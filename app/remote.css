@@ -1,0 +1,357 @@
+/* AUDIO INFO */
+
+nav-info {
+  position: fixed;
+  top: 10px;
+  right: 50px;
+  display: block;
+  z-index: 80;
+  color: #333333;
+  border: solid 0px;
+  font-weight: bold; 
+  font-size:   12px;
+  font-family: sans-serif;
+}
+
+#close {
+  width:25px;
+  height:25px;
+  background:black;
+  color:white;
+  border:2px solid gray;
+  position:absolute;
+  top:0px;
+  right:0px;
+  cursor:pointer;
+}
+
+#audio1 {
+  right: 135px;
+  background-image: url('/icon/mute.png');
+  background-size: 14px;
+  height:14px;
+  width: 14px;
+  color: white;
+}
+#audio2 {
+  right: 135px;
+  background-image: url('/icon/vol+.png');
+  background-size: 14px;
+  height:14px;
+  width: 14px;
+  color: white;
+}
+#audio4 {
+  right: 160px;
+  height:14px;
+  width: 140px;
+  color: gray;
+  text-align: right;
+  font-weight: none; 
+}
+
+/* height of app start screen */
+
+.app_background {
+   height: 100vh;
+}
+
+.remote_nav {
+   float   : left;
+   display : none;
+   width   :150px;
+   height  :100vh;
+}
+
+@media (min-width: 800px) {
+   .remote_nav {
+      display: block;
+   }
+}
+
+
+/* boxes for remote controlls */
+
+.remote {
+   width   : 290px;
+   float   : left;
+   margin  : 4px;
+   padding : 5px;
+   border-radius : 5px;   
+   background-color: #dddddd;
+   opacity: 0.9;
+   font-family:sans-serif;
+   font-size: 12px;
+}
+
+.remoteblock {
+   width : 100%;
+}
+
+/* entries for channel lists */
+
+.channel-entry {
+   width     : 140px;
+   height    :  28px;
+   padding   :   0px;
+   margin    :   2px;
+   color     : white;
+   font-size : 15px;
+   border           : gray;
+   border-style     : solid;
+   border-width     : 1px;
+   border-radius    : 6px;   
+   background-color : #333333;
+}
+
+.channel-entry:hover {
+    color            : black;
+    background-color : #dddddd;
+    box-shadow       : 0 8px 8px 0 rgba(0,0,0,0.24), 0 8px 8px 0 rgba(0,0,0,0.19);
+}
+
+
+/* buttons for remote controls */
+
+.button {
+   color           : white;
+   width           :  63px;
+   height          :  40px;
+   padding         :   2px;
+   margin          :   4px;
+   border-radius   :   6px;   
+   background-color: #111111;
+   overflow        : hidden;
+}
+
+.button.complete {
+   background-color: #eeeeee;
+   border          : blue;
+   border-style    : solid;
+   border-width    : 2px;
+}
+
+.button:hover {
+   color            : yellow;
+   background-color : #555555;
+   box-shadow       : 0 8px 8px 0 rgba(0,0,0,0.24), 0 8px 8px 0 rgba(0,0,0,0.19);
+}
+
+.button:disabled {
+   background-color: #dddddd;
+   color           : #dddddd;
+   border           : gray;
+   border-style     : none;
+   box-shadow       : 0 0px 0px 0 rgba(0,0,0,0.24), 0 0px 0px 0 rgba(0,0,0,0.19);
+}
+
+.button.notfound {
+   background-color: #000055;
+   border          : red;
+   border-style    : solid;
+   border-width    : 2px;
+}
+
+.button.notfound:disabled {
+   background-color: #777777;
+   border          : red;
+   border-style    : solid;
+   border-width    : 2px;
+}
+
+.button.big {
+   width  : 88px;
+   height : 66px;
+}
+
+.button.small {
+   width  : 51px;
+   height : 50px;
+   margin :  3px;
+}
+
+.button.bgred {
+    background-color: red;
+    color: red;
+}
+.button.bgyellow {
+    background-color: yellow;
+    color: yellow;
+}
+.button.bgblue {
+    background-color: blue;
+    color: blue;
+}
+.button.bggreen {
+    background-color: green;
+    color: green;
+}
+
+/* format for iphone Xs */
+
+@media (min-width: 370px) {
+  .remote {
+     width   : 340px;
+  }
+  .setting_bg {
+      width : 340px;
+      }
+
+  .channel-entry {
+
+     width   :  160px;
+  }
+  .button {
+     width  : 76px;
+  }
+  .button.big {
+     width  : 105px;
+  }
+  .button.small {
+     width  : 62px;
+  }
+}
+
+@media (min-width: 720px) {
+  .remote {
+     width   : 335px;
+  }
+  .channel-entry {
+     width   :  160px;
+  }
+  .button {
+     width  : 74px;
+  }
+  .button.big {
+     width  : 102px;
+  }
+  .button.small {
+     width  : 60px;
+  }
+}
+
+
+
+/* buttons for remote controls - OLD */
+
+.command {
+   width   : 100px;
+   height  :  50px;
+   padding :   2px;
+   margin  : 4px;
+   border-radius : 6px;   
+}
+
+.command-small {
+   width   :  60px;
+   height  :  40px;
+   padding :   0px;
+   margin  : 4px;
+   border-radius : 10px;   
+   color   : white;
+   background-color: #111111;
+}
+
+
+/* hover */
+
+.command:hover {
+    color            : red;
+    background-color : yellow;
+    box-shadow       : 0 8px 8px 0 rgba(0,0,0,0.24), 0 8px 8px 0 rgba(0,0,0,0.19);
+}
+
+.command-small:hover {
+    color            : yellow;
+    background-color : #555555;
+    box-shadow       : 0 8px 8px 0 rgba(0,0,0,0.24), 0 8px 8px 0 rgba(0,0,0,0.19);
+}
+
+.command-dev {
+   width   : 80px;
+   height  :  30px;
+   padding :   2px;
+   margin  : 4px;
+   border-radius : 6px;   
+}
+
+.command, .command-small.bgred {
+    background-color: red;
+    color: red;
+}
+.command, .command-small.bgyellow {
+    background-color: yellow;
+    color: yellow;
+}
+.command, .command-small.bgblue {
+    background-color: blue;
+    color: blue;
+}
+.command, .command-small.bggreen {
+    background-color: green;
+    color: green;
+}
+
+.command, .command-small.blue {
+    border: blue;
+    border-style: solid;
+    border-width: 2px;
+}
+.command, .command-small.green {
+    border: green;
+    border-style: solid;
+    border-width: 2px;
+}
+.command, .command-small.darkgreen {
+    border: darkgreen;
+    border-style: solid;
+    border-width: 2px;
+}
+.command, .command-small.red {
+    border: red;
+    border-style: solid;
+    border-width: 2px;
+}
+.command, .command-small.yellow {
+    border: yellow;
+    border-style: solid;
+    border-width: 2px;
+}
+.command, .command-small.darkblue {
+    border: darkblue;
+    border-style: solid;
+    border-width: 2px;
+}
+
+.command-small:disabled {
+   background-color: #dddddd;
+   color           : #dddddd;
+   border          : blue;
+   border-style    : none;
+   border-width    : 2px;
+}
+
+.command-dev.blue {
+    background-color : blue;
+    color            : white;
+}
+
+.command-dev.red {
+    background-color : red;
+    color            : white;
+}
+
+.command-dev.darkblue {
+    background-color : darkblue;
+    color            : white;
+}
+
+.command-dev.green {
+    background-color : green;
+    color            : white;
+}
+
+.command-dev.darkgreen {
+    background-color : darkgreen;
+    color            : white;
+}

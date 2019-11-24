@@ -6,3 +6,13 @@ server/interfaces/broadlink/__pycache__/
 server/server_org.py
 
 config/config_test
+
+app/_sicher/
+
+app/icon/
+
+app/jquery-2.1.3.min.js
+
+app/img/iphone_rm3.jpg
+
+app/img/remote.jpg

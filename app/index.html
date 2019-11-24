@@ -1,0 +1,99 @@
+<?xml version=„1.0“ encoding=„utf-8“?>
+<!doctype html>
+<html manifest="config/cache.manifest">
+<head>
+<title>jc://remote/</title>
+
+<meta charset="utf-8"> 
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<META name="apple-mobile-web-app-capable" content="yes" />
+<META name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.3, maximum-scale=1.0" /> 
+
+<LINK rel=apple-touch-icon href="img/iphone_rm3.jpg" />
+<LINK rel=apple-touch-icon-precomposed href="img/iphone_rm3.jpg" />
+
+<script src="/modules/jc-app/jc-app-1.3.7.js"></script>
+<script src="/modules/jc-msg/jc-msg-1.1.4.js"></script>
+<script src="/modules/jc-cookie/jc-cookie.js"></script>
+<script src="/modules/jc-functions/jc-functions-0.1.0.js"></script>
+
+<link rel="stylesheet" href="/modules/jc-msg/jc-msg-1.1.3.css">
+<link rel="stylesheet" href="/modules/jc-functions/jc-functions-0.1.0.css">
+
+<script src="rm_config_stage.js"></script>
+<script src="rm_config.js"></script>
+<script src="rm_functions.js"></script>
+<script src="rm_functions-api.js"></script>
+<script src="rm_menu.js"></script>
+<script src="rm_remotes.js"></script>
+<script src="rm_status.js"></script>
+<script src="rm_settings.js"></script>
+
+<link rel="stylesheet" href="remote.css">
+<link rel="stylesheet" href="rm_menu.css">
+<link rel="stylesheet" href="rm_settings.css">
+
+</head>
+<body>
+<div id="rm3msg"></div>
+<div id="rm3remote"></div>
+
+<nav id="nav">
+<nav-logo id="rest_status"></nav-logo>
+
+<nav-info id="audio1"></nav-info><!--icon-->
+<nav-info id="audio2"></nav-info><!--icon-->
+<nav-info id="audio3">IIIIIIIIIIIIIIIIIIII</nav-info>
+<nav-info id="audio4"></nav-info><!--icon-->
+
+<nav-title id="navTitle">...</nav-title>
+<ul>
+  <li id="navi"><div onClick="javascript:clickMenu();"><img src="img/button.png" /></div>
+    <ul id='menuItems'>
+      <!-- filled by script -->
+    </ul>
+  </li>
+</ul>
+</nav>
+
+
+<div class="app_background" id="app_background" style="width:100%;">
+
+<div id='devices'></div>
+&nbsp;<br/>
+&nbsp;<br/>
+<div id='remote_block' style="width:100%">
+  <div class='remoteblock'>
+    <div class='remote_nav' id='remote_nav'></div>
+    <div class='setting_bg' id='remote_edit' style='display:none'></div>
+    <div class='remote' id='remote1'></div>
+    <div class='remote' id='remote2'></div>
+    <div class='remote' id='remote3'></div>
+    <div class='setting_bg' id='setting1' style='display:none'></div>
+    <div class='setting_bg' id='setting2' style='display:none'></div>
+    <div class='setting_bg' id='setting3' style='display:none'></div>
+    <div class='setting_bg' id='setting4' style='display:none'>
+      <div id='error_log'></div>
+      <div id='data_log' style='display:none'></div>
+    </div>
+  </div>
+</div>
+<br/>
+
+
+<div id='buttons_all'></div>
+
+  <div id='cover2'>
+&nbsp;<br/>
+&nbsp;<br/>
+&nbsp;<br/>
+&nbsp;<br/>
+&nbsp;<br/>
+    <div id='error_msg'></div>
+  </div>
+</div>
+
+<script src="remote.js"></script>
+
+</body>
+</html>
