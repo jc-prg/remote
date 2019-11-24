@@ -77,14 +77,15 @@
 * OK - migrate to jc-msg v1.1.3+
 * OK - edit mode: edit commands for remote in remote-view
 * OK - edit mode: record IR directly from remote control, if template is loaded / defined
+* OK - migrate to python3
+* OK - server to docker-container
+* OK - server side configuration handling: status in json file
+* OK - migrate to jc-co* OKie
+* OK - optimized directory structure to prepare additional device/API integration
 
-* IN PROGRESS - migrate to python3 (if possible)
-* IN PROGRESS - server side configuration handling: status in json file
+* IN PROGRESS - create license free icon set
+* IN PROGRESS - edit device parameters via settings page (description, driver, image)
 
-* migrate to jc-co* OKie
-
-- edit device parameters via settings page (description, driver, image)
 - edit device parameters via settings page (status definition)
 - edit device parameters via settings page (remote control)
-
 
