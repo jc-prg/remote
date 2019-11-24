@@ -1,0 +1,35 @@
+#!/bin/bash 
+#---------------------------------------------
+# copy file and remove "sample." in the name
+# make changes for your environment
+#---------------------------------------------
+
+export REMOTE_CURRENT_STAGE="test"
+export REMOTE_IS_TEST="True"
+
+# Ports
+export REMOTE_CLIENT_PORT=83
+export REMOTE_SERVER_PORT=5003
+
+# Docker container names
+export REMOTE_DOCKER_CLIENT="remote_client_test"
+export REMOTE_DOCKER_SERVER="remote_server_test"
+
+# Directories
+export REMOTE_DIR="/projects/test/remote"
+export REMOTE_DIR_DATA="$REMOTE_DIR/data"
+export REMOTE_DIR_CLIENT="$REMOTE_DIR/app"
+export REMOTE_DIR_SERVER="$REMOTE_DIR/server"
+export REMOTE_DIR_JCMODULES="/projects/test/modules"
+export REMOTE_DIR_ICONS="$REMOTE_DIR_JCMODULES/jc-icon/white"
+export REMOTE_DIR_ICON_INDEX="$REMOTE_DIR_JCMODULES/jc-icon/white/index.json"
+
+# Images
+export REMOTE_DOCKERIMAGE_CLIENT="php:7.1-apache"
+
+
+#---------------------------------------------
+export THIS_IS_THE_PROJECT_TEMPLATE="Please edit not here, but the orginial configuration file. This files is created using a template."
+
+
+

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# install required PYTHON modules
+pip install --no-cache-dir -r requirements.txt
+

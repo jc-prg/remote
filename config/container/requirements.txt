@@ -1,0 +1,12 @@
+netaddr
+configparser
+broadlink
+flask
+flask-restful
+flask-httpauth
+flask-cors
+pyaes
+Crypto
+pycryptodome
+connexion[swagger-ui]
+

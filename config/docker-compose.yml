@@ -1,0 +1,43 @@
+#----------------------------------------
+# Docker Remote RM
+#----------------------------------------
+
+#services:
+
+  rm3server_prod:
+    build: .
+    volumes:
+      - ./prod.rm3server:/usr/src/app/rm3server
+    ports:
+      - 5002:5002
+
+  rm3app_prod:
+    image: php:7.1-apache
+    ports:
+      - 81:5003
+#    environment:
+#      - VIRTUAL_HOST=intranet.ckloth.de
+    volumes:
+      - ./prod.rm3app:/var/www/html/rm3
+      - ./../www-apps/jc-app:/var/www/html/rm3/jc-app
+      - ./www-rm3.conf:/etc/apache2/sites-enabled/www-rm3.conf
+
+#--------------------
+
+  rm3server:
+    build: .
+    volumes:
+      - ./rm3server:/usr/src/app/rm3server
+    ports:
+      - 5003:5003
+
+  rm3app:
+    image: php:7.1-apache
+    ports:
+      - 83:5003
+    volumes:
+      - ./rm3app:/var/www/html/rm3
+      - ./../www-apps/jc-app:/var/www/html/rm3/jc-app
+      - ./www-rm3.conf:/etc/apache2/sites-enabled/www-rm3.conf
+ 
+#----------------------------------------
