@@ -1,6 +1,6 @@
 # jc://remote/
 
-Based on the Script [BlackBeanControl)(#used-source) this software is build to control single IR devices or more complex scenes of several IR devices via a Web-App.
+Based on the Script [BlackBeanControl](#used-source) this software is build to control single IR devices or more complex scenes of several IR devices via a Web-App.
 
 ## Used Sources
 
