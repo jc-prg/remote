@@ -1,0 +1,6 @@
+
+server/interfaces/broadlink/__pycache__/
+
+*.pyc
+
+server/server_org.py

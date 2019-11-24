@@ -1,0 +1,111 @@
+{
+    "bluray_sony": {
+        "description": "Bluray: SONY Bluray 3D", 
+        "remote": [
+            "open", ".", ".", "on-off", 
+            "LINE", 
+            ".",    "up",    ".",     "topmenu", 
+            "left", "enter", "right", "menu", 
+            ".",    "down",  ".",     "back", 
+            "LINE", 
+            "fbw",  "play",  "ffw",  ".", 
+            "last", "pause", "next", ".", 
+            ".",    "stop",  ".",    "mute", 
+            "LINE", 
+            "audio", "subtitle", "setup",  "display", 
+            "LINE", 
+            "red",   "green",    "yellow", "blue"
+        ]
+    }, 
+    "beamer_optoma": {
+        "description": "Beamer: Optoma HD27", 
+        "remote": [
+            ".", ".", "on", "off", 
+            "LINE", 
+            "timer", "3d",     "aspect",   "menu", 
+            "eco",   "bright", "contrast", "mode", 
+            "LINE", 
+            ".",    "up",    ".",     ".", 
+            "left", "enter", "right", ".", 
+            ".",    "down",   ".",    "."
+        ]
+    }, 
+    "default": {
+        "description": "Default Remote Control definition", 
+        "label": "Default", 
+        "remote": [
+            ".", ".", ".", "on-off", 
+            "LINE", 
+            "1",    "2",    "3",  "vol+", 
+            "4",    "5",    "6",  "mute", 
+            "7",    "8",    "9",  "vol-",  
+            "b.",   "0",    ".",  ".", 
+            "LINE", 
+            ".",    "up",    ".",     "prg+", 
+            "left", "enter", "right", "prg-", 
+            ".",    "down",  ".",     "."
+        ]
+    }, 
+    "screen_elite": {
+        "description": "Screens: Elite Screens 100\"", 
+        "remote": [
+            ".",    ".", "on", "off", 
+            "LINE", 
+            "up",   ".", ".", ".", 
+            "stop", ".", ".", ".", 
+            "down", ".", ".", "."
+        ]
+    }, 
+    "receiver_onkyotxnr686": {
+        "description": "AV-Receiver: ONKYO TX-NR686(B)", 
+        "remote": [
+                ".",".",".","on-off",
+                "LINE",
+                "pc","bd","radio","bluetooth","cable-sat","aux",
+                "LINE",
+                "q",        "up",    "info",   "vol+",
+                "left",     "enter", "right",  "mute",
+                "settings", "down",  "return", "vol-",
+                "LINE",
+                "movie-tv-mode","music-mode","game-mode", ".",
+                "fbw",          "play",      "ffw",       ".",
+                "toggle",       "memory",    "mode",      "."
+        ]
+    }, 
+    "receiver_onkyotxsr508": {
+
+        "description": "AV-Receiver: ONKYO TX-SR508", 
+        "remote": [
+            ".", ".", ".", "on-off", 
+            "LINE", 
+            "tv", "bluray", "ipod", "bluetooth", 
+            "pc", 
+            "LINE", 
+            "1",    "2",    "3", "vol+", 
+            "4",    "5",    "6", "mute", 
+            "7",    "8",    "9", "vol-", 
+            "back", "0",  "+10", "setup", 
+            "LINE", 
+            ".",     "up",    ".",      "prg+", 
+            "left",  "enter", "right",  "prg-", 
+            "movie", "down",  "stereo", "timer"
+        ]
+    }, 
+    "tv": {
+        "description": "TV-Receiver: TOPFIELD", 
+        "remote": [
+            "radiotv", ".", ".", "on-off", 
+            "LINE", 
+            "1",    "2",   "3",    "vol+", 
+            "4",    "5",   "6",    "mute", 
+            "7",    "8",   "9",    "vol-", 
+            "back", "0",   "info", "timer", 
+            "LINE", 
+            ".",    "prg+",  ".",        "menu", 
+            "left", "enter", "right",    "guide", 
+            "fav",  "prg-",  "subtitle", "exit", 
+            "LINE", 
+            "red",  "green", "yellow",   "blue"
+        ]
+    }
+}
