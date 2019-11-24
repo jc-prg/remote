@@ -1,0 +1,20 @@
+{
+     "cinema" : {
+	    "label" : "Kino",
+	    "devices": ["rec2","beam","lw"],
+            "remote": [
+                "makro_bluray", "makro_pc", "scene-on_cinema", "scene-off_cinema",
+                "LINE",
+                "bd_fbw",      "bd_play",  "bd_ffw",   "makro_vol+",
+                "bd_last",     "bd_pause", "bd_next",  "makro_mute",
+                "bd_subtitle", "bd_stop",  "bd_audio", "makro_vol-",
+                "LINE",
+                "bd_open",  "bd_up",    ".",          "bd_topmenu",
+                "bd_left",  "bd_enter", "bd_right",   "bd_menu",
+                "bd_setup", "bd_down",  "bd_display", "bd_back",
+                "LINE",
+                "bd_red",   "bd_green", "bd_yellow",  "bd_blue"
+                ],
+            "channel": {}
+    }
+}

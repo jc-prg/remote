@@ -1,0 +1,56 @@
+{
+    "neu": {
+        "audio": "", 
+        "buttons": {}, 
+        "description": "neu", 
+        "driver": "", 
+        "image": "", 
+        "label": "neu", 
+        "remote": [
+            ".", 
+            ".", 
+            ".", 
+            "on-off", 
+            "LINE", 
+            "pc", 
+            "bd", 
+            "radio", 
+            "bluetooth", 
+            "cable-sat", 
+            "aux", 
+            "LINE", 
+            "q", 
+            "up", 
+            "info", 
+            "vol+", 
+            "left", 
+            "enter", 
+            "right", 
+            "mute", 
+            "settings", 
+            "down", 
+            "return", 
+            "vol-", 
+            "LINE", 
+            "movie-tv-mode", 
+            "music-mode", 
+            "game-mode", 
+            ".", 
+            "fbw", 
+            "play", 
+            "ffw", 
+            ".", 
+            "toggle", 
+            "memory", 
+            "mode", 
+            "."
+        ], 
+        "status": {
+            "vol": {
+                "max": 0, 
+                "min": 0
+            }
+        }, 
+        "visibility": "none"
+    }
+}

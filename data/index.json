@@ -1,0 +1,33 @@
+{
+    "devices": [
+        "neu", 
+        "bd", 
+        "beam", 
+        "default", 
+        "lw", 
+        "rec2", 
+        "tv", 
+        "test"
+    ], 
+    "makros": [
+        "makro",
+       	"scene-on",
+       	"scene-off",
+       	"dev-on",
+       	"dev-off"
+    ], 
+    "scenes": [
+        "music", 
+        "tv", 
+        "cinema"
+    ], 
+    "templates": [
+        "default", 
+        "bluray_sony-bd3d", 
+        "beamer_optoma-hd27", 
+        "screen_elite-screens-100", 
+        "receiver_onkyo-txnr686", 
+        "receiver_onkyo-txsr508", 
+        "tv-receiver_topfield"
+    ]
+}
