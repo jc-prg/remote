@@ -25,7 +25,7 @@ function showRemote(i) {
     var body   = document.getElementById("app_background");
 
     if (i == 1) {
-        body.style.backgroundImage    = "url(img/remote.jpg)";
+        body.style.backgroundImage    = "url(img/remote2.png)";
         body.style.backgroundRepeat   = "no-repeat";
         body.style.backgroundPosition = "bottom center";
         body.style.backgroundSize     = "100%";

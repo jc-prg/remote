@@ -97,7 +97,7 @@ function rmRemote(name) {
 			var cmd    = device + "_" + button;
 
 			if (button == "LINE") 			{ remote += "<div style='width:100%;float:left;'><hr/></div>"; }
-			else if (button == ".") 		{ remote += this.button_device( device+i, ".", "", "", "disabled" ) }
+			else if (button == ".") 		{ remote += this.button_device( device+i, ".", "empty", "", "disabled" ) }
 			else if (button in remote_buttons) 	{ remote += this.button_device( cmd, button, "", cmd, "" ); this.active_buttons.push(cmd); }
 			else if (this.edit_mode)        	{ remote += this.button_device_add( cmd, button, "notfound", cmd, "" ); }
 			else                            	{ remote += this.button_device( cmd, button, "notfound", cmd, "disabled" ); }
@@ -332,7 +332,8 @@ function rmRemote(name) {
 	this.button = function( id, label, style, script_sendCmd, disabled ){
 	
 	        var onContext  = "";
-	        var onClick    = "onclick='" + script_sendCmd + "'";
+	        var onClick    = "";
+	        if (script_sendCmd != "") { onClick    = "onclick='" + script_sendCmd + "'"; }
 	        
 	        if (Array.isArray(script_sendCmd)) {
 	                var test   = "onmousedown_left_right(event,'alert(#left#);','alert(#right#);');"
@@ -357,10 +358,13 @@ function rmRemote(name) {
 			disabled = "disabled";
 			label2[0] = "&nbsp;";
 			}
-		return this.button( id, label2[0], label2[1], 'sendCmd("'+cmd+'");', disabled );
+		if (cmd != "") {
+			cmd = 'sendCmd("'+cmd+'");';
+			}
+		return this.button( id, label2[0], label2[1], cmd, disabled );
 		}
 		
-	// create button for single command
+	// create button for single command -> if no command assigned yet to record command for button
 	this.button_device_add = function( id, label, style, cmd, disabled ) {
 
 		var label2 	= this.button_image( label, style );
@@ -401,7 +405,7 @@ function rmRemote(name) {
 
 		//console.log(label+" - "+makro_string);
 
-		return "<button id='" + id + "' class='channel-entry " + style + "' onclick=\"javascript:sendMakro('" + makro_string + "');\">" + label + "</button>";
+		return "<button id='" + id + "' class='channel-entry " + style + "' " + disabled + " onclick=\"javascript:sendMakro('" + makro_string + "');\">" + label + "</button>";
 		}
 
 	// check if image exists for button

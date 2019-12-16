@@ -1,0 +1,43 @@
+
+@media (prefers-color-scheme: dark) {
+
+  img {
+    opacity: .75;
+    transition: opacity .5s ease-in-out;
+  }
+  
+  img:hover {
+    opacity: 1;
+  }
+  
+  body {
+    background: #222222;
+  }
+  
+  .remote {
+    background: #444444;
+    color: #aaaaaa;
+    opacity: 0.8;
+  }
+  
+  .button {
+    color: #dddddd;
+    opacity: 1;
+  }
+  
+  .button.empty 	{ background: #444444; }
+  .button:disabled 	{ background: #444444; }
+  
+  .button.bggreen  	{ opacity: 0.7; }
+  .button.bgred    	{ opacity: 0.7; }
+  .button.bgyellow 	{ opacity: 0.7; }
+  .button.bgblue   	{ opacity: 0.7; }
+  
+  hr {
+    border: #222222 solid 1px;
+  }
+  
+  nav-info {
+    opacity: 0.7;
+  }
+}
