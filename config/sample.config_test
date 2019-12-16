@@ -30,6 +30,5 @@ export REMOTE_DOCKERIMAGE_CLIENT="php:7.1-apache"
 
 #---------------------------------------------
 export THIS_IS_THE_PROJECT_TEMPLATE="Please edit not here, but the orginial configuration file. This files is created using a template."
-
-
+export DOLLAR="$"
 
