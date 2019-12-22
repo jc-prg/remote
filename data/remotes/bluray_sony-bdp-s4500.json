@@ -1,0 +1,24 @@
+{
+    "bluray_sony-bdp-s4500": {
+        "description": "Bluray: SONY BDP-S4500 Bluray Player", 
+        "api" : [ "BROADLINK" ],
+        "status" : { 
+        	"BROADLINK": "record"
+        	},
+        "remote": [
+            "open", ".", ".", "on-off", 
+            "LINE", 
+            ".",    "up",    ".",     "topmenu", 
+            "left", "enter", "right", "menu", 
+            ".",    "down",  ".",     "back", 
+            "LINE", 
+            "fbw",  "play",  "ffw",  ".", 
+            "last", "pause", "next", ".", 
+            ".",    "stop",  ".",    "mute", 
+            "LINE", 
+            "audio", "subtitle", "setup",  "display", 
+            "LINE", 
+            "red",   "green",    "yellow", "blue"
+        ]
+    }
+}

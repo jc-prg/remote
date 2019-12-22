@@ -307,6 +307,23 @@ paths:
               REQUEST:
                 $ref: "#/definitions/REQUEST"
 
+  /test/:
+    get:
+      operationId: modules_api.server_cmd.RemoteTest
+      tags:
+        - maintain
+      summary: reload data from config files
+      description: reload data from config files
+      responses:
+        200:
+          description: Successfully done reset
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
   /reset/:
     get:
       operationId: modules_api.server_cmd.RemoteReset

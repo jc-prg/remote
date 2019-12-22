@@ -1,0 +1,9 @@
+{
+    "default": {
+        "description" : "API to connect to IR devices (no default commands)",
+        "commands" : {
+       	},
+       	"status" : {
+       	}
+   }
+}

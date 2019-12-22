@@ -1,0 +1,20 @@
+{
+    "receiver_onkyo-txnr686": {
+        "description" : "API to connect to several devices from ONKYO - device specific commands",
+        "buttons" : {
+        	"display" : "display-mode=toggle",
+        	"pc"      : "input-selector=pc",
+        	"tv"      : "input-selector=tv",
+        	"phone"   : "input-selector=phone",
+        	"usb"     : "input-selector=usb",
+        	"game"    : "input-selector=game",
+        	"cbl"     : "input-selector=cbl"
+       	},
+       	"status" : {
+        	"display" : "display-mode=query",
+        	"source"  : "input-selector=query"
+       	},
+       	"values" : {
+       	}
+   }
+}

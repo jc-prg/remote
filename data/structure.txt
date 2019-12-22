@@ -1,0 +1,31 @@
+
+REMOTES
+-> Buttons
+-> Description
+-> API
+
+DEVICES
+-> Connected Remote
+
+API
+-> IR
+-> EISCP-ONKYO
+-> ...
+
+API/DEV/BUTTON
+-> Default
+-> Specific
+
+MAKROS
+-> dev-on
+-> dev-off
+-> scene-on
+-> scene-off
+-> makro
+
+SCENES
+-> cinema
+-> tv
+-> music
+
+

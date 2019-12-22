@@ -61,6 +61,78 @@ def dataInit():
           "ReturnMsg"    : "",
           "DeviceConfig" : [] }
     return d
+    
+#---------------------------
+# read / write configuration NEW
+#---------------------------
+
+def RmListData(selected=""):
+
+    data   = {}
+    makros = ["dev-on","dev-off","scene-on","scene-off","makro"]
+    
+    data["devices"] = rm3json.read("devices/_active")
+    data["scenes"]  = rm3json.read("scenes/_active")
+    data["makros"]  = {}
+    
+    # read data for active devices
+    for device in data["devices"]:
+        if data["devices"][device]["visible"] == "yes":
+          if selected == "" or selected == device:
+
+            key       = data["devices"][device]["device"]
+            interface = data["devices"][device]["interface"]
+            buttons   = rm3json.read("devices/"+interface+"/"+key)
+            remote    = rm3json.read("remotes/"+key)
+           
+            data_temp = data["devices"][device]
+
+            if interface in remote[key]["status"]:  data_temp["status"]["method"]  = remote[key]["status"][interface]
+            else:                                   data_temp["status"]["method"]  = "undefined"
+            if "presets" in remote[key]:            data_temp["status"]["presets"] = remote[key]["presets"]
+             
+            data_temp["buttons"]             = buttons[key]["buttons"]
+            data_temp["description"]         = remote[key]["description"]
+            data_temp["remote"]              = remote[key]["remote"]
+           
+            data["devices"][device] = data_temp
+
+    # read data for active scenes
+    for scene in data["scenes"]:
+        if data["scenes"][scene]["visible"] == "yes":
+          if selected == "" or selected == scene:
+
+            thescene      = rm3json.read("scenes/"+scene)
+           
+            data["scenes"][scene]["remote"]             = thescene[scene]["remote"]
+            data["scenes"][scene]["channel"]            = thescene[scene]["channel"]
+            data["scenes"][scene]["devices"]            = thescene[scene]["devices"]
+            data["scenes"][scene]["label"]              = thescene[scene]["label"]
+           
+    # read data for makros
+    for makro in makros:
+        
+        data["makros"][makro]     = rm3json.read("makros/"+makro)
+        
+        
+    # read data for templates
+    data["templates"]               = {}
+    if selected == "":
+      templates                     = rm3json.available("templates")
+      for template in templates:    
+        template_keys = template.split("/")
+        template_key  = template_keys[len(template_keys)-1]
+        template_data = rm3json.read("templates/"+template)
+
+        if "ERROR" in template_data:  data["templates"][template] = template_data
+        else: 
+          if template_key in template_data: data["templates"][template] = template_data[template_key]
+          else:                             data["templates"][template] = { "ERROR" : "JSON file not correct, key missing: "+template_key }
+        
+        data["templates"][template]["file"] = "templates/"+template
+
+    return data
+
 
 #---------------------------
 # read / write configuration
@@ -278,12 +350,17 @@ def remoteAPI_start(setting=[]):
 
     global Status, lastButton
 
-    data                                   = init.dataInit() 
-    data["DATA"]                           = readDataJsonAll() #"no-buttons"
+    data                                      = init.dataInit() 
+
+
+    #data["DATA"]   = readDataJsonAll() #"no-buttons"
+    data["DATA"]   = RmListData("")
+
     
-    data["CONFIG"]                         = {}  
-    data["CONFIG"]["button_images"]        = rm3json.read("buttons/button_images")
-    data["CONFIG"]["button_colors"]        = rm3json.read("buttons/button_colors")
+    data["CONFIG"]                          = {}  
+    data["CONFIG"]["button_images"]         = rm3json.read("buttons/button_images")
+    data["CONFIG"]["button_colors"]         = rm3json.read("buttons/button_colors")
+
     
     data["REQUEST"]                        = {}
     data["REQUEST"]["start-time"]          = time.time()
@@ -309,8 +386,8 @@ def remoteAPI_start(setting=[]):
     data["Button"]                         = lastButton 
     #--------------------------------
     
-    if "no-config" in setting:  data["CONFIG"] = {}
-    if "no-data" in setting:    data["DATA"]   = {}
+    if "no-data" in setting:   data["DATA"]   = {}
+    if "no-config" in setting: data["CONFIG"] = {}
         
     return data
     
@@ -438,6 +515,15 @@ def Remote(device,button):
 
 #-------------------------------------------------
 
+def RemoteTest():
+        '''Test new functions'''
+
+        data                      = remoteAPI_start(["no-data"])
+        data["TEST"]              = RmListData("")
+        data                      = remoteAPI_end(data)        
+        return data
+
+#-------------------------------------------------
 def RemoteOnOff(device,button):
         '''check old and document new status'''
 
