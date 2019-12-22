@@ -388,7 +388,7 @@ def remoteAPI_start(setting=[]):
     data["STATUS"]["last_button"]          = lastButton
     data["STATUS"]["system"]               = Status
 
-    # Stay compartible for a while    
+    # Stay compartible for a while    => DELETE
     #--------------------------------
     data["DeviceConfig"]                   = {}
     data["DeviceConfig"]["button_images"]  = data["CONFIG"]["button_images"]

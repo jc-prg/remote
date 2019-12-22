@@ -49,7 +49,7 @@
         "main-audio": "yes",
         "status": {
             "mute": "OFF",
-            "power": "ON",
+            "power": "OFF",
             "vol": 0
         },
         "visible": "yes"

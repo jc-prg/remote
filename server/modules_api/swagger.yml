@@ -341,7 +341,7 @@ paths:
               REQUEST:
                 $ref: "#/definitions/REQUEST"
 
-  /reset_audio/:
+  /reset-audio/:
     get:
       operationId: modules_api.server_cmd.RemoteResetAudio
       tags:
