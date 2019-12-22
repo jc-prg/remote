@@ -12,6 +12,9 @@ import logging
 import json
 
 import interfaces.broadlink.broadlink as broadlink
+import interfaces.broadlink_api       as broadlink_api
+import interfaces.interfaces          as interfaces
+
 import modules_api.server_init        as init
 
 import modules.rm3status     as rm3status
@@ -24,7 +27,7 @@ from Crypto.Cipher import AES
 
 #---------------------------
 
-
+rm_data  = {}  # new cache variable
 Device   = {}
 Real     = {}
 devList  = {}
@@ -62,78 +65,6 @@ def dataInit():
           "DeviceConfig" : [] }
     return d
     
-#---------------------------
-# read / write configuration NEW
-#---------------------------
-
-def RmListData(selected=""):
-
-    data   = {}
-    makros = ["dev-on","dev-off","scene-on","scene-off","makro"]
-    
-    data["devices"] = rm3json.read("devices/_active")
-    data["scenes"]  = rm3json.read("scenes/_active")
-    data["makros"]  = {}
-    
-    # read data for active devices
-    for device in data["devices"]:
-        if data["devices"][device]["visible"] == "yes":
-          if selected == "" or selected == device:
-
-            key       = data["devices"][device]["device"]
-            interface = data["devices"][device]["interface"]
-            buttons   = rm3json.read("devices/"+interface+"/"+key)
-            remote    = rm3json.read("remotes/"+key)
-           
-            data_temp = data["devices"][device]
-
-            if interface in remote[key]["status"]:  data_temp["status"]["method"]  = remote[key]["status"][interface]
-            else:                                   data_temp["status"]["method"]  = "undefined"
-            if "presets" in remote[key]:            data_temp["status"]["presets"] = remote[key]["presets"]
-             
-            data_temp["buttons"]             = buttons[key]["buttons"]
-            data_temp["description"]         = remote[key]["description"]
-            data_temp["remote"]              = remote[key]["remote"]
-           
-            data["devices"][device] = data_temp
-
-    # read data for active scenes
-    for scene in data["scenes"]:
-        if data["scenes"][scene]["visible"] == "yes":
-          if selected == "" or selected == scene:
-
-            thescene      = rm3json.read("scenes/"+scene)
-           
-            data["scenes"][scene]["remote"]             = thescene[scene]["remote"]
-            data["scenes"][scene]["channel"]            = thescene[scene]["channel"]
-            data["scenes"][scene]["devices"]            = thescene[scene]["devices"]
-            data["scenes"][scene]["label"]              = thescene[scene]["label"]
-           
-    # read data for makros
-    for makro in makros:
-        
-        data["makros"][makro]     = rm3json.read("makros/"+makro)
-        
-        
-    # read data for templates
-    data["templates"]               = {}
-    if selected == "":
-      templates                     = rm3json.available("templates")
-      for template in templates:    
-        template_keys = template.split("/")
-        template_key  = template_keys[len(template_keys)-1]
-        template_data = rm3json.read("templates/"+template)
-
-        if "ERROR" in template_data:  data["templates"][template] = template_data
-        else: 
-          if template_key in template_data: data["templates"][template] = template_data[template_key]
-          else:                             data["templates"][template] = { "ERROR" : "JSON file not correct, key missing: "+template_key }
-        
-        data["templates"][template]["file"] = "templates/"+template
-
-    return data
-
-
 #---------------------------
 # read / write configuration
 #---------------------------
@@ -188,6 +119,92 @@ def writeDataJsonAll(data):
         
     writeDataJson("index","",index)
     return
+
+
+#---------------------------
+# read / write configuration NEW
+#---------------------------
+
+def RmReadData(selected=""):
+    '''Read all relevant data and create data structure'''
+
+    global rm_data
+
+    data    = {}
+    makros  = ["dev-on","dev-off","scene-on","scene-off","makro"]
+    btnfile = ["buttons","status","values"]
+    
+    data["devices"] = rm3json.read("devices/_active")
+    data["scenes"]  = rm3json.read("scenes/_active")
+    data["makros"]  = {}
+    
+    # read data for active devices
+    for device in data["devices"]:
+        if data["devices"][device]["visible"] == "yes":
+          if selected == "" or selected == device:
+
+            key       = data["devices"][device]["device"]
+            interface = data["devices"][device]["interface"]
+            buttons   = rm3json.read("devices/"+interface+"/"+key)
+            remote    = rm3json.read("remotes/"+interface+"/"+key)
+           
+            buttons_default  = rm3json.read("devices/"+interface+"/default")
+            if not "ERROR" in buttons_default:
+              for x in btnfile:
+                if x in buttons_default["default"]:
+                  for y in buttons_default["default"][x]:
+                    buttons[key][x][y] = buttons_default["default"][x][y]
+
+           
+            data_temp = data["devices"][device]
+
+            if interface in remote[key]["status"]:  data_temp["status"]["method"]  = remote[key]["status"][interface]
+            else:                                   data_temp["status"]["method"]  = "undefined"
+            if "presets" in remote[key]:            data_temp["status"]["presets"] = remote[key]["presets"]
+             
+            data_temp["buttons"]             = buttons[key]["buttons"]
+            data_temp["description"]         = remote[key]["description"]
+            data_temp["remote"]              = remote[key]["remote"]
+           
+            data["devices"][device] = data_temp
+
+    # read data for active scenes
+    for scene in data["scenes"]:
+        if data["scenes"][scene]["visible"] == "yes":
+          if selected == "" or selected == scene:
+
+            thescene      = rm3json.read("scenes/"+scene)
+           
+            data["scenes"][scene]["remote"]             = thescene[scene]["remote"]
+            data["scenes"][scene]["channel"]            = thescene[scene]["channel"]
+            data["scenes"][scene]["devices"]            = thescene[scene]["devices"]
+            data["scenes"][scene]["label"]              = thescene[scene]["label"]
+           
+    # read data for makros
+    for makro in makros:
+        
+        data["makros"][makro]     = rm3json.read("makros/"+makro)
+        
+        
+    # read data for templates
+    data["templates"]               = {}
+    if selected == "":
+      templates                     = rm3json.available("templates")
+      for template in templates:    
+        template_keys = template.split("/")
+        template_key  = template_keys[len(template_keys)-1]
+        template_data = rm3json.read("templates/"+template)
+
+        if "ERROR" in template_data:  data["templates"][template] = template_data
+        else: 
+          if template_key in template_data: data["templates"][template] = template_data[template_key]
+          else:                             data["templates"][template] = { "ERROR" : "JSON file not correct, key missing: "+template_key }
+        
+        data["templates"][template]["file"] = "templates/"+template
+
+    if selected == "": rm_data = data
+    return data
+
 
 #---------------------------
 # add / delete devices & buttons to config
@@ -354,7 +371,7 @@ def remoteAPI_start(setting=[]):
 
 
     #data["DATA"]   = readDataJsonAll() #"no-buttons"
-    data["DATA"]   = RmListData("")
+    data["DATA"]   = RmReadData("")
 
     
     data["CONFIG"]                          = {}  
@@ -366,7 +383,8 @@ def remoteAPI_start(setting=[]):
     data["REQUEST"]["start-time"]          = time.time()
 
     data["STATUS"]                         = {}
-    data["STATUS"]["devices"]              = rm3json.read("status")
+    #data["STATUS"]["devices"]              = rm3json.read("status")
+    data["STATUS"]["devices"]              = rm3status.readStatusOld()
     data["STATUS"]["last_button"]          = lastButton
     data["STATUS"]["system"]               = Status
 
@@ -391,6 +409,9 @@ def remoteAPI_start(setting=[]):
         
     return data
     
+
+#-------------------------------------------------
+
 def remoteAPI_end(data):
 
     data["REQUEST"]["load-time"] = time.time() - data["REQUEST"]["start-time"]
@@ -400,56 +421,6 @@ def remoteAPI_end(data):
         "server_running"        :  time.time() - rm3config.start_time
         }
     return data
-
-
-#-------------------------------------------------
-# Execute IR command
-#-------------------------------------------------
-
-def ir_command_send(device,button):
-    '''send IR command'''
-
-    code = device + "_" + button
-    data = rm3json.read("devices/"+device)
-    cmd  = ""
-
-    if ((code != '_') and (code != device+'_')):
-        if device in data.keys():
-            if button in data[device]["buttons"].keys():
-                cmd  = data[device]["buttons"][button]
-
-                logging.info("Button-Code: " + cmd)
-                #DecodedCommand = cmd.decode('hex')        # python2
-                DecodedCommand = codecs.decode(cmd,'hex')  # python3
-                init.RM3Device.send_data(DecodedCommand)
-                return("OK")
-            else:
-                return("Button-Code not defined")
-        else:
-            return("Device not defined")
-    else:
-        return("No Button-Code")
-
-#-------------------------------------------------
-
-def ir_command_record(device,button):
-    '''record new command'''
-
-    code = device + "_" + button
-    init.RM3Device.enter_learning()
-    time.sleep(5)
-    LearnedCommand = init.RM3Device.check_data()
-
-    if LearnedCommand is None:
-        return('Learn Button (' + code + '): No IR command received')
-        sys.exit()
-
-    #EncodedCommand = LearnedCommand.encode('hex')         # python2
-    EncodedCommand = codecs.encode(LearnedCommand,'hex')   # python3
-
-    msg = varsAddCmd_json(device,button,EncodedCommand)
-
-    return msg
 
 
 #-------------------------------------------------
@@ -507,7 +478,8 @@ def Remote(device,button):
         data                      = remoteAPI_start(["no-data"])
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Button"] = button
-        data["REQUEST"]["Return"] = ir_command_send(device,button)
+        data["REQUEST"]["Return"] = interfaces.send("BROADLINK",device,button)
+
         data["DeviceStatus"]      = rm3status.getStatus(device)
         data["ReturnMsg"]         = data["REQUEST"]["Return"]
         data                      = remoteAPI_end(data)        
@@ -519,7 +491,7 @@ def RemoteTest():
         '''Test new functions'''
 
         data                      = remoteAPI_start(["no-data"])
-        data["TEST"]              = RmListData("")
+        data["TEST"]              = RmReadData("")
         data                      = remoteAPI_end(data)        
         return data
 
@@ -529,24 +501,25 @@ def RemoteOnOff(device,button):
 
         data = remoteAPI_start(["no-data"])
 
+############### need for action ##
+ # - if api
+ # - if multiple values, check definition
+ # - if volume, check minimum and maximum
+
+
+        # for device with only 1 button for ON and OFF
         if button == "on-off":
-           # for device with only 1 button for ON and OFF
            devStat = rm3status.getStatus(device)
-           if devStat == "OFF":
-               rm3status.setStatus(device,"ON")
-           else:
-               rm3status.setStatus(device,"OFF")
+           
+           if devStat == "OFF":   rm3status.setStatus(device,"ON")
+           else:                  rm3status.setStatus(device,"OFF")
 
-        elif button == "on":
-           # for device with diffent buttons for ON an OFF
-           rm3status.setStatus(device,"ON")
+        # for device with diffent buttons for ON an OFF
+        elif button == "on":      rm3status.setStatus(device,"ON")
+        elif button == "off":     rm3status.setStatus(device,"OFF")
 
-        elif button == "off":
-           # for device with diffent buttons for ON an OFF
-           rm3status.setStatus(device,"OFF")
-
+        # TV - change mode between TV and Radio (specific for Authors receiver from TOPFIELD!)
         elif button == "radiotv":
-           # TV - change mode between TV and Radio (specific for Authors receiver from TOPFIELD!)
            devButton = device+"_"+button
            devStat   = rm3status.getStatus(devButton)
            if devStat == "TV":
@@ -556,17 +529,15 @@ def RemoteOnOff(device,button):
                rm3status.setStatus(devButton,"TV")
                print(devButton+":"+devStat+"-TV")
 
+        # change mute on/off
         elif button == "mute":
-           # TV - change mode between TV and Radio (specific for Authors receiver from TOPFIELD!)
            devButton = device+"_"+button
            devStat   = rm3status.getStatus(devButton)
-           if devStat == "MUTE_ON":
-               rm3status.setStatus(devButton,"MUTE_OFF")
-           else:
-               rm3status.setStatus(devButton,"MUTE_ON")
+           if devStat == "ON":   rm3status.setStatus(devButton,"OFF")
+           else:                 rm3status.setStatus(devButton,"ON")
 
+        # document volume
         elif button == "vol+" or button == "vol-":
-           # document volume
            devButton = device+"_vol"
            #
            print(rm3status.getStatus(devButton))
@@ -576,11 +547,12 @@ def RemoteOnOff(device,button):
                devStat -= 1
            if button == "vol+" and devStat < 69:  # max base on receiver -> change to setting per device
                devStat += 1
+               
            rm3status.setStatus(devButton,devStat)
 
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Button"] = button
-        data["REQUEST"]["Return"] = ir_command_send(device,button)
+        data["REQUEST"]["Return"] = interfaces.send("BROADLINK",device,button)
 
         data["DeviceStatus"]      = rm3status.getStatus(device)
         data["ReturnMsg"]         = data["REQUEST"]["Return"]
@@ -616,9 +588,10 @@ def RemoteResetAudio():
 def RemoteAddButton(device,button):
         '''Learn Button and safe to init-file'''
 
-        data               = remoteAPI_start(["no-data"])
-        data["ReturnMsg"]  = ir_command_record(device,button)
-        data               = remoteAPI_end(data)        
+        data                      = remoteAPI_start(["no-data"])
+        EncodedCommand            = interfaces.record("BROADLINK",device,button)
+        data["REQUEST"]["Return"] = varsAddCmd_json(device,button,EncodedCommand)
+        data                      = remoteAPI_end(data)        
         return data
 
 #-------------------------------------------------

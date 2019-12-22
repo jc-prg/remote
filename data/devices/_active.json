@@ -1,58 +1,82 @@
 {
-	"rec" : {
-		"device" 	: "receiver_onkyo-txnr686",
-		"visible"	: "yes",
-		"label"		: "AV Receiver",
-		"interface"     : "BROADLINK",
-		"image"		: "rec",
-		"status"        : {}
-	},
-	"rec2" : {
-		"device" 	: "receiver_onkyo-txnr686",
-		"visible"	: "yes",
-		"label"		: "AV Receiver (neu)",
-		"interface"     : "EISCP-ONKYO",
-		"image"		: "rec",
-		"status"        : {}
-	},
-	"tv" : {
-		"device" 	: "tv-receiver_topfield",
-		"visible"	: "yes",
-		"label"		: "TV/Radio",
-		"interface"     : "BROADLINK",
-		"image"		: "tv",
-		"status"        : {}
-	},
-	"beam" : {
-		"device" 	: "beamer_optoma-hd27",
-		"visible"	: "yes",
-		"label"		: "Beamer",
-		"interface"     : "BROADLINK",
-		"image"		: "beam",
-		"status"        : {}
-	},
-	"bd" : {
-		"device" 	: "bluray_sony-bdp-s4500",
-		"visible"	: "yes",
-		"label"		: "Bluray Player",
-		"interface"     : "BROADLINK",
-		"image"		: "bd",
-		"status"        : {}
-	},
-	"lw" : {
-		"device" 	: "screen_elite-screens-100",
-		"visible"	: "yes",
-		"label"		: "Leinwand",
-		"interface"     : "BROADLINK",
-		"image"		: "lw",
-		"status"        : {}
-	},
-	"default" : {
-		"device" 	: "",
-		"visible"	: "no",
-		"label"		: "",
-		"interface"     : "",
-		"image"		: "",
-		"status"        : {}
-	}
+    "bd": {
+        "device": "bluray_sony-bdp-s4500",
+        "image": "bd",
+        "interface": "BROADLINK",
+        "label": "Bluray Player",
+        "status": {
+            "power": "OFF"
+        },
+        "visible": "yes"
+    },
+    "beam": {
+        "device": "beamer_optoma-hd27",
+        "image": "beam",
+        "interface": "BROADLINK",
+        "label": "Beamer",
+        "status": {
+            "power": "OFF"
+        },
+        "visible": "yes"
+    },
+    "default": {
+        "device": "",
+        "image": "",
+        "interface": "",
+        "label": "Sample Device",
+        "status": {
+            "mute": "OFF",
+            "power": "OFF",
+            "vol": 0
+        },
+        "visible": "no"
+    },
+    "lw": {
+        "device": "screen_elite-screens-100",
+        "image": "lw",
+        "interface": "BROADLINK",
+        "label": "Leinwand",
+        "status": {
+            "power": "OFF"
+        },
+        "visible": "yes"
+    },
+    "rec": {
+        "device": "receiver_onkyo-txnr686",
+        "image": "rec",
+        "interface": "BROADLINK",
+        "label": "AV Receiver",
+        "main-audio": "yes",
+        "status": {
+            "mute": "OFF",
+            "power": "ON",
+            "vol": 0
+        },
+        "visible": "yes"
+    },
+    "rec2": {
+        "device": "receiver_onkyo-txnr686",
+        "image": "rec",
+        "interface": "EISCP-ONKYO",
+        "label": "AV Receiver (neu)",
+        "status": {
+            "mute": "OFF",
+            "power": "OFF",
+            "vol": 0
+        },
+        "visible": "yes"
+    },
+    "tv": {
+        "device": "tv-receiver_topfield",
+        "image": "tv",
+        "interface": "BROADLINK",
+        "label": "TV/Radio",
+        "status": {
+            "mute": "OFF",
+            "power": "OFF",
+            "radiotv": "TV",
+            "vol": 0
+        },
+        "visible": "yes"
+    }
 }

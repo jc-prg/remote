@@ -1,8 +1,8 @@
 {
-    "receiver_onkyo-txnr686": {
-        "description": "AV-Receiver: ONKYO TX-NR686(B) - IR", 
+    "receiver_onkyo-txnr686_api": {
+        "description": "AV-Receiver: ONKYO TX-NR686(B) - API", 
         "remote": [
-                ".",".",".","on-off",
+                ".",".","on","off",
                 "LINE",
                 "pc","bd","radio","bluetooth","cable-sat","aux",
                 "LINE",

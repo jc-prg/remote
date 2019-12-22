@@ -6,14 +6,14 @@
 
 #services:
 
-  remote_server_test:
-    build: ./config/container
-    volumes:
-      - /projects/git/remote/server:/usr/src/app/server
-      - /projects/git/remote/data:/projects/git/remote/data
-      - /projects/git/modules/jc-icon-private/white/index.json:/projects/git/remote/data/buttons/button_images.json
-    ports:
-      - 5008:5008
+#  remote_server_test:
+#    build: ./config/container
+#    volumes:
+#      - /projects/git/remote/server:/usr/src/app/server
+#      - /projects/git/remote/data:/projects/git/remote/data
+#      - /projects/git/modules/jc-icon-private/white/index.json:/projects/git/remote/data/buttons/button_images.json
+#    ports:
+#      - 5008:5008
 
 
   remote_client_test:

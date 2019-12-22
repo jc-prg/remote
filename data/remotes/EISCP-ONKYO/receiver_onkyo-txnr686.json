@@ -1,8 +1,13 @@
 {
     "receiver_onkyo-txnr686": {
-        "description": "AV-Receiver: ONKYO TX-NR686(B) - IR", 
+        "description": "AV-Receiver: ONKYO TX-NR686(B)", 
+        "api" : [ "BROADLINK", "EISCP-ONKYO" ], 
+        "status" : { 
+        	"BROADLINK": "record", 
+        	"EISCP-ONKYO" :"query" 
+        	},
         "remote": [
-                ".",".",".","on-off",
+                ".",".","on","off",
                 "LINE",
                 "pc","bd","radio","bluetooth","cable-sat","aux",
                 "LINE",
