@@ -26,7 +26,7 @@ function rmSettings (name) {	// IN PROGRESS
 		else 		{this.test_info = "Prod Stage";}
 
 		// status
-		if (data)	{this.app_stat = data["StatusMsg"]; this.app_last = data["Button"];}
+		if (data)	{this.app_stat = data["STATUS"]["system"]["message"]; this.app_last = data["REQUEST"]["Button"];}
 		else		{this.app_stat = "ERROR: no connection to server!";}
 		}
 
@@ -46,7 +46,7 @@ function rmSettings (name) {	// IN PROGRESS
 		setting  = this.tab_row( 	"Status:", this.app_stat );
 		setting += this.tab_row( 	"Versions:",
 						"App: " + rm3version + " / " + this.test_info + " (" + rm3_rollout + ")<br/>" +
-						"API: " + this.data["API-version"] + " / " + this.data["API-stage"] + "<br/>" +
+						"API: " + this.data["API"]["version"] + " / " + this.data["API"]["stage"] + "<br/>" +
 						"Modules: jcMsg " + rm3msg.appVersion + " / jcApp " + rm3app.appVersion + "<br/>" +
 						"Cookie: " + cookie
 						);
@@ -90,9 +90,10 @@ function rmSettings (name) {	// IN PROGRESS
 
 		// Edit Remote Settings
 		setting = "";
-		setting += this.tab_row( 	"Device: " + this.input("add_device") + "<br/>" +
-						"Label: &nbsp; " + this.input("add_device_descr"),
-						this.button("addDevice('add_device','add_device_descr');","Add Device")
+		setting += this.tab_row( 	"Device: &nbsp; &nbsp; &nbsp; " + this.input("add_device")     + "<br/>" +
+		                                "Interface: &nbsp; "            + this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"]) + "<br/>" +
+						"Descript.: &nbsp; "            + this.input("add_device_descr"),
+						this.button("addDevice('add_device','add_device_api','add_device_descr');","Add Device")
 					);
 
 		this.write(2,"Add Remote Control",setting);

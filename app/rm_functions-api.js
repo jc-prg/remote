@@ -36,7 +36,7 @@ function check_for_updates_msg(data) {
 	msg = "<br/></b><i>"+msg+"</i>";
 
 	rm3msg.wait("Loading App ..."+msg, "initRemote();" );
-	if (data["ReturnCode"] == "802") { rm3update = true; }
+	if (data["REQUEST"]["ReturnCode"] == "802") { rm3update = true; }
 	}
 
 function checkUpdates(version) {
@@ -49,7 +49,7 @@ function checkUpdates(version) {
 //--------------------------------
 
 function updateRemote(data) {
-        rm3remotes.data = data["DeviceConfig"];
+        rm3remotes.data = data["DATA"]["devices"]; //["DeviceConfig"];
         rm3remotes.create();
         }
         
@@ -96,16 +96,17 @@ function addTemplate_exe(device,template) {
 	
 //--------------------------------
 
-function addDevice(device, description) {
+function addDevice(device, api, description) {
 	device 		= document.getElementById(device).value.toLowerCase();
 	description 	= document.getElementById(description).value;
+	api	 	= document.getElementById(api).value;
 
-	//if (dataConfig["device_list"][device]) 	{ rm3msg.alert("Device '" + device + "' already exists!"); return; }
-	if (dataConfig["devices"][device]) 	{ rm3msg.alert("Device '" + device + "' already exists!"); return; }
+	if (dataAll["DATA"]["devices"][device])	{ rm3msg.alert("Device '" + device + "' already exists!"); return; }
 	else if (device == "") 			{ rm3msg.alert("Please insert name for device (no space, no special cases)."); return; }
+	else if (api == "") 			{ rm3msg.alert("Please insert API for device (no space, no special cases)."); return; }
 	else if (description == "") 		{ rm3msg.alert("Please insert short description for device."); 	return;	}
 
-	rm3app.requestAPI("PUT",["device",device,description], "", alertReturn);
+	rm3app.requestAPI("PUT",["device",device,api,description], "", alertReturn);
 	}
 
 //--------------------------------
