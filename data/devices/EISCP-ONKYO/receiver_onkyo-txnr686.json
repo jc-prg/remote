@@ -10,7 +10,7 @@
         	"game"    : "input-selector=game",
         	"cbl"     : "input-selector=cbl"
        	},
-       	"status" : {
+       	"queries" : {
         	"display" : "display-mode=query",
         	"source"  : "input-selector=query"
        	},

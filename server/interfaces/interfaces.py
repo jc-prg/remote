@@ -29,7 +29,7 @@ def test():
 
 def send( api, device, button ):
 
-    button_code = get_command( api, device, button ) 
+    button_code = get_command( api, "buttons", device, button ) 
     if   api == "BROADLINK":    return broadlink.command_send(device,button_code)
     elif api == "EISCP-ONKYO":  return eiscp.command_send(device,button_code)
     else:                       return "API not available"
@@ -44,15 +44,15 @@ def record( api, device, button ):
     
 def query( api, device, button):
 
-    button_code = get_command( api, device, button )
+    button_code = get_command( api, "queries", device, button )
     if   api == "BROADLINK":    return "API does not support record"
-    elif api == "EISCP-ONKYO":  return "API not implemented yet"
+    elif api == "EISCP-ONKYO":  return eiscp.command_query(device,button_code)
     else:                       return "API not available"
 
 
 #-------------------------------------------------
 
-def get_command(api,device,button):
+def get_command(api,button_query,device,button):
 
     # read data -> to be moved to cache?!
     active       = rm3json.read("devices/_active")
@@ -62,13 +62,14 @@ def get_command(api,device,button):
     # add button definitions from default.json if exist
     if rm3json.ifexist("devices/"+api+"/default"):
        buttons_default = rm3json.read("devices/"+api+"/default")
-       for key in buttons_default["default"]["buttons"]:
-         buttons[device_code]["buttons"][key] = buttons_default["default"]["buttons"][key]
+       for key in buttons_default["default"][button_query]:
+         buttons[device_code][button_query][key] = buttons_default["default"][button_query][key]
 
     # check for errors or return button code
-    if "ERROR" in buttons or "ERROR" in active:      return "ERROR"
-    elif button in buttons[device_code]["buttons"]:  return buttons[device_code]["buttons"][button]
-    else:                                            return "ERROR"      
+    if "ERROR" in buttons or "ERROR" in active:         return "ERROR"
+    elif button in buttons[device_code][button_query]:  return buttons[device_code][button_query][button]
+    else:                                               return "ERROR"      
+
 
 #-------------------------------------------------
 # EOF

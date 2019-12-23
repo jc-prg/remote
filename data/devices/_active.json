@@ -49,8 +49,9 @@
         "main-audio": "yes",
         "status": {
             "mute": "OFF",
-            "power": "OFF",
-            "vol": 0
+            "power": "ON",
+            "rec_vol": 11,
+            "vol": 10
         },
         "visible": "yes"
     },
@@ -62,7 +63,19 @@
         "status": {
             "mute": "OFF",
             "power": "OFF",
+            "rec2_vol": 1,
             "vol": 0
+        },
+        "visible": "yes"
+    },
+    "test5": {
+        "device": "test5_test_test",
+        "image": "test5",
+        "interface": "BROADLINK",
+        "label": "test5_test_test",
+        "main-audio": "no",
+        "status": {
+            "power": "OFF"
         },
         "visible": "yes"
     },

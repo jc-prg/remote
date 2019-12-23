@@ -7,9 +7,10 @@
         	"vol+"    : "master-volume=level-up",
         	"vol-"    : "master-volume=level-down"
        	},
-       	"status" : {
+       	"queries" : {
        		"power"   : "system-power=query",
-        	"vol"     : "master-volume=query"
+        	"vol"     : "master-volume=query",
+        	"mute"    : "audio-muting=query"
        	},
        	"values" : {
        		"power"   : [ "on", "off" ]

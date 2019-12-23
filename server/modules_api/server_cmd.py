@@ -117,7 +117,7 @@ def RmReadData(selected=""):
 
     data    = {}
     makros  = ["dev-on","dev-off","scene-on","scene-off","makro"]
-    btnfile = ["buttons","status","values"]
+    btnfile = ["buttons","queries","values"]
 
     # if update required
     if rm_data_update: 
@@ -134,7 +134,12 @@ def RmReadData(selected=""):
                 interface = data["devices"][device]["interface"]
                 buttons   = rm3json.read("devices/"+interface+"/"+key)
                 remote    = rm3json.read("remotes/"+interface+"/"+key)
-           
+                data_temp = data["devices"][device]
+                
+                if interface in remote[key]["status"]:  data_temp["method"]  = remote[key]["status"][interface]
+                else:                                   data_temp["method"]  = "undefined"
+                if "presets" in remote[key]:            data_temp["presets"] = remote[key]["presets"]
+
                 buttons_default  = rm3json.read("devices/"+interface+"/default")
                 if not "ERROR" in buttons_default:
                   for x in btnfile:
@@ -142,15 +147,13 @@ def RmReadData(selected=""):
                       for y in buttons_default["default"][x]:
                         buttons[key][x][y] = buttons_default["default"][x][y]
            
-                data_temp = data["devices"][device]
-
-                if interface in remote[key]["status"]:  data_temp["method"]  = remote[key]["status"][interface]
-                else:                                   data_temp["method"]  = "undefined"
-                if "presets" in remote[key]:            data_temp["presets"] = remote[key]["presets"]
-             
+                if "queries" in buttons[key]:
+                  data_temp["queries"]           = buttons[key]["queries"]
+                  data_temp["query_list"]        = list(buttons[key]["queries"].keys())
+                  
                 data_temp["buttons"]             = buttons[key]["buttons"]
+                data_temp["description"]         = remote[key]["description"]              
                 data_temp["button_list"]         = list(buttons[key]["buttons"].keys())
-                data_temp["description"]         = remote[key]["description"]
                 data_temp["remote"]              = remote[key]["remote"]
            
                 data["devices"][device] = data_temp
@@ -199,17 +202,24 @@ def RmReadData(selected=""):
         devices    = rm3json.read("devices/_active")
         scenes     = rm3json.read("scenes/_active")
           
-        for device in devices:
-          if "status" in devices[device]:
-            for value in devices[device]["status"]:
-              data["devices"][device]["status"][value] = devices[device]["status"][value]
+        for device in devices:        
+          if "status" in devices[device] and device != "default":
+            
+            if data["devices"][device]["method"] == "record":
+              for value in devices[device]["status"]:
+                data["devices"][device]["status"][value] = devices[device]["status"][value]
+                
+            else:
+              for value in data["devices"][device]["query_list"]:
+                test = interfaces.query(data["devices"][device]["interface"],device,value)
+                data["devices"][device]["status"][value] = test[1]
               
 #### Device Status - request from API if method = "query"
-
-        for scene in scenes:
-          if "status" in scenes[scene]:
-            for value in scenes[scene]["status"]:
-              data["scenes"][scene]["status"][value] = scenes[scene]["status"][value]
+#
+#        for scene in scenes:
+#          if "status" in scenes[scene]:
+#            for value in scenes[scene]["status"]:
+#              data["scenes"][scene]["status"][value] = scenes[scene]["status"][value]
               
         rm_data = data
     
