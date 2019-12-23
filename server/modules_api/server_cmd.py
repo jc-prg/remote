@@ -29,6 +29,7 @@ from Crypto.Cipher import AES
 
 rm_data        = {}  # new cache variable
 rm_data_update = True
+rm_data_last   = time.time()
 
 Device   = {}
 Real     = {}
@@ -110,10 +111,10 @@ def writeDataJsonAll(data):
 # read / write configuration NEW
 #---------------------------
 
-def RmReadData(selected=""):
+def RmReadData(selected=[]):
     '''Read all relevant data and create data structure'''
 
-    global rm_data, rm_data_update
+    global rm_data, rm_data_update, rm_data_last
 
     data    = {}
     makros  = ["dev-on","dev-off","scene-on","scene-off","makro"]
@@ -128,7 +129,7 @@ def RmReadData(selected=""):
         # read data for active devices
         for device in data["devices"]:
             if data["devices"][device]["visible"] == "yes":
-              if selected == "" or selected == device:
+              if selected == [] or device in selected:
 
                 key       = data["devices"][device]["device"]
                 interface = data["devices"][device]["interface"]
@@ -161,7 +162,7 @@ def RmReadData(selected=""):
         # read data for active scenes
         for scene in data["scenes"]:
             if data["scenes"][scene]["visible"] == "yes":
-              if selected == "" or selected == scene:
+              if selected == [] or scene in selected:
 
                 thescene      = rm3json.read("scenes/"+scene)
            
@@ -177,7 +178,7 @@ def RmReadData(selected=""):
         # read data for templates
         data["templates"]               = {}
         data["template_list"]           = {}
-        if selected == "":
+        if selected == []:
           templates                     = rm3json.available("templates")
           for template in templates:    
             template_keys = template.split("/")
@@ -192,16 +193,16 @@ def RmReadData(selected=""):
         
             data["templates"][template]["file"] = "templates/"+template
 
-        if selected == "":
+        if selected == []:
           rm_data        = data
           rm_data_update = False         
 
     # if no update required
-    else: 
+    elif selected == []: 
         data       = rm_data
         devices    = rm3json.read("devices/_active")
-        scenes     = rm3json.read("scenes/_active")
-          
+        #scenes     = rm3json.read("scenes/_active")
+        
         for device in devices:        
           if "status" in devices[device] and device != "default":
             
@@ -209,10 +210,21 @@ def RmReadData(selected=""):
               for value in devices[device]["status"]:
                 data["devices"][device]["status"][value] = devices[device]["status"][value]
                 
-            else:
+            elif time.time() - rm_data_last > 5:
               for value in data["devices"][device]["query_list"]:
-                test = interfaces.query(data["devices"][device]["interface"],device,value)
-                data["devices"][device]["status"][value] = test[1]
+                try:
+                  test = interfaces.query(data["devices"][device]["interface"],device,value)
+                  data["devices"][device]["status"][value] = test[1]
+                  devices[device]["status"][value]         = test[1]
+                  
+                except Exception as e:
+                  logging.error(e)
+                
+              rm3json.write("devices/_active",devices)
+              rm_data_last = time.time()
+                
+                #####
+                # check, if combined command helps to reduce requests
               
 #### Device Status - request from API if method = "query"
 #
@@ -395,7 +407,7 @@ def remoteAPI_start(setting=[]):
     global Status, lastButton
 
     data                                   = init.dataInit() 
-    data["DATA"]                           = RmReadData("")
+    data["DATA"]                           = RmReadData(setting)
     
     data["CONFIG"]                         = {}  
     data["CONFIG"]["button_images"]        = rm3json.read("buttons/button_images")

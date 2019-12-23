@@ -13,6 +13,9 @@ import interfaces.eiscp as eiscp
 #import modules_api.server_init        as init
 #import modules.rm3json                as rm3json
 
+last_cmd = time.time()
+wait_cmd = 0.2
+
 #-------------------------------------------------
 # Execute command
 #-------------------------------------------------
@@ -24,6 +27,16 @@ def init(ip):
    receiver = eiscp.eISCP(ip)
    
    #eiscp.eISCP.get
+   
+def wait(wait=False):
+   global last_cmd, wait_cmd
+   
+   difference = time.time() - last_cmd
+   difference = wait_cmd - difference
+   
+   if difference > 0 and wait: time.sleep(difference)
+   logging.debug(difference)
+   last_cmd = time.time()
 
 #-------------------------------------------------
 
@@ -32,6 +45,7 @@ def command_test():
    global receiver
 
    # Turn the receiver on, select PC input
+   wait()
    receiver.command('power on')
    receiver.command('source pc')
    receiver.disconnect()
@@ -44,6 +58,8 @@ def command_send(device,button_code):
    # Prepare command and send
    logging.info("Button-Code: "+button_code)
    button_code = button_code.replace("="," ")
+   
+   wait()
    receiver.command(button_code)
    receiver.disconnect()
    return
@@ -56,10 +72,17 @@ def command_query(device,button_code):
    
    # Prepare command and send
    button_code = button_code.replace("="," ")
-   #logging.info("Button-Code: "+button_code)
-   time.sleep(0.3)
    
-   return receiver.command(button_code)
+   #multiple requests? onkyo power=query audio-muting=query
+   #result = receiver.command("master-volume=query system-power=query")
+   #logging.info("Button-Code: "+button_code)
+   
+   wait(True)
+   result = receiver.command(button_code)
+   receiver.disconnect()
+   
+   print(result)
+   return result
    
     
 #-------------------------------------------------

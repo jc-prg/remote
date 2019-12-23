@@ -61,10 +61,19 @@
         "interface": "EISCP-ONKYO",
         "label": "AV Receiver (neu)",
         "status": {
-            "mute": "OFF",
-            "power": "OFF",
+            "display": [
+                "selector-volume-1line",
+                "default-2line"
+            ],
+            "mute": "off",
+            "power": "on",
             "rec2_vol": 1,
-            "vol": 0
+            "source": [
+                "video2",
+                "cbl",
+                "sat"
+            ],
+            "vol": 42
         },
         "visible": "yes"
     },

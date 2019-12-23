@@ -188,17 +188,21 @@ function check_status(data={}) {
 	        
 	        //console.error("TEST "+key1+"_"+key2+" = "+devices[key1]["status"][key2]);
 
-		show_status_button( "device_" + key, devices[key1]["status"][key2] ); // main menu button
-		show_status_button( key + "_on-off", devices[key1]["status"][key2] ); // on-off device button
+		if (typeof devices[key1]["status"][key2] == "string") {
+		
+        	        check_button = devices[key1]["status"][key2].toUpperCase()
 
-		if (devices[key1]["status"][key2] == "ON") {
-			show_status_button( key + "_on",  devices[key1]["status"][key2] );
-			show_status_button( key + "_off", "" );
-			}
-		if (devices[key1]["status"][key2] == "OFF") {
-			show_status_button( key + "_off", devices[key1]["status"][key2] );
-			show_status_button( key + "_on",  "" );
-			}
+			show_status_button( "device_" + key, check_button ); // main menu button
+			show_status_button( key + "_on-off", check_button ); // on-off device button
+			
+			if (check_button == "ON") {
+				show_status_button( key + "_on",  check_button );
+				show_status_button( key + "_off", "" );
+				}
+			if (check_button == "OFF") {
+				show_status_button( key + "_off", check_button );
+				show_status_button( key + "_on",  "" );
+			}	}
 		}
 	   }
 
