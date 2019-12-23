@@ -128,16 +128,16 @@ function rmSettings (name) {	// IN PROGRESS
 
 	this.device_list  = function (id,onchange="") {
 		var list = {};
-		for (var key in this.data["DeviceConfig"]["devices"]){
-			list[key] = this.data["DeviceConfig"]["devices"][key]["label"];
+		for (var key in this.data["DATA"]["devices"]){
+			list[key] = this.data["DATA"]["devices"][key]["label"];
 			}
 		return this.select(id,"device",list,onchange);
 		}
 
 	this.button_list  = function (id,filter="") {
 		var list = {};
-		if (filter != "" && filter in this.data["DeviceConfig"]["devices"]) {
-			for (var key in this.data["DeviceConfig"]["devices"][filter]["buttons"]){
+		if (filter != "" && filter in this.data["DATA"]["devices"]) {
+			for (var key in this.data["DATA"]["devices"][filter]["buttons"]){
 				list[filter+"_"+key] = key;
 				}
 			}
@@ -155,10 +155,10 @@ function rmSettings (name) {	// IN PROGRESS
 		var status = "<br/>";
 	        var filter_list = document.getElementById(id_filter);
 	        var filter      = filter_list.options[filter_list.selectedIndex].value;
-		for (var key in this.data["DeviceConfig"]["device_status"]) {
-			key2 = key.split("_");
-			if (key2[0] == filter) { status += key + ": " + this.data["DeviceConfig"]["device_status"][key] + "<br/>"; }
-			//status += key + ": " + this.data["DeviceConfig"]["device_status"][key] + "<br/>"; 
+		for (var key in this.data["DATA"]["devices"][filter]["status"]) {
+			if (key != "presets") {
+				status += key + ": " + this.data["DATA"]["devices"][filter]["status"][key] + "<br/>";
+				}
 			}
 	        setTextById( id_list_container, status );
 		}
