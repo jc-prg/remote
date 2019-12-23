@@ -6,9 +6,11 @@
 
 import logging
 import modules.rm3json       as rm3json
+import interfaces.interfaces as interfaces
 
-configFile = "devices/_active"
 
+configFile    = "devices/_active"
+configMethods = {}
 
 #-----------------------------------------------
 
@@ -20,10 +22,25 @@ def translateDevice(device):
     
 #-----------------------------------------------
 
-def readStatus():
+def readStatus(selected_device=""):
     '''read and return array'''
 
     status = rm3json.read(configFile)
+    
+    # initial load of methods (record vs. query)
+    if configMethods == {} and selected_device == "":
+      for device in status:
+        key                   = status[device]["device"]
+        interface             = status[device]["interface"]
+        if interface != "" and key != "":
+          config                = rm3json.read("remotes/" + interface + "/" + key)
+          if not "ERROR" in config:
+            configMethods[device] = config[key]["status"][interface]
+    
+    # if device is given
+    if selected_device != "" and selected_device in status and "status" in status[selected_device]:
+      status = status[selected_device]["status"]
+      
     return status
     
 #-----------------------------------------------
@@ -33,7 +50,9 @@ def readStatusOld():
     status     = readStatus()
     status_old = {}
     for device in status:
-      if status[device]["visible"] == "yes" and "status" in status[device]:
+      if "visible" in status[device] and status[device]["visible"] == "yes":
+       if "status" in status[device]:
+        status_old[device + "_method"] = configMethods[device]
         for value in status[device]["status"]:
            status_old[device + "_" + value]        = status[device]["status"][value]
            if value == "power": status_old[device] = status[device]["status"][value]
@@ -107,11 +126,23 @@ def resetAudio():
 def getStatus(name):
     '''get status of device'''
 
-    status      = readStatus()
-    name_split  = name.split("_")    
-    device      = name_split[0]
-    device_code = translateDevice(device)
+    status        = readStatus()
+    name_split    = name.split("_")
+    device        = name_split[0]
+    
+    if not device in status: 
+      logging.error("Get status - Device not defined: " +device + " (" + name + ")")
+      return 0
+    
+    device_code   = translateDevice(device)
+    device_method = configMethods[device]
+    device_api    = status[device]["interface"]
+    device_status = status[device]["status"]
+    
     if len(name_split) == 1 or name_split[1] == "": name = "power"
+    else:                                           name = name_split[1]
+
+###### check if method = record or send request to api ######
 
     if device in status and name in status[device]["status"]:
       logging.info("Get status: " + name + " = " + device_code)

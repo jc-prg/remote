@@ -27,7 +27,9 @@ from Crypto.Cipher import AES
 
 #---------------------------
 
-rm_data  = {}  # new cache variable
+rm_data        = {}  # new cache variable
+rm_data_update = True
+
 Device   = {}
 Real     = {}
 devList  = {}
@@ -128,81 +130,106 @@ def writeDataJsonAll(data):
 def RmReadData(selected=""):
     '''Read all relevant data and create data structure'''
 
-    global rm_data
+    global rm_data, rm_data_update
 
     data    = {}
     makros  = ["dev-on","dev-off","scene-on","scene-off","makro"]
     btnfile = ["buttons","status","values"]
+
+    # if update required
+    if rm_data_update: 
+        data["devices"] = rm3json.read("devices/_active")
+        data["scenes"]  = rm3json.read("scenes/_active")
+        data["makros"]  = {}
     
-    data["devices"] = rm3json.read("devices/_active")
-    data["scenes"]  = rm3json.read("scenes/_active")
-    data["makros"]  = {}
-    
-    # read data for active devices
-    for device in data["devices"]:
-        if data["devices"][device]["visible"] == "yes":
-          if selected == "" or selected == device:
+        # read data for active devices
+        for device in data["devices"]:
+            if data["devices"][device]["visible"] == "yes":
+              if selected == "" or selected == device:
 
-            key       = data["devices"][device]["device"]
-            interface = data["devices"][device]["interface"]
-            buttons   = rm3json.read("devices/"+interface+"/"+key)
-            remote    = rm3json.read("remotes/"+interface+"/"+key)
+                key       = data["devices"][device]["device"]
+                interface = data["devices"][device]["interface"]
+                buttons   = rm3json.read("devices/"+interface+"/"+key)
+                remote    = rm3json.read("remotes/"+interface+"/"+key)
            
-            buttons_default  = rm3json.read("devices/"+interface+"/default")
-            if not "ERROR" in buttons_default:
-              for x in btnfile:
-                if x in buttons_default["default"]:
-                  for y in buttons_default["default"][x]:
-                    buttons[key][x][y] = buttons_default["default"][x][y]
-
+                buttons_default  = rm3json.read("devices/"+interface+"/default")
+                if not "ERROR" in buttons_default:
+                  for x in btnfile:
+                    if x in buttons_default["default"]:
+                      for y in buttons_default["default"][x]:
+                        buttons[key][x][y] = buttons_default["default"][x][y]
            
-            data_temp = data["devices"][device]
+                data_temp = data["devices"][device]
 
-            if interface in remote[key]["status"]:  data_temp["status"]["method"]  = remote[key]["status"][interface]
-            else:                                   data_temp["status"]["method"]  = "undefined"
-            if "presets" in remote[key]:            data_temp["status"]["presets"] = remote[key]["presets"]
+                if interface in remote[key]["status"]:  data_temp["status"]["method"]  = remote[key]["status"][interface]
+                else:                                   data_temp["status"]["method"]  = "undefined"
+                if "presets" in remote[key]:            data_temp["status"]["presets"] = remote[key]["presets"]
              
-            data_temp["buttons"]             = buttons[key]["buttons"]
-            data_temp["description"]         = remote[key]["description"]
-            data_temp["remote"]              = remote[key]["remote"]
+                data_temp["buttons"]             = buttons[key]["buttons"]
+                data_temp["button_list"]         = list(buttons[key]["buttons"].keys())
+                data_temp["description"]         = remote[key]["description"]
+                data_temp["remote"]              = remote[key]["remote"]
            
-            data["devices"][device] = data_temp
+                data["devices"][device] = data_temp
+ 
+        # read data for active scenes
+        for scene in data["scenes"]:
+            if data["scenes"][scene]["visible"] == "yes":
+              if selected == "" or selected == scene:
 
-    # read data for active scenes
-    for scene in data["scenes"]:
-        if data["scenes"][scene]["visible"] == "yes":
-          if selected == "" or selected == scene:
-
-            thescene      = rm3json.read("scenes/"+scene)
+                thescene      = rm3json.read("scenes/"+scene)
            
-            data["scenes"][scene]["remote"]             = thescene[scene]["remote"]
-            data["scenes"][scene]["channel"]            = thescene[scene]["channel"]
-            data["scenes"][scene]["devices"]            = thescene[scene]["devices"]
-            data["scenes"][scene]["label"]              = thescene[scene]["label"]
+                data["scenes"][scene]["remote"]             = thescene[scene]["remote"]
+                data["scenes"][scene]["channel"]            = thescene[scene]["channel"]
+                data["scenes"][scene]["devices"]            = thescene[scene]["devices"]
+                data["scenes"][scene]["label"]              = thescene[scene]["label"]
            
-    # read data for makros
-    for makro in makros:
-        
-        data["makros"][makro]     = rm3json.read("makros/"+makro)
-        
-        
-    # read data for templates
-    data["templates"]               = {}
-    if selected == "":
-      templates                     = rm3json.available("templates")
-      for template in templates:    
-        template_keys = template.split("/")
-        template_key  = template_keys[len(template_keys)-1]
-        template_data = rm3json.read("templates/"+template)
+        # read data for makros
+        for makro in makros:        
+            data["makros"][makro]     = rm3json.read("makros/"+makro)
+                
+        # read data for templates
+        data["templates"]               = {}
+        data["template_list"]           = {}
+        if selected == "":
+          templates                     = rm3json.available("templates")
+          for template in templates:    
+            template_keys = template.split("/")
+            template_key  = template_keys[len(template_keys)-1]
+            template_data = rm3json.read("templates/"+template)
 
-        if "ERROR" in template_data:  data["templates"][template] = template_data
-        else: 
-          if template_key in template_data: data["templates"][template] = template_data[template_key]
-          else:                             data["templates"][template] = { "ERROR" : "JSON file not correct, key missing: "+template_key }
+            if "ERROR" in template_data:  data["templates"][template] = template_data
+            else: 
+              if template_key in template_data: data["templates"][template] = template_data[template_key]
+              else:                             data["templates"][template] = { "ERROR" : "JSON file not correct, key missing: "+template_key }
+              data["template_list"][template] = data["templates"][template]["description"]
         
-        data["templates"][template]["file"] = "templates/"+template
+            data["templates"][template]["file"] = "templates/"+template
 
-    if selected == "": rm_data = data
+        if selected == "":
+          rm_data        = data
+          rm_data_update = False         
+
+    # if no update required
+    else: 
+        data       = rm_data
+        devices    = rm3json.read("devices/_active")
+        scenes     = rm3json.read("scenes/_active")
+          
+        for device in devices:
+          if "status" in devices[device]:
+            for value in devices[device]["status"]:
+              data["devices"][device]["status"][value] = devices[device]["status"][value]
+              
+#### Device Status - request from API if method = "query"
+
+        for scene in scenes:
+          if "status" in scenes[scene]:
+            for value in scenes[scene]["status"]:
+              data["scenes"][scene]["status"][value] = scenes[scene]["status"][value]
+              
+        rm_data = data
+    
     return data
 
 
@@ -367,17 +394,12 @@ def remoteAPI_start(setting=[]):
 
     global Status, lastButton
 
-    data                                      = init.dataInit() 
-
-
-    #data["DATA"]   = readDataJsonAll() #"no-buttons"
-    data["DATA"]   = RmReadData("")
-
+    data                                   = init.dataInit() 
+    data["DATA"]                           = RmReadData("")
     
-    data["CONFIG"]                          = {}  
-    data["CONFIG"]["button_images"]         = rm3json.read("buttons/button_images")
-    data["CONFIG"]["button_colors"]         = rm3json.read("buttons/button_colors")
-
+    data["CONFIG"]                         = {}  
+    data["CONFIG"]["button_images"]        = rm3json.read("buttons/button_images")
+    data["CONFIG"]["button_colors"]        = rm3json.read("buttons/button_colors")
     
     data["REQUEST"]                        = {}
     data["REQUEST"]["start-time"]          = time.time()
@@ -390,18 +412,18 @@ def remoteAPI_start(setting=[]):
 
     # Stay compartible for a while    => DELETE
     #--------------------------------
-    data["DeviceConfig"]                   = {}
-    data["DeviceConfig"]["button_images"]  = data["CONFIG"]["button_images"]
-    data["DeviceConfig"]["button_colors"]  = data["CONFIG"]["button_colors"]
-    data["DeviceConfig"]["devices"]        = data["DATA"]["devices"]
-    data["DeviceConfig"]["device_makros"]  = data["DATA"]["makros"]
-    data["DeviceConfig"]["scene_remotes"]  = data["DATA"]["scenes"]
-    data["DeviceConfig"]["device_status"]  = data["STATUS"]["devices"]
-    
-    data["DeviceTemplate"]                 = data["DATA"]["templates"]
-
-    data["StatusMsg"]                      = Status
-    data["Button"]                         = lastButton 
+    #data["DeviceConfig"]                   = {}
+    #data["DeviceConfig"]["button_images"]  = data["CONFIG"]["button_images"]
+    #data["DeviceConfig"]["button_colors"]  = data["CONFIG"]["button_colors"]
+    #data["DeviceConfig"]["devices"]        = data["DATA"]["devices"]
+    #data["DeviceConfig"]["device_makros"]  = data["DATA"]["makros"]
+    #data["DeviceConfig"]["scene_remotes"]  = data["DATA"]["scenes"]
+    #data["DeviceConfig"]["device_status"]  = data["STATUS"]["devices"]
+    #
+    #data["DeviceTemplate"]                 = data["DATA"]["templates"]
+    #
+    #data["StatusMsg"]                      = Status
+    #data["Button"]                         = lastButton 
     #--------------------------------
     
     if "no-data" in setting:   data["DATA"]   = {}
