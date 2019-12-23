@@ -4,13 +4,8 @@
 # (c) Christoph Kloth
 #-----------------------------------
 
-#import configparser
-#import sys, getopt
-#import time, binascii
-#import netaddr, 
-import codecs
-import logging
-import json
+import codecs, json
+import logging, time
 
 import interfaces.broadlink.broadlink as broadlink
 import modules_api.server_init        as init

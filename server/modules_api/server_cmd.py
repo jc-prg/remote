@@ -38,35 +38,18 @@ ErrorMsg   = ""
 Status     = "Starting"
 lastButton = ""
 
+#---------------------------
+
 if rm3stage.test: Stage = "Test Stage"
 else:             Stage = "Prod Stage"
-
-
-def test_cmd():
-    return rm3json.read( "server" )
 
 #---------------------------
 
 def ErrorMsg(code):
-    m = {
-          "200" : "OK",
-          "800" : "Your app is up to date.",
-          "801" : "Update available: " + rm3config.APPversion + ".",
-          "802" : "Update required: "  + rm3config.APPversion + ". Delete your browser cache, please.",
-        }
+    m = rm3config.error_messages
     return m[code]
 
-#---------------------------
-
-def dataInit():
-    d = { "API"          : "RM3",
-          "API-version"  : APIversion,
-          "API-stage"    : Stage,
-          "StatusMsg"    : "Started",
-          "ReturnMsg"    : "",
-          "DeviceConfig" : [] }
-    return d
-    
+   
 #---------------------------
 # read / write configuration
 #---------------------------
@@ -237,35 +220,56 @@ def RmReadData(selected=""):
 # add / delete devices & buttons to config
 #---------------------------
 
-def varsAddDev_json(device,description):
+def addDevice(device,interface,description):
     '''add new device to config file or change existing'''
+    
+    global rm_data_update
 
-    if rm3json.ifexist("devices/"+device):    
-        return("Device " + device + " already exists.")
-
-    else:
-        index = readDataJson("index")
-        index["devices"].append(device)
-        writeDataJson("index","",index)
-        
-        data                             = {}
-        data[device]                     = {}
-        data[device]["label"]            = description
-        data[device]["description"]      = description
-        data[device]["image"]            = ""
-        data[device]["visibility"]       = "block"
-        data[device]["audio"]            = ""
-        data[device]["driver"]           = ""
-        data[device]["buttons"]          = {}
-        data[device]["remote"]           = []
-        data[device]["status"]           = {
-            "on-off": {  "list": ["ON","OFF"],           "value": "OFF"      },
-            "mute"  : {  "list": ["MUTE_ON","MUTE_OFF"], "value": "MUTE_OFF" },
-            "vol"   : {	 "max" : 0,  "value": 0,  "min":   0 }
+    ## Check if exists    
+    active_json          = rm3json.read("devices/_active")
+    if device in active_json:                               return("Device " + device + " already exists (active).")
+    if rm3json.ifexist("devices/"+interface+"/"+device):    return("Device " + device + " already exists (devices).")
+    if rm3json.ifexist("remotes/"+interface+"/"+device):    return("Device " + device + " already exists (remotes).") 
+    
+    ## add to _active.json 
+    active = {
+        "device"    : description,
+        "image"     : device,
+        "interface" : interface,
+        "label"     : description,       # to be edited later
+        "main-audio": "no",
+        "status"    : {
+            "power" : "OFF",
+            },
+        "visible"   : "yes"    	
+        }
+    active_json[device]  = active
+    rm3json.write("devices/_active",active_json)
+    
+    ## add to devices = button definitions
+    buttons = {
+        description : {
+            "description" : description,
+            "buttons"     : {},
+            "presets"     : {}
             }
+        }
+    rm3json.write("devices/"+interface+"/"+description,buttons)
+
+    ## add to remotes = button layout
+    remote = {
+        description : {
+           "description" : description,
+           "api"         : [ interface ],
+           "status"      : {
+               interface : "record"      # options: record, query (editing via ui not implemented yet)
+               },
+           "remote"      : []
+           }
+        }    
+    rm3json.write("remotes/"+interface+"/"+description,remote)
             
-        writeDataJson("devices",device,data)
-        
+    rm_data_update = True
     return("Device " + device + " added.")
 
 
@@ -375,20 +379,6 @@ def varsDeleteDev_json(device):
 
 
 #---------------------------
-# get device data
-#---------------------------
-
-def getDeviceData():
-
-     data = {}
-     temp = getConfigData(data)
-
-     data["DeviceConfig"]   = temp["DeviceConfig"]
-     data["DeviceTemplate"] = temp["DeviceTemplate"] 
-    
-     return data
-
-#---------------------------
      
 def remoteAPI_start(setting=[]):
 
@@ -400,30 +390,17 @@ def remoteAPI_start(setting=[]):
     data["CONFIG"]                         = {}  
     data["CONFIG"]["button_images"]        = rm3json.read("buttons/button_images")
     data["CONFIG"]["button_colors"]        = rm3json.read("buttons/button_colors")
+    data["CONFIG"]["interfaces"]           = interfaces.available
     
     data["REQUEST"]                        = {}
     data["REQUEST"]["start-time"]          = time.time()
+    data["REQUEST"]["Button"]              = lastButton 
 
     data["STATUS"]                         = {}
-    #data["STATUS"]["devices"]              = rm3json.read("status")
-    data["STATUS"]["devices"]              = rm3status.readStatusOld()
+    data["STATUS"]["devices"]              = rm3status.readStatusOld()  # -> to be replaced
     data["STATUS"]["last_button"]          = lastButton
-    data["STATUS"]["system"]               = Status
+    data["STATUS"]["system"]               = {} #  to be filled in remoteAPI_end()
 
-    # Stay compartible for a while    => DELETE
-    #--------------------------------
-    #data["DeviceConfig"]                   = {}
-    #data["DeviceConfig"]["button_images"]  = data["CONFIG"]["button_images"]
-    #data["DeviceConfig"]["button_colors"]  = data["CONFIG"]["button_colors"]
-    #data["DeviceConfig"]["devices"]        = data["DATA"]["devices"]
-    #data["DeviceConfig"]["device_makros"]  = data["DATA"]["makros"]
-    #data["DeviceConfig"]["scene_remotes"]  = data["DATA"]["scenes"]
-    #data["DeviceConfig"]["device_status"]  = data["STATUS"]["devices"]
-    #
-    #data["DeviceTemplate"]                 = data["DATA"]["templates"]
-    #
-    #data["StatusMsg"]                      = Status
-    #data["Button"]                         = lastButton 
     #--------------------------------
     
     if "no-data" in setting:   data["DATA"]   = {}
@@ -436,8 +413,11 @@ def remoteAPI_start(setting=[]):
 
 def remoteAPI_end(data):
 
+    global Status
+
     data["REQUEST"]["load-time"] = time.time() - data["REQUEST"]["start-time"]
-    data["STATUS"]["system"]        = {
+    data["STATUS"]["system"]     = {
+        "message"               :  Status,
         "server_start"          :  rm3config.start_time,
         "server_start_duration" :  rm3config.start_duration,
         "server_running"        :  time.time() - rm3config.start_time
@@ -452,8 +432,9 @@ def remoteAPI_end(data):
 def RemoteReload():
 
         initDevice()
-        data = remoteAPI_start(["no-data"])
-        data["ReturnMsg"]    = "Configuration reloaded"
+        data                          = remoteAPI_start(["no-data"])
+        data["REQUEST"]["Return"]     = "Configuration reloaded"
+        data                          = remoteAPI_end(data)
         return data
 
 #-------------------------------------------------
@@ -475,7 +456,10 @@ def RemoteCheckUpdate(APPversion):
             data["ReturnCode"]   = "802"
             data["ReturnMsg"]    = ErrorMsg("802")
 
-        data = remoteAPI_end(data)
+
+        data["REQUEST"]["Return"]     = data["ReturnMsg"]
+        data["REQUEST"]["ReturnCode"] = data["ReturnCode"]
+        data                          = remoteAPI_end(data)
         return data
 
 #-------------------------------------------------
@@ -507,6 +491,7 @@ def Remote(device,button):
         data                      = remoteAPI_end(data)        
         return data
 
+
 #-------------------------------------------------
 
 def RemoteTest():
@@ -514,10 +499,13 @@ def RemoteTest():
 
         data                      = remoteAPI_start(["no-data"])
         data["TEST"]              = RmReadData("")
+        data["REQUEST"]["Return"] = "Test: show complete data structure"
         data                      = remoteAPI_end(data)        
         return data
 
+
 #-------------------------------------------------
+
 def RemoteOnOff(device,button):
         '''check old and document new status'''
 
@@ -572,36 +560,38 @@ def RemoteOnOff(device,button):
                
            rm3status.setStatus(devButton,devStat)
 
-        data["REQUEST"]["Device"] = device
-        data["REQUEST"]["Button"] = button
-        data["REQUEST"]["Return"] = interfaces.send("BROADLINK",device,button)
+        data["REQUEST"]["Device"]    = device
+        data["REQUEST"]["Button"]    = button
+        data["REQUEST"]["Return"]    = interfaces.send("BROADLINK",device,button)
+        data                         = remoteAPI_end(data)        
 
-        data["DeviceStatus"]      = rm3status.getStatus(device)
-        data["ReturnMsg"]         = data["REQUEST"]["Return"]
-        
-        data                      = remoteAPI_end(data)        
+        rm_data_update = True
         return data
+
 
 #-------------------------------------------------
 
 def RemoteReset():
         '''set status of all devices to OFF and return JSON msg'''
 
-        data               = remoteAPI_start(["no-data"])
-        rm3status.resetStatus()
-        data["ReturnMsg"]  = "Reset all devices to OFF"
-        data               = remoteAPI_end(data)        
+        data                         = remoteAPI_start(["no-data"])
+        data["REQUEST"]["Return"]    = rm3status.resetStatus()
+        data                         = remoteAPI_end(data)        
+
+        rm_data_update = True
         return data
+
 
 #-------------------------------------------------
 
 def RemoteResetAudio():
         '''set status of all devices to OFF and return JSON msg'''
 
-        data               = remoteAPI_start(["no-data"])
-        rm3status.resetAudio()
-        data["ReturnMsg"]  = "Reset all devices to OFF"
-        data               = remoteAPI_end(data)        
+        data                         = remoteAPI_start(["no-data"])
+        data["REQUEST"]["Return"]    = rm3status.resetAudio()
+        data                         = remoteAPI_end(data)        
+
+        rm_data_update = True
         return data
 
 
@@ -610,67 +600,86 @@ def RemoteResetAudio():
 def RemoteAddButton(device,button):
         '''Learn Button and safe to init-file'''
 
-        data                      = remoteAPI_start(["no-data"])
-        EncodedCommand            = interfaces.record("BROADLINK",device,button)
-        data["REQUEST"]["Return"] = varsAddCmd_json(device,button,EncodedCommand)
-        data                      = remoteAPI_end(data)        
+        data                         = remoteAPI_start(["no-data"])
+        EncodedCommand               = interfaces.record("BROADLINK",device,button)
+        data["REQUEST"]["Return"]    = varsAddCmd_json(device,button,EncodedCommand)
+        data["REQUEST"]["Device"]    = device
+        data["REQUEST"]["Button"]    = button
+        data                         = remoteAPI_end(data)
+        
+        rm_data_update = True
         return data
+
 
 #-------------------------------------------------
 
 def RemoteDeleteButton(device,button):
         '''Learn Button and safe to init-file'''
 
-        data               = remoteAPI_start(["no-data"])
-        data["ReturnMsg"]  = varsDeleteCmd_json(device,button)
-        data               = remoteAPI_end(data)        
+        data                         = remoteAPI_start(["no-data"])
+        data["REQUEST"]["Return"]    = varsDeleteCmd_json(device,button)
+        data["REQUEST"]["Device"]    = device
+        data["REQUEST"]["Parameter"] = button
+        data                         = remoteAPI_end(data)        
+
+        rm_data_update = True
         return data
+
 
 #-------------------------------------------------
 
 def RemoteChangeVisibility(device,value):
         '''Add device and save'''
 
-        data                = remoteAPI_start(["no-data"])
-        data["ReturnMsg"]   = varsChangeVisibility_json(device,value)
-        data["Device"]      = device
-        data["Description"] = value
-        data                = remoteAPI_end(data)        
+        data                         = remoteAPI_start(["no-data"])
+        data["REQUEST"]["Return"]    = varsChangeVisibility_json(device,value)
+        data["REQUEST"]["Device"]    = device
+        data["REQUEST"]["Parameter"] = value
+        data                         = remoteAPI_end(data)        
         return data
+
         
 #-------------------------------------------------
 
-def RemoteAddDevice(device,description):
+def RemoteAddDevice(device,interface,description):
         '''Add device and save'''
 
-        data                = remoteAPI_start(["no-data"])
-        data["ReturnMsg"]   = varsAddDev_json(device,description)
-        data["Device"]      = device
-        data["Description"] = description
-        data                = remoteAPI_end(data)        
+        data                         = remoteAPI_start(["no-data"])
+        data["REQUEST"]["Return"]    = addDevice(device,interface,description)
+        data["REQUEST"]["Device"]    = device
+        data["REQUEST"]["Parameter"] = description
+        data                         = remoteAPI_end(data)        
+
+        rm_data_update = True
         return data
+
 
 #-------------------------------------------------
 
 def RemoteAddTemplate(device,template):
         '''Add / overwrite remote template'''
 
-        data                = remoteAPI_start(["no-data"])
-        data["ReturnMsg"]   = varsAddTemplate_json(device,template)
-        data["Device"]      = device
-        data["Description"] = template
-        data                = remoteAPI_end(data)        
+        data                         = remoteAPI_start(["no-data"])
+        data["REQUEST"]["Return"]    = varsAddTemplate_json(device,template)
+        data["REQUEST"]["Device"]    = device
+        data["REQUEST"]["Parameter"] = template
+        data                         = remoteAPI_end(data)        
+
+        rm_data_update = True
         return data
+
         
 #-------------------------------------------------
 
 def RemoteDeleteDevice(device):
         '''Delete Button from init-file'''
 
-        data                = remoteAPI_start(["no-data"])
-        data["ReturnMsg"]   = varsDeleteDev_json(device)
-        data["Device"]      = device
-        data                = remoteAPI_end(data)        
+        data                         = remoteAPI_start(["no-data"])
+        data["REQUEST"]["Return"]    = varsDeleteDev_json(device)
+        data["REQUEST"]["Device"]    = device
+        data                         = remoteAPI_end(data)        
+
+        rm_data_update = True
         return data
 
 

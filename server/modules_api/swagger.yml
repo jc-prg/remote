@@ -166,7 +166,7 @@ paths:
               REQUEST:
                 $ref: "#/definitions/REQUEST"
 
-  /device/{device}/{description}/:
+  /device/{device}/{interface}/{description}/:
     put:
       operationId: modules_api.server_cmd.RemoteAddDevice
       tags:
@@ -175,6 +175,10 @@ paths:
       description: add device to database
       parameters:
         - name: device
+          in: path
+          type: string
+          required: true
+        - name: interface
           in: path
           type: string
           required: true
@@ -384,20 +388,27 @@ definitions:
       start-time:
         type: number
         format: float
-      command:
+        
+      Parameter:
         type: string
-      status:
+      Device:
         type: string
-      db_filter:
+      Button:
+        type: string
+      Return:
+        type: string
+      ReturnCode:
         type: string
 
   STATUS:
     type: object
     properties:
-      active_device:
-        type: string
+      devices:
+        type: object
       last_button:
         type: string
+      system:
+        type: object
 
   CONFIG:
     type: object
@@ -406,17 +417,23 @@ definitions:
         type: object
       button_images:
         type: object
+      interfaces:
+        type: object
 
   DATA:
     type: object
     properties:
       devices:
         type: object
-      scene_remotes:
+      scenes:
         type: object
-      device_status:
+      makros:
         type: object
-      device_makros:
+      templates:
         type: object
+      template_list:
+        type: array
+        items:
+          type: string
 
 

@@ -6,6 +6,10 @@
 
 import interfaces.broadlink_api       as broadlink_api
 
+available = {
+	"BROADLINK"   : "Infrared Broadlink RM3",
+	"EISCP-ONKYO" : "API for ONKYO Devices"
+	}
 
 #-------------------------------------------------
 # Execute commands
