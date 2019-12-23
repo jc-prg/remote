@@ -15,37 +15,19 @@ import modules.rm3json                as rm3json
 # Execute IR command
 #-------------------------------------------------
 
-def ir_command_send(device,button):
+def command_send(device,button_code):
     '''send IR command'''
-
-    cmd    = ""
-    code   = device + "_" + button
-    active = rm3json.read("devices/_active")
     
-    if device in active: device = active[device]["device"]
-    else:                return "Device " + device + " not defined"
+    if button_code == "ERROR":  return "Button not available"
     
-    data = rm3json.read("devices/BROADLINK/"+device)
-    if ((code != '_') and (code != device+'_')):
-        if device in data.keys():
-            if button in data[device]["buttons"].keys():
-                cmd  = data[device]["buttons"][button]
-
-                logging.info("Button-Code: " + cmd)
-                #DecodedCommand = cmd.decode('hex')        # python2
-                DecodedCommand = codecs.decode(cmd,'hex')  # python3
-                init.RM3Device.send_data(DecodedCommand)
-                return("OK")
-            else:
-                return("Button-Code not defined")
-        else:
-            return("Device not defined")
-    else:
-        return("No Button-Code")
-
+    logging.info("Button-Code: " + button_code)
+    DecodedCommand = codecs.decode(button_code,'hex')  # python3
+    init.RM3Device.send_data(DecodedCommand)
+    return("OK")
+    
 #-------------------------------------------------
 
-def ir_command_record(device,button):
+def command_record(device,button):
     '''record new command'''
 
     code = device + "_" + button
@@ -60,6 +42,11 @@ def ir_command_record(device,button):
     #EncodedCommand = LearnedCommand.encode('hex')         # python2
     EncodedCommand = codecs.encode(LearnedCommand,'hex')   # python3
     return EncodedCommand
+
+#-------------------------------------------------
+
+def command_query():
+    return "Not supported"
 
 
 #-------------------------------------------------

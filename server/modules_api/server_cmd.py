@@ -144,9 +144,9 @@ def RmReadData(selected=""):
            
                 data_temp = data["devices"][device]
 
-                if interface in remote[key]["status"]:  data_temp["status"]["method"]  = remote[key]["status"][interface]
-                else:                                   data_temp["status"]["method"]  = "undefined"
-                if "presets" in remote[key]:            data_temp["status"]["presets"] = remote[key]["presets"]
+                if interface in remote[key]["status"]:  data_temp["method"]  = remote[key]["status"][interface]
+                else:                                   data_temp["method"]  = "undefined"
+                if "presets" in remote[key]:            data_temp["presets"] = remote[key]["presets"]
              
                 data_temp["buttons"]             = buttons[key]["buttons"]
                 data_temp["button_list"]         = list(buttons[key]["buttons"].keys())
@@ -482,9 +482,11 @@ def Remote(device,button):
         '''send IR command and return JSON msg'''
 
         data                      = remoteAPI_start(["no-data"])
+        interface                 = rm_data["devices"][device]["interface"]
+        
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Button"] = button
-        data["REQUEST"]["Return"] = interfaces.send("BROADLINK",device,button)
+        data["REQUEST"]["Return"] = interfaces.send(interface,device,button)
 
         data["DeviceStatus"]      = rm3status.getStatus(device)
         data["ReturnMsg"]         = data["REQUEST"]["Return"]
@@ -501,6 +503,9 @@ def RemoteTest():
         data["TEST"]              = RmReadData("")
         data["REQUEST"]["Return"] = "Test: show complete data structure"
         data                      = remoteAPI_end(data)        
+        
+        interfaces.test()
+        
         return data
 
 
