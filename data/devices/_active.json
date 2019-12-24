@@ -69,22 +69,10 @@
             "power": "on",
             "rec2_vol": 1,
             "source": [
-                "video2",
-                "cbl",
-                "sat"
+                "network",
+                "net"
             ],
             "vol": 42
-        },
-        "visible": "yes"
-    },
-    "test5": {
-        "device": "test5_test_test",
-        "image": "test5",
-        "interface": "BROADLINK",
-        "label": "test5_test_test",
-        "main-audio": "no",
-        "status": {
-            "power": "OFF"
         },
         "visible": "yes"
     },
