@@ -1,0 +1,48 @@
+{
+    "receiver_onkyo-txnr686": {
+        "description" : "AV-Receiver: ONKYO TX-NR686(B)",
+        "method"  : "query",
+        "buttons" : {
+        	"display" 	: "display-mode=toggle",
+        	"pc"      	: "input-selector=pc",
+        	"tv"      	: "input-selector=tv",
+        	"phono"   	: "input-selector=phono",
+        	"usb"     	: "input-selector=usb",
+        	"game"    	: "input-selector=game",
+        	"cable-sat"     : "input-selector=cbl",
+        	"radio"         : "input-selector=fm",
+        	"bluetooth"	: "input-selector=bluetooth",
+        	"bd"		: "input-selector=bd",
+        	"aux"		: "input-selector=aux1",
+        	"channel+"	: "tuning=up",
+        	"channel-"	: "tuning=down",
+        	"timer"		: "sleep-set=up",
+        	"dimmer"        : "dimmer-level=dim",
+        	"setup"         : "setup=menu",
+        	"exit"          : "setup=exit",
+        	"home"          : "setup=home",
+        	"enter"         : "setup=enter",
+        	"up"            : "setup=up",
+        	"down"          : "setup=down",
+        	"q"             : "setup=quick",
+        	"right"         : "setup=right",
+        	"left"          : "setup=left"
+       		},
+       	"queries" : {
+        	"display" 	: "display-mode=query",
+        	"source"  	: "input-selector=query",
+        	"temperature"	: "temperature-data=query",
+		"timer"		: "sleep-set=qstn",
+	       	"dimmer"        : "dimmer-level=query"
+       		},
+        "values": {
+        	},
+        "display": {
+        	"Volume" : "vol",
+        	"Power"  : "power",
+        	"Mute"   : "mute",
+        	"Input"  : "source",
+        	"Temp"   : "temperature"
+        	}
+   }
+}

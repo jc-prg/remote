@@ -61,18 +61,33 @@
         "interface": "EISCP-ONKYO",
         "label": "AV Receiver (neu)",
         "status": {
+            "dimmer": "dark",
             "display": [
                 "selector-volume-1line",
                 "default-2line"
             ],
             "mute": "off",
             "power": "on",
-            "rec2_vol": 1,
             "source": [
-                "network",
-                "net"
+                "video2",
+                "cbl",
+                "sat"
             ],
+            "temperature": "F 87C 31",
+            "timer": "N/A",
             "vol": 42
+        },
+        "visible": "yes"
+    },
+    "test": {
+        "device": "test",
+        "image": "",
+        "interface": "BROADLINK",
+        "label": "Test Device",
+        "status": {
+            "mute": "OFF",
+            "power": "OFF",
+            "vol": 0
         },
         "visible": "yes"
     },

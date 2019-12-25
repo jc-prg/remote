@@ -1,31 +1,16 @@
-
-REMOTES
--> Buttons
--> Description
--> API
+-----------------
+Data Structure
+-----------------
 
 DEVICES
--> Connected Remote
-
-API
--> IR
--> EISCP-ONKYO
--> ...
-
-API/DEV/BUTTON
--> Default
--> Specific
-
-MAKROS
--> dev-on
--> dev-off
--> scene-on
--> scene-off
--> makro
+-> commands (interface)		-> button vs. commands
+-> remotes (interface)		-> remote layouts, presets, display definition
+-> interfaces			-> interface configuration
 
 SCENES
--> cinema
--> tv
--> music
+-> scenes			-> scene layouts
+-> makros			-> makros = chain of commands (by devices and buttons)
+-> templates			-> sample remote layouts
+-> buttons			-> button configurations
 
-
+-----------------

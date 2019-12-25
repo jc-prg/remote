@@ -4,7 +4,10 @@
 # (c) Christoph Kloth
 #-----------------------------------
 
+import logging
+
 import modules.rm3json                as rm3json
+import modules.rm3config              as rm3config
 
 import interfaces.broadlink_api       as broadlink
 import interfaces.eiscp_api           as eiscp
@@ -16,7 +19,11 @@ available = {
 	
 #-------------------------------------------------
 
-eiscp.init('192.168.1.33')
+Status = broadlink.init()
+if Status != "Connected": logging.warn(Status)
+
+Status = eiscp.init('192.168.1.33')
+if Status != "Connected": logging.warn(Status)
 
 #-------------------------------------------------
 # Execute commands
@@ -30,14 +37,14 @@ def test():
 def send( api, device, button ):
 
     button_code = get_command( api, "buttons", device, button ) 
-    if   api == "BROADLINK":    return broadlink.command_send(device,button_code)
-    elif api == "EISCP-ONKYO":  return eiscp.command_send(device,button_code)
+    if   api == "BROADLINK":    return broadlink.send(device,button_code)
+    elif api == "EISCP-ONKYO":  return eiscp.send(device,button_code)
     else:                       return "API not available"
 
 
 def record( api, device, button ):
 
-    if   api == "BROADLINK":    return broadlink.command_record(device,button)
+    if   api == "BROADLINK":    return broadlink.record(device,button)
     elif api == "EISCP-ONKYO":  return "API does not support record"
     else:                       return "API not available"
     
@@ -46,7 +53,7 @@ def query( api, device, button):
 
     button_code = get_command( api, "queries", device, button )
     if   api == "BROADLINK":    return "API does not support record"
-    elif api == "EISCP-ONKYO":  return eiscp.command_query(device,button_code)
+    elif api == "EISCP-ONKYO":  return eiscp.query(device,button_code)
     else:                       return "API not available"
 
 
@@ -55,13 +62,13 @@ def query( api, device, button):
 def get_command(api,button_query,device,button):
 
     # read data -> to be moved to cache?!
-    active       = rm3json.read("devices/_active")
+    active       = rm3json.read(rm3config.devices + rm3config.active)
     device_code  = active[device]["device"]
-    buttons      = rm3json.read("devices/"+api+"/"+device_code)
+    buttons      = rm3json.read(rm3config.commands + api + "/" + device_code)
     
     # add button definitions from default.json if exist
-    if rm3json.ifexist("devices/"+api+"/default"):
-       buttons_default = rm3json.read("devices/"+api+"/default")
+    if rm3json.ifexist(rm3config.commands + api + "/default"):
+       buttons_default = rm3json.read(rm3config.commands + api + "/default")
        for key in buttons_default["default"][button_query]:
          buttons[device_code][button_query][key] = buttons_default["default"][button_query][key]
 

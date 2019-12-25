@@ -6,10 +6,11 @@
 
 import logging
 import modules.rm3json       as rm3json
+import modules.rm3config     as rm3config
 import interfaces.interfaces as interfaces
 
 
-configFile    = "devices/_active"
+configFile    = rm3config.devices + rm3config.active
 configMethods = {}
 
 #-----------------------------------------------
@@ -33,7 +34,7 @@ def readStatus(selected_device=""):
         key                   = status[device]["device"]
         interface             = status[device]["interface"]
         if interface != "" and key != "":
-          config                = rm3json.read("remotes/" + interface + "/" + key)
+          config                = rm3json.read(rm3config.remotes + interface + "/" + key)
           if not "ERROR" in config:
             configMethods[device] = config[key]["status"][interface]
     
@@ -94,7 +95,7 @@ def resetStatus():
       if status[key]["interface"] != "":
       
         device_code = translateDevice(key)
-        device      = rm3json.read("remotes/" + status[key]["interface"] + "/" + device_code)
+        device      = rm3json.read(rm3config.remotes + status[key]["interface"] + "/" + device_code)
         logging.info("Reset Device: " + device_code + "/" + status[key]["interface"])
       
         if device[device_code]["status"][status[key]["interface"]] != "query":      
@@ -115,7 +116,7 @@ def resetAudio():
       if status[key]["interface"] != "":
       
         device_code = translateDevice(key)
-        device      = rm3json.read("remotes/" + status[key]["interface"] + "/" + device_code)
+        device      = rm3json.read(rm3config.remotes + status[key]["interface"] + "/" + device_code)
         logging.info("Reset Device: " + device_code + "/" + status[key]["interface"])
       
         if device[device_code]["status"][status[key]["interface"]] != "query":      

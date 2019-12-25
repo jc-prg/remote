@@ -178,16 +178,40 @@ nav-info {
    margin          :   4px;
    font-size       :  10px;
    border-radius   :   6px; 
-   border-style    : black 1px solid;  
    background-color: #000044;
    overflow        : hidden;
    float           : left;
+   display         : inline-block;
+   vertical-align  : top;
 }
 
+.display.right  { float  : right; }
 .display.small  { width  : 133px;   height  :  40px; }
 .display.middle { width  : 133px;   height  :  88px; }
 .display.big    { width  : 276px;   height  :  88px; }
 
+
+.display-element {
+   width	: 56px;
+   margin	: 2px;
+   padding	: 0px;
+   float	: left;
+   color	: white;
+   //border       : blue 1px solid;  
+   text-align        : left;
+}
+
+.display-element.small   { width : 56px; }
+.display-element.middle  { width : 118px; }
+.display-element.big     { width : 118px; }
+
+.display-label {
+   width        : 45px;
+   float        : left;
+}
+.display-input {
+   float        : left;
+}
 
 /* colored circles as status LED */
 
@@ -244,9 +268,14 @@ nav-info {
   .display.small  { width  : 160px; }
   .display.middle { width  : 160px; }
   .display.big    { width  : 328px; }
+  
+  .display-element        { width : 70px; }
+  .display-element.small  { width : 70px; }
+  .display-element.middle { width : 146px; }
+  .display-element.big    { width : 146px; }
 }
 
-/* format for bigger devices */
+/* format for iPhone XS in landscape and bigger devices */
 
 @media (min-width: 720px) {
 
@@ -260,5 +289,10 @@ nav-info {
   .display.small  { width  : 156px; }
   .display.middle { width  : 156px; }
   .display.big    { width  : 320px; }
+  
+  .display-element        { width : 68px; }
+  .display-element.small  { width : 68px; }
+  .display-element.middle { width : 142px; }
+  .display-element.big    { width : 142px; }
 }
 

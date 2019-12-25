@@ -98,7 +98,7 @@ function rmRemote(name) {
 
 			if (button == "LINE") 			{ remote += "<div style='width:100%;float:left;'><hr/></div>"; }
 			else if (button == ".") 		{ remote += this.button_device( device+i, ".", "empty", "", "disabled" ) }
-			else if (button == "DISPLAY")		{ remote += this.display(cmd); }
+			else if (button == "DISPLAY")		{ remote += this.display(id,device,"middle"); }
 			else if (button in remote_buttons) 	{ remote += this.button_device( cmd, button, "", cmd, "" ); this.active_buttons.push(cmd); }
 			else if (this.edit_mode)        	{ remote += this.button_device_add( cmd, button, "notfound", cmd, "" ); }
 			else                            	{ remote += this.button_device( cmd, button, "notfound", cmd, "disabled" ); }
@@ -330,9 +330,21 @@ function rmRemote(name) {
                 }
                 
         // show display with informations
-        this.display = function( id ) {
-        	var text = "";
-        	text += "<button class='display middle'>test</button>";
+        this.display = function( id, device, style="" ) {
+
+		var display_data = {}
+		
+		if (this.data["DATA"]["devices"][device]["display"])	{ display_data = this.data["DATA"]["devices"][device]["display"]; }
+		else							{ display_data["Error"] = "No display defined"; } 
+
+        	var text  = "";
+        	text += "<button class='display "+style+"'>"
+        	for (var key in display_data) {
+        		var label = "<data class='display-label'>"+key+":</data>";
+			var input = "<data class='display-input' id='display_"+device+"_"+display_data[key]+"'>no data</data>";
+	        	text += "<div class='display-element "+style+"'>"+label+input+"</div>";
+	        	}
+        	text += "</button>";
         	return text;
         	}
           

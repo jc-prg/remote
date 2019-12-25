@@ -152,6 +152,8 @@ function check_status(data={}) {
 	var device_audio   = status_mute.split("_");            // ??? from rm_config.js -> to be set to config "main-audio = yes"; incl status_vol_max
 	var scene_status   = {};
 	var vol_color	   = "white";
+	var vol_color2	   = "yellow";
+	var novol_color    = "lightblue";
 
 // ????????????????
 
@@ -234,17 +236,41 @@ function check_status(data={}) {
 		document.getElementById("audio1").style.display = "none";
 		document.getElementById("audio2").style.display = "block";
 		}
+		
+	// check status for displays
+	for (var key in devices) {
+		if (devices[key]["status"] && devices[key]["display"]) {
+		        display = devices[key]["display"];
+			for (var dkey in display) {
+				var vkey    = display[dkey];
+				var element = document.getElementById("display_" + key + "_" + vkey);
+				var status  = devices[key]["status"][vkey];
+				
+				if (devices[key]["values"] && devices[key]["values"][vkey] && vkey == "vol") {
+					if (devices[key]["values"][vkey]["max"]) { status = show_volume( devices[key]["status"][vkey], devices[key]["values"][vkey]["max"], vol_color2, novol_color ) + " &nbsp; ["+devices[key]["status"][vkey]+"]"; }
+					}
+				
+				if (element) { element.innerHTML = status; }
+				}
+			}
+		}
 
 	// check volume and show in navigation bar
-	var volume  = Math.round( devices[device_audio[0]]["status"]["vol"] * 20 / status_vol_max );
-	var vol_str = "<font color='" + vol_color + "'>";
-	for (var i=0; i<volume; i++) { vol_str += "I"; }
-	vol_str += "</font>";
-	for (var i=0; i<20-volume; i++) { vol_str += "I"; }
-
+	vol_str = show_volume( devices[device_audio[0]]["status"]["vol"], status_vol_max, vol_color );
 	document.getElementById("audio3").innerHTML = vol_str;
 
 	//alert(test);
+	}
+	
+function show_volume (volume, maximum, vol_color, novol_color="") {
+
+	var volume  = Math.round( volume * 20 / maximum );
+	var vol_str = "<font color='" + vol_color + "'>";
+	for (var i=0; i<volume; i++) { vol_str += "I"; }
+	vol_str += "</font>";
+	if (novol_color != "") { vol_str += "<font color='" + novol_color + "'>"; }
+	for (var i=0; i<20-volume; i++) { vol_str += "I"; }
+	return vol_str;
 	}
 
 function check_status_dev(device) {

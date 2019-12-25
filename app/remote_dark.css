@@ -24,11 +24,7 @@
     opacity    : 0.8;
   }
   
-  .button {
-    color      : #dddddd;
-    opacity    : 1;
-  }
-  
+  .button               { opacity: 1; color : #dddddd; }
   .button.empty 	{ background: #444444; }
   .button:disabled 	{ background: #444444; }
   
@@ -36,7 +32,6 @@
   .button.bgred    	{ opacity: 0.7; }
   .button.bgyellow 	{ opacity: 0.7; }
   .button.bgblue   	{ opacity: 0.7; }
-  
   
 /* elements from rm_menu.css */
 

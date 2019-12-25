@@ -21,7 +21,6 @@ from Crypto.Cipher import AES
 #-------------------------------------------------
 
 Status     	= "Starting"
-rm3configDir    = path.dirname(path.abspath(__file__)) + "/remotes/"
 
 #-------------------------------------------------
 
@@ -73,50 +72,12 @@ def dataInit():
 	}
     return d
 
-#---------------------------
-# initialize variables
-#---------------------------
-
-def initBroadlink():
-    '''Set vars'''
-
-    config_file = "interfaces/broadlink"
-    logging.info(config_file)
-    
-    config         = rm3json.read(config_file)
-    config["Name"] = "Broadlink"
-    
-    config["Port"]       = int(config["Port"])
-    config["MACAddress"] = netaddr.EUI(config["MACAddress"])
-    config["Timeout"]    = int(config["Timeout"])
-    
-    return config
-
-
-#---------------------------
-
-def initDevice():
-    '''init RM3 IR device'''
-
-    global RM3Device, Status
-    DeviceConfig = initBroadlink()
-    RM3Device    = broadlink.rm((DeviceConfig["IPAddress"], DeviceConfig["Port"]), DeviceConfig["MACAddress"])
-    
-    if RM3Device.auth(): Status = "Connected"
-    else:                Status = "IR Device not available (not found or no access)"
-    
-    return Status
-
-
 #-------------------------------------------------
 # main program
 #-------------------------------------------------
 
-logging.info("Load Data ..." + time_since_start())
+# logging.info("Load Data ..." + time_since_start())
 
-msg = initDevice()
-if msg == "Connected":  logging.info(msg)
-else:                   logging.warn(msg)
 
 
 

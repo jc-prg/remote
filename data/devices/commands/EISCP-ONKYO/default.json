@@ -1,0 +1,23 @@
+{
+    "default": {
+        "description" : "API to connect to several devices from ONKYO",
+        "buttons" : {
+        	"on"      : "system-power=on",
+        	"off"     : "system-power=off",
+        	"vol+"    : "master-volume=level-up",
+        	"vol-"    : "master-volume=level-down",
+        	"mute"    : "audio-muting=toggle"
+       	},
+       	"queries" : {
+       		"power"   : "system-power=query",
+        	"vol"     : "master-volume=query",
+        	"mute"    : "audio-muting=query"
+       	},
+       	"values" : {
+       		"power"   : [ "on", "off" ],
+       		"vol"     : { "min" : 0, "max" : 79 }
+       	},
+       	"display" : {
+       	}
+   }
+}

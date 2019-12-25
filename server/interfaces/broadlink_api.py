@@ -4,34 +4,65 @@
 # (c) Christoph Kloth
 #-----------------------------------
 
-import codecs, json
+import codecs, json, netaddr
 import logging, time
 
 import interfaces.broadlink.broadlink as broadlink
 import modules_api.server_init        as init
 import modules.rm3json                as rm3json
+import modules.rm3config              as rm3config
+
+
+#---------------------------
+# initialize variables
+#---------------------------
+
+def init():
+    '''init RM3 IR device'''
+
+    global RM3Device, Status
+
+    config_file = rm3config.interfaces+"/BROADLINK"
+    logging.info(config_file)
+    
+    config               = rm3json.read(config_file)
+    config["Name"]       = "Broadlink"
+    config["Port"]       = int(config["Port"])
+    config["MACAddress"] = netaddr.EUI(config["MACAddress"])
+    config["Timeout"]    = int(config["Timeout"])
+    
+    RM3Device    = broadlink.rm((config["IPAddress"], config["Port"]), config["MACAddress"])
+    
+    if RM3Device.auth(): Status = "Connected"
+    else:                Status = "IR Device not available (not found or no access)"
+    
+    return Status
+
 
 #-------------------------------------------------
 # Execute IR command
 #-------------------------------------------------
 
-def command_send(device,button_code):
+def send(device,button_code):
     '''send IR command'''
     
+    global RM3Device, Status
     if button_code == "ERROR":  return "Button not available"
     
     logging.info("Button-Code: " + button_code)
     DecodedCommand = codecs.decode(button_code,'hex')  # python3
-    init.RM3Device.send_data(DecodedCommand)
+    RM3Device.send_data(DecodedCommand)
     return("OK")
     
 #-------------------------------------------------
 
-def command_record(device,button):
+def record(device,button):
     '''record new command'''
 
+    global RM3Device, Status
+
     code = device + "_" + button
-    init.RM3Device.enter_learning()
+    RM3Device.enter_learning()
     time.sleep(5)
     LearnedCommand = init.RM3Device.check_data()
 
@@ -45,7 +76,7 @@ def command_record(device,button):
 
 #-------------------------------------------------
 
-def command_query():
+def query():
     return "Not supported"
 
 

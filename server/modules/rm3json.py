@@ -72,11 +72,12 @@ def write(file, data):
 def available(directory):
     files      = []
     file_path  = path.join(jsonAppDir,jsonPath,directory)
-    
+
     for dirpath, dirnames, filenames in os.walk(file_path):
       for filename in [f for f in filenames if f.endswith(".json") and not f.startswith("_")]:
         file_name = os.path.join(dirpath, filename)
         file_name = file_name.replace( file_path+"/", "" )
+        file_name = file_name.replace( file_path, "" )
         file_name = file_name.replace( ".json", "" )
         files.append( file_name )
     

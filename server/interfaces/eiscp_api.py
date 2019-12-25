@@ -24,9 +24,14 @@ def init(ip):
    global receiver
 
    # Create a receiver object, connecting to the host
-   receiver = eiscp.eISCP(ip)
+   try:
+     receiver = eiscp.eISCP(ip)
+   except Exception as e:
+     return "Error connecting to ONKYO device: " + str(e)
    
-   #eiscp.eISCP.get
+   return "Connected"
+
+#-------------------------------------------------
    
 def wait(wait=False):
    global last_cmd, wait_cmd
@@ -41,7 +46,7 @@ def wait(wait=False):
 #-------------------------------------------------
 
 
-def command_test():
+def test():
    global receiver
 
    # Turn the receiver on, select PC input
@@ -52,7 +57,7 @@ def command_test():
    
 #-------------------------------------------------
 
-def command_send(device,button_code):
+def send(device,button_code):
    global receiver
    
    # Prepare command and send
@@ -67,7 +72,7 @@ def command_send(device,button_code):
 
 #-------------------------------------------------
 
-def command_query(device,button_code):
+def query(device,button_code):
    global receiver
    
    # Prepare command and send

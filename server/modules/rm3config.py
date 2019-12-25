@@ -23,6 +23,19 @@ config_status  = "status.json"
 
 # ---------------------------------
 
+interfaces = "interfaces/"
+devices    = "devices/"
+commands   = "devices/commands/"
+remotes    = "devices/remotes/"
+scenes     = "scenes/"
+scenes_def = "scenes/scenes/"
+makros     = "scenes/makros/"
+templates  = "scenes/templates/"
+buttons    = "scenes/buttons/"
+active     = "_active"
+
+# ---------------------------------
+
 error_messages = {
           "200" : "OK",
           "201" : "Error",
