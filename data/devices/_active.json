@@ -79,18 +79,6 @@
         },
         "visible": "yes"
     },
-    "test": {
-        "device": "test",
-        "image": "",
-        "interface": "BROADLINK",
-        "label": "Test Device",
-        "status": {
-            "mute": "OFF",
-            "power": "OFF",
-            "vol": 0
-        },
-        "visible": "yes"
-    },
     "tv": {
         "device": "tv-receiver_topfield",
         "image": "tv",
