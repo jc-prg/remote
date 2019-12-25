@@ -65,7 +65,7 @@ function check_status_inactive(device="") {
 	// rm3remotes.active_type
 	// rm3remotes.active_buttons
 
-	var device_status  = dataAll["STATUS"]["devices"];
+	var device_status  = dataAll["STATUS"]["devices"];  // !!!!!!!!!!!!!! check based on new infos dataAll["DATA"]["devices"][device"]["STATUS"]
 	var scene_status   = {};
 
 	if (deactivateButton)	{ return; }
@@ -118,7 +118,7 @@ function check_status_inactive(device="") {
 			// if device off -> set all buttons off
 			if (dev_stat.length == 1 && device_status[key] == "OFF" && dev_stat.includes(dev)) {
 
-				var buttons = Object.keys(dev[dev_stat[0]]["buttons"]);
+				var buttons = Object.keys(dev[dev_stat[0]]["buttons"]); // -> button_list
 				for (var i=0; i<buttons.length; i++) {
 					if (buttons[i] != "red" && buttons[i] != "blue" && buttons[i] != "yellow" && buttons[i] != "green"
 						&& buttons[i] != "on" && buttons[i] != "off" && buttons[i] != "on-off") {
@@ -128,7 +128,7 @@ function check_status_inactive(device="") {
 			}
 			// if device on -> set all buttons on
 			else if (dev_stat.length == 1 && dev_stat[0] in dev) {
-				var buttons = Object.keys(dev[dev_stat[0]]["buttons"]);
+				var buttons = Object.keys(dev[dev_stat[0]]["buttons"]); // -> button_list
 				for (var i=0; i<buttons.length; i++) {
 					if (buttons[i] != "red" && buttons[i] != "blue" && buttons[i] != "yellow" && buttons[i] != "green"
 						&& buttons[i] != "on" && buttons[i] != "off" && buttons[i] != "on-off") {

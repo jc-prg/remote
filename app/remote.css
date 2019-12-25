@@ -56,20 +56,7 @@ nav-info {
    height: 100vh;
 }
 
-.remote_nav {
-   float   : left;
-   display : none;
-   width   :150px;
-   height  :100vh;
-}
-
-@media (min-width: 800px) {
-   .remote_nav {
-      display: block;
-   }
-}
-
-
+/* default size for boxes and buttons = iPhone 5c */
 /* boxes for remote controlls */
 
 .remote {
@@ -119,16 +106,11 @@ nav-info {
    height          :  40px;
    padding         :   2px;
    margin          :   4px;
+   border-style    : solid 0px #111111;
    border-radius   :   6px;   
    background-color: #111111;
+   font-size       : 13px;
    overflow        : hidden;
-}
-
-.button.complete {
-   background-color: #eeeeee;
-   border          : blue;
-   border-style    : solid;
-   border-width    : 2px;
 }
 
 .button:hover {
@@ -143,6 +125,13 @@ nav-info {
    border           : gray;
    border-style     : none;
    box-shadow       : 0 0px 0px 0 rgba(0,0,0,0.24), 0 0px 0px 0 rgba(0,0,0,0.19);
+}
+
+.button.complete {
+   background-color: #eeeeee;
+   border          : blue;
+   border-style    : solid;
+   border-width    : 2px;
 }
 
 .button.notfound {
@@ -170,188 +159,106 @@ nav-info {
    margin :  3px;
 }
 
-.button.bgred {
-    background-color: red;
-    color: red;
-}
-.button.bgyellow {
-    background-color: yellow;
-    color: yellow;
-}
-.button.bgblue {
-    background-color: blue;
-    color: blue;
-}
-.button.bggreen {
-    background-color: green;
-    color: green;
+
+/* colored buttons */
+
+.button.bgred    { background-color: red;     color: red; }
+.button.bgyellow { background-color: yellow;  color: yellow; }
+.button.bgblue   { background-color: blue;    color: blue; }
+.button.bggreen  { background-color: green;   color: green; }
+
+
+/* display information within the remote control */
+
+.display {
+   width           :  133px;
+   height          :  40px;
+   color           : yellow;
+   padding         :   2px;
+   margin          :   4px;
+   font-size       :  10px;
+   border-radius   :   6px; 
+   border-style    : black 1px solid;  
+   background-color: #000044;
+   overflow        : hidden;
+   float           : left;
 }
 
-/* format for iphone Xs */
+.display.small  { width  : 133px;   height  :  40px; }
+.display.middle { width  : 133px;   height  :  88px; }
+.display.big    { width  : 276px;   height  :  88px; }
+
+
+/* colored circles as status LED */
+
+#green {
+      width: 10px;
+      height: 10px;
+      border-radius: 10px;
+      border: 1px solid green;
+      background: #90EE90;
+      margin: 6px;
+    }
+
+#yellow {
+      width: 10px;
+      height: 10px;
+      border-radius: 10px;
+      border: 1px solid yellow;
+      background: yellow;
+      margin: 6px;
+    }
+
+#red {
+      width: 10px;
+      height: 10px;
+      border-radius: 10px;
+      border: 1px solid red; 
+      background: red;
+      margin: 6px;
+    }
+
+#gray {
+      width: 10px;
+      height: 10px;
+      border-radius: 10px;
+      border: 1px solid #666666; 
+      background: #333333;
+      margin: 6px;
+    }
+
+
+/* format for iphone XS */
 
 @media (min-width: 370px) {
-  .remote {
-     width   : 340px;
-  }
-  .setting_bg {
-      width : 340px;
-      }
 
-  .channel-entry {
+  .remote         { width  : 340px; }
+  .setting_bg     { width  : 340px; }
 
-     width   :  160px;
-  }
-  .button {
-     width  : 76px;
-  }
-  .button.big {
-     width  : 105px;
-  }
-  .button.small {
-     width  : 62px;
-  }
+  .channel-entry  { width  : 160px; }
+  
+  .button 	  { width  :  76px; }
+  .button.big     { width  : 105px; }
+  .button.small   { width  :  62px; }
+  
+  .display.small  { width  : 160px; }
+  .display.middle { width  : 160px; }
+  .display.big    { width  : 328px; }
 }
+
+/* format for bigger devices */
 
 @media (min-width: 720px) {
-  .remote {
-     width   : 335px;
-  }
-  .channel-entry {
-     width   :  160px;
-  }
-  .button {
-     width  : 74px;
-  }
-  .button.big {
-     width  : 102px;
-  }
-  .button.small {
-     width  : 60px;
-  }
+
+  .remote         { width  : 335px; }
+  .channel-entry  { width  : 160px; }
+
+  .button         { width  :  74px; }
+  .button.big     { width  : 102px; }
+  .button.small   { width  :  60px; }
+
+  .display.small  { width  : 156px; }
+  .display.middle { width  : 156px; }
+  .display.big    { width  : 320px; }
 }
 
-
-
-/* buttons for remote controls - OLD */
-
-.command {
-   width   : 100px;
-   height  :  50px;
-   padding :   2px;
-   margin  : 4px;
-   border-radius : 6px;   
-}
-
-.command-small {
-   width   :  60px;
-   height  :  40px;
-   padding :   0px;
-   margin  : 4px;
-   border-radius : 10px;   
-   color   : white;
-   background-color: #111111;
-}
-
-
-/* hover */
-
-.command:hover {
-    color            : red;
-    background-color : yellow;
-    box-shadow       : 0 8px 8px 0 rgba(0,0,0,0.24), 0 8px 8px 0 rgba(0,0,0,0.19);
-}
-
-.command-small:hover {
-    color            : yellow;
-    background-color : #555555;
-    box-shadow       : 0 8px 8px 0 rgba(0,0,0,0.24), 0 8px 8px 0 rgba(0,0,0,0.19);
-}
-
-.command-dev {
-   width   : 80px;
-   height  :  30px;
-   padding :   2px;
-   margin  : 4px;
-   border-radius : 6px;   
-}
-
-.command, .command-small.bgred {
-    background-color: red;
-    color: red;
-}
-.command, .command-small.bgyellow {
-    background-color: yellow;
-    color: yellow;
-}
-.command, .command-small.bgblue {
-    background-color: blue;
-    color: blue;
-}
-.command, .command-small.bggreen {
-    background-color: green;
-    color: green;
-}
-
-.command, .command-small.blue {
-    border: blue;
-    border-style: solid;
-    border-width: 2px;
-}
-.command, .command-small.green {
-    border: green;
-    border-style: solid;
-    border-width: 2px;
-}
-.command, .command-small.darkgreen {
-    border: darkgreen;
-    border-style: solid;
-    border-width: 2px;
-}
-.command, .command-small.red {
-    border: red;
-    border-style: solid;
-    border-width: 2px;
-}
-.command, .command-small.yellow {
-    border: yellow;
-    border-style: solid;
-    border-width: 2px;
-}
-.command, .command-small.darkblue {
-    border: darkblue;
-    border-style: solid;
-    border-width: 2px;
-}
-
-.command-small:disabled {
-   background-color: #dddddd;
-   color           : #dddddd;
-   border          : blue;
-   border-style    : none;
-   border-width    : 2px;
-}
-
-.command-dev.blue {
-    background-color : blue;
-    color            : white;
-}
-
-.command-dev.red {
-    background-color : red;
-    color            : white;
-}
-
-.command-dev.darkblue {
-    background-color : darkblue;
-    color            : white;
-}
-
-.command-dev.green {
-    background-color : green;
-    color            : white;
-}
-
-.command-dev.darkgreen {
-    background-color : darkgreen;
-    color            : white;
-}

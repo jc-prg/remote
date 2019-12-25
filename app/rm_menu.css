@@ -1,5 +1,4 @@
 /* Main Menu */
-
 /* Balken Menü */
 
 nav {
@@ -43,6 +42,19 @@ nav-title {
   display: block;
   z-index: 99;
   width: 150px;
+}
+
+.remote_nav {
+   float   : left;
+   display : none;
+   width   :150px;
+   height  :100vh;
+}
+
+@media (min-width: 800px) {
+   .remote_nav {
+      display: block;
+   }
 }
 
 /* übergeordnete Formatierung DropDown-Menü */
@@ -154,49 +166,4 @@ nav li > a:only-child:after {
   font-style: italic;
 }
 
-/* Status LED */
-
-#green {
-      width: 10px;
-      height: 10px;
-      -webkit-border-radius: 10px;
-      -moz-border-radius: 10px;
-      border-radius: 10px;
-      border: 1px solid green;
-      background: #90EE90;
-      margin: 6px;
-    }
-
-#yellow {
-      width: 10px;
-      height: 10px;
-      -webkit-border-radius: 10px;
-      -moz-border-radius: 10px;
-      border-radius: 10px;
-      border: 1px solid yellow;
-      background: yellow;
-      margin: 6px;
-    }
-
-#red {
-      width: 10px;
-      height: 10px;
-      -webkit-border-radius: 10px;
-      -moz-border-radius: 10px;
-      border-radius: 10px;
-      border: 1px solid red; 
-      background: red;
-      margin: 6px;
-    }
-
-#gray {
-      width: 10px;
-      height: 10px;
-      -webkit-border-radius: 10px;
-      -moz-border-radius: 10px;
-      border-radius: 10px;
-      border: 1px solid #666666; 
-      background: #333333;
-      margin: 6px;
-    }
 

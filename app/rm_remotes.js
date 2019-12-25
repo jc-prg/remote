@@ -98,6 +98,7 @@ function rmRemote(name) {
 
 			if (button == "LINE") 			{ remote += "<div style='width:100%;float:left;'><hr/></div>"; }
 			else if (button == ".") 		{ remote += this.button_device( device+i, ".", "empty", "", "disabled" ) }
+			else if (button == "DISPLAY")		{ remote += this.display(cmd); }
 			else if (button in remote_buttons) 	{ remote += this.button_device( cmd, button, "", cmd, "" ); this.active_buttons.push(cmd); }
 			else if (this.edit_mode)        	{ remote += this.button_device_add( cmd, button, "notfound", cmd, "" ); }
 			else                            	{ remote += this.button_device( cmd, button, "notfound", cmd, "disabled" ); }
@@ -327,6 +328,14 @@ function rmRemote(name) {
                 item     += "</select>";
                 return item;
                 }
+                
+        // show display with informations
+        this.display = function( id ) {
+        	var text = "";
+        	text += "<button class='display middle'>test</button>";
+        	return text;
+        	}
+          
 
 	// standard standard button with option to left and right click
 	this.button = function( id, label, style, script_sendCmd, disabled ){
