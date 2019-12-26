@@ -13,6 +13,7 @@ import interfaces.eiscp as eiscp
 #import modules_api.server_init        as init
 #import modules.rm3json                as rm3json
 
+working  = False
 last_cmd = time.time()
 wait_cmd = 0.2
 
@@ -31,62 +32,59 @@ def init(ip):
    
    return "Connected"
 
-#-------------------------------------------------
-   
-def wait(wait=False):
-   global last_cmd, wait_cmd
-   
-   difference = time.time() - last_cmd
-   difference = wait_cmd - difference
-   
-   if difference > 0 and wait: time.sleep(difference)
-   logging.debug(difference)
-   last_cmd = time.time()
+#------------------------------------------------- 
+
+def wait_if_working():
+   '''API creates error, if several requests are done at the same time ... so wait'''
+   global working
+   while working:
+     logging.debug(".")
 
 #-------------------------------------------------
-
 
 def test():
-   global receiver
+   global receiver, working
 
    # Turn the receiver on, select PC input
-   wait()
+   wait_if_working()
+   working = True
    receiver.command('power on')
    receiver.command('source pc')
    receiver.disconnect()
+   working = False
    
 #-------------------------------------------------
 
 def send(device,button_code):
-   global receiver
+   global receiver, working
    
    # Prepare command and send
    logging.info("Button-Code: "+button_code)
    button_code = button_code.replace("="," ")
    
-   wait()
+   wait_if_working()
+   working = True
    receiver.command(button_code)
    receiver.disconnect()
+   working = False
    return
 
 
 #-------------------------------------------------
 
 def query(device,button_code):
-   global receiver
+   global receiver, working
    
    # Prepare command and send
+   logging.info("Button-Code: "+button_code)
    button_code = button_code.replace("="," ")
    
-   #multiple requests? onkyo power=query audio-muting=query
-   #result = receiver.command("master-volume=query system-power=query")
-   #logging.info("Button-Code: "+button_code)
-   
-   wait(True)
+   wait_if_working()
+   working = True
    result = receiver.command(button_code)
    receiver.disconnect()
-   
-   print(result)
+   working = False
+
    return result
    
     

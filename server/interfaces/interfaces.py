@@ -69,12 +69,12 @@ def get_command(api,button_query,device,button):
     # add button definitions from default.json if exist
     if rm3json.ifexist(rm3config.commands + api + "/default"):
        buttons_default = rm3json.read(rm3config.commands + api + "/default")
-       for key in buttons_default["default"][button_query]:
-         buttons[device_code][button_query][key] = buttons_default["default"][button_query][key]
+       for key in buttons_default["data"][button_query]:
+         buttons["data"][button_query][key] = buttons_default["data"][button_query][key]
 
     # check for errors or return button code
     if "ERROR" in buttons or "ERROR" in active:         return "ERROR"
-    elif button in buttons[device_code][button_query]:  return buttons[device_code][button_query][button]
+    elif button in buttons["data"][button_query]:       return buttons["data"][button_query][button]
     else:                                               return "ERROR"      
 
 

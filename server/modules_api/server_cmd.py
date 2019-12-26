@@ -139,7 +139,7 @@ def RmReadStatus(data):
                 data[device]["status"][value]         = test[1] 
                   
               except Exception as e:
-                logging.error(e)
+                logging.error(str(e)+" / " + device + "-" + value + " : " + data[device]["interface"])
                 
       status_cache = devices
 
