@@ -32,6 +32,7 @@
 
 * EISCP - add configuriation file including time out
 * SONY  - add API
+* Config files analog to mbox
 
 - app side configuration handling in JSON -> sendCmd() / sendMakro() / check_status() / check_status_inactive()
 - check status in menu (device button) via data from JSON
@@ -91,11 +92,11 @@
 * OK - migrate to jc-co* OKie
 * OK - optimized directory structure to prepare additional device/API integration
 * OK - added display (with queried information from API)
+* OK - correct show / hide menu
 
 * IN PROGRESS - create license free icon set
 * IN PROGRESS - edit device parameters via settings page (description, driver, image)
 
-- correct show / hide menu
 - edit device parameters via settings page (status definition)
 - edit device parameters via settings page (remote control)
 

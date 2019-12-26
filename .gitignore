@@ -18,3 +18,5 @@ app/img/iphone_rm3.jpg
 app/img/remote.jpg
 
 *.save
+
+docker-compose.yml
