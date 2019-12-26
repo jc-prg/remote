@@ -14,9 +14,10 @@ function rmMenu(name, menu) {
 
         // load data with devices (deviceConfig["devices"])
         this.init = function(data) {
+
                 this.data = data;
                 this.log("Initialized new class 'rmMenu'.");
-                setTextById(this.menuItems,"");
+    		this.writeMenu("");
                 }
 
 
@@ -27,19 +28,15 @@ function rmMenu(name, menu) {
     		if (data) {} else { return; }
 
 		// set vars
-    		var menu = getTextById(this.menuItems);
+    		var menu = this.readMenu();
     		var i    = 0;
-
-		// create link for each device
 		for (var key in data) {
 			if (key != "default") {
 			        if (data[key]["visibility"] != "none")  { menu  += this.entry_device( key, data[key]["label"] ); }
 			        else if (this.edit_mode)                { menu  += this.entry_device( key, "<div class=#hidden_entry_edit#>.(" + data[key]["label"] + ").</div>" ); }
 				}
         		}
-
-		// replace old menu
-    		setTextById(this.menuItems,menu + "<li><hr/></li>");
+    		this.writeMenu(menu + "<li><hr/></li>");
 		}
 		
 	// show hide edit mode for remotes
@@ -54,46 +51,31 @@ function rmMenu(name, menu) {
 
 		// return if no data
     		if (data) {} else { return; }
+    		var menu = this.readMenu();
 
-		// set vars
-    		var menu = getTextById(this.menuItems);
     		var i    = 0;
-
-		// create link for each device
 		for (var key in data) {
 			menu  += this.entry_scene( key, data[key]["label"] );
         		}
-
-		// replace old menu
-    		setTextById(this.menuItems,menu + "<li><hr/></li>");
+    		this.writeMenu(menu + "<li><hr/></li>");
 		}
 
 
 	// add links to scenes to drop down menu
 	this.add_script = function(script,label) {
 
-		// set vars
-    		var menu = getTextById(this.menuItems);
-
-		// create link for javascript
+    		var menu = this.readMenu();
 		menu += this.entry_script(script,label);
-
-		// replace old menu
-    		setTextById(this.menuItems,menu);
+    		this.writeMenu(menu);
 		}
 
 
 	// add links to scenes to drop down menu
 	this.add_link = function(link,label) {
 
-		// set vars
-    		var menu = getTextById(this.menuItems);
-
-		// create link for javascript
+    		var menu = this.readMenu();
 		menu += menuEntry(link,label);
-
-		// replace old menu
-    		setTextById(this.menuItems,menu);
+    		this.writeMenu(menu);
 		}
 
 	// menu entries
@@ -119,6 +101,25 @@ function rmMenu(name, menu) {
         this.log = function(msg) {
                 console.log(this.app_name + ": " + msg);
                 }
+                
+        this.writeMenu = function(menutext) {
+        	if (typeof this.menuItems == "string") {
+        		setTextById(this.menuItems,menutext);
+        		}
+        	else if (typeof this.menuItems == "object") {
+        		for (var i=0; i<this.menuItems.length; i++) {
+	        		setTextById(this.menuItems[i],menutext);
+        			}
+        		}
+        	}
+        this.readMenu = function() {
+        	if (typeof this.menuItems == "string") {
+        		return getTextById(this.menuItems);
+        		}
+        	else if (typeof this.menuItems == "object") {
+        		return getTextById(this.menuItems[0]);
+        		}
+        	}
 	}
 
 
