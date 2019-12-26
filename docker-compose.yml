@@ -6,14 +6,14 @@
 
 #services:
 
-#  remote_server_test:
-#    build: ./config/container
-#    volumes:
-#      - /projects/git/remote/server:/usr/src/app/server
-#      - /projects/git/remote/data:/projects/git/remote/data
-#      - /projects/git/modules/jc-icon-private/white/index.json:/projects/git/remote/data/buttons/button_images.json
-#    ports:
-#      - 5008:5008
+  remote_server_test:
+    build: ./config/container
+    volumes:
+      - /projects/git/remote/server:/usr/src/app/server
+      - /projects/git/remote/data:/projects/git/remote/data
+      - /projects/git/modules/jc-icon/remote/index.json:/projects/git/remote/data/buttons/button_images.json
+    ports:
+      - 5008:5008
 
 
   remote_client_test:
@@ -23,7 +23,7 @@
     volumes:
       - /projects/git/remote/app:/var/www/html/rm3
       - /projects/git/modules:/var/www/html/rm3/modules
-      - /projects/git/modules/jc-icon/white:/var/www/html/rm3/icon
+      - /projects/git/modules/jc-icon/remote:/var/www/html/rm3/icon
       - ./config/apache2/www-rm3.conf:/etc/apache2/sites-enabled/www-rm3.conf
 
 

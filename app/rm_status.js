@@ -190,21 +190,25 @@ function check_status(data={}) {
 	        
 	        //console.error("TEST "+key1+"_"+key2+" = "+devices[key1]["status"][key2]);
 
-		if (typeof devices[key1]["status"][key2] == "string") {
-		
-        	        check_button = devices[key1]["status"][key2].toUpperCase()
+		if (typeof devices[key1]["status"][key2] == "string")	{ check_button = devices[key1]["status"][key2].toUpperCase() }
+		else							{ check_button = devices[key1]["status"][key2]; }
 
-			show_status_button( "device_" + key, check_button ); // main menu button
-			show_status_button( key + "_on-off", check_button ); // on-off device button
+		show_status_button( "device_" + key, check_button ); // main menu button
+		show_status_button( key + "_on-off", check_button ); // on-off device button
 			
-			if (check_button == "ON") {
-				show_status_button( key + "_on",  check_button );
-				show_status_button( key + "_off", "" );
-				}
-			if (check_button == "OFF") {
-				show_status_button( key + "_off", check_button );
-				show_status_button( key + "_on",  "" );
-			}	}
+		if (typeof check_button == "string" && check_button == "ON") {
+			show_status_button( key + "_on",  check_button );
+			show_status_button( key + "_off", "" );
+			}
+		if (typeof check_button == "string" && check_button == "OFF") {
+			show_status_button( key + "_off", check_button );
+			show_status_button( key + "_on",  "" );
+			}	
+
+		if (typeof check_button == "object" && check_button.indexOf("off") >= 0) {
+			show_status_button( key + "_off", "OFF" );
+			show_status_button( key + "_on",  "" );
+			}	
 		}
 	   }
 
