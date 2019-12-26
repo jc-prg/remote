@@ -7,11 +7,7 @@
 import logging, time
 import interfaces.eiscp as eiscp
 
-#import codecs, json
-#import logging, time
-
-#import modules_api.server_init        as init
-#import modules.rm3json                as rm3json
+#-------------------------------------------------
 
 working  = False
 last_cmd = time.time()
@@ -84,6 +80,7 @@ def query(device,button_code):
    result = receiver.command(button_code)
    receiver.disconnect()
    working = False
+   logging.info(result)
 
    return result
    

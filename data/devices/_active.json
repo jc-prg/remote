@@ -61,6 +61,7 @@
         "interface": "EISCP-ONKYO",
         "label": "AV Receiver (neu)",
         "status": {
+            "audio-info": "ANALOG,,,,Theater-Dimensional,3.1 ch,",
             "dimmer": "dark",
             "display": [
                 "selector-volume-1line",
@@ -73,9 +74,10 @@
                 "cbl",
                 "sat"
             ],
-            "temperature": "F 82C 28",
+            "temperature": "F 87C 31",
             "timer": "N/A",
-            "vol": 42
+            "video-info": "VIDEO 1,Unknown,,24bit,,Unknown,,24bit,,",
+            "vol": 43
         },
         "visible": "yes"
     },

@@ -18,7 +18,7 @@ paths:
 
   /test/:
     get:
-      operationId: modules_api.server_cmd.test_cmd
+      operationId: modules.server_cmd.test_cmd
       tags:
         - test
       summary: list status data
@@ -41,7 +41,7 @@ paths:
 
   /list/:
     get:
-      operationId: modules_api.server_cmd.RemoteList
+      operationId: modules.server_cmd.RemoteList
       tags:
         - interface
       summary: list status data
@@ -63,7 +63,7 @@ paths:
 
   /sendIR_check/{device}/{button}/:
     get:
-      operationId: modules_api.server_cmd.RemoteOnOff
+      operationId: modules.server_cmd.RemoteOnOff
       tags:
         - interface
       summary: send IR command including a check, if device is on
@@ -89,7 +89,7 @@ paths:
 
   /sendIR/{device}/{button}/:
     get:
-      operationId: modules_api.server_cmd.Remote
+      operationId: modules.server_cmd.Remote
       tags:
         - interface
       summary: send IR command
@@ -117,7 +117,7 @@ paths:
 
   /button/{device}/{button}/:
     put:
-      operationId: modules_api.server_cmd.RemoteAddButton
+      operationId: modules.server_cmd.RemoteAddButton
       tags:
         - interface
       summary: add button
@@ -142,7 +142,7 @@ paths:
                 $ref: "#/definitions/REQUEST"
                 
     delete:
-      operationId: modules_api.server_cmd.RemoteDeleteButton
+      operationId: modules.server_cmd.RemoteDeleteButton
       tags:
         - interface
       summary: delete button
@@ -168,7 +168,7 @@ paths:
 
   /device/{device}/{interface}/{description}/:
     put:
-      operationId: modules_api.server_cmd.RemoteAddDevice
+      operationId: modules.server_cmd.RemoteAddDevice
       tags:
         - interface
       summary: add device
@@ -198,7 +198,7 @@ paths:
 
   /template/{device}/{template}/:
     put:
-      operationId: modules_api.server_cmd.RemoteAddTemplate
+      operationId: modules.server_cmd.RemoteAddTemplate
       tags:
         - interface
       summary: add template to device
@@ -224,7 +224,7 @@ paths:
                 
   /visibility/{device}/{value}/:
     put:
-      operationId: modules_api.server_cmd.RemoteChangeVisibility
+      operationId: modules.server_cmd.RemoteChangeVisibility
       tags:
         - interface
       summary: add template to device
@@ -250,7 +250,7 @@ paths:
 
   /device/{device}/:
     delete:
-      operationId: modules_api.server_cmd.RemoteDeleteDevice
+      operationId: modules.server_cmd.RemoteDeleteDevice
       tags:
         - interface
       summary: delete device
@@ -274,7 +274,7 @@ paths:
 
   /version/{APPversion}/:
     get:
-      operationId: modules_api.server_cmd.RemoteCheckUpdate
+      operationId: modules.server_cmd.RemoteCheckUpdate
       tags:
         - maintain
       summary: check if APP-version is supported
@@ -296,7 +296,7 @@ paths:
                                 
   /reload/:
     get:
-      operationId: modules_api.server_cmd.RemoteReload
+      operationId: modules.server_cmd.RemoteReload
       tags:
         - maintain
       summary: reload data from config files
@@ -313,7 +313,7 @@ paths:
 
   /test/:
     get:
-      operationId: modules_api.server_cmd.RemoteTest
+      operationId: modules.server_cmd.RemoteTest
       tags:
         - maintain
       summary: reload data from config files
@@ -330,7 +330,7 @@ paths:
 
   /reset/:
     get:
-      operationId: modules_api.server_cmd.RemoteReset
+      operationId: modules.server_cmd.RemoteReset
       tags:
         - maintain
       summary: reset all configuration status values
@@ -347,7 +347,7 @@ paths:
 
   /reset-audio/:
     get:
-      operationId: modules_api.server_cmd.RemoteResetAudio
+      operationId: modules.server_cmd.RemoteResetAudio
       tags:
         - maintain
       summary: reset all volume values

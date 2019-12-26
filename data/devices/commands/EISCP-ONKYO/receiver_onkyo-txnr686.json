@@ -33,7 +33,9 @@
         	"source"  	: "input-selector=query",
         	"temperature"	: "temperature-data=query",
 		"timer"		: "sleep-set=qstn",
-	       	"dimmer"        : "dimmer-level=query"
+	       	"dimmer"        : "dimmer-level=query",
+	       	"audio-info"    : "audio-information=query",
+	       	"video-info"    : "video-information=query"
        		},
         "values": {
         	}

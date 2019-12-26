@@ -8,8 +8,6 @@ import sys, getopt
 import time, binascii
 import netaddr, logging
 
-import interfaces.broadlink.broadlink as broadlink
-
 import modules.rm3json       as rm3json
 import modules.rm3stage      as rm3stage
 import modules.rm3config     as rm3config

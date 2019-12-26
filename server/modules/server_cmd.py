@@ -11,12 +11,9 @@ import netaddr, codecs
 import logging
 import json
 
-import interfaces.broadlink.broadlink as broadlink
-import interfaces.broadlink_api       as broadlink_api
-import interfaces.interfaces          as interfaces
+import interfaces.interfaces as interfaces
 
-import modules_api.server_init        as init
-
+import modules.server_init   as init
 import modules.rm3status     as rm3status
 import modules.rm3json       as rm3json
 import modules.rm3stage      as rm3stage

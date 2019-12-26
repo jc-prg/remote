@@ -7,10 +7,9 @@
 import codecs, json, netaddr
 import logging, time
 
-import interfaces.broadlink.broadlink as broadlink
-import modules_api.server_init        as init
-import modules.rm3json                as rm3json
-import modules.rm3config              as rm3config
+import interfaces.broadlink.broadlink  as broadlink
+import modules.rm3json                 as rm3json
+import modules.rm3config               as rm3config
 
 
 #---------------------------
@@ -64,7 +63,7 @@ def record(device,button):
     code = device + "_" + button
     RM3Device.enter_learning()
     time.sleep(5)
-    LearnedCommand = init.RM3Device.check_data()
+    LearnedCommand = RM3Device.check_data()
 
     if LearnedCommand is None:
         return('Learn Button (' + code + '): No IR command received')

@@ -28,9 +28,9 @@
 * OK - EISCP API: query status
 * OK - BROADLINK: optimized integration (as EISCP API)
 * OK - simplified and optimized data structure
+* OK - EISCP - process multiple requests
 
 * EISCP - add configuriation file including time out
-* EISCP - process multiple requests
 * SONY  - add API
 
 - app side configuration handling in JSON -> sendCmd() / sendMakro() / check_status() / check_status_inactive()

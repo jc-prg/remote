@@ -9,8 +9,8 @@ import logging
 import modules.rm3json                as rm3json
 import modules.rm3config              as rm3config
 
-import interfaces.broadlink_api       as broadlink
 import interfaces.eiscp_api           as eiscp
+import interfaces.broadlink_api       as broadlink
 
 available = {
 	"BROADLINK"   : "Infrared Broadlink RM3",

@@ -5,10 +5,11 @@
 #-----------------------------------------------
 
 import logging
-import modules.rm3json       as rm3json
-import modules.rm3config     as rm3config
-import interfaces.interfaces as interfaces
+import modules.rm3json        as rm3json
+import modules.rm3config      as rm3config
+import interfaces.interfaces  as interfaces
 
+#-----------------------------------------------
 
 configFile    = rm3config.devices + rm3config.active
 configMethods = {}
