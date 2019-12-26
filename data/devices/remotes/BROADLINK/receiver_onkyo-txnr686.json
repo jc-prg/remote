@@ -1,11 +1,6 @@
 {
-    "receiver_onkyo-txnr686": {
+    "data": {
         "description": "AV-Receiver: ONKYO TX-NR686(B)", 
-        "api" : [ "BROADLINK", "EISCP-ONKYO" ], 
-        "status" : { 
-        	"BROADLINK": "record", 
-        	"EISCP-ONKYO" :"query" 
-        	},
         "remote": [
                 ".",".",".","on-off",
                 "LINE",
@@ -19,11 +14,7 @@
                 "fbw",          "play",      "ffw",       ".",
                 "toggle",       "memory",    "mode",      "."
         ],
-        "presets": {
-        	"vol" : {
-        		"max" : 79,
-        		"min" : 0
-        	}
+        "display": {
         }
     }
 }

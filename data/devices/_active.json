@@ -66,14 +66,14 @@
                 "selector-volume-1line",
                 "default-2line"
             ],
-            "mute": "off",
+            "mute": "on",
             "power": "on",
             "source": [
                 "video2",
                 "cbl",
                 "sat"
             ],
-            "temperature": "F 87C 31",
+            "temperature": "F 82C 28",
             "timer": "N/A",
             "vol": 42
         },

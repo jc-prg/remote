@@ -1,10 +1,6 @@
 {
-    "receiver_onkyo-txsr508": {
+    "data": {
         "description": "AV-Receiver: ONKYO TX-SR508", 
-        "api" : [ "BROADLINK" ],        
-        "status" : { 
-        	"BROADLINK" : "record"
-        	},
         "remote": [
             ".", ".", ".", "on-off", 
             "LINE", 
@@ -20,11 +16,8 @@
             "left",  "enter", "right",  "prg-", 
             "movie", "down",  "stereo", "timer"
         ],
-        "presets": {
-        	"vol" : {
-        		"max" : 79,
-        		"min" : 0
+        "display": {
         	}
-        }      
+        }
     }
 }

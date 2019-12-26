@@ -1,9 +1,9 @@
 {
-    "default": {
+    "data": {
         "description" : "API to connect to IR devices (no default commands)",
-        "commands" : {
-       	},
-       	"status" : {
-       	}
+        "buttons" : {},
+	"queries" : {},
+	"method" : "record",
+       	"values" : {}
    }
 }

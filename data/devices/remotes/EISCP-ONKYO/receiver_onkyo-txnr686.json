@@ -1,24 +1,30 @@
 {
-    "receiver_onkyo-txnr686": {
+    "data": {
         "description": "AV-Receiver: ONKYO TX-NR686(B)", 
-        "api" : [ "BROADLINK", "EISCP-ONKYO" ], 
-        "status" : { 
-        	"BROADLINK": "record", 
-        	"EISCP-ONKYO" :"query" 
-        	},
         "remote": [
                 ".",".","on","off",
                 "LINE",
-                "DISPLAY",
-                "pc","bd","radio","bluetooth","cable-sat","aux",
+                "cable-sat", "pc", "bd", "radio",
+                "bluetooth", "aux","usb","phono",
                 "LINE",
-                "q",        "up",    "info",   "vol+",
-                "left",     "enter", "right",  "mute",
-                "settings", "down",  "return", "vol-",
+                "DISPLAY",
+                "timer", "display", "settings", "q",
+                "LINE",
+                "prg+",    "up",    ".",   "vol+",
+                "left", "enter", "right",  "mute",
+                "prg-",  "down",  "exit",  "vol-",
                 "LINE",
                 "movie-tv-mode","music-mode","game-mode", ".",
                 "fbw",          "play",      "ffw",       ".",
                 "toggle",       "memory",    "mode",      "."
-       		]
+       		],
+	"display": {
+        	"Volume" : "vol",
+        	"Power"  : "power",
+        	"Mute"   : "mute",
+        	"Input"  : "source",
+        	"Temp"   : "temperature"
+        	}
+
         }
 }

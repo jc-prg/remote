@@ -1,5 +1,5 @@
 {
-    "receiver_onkyo-txnr686": {
+    "data": {
         "description" : "AV-Receiver: ONKYO TX-NR686(B)",
         "method"  : "query",
         "buttons" : {
@@ -14,11 +14,11 @@
         	"bluetooth"	: "input-selector=bluetooth",
         	"bd"		: "input-selector=bd",
         	"aux"		: "input-selector=aux1",
-        	"channel+"	: "tuning=up",
-        	"channel-"	: "tuning=down",
+        	"prg+"		: "tuning=up",
+        	"prg-"		: "tuning=down",
         	"timer"		: "sleep-set=up",
         	"dimmer"        : "dimmer-level=dim",
-        	"setup"         : "setup=menu",
+        	"settings"      : "setup=menu",
         	"exit"          : "setup=exit",
         	"home"          : "setup=home",
         	"enter"         : "setup=enter",
@@ -36,13 +36,6 @@
 	       	"dimmer"        : "dimmer-level=query"
        		},
         "values": {
-        	},
-        "display": {
-        	"Volume" : "vol",
-        	"Power"  : "power",
-        	"Mute"   : "mute",
-        	"Input"  : "source",
-        	"Temp"   : "temperature"
         	}
    }
 }

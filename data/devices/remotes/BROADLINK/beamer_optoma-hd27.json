@@ -1,10 +1,6 @@
 {
-    "beamer_optoma-hd27": {
+    "data": {
         "description": "Beamer: Optoma HD27", 
-        "api" : [ "BROADLINK" ],
-        "status" : { 
-        	"BROADLINK" : "record"
-        	},
         "remote": [
             ".", ".", "on", "off", 
             "LINE", 
@@ -14,6 +10,7 @@
             ".",    "up",    ".",     ".", 
             "left", "enter", "right", ".", 
             ".",    "down",   ".",    "."
-        ]
+        ],
+	"display" : {}
     }
 }

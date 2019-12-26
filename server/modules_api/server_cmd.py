@@ -159,7 +159,7 @@ def RmReadData(selected=[]):
 
     data    = {}
     makros  = ["dev-on","dev-off","scene-on","scene-off","makro"]
-    btnfile = ["buttons","queries","values","display"]
+    btnfile = ["buttons","queries","values"]
 
     # if update required
     if rm_data_update: 
@@ -172,35 +172,36 @@ def RmReadData(selected=[]):
             if data["devices"][device]["visible"] == "yes":
               if selected == [] or device in selected:
 
-                key       = data["devices"][device]["device"]
-                interface = data["devices"][device]["interface"]
-                buttons   = rm3json.read(rm3config.commands + interface + "/" + key) # button definitions, presets, display, ...
-                remote    = rm3json.read(rm3config.remotes  + interface + "/" + key) # remote layout & method
-                data_temp = data["devices"][device]
-                
-                if interface in remote[key]["status"]:  data_temp["method"]  = remote[key]["status"][interface]
-                else:                                   data_temp["method"]  = "undefined"
-                if "presets" in remote[key]:            data_temp["presets"] = remote[key]["presets"]
+                key        = data["devices"][device]["device"]
+                interface  = data["devices"][device]["interface"]
+                data_temp  = data["devices"][device]
 
+                remote           = rm3json.read(rm3config.remotes  + interface + "/" + key) # remote layout & display
+                buttons          = rm3json.read(rm3config.commands + interface + "/" + key) # button definitions, presets, queries ...
                 buttons_default  = rm3json.read(rm3config.commands + interface + "/default")
+               
+               # COMMAND/BUTTON : get button definitions, presets, queries ...
                 if not "ERROR" in buttons_default:
                   for x in btnfile:
-                    if x in buttons_default["default"]:
-                      for y in buttons_default["default"][x]:
-                        buttons[key][x][y] = buttons_default["default"][x][y]
+                    if x in buttons_default["data"]:
+                      for y in buttons_default["data"][x]:
+                        buttons["data"][x][y] = buttons_default["data"][x][y]
            
-                if "method" in buttons[key]:    data_temp["method"]  = buttons[key]["method"]              
-                if "values" in buttons[key]:    data_temp["values"]  = buttons[key]["values"]              
-                if "display" in buttons[key]:   data_temp["display"] = buttons[key]["display"]              
-                if "queries" in buttons[key]:
-                  data_temp["queries"]           = buttons[key]["queries"]
-                  data_temp["query_list"]        = list(buttons[key]["queries"].keys())                 
+                if "method"  in buttons["data"]:   data_temp["method"]  = buttons["data"]["method"]              
+                if "values"  in buttons["data"]:   data_temp["values"]  = buttons["data"]["values"]              
+                if "queries" in buttons["data"]:
+                  data_temp["queries"]           = buttons["data"]["queries"]
+                  data_temp["query_list"]        = list(buttons["data"]["queries"].keys())                 
                 
-                data_temp["buttons"]             = buttons[key]["buttons"]
-                data_temp["button_list"]         = list(buttons[key]["buttons"].keys())
+                data_temp["buttons"]             = buttons["data"]["buttons"]
+                data_temp["button_list"]         = list(buttons["data"]["buttons"].keys())
                                 
-                data_temp["description"]         = remote[key]["description"]              
-                data_temp["remote"]              = remote[key]["remote"]
+                # REMOTE : get remote layout & display # logging.info(device)
+                data_temp["description"]         = remote["data"]["description"]              
+                data_temp["remote"]              = remote["data"]["remote"]
+
+                if "display" in remote["data"]:   
+                  data_temp["display"]           = remote["data"]["display"]              
            
                 data["devices"][device] = data_temp
  
@@ -285,22 +286,22 @@ def addDevice(device,interface,description):
     
     ## add to devices = button definitions
     buttons = {
-        description : {
+        "info" : "jc://remote/ - In this files the commands foreach button, queries, the query method is defined.",
+        "data" : {
             "description" : description,
+            "method"      : "record", #-> to be changed
             "buttons"     : {},
-            "presets"     : {}
+            "queries"     : {},
+            "values"      : {}
             }
         }
     rm3json.write(rm3config.commands + interface+"/"+description,buttons)
 
     ## add to remotes = button layout
     remote = {
-        description : {
+        "info" : "jc://remote/ - In this files the remote layout and a display layout is defined.",
+        "data" : {
            "description" : description,
-           "api"         : [ interface ],
-           "status"      : {
-               interface : "record"      # options: record, query (editing via ui not implemented yet)
-               },
            "remote"      : [],
            "display"     : {}
            }
@@ -356,18 +357,17 @@ def varsAddTemplate_json(device,template):
 
         return "Device '" + device + "' does not exists."
         
-        
+    # add layout from template
     elif template in templates and data[device] == []:
     
-        data[device]["remote"]           = templates[template]["remote"]
-
+        data["data"]["remote"]           = templates[template]["remote"]
         writeDataJson(rm3config.remotes,device,data)
         return "Template '" + template + "' added to '" + device + "'."
-        
-        
+            
+    # overwrite layout from template
     elif template in templates and data[device] != []:
 
-        data[device]["remote"]           = templates[template]["remote"]
+        data["data"]["remote"]           = templates[template]["remote"]
         writeDataJson(rm3config.remotes,device,data)
         return "Remote definition of '" + device + "' overwritten by template '" + template + "'."
         
@@ -380,15 +380,15 @@ def varsAddTemplate_json(device,template):
 def varsChangeVisibility_json(device,visibility):
     '''add / overwrite remote definition by template'''
 
-    data = readDataJson(rm3config.remotes,device)
+    data = rm3json.read(rm3config.devices+rm3config.active)
     
     if device not in data.keys():
         return "Device '" + device + "' does not exists."
         
-    elif visibility == "block" or visibility == "none":
-        data[device]["visibility"]           = visibility
-        writeDataJson(rm3config.remotes,device,data)
-        return "Change visibility for '" + device + "'."
+    elif visibe == "yes" or visibility == "no":
+        data[device]["visibility"] = visibility
+        rm3json.write(rm3config.devices+rm3config.active,data)
+        return "Change visibility for '" + device + "': " + visibility
         
     else:
         return "Visibility value '" + visibility + "' does not exists."
@@ -427,8 +427,8 @@ def remoteAPI_start(setting=[]):
     data["DATA"]                           = RmReadData(setting)
     
     data["CONFIG"]                         = {}  
-    data["CONFIG"]["button_images"]        = rm3json.read(rm3config.buttons + "button_images")
-    data["CONFIG"]["button_colors"]        = rm3json.read(rm3config.buttons + "button_colors")
+    data["CONFIG"]["button_images"]        = rm3json.read(rm3stage.icons_dir + "/index")
+    data["CONFIG"]["button_colors"]        = rm3json.read(rm3config.buttons  + "button_colors")
     data["CONFIG"]["interfaces"]           = interfaces.available
     
     data["REQUEST"]                        = {}
@@ -553,15 +553,16 @@ def RemoteTest():
 def RemoteOnOff(device,button):
         '''check old and document new status'''
 
-        data = remoteAPI_start()    
+        data            = remoteAPI_start()    
         interface       = data["DATA"]["devices"][device]["interface"]
         
-        if "method"  in data["DATA"]["devices"][device]: method  = data["DATA"]["devices"][device]["method"]
-        else:                                            method  = "record"
+        # Get method and presets
+        if "method"  in data["DATA"]["devices"][device]:  method  = data["DATA"]["devices"][device]["method"]
+        else:                                             method  = "record"
+        if "values"  in data["DATA"]["devices"][device]:  presets = data["DATA"]["devices"][device]["values"]
+        else:                                             presets = {}
         
-        if "presets" in data["DATA"]["devices"][device]: presets = data["DATA"]["devices"][device]["presets"]
-        else:                                            presets = {}
-        
+        # delete DATA (less data to be returned via API)
         data["DATA"]    = {}
         
 ############### need for action ##

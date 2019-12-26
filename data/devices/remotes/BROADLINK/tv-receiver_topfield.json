@@ -1,10 +1,6 @@
 {
-   "tv-receiver_topfield": {
+   "data": {
         "description": "TV-Receiver: TOPFIELD", 
-        "api" : [ "BROADLINK" ],        
-        "status" : { 
-        	"BROADLINK" : "record"
-        	},
         "remote": [
             "radiotv", ".", ".", "on-off", 
             "LINE", 
@@ -18,6 +14,7 @@
             "fav",  "prg-",  "subtitle", "exit", 
             "LINE", 
             "red",  "green", "yellow",   "blue"
-        ]
+        ],
+	"display" : {}
     }
 }

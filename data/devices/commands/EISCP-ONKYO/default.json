@@ -1,5 +1,5 @@
 {
-    "default": {
+    "data": {
         "description" : "API to connect to several devices from ONKYO",
         "buttons" : {
         	"on"      : "system-power=on",

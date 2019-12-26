@@ -33,10 +33,11 @@ def readStatus(selected_device=""):
       for device in status:
         key                   = status[device]["device"]
         interface             = status[device]["interface"]
+        
         if interface != "" and key != "":
-          config                = rm3json.read(rm3config.remotes + interface + "/" + key)
+          config = rm3json.read(rm3config.commands + interface + "/" + key)
           if not "ERROR" in config:
-            configMethods[device] = config[key]["status"][interface]
+            configMethods[device] = config["data"]["method"]
     
     # if device is given
     if selected_device != "" and selected_device in status and "status" in status[selected_device]:
@@ -95,10 +96,10 @@ def resetStatus():
       if status[key]["interface"] != "":
       
         device_code = translateDevice(key)
-        device      = rm3json.read(rm3config.remotes + status[key]["interface"] + "/" + device_code)
+        device      = rm3json.read(rm3config.commands + status[key]["interface"] + "/" + device_code)
         logging.info("Reset Device: " + device_code + "/" + status[key]["interface"])
       
-        if device[device_code]["status"][status[key]["interface"]] != "query":      
+        if device["data"]["method"] != "query":      
           status[key]["status"]["power"] = "OFF" 
 
     writeStatus(status)
@@ -116,10 +117,10 @@ def resetAudio():
       if status[key]["interface"] != "":
       
         device_code = translateDevice(key)
-        device      = rm3json.read(rm3config.remotes + status[key]["interface"] + "/" + device_code)
+        device      = rm3json.read(rm3config.commands + status[key]["interface"] + "/" + device_code)
         logging.info("Reset Device: " + device_code + "/" + status[key]["interface"])
       
-        if device[device_code]["status"][status[key]["interface"]] != "query":      
+        if device["data"]["method"] != "query":      
           if "vol"  in status[key]["status"]: status[key]["status"]["vol"]  = 0 
           if "mute" in status[key]["status"]: status[key]["status"]["mute"] = "OFF"
 
