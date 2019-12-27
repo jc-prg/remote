@@ -30,7 +30,7 @@
 * OK - simplified and optimized data structure
 * OK - EISCP - process multiple requests
 
-* EISCP - add configuriation file including time out
+* EISCP - add configuriation file including time out (for multiple onkyo devices ?!)
 * SONY  - add API
 * Config files analog to mbox
 

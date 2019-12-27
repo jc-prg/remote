@@ -121,7 +121,7 @@ paths:
       tags:
         - interface
       summary: add button
-      description: record button command of an existing device
+      description: add button to remote layout
       parameters:
         - name: device
           in: path
@@ -134,6 +134,31 @@ paths:
       responses:
         200:
           description: Successfully added button
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+                
+    post:
+      operationId: modules.server_cmd.RemoteRecordCommand
+      tags:
+        - interface
+      summary: record comannd
+      description: record button command of an existing device
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: button
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully recorded command to button
           schema:
             properties:
               API:

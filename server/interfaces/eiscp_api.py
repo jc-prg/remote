@@ -63,7 +63,7 @@ def send(device,button_code):
    receiver.command(button_code)
    receiver.disconnect()
    working = False
-   return
+   return 
 
 
 #-------------------------------------------------
@@ -80,7 +80,7 @@ def query(device,button_code):
    result = receiver.command(button_code)
    receiver.disconnect()
    working = False
-   logging.info(result)
+   logging.debug(result)
 
    return result
    

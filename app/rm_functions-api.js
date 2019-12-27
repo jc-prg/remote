@@ -66,9 +66,9 @@ function changeVisibilityDevice(device_id, value_id) {
         device   = check_if_element_or_value(device_id);
         value    = check_if_element_or_value(value_id);
         
-	if (!dataConfig["devices"][device]) 	{ rm3msg.alert("Device '" + device + "' doesn't exists!"); return; }
-	else if (device == "") 			{ rm3msg.alert("Please insert/select name for device (no space, no special cases)."); return; }
-	else if (value == "")   		{ rm3msg.alert("Please insert/select visibility."); return;	}
+	if (!dataAll["DATA"]["devices"][device]) 	{ rm3msg.alert("Device '" + device + "' doesn't exists!"); return; }
+	else if (device == "") 				{ rm3msg.alert("Please insert/select name for device (no space, no special cases)."); return; }
+	else if (value == "")   			{ rm3msg.alert("Please insert/select visibility."); return;	}
 
 	rm3app.requestAPI("PUT",["visibility",device,value], "", alertReturn);
 	}
@@ -117,9 +117,12 @@ function addButton(device_id, button_id) {
 
 	if (document.getElementById(device_id)) 	{ var device 	= document.getElementById(device_id).value.toLowerCase(); }
 	else					        { var device    = device_id; i++; }
-	if (document.getElementById(button_id)) 	{ var button 	= document.getElementById(button_id).value.toLowerCase(); }
+	if (document.getElementById(button_id)) 	{ var button 	= document.getElementById(button_id).value; 
+							  if (button != "LINE") { button = button.toLowerCase(); }
+							  if (button == ".")	{ button = "DOT"; }
+							  }
 	else					        { var button    = button_id; i++; }	
-
+	
         cmd = "rm3app.requestAPI('PUT',['button','"+device+"','"+button+"'], '', rm3msg.alertReturn );";
 
 	if (device == "") { rm3msg.alert("Please select device."); return; }

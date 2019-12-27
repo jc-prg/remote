@@ -226,14 +226,6 @@ function rmRemote(name) {
 		remote  += this.tab_row("start");
 
 		remote  += this.tab_row(
-				this.input("add_button"),
-				this.button_edit("addButton('"+device+"','add_button');","add button")
-				);
-		remote  += this.tab_row(
-				this.button_select("del_button",device),
-				this.button_edit("deleteButton('"+device+"','del_button');","delete button")
-				);
-		remote  += this.tab_row(
 				this.input("edit_description"),
 				this.button_edit("alert('Not implemented yet.');","edit description","disabled")
 				);
@@ -242,16 +234,51 @@ function rmRemote(name) {
 				this.button_edit("alert('Not implemented yet.');","edit label","disabled")
 				);
 		remote  += this.tab_row(
-				this.input("del_device"),
-				this.button_edit("deleteDevice('del_device');","delete device")
+				this.input("edit_method"),
+				this.button_edit("alert('Not implemented yet.');","set query method","disabled")
+				);
+
+		remote  += "<tr><td colspan='2'><hr/></td></tr>";
+
+		remote  += this.tab_row(
+				"Set main AUDIO device",
+				this.button_edit("alert('Not implemented yet.');","set main device","disabled")
+				);
+
+		remote  += "<tr><td colspan='2'><hr/></td></tr>";
+
+		remote  += this.tab_row(
+				this.input("add_button"),
+				this.button_edit("addButton('"+device+"','add_button');","add button")
 				);
 		remote  += this.tab_row(
-				this.template_select("change_visibility","visibility",{"block":{"description":"visible"},"none":{"description":"hidden"}}),
+		
+// ERROR -> buttons / button_list not filled ::: for test 1 (new devices?)
+
+				this.button_select("rec_button",device),
+				this.button_edit("alert('Not implemented yet.');","record command","disabled")
+				);
+		remote  += this.tab_row(
+				this.button_select("del_button",device),
+				"*"+this.button_edit("deleteButton('"+device+"','del_button');","delete button")
+				);
+
+		remote  += "<tr><td colspan='2'><hr/></td></tr>";
+
+		remote  += this.tab_row(
+				this.template_select("change_visibility","visibility",{"yes":{"description":"visible"},"no":{"description":"hidden"}}),
 				this.button_edit("changeVisibilityDevice('"+device+"','change_visibility');","change visibility")
 				);
 		remote  += this.tab_row(
 				this.template_select("add_template","template",this.templates),
-				this.button_edit("addTemplate('"+device+"','add_template');","clone template")
+				"*"+this.button_edit("addTemplate('"+device+"','add_template');","clone template")
+				);
+
+		remote  += "<tr><td colspan='2'><hr/></td></tr>";
+
+		remote  += this.tab_row(
+				this.input("del_device"),
+				this.button_edit("deleteDevice('del_device');","delete device")
 				);
 
 		remote  += this.tab_row("end");
@@ -289,6 +316,9 @@ function rmRemote(name) {
         this.button_select = function (id,filter="") {
                 var list = {};
                 if (filter != "" && filter in this.data["DATA"]["devices"]) {
+                
+console.error(this.data["DATA"]["devices"][filter]);  
+
                         for (var key in this.data["DATA"]["devices"][filter]["buttons"]){
                                 list[filter+"_"+key] = key;
                                 }

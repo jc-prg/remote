@@ -67,6 +67,7 @@ nav-info {
 @media (min-width: 800px) {
 
    .remote_nav { display: block; }
+   #navi-click { display: none; }
 }
 
 

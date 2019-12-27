@@ -65,6 +65,8 @@ def write(file, data):
 
     with open(file2, 'wb') as outfile:
         json.dump(data, codecs.getwriter('utf-8')(outfile), ensure_ascii=False, sort_keys=True, indent=4)
+        
+    logging.info("write ..."+file)
 
 
 #--------------------------------------------

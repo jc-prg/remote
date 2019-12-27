@@ -46,7 +46,24 @@ else:             Stage = "Prod Stage"
 def ErrorMsg(code):
     m = rm3config.error_messages
     return m[code]
+    
 
+#---------------------------
+
+working = False
+
+def start_working():
+    global working
+    working = True
+
+def stop_working():
+    global working
+    working = False
+
+def wait_if_working():
+    global working
+    #while working:
+    #  logging.info("wait.")
    
 #---------------------------
 # read / write configuration
@@ -112,14 +129,13 @@ status_cache          = {}
 status_cache_time     = 0
 status_cache_interval = 5
 
-def RmReadStatus(data):
+def readStatus(data):
 
-    global rm_data, status_cache, status_cache_time, status_cache_interval
+    global status_cache, status_cache_time, status_cache_interval #,rm_data
         
-    devices    = rm3json.read(rm3config.devices + rm3config.active)
-    
     if time.time() - status_cache_time > 5 or status_cache_time == 0:
     
+      devices    = rm3json.read(rm3config.devices + rm3config.active)    
       for device in devices:        
         if "status" in devices[device] and "method" in data[device]:
             
@@ -137,18 +153,37 @@ def RmReadStatus(data):
                   
               except Exception as e:
                 logging.error(str(e)+" / " + device + "-" + value + " : " + data[device]["interface"])
-                
+                               
       status_cache = devices
+      rm3json.write(rm3config.devices + rm3config.active, devices)
 
     else:
       devices = status_cache
                 
-    rm3json.write(rm3config.devices + rm3config.active,devices)
     status_cache_time = time.time()
     return data
      
 #---------------------------
-     
+
+def translateStatusOld():
+
+    global status_cache, rm_data
+    status     = status_cache
+    status_old = {}
+        
+    for device in status:
+      if "status" in status[device] and device in rm_data["devices"]:
+        if "method" in rm_data["devices"][device]:
+           status_old[device + "_method"] = rm_data["devices"][device]["method"]
+        for value in status[device]["status"]:
+           status_old[device + "_" + value]        = status[device]["status"][value]
+           if value == "power": status_old[device] = status[device]["status"][value]
+           
+    return status_old
+
+    
+#---------------------------
+
 def RmReadData(selected=[]):
     '''Read all relevant data and create data structure'''
 
@@ -166,9 +201,9 @@ def RmReadData(selected=[]):
     
         # read data for active devices
         for device in data["devices"]:
-            if data["devices"][device]["visible"] == "yes":
+            if data["devices"][device]["interface"] != "":
               if selected == [] or device in selected:
-
+	
                 key        = data["devices"][device]["device"]
                 interface  = data["devices"][device]["interface"]
                 data_temp  = data["devices"][device]
@@ -183,7 +218,7 @@ def RmReadData(selected=[]):
                     if x in buttons_default["data"]:
                       for y in buttons_default["data"][x]:
                         buttons["data"][x][y] = buttons_default["data"][x][y]
-           
+                        
                 if "method"  in buttons["data"]:   data_temp["method"]  = buttons["data"]["method"]              
                 if "values"  in buttons["data"]:   data_temp["values"]  = buttons["data"]["values"]              
                 if "queries" in buttons["data"]:
@@ -245,7 +280,7 @@ def RmReadData(selected=[]):
         data            = rm_data
 
     # Update status data        
-    data["devices"] = RmReadStatus(data["devices"])
+    data["devices"] = readStatus(data["devices"])
     rm_data         = data
     
     return data
@@ -259,15 +294,17 @@ def addDevice(device,interface,description):
     '''add new device to config file or change existing'''
     
     global rm_data_update
-
+    
     ## Check if exists    
     active_json          = rm3json.read(rm3config.devices + rm3config.active)
-    if device in active_json:                               return("Device " + device + " already exists (active).")
+    
+    if device in active_json:                                        return("Device " + device + " already exists (active).")
     if rm3json.ifexist(rm3config.commands +interface+"/"+device):    return("Device " + device + " already exists (devices).")
     if rm3json.ifexist(rm3config.remotes  +interface+"/"+device):    return("Device " + device + " already exists (remotes).") 
     
+    logging.warn(device+" add")
     ## add to _active.json 
-    active = {
+    active_json[device] = {
         "device"    : description,
         "image"     : device,
         "interface" : interface,
@@ -278,9 +315,8 @@ def addDevice(device,interface,description):
             },
         "visible"   : "yes"    	
         }
-    active_json[device]  = active
-    rm3json.write(rm3config.devices + rm3config.active,active_json)
-    
+    rm3json.write(rm3config.devices + rm3config.active, active_json)
+        
     ## add to devices = button definitions
     buttons = {
         "info" : "jc://remote/ - In this files the commands foreach button, queries, the query method is defined.",
@@ -313,19 +349,50 @@ def addDevice(device,interface,description):
 # add vars to config JSON (buttons & devices)
 #---------------------------------------
 
-def varsAddCmd_json(device,button,command):
+def addCommand2Button(device,button,command):
     '''add new button to config file or change existing'''
 
-    data = readDataJson(rm3config.remotes,device)
-    if device in data:
-        if button in data[device]["buttons"].keys():
+    global rm_data_update
+
+    config      = rm3json.read(rm3config.devices+rm3config.active)
+    interface   = config[device]["interface"]  
+    device_code = config[device]["device"]  
+    data        = rm3json.read(rm3config.commands+interface+"/"+device_code)
+    
+    if "data" in data:
+        if button in data["data"]["buttons"].keys():
             return "Button '" + device + "_" + button + "' already exists."
         else:
-            data[device]["buttons"][button] = command
-            writeDataJson(rm3config.remotes,device,data)
+            data["data"]["buttons"][button] = command
+            rm3json.write(rm3config.commands+interface+"/"+device_code,data)
+            rm_data_update = True
             return "Button '" + device + "_" + button + "' recorded and saved: " + command
     else:
         return "Device '" + device + "' does not exists."
+        
+#---------------------------------------
+
+def addButton(device,button):
+    '''add new button to config file or change existing'''
+    
+    global rm_data_update
+
+    config    = rm3json.read(rm3config.devices+rm3config.active)
+    interface = config[device]["interface"]  
+    device_code = config[device]["device"]  
+    data        = rm3json.read(rm3config.remotes+interface+"/"+device_code)
+    
+    if "data" in data:
+        if button != "DOT" and button != "LINE" and button in data["data"]["remote"]:
+            return "Button '" + device + "_" + button + "' already exists."
+        else:
+            if button == "DOT": button = "."
+            data["data"]["remote"].append(button)
+            rm3json.write(rm3config.remotes+interface+"/"+device_code,data)
+            rm_data_update = True
+            return "Button '" + device + "_" + button + "' added."
+    else:
+        return "Device '" + device + "' does not exists."        
 
 #---------------------------------------
 
@@ -374,17 +441,19 @@ def varsAddTemplate_json(device,template):
 
 #---------------------------------------
 
-def varsChangeVisibility_json(device,visibility):
+def changeVisibility(device,visibility):
     '''add / overwrite remote definition by template'''
 
-    data = rm3json.read(rm3config.devices+rm3config.active)
+    global rm_data_update
     
+    data = rm3json.read(rm3config.devices + rm3config.active)
     if device not in data.keys():
         return "Device '" + device + "' does not exists."
         
-    elif visibe == "yes" or visibility == "no":
-        data[device]["visibility"] = visibility
-        rm3json.write(rm3config.devices+rm3config.active,data)
+    elif visibility == "yes" or visibility == "no":
+        data[device]["visible"] = visibility
+        rm3json.write(rm3config.devices + rm3config.active, data)
+        rm_data_update = True
         return "Change visibility for '" + device + "': " + visibility
         
     else:
@@ -393,22 +462,31 @@ def varsChangeVisibility_json(device,visibility):
 
 #---------------------------------------
 
-def varsDeleteDev_json(device):
+def deleteDevice(device):
     '''delete device from json config file'''
+    
+    global rm_data_update
 
-    devices = []
-    index   = readDataJson("index")
-    for entry in index["devices"]:
+    devices              = {}
+    active_json          = rm3json.read(rm3config.devices + rm3config.active)
+    interface            = active_json[device]["interface"]
+    
+    if not device in active_json:                                        return("Device " + device + " doesn't exists (active).")
+    if not rm3json.ifexist(rm3config.commands +interface+"/"+device):    return("Device " + device + " doesn't exists (devices).")
+    if not rm3json.ifexist(rm3config.remotes  +interface+"/"+device):    return("Device " + device + " doesn't exists (remotes).") 
+
+    interface = active_json[device]["interface"]  ############# funtioniert nicht so richtig ...
+    for entry in active_json:
       if entry != device: 
-        devices.append(entry)
-    if device == index["devices"]:
-        return "Device '" + device + "' does not exist."
+        devices[entry] = active_json[entry]
         
-    index["devices"] = devices
-    writeDataJson("index","",index)
+    active_json = devices
+    rm3json.write(rm3config.devices + rm3config.active, active_json)
 
     try:    
-      rm3json.delete(rm3config.remotes+device)
+      rm3json.delete(rm3config.remotes  + interface + "/" + device)
+      rm3json.delete(rm3config.commands + interface + "/" + device)
+      rm_data_update = True
       return "Device '" + device + "' deleted."
     except Exception as e:
       return "Could not delete device '" + device + "': " + str(e)
@@ -418,8 +496,10 @@ def varsDeleteDev_json(device):
      
 def remoteAPI_start(setting=[]):
 
-    global Status, lastButton
-
+    global Status, lastButton, working
+    wait_if_working()
+    start_working()
+    
     data                                   = init.dataInit() 
     data["DATA"]                           = RmReadData(setting)
     
@@ -433,7 +513,7 @@ def remoteAPI_start(setting=[]):
     data["REQUEST"]["Button"]              = lastButton 
 
     data["STATUS"]                         = {}
-    data["STATUS"]["devices"]              = rm3status.readStatusOld()  # -> to be replaced
+    data["STATUS"]["devices"]              = translateStatusOld()  # -> to be replaced
     data["STATUS"]["last_button"]          = lastButton
     data["STATUS"]["system"]               = {} #  to be filled in remoteAPI_end()
 
@@ -449,7 +529,7 @@ def remoteAPI_start(setting=[]):
 
 def remoteAPI_end(data):
 
-    global Status
+    global Status, working
 
     data["REQUEST"]["load-time"] = time.time() - data["REQUEST"]["start-time"]
     data["STATUS"]["system"]     = {
@@ -458,6 +538,7 @@ def remoteAPI_end(data):
         "server_start_duration" :  rm3config.start_duration,
         "server_running"        :  time.time() - rm3config.start_time
         }
+    stop_working()
     return data
 
 
@@ -656,8 +737,24 @@ def RemoteAddButton(device,button):
         '''Learn Button and safe to init-file'''
 
         data                         = remoteAPI_start(["no-data"])
+
+        data["REQUEST"]["Return"]    = addButton(device,button)
+        data["REQUEST"]["Device"]    = device
+        data["REQUEST"]["Button"]    = button
+        data                         = remoteAPI_end(data)
+        
+        rm_data_update = True
+        return data
+
+#-------------------------------------------------
+
+def RemoteRecordCommand(device,button):
+        '''Learn Button and safe to init-file'''
+
+        data                         = remoteAPI_start(["no-data"])
+        
         EncodedCommand               = interfaces.record("BROADLINK",device,button)
-        data["REQUEST"]["Return"]    = varsAddCmd_json(device,button,EncodedCommand)
+        data["REQUEST"]["Return"]   += addCommand2Button(device,button,EncodedCommand)       
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
         data                         = remoteAPI_end(data)
@@ -687,7 +784,7 @@ def RemoteChangeVisibility(device,value):
         '''Add device and save'''
 
         data                         = remoteAPI_start(["no-data"])
-        data["REQUEST"]["Return"]    = varsChangeVisibility_json(device,value)
+        data["REQUEST"]["Return"]    = changeVisibility(device,value)
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Parameter"] = value
         data                         = remoteAPI_end(data)        
@@ -730,7 +827,7 @@ def RemoteDeleteDevice(device):
         '''Delete Button from init-file'''
 
         data                         = remoteAPI_start(["no-data"])
-        data["REQUEST"]["Return"]    = varsDeleteDev_json(device)
+        data["REQUEST"]["Return"]    = deleteDevice(device)
         data["REQUEST"]["Device"]    = device
         data                         = remoteAPI_end(data)        
 

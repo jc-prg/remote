@@ -45,7 +45,7 @@
         "device": "receiver_onkyo-txnr686",
         "image": "rec",
         "interface": "BROADLINK",
-        "label": "AV Receiver",
+        "label": "AV Receiver (alt)",
         "main-audio": "yes",
         "status": {
             "mute": "OFF",
@@ -53,21 +53,21 @@
             "rec_vol": 11,
             "vol": 10
         },
-        "visible": "yes"
+        "visible": "no"
     },
     "rec2": {
         "device": "receiver_onkyo-txnr686",
         "image": "rec",
         "interface": "EISCP-ONKYO",
-        "label": "AV Receiver (neu)",
+        "label": "AV Receiver",
         "status": {
-            "audio-info": "ANALOG,,,,Theater-Dimensional,3.1 ch,",
+            "audio-info": "HDMI 2,PCM,48 kHz,2.0 ch,Theater-Dimensional,3.1 ch,",
             "dimmer": "dark",
             "display": [
                 "selector-volume-1line",
                 "default-2line"
             ],
-            "mute": "on",
+            "mute": "off",
             "power": "on",
             "source": [
                 "video2",
@@ -76,8 +76,19 @@
             ],
             "temperature": "F 87C 31",
             "timer": "N/A",
-            "video-info": "VIDEO 1,Unknown,,24bit,,Unknown,,24bit,,",
+            "video-info": "HDMI 2,1920 x 1080i  50 Hz,YCbCr444,24bit,MAIN,1920 x 1080i  50 Hz,YCbCr444,24bit,,",
             "vol": 43
+        },
+        "visible": "yes"
+    },
+    "test1": {
+        "device": "test1",
+        "image": "test1",
+        "interface": "BROADLINK",
+        "label": "test1",
+        "main-audio": "no",
+        "status": {
+            "power": "OFF"
         },
         "visible": "yes"
     },

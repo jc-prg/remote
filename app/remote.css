@@ -37,6 +37,17 @@
   font-weight: none; 
 }
 
+/* buttons */
+
+button {
+  background      : #000044;
+  color           : white;
+  height          : 30px;
+  overflow        : hidden;
+  border-radius   : 5px;
+  font-size       : 12px;
+}
+
 /* height of app start screen */
 
 .app_background {

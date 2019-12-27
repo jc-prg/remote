@@ -32,8 +32,8 @@ function rmMenu(name, menu) {
     		var i    = 0;
 		for (var key in data) {
 			if (key != "default") {
-			        if (data[key]["visibility"] != "none")  { menu  += this.entry_device( key, data[key]["label"] ); }
-			        else if (this.edit_mode)                { menu  += this.entry_device( key, "<div class=#hidden_entry_edit#>.(" + data[key]["label"] + ").</div>" ); }
+			        if (data[key]["visible"] != "no")  { menu  += this.entry_device( key, data[key]["label"] ); }
+			        else if (this.edit_mode)           { menu  += this.entry_device( key, "<div class=#hidden_entry_edit#>.(" + data[key]["label"] + ").</div>" ); }
 				}
         		}
     		this.writeMenu(menu + "<li><hr/></li>");
@@ -147,7 +147,7 @@ function rmStart(name) {
 
 		// create small buttons for devices
 	    	for ( var key in data ) {
-			if (key != "default" && data[key]["visibility"] != "none") {
+			if (key != "default" && data[key]["visible"] == "yes") {
 				var id     = "device_"+key;
         			menu  += this.entry_device( data, id, key, "small" );
 				}
