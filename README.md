@@ -1,11 +1,18 @@
 # jc://remote/
 
-Based on the Script [BlackBeanControl](#used-source) this software is build to control single IR devices or more complex scenes of several IR devices via a Web-App.
+Looking a remote control to control several devices I got disappointed ... and decided to develope my own webapp running on my smartphone.
+Therefore I found the **Broadlink RM 3 Mini** and sources on Github to control this IR device via API. About two years later several devices
+as my new ONKYO receiver come with their own API and I started to rework my software and to integrate the first device via API directly ...
 
 ## Used Sources
 
-* *Hardware:* Broadlink RM 3 Mini
-* *Software:* BlackBeanControl (https://github.com/davorf/BlackBeanControl)
+* *Hardware:* 
+  * Broadlink RM 3 Mini
+  
+* *Software:* 
+  * BlackBeanControl (https://github.com/davorf/BlackBeanControl)
+  * eiscp-onkyo (https://github.com/miracle2k/onkyo-eiscp)
+
 
 ## How to setup the software
 
@@ -15,7 +22,7 @@ In order to use jc://music-box/ as it is you must have installed:
 
 1. git
 2. docker, docker-compose
-3. python3, pip3, python2, pip
+3. python3, pip3
 4. jc-modules [https://github.com/jc-prg/modules.git](https://github.com/jc-prg/modules.git)
 
 
