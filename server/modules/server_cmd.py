@@ -251,7 +251,8 @@ def RmReadData(selected=[]):
            
         # read data for makros
         for makro in makros:        
-            data["makros"][makro]     = rm3json.read(rm3config.makros + makro)
+            temp                      = rm3json.read(rm3config.makros + makro)
+            data["makros"][makro]     = temp[makro]
                 
         # read data for templates
         data["templates"]               = {}

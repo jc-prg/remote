@@ -2,7 +2,8 @@
 	"description" :	     "In define makros to switch off devices: <device>_<button>",
 	"dev-off": {
 		"beam":      ["beam_off", 1, "beam_off",  2, "beam_off"],
-	        "rec2":      ["rec2_on-off||OFF"],
+	        "rec":       ["rec_on-off||OFF"],
+	        "rec2":      ["rec2_off"],
 	        "tv":        ["tv_on-off||OFF"],
 	        "radio":     ["tv_on-off||OFF"],
 	        "bd":        ["bd_on-off||OFF"],

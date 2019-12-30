@@ -127,7 +127,7 @@ function check_status_inactive(device="") {
 				}
 			}
 			// if device on -> set all buttons on
-			else if (dev_stat.length == 1 && dev_stat[0] in dev && typeof dev[dev_stat[0]]["buttons"] == "object") {
+			else if (dev_stat.length == 1 && dev[dev_stat[0]] && typeof dev[dev_stat[0]]["buttons"] == "object") {
 				var buttons = Object.keys(dev[dev_stat[0]]["buttons"]); // -> button_list
 				for (var i=0; i<buttons.length; i++) {
 					if (buttons[i] != "red" && buttons[i] != "blue" && buttons[i] != "yellow" && buttons[i] != "green"

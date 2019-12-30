@@ -120,7 +120,7 @@ function rmRemote(name) {
 		var makros 		= this.data["DATA"]["makros"]["makro"];
 		var makros_sceneOn	= this.data["DATA"]["makros"]["scene-on"];
 		var makros_sceneOff	= this.data["DATA"]["makros"]["scene-off"];
-
+		
 		rm3cookie.set("remote","scene::"+scene+"::"+remote_label);
 
 		for (var i=0; i<remote_definition.length; i++) {
@@ -132,7 +132,8 @@ function rmRemote(name) {
 			//else if (button[0] == "makro")  { remote += sendButtonMakro( cmd, makros[button[1]], button[1], "", "" ); }
 			else if (button[0] == ".") 		{ remote += this.button_device( scene+i, ".", "", "", "disabled" ); }
 			else if (button[0] == "makro")		{ remote += this.button_makro(  cmd, button[1], "", makros[button[1]], "" ); 
-								  this.active_buttons.push(cmd); }
+								  this.active_buttons.push(cmd); 
+								  }
 			else if (button[0] == "scene-on")	{ remote += this.button_makro(  "scene_on_"+button[1],  "on",  "", makros_sceneOn[button[1]], "" );
 								  this.active_buttons.push("scene_on_"+button[1]); }
 			else if (button[0] == "scene-off")	{ remote += this.button_makro(  "scene_off_"+button[1], "off", "", makros_sceneOff[button[1]], "" );
@@ -260,7 +261,7 @@ function rmRemote(name) {
 				);
 		remote  += this.tab_row(
 				this.button_select("del_button",device),
-				"*"+this.button_edit("deleteButton('"+device+"','del_button');","delete button")
+				this.button_edit("deleteButton('"+device+"','del_button');","*delete button")
 				);
 
 		remote  += "<tr><td colspan='2'><hr/></td></tr>";
@@ -271,7 +272,7 @@ function rmRemote(name) {
 				);
 		remote  += this.tab_row(
 				this.template_select("add_template","template",this.templates),
-				"*"+this.button_edit("addTemplate('"+device+"','add_template');","clone template")
+				this.button_edit("addTemplate('"+device+"','add_template');","*clone template")
 				);
 
 		remote  += "<tr><td colspan='2'><hr/></td></tr>";

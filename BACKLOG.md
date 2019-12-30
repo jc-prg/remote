@@ -30,6 +30,7 @@
 * OK - simplified and optimized data structure
 * OK - EISCP - process multiple requests
 
+* Execute makros server-side (and show OK in client, when done / close menu ...)
 * EISCP - add configuriation file including time out (for multiple onkyo devices ?!)
 * SONY  - add API
 * Config files analog to mbox
