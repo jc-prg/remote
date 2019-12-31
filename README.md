@@ -23,7 +23,7 @@ In order to use jc://music-box/ as it is you must have installed:
 1. git
 2. docker, docker-compose
 3. python3, pip3
-4. jc-modules [https://github.com/jc-prg/modules.git](https://github.com/jc-prg/modules.git)
+4. jc-modules ([https://github.com/jc-prg/modules.git](https://github.com/jc-prg/modules.git))
 
 
 ### How to install, configure and run the software

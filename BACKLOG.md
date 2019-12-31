@@ -38,6 +38,15 @@
 - app side configuration handling in JSON -> sendCmd() / sendMakro() / check_status() / check_status_inactive()
 - check status in menu (device button) via data from JSON
 
+## automated testing
+
+* OK - data files (JSON) are correctly formatted
+
+* main structure of data files is OK
+* all API calls return a code 200 (instead of 404 or 500)
+* more detailled API testing (e.g. creating, modifing, changing a remote control)
+* all defined image files are available
+
 
 ## client
 
