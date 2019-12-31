@@ -7,7 +7,7 @@ as my new ONKYO receiver come with their own API and I started to rework my soft
 ## Supported Hardware
 
 * Broadlink RM 3 Mini - Infrared receiver/sender
-* Several ONKYO devices with API (see section modelsets in the file eiscp-commands.yamk in https://github.com/miracle2k/onkyo-eiscp)
+* Several ONKYO devices with API (see section modelsets in the file eiscp-commands.yaml in https://github.com/miracle2k/onkyo-eiscp)
 * *Other devices easily can be integrated*
 
 ## Used Software
