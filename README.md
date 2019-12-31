@@ -1,29 +1,30 @@
 # jc://remote/
 
-Looking a remote control to control several devices I got disappointed ... and decided to develope my own webapp running on my smartphone.
+Looking a remote control to control several devices I got disappointed ... and decided to develop my own web-app  running on my smartphone.
 Therefore I found the **Broadlink RM 3 Mini** and sources on Github to control this IR device via API. About two years later several devices
 as my new ONKYO receiver come with their own API and I started to rework my software and to integrate the first device via API directly ...
 
-## Used Sources
+## Supported Hardware
 
-* *Hardware:* 
-  * Broadlink RM 3 Mini
+* Broadlink RM 3 Mini - Infrared receiver/sender
+* Several ONKYO devices with API (see section modelsets in the file eiscp-commands.yamk in https://github.com/miracle2k/onkyo-eiscp)
+* *Other devices easily can be integrated*
+
+## Used Software
   
-* *Software:* 
-  * BlackBeanControl (https://github.com/davorf/BlackBeanControl)
-  * eiscp-onkyo (https://github.com/miracle2k/onkyo-eiscp)
+* BlackBeanControl (https://github.com/davorf/BlackBeanControl)
+* eiscp-onkyo (https://github.com/miracle2k/onkyo-eiscp)
 
 
 ## How to setup the software
 
 ### Prerequisites
 
-In order to use jc://music-box/ as it is you must have installed:
+In order to use jc://remote/ as it is you must have installed:
 
 1. git
 2. docker, docker-compose
-3. python3, pip3
-4. jc-modules ([https://github.com/jc-prg/modules.git](https://github.com/jc-prg/modules.git))
+3. jc-modules ([https://github.com/jc-prg/modules.git](https://github.com/jc-prg/modules.git))
 
 
 ### How to install, configure and run the software
