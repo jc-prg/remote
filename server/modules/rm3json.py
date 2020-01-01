@@ -47,6 +47,7 @@ def delete(file):
 
 def ifexist(file):
     filename = path.join(jsonAppDir,jsonPath,file+".json")
+    logging.error("IF EXIST: "+filename)
     try:
         with open(filename, 'r') as fh:
             test = ""

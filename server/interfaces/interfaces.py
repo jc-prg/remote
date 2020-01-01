@@ -9,28 +9,39 @@ import logging
 import modules.rm3json                as rm3json
 import modules.rm3config              as rm3config
 
+import interfaces.test_api            as test_api
 import interfaces.eiscp_api           as eiscp
 import interfaces.broadlink_api       as broadlink
 
 available = {
 	"BROADLINK"   : "Infrared Broadlink RM3",
-	"EISCP-ONKYO" : "API for ONKYO Devices"
+	"EISCP-ONKYO" : "API for ONKYO Devices",
+	"TEST"        : "Test API for automated tests"
 	}
 	
 #-------------------------------------------------
 
-Status = broadlink.init()
-if Status != "Connected": logging.warn(Status)
+def init():
+    '''
+    Initialize APIs
+    '''
 
-Status = eiscp.init('192.168.1.33')
-if Status != "Connected": logging.warn(Status)
+    Status = broadlink.init()
+    if Status != "Connected": logging.warn(Status)
+
+    Status = eiscp.init('192.168.1.33')
+    if Status != "Connected": logging.warn(Status)
+
+    Status = test_api.init()
+    
+init()
 
 #-------------------------------------------------
 # Execute commands
 #-------------------------------------------------
 
 def test():
-    eiscp.command_test()
+    return "Interfaces are loaded"
 
 #-------------------------------------------------
 
@@ -39,12 +50,14 @@ def send( api, device, button ):
     button_code = get_command( api, "buttons", device, button ) 
     if   api == "BROADLINK":    return broadlink.send(device,button_code)
     elif api == "EISCP-ONKYO":  return eiscp.send(device,button_code)
+    elif api == "TEST":         return test_api.send(device,button_code)
     else:                       return "API not available"
 
 
 def record( api, device, button ):
 
     if   api == "BROADLINK":    return broadlink.record(device,button)
+    elif api == "TEST":         return test_api.record(device,button)
     elif api == "EISCP-ONKYO":  return "API does not support record"
     else:                       return "API not available"
     
@@ -53,6 +66,7 @@ def query( api, device, button):
 
     button_code = get_command( api, "queries", device, button )
     if   api == "BROADLINK":    return "API does not support record"
+    elif api == "TEST":         return "API does not support record"
     elif api == "EISCP-ONKYO":  return eiscp.query(device,button_code)
     else:                       return "API not available"
 

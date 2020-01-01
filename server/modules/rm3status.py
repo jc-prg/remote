@@ -83,7 +83,7 @@ def setStatus(name,value):
     status[device]["status"][name] = value
     writeStatus(status)
     
-    return "Set status " + name + "/" + value
+    return "TBC: Set status " + name + "/" + value
     
 #-----------------------------------------------
 
@@ -104,7 +104,7 @@ def resetStatus():
           status[key]["status"]["power"] = "OFF" 
 
     writeStatus(status)
-    return "Reset POWER to OFF for devices without API"
+    return "TBC: Reset POWER to OFF for devices without API"
 
 #-----------------------------------------------
 
@@ -126,7 +126,7 @@ def resetAudio():
           if "mute" in status[key]["status"]: status[key]["status"]["mute"] = "OFF"
 
     writeStatus(status)
-    return "Reset AUDIO to 0 for devices without API"
+    return "TBC: Reset AUDIO to 0 for devices without API"
 
 #-----------------------------------------------
 
