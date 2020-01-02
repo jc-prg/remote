@@ -19,6 +19,11 @@ available = {
 	"TEST"        : "Test API for automated tests"
 	}
 	
+methods = {
+        "record"      : "Record per device (record)",
+        "query"       : "Request per API (query)"
+	}
+	
 #-------------------------------------------------
 
 def init():
@@ -26,12 +31,15 @@ def init():
     Initialize APIs
     '''
 
+    logging.info("... BROADLINK - " + available["BROADLINK"])
     Status = broadlink.init()
     if Status != "Connected": logging.warn(Status)
 
+    logging.info("... EISCP-ONKYO - " + available["EISCP-ONKYO"])
     Status = eiscp.init('192.168.1.33')
     if Status != "Connected": logging.warn(Status)
 
+    logging.info("... TEST - " + available["TEST"])
     Status = test_api.init()
     
 init()

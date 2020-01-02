@@ -472,7 +472,65 @@ def deleteDevice(device):
     except Exception as e:
       return "ERROR: Could not delete device '" + device + "': " + str(e)
 
+#---------------------------------------
 
+def editDevice(device,info):
+    '''
+    delete device from json config file and delete device related files
+    '''
+    
+    global rm_data_update
+    
+    keys_active   = ["label","description","main-audio","interface"]
+    keys_commands = ["description","method"]
+    keys_remotes  = ["description"]
+
+    # read central config file
+    active_json          = rm3json.read(rm3config.devices + rm3config.active)
+    if "ERROR" in active_json: return("ERROR: Device " + device + " doesn't exists (active).")
+    
+    interface            = active_json[device]["interface"]
+    device_code          = active_json[device]["device"]  
+    
+    # read command definition
+    commands             = rm3json.read(rm3config.commands +interface+"/"+device_code)
+    if "ERROR" in commands: return("ERROR: Device " + device + " doesn't exists (commands).")
+
+    # read remote layout definitions
+    remotes              = rm3json.read(rm3config.remotes +interface+"/"+device_code)
+    if "ERROR" in remotes: return("ERROR: Device " + device + " doesn't exists (remotes).") 
+    
+    i = 0
+    for key in keys_active:   
+      if key in info: 
+        active_json[device][key] = info[key]
+        i+=1
+      
+    for key in keys_commands: 
+      if key in info: 
+        commands["data"][key] = info[key]
+        i+=1
+      
+    for key in keys_remotes:   
+      if key in info: 
+        remotes["data"][key] = info[key]
+        i+=1
+    
+    # write central config file
+    try:                    rm3json.write(rm3config.devices + rm3config.active, active_json)
+    except Exception as e:  return("ERROR: could not write changes (active) - "+str(e))
+
+    # write command definition
+    try:                    rm3json.write(rm3config.commands +interface+"/"+device_code, commands)
+    except Exception as e:  return("ERROR: could not write changes (commands) - "+str(e))
+
+    # write remote layout definition
+    try:                    rm3json.write(rm3config.remotes +interface+"/"+device_code, remotes)
+    except Exception as e:  return("ERROR: could not write changes (remotes) - "+str(e))
+
+    if i > 0: return("OK: Edited device paramenters of "+device+" ("+str(i)+" changes)")
+    else:     return("ERROR: no data key matched with keys from config-files ("+str(info.keys)+")")
+      
 #---------------------------
      
 def remoteAPI_start(setting=[]):
@@ -489,6 +547,7 @@ def remoteAPI_start(setting=[]):
     data["CONFIG"]["button_images"]        = rm3json.read(rm3stage.icons_dir + "/index")
     data["CONFIG"]["button_colors"]        = rm3json.read(rm3config.buttons  + "button_colors")
     data["CONFIG"]["interfaces"]           = interfaces.available
+    data["CONFIG"]["methods"]              = interfaces.methods
     
     data["REQUEST"]                        = {}
     data["REQUEST"]["start-time"]          = time.time()
@@ -611,6 +670,21 @@ def Remote(device,button):
 
 #-------------------------------------------------
 
+def RemoteMakro(makro):
+        '''
+        send makro (list of commands)
+        '''
+
+        data                      = remoteAPI_start(["no-data"])
+      
+        data["REQUEST"]["Button"] = makro
+        data["REQUEST"]["Return"] = "ERROR: not implemented yet." #interfaces.send(interface,device,button)
+
+        data                      = remoteAPI_end(data)        
+        return data
+
+
+#-------------------------------------------------
 def RemoteTest():
         '''
         Test new functions
@@ -806,6 +880,20 @@ def RemoteChangeVisibility(device,value):
         
 #-------------------------------------------------
 
+def RemoteChangeMainAudio(device,value):
+        '''
+        change main audio device in config file
+        '''
+
+        data                         = remoteAPI_start(["no-data"])
+        data["REQUEST"]["Return"]    = "ERROR: Not implemented yet." #changeVisibility(device,value)
+        data["REQUEST"]["Device"]    = device
+        data["REQUEST"]["Parameter"] = value
+        data                         = remoteAPI_end(data)        
+        return data
+
+ #-------------------------------------------------
+
 def RemoteAddDevice(device,interface,description):
         '''
         add device in config file and create config files for remote and command
@@ -820,6 +908,20 @@ def RemoteAddDevice(device,interface,description):
         rm_data_update = True
         return data
 
+
+#-------------------------------------------------
+
+def RemoteEditDevice(device,info):
+        '''
+        Edit data of device
+        '''
+        logging.info(info)
+        
+        data                         = remoteAPI_start(["no-data"])
+        data["REQUEST"]["Return"]    = editDevice(device,info)
+        data["REQUEST"]["Device"]    = device
+        data                         = remoteAPI_end(data)        
+        return data
 
 #-------------------------------------------------
 

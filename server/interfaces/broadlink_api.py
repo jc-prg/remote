@@ -21,9 +21,8 @@ def init():
 
     global RM3Device, Status
 
-    config_file = rm3config.interfaces+"/BROADLINK"
-    logging.info(config_file)
-    
+    config_file = rm3config.interfaces+"BROADLINK"
+   
     config               = rm3json.read(config_file)
     config["Name"]       = "Broadlink"
     config["Port"]       = int(config["Port"])
