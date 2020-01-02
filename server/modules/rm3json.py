@@ -47,12 +47,10 @@ def delete(file):
 
 def ifexist(file):
     filename = path.join(jsonAppDir,jsonPath,file+".json")
-    logging.error("IF EXIST: "+filename)
-    try:
-        with open(filename, 'r') as fh:
-            test = ""
-    except:
-        return False
+    
+    try:             f = open(filename)
+    except IOError:  return False
+    
     return True
 
 #--------------------------------------------

@@ -49,79 +49,6 @@ def ErrorMsg(code):
     
 
 #---------------------------
-
-working = False
-
-def start_working():
-    global working
-    working = True
-
-def stop_working():
-    global working
-    working = False
-
-def wait_if_working():
-    global working
-    #while working:
-    #  logging.info("wait.")
-   
-#---------------------------
-# read / write configuration
-#---------------------------
-
-def readDataJson(category, entry=""):
-
-    if entry == "":  filename = category
-    else:            filename = category + "/" + entry
-    data = rm3json.read(filename)
-    return data
-
-# ---
-
-def readDataJsonAll(setting=""):
-
-    index = readDataJson("index")
-    data  = {}
-    
-    for key in index:
-      data[key] = {}
-      for entry in index[key]:
-        temp = readDataJson(key,entry)
-        data[key][entry] = temp[entry]
-        if setting == "no-buttons" and "buttons" in data[key][entry]: data[key][entry]["buttons"] = {}
-        
-    return data
-
-# ---
-
-def writeDataJson(category, entry, data):
-
-    if entry == "":  filename = category
-    else:            filename = category + "/" + entry
-    
-    logging.info("writeDataJSON: "+filename)
-    data = rm3json.write(filename, data)
-    return
-    
-# ---
-
-def writeDataJsonAll(data):
-
-    index = {}
-
-    for key in data:
-      index[key] = []
-      for entry in data[key]:
-        index[key].push(entry)
-        temp = {}
-        temp[entry] = data[key][entry]
-        writeDataJson(key,entry,temp)
-        
-    writeDataJson("index","",index)
-    return
-
-
-#---------------------------
 # read / write configuration NEW
 #---------------------------
 
@@ -129,7 +56,12 @@ status_cache          = {}
 status_cache_time     = 0
 status_cache_interval = 5
 
+#---------------------------
+
 def readStatus(data):
+    '''
+    read status data from config file (method=record) and/or device APIs (method=query)
+    '''
 
     global status_cache, status_cache_time, status_cache_interval #,rm_data
         
@@ -166,6 +98,10 @@ def readStatus(data):
 #---------------------------
 
 def translateStatusOld():
+    '''
+    create old view to status data for compartibility reasons
+    -> to be removed
+    '''
 
     global status_cache, rm_data
     status     = status_cache
@@ -297,7 +233,9 @@ def RmReadData(selected=[]):
 #---------------------------
 
 def addDevice(device,interface,description):
-    '''add new device to config file or change existing'''
+    '''
+    add new device to config file and create command/remote files
+    '''
     
     global rm_data_update
     
@@ -365,7 +303,9 @@ def addDevice(device,interface,description):
 #---------------------------------------
 
 def addCommand2Button(device,button,command):
-    '''add new button to config file or change existing'''
+    '''
+    add new command to button or change existing
+    '''
 
     global rm_data_update
 
@@ -388,7 +328,9 @@ def addCommand2Button(device,button,command):
 #---------------------------------------
 
 def addButton(device,button):
-    '''add new button to config file or change existing'''
+    '''
+    add new button to remote layout
+    '''
     
     global rm_data_update
 
@@ -412,19 +354,20 @@ def addButton(device,button):
 #---------------------------------------
 
 def deleteCmd(device, button):
-    '''delete button from json config file'''
+    '''
+    delete command (button) from json config file
+    -> not yet implemented, delete from remote file also
+    '''
 
     config      = rm3json.read(rm3config.devices+rm3config.active)
     interface   = config[device]["interface"]  
     device_code = config[device]["device"]  
     data        = rm3json.read(rm3config.commands+interface+"/"+device_code)
-    #data = readDataJson(rm3config.remotes,device)
     
     if data["data"]:
         if button in data["data"]["buttons"].keys():
         
             data["data"]["buttons"].pop(button,None)
-            #writeDataJson(rm3config.remotes,device,data)
             data = rm3json.write(rm3config.commands+interface+"/"+device_code,data)
             return "OK: Button '" + device + "_" + button + "' deleted."
         else:
@@ -434,37 +377,44 @@ def deleteCmd(device, button):
 
 #---------------------------------------
 
-def varsAddTemplate_json(device,template):
-    '''add / overwrite remote definition by template'''
+def addTemplate(device,template):
+    '''
+    add / overwrite remote layout definition by template
+    '''
 
-    templates = readDataJson(rm3config.templates,template)  #rm3json.read("remote-templates")
-    data      = readDataJson(rm3config.remotes, device)     #rm3json.read("devices")
-    if device not in data.keys():
+    templates   = rm3json.read(rm3config.templates + template)
+    config      = rm3json.read(rm3config.devices + rm3config.active)
+    interface   = config[device]["interface"]
+    device_code = config[device]["device"]
+    data       = rm3json.read(rm3config.remotes + interface + "/" + device_code)
 
-        return "Device '" + device + "' does not exists."
+    # check if error
+    if "data" not in data.keys():  return "ERROR: Device '" + device + "' does not exists."
         
     # add layout from template
-    elif template in templates and data[device] == []:
+    elif template in templates and data["data"] == []:
     
         data["data"]["remote"]           = templates[template]["remote"]
-        writeDataJson(rm3config.remotes,device,data)
-        return "Template '" + template + "' added to '" + device + "'."
+        rm3json.write(rm3config.remotes + interface + "/" + device_code, data)
+        return "OK: Template '" + template + "' added to '" + device + "'."
             
     # overwrite layout from template
-    elif template in templates and data[device] != []:
+    elif template in templates and data["data"] != []:
 
         data["data"]["remote"]           = templates[template]["remote"]
-        writeDataJson(rm3config.remotes,device,data)
+        rm3json.write(rm3config.remotes + interface + "/" + device_code, data)
         return "OK: Remote definition of '" + device + "' overwritten by template '" + template + "'."
         
+    # template doesn't exist
     else:
-
-        return "ERROR: Template '" + template + "' does not exists."
+        return "ERROR: Template '" + template + "' does't exists."
 
 #---------------------------------------
 
 def changeVisibility(device,visibility):
-    '''add / overwrite remote definition by template'''
+    '''
+    change visibility in device configuration (yes/no)
+    '''
 
     global rm_data_update
     
@@ -486,7 +436,9 @@ def changeVisibility(device,visibility):
 #---------------------------------------
 
 def deleteDevice(device):
-    '''delete device from json config file'''
+    '''
+    delete device from json config file and delete device related files
+    '''
     
     global rm_data_update
 
@@ -511,7 +463,12 @@ def deleteDevice(device):
       rm3json.delete(rm3config.remotes  + interface + "/" + device_code)
       rm3json.delete(rm3config.commands + interface + "/" + device_code)
       rm_data_update = True
-      return "OK: Device '" + device + "' deleted."
+      
+      if not rm3json.ifexist(rm3config.commands + interface + "/" + device_code) and not rm3json.ifexist(rm3config.remotes + interface + "/" + device_code):
+        return "OK: Device '" + device + "' deleted."
+      else:
+        return "ERROR: Could not delete device '" + device + "'"
+        
     except Exception as e:
       return "ERROR: Could not delete device '" + device + "': " + str(e)
 
@@ -519,10 +476,11 @@ def deleteDevice(device):
 #---------------------------
      
 def remoteAPI_start(setting=[]):
+    '''
+    create data structure for API response and read relevant data from config files
+    '''
 
-    global Status, lastButton, working
-    wait_if_working()
-    start_working()
+    global Status, lastButton
     
     data                                   = init.dataInit() 
     data["DATA"]                           = RmReadData(setting)
@@ -552,8 +510,11 @@ def remoteAPI_start(setting=[]):
 #-------------------------------------------------
 
 def remoteAPI_end(data):
+    '''
+    add system status and timing data to API response
+    '''
 
-    global Status, working
+    global Status
 
     data["REQUEST"]["load-time"] = time.time() - data["REQUEST"]["start-time"]
     data["STATUS"]["system"]     = {
@@ -562,7 +523,6 @@ def remoteAPI_end(data):
         "server_start_duration" :  rm3config.start_duration,
         "server_running"        :  time.time() - rm3config.start_time
         }
-    stop_working()
     return data
 
 
@@ -571,6 +531,9 @@ def remoteAPI_end(data):
 #-------------------------------------------------
 
 def RemoteReload():
+        '''
+        reload interfaces and reload config data in cache
+        '''
         
         global rm_data_update
         
@@ -587,7 +550,9 @@ def RemoteReload():
 #-------------------------------------------------
 
 def RemoteCheckUpdate(APPversion):
-        '''Check if app is supported by this server version'''
+        '''
+        Check if app is supported by this server version
+        '''
 
         data = remoteAPI_start(["no-data"])
 
@@ -612,7 +577,9 @@ def RemoteCheckUpdate(APPversion):
 #-------------------------------------------------
 
 def RemoteList():
-        '''Load and list all data'''
+        '''
+        Load and list all data
+        '''
 
         data                      = remoteAPI_start()
         data["REQUEST"]["Return"] = "OK: Returned list and status data."
@@ -625,7 +592,9 @@ def RemoteList():
 #-------------------------------------------------
 
 def Remote(device,button):
-        '''send IR command and return JSON msg'''
+        '''
+        send IR command and return JSON msg
+        '''
 
         data                      = remoteAPI_start(["no-data"])
         interface                 = rm_data["devices"][device]["interface"]
@@ -643,7 +612,9 @@ def Remote(device,button):
 #-------------------------------------------------
 
 def RemoteTest():
-        '''Test new functions'''
+        '''
+        Test new functions
+        '''
 
         data                      = remoteAPI_start(["no-data"])
         data["TEST"]              = RmReadData("")
@@ -658,7 +629,9 @@ def RemoteTest():
 #-------------------------------------------------
 
 def RemoteOnOff(device,button):
-        '''check old and document new status'''
+        '''
+        check old status and document new status
+        '''
 
         data            = remoteAPI_start()    
         interface       = data["DATA"]["devices"][device]["interface"]
@@ -737,7 +710,9 @@ def RemoteOnOff(device,button):
 #-------------------------------------------------
 
 def RemoteReset():
-        '''set status of all devices to OFF and return JSON msg'''
+        '''
+        set status of all devices to OFF and return JSON msg
+        '''
 
         data                         = remoteAPI_start(["no-data"])
         data["REQUEST"]["Return"]    = rm3status.resetStatus()
@@ -750,7 +725,9 @@ def RemoteReset():
 #-------------------------------------------------
 
 def RemoteResetAudio():
-        '''set status of all devices to OFF and return JSON msg'''
+        '''
+        set status of all devices to OFF and return JSON msg
+        '''
 
         data                         = remoteAPI_start(["no-data"])
         data["REQUEST"]["Return"]    = rm3status.resetAudio()
@@ -763,7 +740,9 @@ def RemoteResetAudio():
 #-------------------------------------------------
 
 def RemoteAddButton(device,button):
-        '''Learn Button and safe to init-file'''
+        '''
+        Learn Button and safe to init-file
+        '''
 
         data                         = remoteAPI_start(["no-data"])
 
@@ -778,7 +757,9 @@ def RemoteAddButton(device,button):
 #-------------------------------------------------
 
 def RemoteRecordCommand(device,button):
-        '''Learn Button and safe to init-file'''
+        '''
+        Learn Button and safe to init-file
+        '''
 
         data                         = remoteAPI_start(["no-data"])
         
@@ -795,7 +776,8 @@ def RemoteRecordCommand(device,button):
 #-------------------------------------------------
 
 def RemoteDeleteButton(device,button):
-        '''Learn Button and safe to init-file'''
+        '''delete button from layout file
+        '''
 
         data                         = remoteAPI_start(["no-data"])
         data["REQUEST"]["Return"]    = deleteCmd(device,button)
@@ -810,7 +792,9 @@ def RemoteDeleteButton(device,button):
 #-------------------------------------------------
 
 def RemoteChangeVisibility(device,value):
-        '''Add device and save'''
+        '''
+        change visibility of device in config file
+        '''
 
         data                         = remoteAPI_start(["no-data"])
         data["REQUEST"]["Return"]    = changeVisibility(device,value)
@@ -823,7 +807,9 @@ def RemoteChangeVisibility(device,value):
 #-------------------------------------------------
 
 def RemoteAddDevice(device,interface,description):
-        '''Add device and save'''
+        '''
+        add device in config file and create config files for remote and command
+        '''
 
         data                         = remoteAPI_start(["no-data"])
         data["REQUEST"]["Return"]    = addDevice(device,interface,description)
@@ -838,10 +824,12 @@ def RemoteAddDevice(device,interface,description):
 #-------------------------------------------------
 
 def RemoteAddTemplate(device,template):
-        '''Add / overwrite remote template'''
+        '''
+        add / overwrite remote template
+        '''
 
         data                         = remoteAPI_start(["no-data"])
-        data["REQUEST"]["Return"]    = varsAddTemplate_json(device,template)
+        data["REQUEST"]["Return"]    = addTemplate(device,template)
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Parameter"] = template
         data                         = remoteAPI_end(data)        
@@ -853,7 +841,9 @@ def RemoteAddTemplate(device,template):
 #-------------------------------------------------
 
 def RemoteDeleteDevice(device):
-        '''Delete Button from init-file'''
+        '''
+        delete device from config file and delete device related files
+        '''
 
         data                         = remoteAPI_start(["no-data"])
         data["REQUEST"]["Return"]    = deleteDevice(device)

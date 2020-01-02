@@ -68,14 +68,17 @@
                 "default-2line"
             ],
             "mute": "off",
-            "power": "on",
+            "power": [
+                "standby",
+                "off"
+            ],
             "source": [
                 "video6",
                 "pc"
             ],
-            "temperature": "F 87C 31",
+            "temperature": "F 86C 30",
             "timer": "N/A",
-            "video-info": "No Video,Unknown,,24bit,MAIN,1920 x 1080p,RGB,24bit,,",
+            "video-info": "No Video,Unknown,,24bit,,Unknown,,24bit,,",
             "vol": 49
         },
         "visible": "yes"
