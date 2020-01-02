@@ -232,12 +232,9 @@ function sendCmd(cmdButton, sync="", callback="") {
 		dc = vv.split("_");
 		}
 
-	if (deactivateButton) {
-		dc = ["sendIR" , dc[0] , dc[1]];
-		}
-        else {
-		dc = ["sendIR_check" , dc[0] , dc[1]];
-                }
+	// check, if manual mode (with out checking the device status) or intelligent mode (with checking the device status)
+	if (deactivateButton) 	{ dc = ["send" , dc[0] , dc[1]]; }
+        else 			{ dc = ["send_check" , dc[0] , dc[1]]; }
 
 	// send via app
 	if (sync == "sync") 	{

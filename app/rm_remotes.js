@@ -226,20 +226,18 @@ function rmRemote(name) {
 		remote  += "Edit &quot;<b>"+this.data["DATA"]["devices"][device]["label"]+" - "+this.data["DATA"]["devices"][device]["description"]+"</b>&quot; ("+device+"):<br/>&nbsp;<br/>";
 		remote  += this.tab_row("start");
 
+		remote  += this.tab_row( "Description:", 	this.input("edit_description",	this.data["DATA"]["devices"][device]["description"]) );
+		remote  += this.tab_row( "Label:",       	this.input("edit_label",	this.data["DATA"]["devices"][device]["label"]) );
+		//remote  += this.tab_row( "Interface:",   	this.input("edit_interface",	this.data["DATA"]["devices"][device]["interface"]) );
+		remote  += this.tab_row( "Interface:",   	this.select("edit_interface", "interface", this.data["CONFIG"]["interfaces"], "", this.data["DATA"]["devices"][device]["interface"]) );
+		remote  += this.tab_row( "Status request:",	this.select("edit_method",    "method",    this.data["CONFIG"]["methods"],    "", this.data["DATA"]["devices"][device]["method"]) );
 		remote  += this.tab_row(
-				this.input("edit_description"),
-				this.button_edit("alert('Not implemented yet.');","edit description","disabled")
-				);
-		remote  += this.tab_row(
-				this.input("edit_label"),
-				this.button_edit("alert('Not implemented yet.');","edit label","disabled")
-				);
-		remote  += this.tab_row(
-				this.input("edit_method"),
-				this.button_edit("alert('Not implemented yet.');","set query method","disabled")
+				this.button_edit("alert('Not implemented yet.');","change data","disabled")
 				);
 
-		remote  += "<tr><td colspan='2'><hr/></td></tr>";
+		remote  += this.tab_row("end");
+		remote  += "<hr/>";
+		remote  += this.tab_row("start");
 
 		remote  += this.tab_row(
 				"Set main AUDIO device",
@@ -278,7 +276,7 @@ function rmRemote(name) {
 		remote  += "<tr><td colspan='2'><hr/></td></tr>";
 
 		remote  += this.tab_row(
-				this.input("del_device"),
+				this.input("del_device",device),
 				this.button_edit("deleteDevice('del_device');","delete device")
 				);
 
@@ -293,9 +291,6 @@ function rmRemote(name) {
 */
 			
 		setTextById(id,remote);
-		document.getElementById("del_device").value 		= device;
-		document.getElementById("edit_description").value	= this.data["DATA"]["devices"][device]["description"];
-		document.getElementById("edit_label").value		= this.data["DATA"]["devices"][device]["label"];
 		
 //	console.error("device_edit_ende");
 		}
@@ -341,7 +336,7 @@ console.error(this.data["DATA"]["devices"][filter]);
 	// create basic buttons & inputs
 	//--------------------
 
-        this.input         = function (id)            { return "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;'>"; }
+        this.input         = function (id,value="")   { return "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"'>"; }
 
         this.button_edit   = function (onclick,label,disabled="") {
         	var style = "width:" + this.button_width + ";margin:1px;";
@@ -349,12 +344,14 @@ console.error(this.data["DATA"]["devices"][filter]);
         	return "<button style=\""+style+"\" onClick=\""+onclick+"\" "+disabled+">"+label+"</button>";
         	}
 
-        this.select  = function (id,title,data,onchange="") {
+        this.select  = function (id,title,data,onchange="",selected_value="") {
                 var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
                 item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
                 for (var key in data) {
+                        var selected = "";
+                        if (selected_value == key) { selected = "selected"; }
                         if (key != "default") {
-                                item += "<option value=\"" + key + "\">" + data[key] + "</option>";
+                                item += "<option value=\"" + key + "\" "+selected+">" + data[key] + "</option>";
                         }       }
                 item     += "</select>";
                 return item;
