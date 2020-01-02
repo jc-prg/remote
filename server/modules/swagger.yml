@@ -600,6 +600,8 @@ definitions:
         type: object
       interfaces:
         type: object
+      methods:
+        type: object
 
   DATA:
     type: object
