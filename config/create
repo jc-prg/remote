@@ -5,7 +5,7 @@ config="config_$1"
 
 echo
 echo "-------------------------------------"
-echo " Create jc://remote/ configuration"
+echo " Create jc://mbox/ configuration"
 echo " (by Christoph Kloth)"
 echo "-------------------------------------"
 
@@ -46,16 +46,7 @@ if ! [ -f $config ]; then
 fi
 
 source $config
-
-rm -rf ../docker-compose.yml
-envsubst < "templates/docker-compose.yml" > "../docker-compose.yml"
-
-rm -rf ../app/config_stage.js
-envsubst < "templates/rm_stage.js" > "../app/rm_config_stage.js"
-
-rm -rf ../server/modules/config_stage.py
-envsubst < "templates/rm3stage.py" > "../server/modules/rm3stage.py"
-
+source templates/00-envsubst
 
 echo
 echo "Done."
