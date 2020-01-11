@@ -1,4 +1,50 @@
 {
 	"IPAddress"  : "192.168.1.33",
-	"Timeout"    : 5
+	"Timeout"    : 5,
+	"Commands"   : {
+        	"on"      	: "system-power=on",
+        	"off"     	: "system-power=off",
+        	"vol+"    	: "master-volume=level-up",
+        	"vol-"    	: "master-volume=level-down",
+        	"mute"    	: "audio-muting=toggle",
+        	"mute-off"	: "audio-muting=off",
+        	"mute-on"	: "audio-muting=on",
+        	"display" 	: "display-mode=toggle",
+        	"pc"      	: "input-selector=pc",
+        	"tv"      	: "input-selector=tv",
+        	"phono"   	: "input-selector=phono",
+        	"usb"     	: "input-selector=usb",
+        	"game"    	: "input-selector=game",
+        	"cable-sat"     : "input-selector=cbl",
+        	"radio"         : "input-selector=fm",
+        	"bluetooth"	: "input-selector=bluetooth",
+        	"bd"		: "input-selector=bd",
+        	"aux"		: "input-selector=aux1",
+        	"prg+"		: "tuning=up",
+        	"prg-"		: "tuning=down",
+        	"timer"		: "sleep-set=up",
+        	"dimmer"        : "dimmer-level=dim",
+        	"settings"      : "setup=menu",
+        	"exit"          : "setup=exit",
+        	"home"          : "setup=home",
+        	"enter"         : "setup=enter",
+        	"up"            : "setup=up",
+        	"down"          : "setup=down",
+        	"q"             : "setup=quick",
+        	"right"         : "setup=right",
+        	"left"          : "setup=left"
+       		},
+       	"Queries" : {
+       		"power"		: "system-power=query",
+        	"vol"     	: "master-volume=query",
+        	"mute"    	: "audio-muting=query",
+        	"display" 	: "display-mode=query",
+        	"source"  	: "input-selector=query",
+        	"temperature"	: "temperature-data=query",
+		"timer"		: "sleep-set=qstn",
+	       	"dimmer"        : "dimmer-level=query",
+	       	"audio-info"    : "audio-information=query",
+	       	"video-info"    : "video-information=query"
+        	}
+        }
 }
