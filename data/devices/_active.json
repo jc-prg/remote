@@ -61,7 +61,7 @@
         "interface": "EISCP-ONKYO",
         "label": "AV Receiver",
         "status": {
-            "audio-info": "HDMI 2,PCM,48 kHz,2.0 ch,Theater-Dimensional,3.1 ch,",
+            "audio-info": "ANALOG,,,,All Ch Stereo,5.1 ch,",
             "dimmer": "dark",
             "display": [
                 "selector-volume-1line",
@@ -70,14 +70,15 @@
             "mute": "off",
             "power": "on",
             "source": [
-                "video2",
-                "cbl",
-                "sat"
+                "video3",
+                "game/tv",
+                "game",
+                "game1"
             ],
-            "temperature": "F 86C 30",
+            "temperature": "F 87C 31",
             "timer": "N/A",
-            "video-info": "HDMI 2,1920 x 1080i  50 Hz,YCbCr444,24bit,MAIN,1920 x 1080i  50 Hz,YCbCr444,24bit,,",
-            "vol": 48
+            "video-info": "HDMI 3,1920 x 1080p  60 Hz,RGB,24bit,,Unknown,,24bit,,",
+            "vol": 45
         },
         "visible": "yes"
     },
