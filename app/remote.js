@@ -33,7 +33,7 @@ rm3app.setAutoupdate( );
 // additional apps to write menus, remotes, messages
 //--------------------------------
 
-var rm3menu     = new rmMenu(     "rm3menu", "menuItems" );
+var rm3menu     = new rmMenu(     "rm3menu", ["menuItems","menuItems2"] );
 var rm3start    = new rmStart(    "rm3start" );
 var rm3remotes  = new rmRemote(   "rm3remotes" );
 var rm3settings = new rmSettings( "rm3settings" );
@@ -77,6 +77,8 @@ function printRmStatus(data) {
 
 	}
 	
+//--------------------------------
+
 function rmDropDownMenu_update() { rm3app.requestAPI( "GET", ["list"], "", rmDropDownMenu ); }
 function rmDropDownMenu(data) {
 
@@ -97,6 +99,8 @@ function rmDropDownMenu(data) {
 	rm3menu.add_script( "rm3settings.button_deact(true);", deact_link);        
         }
 
+
+//--------------------------------
 
 function printRmMenu(data) {
 
@@ -164,6 +168,8 @@ function initRemote (first_load=true) {
 
 	rm3app.requestAPI( "GET", ["list"], "", printRmMenu );
 	}
+
+//--------------------------------
 
 function lastRemoteCookie() {
 

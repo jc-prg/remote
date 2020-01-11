@@ -1,41 +1,35 @@
-button {
-        color           : white;
-   	font-size: 13px;
 
-        width           :  80px;
-        height          :  30px;
-        padding         :   2px;
-        margin          :   4px;
-        border-radius   :   6px;   
-        background-color: #000044;
-        overflow        : hidden;
-}
+/* Default element in settings - size for iPhone 5c */
 
 .setting_bg {
    font-family : sans-serif;
-   width   : 290px;
-   float   : left;
-   margin  : 4px;
-   padding : 5px;
-   border-radius : 5px;   
-   background-color: #444444;
+   width       : 290px;
+   margin      : 4px;
+   padding     : 5px;
+   float       : left;
+   
+   border-radius    : 5px;   
+   background-color : #444444;
 
-   color : white;
-   font-size: 14px;
-   opacity: 0.9;
+   color      : white;
+   font-size  : 14px;
+   opacity    : 0.9;
 }
+
+/* iPhone XS */
 
 @media (min-width:370px){
-  .setting_bg {
-   width : 340px; 
- }
+  .setting_bg { width : 340px; }
 }
 
+/* Bigger devices (e.g. Laptop) */
+
 @media (min-width:720px){
-  .setting_bg {
-   width : 335px; 
- }
+  .setting_bg { width : 335px; }
 }
+
+/* --------------------------------- */
+/* tbc. if still required            */
 
 #cover, #cover2, #cover3 { 
 	display:none; 
@@ -50,12 +44,14 @@ button {
 	} 
 
 #cover3 {
-display:block;
-color:white;
-font-size:16px;
-font-family:Helvetica;
-text-align:center;
-}
+	display:block;
+	color:white;
+	font-size:16px;
+	font-family:Helvetica;
+	text-align:center;
+	}
+
+/* --------------------------------- */
 
 #settings { 
 	display       : none; 

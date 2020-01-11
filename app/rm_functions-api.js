@@ -36,7 +36,7 @@ function check_for_updates_msg(data) {
 	msg = "<br/></b><i>"+msg+"</i>";
 
 	rm3msg.wait("Loading App ..."+msg, "initRemote();" );
-	if (data["ReturnCode"] == "802") { rm3update = true; }
+	if (data["REQUEST"]["ReturnCode"] == "802") { rm3update = true; }
 	}
 
 function checkUpdates(version) {
@@ -49,7 +49,7 @@ function checkUpdates(version) {
 //--------------------------------
 
 function updateRemote(data) {
-        rm3remotes.data = data["DeviceConfig"];
+        rm3remotes.data = data["DATA"]["devices"]; //["DeviceConfig"];
         rm3remotes.create();
         }
         
@@ -66,9 +66,9 @@ function changeVisibilityDevice(device_id, value_id) {
         device   = check_if_element_or_value(device_id);
         value    = check_if_element_or_value(value_id);
         
-	if (!dataConfig["devices"][device]) 	{ rm3msg.alert("Device '" + device + "' doesn't exists!"); return; }
-	else if (device == "") 			{ rm3msg.alert("Please insert/select name for device (no space, no special cases)."); return; }
-	else if (value == "")   		{ rm3msg.alert("Please insert/select visibility."); return;	}
+	if (!dataAll["DATA"]["devices"][device]) 	{ rm3msg.alert("Device '" + device + "' doesn't exists!"); return; }
+	else if (device == "") 				{ rm3msg.alert("Please insert/select name for device (no space, no special cases)."); return; }
+	else if (value == "")   			{ rm3msg.alert("Please insert/select visibility."); return;	}
 
 	rm3app.requestAPI("PUT",["visibility",device,value], "", alertReturn);
 	}
@@ -96,16 +96,17 @@ function addTemplate_exe(device,template) {
 	
 //--------------------------------
 
-function addDevice(device, description) {
+function addDevice(device, api, description) {
 	device 		= document.getElementById(device).value.toLowerCase();
 	description 	= document.getElementById(description).value;
+	api	 	= document.getElementById(api).value;
 
-	//if (dataConfig["device_list"][device]) 	{ rm3msg.alert("Device '" + device + "' already exists!"); return; }
-	if (dataConfig["devices"][device]) 	{ rm3msg.alert("Device '" + device + "' already exists!"); return; }
+	if (dataAll["DATA"]["devices"][device])	{ rm3msg.alert("Device '" + device + "' already exists!"); return; }
 	else if (device == "") 			{ rm3msg.alert("Please insert name for device (no space, no special cases)."); return; }
+	else if (api == "") 			{ rm3msg.alert("Please insert API for device (no space, no special cases)."); return; }
 	else if (description == "") 		{ rm3msg.alert("Please insert short description for device."); 	return;	}
 
-	rm3app.requestAPI("PUT",["device",device,description], "", alertReturn);
+	rm3app.requestAPI("PUT",["device",device,api,description], "", alertReturn);
 	}
 
 //--------------------------------
@@ -116,9 +117,12 @@ function addButton(device_id, button_id) {
 
 	if (document.getElementById(device_id)) 	{ var device 	= document.getElementById(device_id).value.toLowerCase(); }
 	else					        { var device    = device_id; i++; }
-	if (document.getElementById(button_id)) 	{ var button 	= document.getElementById(button_id).value.toLowerCase(); }
+	if (document.getElementById(button_id)) 	{ var button 	= document.getElementById(button_id).value; 
+							  if (button != "LINE") { button = button.toLowerCase(); }
+							  if (button == ".")	{ button = "DOT"; }
+							  }
 	else					        { var button    = button_id; i++; }	
-
+	
         cmd = "rm3app.requestAPI('PUT',['button','"+device+"','"+button+"'], '', rm3msg.alertReturn );";
 
 	if (device == "") { rm3msg.alert("Please select device."); return; }
@@ -228,12 +232,9 @@ function sendCmd(cmdButton, sync="", callback="") {
 		dc = vv.split("_");
 		}
 
-	if (deactivateButton) {
-		dc = ["sendIR" , dc[0] , dc[1]];
-		}
-        else {
-		dc = ["sendIR_check" , dc[0] , dc[1]];
-                }
+	// check, if manual mode (with out checking the device status) or intelligent mode (with checking the device status)
+	if (deactivateButton) 	{ dc = ["send" , dc[0] , dc[1]]; }
+        else 			{ dc = ["send_check" , dc[0] , dc[1]]; }
 
 	// send via app
 	if (sync == "sync") 	{

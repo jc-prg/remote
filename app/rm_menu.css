@@ -1,5 +1,4 @@
 /* Main Menu */
-
 /* Balken Menü */
 
 nav {
@@ -45,6 +44,35 @@ nav-title {
   width: 150px;
 }
 
+nav-info {
+  position: fixed;
+  top: 10px;
+  right: 50px;
+  display: block;
+  z-index: 80;
+  color: #333333;
+  border: solid 0px;
+  font-weight: bold; 
+  font-size:   12px;
+  font-family: sans-serif;
+}
+
+.remote_nav {
+   float   :  left;
+   display :  none;
+   width   : 150px;
+   height  : 100vh;
+}
+
+@media (min-width: 800px) {
+
+   .remote_nav { display: block; }
+   #navi-click { display: none; }
+}
+
+
+/* -------------------------------------------- */
+
 /* übergeordnete Formatierung DropDown-Menü */
 
 nav ul {
@@ -82,12 +110,6 @@ nav > ul > li > ul > li > hr {
    width : 90%;
 }
 
-/*
-nav > ul > li:active > ul {
-  display: block;
-}
-*/
-
 nav > ul > li > ul {
   display    : block;
   visibility : hidden;
@@ -95,9 +117,7 @@ nav > ul > li > ul {
   left       : 5px;
   top        : 38px;
   background : #ddddee;
-   -webkit-border-radius: 5px;
-   -moz-border-radius: 5px;
-    border-radius: 5px;
+  border-radius: 5px;
   box-shadow : 3px 3px 3px rgba(0, 0, 0, 0.25);
   min-width  : 140px;
 }
@@ -149,54 +169,105 @@ nav li > a:only-child:after {
   content: "";
 }
 
+/* -------------------------------------------- */
+/* 2nd menu */
+/* -------------------------------------------- */
+
+nav-b {
+  position: fixed;
+  left: 0px;
+  top: 10px;
+  width: 0px;
+  
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.25);
+  background: #111111;
+  padding: 0px;
+  z-index: 85;
+  text-decoration: none;
+  
+  display: block;
+  font-family: sans-serif;
+  font-size: 14px;
+
+  border-top: 1px solid darkgray;
+}
+
+/* übergeordnete Formatierung DropDown-Menü */
+
+nav-b ul {
+  list-style : none;
+  margin     : 0;
+  padding    : 0;
+  cursor     : pointer;
+  z-index    : 90;
+  width      : 145px;
+}
+
+/* Menüpunkte im Balken */
+
+nav-b > ul {
+  float: left;
+  overflow: hidden;
+  padding: 5px;
+  text-decoration: none;
+}
+
+nav-b > ul a {
+  display: block;
+  white-space: nowrap;
+  padding: 3px;
+  text-decoration: none;
+}
+
+/* Erste Unterebene, ausklappbar */
+/* UL => Hintergrund; LI => Eintrag */
+
+nav-b > ul > li {
+   float: left;
+}
+
+nav-b > ul > li > ul > li > hr {
+   width : 90%;
+}
+
+nav-b > ul > li > ul {
+  display    : block;
+//  visibility : hidden;
+  position   : absolute;
+  left       : 5px;
+  top        : 38px;
+  background : #ddddee;
+  border-radius: 5px;
+  box-shadow : 3px 3px 3px rgba(0, 0, 0, 0.25);
+  min-width  : 130px;
+}
+
+nav-b > ul > li > ul > li {
+  position: relative;
+}
+
+nav-b ul > li > ul > li a {
+   color: black;
+   padding: 8px 12px;
+   text-decoration: none;
+   display: block;
+}
+
+/* Element zum Aufklappen kennzeichnen */
+
+nav-b li > a:after {
+  content: " +";
+}
+
+nav-b li > a:only-child:after {
+  content: "";
+}
+
+/*-----------------------------*/
+
 .hidden_entry_edit {
-  color : blue;
+  color     : blue;
   font-style: italic;
 }
 
-/* Status LED */
-
-#green {
-      width: 10px;
-      height: 10px;
-      -webkit-border-radius: 10px;
-      -moz-border-radius: 10px;
-      border-radius: 10px;
-      border: 1px solid green;
-      background: #90EE90;
-      margin: 6px;
-    }
-
-#yellow {
-      width: 10px;
-      height: 10px;
-      -webkit-border-radius: 10px;
-      -moz-border-radius: 10px;
-      border-radius: 10px;
-      border: 1px solid yellow;
-      background: yellow;
-      margin: 6px;
-    }
-
-#red {
-      width: 10px;
-      height: 10px;
-      -webkit-border-radius: 10px;
-      -moz-border-radius: 10px;
-      border-radius: 10px;
-      border: 1px solid red; 
-      background: red;
-      margin: 6px;
-    }
-
-#gray {
-      width: 10px;
-      height: 10px;
-      -webkit-border-radius: 10px;
-      -moz-border-radius: 10px;
-      border-radius: 10px;
-      border: 1px solid #666666; 
-      background: #333333;
-      margin: 6px;
-    }
 

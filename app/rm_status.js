@@ -65,7 +65,7 @@ function check_status_inactive(device="") {
 	// rm3remotes.active_type
 	// rm3remotes.active_buttons
 
-	var device_status  = dataAll["STATUS"]["devices"];
+	var device_status  = dataAll["STATUS"]["devices"];  // !!!!!!!!!!!!!! check based on new infos dataAll["DATA"]["devices"][device"]["STATUS"]
 	var scene_status   = {};
 
 	if (deactivateButton)	{ return; }
@@ -116,9 +116,9 @@ function check_status_inactive(device="") {
 		if (filter == false || device == dev_stat[0]) {
 
 			// if device off -> set all buttons off
-			if (dev_stat.length == 1 && device_status[key] == "OFF" && dev_stat in dev) {
+			if (dev_stat.length == 1 && device_status[key] == "OFF" && dev_stat.includes(dev)) {
 
-				var buttons = Object.keys(dev[dev_stat[0]]["buttons"]);
+				var buttons = Object.keys(dev[dev_stat[0]]["buttons"]); // -> button_list
 				for (var i=0; i<buttons.length; i++) {
 					if (buttons[i] != "red" && buttons[i] != "blue" && buttons[i] != "yellow" && buttons[i] != "green"
 						&& buttons[i] != "on" && buttons[i] != "off" && buttons[i] != "on-off") {
@@ -127,8 +127,8 @@ function check_status_inactive(device="") {
 				}
 			}
 			// if device on -> set all buttons on
-			else if (dev_stat.length == 1 && dev_stat[0] in dev) {
-				var buttons = Object.keys(dev[dev_stat[0]]["buttons"]);
+			else if (dev_stat.length == 1 && dev[dev_stat[0]] && typeof dev[dev_stat[0]]["buttons"] == "object") {
+				var buttons = Object.keys(dev[dev_stat[0]]["buttons"]); // -> button_list
 				for (var i=0; i<buttons.length; i++) {
 					if (buttons[i] != "red" && buttons[i] != "blue" && buttons[i] != "yellow" && buttons[i] != "green"
 						&& buttons[i] != "on" && buttons[i] != "off" && buttons[i] != "on-off") {
@@ -147,10 +147,15 @@ function check_status(data={}) {
 
 	if (deactivateButton)	{ return; }
 
+        var devices        = dataAll["DATA"]["devices"];
 	var device_status  = dataAll["STATUS"]["devices"];
-	var device_audio   = status_mute.split("_");
+	var device_audio   = status_mute.split("_");            // ??? from rm_config.js -> to be set to config "main-audio = yes"; incl status_vol_max
 	var scene_status   = {};
 	var vol_color	   = "white";
+	var vol_color2	   = "yellow";
+	var novol_color    = "lightblue";
+
+// ????????????????
 
 	// if data -> callback of sendCmd (ON/OFF) -> check_status_inactive()
 	if ("Device" in data)	{ check_status_inactive(data["Device"]); }
@@ -163,7 +168,7 @@ function check_status(data={}) {
 		var dev_on   = 0;
 
 		for (var i=0;i<required.length;i++) {
-			if (device_status[required[i]] == "ON") {
+			if (devices[required[i]]["status"]["power"] == "ON") {
 				dev_on += 1;
 				}
 			//console.log(required[i]+":"+device_status[required[i]]);
@@ -177,20 +182,35 @@ function check_status(data={}) {
 		}
 
 	// check device status and change color of power buttons / main menu buttons device
-	for (var key in device_status) {
+	for (var key1 in devices) {
+	  for (var key2 in devices[key1]["status"]) {
+	  
+	        key = key1;
+	        if (key2 != "power") { key += "_"+key2; }
+	        
+	        //console.error("TEST "+key1+"_"+key2+" = "+devices[key1]["status"][key2]);
 
-		show_status_button( "device_" + key, device_status[key] ); // main menu button
-		show_status_button( key + "_on-off", device_status[key] ); // on-off device button
+		if (typeof devices[key1]["status"][key2] == "string")	{ check_button = devices[key1]["status"][key2].toUpperCase() }
+		else							{ check_button = devices[key1]["status"][key2]; }
 
-		if (device_status[key] == "ON") {
-			show_status_button( key + "_on",  device_status[key] );
+		show_status_button( "device_" + key, check_button ); // main menu button
+		show_status_button( key + "_on-off", check_button ); // on-off device button
+			
+		if (typeof check_button == "string" && check_button == "ON") {
+			show_status_button( key + "_on",  check_button );
 			show_status_button( key + "_off", "" );
 			}
-		if (device_status[key] == "OFF") {
-			show_status_button( key + "_off", device_status[key] );
+		if (typeof check_button == "string" && check_button == "OFF") {
+			show_status_button( key + "_off", check_button );
 			show_status_button( key + "_on",  "" );
-			}
+			}	
+
+		if (typeof check_button == "object" && check_button.indexOf("off") >= 0) {
+			show_status_button( key + "_off", "OFF" );
+			show_status_button( key + "_on",  "" );
+			}	
 		}
+	   }
 
 	// check scene status and change color of power buttons
 	for (var key in scene_status) {
@@ -211,7 +231,7 @@ function check_status(data={}) {
 		}
 
 	// check audio status and show in navigation bar
-	if (device_status[status_mute] == "MUTE_ON" || device_status[device_audio[0]] == "OFF" || device_status[status_vol] == 0) {
+	if (devices[device_audio[0]]["status"]["mute"] == "ON" || devices[device_audio[0]]["status"]["power"] == "OFF" || devices[device_audio[0]]["status"]["vol"] == 0) {
 		document.getElementById("audio1").style.display = "block";
 		document.getElementById("audio2").style.display = "none";
 		vol_color = "gray";
@@ -220,17 +240,41 @@ function check_status(data={}) {
 		document.getElementById("audio1").style.display = "none";
 		document.getElementById("audio2").style.display = "block";
 		}
+		
+	// check status for displays
+	for (var key in devices) {
+		if (devices[key]["status"] && devices[key]["display"]) {
+		        display = devices[key]["display"];
+			for (var dkey in display) {
+				var vkey    = display[dkey];
+				var element = document.getElementById("display_" + key + "_" + vkey);
+				var status  = devices[key]["status"][vkey];
+				
+				if (devices[key]["values"] && devices[key]["values"][vkey] && vkey == "vol") {
+					if (devices[key]["values"][vkey]["max"]) { status = show_volume( devices[key]["status"][vkey], devices[key]["values"][vkey]["max"], vol_color2, novol_color ) + " &nbsp; ["+devices[key]["status"][vkey]+"]"; }
+					}
+				
+				if (element) { element.innerHTML = status; }
+				}
+			}
+		}
 
 	// check volume and show in navigation bar
-	var volume  = Math.round( device_status[status_vol] * 20 / status_vol_max );
-	var vol_str = "<font color='" + vol_color + "'>";
-	for (var i=0; i<volume; i++) { vol_str += "I"; }
-	vol_str += "</font>";
-	for (var i=0; i<20-volume; i++) { vol_str += "I"; }
-
+	vol_str = show_volume( devices[device_audio[0]]["status"]["vol"], status_vol_max, vol_color );
 	document.getElementById("audio3").innerHTML = vol_str;
 
 	//alert(test);
+	}
+	
+function show_volume (volume, maximum, vol_color, novol_color="") {
+
+	var volume  = Math.round( volume * 20 / maximum );
+	var vol_str = "<font color='" + vol_color + "'>";
+	for (var i=0; i<volume; i++) { vol_str += "I"; }
+	vol_str += "</font>";
+	if (novol_color != "") { vol_str += "<font color='" + novol_color + "'>"; }
+	for (var i=0; i<20-volume; i++) { vol_str += "I"; }
+	return vol_str;
 	}
 
 function check_status_dev(device) {

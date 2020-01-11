@@ -1,0 +1,12 @@
+{
+	"description" :	     "In define makros to switch on devices: <device>_<button>",
+	"dev-on": {
+		"beam":      ["beam_on||ON"],
+	        "rec":       ["rec_on-off||ON", 1, "rec_mute||MUTE_OFF"],
+	        "rec2":      ["rec2_on", 1,        "rec2_mute-off"],
+	        "tv":        ["tv_on-off||ON", 13, "tv_radiotv||TV",   "tv_mute||MUTE_OFF"],
+	        "radio":     ["tv_on-off||ON", 13, "tv_radiotv||RADIO","tv_mute||MUTE_OFF"],
+	        "bd":        ["bd_on-off||ON"],
+	        "lw":        ["lw_on||ON"]
+               }
+}

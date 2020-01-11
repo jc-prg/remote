@@ -9,4 +9,4 @@ pyaes
 Crypto
 pycryptodome
 connexion[swagger-ui]
-
+netifaces

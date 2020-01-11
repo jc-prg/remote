@@ -1,0 +1,98 @@
+{
+    "bd": {
+        "device": "bluray_sony-bdp-s4500",
+        "image": "bd",
+        "interface": "BROADLINK",
+        "label": "Bluray Player",
+        "status": {
+            "power": "OFF"
+        },
+        "visible": "yes"
+    },
+    "beam": {
+        "device": "beamer_optoma-hd27",
+        "image": "beam",
+        "interface": "BROADLINK",
+        "label": "Beamer",
+        "status": {
+            "power": "OFF"
+        },
+        "visible": "yes"
+    },
+    "default": {
+        "device": "",
+        "image": "",
+        "interface": "",
+        "label": "Sample Device",
+        "status": {
+            "mute": "OFF",
+            "power": "OFF",
+            "vol": 0
+        },
+        "visible": "no"
+    },
+    "lw": {
+        "device": "screen_elite-screens-100",
+        "image": "lw",
+        "interface": "BROADLINK",
+        "label": "Leinwand",
+        "status": {
+            "power": "OFF"
+        },
+        "visible": "yes"
+    },
+    "rec": {
+        "device": "receiver_onkyo-txnr686",
+        "image": "rec",
+        "interface": "BROADLINK",
+        "label": "AV Receiver (alt)",
+        "main-audio": "yes",
+        "status": {
+            "mute": "OFF",
+            "power": "OFF",
+            "rec_vol": 11,
+            "vol": 0
+        },
+        "visible": "no"
+    },
+    "rec2": {
+        "device": "receiver_onkyo-txnr686",
+        "image": "rec",
+        "interface": "EISCP-ONKYO",
+        "label": "AV Receiver",
+        "status": {
+            "audio-info": "HDMI 2,PCM,48 kHz,2.0 ch,Theater-Dimensional,3.1 ch,",
+            "dimmer": "dark",
+            "display": [
+                "selector-volume-1line",
+                "default-2line"
+            ],
+            "mute": "off",
+            "power": "on",
+            "source": [
+                "video2",
+                "cbl",
+                "sat"
+            ],
+            "temperature": "F 86C 30",
+            "timer": "N/A",
+            "video-info": "HDMI 2,1920 x 1080i  50 Hz,YCbCr444,24bit,MAIN,1920 x 1080i  50 Hz,YCbCr444,24bit,,",
+            "vol": 48
+        },
+        "visible": "yes"
+    },
+    "tv": {
+        "device": "tv-receiver_topfield",
+        "image": "tv",
+        "interface": "BROADLINK",
+        "label": "TV/Radio",
+        "status": {
+            "mute": "OFF",
+            "power": "OFF",
+            "radiotv": "TV",
+            "tv_mute": "ON",
+            "vol": 0
+        },
+        "visible": "yes"
+    }
+}

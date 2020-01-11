@@ -49,14 +49,13 @@
 
 <nav-title id="navTitle">...</nav-title>
 <ul>
-  <li id="navi"><div onClick="javascript:clickMenu();"><img src="img/button.png" /></div>
+  <li id="navi"><div onClick="javascript:clickMenu();" id="navi-click"><img src="img/button.png" /></div>
     <ul id='menuItems'>
       <!-- filled by script -->
     </ul>
   </li>
 </ul>
 </nav>
-
 
 <div class="app_background" id="app_background" style="width:100%;">
 
@@ -65,7 +64,15 @@
 &nbsp;<br/>
 <div id='remote_block' style="width:100%">
   <div class='remoteblock'>
-    <div class='remote_nav' id='remote_nav'></div>
+    <div class='remote_nav' id='remote_nav'><nav-b>
+     <ul>
+      <li>
+        <ul id='menuItems2'>
+          <!-- filled by script -->
+        </ul>
+      </li>
+     </ul>    
+    </nav-b></div>
     <div class='setting_bg' id='remote_edit' style='display:none'></div>
     <div class='remote' id='remote1'></div>
     <div class='remote' id='remote2'></div>

@@ -1,0 +1,53 @@
+#!/bin/bash
+#--------------------------
+
+config="config_$1"
+
+echo
+echo "-------------------------------------"
+echo " Create jc://mbox/ configuration"
+echo " (by Christoph Kloth)"
+echo "-------------------------------------"
+
+if [ ! $1 ]; then
+  echo
+  echo "Press key - your options:"
+  echo " 'q' - exit"
+  echo " 't' - test"
+  echo " 'p' - prod"
+
+  count=0
+  while : ; do
+    read -n 1 k <&1
+    if [[ $k = q ]] ; then
+       printf "\nQuitting from the program.\n"
+       exit 0
+    elif [[ $k = p ]] ; then
+       config="$config""prod"
+       printf "\nCreating prod ($config) ...\n"
+       break
+    elif [[ $k = t ]] ; then
+       config="$config""test"
+       printf "\nCreating test ($config) ...\n"
+       break
+    else
+       ((count=$count+1))
+       printf "\nIterate for $count times\n"
+       echo "Press 'q' to exit"
+    fi
+  done
+fi
+
+if ! [ -f $config ]; then
+  echo
+  echo "ERROR: No config file available! Copy sample file to '$config', edit and run this script again."
+  echo
+  exit 0
+fi
+
+source $config
+source templates/00-envsubst
+
+echo
+echo "Done."
+echo

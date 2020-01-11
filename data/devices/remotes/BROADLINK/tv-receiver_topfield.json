@@ -1,0 +1,20 @@
+{
+   "data": {
+        "description": "TV-Receiver: TOPFIELD", 
+        "remote": [
+            "radiotv", ".", ".", "on-off", 
+            "LINE", 
+            "1",    "2",   "3",    "vol+", 
+            "4",    "5",   "6",    "mute", 
+            "7",    "8",   "9",    "vol-", 
+            "back", "0",   "info", "timer", 
+            "LINE", 
+            ".",    "prg+",  ".",        "menu", 
+            "left", "enter", "right",    "guide", 
+            "fav",  "prg-",  "subtitle", "exit", 
+            "LINE", 
+            "red",  "green", "yellow",   "blue"
+        ],
+	"display" : {}
+    }
+}

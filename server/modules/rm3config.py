@@ -4,9 +4,9 @@ import time
 # ---------------------------------
 
 APIname    = "jc://remote/"
-APIversion = "v1.4.3"
-APPversion = "v2.1.2"
-APPsupport = [APPversion, "v2.1.1", "v2.1.0"]  # other supported versions
+APIversion = "v1.6.1"
+APPversion = "v2.2.0"
+APPsupport = [APPversion, "v2.1.3"]  # other supported versions
 
 # ---------------------------------
 
@@ -20,6 +20,19 @@ DEBUG          = False
 config_dir     = rm3stage.data_dir+"/"
 config_server  = "server.json"
 config_status  = "status.json"
+
+# ---------------------------------
+
+interfaces = "interfaces/"
+devices    = "devices/"
+commands   = "devices/commands/"
+remotes    = "devices/remotes/"
+scenes     = "scenes/"
+scenes_def = "scenes/scenes/"
+makros     = "scenes/makros/"
+templates  = "scenes/templates/"
+buttons    = "scenes/buttons/"
+active     = "_active"
 
 # ---------------------------------
 

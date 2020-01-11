@@ -34,7 +34,7 @@ import connexion
 from connexion.resolver import RestyResolver
 from flask_cors         import CORS
 
-import modules_api.server_init as init
+import modules.server_init as init
 
 #----------------------------------------------
 
@@ -45,7 +45,7 @@ CORS(app.app)
 
 # Cead the swagger.yml file to configure the endpoints
 logging.info("Load API Specification ..." + init.time_since_start())
-app.add_api("modules_api/swagger.yml")
+app.add_api("modules/swagger.yml")
 
 if __name__ == "__main__":
 

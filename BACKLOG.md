@@ -23,11 +23,30 @@
 * OK - define main audio device in devices.json
 * OK - switch connection between test / prod server
 * OK - migrate to swagger-ui
+* OK - added EISCP API: send commands
+* OK - migrate to JSON files
+* OK - EISCP API: query status
+* OK - BROADLINK: optimized integration (as EISCP API)
+* OK - simplified and optimized data structure
+* OK - EISCP - process multiple requests
+
+* Execute makros server-side (and show OK in client, when done / close menu ...)
+* EISCP - add configuriation file including time out (for multiple onkyo devices ?!)
+* SONY  - add API
+* Config files analog to mbox
 
 - app side configuration handling in JSON -> sendCmd() / sendMakro() / check_status() / check_status_inactive()
 - check status in menu (device button) via data from JSON
-* migrate to JSON files
-* use https://github.com/miracle2k/onkyo-eiscp.git to control AV receiver
+
+## automated testing
+
+* OK - data files (JSON) are correctly formatted
+
+* main structure of data files is OK
+* all API calls return a code 200 (instead of 404 or 500)
+* more detailled API testing (e.g. creating, modifing, changing a remote control)
+* all defined image files are available
+
 
 ## client
 
@@ -82,6 +101,8 @@
 * OK - server side configuration handling: status in json file
 * OK - migrate to jc-co* OKie
 * OK - optimized directory structure to prepare additional device/API integration
+* OK - added display (with queried information from API)
+* OK - correct show / hide menu
 
 * IN PROGRESS - create license free icon set
 * IN PROGRESS - edit device parameters via settings page (description, driver, image)
