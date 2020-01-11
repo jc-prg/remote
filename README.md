@@ -11,9 +11,12 @@ as my new ONKYO receiver come with their own API and I started to rework my soft
 * *Other devices easily can be integrated*
 
 ## Used Software
+
+Many thanks to the authors ...
   
 * BlackBeanControl (https://github.com/davorf/BlackBeanControl)
 * eiscp-onkyo (https://github.com/miracle2k/onkyo-eiscp)
+* KodiJson (https://github.com/jcsaaddupuy/python-kodijson)
 
 
 ## How to setup the software

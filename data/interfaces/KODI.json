@@ -1,0 +1,24 @@
+{
+	"IPAddress"  : "192.168.1.36",
+        "Port"       : "8080",
+	"Timeout"    : 5,
+        "Commands"   : {
+		"home"		: "GUI.ActivateWindow({'window':'home'})",
+		"weather"	: "GUI.ActivateWindow({'window':'weather'})",
+		"hello-world"   : "GUI.ShowNotification(title='Hello World', message='Hello World!!!')",
+		"mute-on"	: "Application.SetMute({'mute':True})",
+		"mute-off"	: "Application.SetMute({'mute':False})",
+		"video-pause"	: "Player.PlayPause([PLAYER_VIDEO])",
+		"video-stop"	: "Player.Stop([PLAYER_VIDEO])",
+		"left"		: "Input.Left()",
+		"right"		: "Input.Right()",
+		"up"		: "Input.Up()",
+		"down"		: "Input.Down()",
+		"back"		: "Input.Back()",
+		"info"		: "Input.Info()"
+		},
+	"Queries"    : {
+		},
+	"API-Source" : "https://github.com/jcsaaddupuy/python-kodijson",
+	"API-Info"   : "http://wiki.xbmc.org/index.php?title=JSON-RPC_API/v6"
+}
