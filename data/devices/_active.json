@@ -68,14 +68,17 @@
                 "default-2line"
             ],
             "mute": "off",
-            "power": "on",
+            "power": [
+                "standby",
+                "off"
+            ],
             "source": [
                 "video3",
                 "game/tv",
                 "game",
                 "game1"
             ],
-            "temperature": "F 87C 31",
+            "temperature": "F 84C 29",
             "timer": "N/A",
             "video-info": "HDMI 3,1920 x 1080p  60 Hz,RGB,24bit,,Unknown,,24bit,,",
             "vol": 45

@@ -1,43 +1,88 @@
 #-----------------------------------
-# API commands defined in swagger.yml
+# Sample API integration for jc://remote/
 #-----------------------------------
 # (c) Christoph Kloth
 #-----------------------------------
 
-#---------------------------
-# initialize variables
-#---------------------------
+import logging, time
+import modules.rm3json                 as rm3json
+import modules.rm3config               as rm3config
 
-def init():
-    '''init test device'''
-
-    return "Connected"
-
+#import sampleAPI as sample
 
 #-------------------------------------------------
-# Execute IR command
+# API-class
 #-------------------------------------------------
 
-def send(device,button_code):
-    '''send IR command'''
-    
-    print("SEND: " + device + "/" + button_code)
-    return("OK: send test-"+device+"-"+button_code)
-    
-#-------------------------------------------------
+class testAPI():
+   '''
+   Integration of sample API to be use by jc://remote/
+   '''
 
-def record(device,button):
-    '''record new command'''
+   def __init__(self,api_name):
+       '''Initialize API / check connect to device'''
+       
+       self.api_name        = api_name       
+       self.api_description = "Test API Description for automatic testing"
+       self.working         = False
+       
+       logging.info("... "+self.api_name+" - " + self.api_description)
+              
+       self.connect()
+            
 
-    print("RECORD: " + device + "/" + button)
-    return("OK: record test-"+device+"-"+button)
+   #-------------------------------------------------
+   
+   def connect(self):
+       '''Connect / check connection'''
+
+       self.status = "Connected"
 
 
-#-------------------------------------------------
+   #-------------------------------------------------
+   
+   def wait_if_working(self):
+       '''Some devices run into problems, if send several requests at the same time'''
 
-def query():
-    return "WARN: Not supported"
+       while working:
+         logging.debug(".")
+         time.sleep(0.2)
+       return
+       
+       
+   #-------------------------------------------------
+   
+   def send(self,device,command):
+       '''Send command to API'''
 
+       print("SEND: " + device + "/" + command)
+       return("OK: send test-"+device+"-"+command)
+       
+       
+   #-------------------------------------------------
+   
+   def query(self,device,command):
+       '''Send command to API and wait for answer'''
+
+       return "WARN: Not supported by this API"
+       
+       
+   #-------------------------------------------------
+   
+   def record(self,device,command):
+       '''Record command, especially build for IR devices'''
+
+       print("RECORD: " + device + "/" + command)
+       return("OK: record test-"+device+"-"+command)
+
+       
+   #-------------------------------------------------
+   
+   def test(self):
+       '''Test device by sending a couple of commands'''
+
+       print("TEST: " + device + "/" + command)
+       return("OK: test commands-"+device+"-"+command)
 
 #-------------------------------------------------
 # EOF

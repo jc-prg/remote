@@ -9,22 +9,19 @@ import logging
 import modules.rm3json                as rm3json
 import modules.rm3config              as rm3config
 
-import interfaces.test_api            as test_api
-import interfaces.eiscp_api           as eiscp
-import interfaces.kodi_api            as kodi
-import interfaces.broadlink_api       as broadlink
+import interfaces.test_api
+import interfaces.kodi_api
+import interfaces.eiscp_api
+import interfaces.broadlink_api
 
-available = {
-	"BROADLINK"   : "Infrared Broadlink RM3",
-	"EISCP-ONKYO" : "API for ONKYO Devices",
-        "KODI"        : "API for KODI Servers (basic functionality, under development)",
-	"TEST"        : "Test API for automated tests"
-	}
+available = {}
+api       = {}
 	
 methods = {
         "record"      : "Record per device (record)",
         "query"       : "Request per API (query)"
 	}
+
 	
 #-------------------------------------------------
 
@@ -32,60 +29,71 @@ def init():
     '''
     Initialize APIs
     '''
-
-    logging.info("... BROADLINK - " + available["BROADLINK"])
-    Status = broadlink.init()
-    if Status != "Connected": logging.warn(Status)
-
-    logging.info("... EISCP-ONKYO - " + available["EISCP-ONKYO"])
-    Status = eiscp.init('192.168.1.33')
-    if Status != "Connected": logging.warn(Status)
-
-    logging.info("... KODI - " + available["KODI"])
-    Status = kodi.init()
-    if Status != "Connected": logging.warn(Status)
-
-    logging.info("... TEST - " + available["TEST"])
-    Status = test_api.init()
     
+    global api, available
+
+    api["KODI"]        = interfaces.kodi_api.kodiAPI("KODI")
+    api["TEST"]        = interfaces.test_api.testAPI("TEST")
+    api["EISCP-ONKYO"] = interfaces.eiscp_api.eiscpAPI("EISCP-ONKYO")
+    api["BROADLINK"]   = interfaces.broadlink_api.broadlinkAPI("BROADLINK")
+    
+    for key in api:
+       available[key] = api[key].api_description
+
+
+
 init()
 
 #-------------------------------------------------
 # Execute commands
 #-------------------------------------------------
 
-def test():
+def test(call_api):
+    '''test API'''
+    
+    global api   
+
+    if call_api in api: return api[call_api].test()
+    else:               return "ERROR: API not available ("+call_api+")"
+
     return "Interfaces are loaded"
 
 #-------------------------------------------------
 
-def send( api, device, button ):
+def send( call_api, device, button ):
+    '''check if API exists and send command'''
+    
+    global api   
+    logging.debug("SEND "+call_api+" / "+device+" - "+button)
 
-    button_code = get_command( api, "buttons", device, button ) 
-    if   api == "BROADLINK":    return broadlink.send(device,button_code)
-    elif api == "EISCP-ONKYO":  return eiscp.send(device,button_code)
-    elif api == "TEST":         return test_api.send(device,button_code)
-    elif api == "KODI":         return "API under construction"
-    else:                       return "API not available"
-
-
-def record( api, device, button ):
-
-    if   api == "BROADLINK":    return broadlink.record(device,button)
-    elif api == "TEST":         return test_api.record(device,button)
-    elif api == "EISCP-ONKYO":  return "API does not support record"
-    elif api == "KODI":         return "API does not support record"
-    else:                       return "API not available"
+    button_code = get_command( call_api, "buttons", device, button ) 
+    if call_api in api: return api[call_api].send(device,button_code)
+    else:               return "ERROR: API not available ("+call_api+")"
 
 
-def query( api, device, button):
+#-------------------------------------------------
 
-    button_code = get_command( api, "queries", device, button )
-    if   api == "BROADLINK":    return "API does not support query"
-    elif api == "KODI":         return "API under construction"
-    elif api == "TEST":         return "API does not support query"
-    elif api == "EISCP-ONKYO":  return eiscp.query(device,button_code)
-    else:                       return "API not available"
+def record( call_api, device, button ):
+    '''record a command'''
+    
+    global api   
+    logging.debug("RECORD "+call_api+" / "+device+" - "+button)
+
+    if call_api in api: return api[call_api].send(device,button_code)
+    else:               return "ERROR: API not available ("+call_api+")"
+
+
+#-------------------------------------------------
+
+def query( call_api, device, button):
+    '''query an information'''
+
+    global api   
+    button_code = get_command( call_api, "queries", device, button )
+    logging.debug("QUERY "+call_api+" / "+device+" - "+button)
+
+    if call_api in api: return api[call_api].query(device,button_code)
+    else:               return "ERROR: API not available ("+call_api+")"
 
 
 #-------------------------------------------------
@@ -102,6 +110,8 @@ def get_command(api,button_query,device,button):
        buttons_default = rm3json.read(rm3config.commands + api + "/default")
        for key in buttons_default["data"][button_query]:
          buttons["data"][button_query][key] = buttons_default["data"][button_query][key]
+
+    #logging.debug(buttons["data"][button_query][button])
 
     # check for errors or return button code
     if "ERROR" in buttons or "ERROR" in active:         return "ERROR"

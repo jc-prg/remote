@@ -1,95 +1,133 @@
 #-----------------------------------
-# API commands defined in swagger.yml
+# Sample API integration for jc://remote/
 #-----------------------------------
 # (c) Christoph Kloth
 #-----------------------------------
 
 import logging, time
+import modules.rm3json                 as rm3json
+import modules.rm3config               as rm3config
+
 import interfaces.eiscp as eiscp
 
 #-------------------------------------------------
-
-working  = False
-last_cmd = time.time()
-wait_cmd = 0.2
-
-#-------------------------------------------------
-# Execute command
+# API-class
 #-------------------------------------------------
 
-def init(ip):
-   global receiver
+class eiscpAPI():
+   '''
+   Integration of sample API to be use by jc://remote/
+   '''
 
-   # Create a receiver object, connecting to the host
-   try:
-     receiver = eiscp.eISCP(ip)
-   except Exception as e:
-     return "Error connecting to ONKYO device: " + str(e)
+   def __init__(self,api_name):
+       '''Initialize API / check connect to device'''
+       
+       self.api_name        = api_name       
+       self.api_description = "API for ONKYO Devices"
+       self.api_config      = rm3json.read(rm3config.interfaces+self.api_name)
+       self.api_ip          = self.api_config["IPAddress"]
+       self.working         = False
+       
+       logging.info("... "+self.api_name+" - " + self.api_description)
+       
+       self.connect()
+            
+   #-------------------------------------------------
    
-   return "Connected"
-
-#------------------------------------------------- 
-
-def wait_if_working():
-   '''API creates error, if several requests are done at the same time ... so wait'''
-   global working
-   while working:
-     logging.debug(".")
-
-#-------------------------------------------------
-
-def test():
-   global receiver, working
-
-   # Turn the receiver on, select PC input
-   wait_if_working()
-   working = True
-   receiver.command('power on')
-   receiver.command('source pc')
-   receiver.disconnect()
-   working = False
+   def connect(self):
+       '''Connect / check connection'''
+       
+       # Create a receiver object, connecting to the host
+       try:
+          self.api = eiscp.eISCP(self.api_ip)
+          self.status = "Connected"
+          
+       except Exception as e:
+          self.status = "Error connecting to ONKYO device: " + str(e)
+          logging.warn(self.status)
    
-#-------------------------------------------------
-
-def send(device,button_code):
-   global receiver, working
    
-   # Prepare command and send
-   logging.info("Button-Code: "+button_code)
-   button_code = button_code.replace("="," ")
+   #-------------------------------------------------
    
-   wait_if_working()
-   working = True
-   receiver.command(button_code)
-   receiver.disconnect()
-   working = False
-   return 
-
-
-#-------------------------------------------------
-
-def query(device,button_code):
-   global receiver, working
+   def wait_if_working(self):
+       '''Some devices run into problems, if send several requests at the same time'''
+       while self.working:
+         logging.debug(".")
+         time.sleep(0.2)
+       return
+       
+       
+   #-------------------------------------------------
    
-   # Prepare command and send
-   logging.info("Button-Code: "+button_code)
-   button_code = button_code.replace("="," ")
-   
-   wait_if_working()
-   working = True
-   result = receiver.command(button_code)
-   receiver.disconnect()
-   working = False
-   logging.debug(result)
+   def send(self,device,command):
+       '''Send command to API'''
 
-   return result
-   
-    
-#-------------------------------------------------
+       self.wait_if_working()
+       self.working = True
 
-def command_record():
-   return "Not supported"
- 
+       if self.status == "Connected":
+         logging.debug("Button-Code: "+command)
+         button_code = command.replace("="," ")
+         try:
+           self.api.command(button_code)
+           self.api.disconnect()
+         except Exception as e:
+           return "ERROR "+self.api_name+" - send: " + str(e)
+           
+       else:
+         return "ERROR "+self.api_name+": Not connected"
+
+       self.working = False
+       return "OK"
+       
+       
+   #-------------------------------------------------
+   
+   def query(self,device,command):
+       '''Send command to API and wait for answer'''
+
+       self.wait_if_working()
+       self.working = True
+
+       if self.status == "Connected":
+         button_code = command.replace("="," ")
+         logging.info("Button-Code: "+button_code)
+         try:
+           result      = self.api.command(button_code)
+           self.api.disconnect()
+           logging.debug(result)
+         except Exception as e:
+           return "ERROR "+self.api_name+" - query: " + str(e)
+           
+       else:
+         return "ERROR "+self.api_name+": Not connected"
+
+       self.working = False
+       return result
+       
+       
+   #-------------------------------------------------
+   
+   def record(self,device,command):
+       '''Record command, especially build for IR devices'''
+
+       return "WARN: Not supported by this API"
+
+       
+   #-------------------------------------------------
+   
+   def test(self):
+       '''Test device by sending a couple of commands'''
+
+       self.wait_if_working()
+       self.working = True
+
+       self.api.command('power on')
+       self.api.command('source pc')
+       self.api.disconnect()
+
+       self.working = False
+       return
 
 #-------------------------------------------------
 # EOF
