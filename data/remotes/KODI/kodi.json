@@ -1,0 +1,20 @@
+{
+    "data": {
+	"description" : "Kodi Media-Center",
+	"remote"      : [
+		"home","music","videos","pictures",
+		"weather","settings",
+		"LINE",
+		".", "up", ".","vol+",
+		"left","enter","right","mute",
+		".","down","back","vol-",
+		"LINE",
+		"DISPLAY"
+	],
+	"display" : {
+		"Mute"   : "mute",
+		"Name"   : "name",
+		"Volume" : "vol"
+		}
+	}
+}

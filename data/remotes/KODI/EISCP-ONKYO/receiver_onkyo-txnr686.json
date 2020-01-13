@@ -1,15 +1,8 @@
 {
-	"IPAddress"  : "192.168.1.33",
-	"Timeout"    : 5,
-	"Methods"    : ["send","query"],
-	"Commands"   : {
-        	"on"      	: "system-power=on",
-        	"off"     	: "system-power=off",
-        	"vol+"    	: "master-volume=level-up",
-        	"vol-"    	: "master-volume=level-down",
-        	"mute"    	: "audio-muting=toggle",
-        	"mute-off"	: "audio-muting=off",
-        	"mute-on"	: "audio-muting=on",
+    "data": {
+        "description" : "AV-Receiver: ONKYO TX-NR686(B)",
+        "method"  : "query",
+        "buttons" : {
         	"display" 	: "display-mode=toggle",
         	"pc"      	: "input-selector=pc",
         	"tv"      	: "input-selector=tv",
@@ -35,10 +28,7 @@
         	"right"         : "setup=right",
         	"left"          : "setup=left"
        		},
-       	"Queries" : {
-       		"power"		: "system-power=query",
-        	"vol"     	: "master-volume=query",
-        	"mute"    	: "audio-muting=query",
+       	"queries" : {
         	"display" 	: "display-mode=query",
         	"source"  	: "input-selector=query",
         	"temperature"	: "temperature-data=query",
@@ -46,8 +36,8 @@
 	       	"dimmer"        : "dimmer-level=query",
 	       	"audio-info"    : "audio-information=query",
 	       	"video-info"    : "video-information=query"
-        	},
-	"API-Source"      : "https://github.com/miracle2k/onkyo-eiscp",
-	"API-Info"        : "https://github.com/miracle2k/onkyo-eiscp",
-	"API-Description" : "API for ONKYO Devices"
+       		},
+        "values": {
+        	}
+   }
 }

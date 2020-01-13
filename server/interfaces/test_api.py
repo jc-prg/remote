@@ -81,8 +81,8 @@ class testAPI():
    def test(self):
        '''Test device by sending a couple of commands'''
 
-       print("TEST: " + device + "/" + command)
-       return("OK: test commands-"+device+"-"+command)
+       print("TEST:" + self.api_name + "/" + self.api_description + " (no further action)")
+       return("OK: test commands")
 
 #-------------------------------------------------
 # EOF

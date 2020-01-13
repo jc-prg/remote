@@ -60,7 +60,7 @@ class sampleAPI():
 
 
        self.working = False
-       return
+       return "OK"
        
        
    #-------------------------------------------------
@@ -73,7 +73,7 @@ class sampleAPI():
 
 
        self.working = False
-       return
+       return "Command"
        
        
    #-------------------------------------------------
@@ -86,7 +86,7 @@ class sampleAPI():
 
 
        self.working = False
-       return
+       return "OK"
 
        
    #-------------------------------------------------
@@ -99,7 +99,7 @@ class sampleAPI():
 
 
        self.working = False
-       return
+       return "OK"
 
 #-------------------------------------------------
 # EOF

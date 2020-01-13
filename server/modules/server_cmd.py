@@ -65,7 +65,7 @@ def readStatus(data):
 
     global status_cache, status_cache_time, status_cache_interval #,rm_data
         
-    if time.time() - status_cache_time > 5 or status_cache_time == 0:
+    if time.time() - status_cache_time >= 5 or status_cache_time == 0:
     
       devices    = rm3json.read(rm3config.devices + rm3config.active)    
       for device in devices:        
@@ -80,8 +80,8 @@ def readStatus(data):
             for value in data[device]["query_list"]:
               try:
                 test = interfaces.query(data[device]["interface"],device,value)
-                devices[device]["status"][value]      = test[1]
-                data[device]["status"][value]         = test[1] 
+                devices[device]["status"][value]      = str(test)
+                data[device]["status"][value]         = str(test)
                   
               except Exception as e:
                 logging.error(str(e)+" / " + device + "-" + value + " : " + data[device]["interface"])
@@ -654,6 +654,9 @@ def Remote(device,button):
         '''
         send IR command and return JSON msg
         '''
+        
+        global status_cache_time
+        status_cache_time = 0
 
         data                      = remoteAPI_start(["no-data"])
         interface                 = rm_data["devices"][device]["interface"]
@@ -661,10 +664,13 @@ def Remote(device,button):
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Button"] = button
         data["REQUEST"]["Return"] = interfaces.send(interface,device,button)
+        
+        if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
 
         data["DeviceStatus"]      = rm3status.getStatus(device)  # to be removed
         data["ReturnMsg"]         = data["REQUEST"]["Return"]    # to be removed
-        data                      = remoteAPI_end(data)        
+        data                      = remoteAPI_end(data)      
+        
         return data
 
 
@@ -674,6 +680,9 @@ def RemoteMakro(makro):
         '''
         send makro (list of commands)
         '''
+
+        global status_cache_time
+        status_cache_time = 0
 
         data                      = remoteAPI_start(["no-data"])
       
@@ -706,6 +715,9 @@ def RemoteOnOff(device,button):
         '''
         check old status and document new status
         '''
+
+        global status_cache_time
+        status_cache_time = 0
 
         data            = remoteAPI_start()    
         interface       = data["DATA"]["devices"][device]["interface"]
@@ -777,6 +789,8 @@ def RemoteOnOff(device,button):
         data["REQUEST"]["Return"]    = interfaces.send(interface,device,button)
         data                         = remoteAPI_end(data)        
 
+        if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
+
         rm_data_update = True
         return data
 
@@ -835,9 +849,11 @@ def RemoteRecordCommand(device,button):
         Learn Button and safe to init-file
         '''
 
-        data                         = remoteAPI_start(["no-data"])
+        data                         = remoteAPI_start()
+        interface                    = data["DATA"]["devices"][device]["interface"]
+        data["DATA"]                 = {}
         
-        EncodedCommand               = interfaces.record("BROADLINK",device,button)
+        EncodedCommand               = interfaces.record(interface,device,button)
         data["REQUEST"]["Return"]    = addCommand2Button(device,button,EncodedCommand)       
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button

@@ -16,8 +16,8 @@ import interfaces.broadlink_api
 
 available = {}
 api       = {}
-	
-methods = {
+methods   = {
+        "send"        : "Send command via API (send)",
         "record"      : "Record per device (record)",
         "query"       : "Request per API (query)"
 	}
@@ -48,15 +48,15 @@ init()
 # Execute commands
 #-------------------------------------------------
 
-def test(call_api):
-    '''test API'''
+def test():
+    '''test all APIs'''
     
     global api   
+    for key in api: 
+      status = api[key].test()
+      if "ERROR" in str(status): return status
 
-    if call_api in api: return api[call_api].test()
-    else:               return "ERROR: API not available ("+call_api+")"
-
-    return "Interfaces are loaded"
+    return "OK"
 
 #-------------------------------------------------
 
@@ -79,7 +79,7 @@ def record( call_api, device, button ):
     global api   
     logging.debug("RECORD "+call_api+" / "+device+" - "+button)
 
-    if call_api in api: return api[call_api].send(device,button_code)
+    if call_api in api: return api[call_api].send(device,button)
     else:               return "ERROR: API not available ("+call_api+")"
 
 

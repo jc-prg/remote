@@ -1,0 +1,42 @@
+{
+    "data": {
+	"description" : "Kodi Media-Center",
+        "method"  : "query",
+        "buttons"   : {
+		"home"		: "GUI.ActivateWindow({'window':'home'})",
+		"weather"	: "GUI.ActivateWindow({'window':'weather'})",
+		"pictures"	: "GUI.ActivateWindow({'window':'pictures'})",
+		"videos"   	: "GUI.ActivateWindow({'window':'videos'})",
+		"music"		: "GUI.ActivateWindow({'window':'music'})",
+		"settings"	: "GUI.ActivateWindow({'window':'settings'})",
+		"hello-world"   : "GUI.ShowNotification(title='Hello World', message='Hello World!!!')",
+		"mute-on"	: "Application.SetMute({'mute':True})",
+		"mute-off"	: "Application.SetMute({'mute':False})",
+		"video-play"	: "Player.Play([PLAYER_VIDEO])",
+		"video-pause"	: "Player.PlayPause([PLAYER_VIDEO])",
+		"video-stop"	: "Player.Stop([PLAYER_VIDEO])",
+		"left"		: "Input.Left()",
+		"right"		: "Input.Right()",
+		"up"		: "Input.Up()",
+		"down"		: "Input.Down()",
+		"back"		: "Input.Back()",
+		"info"		: "Input.Info()",
+		"enter"         : "Input.Select()",
+		"back"          : "Input.Back()",
+		"menu"          : "Input.ContextMenu()",
+		"page-up"       : "GUI.PageUp()",
+		"page-down"     : "GUI.PageDown()",
+		"vol+"          : "jc.IncreaseVolume(5)",
+		"vol-"          : "jc.DecreaseVolume(5)",
+		"mute"	        : "jc.ToggleMute()"
+		},
+	"queries"    : {
+	        "vol"		: "Application.GetProperties({'properties': ['volume']})||['result']['volume']",
+	        "version"	: "Application.GetProperties({'properties': ['version']})||['result']['version']",
+	        "name"		: "Application.GetProperties({'properties': ['name']})||['result']['name']",
+	        "mute"		: "Application.GetProperties({'properties': ['muted']})||['result']['muted']"
+		},
+	"values" : {},
+	"display" : {}
+	}
+}

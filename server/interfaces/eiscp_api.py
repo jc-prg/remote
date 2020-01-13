@@ -91,7 +91,7 @@ class eiscpAPI():
 
        if self.status == "Connected":
          button_code = command.replace("="," ")
-         logging.info("Button-Code: "+button_code)
+         logging.debug("Button-Code: "+button_code+" ("+self.api_name+")")
          try:
            result      = self.api.command(button_code)
            self.api.disconnect()
@@ -103,7 +103,7 @@ class eiscpAPI():
          return "ERROR "+self.api_name+": Not connected"
 
        self.working = False
-       return result
+       return result[1]
        
        
    #-------------------------------------------------
@@ -122,12 +122,15 @@ class eiscpAPI():
        self.wait_if_working()
        self.working = True
 
-       self.api.command('power on')
-       self.api.command('source pc')
-       self.api.disconnect()
+       try:
+         self.api.command('power on')
+         self.api.command('source pc')
+         self.api.disconnect()
+       except Exception as e:
+         return "ERROR "+self.api_name+": "+str(e)
 
        self.working = False
-       return
+       return "OK"
 
 #-------------------------------------------------
 # EOF
