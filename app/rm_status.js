@@ -247,14 +247,25 @@ function check_status(data={}) {
 		        display = devices[key]["display"];
 			for (var dkey in display) {
 				var vkey    = display[dkey];
-				var element = document.getElementById("display_" + key + "_" + vkey);
+				var element  = document.getElementById("display_" + key + "_" + vkey);
+				var element2 = document.getElementById("display_full_" + key + "_" + vkey);
 				var status  = devices[key]["status"][vkey];
 				
 				if (devices[key]["values"] && devices[key]["values"][vkey] && vkey == "vol") {
 					if (devices[key]["values"][vkey]["max"]) { status = show_volume( devices[key]["status"][vkey], devices[key]["values"][vkey]["max"], vol_color2, novol_color ) + " &nbsp; ["+devices[key]["status"][vkey]+"]"; }
 					}
 				
-				if (element) { element.innerHTML = status; }
+				if (element)  { element.innerHTML = status; }
+				if (element2) { element2.innerHTML = status; }
+				}
+			}
+		if (devices[key]["status"] && devices[key]["query_list"]) {
+		        display = devices[key]["query_list"];
+			for (var i=0; i<display.length; i++) {
+				var vkey    = display[i];
+				var element2 = document.getElementById("display_full_" + key + "_" + vkey);
+				var status  = devices[key]["status"][vkey];		
+				if (element2) { element2.innerHTML = status; }
 				}
 			}
 		}

@@ -313,8 +313,6 @@ function rmRemote(name) {
                 var list = {};
                 if (filter != "" && filter in this.data["DATA"]["devices"]) {
                 
-console.error(this.data["DATA"]["devices"][filter]);  
-
                         for (var key in this.data["DATA"]["devices"][filter]["buttons"]){
                                 list[filter+"_"+key] = key;
                                 }
@@ -366,7 +364,7 @@ console.error(this.data["DATA"]["devices"][filter]);
 		else							{ display_data["Error"] = "No display defined"; } 
 
         	var text  = "";
-        	text += "<button class='display "+style+"'>"
+        	text += "<button class=\"display "+style+"\" onclick=\"" + this.app_name + ".display_alert('"+id+"','"+device+"','"+style+"');\">";
         	for (var key in display_data) {
         		var label = "<data class='display-label'>"+key+":</data>";
 			var input = "<data class='display-input' id='display_"+device+"_"+display_data[key]+"'>no data</data>";
@@ -374,6 +372,29 @@ console.error(this.data["DATA"]["devices"][filter]);
 	        	}
         	text += "</button>";
         	return text;
+        	}
+        	
+        // display all information
+        this.display_alert = function( id, device, style="" ) {
+        
+		var display_data = [];
+		if (this.data["DATA"]["devices"][device]["query_list"])	{ display_data = this.data["DATA"]["devices"][device]["query_list"]; }
+		else							{ display_data = ["ERROR","No display defined"]; } 
+
+        	var text = "Device Information: "+device +"<hr/>";
+        	text  += "<div style='width:100%;height:200px;overflow-y:scroll;'>";
+        	text  += this.tab_row("start","100%");
+
+        	for (var i=0; i<display_data.length; i++) {
+        		var label = "<data class='display-label'>"+display_data[i]+":</data>";
+			var input = "<data class='display-input' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>";
+	        	//text += "<div class='display-element alert'>"+label+input+"</div><br/>";
+	        	text += this.tab_row("<div style='width:100px;'>"+label+"</div>",input);
+	        	}
+        	text  += this.tab_row("end");
+        	text  += "</div>";
+		rm3msg.confirm(text,"",300);
+		check_status(this.data);
         	}
           
 
@@ -516,7 +537,7 @@ console.error(this.data["DATA"]["devices"][filter]);
 
         // write table tags
 	this.tab_row = function (td1,td2="")  { 
-		if (td1 == "start")	{ return "<table border=\"0\">"; }
+		if (td1 == "start")	{ return "<table border=\"0\" width=\""+td2+"\">"; }
 		else if (td1 == "end")	{ return "</table>"; }
 		else			{ return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
 		}

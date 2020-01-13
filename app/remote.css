@@ -199,6 +199,7 @@ button {
    text-align        : left;
 }
 
+.display-element.alert   { color : black; }
 .display-element.small   { width : 56px; }
 .display-element.middle  { width : 118px; }
 .display-element.big     { width : 118px; }
