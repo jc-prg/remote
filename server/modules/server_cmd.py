@@ -175,6 +175,8 @@ def RmReadData(selected=[]):
 
                 if "display" in remote["data"]:   
                   data_temp["display"]           = remote["data"]["display"]              
+                if "display-size" in remote["data"]:   
+                  data_temp["display-size"]           = remote["data"]["display-size"]              
            
                 data["devices"][device] = data_temp
  

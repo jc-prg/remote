@@ -84,11 +84,14 @@ function rmRemote(name) {
 	
 	//console.error("device_remote");
 	
-		var remote            = "";
-		var remote_label      = this.data["DATA"]["devices"][device]["label"];
-		var remote_definition = this.data["DATA"]["devices"][device]["remote"];
-		var remote_buttons    = this.data["DATA"]["devices"][device]["buttons"];
+		var remote             = "";
+		var remote_displaysize = "middle";
+		var remote_label       = this.data["DATA"]["devices"][device]["label"];
+		var remote_definition  = this.data["DATA"]["devices"][device]["remote"];
+		var remote_buttons     = this.data["DATA"]["devices"][device]["buttons"];
 
+		if (this.data["DATA"]["devices"][device]["display-size"]) { remote_displaysize = this.data["DATA"]["devices"][device]["display-size"]; }
+		
 		rm3cookie.set("remote","device::"+device+"::"+remote_label);
 
 		for (var i=0; i<remote_definition.length; i++) {
@@ -98,7 +101,7 @@ function rmRemote(name) {
 
 			if (button == "LINE") 			{ remote += "<div style='width:100%;float:left;'><hr/></div>"; }
 			else if (button == ".") 		{ remote += this.button_device( device+i, ".", "empty", "", "disabled" ) }
-			else if (button == "DISPLAY")		{ remote += this.display(id,device,"middle"); }
+			else if (button == "DISPLAY")		{ remote += this.display(id,device,remote_displaysize); }
 			else if (button in remote_buttons) 	{ remote += this.button_device( cmd, button, "", cmd, "" ); this.active_buttons.push(cmd); }
 			else if (this.edit_mode)        	{ remote += this.button_device_add( cmd, button, "notfound", cmd, "" ); }
 			else                            	{ remote += this.button_device( cmd, button, "notfound", cmd, "disabled" ); }
@@ -412,7 +415,8 @@ function rmRemote(name) {
 	                onContext  = "oncontextmenu=\"return false;\"";
 	                }
 	
-		var button = "<button id='" + id.toLowerCase() + "' class='button " + style + "' " + onClick + " " + onContext + " " + disabled + " style='float:left;'>" + label + "</button>";
+		if (style != "") { style = " " + style; }
+		var button = "<button id='" + id.toLowerCase() + "' class='button" + style + "' " + onClick + " " + onContext + " " + disabled + " >" + label + "</button>"; // style='float:left;'
 		//console.debug(button);
 		return button;
 		}
