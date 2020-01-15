@@ -15,6 +15,7 @@
 		"Mute"   : "mute",
 		"Name"   : "name",
 		"Volume" : "vol"
-		}
+		},
+	"display-size"   : "middle"
 	}
 }

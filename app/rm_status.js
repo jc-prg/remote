@@ -16,7 +16,7 @@ function show_status_button(id, status) {
 	if (status == "ON")		{color = "darkgreen";}
 	else if (status == "OFF")	{color = "darkred";}
 	else if (status == "OTHER")	{color = "purple";}
-	else				{color = "black";}
+	else				{color = "";} // reset to CSS color
 
 	var button = document.getElementById(id);
 	if (typeof(button) != 'undefined' && button != null) {
@@ -50,7 +50,7 @@ function show_status( color, wait ) {
 // change button color
 function set_button_status(id,active) {
 	if (document.getElementById(id)) {
-		if (active) 	{ document.getElementById(id).style.backgroundColor = "#000000"; }
+		if (active) 	{ document.getElementById(id).style.backgroundColor = ""; }  // reset to CSS color
 		else 		{ document.getElementById(id).style.backgroundColor = "#666666"; }
 		}
 	}
