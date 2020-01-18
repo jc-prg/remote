@@ -103,8 +103,13 @@
 * OK - optimized directory structure to prepare additional device/API integration
 * OK - added display (with queried information from API)
 * OK - correct show / hide menu
+* OK - get display size (small,middle,big) from remote config file
 
 * IN PROGRESS - create license free icon set
+  - ideas: https://www.freeicons.io/icon-list/material-icons-navigation-2
+           https://www.freeicons.io/icon-list/material-icons-action
+           https://www.freeicons.io/icon-list/free-mobile-app-icons
+           https://www.freeicons.io/icon-list/material-icons-hardware-2
 * IN PROGRESS - edit device parameters via settings page (description, driver, image)
 
 - edit device parameters via settings page (status definition)

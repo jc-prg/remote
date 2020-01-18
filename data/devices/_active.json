@@ -15,7 +15,7 @@
         "interface": "BROADLINK",
         "label": "Beamer",
         "status": {
-            "power": "OFF"
+            "power": "ON"
         },
         "visible": "yes"
     },
@@ -37,7 +37,7 @@
         "interface": "BROADLINK",
         "label": "Leinwand",
         "status": {
-            "power": "OFF"
+            "power": "ON"
         },
         "visible": "yes"
     },
@@ -50,7 +50,7 @@
             "mute": "False",
             "name": "Kodi",
             "version": "{'major': 18, 'minor': 4, 'revision': '20191027-06c77692ee', 'tag': 'stable'}",
-            "vol": "40"
+            "vol": "100"
         },
         "visible": "yes"
     },
@@ -74,7 +74,7 @@
         "interface": "EISCP-ONKYO",
         "label": "AV Receiver",
         "status": {
-            "audio-info": "HDMI 5,PCM,44.1 kHz,2.0 ch,All Ch Stereo,5.1 ch,",
+            "audio-info": "HDMI 5,PCM,48 kHz,2.0 ch,Direct,2.0 ch,",
             "dimmer": "dark",
             "display": "('selector-volume-1line', 'default-2line')",
             "mute": "off",
@@ -82,8 +82,8 @@
             "source": "('video6', 'pc')",
             "temperature": "F 86C 30",
             "timer": "N/A",
-            "video-info": "HDMI 5,1280 x 720p   60 Hz,RGB,24bit,MAIN,1280 x 720p   60 Hz,RGB,24bit,,",
-            "vol": "46"
+            "video-info": "HDMI 5,1280 x 720p   60 Hz,RGB,36bit,MAIN,1280 x 720p   60 Hz,RGB,36bit,,",
+            "vol": "45"
         },
         "visible": "yes"
     },

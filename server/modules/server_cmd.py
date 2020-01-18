@@ -18,6 +18,7 @@ import modules.rm3status     as rm3status
 import modules.rm3json       as rm3json
 import modules.rm3stage      as rm3stage
 import modules.rm3config     as rm3config
+import modules.server_thread as remoteThread
 
 from os import path
 from Crypto.Cipher import AES
@@ -55,6 +56,11 @@ def ErrorMsg(code):
 status_cache          = {}
 status_cache_time     = 0
 status_cache_interval = 5
+
+#---------------------------
+
+sendRemote = remoteThread.sendCmd("sendRemote")
+sendRemote.start()
 
 #---------------------------
 
@@ -256,9 +262,7 @@ def addDevice(device,interface,description):
         "interface" : interface,
         "label"     : description,       # to be edited later
         "main-audio": "no",
-        "status"    : {
-            "power" : "OFF",
-            },
+        "status"    : { "power" : "OFF" },
         "visible"   : "yes"    	
         }
     try:
@@ -665,7 +669,8 @@ def Remote(device,button):
         
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Button"] = button
-        data["REQUEST"]["Return"] = interfaces.send(interface,device,button)
+        #data["REQUEST"]["Return"] = interfaces.send(interface,device,button)
+        data["REQUEST"]["Return"] = sendRemote.add2queue([[interface,device,button]])
         
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
 
@@ -685,12 +690,23 @@ def RemoteMakro(makro):
 
         global status_cache_time
         status_cache_time = 0
-
-        data                      = remoteAPI_start(["no-data"])
+        
+               
+        data                      = remoteAPI_start(["no_data"])
       
         data["REQUEST"]["Button"] = makro
         data["REQUEST"]["Return"] = "ERROR: not implemented yet." #interfaces.send(interface,device,button)
+        
+        commands                  = makro.split("::")
+        for command in commands:
+          if "_" in command: 
+            device,button               = command.split("_")
+            interface                   = rm_data["devices"][device]["interface"]
+            data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([[interface,device,button]])
+          else:
+            data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([float(command)])
 
+        data["DATA"]              = {}
         data                      = remoteAPI_end(data)        
         return data
 
@@ -788,7 +804,8 @@ def RemoteOnOff(device,button):
         
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
-        data["REQUEST"]["Return"]    = interfaces.send(interface,device,button)
+        #data["REQUEST"]["Return"]    = interfaces.send(interface,device,button)
+        data["REQUEST"]["Return"] = sendRemote.add2queue([[interface,device,button]])
         data                         = remoteAPI_end(data)        
 
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
