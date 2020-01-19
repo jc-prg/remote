@@ -13,6 +13,9 @@
 
 
 function show_status_button(id, status) {
+
+if (status.includes("device")) { console.error(id+"."+status); }
+	
 	if (status == "ON")		{color = "darkgreen";}
 	else if (status == "OFF")	{color = "darkred";}
 	else if (status == "OTHER")	{color = "purple";}
@@ -183,34 +186,55 @@ function check_status(data={}) {
 
 	// check device status and change color of power buttons / main menu buttons device
 	for (var key1 in devices) {
-	  for (var key2 in devices[key1]["status"]) {
-	  
+	
+	  // if device is visible
+	  if (devices[key1]["visible"] == "yes") {
+	    for (var key2 in devices[key1]["status"]) {
+	    
+	      // if power staus
+	      if (key2.includes("power")) {
 	        key = key1;
 	        if (key2 != "power") { key += "_"+key2; }
 	        
 	        //console.error("TEST "+key1+"_"+key2+" = "+devices[key1]["status"][key2]);
 
-		if (typeof devices[key1]["status"][key2] == "string")	{ check_button = devices[key1]["status"][key2].toUpperCase() }
-		else							{ check_button = devices[key1]["status"][key2]; }
+		check_button = devices[key1]["status"][key2];
 
-		show_status_button( "device_" + key, check_button ); // main menu button
-		show_status_button( key + "_on-off", check_button ); // on-off device button
+		if (typeof check_button == "string") {
+			check_button = check_button.toUpperCase()
 			
-		if (typeof check_button == "string" && check_button == "ON") {
-			show_status_button( key + "_on",  check_button );
-			show_status_button( key + "_off", "" );
+			if (check_button.includes("ON")) {
+				show_status_button( "device_" + key, "ON" ); // main menu button
+				show_status_button( key + "_on-off", "ON" ); // on-off device button		
+				show_status_button( key + "_on",  "ON" );
+				show_status_button( key + "_off", "" );
+				}
+			else if (check_button.includes("OFF")) {
+				show_status_button( "device_" + key, "OFF" ); // main menu button
+				show_status_button( key + "_on-off", "OFF" ); // on-off device button		
+				show_status_button( key + "_off", "OFF" );
+				show_status_button( key + "_on",  "" );
+				}	
 			}
-		if (typeof check_button == "string" && check_button == "OFF") {
-			show_status_button( key + "_off", check_button );
-			show_status_button( key + "_on",  "" );
-			}	
-
-		if (typeof check_button == "object" && check_button.indexOf("off") >= 0) {
-			show_status_button( key + "_off", "OFF" );
-			show_status_button( key + "_on",  "" );
+			
+		if (typeof check_button == "object") {
+			if (check_button.indexOf("off") >= 0) {
+				show_status_button( "device_" + key, "OFF" ); // main menu button
+				show_status_button( key + "_on-off", "OFF" ); // on-off device button		
+				show_status_button( key + "_off", "OFF" );
+				show_status_button( key + "_on",  "" );
+				}	
+			else if (check_button.indexOf("on") >= 0) {
+				show_status_button( "device_" + key, "ON" ); // main menu button
+				show_status_button( key + "_on-off", "ON" ); // on-off device button		
+				show_status_button( key + "_on",  "ON" );
+				show_status_button( key + "_off", "" );
+				}
 			}	
 		}
+	      }
 	   }
+	}
 
 	// check scene status and change color of power buttons
 	for (var key in scene_status) {

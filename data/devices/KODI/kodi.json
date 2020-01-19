@@ -34,7 +34,8 @@
 	        "vol"		: "Application.GetProperties({'properties': ['volume']})||['result']['volume']",
 	        "version"	: "Application.GetProperties({'properties': ['version']})||['result']['version']",
 	        "name"		: "Application.GetProperties({'properties': ['name']})||['result']['name']",
-	        "mute"		: "Application.GetProperties({'properties': ['muted']})||['result']['muted']"
+	        "mute"		: "Application.GetProperties({'properties': ['muted']})||['result']['muted']",
+	        "power"		: "jc.PowerStatus()||['result']['power']"
 		},
 	"values" : {},
 	"display" : {}

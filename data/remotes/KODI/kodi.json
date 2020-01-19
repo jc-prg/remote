@@ -2,6 +2,8 @@
     "data": {
 	"description" : "Kodi Media-Center",
 	"remote"      : [
+		".", ".", ".","on",
+		"LINE",
 		"home","music","videos","pictures",
 		"weather","settings",
 		"LINE",
