@@ -27,6 +27,7 @@ class kodiAPI():
        self.api_config      = rm3json.read(rm3config.interfaces+self.api_name)
        self.api_url         = "http://"+str(self.api_config["IPAddress"])+":"+str(self.api_config["Port"])+"/jsonrpc"
        self.working         = False
+       self.status          = "Started"
        
        logging.info("... "+self.api_name+" - " + self.api_description)
        logging.debug(self.api_url)
@@ -43,10 +44,13 @@ class kodiAPI():
           #self.api   = Kodi(self.api_url, "login", "password")
           self.api.jc = kodiAPIaddOn(self.api)
           logging.debug(str(self.api.JSONRPC.Ping()))
-          self.status = "Connected"
+          
+          self.status        = "Connected"
+          self.api.jc.status = "Connected"
 
        except Exception as e:
-          self.status = "Error connecting to KODI server: " + str(e)
+          self.status          = "Error connecting to KODI server: " + str(e)
+          self.api.jc.status   = "Error connecting to KODI server: " + str(e)
           logging.warn(self.status)
        
        
@@ -95,17 +99,20 @@ class kodiAPI():
        
        result  = {}
        logging.info("Button-Code: "+command+" ("+self.api_name+")")
-       command_param = command.split("||")
+
+       if "||" in command: command_param = command.split("||")
+       else:               command_param = [command]
 
        if self.status == "Connected":
          command = "self.api."+command_param[0]
          try:
            result = eval(command)
            logging.info(str(result))
+           
            if "error" in result:      return "ERROR "+self.api_name+" - " + result["error"]["message"]
            if not "result" in result: return "ERROR "+self.api_name+" - unexpected result format."
            
-           if len(command_param) > 0: result_param = eval("result"+command_param[1])
+           if len(command_param) > 1: result_param = eval("result"+command_param[1])
            else:                      result_param = str(result)
            
          except Exception as e:       return "ERROR "+self.api_name+" - query: " + str(e)
@@ -194,6 +201,19 @@ class kodiAPIaddOn():
       self.api.Application.SetMute({ "mute" : self.mute })
       return({"result" : self.mute})
       
+   #-------------------------------------------------
+   
+   def PowerStatus(self):
+      '''Return Power Status'''
+
+      self.power = {}
+      if self.status == "Connected": self.power["result"] = { "power" : "ON" }
+      else:                          self.power["result"] = { "power" : "OFF" }
+      
+      logging.info("TEST "+str(self.status))
+
+      return self.power
+       
 
 #-------------------------------------------------
 # EOF
