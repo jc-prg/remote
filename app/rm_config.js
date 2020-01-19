@@ -71,7 +71,7 @@ var remote_std = [
 // ------------------------------------------
 
 function image(file) {
-        return "<img src='icon/"+file+"' style='height:15px;margin:0px;padding:0px;' alt='"+file+"' />";
+        return "<img src='icon/"+file+"' style='max-height:18px;max-width:24px;margin:0px;padding:0px;' alt='"+file+"' />";
         }
 
 // ------------------------------------------
