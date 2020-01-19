@@ -263,6 +263,13 @@ function sendMakro( makro ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
 	rm3msg.wait_small("Please wait ...<br/>");
 	console.log( "Send makro: " + makro );
 	
+	dc = [ "makro", makro ];
+	rm3app.requestAPI( "GET", dc );
+	rm3msg.hide();
+	return;
+	
+	// old definition, server side execution off the command
+	
 	var makro_def = dataAll["DATA"]["makros"];
 
     	setTimeout(function(){

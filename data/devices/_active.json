@@ -74,16 +74,16 @@
         "interface": "EISCP-ONKYO",
         "label": "AV Receiver",
         "status": {
-            "audio-info": "HDMI 5,PCM,48 kHz,2.0 ch,Direct,2.0 ch,",
+            "audio-info": "ANALOG,,,,Direct,2.0 ch,",
             "dimmer": "dark",
             "display": "('selector-volume-1line', 'default-2line')",
             "mute": "off",
-            "power": "on",
+            "power": "('standby', 'off')",
             "source": "('video6', 'pc')",
             "temperature": "F 86C 30",
             "timer": "N/A",
-            "video-info": "HDMI 5,1280 x 720p   60 Hz,RGB,36bit,MAIN,1280 x 720p   60 Hz,RGB,36bit,,",
-            "vol": "45"
+            "video-info": "No Video,Unknown,,24bit,,Unknown,,24bit,,",
+            "vol": "43"
         },
         "visible": "yes"
     },
@@ -94,7 +94,7 @@
         "label": "TV/Radio",
         "status": {
             "mute": "OFF",
-            "power": "OFF",
+            "power": "ON",
             "radiotv": "TV",
             "tv_mute": "ON",
             "vol": 0
