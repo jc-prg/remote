@@ -13,6 +13,7 @@ services:
     volumes:
       - ${REMOTE_DIR_SERVER}:/usr/src/app/server
       - ${REMOTE_DIR_DATA}:${REMOTE_DIR_DATA}
+      - ${REMOTE_DIR_ICONS}:${REMOTE_DIR_ICONS}
       - ${REMOTE_DIR_ICON_INDEX}:${REMOTE_DIR_ICON_INDEX}
     ports:
       - ${REMOTE_SERVER_PORT}:${REMOTE_SERVER_PORT}
