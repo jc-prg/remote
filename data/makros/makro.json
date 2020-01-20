@@ -13,7 +13,7 @@
 		"radiotv":   ["rec2_cable-sat",  "tv_radiotv"],
 		"tv":        ["rec2_cable-sat",  "tv_radiotv||TV"],
 		"radio":     ["rec2_cable-sat",  "tv_radiotv||RADIO"],
-		"mute":      ["rec2_mute",       "tv_mute||MUTE_OFF"],
+		"mute":      ["rec2_mute",       "tv_mute||OFF"],
 		"stereo":    ["rec2_stereo"],
 
 		"vol+":      ["rec2_vol+","rec2_vol+","rec2_vol+","rec2_vol+","rec2_vol+"],

@@ -15,7 +15,7 @@
         "interface": "BROADLINK",
         "label": "Beamer",
         "status": {
-            "power": "ON"
+            "power": "OFF"
         },
         "visible": "yes"
     },
@@ -37,7 +37,7 @@
         "interface": "BROADLINK",
         "label": "Leinwand",
         "status": {
-            "power": "ON"
+            "power": "OFF"
         },
         "visible": "yes"
     },
@@ -95,7 +95,7 @@
         "label": "TV/Radio",
         "status": {
             "mute": "OFF",
-            "power": "ON",
+            "power": "OFF",
             "radiotv": "TV",
             "tv_mute": "ON",
             "vol": 0

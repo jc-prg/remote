@@ -692,18 +692,57 @@ def RemoteMakro(makro):
         status_cache_time = 0
         
                
-        data                      = remoteAPI_start(["no_data"])
+        data                      = remoteAPI_start()
       
         data["REQUEST"]["Button"] = makro
         data["REQUEST"]["Return"] = "ERROR: not implemented yet." #interfaces.send(interface,device,button)
         
-        commands                  = makro.split("::")
-        for command in commands:
-          if "_" in command: 
-            device,button               = command.split("_")
-            interface                   = rm_data["devices"][device]["interface"]
-            data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([[interface,device,button]])
-          else:
+        commands_1st              = makro.split("::")
+        commands_2nd              = []
+        commands_3rd              = []
+        
+        # decode makros: scene-on/off
+        for command in commands_1st:
+          if not command.isnumeric() and "_" in command:  
+            device,button = command.split("_",1)
+            if "scene-on_" in command:     commands_2nd.extend(data["DATA"]["makros"]["scene-on"][button])
+            elif "scene-off_" in command:  commands_2nd.extend(data["DATA"]["makros"]["scene-off"][button])
+            else:                          commands_2nd.extend([command])
+          else:                            commands_3rd.extend([command])
+          
+        # decode makros: dev-on/off
+        for command in commands_2nd:
+          if not command.isnumeric() and "_" in command:  
+            device,button = command.split("_",1)
+            if "dev-on_" in command:     commands_3rd.extend(data["DATA"]["makros"]["dev-on"][button])
+            elif "dev-off_" in command:  commands_3rd.extend(data["DATA"]["makros"]["dev-off"][button])
+            else:                        commands_3rd.extend([command])
+          else:                          commands_3rd.extend([command])
+          
+        logging.info(str(commands_3rd))
+                  
+        # decode makros: makros
+        for command in commands_3rd:
+          if not command.isnumeric() and "_" in command:
+            device,button_status        = command.split("_",1)                         # split device and button
+            interface                   = data["DATA"]["devices"][device]["interface"] # get interface / API
+            
+            if "||" in button_status:                                                  # if future state defined
+              button,status = button_status.split("||",1)                              # split button and future state
+              device_status = device + "_" + button
+            else:
+              status        = ""
+              device_status = ""
+              button        = button_status
+
+            # if state is not future state or no future state is defined, add command to queue (used for devices where state is recorded)
+            if device_status in data["STATUS"]["devices"] and data["STATUS"]["devices"][device_status] != status:
+              data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([[interface,device,button]])
+            elif status == "":
+              data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([[interface,device,button]])
+          
+          # if command is numeric, add to queue directly (time to wait)
+          elif command.isnumeric():
             data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([float(command)])
 
         data["DATA"]              = {}
