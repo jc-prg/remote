@@ -24,6 +24,9 @@ export REMOTE_DIR_JCMODULES="/projects/test/modules"
 export REMOTE_DIR_ICONS="$REMOTE_DIR_JCMODULES/jc-icon/white"
 export REMOTE_DIR_ICON_INDEX="$REMOTE_DIR_JCMODULES/jc-icon/white/index.json"
 
+# Docker-Compose
+export DOCKERCOMPOSE_DIR="/usr/local/bin/docker-compose"
+
 # Images
 export REMOTE_DOCKERIMAGE_CLIENT="php:7.1-apache"
 
