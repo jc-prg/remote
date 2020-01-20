@@ -4,7 +4,8 @@
 # ${THIS_IS_THE_PROJECT_TEMPLATE}
 #----------------------------------------
 
-#services:
+version: '3'
+services:
 
   ${REMOTE_DOCKER_SERVER}:
     build: ./config/container
