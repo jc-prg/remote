@@ -79,7 +79,7 @@ class kodiAPI():
          command = "self.api."+command
          try:
            result = eval(command)
-           logging.info(str(result))
+           logging.debug(str(result))
            if "error" in result:      return "ERROR "+self.api_name+" - " + result["error"]["message"]
            if not "result" in result: return "ERROR "+self.api_name+" - unexpected result format."           
          except Exception as e: return "ERROR "+self.api_name+" - query: " + str(e)
@@ -107,7 +107,7 @@ class kodiAPI():
          command = "self.api."+command_param[0]
          try:
            result = eval(command)
-           logging.info(str(result))
+           logging.debug(str(result))
            
            if "error" in result:      return "ERROR "+self.api_name+" - " + result["error"]["message"]
            if not "result" in result: return "ERROR "+self.api_name+" - unexpected result format."
@@ -167,7 +167,7 @@ class kodiAPIaddOn():
       '''get current volume and increase by step'''
       
       self.volume = self.api.Application.GetProperties({'properties': ['volume']})["result"]["volume"]
-      logging.info("Increase Volume:"+str(self.volume))
+      logging.debug("Increase Volume:"+str(self.volume))
       
       if (self.volume + step) > 100: self.volume  = 100
       else:                          self.volume += step
@@ -180,7 +180,7 @@ class kodiAPIaddOn():
       '''get current volume and increase by step'''
       
       self.volume = self.api.Application.GetProperties({'properties': ['volume']})["result"]["volume"]
-      logging.info("Decrease Volume:"+str(self.volume))
+      logging.debug("Decrease Volume:"+str(self.volume))
 
       if (self.volume - step) < 0:   self.volume  = 0
       else:                          self.volume -= step
@@ -193,7 +193,7 @@ class kodiAPIaddOn():
       '''get muted value and set opposite state'''
       
       self.mute = self.api.Application.GetProperties({'properties': ['muted']})["result"]["muted"]
-      logging.info("Toggle Mute:"+str(self.mute))
+      logging.debug("Toggle Mute:"+str(self.mute))
       
       if self.mute: self.mute = False
       else:         self.mute = True
@@ -210,7 +210,7 @@ class kodiAPIaddOn():
       if self.status == "Connected": self.power["result"] = { "power" : "ON" }
       else:                          self.power["result"] = { "power" : "OFF" }
       
-      logging.info("TEST "+str(self.status))
+      logging.debug("TEST "+str(self.status))
 
       return self.power
        

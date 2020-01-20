@@ -117,6 +117,7 @@ def translateStatusOld():
       if "status" in status[device] and device in rm_data["devices"]:
         if "method" in rm_data["devices"][device]:
            status_old[device + "_method"] = rm_data["devices"][device]["method"]
+           
         for value in status[device]["status"]:
            status_old[device + "_" + value]        = status[device]["status"][value]
            if value == "power": status_old[device] = status[device]["status"][value]
@@ -719,7 +720,7 @@ def RemoteMakro(makro):
             else:                        commands_3rd.extend([command])
           else:                          commands_3rd.extend([command])
           
-        logging.info(str(commands_3rd))
+        logging.debug(str(commands_3rd))
                   
         # decode makros: makros
         for command in commands_3rd:

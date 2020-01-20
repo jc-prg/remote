@@ -81,10 +81,10 @@
             "mute": "off",
             "power": "on",
             "source": "('video2', 'cbl', 'sat')",
-            "temperature": "F 86C 30",
+            "temperature": "F 87C 31",
             "timer": "N/A",
             "video-info": "HDMI 2,1920 x 1080i  50 Hz,YCbCr444,24bit,MAIN,1920 x 1080i  50 Hz,YCbCr444,24bit,,",
-            "vol": "48"
+            "vol": "49"
         },
         "visible": "yes"
     },
