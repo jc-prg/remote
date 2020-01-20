@@ -66,7 +66,7 @@ function rmRemote(name) {
 			// create remote for scene
 			this.scene_remote("remote1",rm_id);
 			this.scene_channels("remote2",rm_id);
-			this.empty("remote_edit");              elementHidden("remote_edit","scene"); // not implemented yet
+			this.scene_edit("remote_edit",rm_id);
 			this.empty("remote3");
 
 			// show
@@ -144,6 +144,18 @@ function rmRemote(name) {
 			else 					{ remote += this.button_device( cmd, button[1], "", cmd, "" );
 								  this.active_buttons.push(cmd); }
 			}
+
+		setTextById(id,remote);
+		}
+
+
+	this.scene_edit = function(id, device) {
+	
+		remote = "Edit mode for scenes not implemented yet!";
+	        document.getElementById(id).style.display = "block";
+	
+	        if (this.edit_mode)     { elementVisible(id); }
+	        else                    { elementHidden(id,"device_edit"); return; }
 
 		setTextById(id,remote);
 		}
