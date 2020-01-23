@@ -1,4 +1,3 @@
-#-----------------------------------
 # API commands defined in swagger.yml
 #-----------------------------------
 # (c) Christoph Kloth
@@ -64,25 +63,38 @@ sendRemote.start()
 
 #---------------------------
 
+def refreshCache():
+    '''
+    Reset vars to enforce a refresh of all cached data
+    '''
+    
+    global status_cache_time, rm_data_update
+    rm_data_update    = True
+    status_cache_time = 0
+
+#---------------------------
+
 def readStatus(data):
     '''
     read status data from config file (method=record) and/or device APIs (method=query)
     '''
 
-    global status_cache, status_cache_time, status_cache_interval #,rm_data
-        
-    if time.time() - status_cache_time >= 5 or status_cache_time == 0:
+    global status_cache, status_cache_time, status_cache_interval
+    
+    # if cache is older than 5 seconds or cache time is not set
+    if (status_cache_time == 0) or (time.time() - status_cache_time >= status_cache_interval):
     
       devices    = rm3json.read(rm3config.devices + rm3config.active)    
       for device in devices:        
         if "status" in devices[device] and "method" in data[device]:
-            
+          
+          # if method == record read from file
           if data[device]["method"] == "record":
             for value in devices[device]["status"]:
               data[device]["status"][value] = devices[device]["status"][value]
-                
+               
+          # else request status from API 
           else:
-        
             for value in data[device]["query_list"]:
               try:
                 test = interfaces.query(data[device]["interface"],device,value)
@@ -233,7 +245,6 @@ def RmReadData(selected=[]):
     # Update status data        
     data["devices"] = readStatus(data["devices"])
     rm_data         = data
-    
     return data
 
 
@@ -565,6 +576,13 @@ def remoteAPI_start(setting=[]):
     data["STATUS"]["last_button"]          = lastButton
     data["STATUS"]["system"]               = {} #  to be filled in remoteAPI_end()
 
+    for device in data["DATA"]["devices"]:
+      if "main-audio" in data["DATA"]["devices"][device] and data["DATA"]["devices"][device]["main-audio"] == "yes":
+        data["CONFIG"]["main-audio"] = device
+      data["DATA"]["devices"][device]["templates"] = {}
+      data["DATA"]["devices"][device]["queries"]   = {}
+      data["DATA"]["devices"][device]["buttons"]   = {}
+    
     #--------------------------------
     
     if "no-data" in setting:   data["DATA"]   = {}
@@ -589,6 +607,11 @@ def remoteAPI_end(data):
         "server_start_duration" :  rm3config.start_duration,
         "server_running"        :  time.time() - rm3config.start_time
         }
+  
+    # Update device status (e.g. if send command and cache maybe is not up-to-date any more)      
+    if "devices" in data["DATA"]:
+      data["DATA"]["devices"] = readStatus(data["DATA"]["devices"])
+
     return data
 
 
@@ -601,10 +624,8 @@ def RemoteReload():
         reload interfaces and reload config data in cache
         '''
         
-        global rm_data_update
-        
         interfaces.init()
-        rm_data_update = True
+        refreshCache()
         
         data                          = remoteAPI_start(["no-data"])
         data["REQUEST"]["Return"]     = "OK: Configuration reloaded"
@@ -647,6 +668,7 @@ def RemoteList():
         Load and list all data
         '''
 
+        refreshCache()
         data                      = remoteAPI_start()
         data["REQUEST"]["Return"] = "OK: Returned list and status data."
         data                      = remoteAPI_end(data)        
@@ -662,9 +684,6 @@ def Remote(device,button):
         send IR command and return JSON msg
         '''
         
-        global status_cache_time
-        status_cache_time = 0
-
         data                      = remoteAPI_start(["no-data"])
         interface                 = rm_data["devices"][device]["interface"]
         
@@ -677,6 +696,8 @@ def Remote(device,button):
 
         data["DeviceStatus"]      = rm3status.getStatus(device)  # to be removed
         data["ReturnMsg"]         = data["REQUEST"]["Return"]    # to be removed
+
+        refreshCache()
         data                      = remoteAPI_end(data)      
         
         return data
@@ -689,10 +710,6 @@ def RemoteMakro(makro):
         send makro (list of commands)
         '''
 
-        global status_cache_time
-        status_cache_time = 0
-        
-               
         data                      = remoteAPI_start()
       
         data["REQUEST"]["Button"] = makro
@@ -701,6 +718,7 @@ def RemoteMakro(makro):
         commands_1st              = makro.split("::")
         commands_2nd              = []
         commands_3rd              = []
+        commands_4th              = []
         
         # decode makros: scene-on/off
         for command in commands_1st:
@@ -720,10 +738,18 @@ def RemoteMakro(makro):
             else:                        commands_3rd.extend([command])
           else:                          commands_3rd.extend([command])
           
-        logging.debug(str(commands_3rd))
-                  
-        # decode makros: makros
+        # decode makros: makro
         for command in commands_3rd:
+          if not command.isnumeric() and "_" in command:  
+            device,button = command.split("_",1)
+            if "makro_" in command:      commands_4th.extend(data["DATA"]["makros"]["makro"][button])
+            else:                        commands_4th.extend([command])
+          else:                          commands_4th.extend([command])
+          
+        logging.debug(str(commands_4th))
+                  
+        # execute buttons
+        for command in commands_4th:
           if not command.isnumeric() and "_" in command:
             device,button_status        = command.split("_",1)                         # split device and button
             interface                   = data["DATA"]["devices"][device]["interface"] # get interface / API
@@ -746,12 +772,14 @@ def RemoteMakro(makro):
           elif command.isnumeric():
             data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([float(command)])
 
+        refreshCache()
         data["DATA"]              = {}
         data                      = remoteAPI_end(data)        
         return data
 
 
 #-------------------------------------------------
+
 def RemoteTest():
         '''
         Test new functions
@@ -774,8 +802,9 @@ def RemoteOnOff(device,button):
         check old status and document new status
         '''
 
-        global status_cache_time
+        global status_cache_time, rm_data_update
         status_cache_time = 0
+        rm_data_update    = True
 
         data            = remoteAPI_start()    
         interface       = data["DATA"]["devices"][device]["interface"]
@@ -844,13 +873,12 @@ def RemoteOnOff(device,button):
         
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
-        #data["REQUEST"]["Return"]    = interfaces.send(interface,device,button)
-        data["REQUEST"]["Return"] = sendRemote.add2queue([[interface,device,button]])
+        data["REQUEST"]["Return"]    = sendRemote.add2queue([[interface,device,button]])
+
+        refreshCache()
         data                         = remoteAPI_end(data)        
 
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
-
-        rm_data_update = True
         return data
 
 
@@ -863,9 +891,10 @@ def RemoteReset():
 
         data                         = remoteAPI_start(["no-data"])
         data["REQUEST"]["Return"]    = rm3status.resetStatus()
+
+        refreshCache()
         data                         = remoteAPI_end(data)        
 
-        rm_data_update = True
         return data
 
 
@@ -878,6 +907,8 @@ def RemoteResetAudio():
 
         data                         = remoteAPI_start(["no-data"])
         data["REQUEST"]["Return"]    = rm3status.resetAudio()
+
+        refreshCache()
         data                         = remoteAPI_end(data)        
 
         rm_data_update = True
@@ -896,9 +927,9 @@ def RemoteAddButton(device,button):
         data["REQUEST"]["Return"]    = addButton(device,button)
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
+
+        refreshCache()
         data                         = remoteAPI_end(data)
-        
-        rm_data_update = True
         return data
 
 #-------------------------------------------------
@@ -916,9 +947,10 @@ def RemoteRecordCommand(device,button):
         data["REQUEST"]["Return"]    = addCommand2Button(device,button,EncodedCommand)       
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
+
+        refreshCache()
         data                         = remoteAPI_end(data)
         
-        rm_data_update = True
         return data
 
 
@@ -932,9 +964,9 @@ def RemoteDeleteButton(device,button):
         data["REQUEST"]["Return"]    = deleteCmd(device,button)
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Parameter"] = button
-        data                         = remoteAPI_end(data)        
 
-        rm_data_update = True
+        refreshCache()
+        data                         = remoteAPI_end(data)        
         return data
 
 
@@ -949,6 +981,8 @@ def RemoteChangeVisibility(device,value):
         data["REQUEST"]["Return"]    = changeVisibility(device,value)
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Parameter"] = value
+
+        refreshCache()
         data                         = remoteAPI_end(data)        
         return data
 
@@ -964,6 +998,8 @@ def RemoteChangeMainAudio(device,value):
         data["REQUEST"]["Return"]    = "ERROR: Not implemented yet." #changeVisibility(device,value)
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Parameter"] = value
+
+        refreshCache()
         data                         = remoteAPI_end(data)        
         return data
 
@@ -978,9 +1014,9 @@ def RemoteAddDevice(device,interface,description):
         data["REQUEST"]["Return"]    = addDevice(device,interface,description)
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Parameter"] = description
-        data                         = remoteAPI_end(data)        
 
-        rm_data_update = True
+        refreshCache()
+        data                         = remoteAPI_end(data)        
         return data
 
 
@@ -995,6 +1031,8 @@ def RemoteEditDevice(device,info):
         data                         = remoteAPI_start(["no-data"])
         data["REQUEST"]["Return"]    = editDevice(device,info)
         data["REQUEST"]["Device"]    = device
+
+        refreshCache()
         data                         = remoteAPI_end(data)        
         return data
 
@@ -1009,9 +1047,9 @@ def RemoteAddTemplate(device,template):
         data["REQUEST"]["Return"]    = addTemplate(device,template)
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Parameter"] = template
-        data                         = remoteAPI_end(data)        
 
-        rm_data_update = True
+        refreshCache()
+        data                         = remoteAPI_end(data)        
         return data
 
         
@@ -1025,9 +1063,9 @@ def RemoteDeleteDevice(device):
         data                         = remoteAPI_start(["no-data"])
         data["REQUEST"]["Return"]    = deleteDevice(device)
         data["REQUEST"]["Device"]    = device
-        data                         = remoteAPI_end(data)        
 
-        rm_data_update = True
+        refreshCache()
+        data                         = remoteAPI_end(data)        
         return data
 
 
