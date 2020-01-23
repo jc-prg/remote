@@ -88,8 +88,8 @@ function rmRemote(name) {
 		var remote_displaysize = "middle";
 		var remote_label       = this.data["DATA"]["devices"][device]["label"];
 		var remote_definition  = this.data["DATA"]["devices"][device]["remote"];
-		var remote_buttons     = this.data["DATA"]["devices"][device]["buttons"];
-
+		var remote_buttons     = this.data["DATA"]["devices"][device]["button_list"];
+		
 		if (this.data["DATA"]["devices"][device]["display-size"]) { remote_displaysize = this.data["DATA"]["devices"][device]["display-size"]; }
 		
 		rm3cookie.set("remote","device::"+device+"::"+remote_label);
@@ -99,15 +99,13 @@ function rmRemote(name) {
 			var button = remote_definition[i];
 			var cmd    = device + "_" + button;
 
-			if (button == "LINE") 			{ remote += "<div style='width:100%;float:left;'><hr/></div>"; }
-			else if (button == ".") 		{ remote += this.button_device( device+i, ".", "empty", "", "disabled" ) }
-			else if (button == "DISPLAY")		{ remote += this.display(id,device,remote_displaysize); }
-			else if (button in remote_buttons) 	{ remote += this.button_device( cmd, button, "", cmd, "" ); this.active_buttons.push(cmd); }
-			else if (this.edit_mode)        	{ remote += this.button_device_add( cmd, button, "notfound", cmd, "" ); }
-			else                            	{ remote += this.button_device( cmd, button, "notfound", cmd, "disabled" ); }
-
+			if (button == "LINE") 				{ remote += "<div style='width:100%;float:left;'><hr/></div>"; }
+			else if (button == ".") 			{ remote += this.button_device( device+i, ".", "empty", "", "disabled" ) }
+			else if (button == "DISPLAY")			{ remote += this.display(id,device,remote_displaysize); }
+			else if (remote_buttons.includes(button)) 	{ remote += this.button_device( cmd, button, "", cmd, "" ); this.active_buttons.push(cmd); }
+			else if (this.edit_mode)        		{ remote += this.button_device_add( cmd, button, "notfound", cmd, "" ); }
+			else                            		{ remote += this.button_device( cmd, button, "notfound", cmd, "disabled" ); }
 									//NEU: function( id, label, style, cmd, disabled ) {
-									//ALT: function( id, cmd, label, style, disabled ) {
 			}
 
 		setTextById(id,remote);

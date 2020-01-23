@@ -39,20 +39,26 @@ function rmSettings (name) {	// IN PROGRESS
 		var setting;
 
 		// Show Server Infos
-		var audio1  = device_status[status_mute] + " / Volume: " + device_status[status_vol] + " (" + status_vol_max + ")";
-		var audio2  = dataAll["DATA"]["devices"][status_vol.split("_")[0]]["label"];
-		var cookie  = rm3cookie.get("remote");
+		var main_audio = dataAll["CONFIG"]["main-audio"];  // get main audio device from file
+		var audio_max  = "";
+		if (dataAll["DATA"]["devices"][main_audio]["values"]) {
+			audio_max  = dataAll["DATA"]["devices"][main_audio]["values"]["vol"]["max"];
+			}
+		var audio1     = "Power: "  + dataAll["DATA"]["devices"][main_audio]["status"]["power"] + " / "
+		               + "Volume: " + dataAll["DATA"]["devices"][main_audio]["status"]["vol"] + " (" + audio_max + ")";
+		var audio2     = dataAll["DATA"]["devices"][main_audio]["label"];
+		var cookie     = rm3cookie.get("remote");
 
-		setting  = this.tab_row( 	"Status:", this.app_stat );
+		setting  = this.tab_row( 	"Status:", 		this.app_stat );
 		setting += this.tab_row( 	"Versions:",
-						"App: " + rm3version + " / " + this.test_info + " (" + rm3_rollout + ")<br/>" +
-						"API: " + this.data["API"]["version"] + " / " + this.data["API"]["stage"] + "<br/>" +
-						"Modules: jcMsg " + rm3msg.appVersion + " / jcApp " + rm3app.appVersion + "<br/>" +
-						"Cookie: " + cookie
+						"App: " 		+ rm3version + " / " + this.test_info + " (" + rm3_rollout + ")<br/>" +
+						"API: " 		+ this.data["API"]["version"] + " / " + this.data["API"]["stage"] + "<br/>" +
+						"Modules: jcMsg " 	+ rm3msg.appVersion + " / jcApp " + rm3app.appVersion + "<br/>" +
+						"Cookie: " 		+ cookie
 						);
-		setting += this.tab_row( 	"Button:", this.app_last );
-		setting += this.tab_row( 	"Audio:", audio2 + "<br/>" + audio1 );
-		setting += this.tab_row( 	"Window:", document.body.clientWidth + "x" + document.body.clientHeight );
+		setting += this.tab_row( 	"Button:", 		this.app_last );
+		setting += this.tab_row( 	"Audio:",		 audio2 + "<br/>" + audio1 );
+		setting += this.tab_row( 	"Window:", 		document.body.clientWidth + "x" + document.body.clientHeight );
 		setting += this.tab_row( 	"Status:",
 						this.device_list("select_dev_status", this.app_name+".device_list_status('select_dev_status','dev_status');") +
 						"<span id='dev_status'></span>"

@@ -17,7 +17,7 @@
        	},
        	"values" : {
        		"power"   : [ "on", "off" ],
-       		"vol"     : { "min" : 0, "max" : 79 }
+       		"vol"     : { "min" : 0, "max" : 100 }
        	},
        	"display" : {
        	}

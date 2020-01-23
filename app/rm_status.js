@@ -134,19 +134,32 @@ function check_status_inactive(device="") {
 
 //-----------------------------------------
 
+function check_status_fresh() {
+	rm3app.requestAPI("GET",["list"], "", printRmStatus, "" );
+	}
+
 function check_status(data={}) {
 
 	if (deactivateButton)	{ return; }                     // if manual mode <- deactivateButton == true
 
+	var scene_status   = {};
         var devices        = dataAll["DATA"]["devices"];
 	var device_status  = dataAll["STATUS"]["devices"];
-	var device_audio   = status_mute.split("_");            // ??? from rm_config.js -> to be set to config "main-audio = yes"; incl status_vol_max
-	var scene_status   = {};
-	
+
+	// get data from main audio device
+	var main_audio      = dataAll["CONFIG"]["main-audio"];  // get main audio device from file
+	var main_audio_max  = "";
+	if (dataAll["DATA"]["devices"][main_audio]["values"]) {
+		main_audio_max  = dataAll["DATA"]["devices"][main_audio]["values"]["vol"]["max"];
+		}
+	var main_audio_vol  = dataAll["DATA"]["devices"][main_audio]["status"]["vol"];
+	var main_audio_mute = dataAll["DATA"]["devices"][main_audio]["status"]["mute"].toUpperCase();
+
+	// set colors
 	var vol_color	   = "white";
 	var vol_color2	   = "yellow";
 	var novol_color    = "lightblue";
-
+	
 	// if data -> callback of sendCmd (ON/OFF) -> check_status_inactive()
 	if ("Device" in data)	{ check_status_inactive(data["Device"]); }
 	else			{ check_status_inactive(); }
@@ -238,7 +251,8 @@ function check_status(data={}) {
 		}
 
 	// check audio status and show in navigation bar
-	if (devices[device_audio[0]]["status"]["mute"] == "ON" || devices[device_audio[0]]["status"]["power"] == "OFF" || devices[device_audio[0]]["status"]["vol"] == 0) {
+	var power = devices[main_audio]["status"]["power"].toUpperCase();
+	if (devices[main_audio]["status"]["mute"].toUpperCase() == "ON" || power.includes("OFF") || devices[main_audio]["status"]["vol"] == 0) {
 		document.getElementById("audio1").style.display = "block";
 		document.getElementById("audio2").style.display = "none";
 		vol_color = "gray";
@@ -248,6 +262,10 @@ function check_status(data={}) {
 		document.getElementById("audio2").style.display = "block";
 		}
 		
+	// check volume and show in navigation bar
+	vol_str = show_volume( main_audio_vol, main_audio_max, vol_color );
+	document.getElementById("audio3").innerHTML = vol_str;
+
 	// check status for displays
 	for (var key in devices) {
 		if (devices[key]["status"] && devices[key]["display"]) {
@@ -262,7 +280,7 @@ function check_status(data={}) {
 					if (devices[key]["values"][vkey]["max"]) { status = show_volume( devices[key]["status"][vkey], devices[key]["values"][vkey]["max"], vol_color2, novol_color ) + " &nbsp; ["+devices[key]["status"][vkey]+"]"; }
 					}
 				
-				if (element)  { element.innerHTML = status; }
+				if (element)  { element.innerHTML  = status; }
 				if (element2) { element2.innerHTML = status; }
 				}
 			}
@@ -275,13 +293,7 @@ function check_status(data={}) {
 				if (element2) { element2.innerHTML = status; }
 				}
 			}
-		}
-
-	// check volume and show in navigation bar
-	vol_str = show_volume( devices[device_audio[0]]["status"]["vol"], status_vol_max, vol_color );
-	document.getElementById("audio3").innerHTML = vol_str;
-
-	//alert(test);
+		}	
 	}
 	
 function show_volume (volume, maximum, vol_color, novol_color="") {

@@ -12,7 +12,7 @@ var RESTip         = location.host; var ip = RESTip.split(":");
 var RESTurl_test   = "http://"+ip[0]+":5003/";
 var RESTurl_prod   = "http://"+ip[0]+":5002/";
 var RESTurl        = "http://"+ip[0]+":"+stage_port+"/";
-var rm3version     = "v2.2.3";
+var rm3version     = "v2.2.4";
 var rm3title       = "jc://remote/";
 var rm3update      = false;
 var rm3background  = "img/remote2.png";
@@ -52,11 +52,8 @@ var status_vol_max = 74;         // -> calculate in percent		// changed based on
 
 var button_color = {};
 var button_img = {};
-
 var makro_def = {};
-
 var device_status = {};
-
 var remote_def = {};
 var remote_mix_def = {};
 var remote_std = [
