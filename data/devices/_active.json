@@ -79,7 +79,7 @@
             "audio-info": "HDMI 2,PCM,48 kHz,2.0 ch,Theater-Dimensional,3.1 ch,",
             "dimmer": "dark",
             "display": "('selector-volume-1line', 'default-2line')",
-            "mute": "off",
+            "mute": "on",
             "power": "on",
             "source": "('video2', 'cbl', 'sat')",
             "temperature": "F 86C 30",
