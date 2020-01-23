@@ -140,8 +140,9 @@ function check_status_fresh() {
 
 function check_status(data={}) {
 
-	if (deactivateButton)	{ return; }                     // if manual mode <- deactivateButton == true
-
+	if (deactivateButton)			{ return; }     // if manual mode <- deactivateButton == true
+	if (!dataAll["DATA"]["devices"]) 	{ return; }	// if no data loaded return
+	
 	var scene_status   = {};
         var devices        = dataAll["DATA"]["devices"];
 	var device_status  = dataAll["STATUS"]["devices"];
@@ -149,11 +150,11 @@ function check_status(data={}) {
 	// get data from main audio device
 	var main_audio      = dataAll["CONFIG"]["main-audio"];  // get main audio device from file
 	var main_audio_max  = "";
-	if (dataAll["DATA"]["devices"][main_audio]["values"]) {
-		main_audio_max  = dataAll["DATA"]["devices"][main_audio]["values"]["vol"]["max"];
+	if (devices[main_audio] && devices[main_audio]["values"]) {
+		main_audio_max  = devices[main_audio]["values"]["vol"]["max"];
 		}
-	var main_audio_vol  = dataAll["DATA"]["devices"][main_audio]["status"]["vol"];
-	var main_audio_mute = dataAll["DATA"]["devices"][main_audio]["status"]["mute"].toUpperCase();
+	var main_audio_vol  = devices[main_audio]["status"]["vol"];
+	var main_audio_mute = devices[main_audio]["status"]["mute"].toUpperCase();
 
 	// set colors
 	var vol_color	   = "white";
