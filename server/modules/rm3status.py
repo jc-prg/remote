@@ -73,14 +73,13 @@ def writeStatus(status):
 def setStatus(name,value):
     '''change status and write to file'''
 
-    status      = readStatus()
-    name_split  = name.split("_")
+    button         = "power"
+    status         = readStatus()
+    if "_" in name:  device,button  = name.split("_")   
+    else:            device         = name
+    device_code    = translateDevice(device)
     
-    device      = name_split[0]
-    device_code = translateDevice(device)
-    if len(name_split) == 1 or name_split[1] == "": name = "power"
-        
-    status[device]["status"][name] = value
+    status[device]["status"][button] = value
     writeStatus(status)
     
     return "TBC: Set status " + name + "/" + value

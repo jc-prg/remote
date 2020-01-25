@@ -15,9 +15,13 @@ import interfaces.broadlink.broadlink  as broadlink
 # API-class
 #-------------------------------------------------
 
+shorten_info_to = 30
+
+#-------------------------------------------------
+
 class broadlinkAPI():
    '''
-   Integration of sample API to be use by jc://remote/
+   Integration of BROADLINK API to be use by jc://remote/
    '''
 
    def __init__(self,api_name):
@@ -68,7 +72,7 @@ class broadlinkAPI():
        self.working = True
 
        if self.status == "Connected":
-         logging.info("Button-Code: " + command)
+         logging.info("Button-Code: " + command[:shorten_info_to]+"...")
          DecodedCommand = codecs.decode(command,'hex')  # python3
          try: 
            self.api.send_data(DecodedCommand)

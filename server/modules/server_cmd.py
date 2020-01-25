@@ -550,6 +550,48 @@ def editDevice(device,info):
     else:     return("ERROR: no data key matched with keys from config-files ("+str(info.keys)+")")
       
 #---------------------------
+
+def deviceStatusGet(device_button):
+    '''
+    Get Status from device for a specific button or display value (first step if method = "record")
+    '''
+    
+    global rm_data
+    power_buttons = ["on","on-off","off"]
+    device,button = device_button.split("_")
+    method        = rm_data["devices"][device]["method"]
+    
+    if method == "record":
+      if button in power_buttons: button = "power"
+      rm3status.getStatus(device+"_"+button)
+      return "OK"
+    else:
+      return "ERROR: Wrong method ("+method+")"
+    
+#---------------------------
+
+def deviceStatusSet(device_button,state):
+    '''
+    Set Status of device for a specific button or display value (first step if method = "record")
+    '''
+    
+    global rm_data
+    power_buttons = ["on","on-off","off"]
+    device,button = device_button.split("_")
+    method        = rm_data["devices"][device]["method"]
+    
+    logging.warn(" ...m:"+method+" ...d:"+device_button+" ...s:"+state)
+    
+    if method == "record":
+      if button in power_buttons: button = "power"
+      if button == "on":          state  = "ON"
+      if button == "off":         state  = "OFF"
+      rm3status.setStatus(device+"_"+button,state)
+      return "OK"
+    else:
+      return "ERROR: Wrong method ("+method+")"
+
+#---------------------------
      
 def remoteAPI_start(setting=[]):
     '''
@@ -711,7 +753,6 @@ def RemoteMakro(makro):
         '''
 
         data                      = remoteAPI_start()
-      
         data["REQUEST"]["Button"] = makro
         data["REQUEST"]["Return"] = "ERROR: not implemented yet." #interfaces.send(interface,device,button)
         
@@ -722,7 +763,8 @@ def RemoteMakro(makro):
         
         # decode makros: scene-on/off
         for command in commands_1st:
-          if not command.isnumeric() and "_" in command:  
+          command_str = str(command)
+          if not command_str.isnumeric() and "_" in command:  
             device,button = command.split("_",1)
             if "scene-on_" in command:     commands_2nd.extend(data["DATA"]["makros"]["scene-on"][button])
             elif "scene-off_" in command:  commands_2nd.extend(data["DATA"]["makros"]["scene-off"][button])
@@ -731,7 +773,8 @@ def RemoteMakro(makro):
           
         # decode makros: dev-on/off
         for command in commands_2nd:
-          if not command.isnumeric() and "_" in command:  
+          command_str = str(command)
+          if not command_str.isnumeric() and "_" in command:  
             device,button = command.split("_",1)
             if "dev-on_" in command:     commands_3rd.extend(data["DATA"]["makros"]["dev-on"][button])
             elif "dev-off_" in command:  commands_3rd.extend(data["DATA"]["makros"]["dev-off"][button])
@@ -740,36 +783,51 @@ def RemoteMakro(makro):
           
         # decode makros: makro
         for command in commands_3rd:
-          if not command.isnumeric() and "_" in command:  
+          command_str = str(command)
+          if not command_str.isnumeric() and "_" in command:  
             device,button = command.split("_",1)
             if "makro_" in command:      commands_4th.extend(data["DATA"]["makros"]["makro"][button])
             else:                        commands_4th.extend([command])
           else:                          commands_4th.extend([command])
           
-        logging.debug(str(commands_4th))
+        logging.warn(str(commands_4th))
                   
         # execute buttons
         for command in commands_4th:
-          if not command.isnumeric() and "_" in command:
+          command_str = str(command)
+          if not command_str.isnumeric() and "_" in command:
+          
+            status                      = ""
+            power_buttons               = ["on","on-off","off"]
             device,button_status        = command.split("_",1)                         # split device and button
             interface                   = data["DATA"]["devices"][device]["interface"] # get interface / API
-            
-            if "||" in button_status:                                                  # if future state defined
-              button,status = button_status.split("||",1)                              # split button and future state
-              device_status = device + "_" + button
-            else:
-              status        = ""
-              device_status = ""
-              button        = button_status
 
-            # if state is not future state or no future state is defined, add command to queue (used for devices where state is recorded)
-            if device_status in data["STATUS"]["devices"] and data["STATUS"]["devices"][device_status] != status:
-              data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([[interface,device,button]])
+            # check if future state defined
+            if "||" in button_status:   button,status = button_status.split("||",1)                              # split button and future state           
+            else:                       button        = button_status
+            
+            if button in power_buttons: status_var    = "power"
+            else:                       status_var    = button
+
+            # if future state not already in place add command to queue              
+            logging.warn(" ...i:"+interface+" ...d:"+device+" ...b:"+button+" ...s:"+status)
+            if device in data["DATA"]["devices"] and status_var in data["DATA"]["devices"][device]["status"]:
+              logging.warn(" ...y:"+status_var+"="+str(data["DATA"]["devices"][device]["status"][status_var])+" -> "+status)
+              
+              if data["DATA"]["devices"][device]["status"][status_var] != status:
+                data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([[interface,device,button]])
+                deviceStatusSet(device+"_"+button,status)
+            
+            # if no future state is defined just add command to queue
             elif status == "":
-              data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([[interface,device,button]])
+                data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([[interface,device,button]])
+                
+            ##### -> change state ??? ###########
+
+#?????????????????? 
           
           # if command is numeric, add to queue directly (time to wait)
-          elif command.isnumeric():
+          elif command_str.isnumeric():
             data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([float(command)])
 
         refreshCache()
@@ -894,7 +952,6 @@ def RemoteReset():
 
         refreshCache()
         data                         = remoteAPI_end(data)        
-
         return data
 
 
@@ -910,8 +967,6 @@ def RemoteResetAudio():
 
         refreshCache()
         data                         = remoteAPI_end(data)        
-
-        rm_data_update = True
         return data
 
 
@@ -950,14 +1005,14 @@ def RemoteRecordCommand(device,button):
 
         refreshCache()
         data                         = remoteAPI_end(data)
-        
         return data
 
 
 #-------------------------------------------------
 
 def RemoteDeleteButton(device,button):
-        '''delete button from layout file
+        '''
+        Delete button from layout file
         '''
 
         data                         = remoteAPI_start(["no-data"])

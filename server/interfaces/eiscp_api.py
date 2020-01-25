@@ -14,6 +14,10 @@ import interfaces.eiscp as eiscp
 # API-class
 #-------------------------------------------------
 
+shorten_info_to = 30
+
+#-------------------------------------------------
+
 class eiscpAPI():
    '''
    Integration of sample API to be use by jc://remote/
@@ -66,7 +70,7 @@ class eiscpAPI():
        self.working = True
 
        if self.status == "Connected":
-         logging.debug("Button-Code: "+command)
+         logging.debug("Button-Code: "+command[:shorten_info_to]+"...")
          button_code = command.replace("="," ")
          try:
            self.api.command(button_code)
@@ -91,7 +95,7 @@ class eiscpAPI():
 
        if self.status == "Connected":
          button_code = command.replace("="," ")
-         logging.debug("Button-Code: "+button_code+" ("+self.api_name+")")
+         logging.debug("Button-Code: "+button_code[:shorten_info_to]+"... ("+self.api_name+")")
          try:
            result      = self.api.command(button_code)
            self.api.disconnect()

@@ -14,6 +14,10 @@ from kodijson import Kodi, PLAYER_VIDEO
 # Execute command
 #-------------------------------------------------
 
+shorten_info_to = 30
+
+#-------------------------------------------------
+
 class kodiAPI():
    '''
    Integration of KODI API to be use by jc://remote/
@@ -73,7 +77,7 @@ class kodiAPI():
        self.working = True
        
        result  = {}
-       logging.info("Button-Code: "+command+" ("+self.api_name+")")
+       logging.info("Button-Code: "+command[:shorten_info_to]+"... ("+self.api_name+")")
 
        if self.status == "Connected":
          command = "self.api."+command
@@ -98,7 +102,7 @@ class kodiAPI():
        self.working = True
        
        result  = {}
-       logging.info("Button-Code: "+command+" ("+self.api_name+")")
+       logging.info("Button-Code: "+command[:shorten_info_to]+"... ("+self.api_name+")")
 
        if "||" in command: command_param = command.split("||")
        else:               command_param = [command]
