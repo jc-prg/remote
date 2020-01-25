@@ -6,6 +6,7 @@
                 "pc":        ["dev-off_bd", "dev-on_rec", 1, "rec2_pc"],
                 "aux":       ["dev-off_bd", "dev-on_rec", 1, "rec2_aux"],
                 "bluetooth": ["dev-off_bd", "dev-on_rec", 1, "rec2_bluetooth"],
+                "game":      ["rec2_game"],
 
 		"rectv":     ["rec2_cable-sat", "tv_radiotv||TV",   "tv_exit"],
 		"recradio":  ["rec2_cable-sat", "tv_radiotv||RADIO","tv_exit"],
