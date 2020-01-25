@@ -30,8 +30,8 @@
        		},
        	"queries" : {
         	"display" 	: "display-mode=query",
-        	"source"  	: "input-selector=query",
-        	"temperature"	: "temperature-data=query",
+        	"source"  	: "input-selector=query||[1]",
+        	"temperature"	: "temperature-data=query||[4:]",
 		"timer"		: "sleep-set=qstn",
 	       	"dimmer"        : "dimmer-level=query",
 	       	"audio-info"    : "audio-information=query",

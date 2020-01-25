@@ -92,22 +92,36 @@ class eiscpAPI():
 
        self.wait_if_working()
        self.working = True
+       result  = {}
+       
+       if "||" in command: command_param = command.split("||")
+       else:               command_param = [command]      
 
        if self.status == "Connected":
-         button_code = command.replace("="," ")
+         button_code = command_param[0].replace("="," ")        
          logging.debug("Button-Code: "+button_code[:shorten_info_to]+"... ("+self.api_name+")")
          try:
-           result      = self.api.command(button_code)
+           result  = self.api.command(button_code)          
            self.api.disconnect()
            logging.debug(result)
          except Exception as e:
            return "ERROR "+self.api_name+" - query: " + str(e)
+
+         result = result[1]
+         logging.warn(str(result))
+
+         if "||" in command: 
+           try:
+             result2 = eval("result"+command_param[1])
+             result  = result2
+           except:
+             logging.warn("result"+command_param[1])
            
        else:
          return "ERROR "+self.api_name+": Not connected"
 
        self.working = False
-       return result[1]
+       return result
        
        
    #-------------------------------------------------
