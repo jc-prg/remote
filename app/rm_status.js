@@ -14,11 +14,8 @@
 
 function show_status_button(id, status) {
 
-	if (status == "ON")		{color = "darkgreen";}
-	else if (status == "OFF")	{color = "darkred";}
-	else if (status == "OTHER")	{color = "purple";}
-	else if (status == "ERROR")	{color = "orangered";}
-	else				{color = "";} // reset to CSS color
+	if (status in colors_power)	{ color = colors_power[status]; }	// color defined in rm_config.js
+	else				{ color = ""; } 			// reset to CSS color
 
 	var button = document.getElementById(id);
 	if (typeof(button) != 'undefined' && button != null) {

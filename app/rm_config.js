@@ -35,6 +35,12 @@ var showEditRemote   = false;   // show / hide edit panel
 
 var colors         = [ "red", "green", "darkgreen", "blue", "darkblue" ];
 var colors_dev     = [];
+var colors_power   = {	"ON" 	: "darkgreen",
+			"OFF"	: "darkred",
+			"OTHER"	: "purple",
+			"ERROR"	: "orangered",
+			}
+// color definitions: https://www.w3schools.com/cssref/css_colors.asp			
 
 var show_error     = ""; // onClick=\"javascript:showErrorLog();\""; // not implemented any more
 var status_green   = "<div id='green' "+show_error+"></div>";
