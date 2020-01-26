@@ -4,7 +4,7 @@
 # (c) Christoph Kloth
 #-----------------------------------
 
-import logging
+import logging, time, threading
 
 import modules.rm3json                as rm3json
 import modules.rm3config              as rm3config
@@ -13,110 +13,129 @@ import interfaces.test_api
 import interfaces.kodi_api
 import interfaces.eiscp_api
 import interfaces.broadlink_api
-
-available = {}
-api       = {}
-methods   = {
-        "send"        : "Send command via API (send)",
-        "record"      : "Record per device (record)",
-        "query"       : "Request per API (query)"
-	}
-
 	
 #-------------------------------------------------
 
-def init():
+class connect(threading.Thread):
     '''
-    Initialize APIs
+    class to control all interfaces including a continuous check if interfaces still available
     '''
+
+    def __init__(self):
+        '''
+        Initialize Interfaces
+        '''
+	    
+        threading.Thread.__init__(self)
+        self.api         = {}
+        self.available   = {}
+        self.stopProcess = False
+        self.wait        = 10
+        self.name        = "jc://remote/interfaces/"
+
+        self.methods   = {
+            "send"        : "Send command via API (send)",
+            "record"      : "Record per device (record)",
+            "query"       : "Request per API (query)"
+            }
+
+    #-------------------------------------------------
     
-    global api, available
+    def run(self):
+        '''
+        Initialize APIs and loop to check connection status
+        '''
+        
+        logging.info( "Starting " + self.name )
+        
+        self.api["KODI"]        = interfaces.kodi_api.kodiAPI("KODI")
+        self.api["TEST"]        = interfaces.test_api.testAPI("TEST")
+        self.api["EISCP-ONKYO"] = interfaces.eiscp_api.eiscpAPI("EISCP-ONKYO")
+        self.api["BROADLINK"]   = interfaces.broadlink_api.broadlinkAPI("BROADLINK")
 
-    api["KODI"]        = interfaces.kodi_api.kodiAPI("KODI")
-    api["TEST"]        = interfaces.test_api.testAPI("TEST")
-    api["EISCP-ONKYO"] = interfaces.eiscp_api.eiscpAPI("EISCP-ONKYO")
-    api["BROADLINK"]   = interfaces.broadlink_api.broadlinkAPI("BROADLINK")
+        for key in self.api:
+           self.available[key] = self.api[key].api_description
+
+        while not self.stopProcess:
+           time.sleep(self.wait)
+             
+        logging.info( "Exiting " + self.name )
+
+    #-------------------------------------------------
     
-    for key in api:
-       available[key] = api[key].api_description
+    def reload(self):
+        return
+    
+    #-------------------------------------------------
+    
+    def test(self):
+        '''test all APIs'''
+      
+        for key in self.api: 
+          status = self.api[key].test()
+          if "ERROR" in str(status): return status
+          
+        return "OK"
+
+    #-------------------------------------------------
+
+    def send(self, call_api, device, button ):
+        '''check if API exists and send command'''
+    
+        logging.debug("SEND "+call_api+" / "+device+" - "+button)
+
+        button_code = self.get_command( call_api, "buttons", device, button ) 
+        if call_api in self.api: return self.api[call_api].send(device,button_code)
+        else:                    return "ERROR: API not available ("+call_api+")"
 
 
+    #-------------------------------------------------
 
-init()
+    def record(self, call_api, device, button ):
+        '''record a command'''
+    
+        logging.debug("RECORD "+call_api+" / "+device+" - "+button)
+
+        if call_api in self.api: return self.api[call_api].send(device,button)
+        else:                    return "ERROR: API not available ("+call_api+")"
+
 
 #-------------------------------------------------
-# Execute commands
+
+    def query(self, call_api, device, button):
+        '''query an information'''
+
+        button_code = self.get_command( call_api, "queries", device, button )
+        logging.debug("QUERY "+call_api+" / "+device+" - "+button)
+
+        if call_api in self.api: return self.api[call_api].query(device,button_code)
+        else:                    return "ERROR: API not available ("+call_api+")"
+
+
 #-------------------------------------------------
 
-def test():
-    '''test all APIs'''
+    def get_command(self,api,button_query,device,button):
+        '''
+        translate device and button to command for the specific device
+        '''
+
+        # read data -> to be moved to cache?!
+        active       = rm3json.read(rm3config.devices + rm3config.active)
+        device_code  = active[device]["device"]
+        buttons      = rm3json.read(rm3config.commands + api + "/" + device_code)
     
-    global api   
-    for key in api: 
-      status = api[key].test()
-      if "ERROR" in str(status): return status
+        # add button definitions from default.json if exist
+        if rm3json.ifexist(rm3config.commands + api + "/default"):
+           buttons_default = rm3json.read(rm3config.commands + api + "/default")
+           for key in buttons_default["data"][button_query]:
+             buttons["data"][button_query][key] = buttons_default["data"][button_query][key]
 
-    return "OK"
+        #logging.debug(buttons["data"][button_query][button])
 
-#-------------------------------------------------
-
-def send( call_api, device, button ):
-    '''check if API exists and send command'''
-    
-    global api   
-    logging.debug("SEND "+call_api+" / "+device+" - "+button)
-
-    button_code = get_command( call_api, "buttons", device, button ) 
-    if call_api in api: return api[call_api].send(device,button_code)
-    else:               return "ERROR: API not available ("+call_api+")"
-
-
-#-------------------------------------------------
-
-def record( call_api, device, button ):
-    '''record a command'''
-    
-    global api   
-    logging.debug("RECORD "+call_api+" / "+device+" - "+button)
-
-    if call_api in api: return api[call_api].send(device,button)
-    else:               return "ERROR: API not available ("+call_api+")"
-
-
-#-------------------------------------------------
-
-def query( call_api, device, button):
-    '''query an information'''
-
-    global api   
-    button_code = get_command( call_api, "queries", device, button )
-    logging.debug("QUERY "+call_api+" / "+device+" - "+button)
-
-    if call_api in api: return api[call_api].query(device,button_code)
-    else:               return "ERROR: API not available ("+call_api+")"
-
-
-#-------------------------------------------------
-
-def get_command(api,button_query,device,button):
-
-    # read data -> to be moved to cache?!
-    active       = rm3json.read(rm3config.devices + rm3config.active)
-    device_code  = active[device]["device"]
-    buttons      = rm3json.read(rm3config.commands + api + "/" + device_code)
-    
-    # add button definitions from default.json if exist
-    if rm3json.ifexist(rm3config.commands + api + "/default"):
-       buttons_default = rm3json.read(rm3config.commands + api + "/default")
-       for key in buttons_default["data"][button_query]:
-         buttons["data"][button_query][key] = buttons_default["data"][button_query][key]
-
-    #logging.debug(buttons["data"][button_query][button])
-
-    # check for errors or return button code
-    if "ERROR" in buttons or "ERROR" in active:         return "ERROR"
-    elif button in buttons["data"][button_query]:       return buttons["data"][button_query][button]
-    else:                                               return "ERROR"      
+        # check for errors or return button code
+        if "ERROR" in buttons or "ERROR" in active:         return "ERROR"
+        elif button in buttons["data"][button_query]:       return buttons["data"][button_query][button]
+        else:                                               return "ERROR"      
 
 
 #-------------------------------------------------

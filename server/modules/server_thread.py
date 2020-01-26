@@ -12,8 +12,6 @@ import logging, time
 #import json
 import threading
 
-import interfaces.interfaces as interfaces
-
 #import modules.server_init   as init
 #import modules.rm3status     as rm3status
 #import modules.rm3json       as rm3json
@@ -27,7 +25,7 @@ class sendCmd (threading.Thread):
     class to create a queue to send commands (or a chain of commands) to the devices
     '''
     
-    def __init__(self, name):
+    def __init__(self, name, device_apis):
        '''create queue, set name'''
     
        threading.Thread.__init__(self)
@@ -35,6 +33,7 @@ class sendCmd (threading.Thread):
        self.name        = name
        self.stopProcess = False
        self.wait        = 0.1
+       self.device_apis = device_apis
 
 
     #------------------       
@@ -64,7 +63,7 @@ class sendCmd (threading.Thread):
        if "," in str(command):
           interface,device,button = command
           logging.info("Thread "+self.name+" - "+interface+":"+device+":"+button)
-          interfaces.send(interface,device,button)
+          self.device_apis.send(interface,device,button)
           
        else:
           time.sleep(float(command))

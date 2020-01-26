@@ -58,8 +58,12 @@ status_cache_interval = 5
 
 #---------------------------
 
-sendRemote = remoteThread.sendCmd("sendRemote")
+deviceAPIs = interfaces.connect()
+deviceAPIs.start()
+
+sendRemote = remoteThread.sendCmd("sendRemote",deviceAPIs)
 sendRemote.start()
+
 
 #---------------------------
 
@@ -97,7 +101,7 @@ def readStatus(data):
           else:
             for value in data[device]["query_list"]:
               try:
-                test = interfaces.query(data[device]["interface"],device,value)
+                test = deviceAPIs.query(data[device]["interface"],device,value)
                 devices[device]["status"][value]      = str(test)
                 data[device]["status"][value]         = str(test)
                   
@@ -591,7 +595,9 @@ def deviceStatusSet(device_button,state):
     else:
       return "ERROR: Wrong method ("+method+")"
 
-#---------------------------
+#-------------------------------------------------
+# Start and end of API answer
+#-------------------------------------------------
      
 def remoteAPI_start(setting=[]):
     '''
@@ -606,15 +612,15 @@ def remoteAPI_start(setting=[]):
     data["CONFIG"]                         = {}  
     data["CONFIG"]["button_images"]        = rm3json.read(rm3stage.icons_dir + "/index")
     data["CONFIG"]["button_colors"]        = rm3json.read(rm3config.buttons  + "button_colors")
-    data["CONFIG"]["interfaces"]           = interfaces.available
-    data["CONFIG"]["methods"]              = interfaces.methods
+    data["CONFIG"]["interfaces"]           = deviceAPIs.available
+    data["CONFIG"]["methods"]              = deviceAPIs.methods
     
     data["REQUEST"]                        = {}
     data["REQUEST"]["start-time"]          = time.time()
     data["REQUEST"]["Button"]              = lastButton 
 
     data["STATUS"]                         = {}
-    data["STATUS"]["devices"]              = translateStatusOld()  # -> to be replaced
+#    data["STATUS"]["devices"]              = translateStatusOld()  # -> to be replaced
     data["STATUS"]["last_button"]          = lastButton
     data["STATUS"]["system"]               = {} #  to be filled in remoteAPI_end()
 
@@ -666,7 +672,7 @@ def RemoteReload():
         reload interfaces and reload config data in cache
         '''
         
-        interfaces.init()
+        deviceAPIs.reload()
         refreshCache()
         
         data                          = remoteAPI_start(["no-data"])
@@ -731,7 +737,7 @@ def Remote(device,button):
         
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Button"] = button
-        #data["REQUEST"]["Return"] = interfaces.send(interface,device,button)
+        #data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,button)
         data["REQUEST"]["Return"] = sendRemote.add2queue([[interface,device,button]])
         
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
@@ -754,7 +760,7 @@ def RemoteMakro(makro):
 
         data                      = remoteAPI_start()
         data["REQUEST"]["Button"] = makro
-        data["REQUEST"]["Return"] = "ERROR: not implemented yet." #interfaces.send(interface,device,button)
+        data["REQUEST"]["Return"] = "ERROR: not implemented yet." #deviceAPIs.send(interface,device,button)
         
         commands_1st              = makro.split("::")
         commands_2nd              = []
@@ -848,7 +854,7 @@ def RemoteTest():
         data["REQUEST"]["Return"] = "OK: Test - show complete data structure"
         data                      = remoteAPI_end(data)        
         
-        interfaces.test()
+        deviceAPIs.test()
         
         return data
 
@@ -998,7 +1004,7 @@ def RemoteRecordCommand(device,button):
         interface                    = data["DATA"]["devices"][device]["interface"]
         data["DATA"]                 = {}
         
-        EncodedCommand               = interfaces.record(interface,device,button)
+        EncodedCommand               = deviceAPIs.record(interface,device,button)
         data["REQUEST"]["Return"]    = addCommand2Button(device,button,EncodedCommand)       
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
