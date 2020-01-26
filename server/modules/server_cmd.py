@@ -825,7 +825,7 @@ def RemoteMakro(makro):
           elif command_str.isnumeric():
             data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([float(command)])
 
-        #refreshCache()
+        refreshCache()
         data["DATA"]              = {}
         data                      = remoteAPI_end(data)        
         return data
@@ -927,7 +927,7 @@ def RemoteOnOff(device,button):
         data["REQUEST"]["Button"]    = button
         data["REQUEST"]["Return"]    = sendRemote.add2queue([[interface,device,button]])
 
-        #refreshCache()
+        refreshCache()
         data                         = remoteAPI_end(data)        
 
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
