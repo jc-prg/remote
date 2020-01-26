@@ -30,6 +30,7 @@ class eiscpAPI():
        self.api_description = "API for ONKYO Devices"
        self.api_config      = rm3json.read(rm3config.interfaces+self.api_name)
        self.api_ip          = self.api_config["IPAddress"]
+       self.api_timeout     = 5
        self.working         = False
        
        logging.info("... "+self.api_name+" - " + self.api_description)
@@ -45,9 +46,14 @@ class eiscpAPI():
        
        try:
           self.api    = eiscp.eISCP(self.api_ip)
+          self.status = "Connected"
+       except Exception as e:
+          self.status = "Error connecting to ONKYO device: " + str(e)
+          logging.warn(self.status)
+
+       try:
           self.api.command("system-power query") # send a command to check if connected
           self.status = "Connected"
-          
        except Exception as e:
           self.status = "Error connecting to ONKYO device: " + str(e)
           logging.warn(self.status)
@@ -102,16 +108,15 @@ class eiscpAPI():
 
        if self.status == "Connected":
          button_code = command_param[0].replace("="," ")        
-         logging.debug("Button-Code: "+button_code[:shorten_info_to]+"... ("+self.api_name+")")
+         logging.warn("Button-Code: "+button_code[:shorten_info_to]+"... ("+self.api_name+")")
          try:
-           result  = self.api.command(button_code)          
-           self.api.disconnect()
-           logging.debug(result)
+           result  = self.api.command(button_code)          # ??????????????????
          except Exception as e:
            return "ERROR "+self.api_name+" - query: " + str(e)
-
+           
+         self.api.disconnect()                            # ??????????????????
          result = result[1]
-         logging.debug(str(result))
+         logging.warn(str(result))
 
          # if || try to extract data from the result
          if "||" in command: 

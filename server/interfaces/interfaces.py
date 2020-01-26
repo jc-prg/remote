@@ -70,7 +70,9 @@ class connect(threading.Thread):
         reconnect all devices
         '''
         
-        for key in self.api: self.api[key].connect()
+        for key in self.api:
+          if self.api[key].status != "Connected":
+            self.api[key].connect()
                
     #-------------------------------------------------
     
