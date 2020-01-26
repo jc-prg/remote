@@ -102,7 +102,7 @@ class kodiAPI():
        self.working = True
        
        result  = {}
-       logging.info("Button-Code: "+command[:shorten_info_to]+"... ("+self.api_name+")")
+       logging.debug("Button-Code: "+command[:shorten_info_to]+"... ("+self.api_name+")")
 
        if "||" in command: command_param = command.split("||")
        else:               command_param = [command]

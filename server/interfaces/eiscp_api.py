@@ -108,14 +108,15 @@ class eiscpAPI():
            return "ERROR "+self.api_name+" - query: " + str(e)
 
          result = result[1]
-         logging.warn(str(result))
+         logging.debug(str(result))
 
+         # if || try to extract data from the result
          if "||" in command: 
            try:
              result2 = eval("result"+command_param[1])
              result  = result2
            except:
-             logging.warn("result"+command_param[1])
+             logging.warn("Not able to extract data: result"+command_param[1])
            
        else:
          return "ERROR "+self.api_name+": Not connected"

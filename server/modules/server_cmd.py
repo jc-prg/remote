@@ -621,14 +621,14 @@ def remoteAPI_start(setting=[]):
     for device in data["DATA"]["devices"]:
       if "main-audio" in data["DATA"]["devices"][device] and data["DATA"]["devices"][device]["main-audio"] == "yes":
         data["CONFIG"]["main-audio"] = device
-      data["DATA"]["devices"][device]["templates"] = {}
-      data["DATA"]["devices"][device]["queries"]   = {}
-      data["DATA"]["devices"][device]["buttons"]   = {}
+      if "templates" in data["DATA"]["devices"][device]:  del data["DATA"]["devices"][device]["templates"]
+      if "queries"   in data["DATA"]["devices"][device]:  del data["DATA"]["devices"][device]["queries"]
+      if "buttons"   in data["DATA"]["devices"][device]:  del data["DATA"]["devices"][device]["buttons"]
     
     #--------------------------------
     
-    if "no-data" in setting:   data["DATA"]   = {}
-    if "no-config" in setting: data["CONFIG"] = {}
+    if "no-data" in setting:   del data["DATA"]
+    if "no-config" in setting: del data["CONFIG"]
         
     return data
     
@@ -651,7 +651,7 @@ def remoteAPI_end(data):
         }
   
     # Update device status (e.g. if send command and cache maybe is not up-to-date any more)      
-    if "devices" in data["DATA"]:
+    if "DATA" in data and "devices" in data["DATA"]:
       data["DATA"]["devices"] = readStatus(data["DATA"]["devices"])
 
     return data
