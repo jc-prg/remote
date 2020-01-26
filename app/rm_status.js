@@ -85,7 +85,7 @@ function check_status_inactive(device="") {
 		}
 		
 	// deactive makro_buttons (check scene status, deactivate all buttons from list starting with "makro")
-	if (rm3remotes.active_type == "scene" && scene_status[rm3remotes.active_name] == "OFF") {
+	if (rm3remotes.active_type == "scene" && scene_status[rm3remotes.active_name] != "ON") {
 		for (var i=0; i<rm3remotes.active_buttons.length; i++) {
 			var button1 = rm3remotes.active_buttons[i].split("_");
 			if (button1[0] == "makro") { set_button_status(button1[0]+"_"+button1[1],false); }
@@ -105,7 +105,7 @@ function check_status_inactive(device="") {
 		if (filter == false) { 
 
 			// if device off -> set all buttons off
-			if (dev[key]["button_list"] && device_status[key] == "OFF") {
+			if (dev[key]["button_list"] && device_status[key] != "ON") {
 				var buttons = dev[key]["button_list"];
 				for (var i=0; i<buttons.length; i++) {
 					if (buttons[i] != "red" && buttons[i] != "blue" && buttons[i] != "yellow" && buttons[i] != "green"
