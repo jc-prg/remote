@@ -199,7 +199,7 @@ function rmRemote(name) {
 
 		var remote            = "";
 		var remote_buttons    = this.data["DATA"]["devices"][device]["remote"];
-		var device_buttons    = Object.keys(this.data["DATA"]["devices"][device]["buttons"]);
+		var device_buttons    = this.data["DATA"]["devices"][device]["button_list"];
 		var notused           = [];
 
 		// difference of arrays
@@ -231,7 +231,7 @@ function rmRemote(name) {
 
 		var remote            = "";
 		var remote_buttons    = this.data["DATA"]["devices"][device]["remote"];
-		var device_buttons    = Object.keys(this.data["DATA"]["devices"][device]["buttons"]);
+		var device_buttons    = this.data["DATA"]["devices"][device]["button_list"];
 
 		this.input_width      = "180px";
 		this.button_width     = "120px";
@@ -253,7 +253,7 @@ function rmRemote(name) {
 		remote  += this.tab_row("start");
 
 		remote  += this.tab_row(
-				"Set main AUDIO device",
+				"Set as main AUDIO device",
 				this.button_edit("alert('Not implemented yet.');","set main device","disabled")
 				);
 
@@ -322,14 +322,14 @@ function rmRemote(name) {
 	// specific selects ...
 	//--------------------
 	
-        this.button_select = function (id,filter="") {
+        this.button_select = function (id,device="") {
                 var list = {};
-                if (filter != "" && filter in this.data["DATA"]["devices"]) {
-                
-                        for (var key in this.data["DATA"]["devices"][filter]["buttons"]){
-                                list[filter+"_"+key] = key;
-                                }
-                        }
+                if (device != "" && device in this.data["DATA"]["devices"]) {
+			button_list = this.button_list(device);
+			for (var i=0;i<button_list.length;i++) {
+                                list[device+"_"+button_list[i]] = button_list[i];
+				}
+			}
                 return this.select(id,"button",list);
                 }
                 
@@ -529,7 +529,8 @@ function rmRemote(name) {
 
 	// return list of buttons for a device
 	this.button_list = function(device) {
-		return Object.keys(this.data["DATA"]["devices"][device]["buttons"]);
+		if (this.data["DATA"]["devices"][device]) 	{ return this.data["DATA"]["devices"][device]["button_list"]; }
+		else						{ return ["error:"+device]; }
 		}
 
 	// handle messages for console

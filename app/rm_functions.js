@@ -21,16 +21,17 @@ function pausecmd(s) {
 // create menus & landing page & setting page
 //--------------------------------
 
-function showRemote(i) {
+function showRemote(show=false) {
     var body   = document.getElementById("app_background");
-    var w      = window.innerWidth;
+    var width  = window.innerWidth;
 
-    if (i == 1) {
-        body.style.backgroundImage    = "url("+rm3background+")";
-        body.style.backgroundRepeat   = "no-repeat";
-        body.style.backgroundPosition = "bottom center";
-        if (w < 400)	{ body.style.backgroundSize     = "100%"; }
-        else 		{ body.style.backgroundSize     = "400px"; }
+    if (show == 1 || show == true) {
+        body.style.backgroundImage      = "url("+rm3background+")";
+        body.style.backgroundRepeat     = "no-repeat";
+        body.style.backgroundPosition   = "bottom center";
+        body.style.backgroundAttachment = "fixed";
+        if (width < 400)	{ body.style.backgroundSize     = "100%"; }
+        else 			{ body.style.backgroundSize     = "400px"; }
         }
     else {
         body.style.backgroundImage    = "";
