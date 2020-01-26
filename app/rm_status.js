@@ -17,6 +17,7 @@ function show_status_button(id, status) {
 	if (status == "ON")		{color = "darkgreen";}
 	else if (status == "OFF")	{color = "darkred";}
 	else if (status == "OTHER")	{color = "purple";}
+	else if (status == "ERROR")	{color = "orangered";}
 	else				{color = "";} // reset to CSS color
 
 	var button = document.getElementById(id);
@@ -175,21 +176,29 @@ function check_status(data={}) {
 		}
 		
 	// check device status and change color of power buttons / main menu buttons device
-	for (var key1 in devices) {
+	for (var device in devices) {
 	
 	  // if device is visible
-	  if (devices[key1]["visible"] == "yes") {
-	    for (var key2 in devices[key1]["status"]) {
+	  if (devices[device]["visible"] == "yes") {
+	    for (var key2 in devices[device]["status"]) {
 	    
 	      // if power status
 	      if (key2.includes("power")) {
-	        key = key1;
+	        key = device;
 	        if (key2 != "power") { key += "_"+key2; }
 	        
 	        //console.error("TEST "+key1+"_"+key2+" = "+devices[key1]["status"][key2]);
-		check_button = devices[key1]["status"][key2];
+		check_button = devices[device]["status"][key2];
+		connection   = devices[device]["connected"].toLowerCase();
+		
+		if (connection != "connected") {
+			show_status_button( "device_" + key, "ERROR" ); // main menu button
+			show_status_button( key + "_on-off", "ERROR" ); // on-off device button		
+			show_status_button( key + "_on",     "ERROR" );
+			show_status_button( key + "_off",    "ERROR" );
+			}
 
-		if (typeof check_button == "string") {
+		else if (typeof check_button == "string") {
 			check_button = check_button.toUpperCase()
 			
 			if (check_button.includes("ON")) {
@@ -206,7 +215,7 @@ function check_status(data={}) {
 				}	
 			}
 			
-		if (typeof check_button == "object") {
+		else if (typeof check_button == "object") {
 			if (check_button.indexOf("off") >= 0) {
 				show_status_button( "device_" + key, "OFF" ); // main menu button
 				show_status_button( key + "_on-off", "OFF" ); // on-off device button		

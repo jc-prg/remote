@@ -88,7 +88,8 @@ def readStatus(data):
     # if cache is older than 5 seconds or cache time is not set
     if (status_cache_time == 0) or (time.time() - status_cache_time >= status_cache_interval):
     
-      devices    = rm3json.read(rm3config.devices + rm3config.active)    
+      devices    = rm3json.read(rm3config.devices + rm3config.active)
+      
       for device in devices:        
         if "status" in devices[device] and "method" in data[device]:
           
@@ -100,13 +101,18 @@ def readStatus(data):
           # else request status from API 
           else:
             for value in data[device]["query_list"]:
-              try:
-                test = deviceAPIs.query(data[device]["interface"],device,value)
-                devices[device]["status"][value]      = str(test)
-                data[device]["status"][value]         = str(test)
+              if deviceAPIs.status(data[device]["interface"]) == "Connected":
+
+                try:
+                  test = deviceAPIs.query(data[device]["interface"],device,value)
+                  devices[device]["status"][value]      = str(test)
+                  data[device]["status"][value]         = str(test)
                   
-              except Exception as e:
-                logging.error(str(e)+" / " + device + "-" + value + " : " + data[device]["interface"])
+                except Exception as e:
+                  logging.error(str(e)+" / " + device + "-" + value + " : " + data[device]["interface"])
+                  
+              else:
+                 devices[device]["status"][value] = "Not connected"
                                
       status_cache = devices
       rm3json.write(rm3config.devices + rm3config.active, devices)
@@ -196,10 +202,8 @@ def RmReadData(selected=[]):
                 data_temp["description"]         = remote["data"]["description"]              
                 data_temp["remote"]              = remote["data"]["remote"]
 
-                if "display" in remote["data"]:   
-                  data_temp["display"]           = remote["data"]["display"]              
-                if "display-size" in remote["data"]:   
-                  data_temp["display-size"]           = remote["data"]["display-size"]              
+                if "display" in remote["data"]:       data_temp["display"]       = remote["data"]["display"]              
+                if "display-size" in remote["data"]:  data_temp["display-size"]  = remote["data"]["display-size"]              
            
                 data["devices"][device] = data_temp
  
@@ -209,11 +213,10 @@ def RmReadData(selected=[]):
               if selected == [] or scene in selected:
 
                 thescene      = rm3json.read(rm3config.scenes_def + scene)
-           
-                data["scenes"][scene]["remote"]             = thescene[scene]["remote"]
-                data["scenes"][scene]["channel"]            = thescene[scene]["channel"]
-                data["scenes"][scene]["devices"]            = thescene[scene]["devices"]
-                data["scenes"][scene]["label"]              = thescene[scene]["label"]
+                keys          = ["remote","channel","devices","label"]
+                
+                for key in keys:
+                    data["scenes"][scene][key] = thescene[scene][key]
            
         # read data for makros
         for makro in makros:        
@@ -238,17 +241,18 @@ def RmReadData(selected=[]):
         
             data["templates"][template]["file"] = template
 
+        # update cache data
         if selected == []:
           rm_data        = data
           rm_data_update = False         
 
-    # if no update required
-    else:
-        data            = rm_data
+    # if no update required read from cache
+    else: data           = rm_data
 
     # Update status data        
     data["devices"] = readStatus(data["devices"])
     rm_data         = data
+    
     return data
 
 
@@ -587,13 +591,13 @@ def deviceStatusSet(device_button,state):
     logging.warn(" ...m:"+method+" ...d:"+device_button+" ...s:"+state)
     
     if method == "record":
-      if button in power_buttons: button = "power"
-      if button == "on":          state  = "ON"
-      if button == "off":         state  = "OFF"
-      rm3status.setStatus(device+"_"+button,state)
-      return "OK"
+        if button in power_buttons: button = "power"
+        if button == "on":          state  = "ON"
+        if button == "off":         state  = "OFF"
+        rm3status.setStatus(device+"_"+button,state)
+        return "OK"
     else:
-      return "ERROR: Wrong method ("+method+")"
+        return "ERROR: Wrong method ("+method+")"
 
 #-------------------------------------------------
 # Start and end of API answer
@@ -620,16 +624,19 @@ def remoteAPI_start(setting=[]):
     data["REQUEST"]["Button"]              = lastButton 
 
     data["STATUS"]                         = {}
-#    data["STATUS"]["devices"]              = translateStatusOld()  # -> to be replaced
-    data["STATUS"]["last_button"]          = lastButton
+    data["STATUS"]["interfaces"]           = deviceAPIs.status()
     data["STATUS"]["system"]               = {} #  to be filled in remoteAPI_end()
 
     for device in data["DATA"]["devices"]:
-      if "main-audio" in data["DATA"]["devices"][device] and data["DATA"]["devices"][device]["main-audio"] == "yes":
-        data["CONFIG"]["main-audio"] = device
-      if "templates" in data["DATA"]["devices"][device]:  del data["DATA"]["devices"][device]["templates"]
-      if "queries"   in data["DATA"]["devices"][device]:  del data["DATA"]["devices"][device]["queries"]
-      if "buttons"   in data["DATA"]["devices"][device]:  del data["DATA"]["devices"][device]["buttons"]
+      if "main-audio" in data["DATA"]["devices"][device] and data["DATA"]["devices"][device]["main-audio"] == "yes": data["CONFIG"]["main-audio"] = device
+      if "templates"  in data["DATA"]["devices"][device]:  del data["DATA"]["devices"][device]["templates"]
+      if "queries"    in data["DATA"]["devices"][device]:  del data["DATA"]["devices"][device]["queries"]
+      if "buttons"    in data["DATA"]["devices"][device]:  del data["DATA"]["devices"][device]["buttons"]
+      
+      if data["DATA"]["devices"][device]["interface"] in data["STATUS"]["interfaces"]:
+        data["DATA"]["devices"][device]["connected"] = data["STATUS"]["interfaces"][data["DATA"]["devices"][device]["interface"]]
+      else:
+        data["DATA"]["devices"][device]["connected"] = "No connection yet."
     
     #--------------------------------
     
@@ -658,7 +665,7 @@ def remoteAPI_end(data):
   
     # Update device status (e.g. if send command and cache maybe is not up-to-date any more)      
     if "DATA" in data and "devices" in data["DATA"]:
-      data["DATA"]["devices"] = readStatus(data["DATA"]["devices"])
+        data["DATA"]["devices"] = readStatus(data["DATA"]["devices"])
 
     return data
 
@@ -672,7 +679,7 @@ def RemoteReload():
         reload interfaces and reload config data in cache
         '''
         
-        deviceAPIs.reload()
+        deviceAPIs.reconnect()
         refreshCache()
         
         data                          = remoteAPI_start(["no-data"])

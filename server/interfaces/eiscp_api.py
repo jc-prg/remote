@@ -42,8 +42,10 @@ class eiscpAPI():
        '''Connect / check connection'''
        
        # Create a receiver object, connecting to the host
+       
        try:
-          self.api = eiscp.eISCP(self.api_ip)
+          self.api    = eiscp.eISCP(self.api_ip)
+          self.api.command("system-power query") # send a command to check if connected
           self.status = "Connected"
           
        except Exception as e:
@@ -55,6 +57,7 @@ class eiscpAPI():
    
    def wait_if_working(self):
        '''Some devices run into problems, if send several requests at the same time'''
+       
        while self.working:
          logging.debug(".")
          time.sleep(0.2)

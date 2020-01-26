@@ -15,7 +15,7 @@
         "interface": "BROADLINK",
         "label": "Beamer",
         "status": {
-            "power": "ON"
+            "power": "OFF"
         },
         "visible": "yes"
     },
@@ -37,7 +37,7 @@
         "interface": "BROADLINK",
         "label": "Leinwand",
         "status": {
-            "power": "ON"
+            "power": "OFF"
         },
         "visible": "yes"
     },
@@ -47,11 +47,11 @@
         "interface": "KODI",
         "label": "Media-Center",
         "status": {
-            "mute": "False",
-            "name": "Kodi",
-            "power": "ON",
-            "version": "{'major': 18, 'minor': 4, 'revision': '20191027-06c77692ee', 'tag': 'stable'}",
-            "vol": "100"
+            "mute": "Not connected",
+            "name": "Not connected",
+            "power": "Not connected",
+            "version": "Not connected",
+            "vol": "Not connected"
         },
         "visible": "yes"
     },
@@ -63,7 +63,7 @@
         "main-audio": "no",
         "status": {
             "mute": "OFF",
-            "power": "ON",
+            "power": "OFF",
             "vol": 0
         },
         "visible": "no"
@@ -75,16 +75,16 @@
         "label": "AV Receiver",
         "main-audio": "yes",
         "status": {
-            "audio-info": "ANALOG,,,,All Ch Stereo,5.1 ch,",
-            "dimmer": "dark",
-            "display": "('selector-volume-1line', 'default-2line')",
-            "mute": "off",
-            "power": "on",
-            "source": "game/tv",
-            "temperature": "C 30",
-            "timer": "N/A",
-            "video-info": "HDMI 3,1920 x 1080p  60 Hz,RGB,24bit,MAIN,1920 x 1080p  60 Hz,RGB,24bit,,",
-            "vol": "44"
+            "audio-info": "Not connected",
+            "dimmer": "Not connected",
+            "display": "Not connected",
+            "mute": "Not connected",
+            "power": "Not connected",
+            "source": "Not connected",
+            "temperature": "Not connected",
+            "timer": "Not connected",
+            "video-info": "Not connected",
+            "vol": "Not connected"
         },
         "visible": "yes"
     },

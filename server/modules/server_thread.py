@@ -4,19 +4,8 @@
 # (c) Christoph Kloth
 #-----------------------------------
 
-#import configparser
-#import sys, getopt
-#import time, binascii
-#import netaddr, codecs
 import logging, time
-#import json
 import threading
-
-#import modules.server_init   as init
-#import modules.rm3status     as rm3status
-#import modules.rm3json       as rm3json
-#import modules.rm3stage      as rm3stage
-#import modules.rm3config     as rm3config
 
 #-------------------------------------------------
 

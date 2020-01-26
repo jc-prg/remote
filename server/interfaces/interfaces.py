@@ -57,15 +57,21 @@ class connect(threading.Thread):
            self.available[key] = self.api[key].api_description
 
         while not self.stopProcess:
+        
            time.sleep(self.wait)
+           self.reconnect()
              
         logging.info( "Exiting " + self.name )
 
     #-------------------------------------------------
     
-    def reload(self):
-        return
-    
+    def reconnect(self):
+        '''
+        reconnect all devices
+        '''
+        
+        for key in self.api: self.api[key].connect()
+               
     #-------------------------------------------------
     
     def test(self):
@@ -78,15 +84,33 @@ class connect(threading.Thread):
         return "OK"
 
     #-------------------------------------------------
+    
+    def status(self,interface=""):
+        '''
+        return status of all devices
+        '''
+        
+        if interface == "":
+           status = {}
+           for key in self.api: status[key] = self.api[key].status
+           return status
+        elif interface in self.api:
+           return self.api[interface].status
+        else:
+           return "ERROR: API not found ("+interface+")."
+    
+    #-------------------------------------------------
 
     def send(self, call_api, device, button ):
         '''check if API exists and send command'''
     
         logging.debug("SEND "+call_api+" / "+device+" - "+button)
 
-        button_code = self.get_command( call_api, "buttons", device, button ) 
-        if call_api in self.api: return self.api[call_api].send(device,button_code)
-        else:                    return "ERROR: API not available ("+call_api+")"
+        if self.api[call_api].status == "Connected":       
+            button_code = self.get_command( call_api, "buttons", device, button ) 
+            if call_api in self.api: return self.api[call_api].send(device,button_code)
+            else:                    return "ERROR: API not available ("+call_api+")"
+        else:                        return "ERROR: API not connected ("+call_api+")"
 
 
     #-------------------------------------------------
@@ -96,8 +120,10 @@ class connect(threading.Thread):
     
         logging.debug("RECORD "+call_api+" / "+device+" - "+button)
 
-        if call_api in self.api: return self.api[call_api].send(device,button)
-        else:                    return "ERROR: API not available ("+call_api+")"
+        if self.api[call_api].status == "Connected":       
+            if call_api in self.api: return self.api[call_api].send(device,button)
+            else:                    return "ERROR: API not available ("+call_api+")"
+        else:                        return "ERROR: API not connected ("+call_api+")"
 
 
 #-------------------------------------------------
@@ -105,11 +131,13 @@ class connect(threading.Thread):
     def query(self, call_api, device, button):
         '''query an information'''
 
-        button_code = self.get_command( call_api, "queries", device, button )
         logging.debug("QUERY "+call_api+" / "+device+" - "+button)
 
-        if call_api in self.api: return self.api[call_api].query(device,button_code)
-        else:                    return "ERROR: API not available ("+call_api+")"
+        if self.api[call_api].status == "Connected":       
+            button_code = self.get_command( call_api, "queries", device, button )
+            if call_api in self.api: return self.api[call_api].query(device,button_code)
+            else:                    return "ERROR: API not available ("+call_api+")"
+        else:                        return "ERROR: API not connected ("+call_api+")"
 
 
 #-------------------------------------------------
