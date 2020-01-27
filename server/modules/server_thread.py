@@ -7,7 +7,9 @@
 import logging, time
 import threading
 
+import modules.rm3config     as rm3config
 import modules.rm3json       as rm3json
+#import modules.rm3status     as rm3status
 
 #-------------------------------------------------
 # read / write configuratioh
@@ -27,7 +29,8 @@ class configuration (threading.Thread):
        self.cache          = {}
        self.cache_time     = time.time()
        self.cache_interval = 60
-  
+       self.configMethods  = {}
+       
     #------------------       
        
     def run(self):
@@ -77,6 +80,56 @@ class configuration (threading.Thread):
         self.cache[config_file] = value
 
 
+    #---------------------------
+
+    def translate_device(device):
+        '''
+        get device name as file name
+        '''
+
+        status = self.read(rm3config.devices + rm3config.active)
+        if device in status: return status[device]["device"]
+        else:                return ""
+        
+    #---------------------------
+    
+    def read_status(self,selected_device=""):
+        '''
+        read and return array
+        '''
+
+        status = self.read(rm3config.devices + rm3config.active)
+    
+        # initial load of methods (record vs. query)
+        if self.configMethods == {} and selected_device == "":
+    
+          for device in status:
+              key       = status[device]["device"]
+              interface = status[device]["interface"]
+        
+              if interface != "" and key != "":
+                  config = self.read(rm3config.commands + interface + "/" + key)
+                  if not "ERROR" in config:
+                      self.configMethods[device] = config["data"]["method"]
+    
+        # if device is given return only device status
+        if selected_device != "" and selected_device in status and "status" in status[selected_device]:
+          status = status[selected_device]["status"]
+      
+        return status
+    
+    #---------------------------
+    
+    def write_status(self,status):
+        '''
+        write status
+        '''
+
+        self.write(rm3config.devices + rm3config.active,status)
+
+    
+
+    #---------------------------
 
 
 

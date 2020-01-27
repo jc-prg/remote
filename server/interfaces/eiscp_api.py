@@ -108,7 +108,7 @@ class eiscpAPI():
 
        if self.status == "Connected":
          button_code = command_param[0].replace("="," ")        
-         logging.warn("Button-Code: "+button_code[:shorten_info_to]+"... ("+self.api_name+")")
+         logging.debug("Button-Code: "+button_code[:shorten_info_to]+"... ("+self.api_name+")")
          try:
            result  = self.api.command(button_code)          # ??????????????????
          except Exception as e:
@@ -116,7 +116,7 @@ class eiscpAPI():
            
          self.api.disconnect()                            # ??????????????????
          result = result[1]
-         logging.warn(str(result))
+         logging.debug(str(result))
 
          # if || try to extract data from the result
          if "||" in command: 

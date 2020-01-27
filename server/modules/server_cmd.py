@@ -13,7 +13,7 @@ import json
 import interfaces.interfaces as interfaces
 
 import modules.server_init   as init
-import modules.rm3status     as rm3status
+#import modules.rm3status     as rm3status
 import modules.rm3json       as rm3json
 import modules.rm3stage      as rm3stage
 import modules.rm3config     as rm3config
@@ -80,59 +80,9 @@ def refreshCache():
     configFiles.cache_time = 0
 
 #---------------------------
-
-def readStatus(data):
-    '''
-    read status data from config file (method=record) and/or device APIs (method=query)
-    '''
-
-    global status_cache, status_cache_time, status_cache_interval
-    
-    devices = configFiles.read(rm3config.devices + rm3config.active)
-    
-    # if cache is older than 5 seconds or cache time is not set
-    if (status_cache_time == 0) or (time.time() - status_cache_time >= status_cache_interval):
-    
-      for device in devices: 
-        if "status" in devices[device] and "method" in data[device]:
-          
-          # if method == record read from file
-          if data[device]["method"] == "record":
-
-            for value in devices[device]["status"]:
-              data[device]["status"][value] = devices[device]["status"][value]
-               
-          # else request status from API 
-          elif data[device]["method"] == "query":
-          
-            interface = data[device]["interface"]
-            if deviceAPIs.status(interface) == "Connected":
-
-                for value in data[device]["query_list"]:              
-                    result = deviceAPIs.query(interface,device,value)
-                    if not "ERROR" in str(result):
-                        devices[device]["status"][value]      = str(result)
-                        data[device]["status"][value]         = str(result)
-
-                    else:
-                        devices[device]["status"][value]      = "Error"
-                        data[device]["status"][value]         = "Error"
-                        logging.error(result)
-                  
-            else:
-                 devices[device]["status"][value] = "Not connected"
-                               
-      status_cache = devices
-      configFiles.write(rm3config.devices + rm3config.active, devices)
-
-    else:
-      devices = status_cache
-                
-    status_cache_time = time.time()
-    return data
-     
-    
+# Read data
 #---------------------------
+
 
 def RmReadData(selected=[]):
     '''Read all relevant data and create data structure'''
@@ -145,6 +95,7 @@ def RmReadData(selected=[]):
 
     # if update required
     if rm_data_update: 
+    
         data["devices"] = configFiles.read(rm3config.devices + rm3config.active)
         data["scenes"]  = configFiles.read(rm3config.scenes  + rm3config.active)
         data["makros"]  = {}
@@ -178,8 +129,8 @@ def RmReadData(selected=[]):
                 if "method"  in buttons["data"]:   data_temp["method"]  = buttons["data"]["method"]              
                 if "values"  in buttons["data"]:   data_temp["values"]  = buttons["data"]["values"]              
                 if "queries" in buttons["data"]:
-                  data_temp["queries"]           = buttons["data"]["queries"]
-                  data_temp["query_list"]        = list(buttons["data"]["queries"].keys())                 
+                    data_temp["queries"]         = buttons["data"]["queries"]
+                    data_temp["query_list"]      = list(buttons["data"]["queries"].keys())                 
                 
                 data_temp["buttons"]             = buttons["data"]["buttons"]
                 data_temp["button_list"]         = list(buttons["data"]["buttons"].keys())
@@ -221,9 +172,9 @@ def RmReadData(selected=[]):
 
             if "ERROR" in template_data:  data["templates"][template] = template_data
             else: 
-              if template_key in template_data: data["templates"][template] = template_data[template_key]
-              else:                             data["templates"][template] = { "ERROR" : "JSON file not correct, key missing: "+template_key }
-              data["template_list"][template] = data["templates"][template]["description"]
+                if template_key in template_data: data["templates"][template] = template_data[template_key]
+                else:                             data["templates"][template] = { "ERROR" : "JSON file not correct, key missing: "+template_key }
+                data["template_list"][template] = data["templates"][template]["description"]
         
             data["templates"][template]["file"] = template
 
@@ -236,10 +187,11 @@ def RmReadData(selected=[]):
     else: data           = rm_data
 
     # Update status data        
-    data["devices"] = readStatus(data["devices"])
+    data["devices"] = devicesGetStatus(data["devices"])
     rm_data         = data
     
     return data
+
 
 
 #---------------------------
@@ -260,7 +212,8 @@ def addDevice(device,interface,description):
     if rm3json.ifexist(rm3config.commands +interface+"/"+device):    return("WARN: Device " + device + " already exists (devices).")
     if rm3json.ifexist(rm3config.remotes  +interface+"/"+device):    return("WARN: Device " + device + " already exists (remotes).") 
     
-    logging.warn(device+" add")
+    logging.info(device+" add")
+    
     ## add to _active.json 
     active_json[device] = {
         "device"    : description,
@@ -308,6 +261,7 @@ def addDevice(device,interface,description):
             
     rm_data_update = True
     return("OK: Device " + device + " added.")
+
 
 
 #---------------------------------------
@@ -542,48 +496,212 @@ def editDevice(device,info):
 
     if i > 0: return("OK: Edited device paramenters of "+device+" ("+str(i)+" changes)")
     else:     return("ERROR: no data key matched with keys from config-files ("+str(info.keys)+")")
-      
-#---------------------------
 
-def deviceStatusGet(device_button):
+      
+
+#-----------------------------------------------
+# Read and set status
+#-----------------------------------------------
+
+def setStatus(device,key,value):
+    '''
+    change status and write to file
+    '''
+
+    status = configFiles.read_status()
+    
+    if key == "":
+        key = "power"
+      
+    if device in status:
+        logging.debug("setStatus:"+key+"="+value)
+        status[device]["status"][key] = value
+        configFiles.write_status(status)
+      
+    else:
+        logging.warn("setStatus: device does not exist ("+device+")")
+        return "ERROR setStatus: device does not exist ("+device+")"
+    
+    return "TBC: setStatus: " + device + "/" + key + "/" + value
+    
+#-----------------------------------------------
+
+def resetStatus():
+    '''set status for all devices to OFF'''
+
+    status = configFiles.read_status()
+
+    # reset if device is not able to return status and interface is defined
+    for key in status:
+    
+      if status[key]["interface"] != "":     
+        device_code = configFiles.translate_device(key)
+        device      = configFiles.read(rm3config.commands + status[key]["interface"] + "/" + device_code)
+        logging.info("Reset Device: " + device_code + "/" + status[key]["interface"])
+      
+        if device["data"]["method"] != "query":
+          status[key]["status"]["power"] = "OFF"
+
+    configFiles.write_status(status)
+    return "TBC: Reset POWER to OFF for devices without API"
+
+#-----------------------------------------------
+
+def resetAudio():
+    '''set status for all devices to OFF'''
+  
+    status = configFiles.read_status()
+
+    # reset if device is not able to return status and interface is defined
+    for key in status:
+    
+      if status[key]["interface"] != "":
+      
+        device_code = configFiles.translate_device(key)
+        device      = configFiles.read(rm3config.commands + status[key]["interface"] + "/" + device_code)
+        logging.info("Reset Device: " + device_code + "/" + status[key]["interface"])
+      
+        if device["data"]["method"] != "query":      
+          if "vol"  in status[key]["status"]: status[key]["status"]["vol"]  = 0 
+          if "mute" in status[key]["status"]: status[key]["status"]["mute"] = "OFF"
+
+    configFiles.write_status(status)
+    return "TBC: Reset AUDIO to 0 for devices without API"
+
+#-----------------------------------------------
+
+def getStatus(device,key):
+    '''get status of device'''
+
+    status = configFiles.read_status()
+    
+    if not device in status: 
+      logging.error("Get status - Device not defined: " +device + " (" + key + ")")
+      return 0
+    
+    if device in status and key in status[device]["status"]:
+      logging.info("Get status: " + key + " = " + status[device]["status"][key])
+      return status[device]["status"][key]
+      
+    else:
+      logging.error("Get status: " + key + "/" + device)
+      return 0    
+
+
+
+#-----------------------------------------------
+# Device status
+#-----------------------------------------------
+
+def devicesGetStatus(data):
+    '''
+    read status data from config file (method=record) and/or device APIs (method=query)
+    data -> data["DATA"]["devices"]
+    '''
+
+    global status_cache, status_cache_time, status_cache_interval
+
+    devices       = configFiles.read(rm3config.devices + rm3config.active)
+    relevant_keys = ["status","visible","description","image","interface","label","device","main-audio"]
+    
+    # if cache is older than 5 seconds or cache time is not set
+    if (status_cache_time == 0) or (time.time() - status_cache_time >= status_cache_interval):
+    
+      for device in devices: 
+        if "status" in devices[device] and "method" in data[device]:
+          
+          # if method == record read from file
+          if data[device]["method"] == "record":
+
+              for value in devices[device]["status"]:
+                  data[device]["status"][value] = devices[device]["status"][value]
+               
+          # else request status from API 
+          elif data[device]["method"] == "query":
+          
+              interface = data[device]["interface"]
+              if deviceAPIs.status(interface) == "Connected":
+
+                  for value in data[device]["query_list"]:              
+                      result = deviceAPIs.query(interface,device,value)
+                      if not "ERROR" in str(result):
+                          devices[device]["status"][value]      = str(result)
+                          data[device]["status"][value]         = str(result)
+
+                      else:
+                          devices[device]["status"][value]      = "Error"
+                          data[device]["status"][value]         = "Error"
+                          logging.error(result)
+                  
+              else:
+                   devices[device]["status"][value] = "Not connected"
+      
+      # workaround: delete keys that are not required
+      devices_temp = {}
+      for device in devices:
+          devices_temp[device] = {}
+          for key in devices[device]:
+              if key in relevant_keys:
+                 devices_temp[device][key] = devices[device][key]
+                  
+      devices = devices_temp
+                               
+      status_cache = devices
+      configFiles.write(rm3config.devices + rm3config.active, devices)
+
+    else:
+      devices = status_cache
+                
+    status_cache_time = time.time()
+    return data
+
+#-----------------------------------------------
+
+def deviceStatusGet(device,button):
     '''
     Get Status from device for a specific button or display value (first step if method = "record")
     '''
     
     global rm_data
     power_buttons = ["on","on-off","off"]
-    device,button = device_button.split("_")
     method        = rm_data["devices"][device]["method"]
     
     if method == "record":
       if button in power_buttons: button = "power"
-      rm3status.getStatus(device+"_"+button)
+      getStatus(device,button)
       return "OK"
     else:
       return "ERROR: Wrong method ("+method+")"
     
-#---------------------------
+#-----------------------------------------------
 
-def deviceStatusSet(device_button,state):
+def deviceStatusSet(device,button,state):
     '''
     Set Status of device for a specific button or display value (first step if method = "record")
     '''
     
     global rm_data
     power_buttons = ["on","on-off","off"]
-    device,button = device_button.split("_")
+    vol_buttons   = ["vol+","vol-"]
     method        = rm_data["devices"][device]["method"]
     
-    logging.warn(" ...m:"+method+" ...d:"+device_button+" ...s:"+state)
+    logging.debug(" ...m:"+method+" ...d:"+device+" ...b:"+button+" ...s:"+state)
     
     if method == "record":
+
         if button in power_buttons: button = "power"
+        if button in vol_buttons:   button = "vol"
         if button == "on":          state  = "ON"
         if button == "off":         state  = "OFF"
-        rm3status.setStatus(device+"_"+button,state)
+        
+        setStatus(device,button,state)
+        configFiles.cache_time = 0
         return "OK"
     else:
+        logging.warn("deviceStatusSet: Wrong method ("+method+")")
         return "ERROR: Wrong method ("+method+")"
+
+
 
 #-------------------------------------------------
 # Start and end of API answer
@@ -651,7 +769,7 @@ def remoteAPI_end(data):
   
     # Update device status (e.g. if send command and cache maybe is not up-to-date any more)      
     if "DATA" in data and "devices" in data["DATA"]:
-        data["DATA"]["devices"] = readStatus(data["DATA"]["devices"])
+        data["DATA"]["devices"] = devicesGetStatus(data["DATA"]["devices"])
 
     return data
 
@@ -735,7 +853,7 @@ def Remote(device,button):
         
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
 
-        data["DeviceStatus"]      = rm3status.getStatus(device)  # to be removed
+        data["DeviceStatus"]      = getStatus(device,"power")  # to be removed
         data["ReturnMsg"]         = data["REQUEST"]["Return"]    # to be removed
 
         #refreshCache()
@@ -810,12 +928,13 @@ def RemoteMakro(makro):
 
             # if future state not already in place add command to queue              
             logging.warn(" ...i:"+interface+" ...d:"+device+" ...b:"+button+" ...s:"+status)
+
             if device in data["DATA"]["devices"] and status_var in data["DATA"]["devices"][device]["status"]:
               logging.warn(" ...y:"+status_var+"="+str(data["DATA"]["devices"][device]["status"][status_var])+" -> "+status)
               
               if data["DATA"]["devices"][device]["status"][status_var] != status:
-                data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([[interface,device,button]])
-                deviceStatusSet(device+"_"+button,status)
+                  data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([[interface,device,button]])
+                  deviceStatusSet(device,button,status)
             
             # if no future state is defined just add command to queue
             elif status == "":
@@ -825,7 +944,7 @@ def RemoteMakro(makro):
           elif command_str.isnumeric():
             data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([float(command)])
 
-        refreshCache()
+        #refreshCache()
         data["DATA"]              = {}
         data                      = remoteAPI_end(data)        
         return data
@@ -869,56 +988,47 @@ def RemoteOnOff(device,button):
         
         # delete DATA (less data to be returned via API)
         data["DATA"]    = {}
-        
+
+
 ############### need for action ##
  # - if multiple values, check definition
  # - if volume, check minimum and maximum
 
         # if recorded values, check against status quo
         if method == "record":
+        
           logging.info("RemoteOnOff: " +device+"/"+button+" ("+interface+"/"+method+")")
         
-          # for device with only 1 button for ON and OFF
+          statPower = getStatus(device,"power")
+          statTV    = getStatus(device,"radiotv")
+          statMute  = getStatus(device,"mute")
+          statVol   = getStatus(device,"vol")
+   
+          # buttons ON / OFF
           if button == "on-off":
-             devStat = rm3status.getStatus(device)
-           
-             if devStat == "OFF":   rm3status.setStatus(device,"ON")
-             else:                  rm3status.setStatus(device,"OFF")
-
-          # for device with diffent buttons for ON an OFF
-          elif button == "on":      rm3status.setStatus(device,"ON")
-          elif button == "off":     rm3status.setStatus(device,"OFF")
-
+              if statPower == "OFF": status = "ON" 
+              else:                  status = "OFF"
+          elif button == "on":       status = "ON" 
+          elif button == "off":      status = "OFF" 
+              
           # TV - change mode between TV and Radio (specific for Authors receiver from TOPFIELD!)
           elif button == "radiotv":
-             devButton = device+"_"+button
-             devStat   = rm3status.getStatus(devButton)
-             if devStat == "TV":
-                 rm3status.setStatus(devButton,"RADIO")
-                 print(devButton+":"+devStat+"-RADIO")
-             else:
-                 rm3status.setStatus(devButton,"TV")
-                 print(devButton+":"+devStat+"-TV")
-
+              if statTV == "TV":     status = "RADIO"
+              else:                  status = "TV"
+              
           # change mute on/off
           elif button == "mute":
-             devButton = device+"_"+button
-             devStat   = rm3status.getStatus(devButton)
-             if devStat == "ON":   rm3status.setStatus(devButton,"OFF")
-             else:                 rm3status.setStatus(devButton,"ON")
-
+              if statMute == "OFF":  status = "ON"
+              else:                  status = "OFF"
+          
           # document volume
-          elif button == "vol+" or button == "vol-":
-             devButton = device+"_vol"
-             devStat   = int(rm3status.getStatus(devButton)) # has to be a number
+          elif "vol-" in button:
+              if statVol > 0:        status = statVol - 1
+          elif "vol+" in button:
+              if statVol < 69:       status = statVol + 1  # max base on receiver -> change to setting per device # !!!!
              
-             if button == "vol-" and devStat > 0:
-                 devStat -= 1
-             if button == "vol+" and devStat < 69:  # max base on receiver -> change to setting per device
-                 devStat += 1
-               
-             rm3status.setStatus(devButton,devStat)
-             
+          deviceStatusSet(device,button,status)
+
         # if values via API, no additional need for checks (as done by API ...)
         elif method == "query":
           logging.info("RemoteOnOff: " +device+"/"+button+" ("+interface+"/"+method+")")
@@ -942,7 +1052,7 @@ def RemoteReset():
         '''
 
         data                         = remoteAPI_start(["no-data"])
-        data["REQUEST"]["Return"]    = rm3status.resetStatus()
+        data["REQUEST"]["Return"]    = resetStatus()
 
         refreshCache()
         data                         = remoteAPI_end(data)        
@@ -957,7 +1067,7 @@ def RemoteResetAudio():
         '''
 
         data                         = remoteAPI_start(["no-data"])
-        data["REQUEST"]["Return"]    = rm3status.resetAudio()
+        data["REQUEST"]["Return"]    = resetAudio()
 
         refreshCache()
         data                         = remoteAPI_end(data)        
