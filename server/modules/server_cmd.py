@@ -12,61 +12,38 @@ import json
 
 import interfaces.interfaces as interfaces
 
-import modules.server_init   as init
-#import modules.rm3status     as rm3status
 import modules.rm3json       as rm3json
 import modules.rm3stage      as rm3stage
 import modules.rm3config     as rm3config
-import modules.server_thread as remoteThread
+import modules.rm3cache      as rm3cache
+import modules.rm3queue      as rm3queue
 
 from os import path
 from Crypto.Cipher import AES
 
 #---------------------------
-
-rm_data        = {}  # new cache variable
-rm_data_update = True
-rm_data_last   = time.time()
-
-Device   = {}
-Real     = {}
-devList  = {}
-cmdList  = []
-ErrorMsg   = ""
-Status     = "Starting"
-lastButton = ""
-
-#---------------------------
-
-if rm3stage.test: Stage = "Test Stage"
-else:             Stage = "Prod Stage"
-
-#---------------------------
-
-def ErrorMsg(code):
-    m = rm3config.error_messages
-    return m[code]
-    
-
-#---------------------------
-# read / write configuration NEW
+# init vars ... check all, if still required after redesign
 #---------------------------
 
 status_cache          = {}
 status_cache_time     = 0
 status_cache_interval = 5
 
+rm_data               = {}  # new cache variable
+rm_data_update        = True
+rm_data_last          = time.time()
+
+Status                = "Starting"
+lastButton            = ""
+
 #---------------------------
 
-deviceAPIs  = interfaces.connect()
-deviceAPIs.start()
+if rm3stage.test: Stage = "Test Stage"
+else:             Stage = "Prod Stage"
 
-sendRemote  = remoteThread.sendCmd("sendRemote",deviceAPIs)
-sendRemote.start()
 
-configFiles = remoteThread.configuration("Config")
-configFiles.start()
-
+#---------------------------
+# see initialization of thread ad the end ...
 #---------------------------
 
 def refreshCache():
@@ -514,7 +491,7 @@ def setStatus(device,key,value):
         key = "power"
       
     if device in status:
-        logging.debug("setStatus:"+key+"="+value)
+        logging.debug("setStatus:"+key+"="+str(value))
         status[device]["status"][key] = value
         configFiles.write_status(status)
       
@@ -522,7 +499,7 @@ def setStatus(device,key,value):
         logging.warn("setStatus: device does not exist ("+device+")")
         return "ERROR setStatus: device does not exist ("+device+")"
     
-    return "TBC: setStatus: " + device + "/" + key + "/" + value
+    return "TBC: setStatus: " + device + "/" + key + "/" + str(value)
     
 #-----------------------------------------------
 
@@ -580,7 +557,7 @@ def getStatus(device,key):
       return 0
     
     if device in status and key in status[device]["status"]:
-      logging.info("Get status: " + key + " = " + status[device]["status"][key])
+      logging.info("Get status: " + key + " = " + str(status[device]["status"][key]))
       return status[device]["status"][key]
       
     else:
@@ -680,12 +657,13 @@ def deviceStatusSet(device,button,state):
     Set Status of device for a specific button or display value (first step if method = "record")
     '''
     
-    global rm_data
     power_buttons = ["on","on-off","off"]
     vol_buttons   = ["vol+","vol-"]
-    method        = rm_data["devices"][device]["method"]
     
-    logging.debug(" ...m:"+method+" ...d:"+device+" ...b:"+button+" ...s:"+state)
+    logging.warn("....d:"+device)
+    method        = configFiles.get_method(device)
+    
+    logging.debug(" ...m:"+method+" ...d:"+device+" ...b:"+button+" ...s:"+str(state))
     
     if method == "record":
 
@@ -714,7 +692,7 @@ def remoteAPI_start(setting=[]):
 
     global Status, lastButton
     
-    data                                   = init.dataInit() 
+    data                                   = configFiles.api_init
     data["DATA"]                           = RmReadData(setting)
     
     data["CONFIG"]                         = {}  
@@ -804,13 +782,13 @@ def RemoteCheckUpdate(APPversion):
 
         if (APPversion == rm3config.APPversion):
             data["ReturnCode"]   = "800"
-            data["ReturnMsg"]    = "OK: "+ErrorMsg("800")
+            data["ReturnMsg"]    = "OK: "+rm3config.ErrorMsg("800")
         elif (APPversion in rm3config.APPsupport):
             data["ReturnCode"]   = "801"
-            data["ReturnMsg"]    = "WARN: "+ErrorMsg("801")
+            data["ReturnMsg"]    = "WARN: "+rm3config.ErrorMsg("801")
         else:
             data["ReturnCode"]   = "802"
-            data["ReturnMsg"]    = "WARN: "+ErrorMsg("802")
+            data["ReturnMsg"]    = "WARN: "+rm3config.ErrorMsg("802")
 
 
         data["REQUEST"]["Return"]     = data["ReturnMsg"]
@@ -849,7 +827,7 @@ def Remote(device,button):
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Button"] = button
         #data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,button)
-        data["REQUEST"]["Return"] = sendRemote.add2queue([[interface,device,button]])
+        data["REQUEST"]["Return"] = sendRemote.add2queue([[interface,device,button,""]])
         
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
 
@@ -933,12 +911,12 @@ def RemoteMakro(makro):
               logging.warn(" ...y:"+status_var+"="+str(data["DATA"]["devices"][device]["status"][status_var])+" -> "+status)
               
               if data["DATA"]["devices"][device]["status"][status_var] != status:
-                  data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([[interface,device,button]])
-                  deviceStatusSet(device,button,status)
+              
+                  data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([[interface,device,button,status]])
             
             # if no future state is defined just add command to queue
             elif status == "":
-                data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([[interface,device,button]])
+                data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([[interface,device,button,""]])
                 
           # if command is numeric, add to queue directly (time to wait)
           elif command_str.isnumeric():
@@ -973,10 +951,6 @@ def RemoteOnOff(device,button):
         check old status and document new status
         '''
 
-        global status_cache_time, rm_data_update
-        status_cache_time = 0
-        rm_data_update    = True
-
         data            = remoteAPI_start()    
         interface       = data["DATA"]["devices"][device]["interface"]
         
@@ -988,6 +962,7 @@ def RemoteOnOff(device,button):
         
         # delete DATA (less data to be returned via API)
         data["DATA"]    = {}
+        status          = ""
 
 
 ############### need for action ##
@@ -1023,19 +998,20 @@ def RemoteOnOff(device,button):
           
           # document volume
           elif "vol-" in button:
+              status = statVol
               if statVol > 0:        status = statVol - 1
           elif "vol+" in button:
+              status = statVol
               if statVol < 69:       status = statVol + 1  # max base on receiver -> change to setting per device # !!!!
              
-          deviceStatusSet(device,button,status)
-
         # if values via API, no additional need for checks (as done by API ...)
         elif method == "query":
           logging.info("RemoteOnOff: " +device+"/"+button+" ("+interface+"/"+method+")")
+          status = ""
         
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
-        data["REQUEST"]["Return"]    = sendRemote.add2queue([[interface,device,button]])
+        data["REQUEST"]["Return"]    = sendRemote.add2queue([[interface,device,button,status]])
 
         refreshCache()
         data                         = remoteAPI_end(data)        
@@ -1227,6 +1203,17 @@ def RemoteDeleteDevice(device):
         data                         = remoteAPI_end(data)        
         return data
 
+
+#-------------------------------------------------
+
+deviceAPIs  = interfaces.connect()
+deviceAPIs.start()
+
+sendRemote  = rm3queue.sendCmd("sendRemote",deviceAPIs,deviceStatusSet)
+sendRemote.start()
+
+configFiles = rm3cache.configuration("Config")
+configFiles.start()
 
 #-------------------------------------------------
 # EOF

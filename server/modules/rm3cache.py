@@ -9,6 +9,7 @@ import threading
 
 import modules.rm3config     as rm3config
 import modules.rm3json       as rm3json
+import modules.rm3stage      as rm3stage
 #import modules.rm3status     as rm3status
 
 #-------------------------------------------------
@@ -21,7 +22,10 @@ class configuration (threading.Thread):
     '''
     
     def __init__(self, name):
-       '''create class, set name'''
+       '''
+       create class, set name
+       '''
+       
        threading.Thread.__init__(self)
        self.name           = name
        self.stopProcess    = False
@@ -30,6 +34,12 @@ class configuration (threading.Thread):
        self.cache_time     = time.time()
        self.cache_interval = 60
        self.configMethods  = {}
+       self.api_init       = { "API" : {
+                                     "name"     : rm3config.APIname,
+                                     "version"  : rm3config.APIversion,
+                                     "stage"    : rm3config.initial_stage,
+                                     "rollout"  : rm3stage.rollout
+                                     } }
        
     #------------------       
        
@@ -82,7 +92,7 @@ class configuration (threading.Thread):
 
     #---------------------------
 
-    def translate_device(device):
+    def translate_device(self,device):
         '''
         get device name as file name
         '''
@@ -91,6 +101,19 @@ class configuration (threading.Thread):
         if device in status: return status[device]["device"]
         else:                return ""
         
+    #---------------------------
+    
+    def get_method(self,device):
+        '''
+        get method for device
+        '''
+
+        status     = self.read(rm3config.devices + rm3config.active)
+        interface  = status[device]["interface"]
+        device     = status[device]["device"]
+        definition = self.read(rm3config.devices + interface + "/" + device)
+        return definition["data"]["method"]
+    
     #---------------------------
     
     def read_status(self,selected_device=""):
@@ -128,80 +151,5 @@ class configuration (threading.Thread):
         self.write(rm3config.devices + rm3config.active,status)
 
     
-
-    #---------------------------
-
-
-
-#-------------------------------------------------
-# send commands
-#-------------------------------------------------
-
-class sendCmd (threading.Thread):
-    '''
-    class to create a queue to send commands (or a chain of commands) to the devices
-    '''
-    
-    def __init__(self, name, device_apis):
-       '''create queue, set name'''
-    
-       threading.Thread.__init__(self)
-       self.queue_send  = []
-       self.name        = name
-       self.stopProcess = False
-       self.wait        = 0.1
-       self.device_apis = device_apis
-
-    #------------------       
-       
-    def run(self):
-       '''loop running in the background'''
-       
-       logging.info( "Starting " + self.name )
-       while not self.stopProcess:
-           if len(self.queue_send) > 0:
-             logging.debug(".")
-             command = self.queue_send.pop(0)
-             self.execute(command)
-       
-           else:
-             time.sleep(self.wait)
-             
-       logging.info( "Exiting " + self.name )
-
-
-    #------------------       
-    
-    def execute(self,command):
-       '''execute command or wait -> command = number or command = [interface,device,button]'''
-       
-       command_str = str(command)
-       if "," in str(command):
-          interface,device,button = command
-          logging.info("Thread "+self.name+" - "+interface+":"+device+":"+button)
-          self.device_apis.send(interface,device,button)
-          
-       else:
-          time.sleep(float(command))
-        
-    
-    #------------------       
-
-    def add2queue(self,commands):
-       '''add single command or list of commands to queue'''
-       
-       logging.info("Add to queue "+self.name+": "+str(commands))
-       self.queue_send.extend(commands)
-       return "OK: Added command(s) to the queue:"+str(commands)
-   
-
-    #------------------       
-
-    def stop(self):
-       '''stop thread'''
-       
-       self.stopProcess = True              
-
-
 #-------------------------------------------------
 # EOF

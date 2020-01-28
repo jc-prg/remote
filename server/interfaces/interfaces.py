@@ -160,8 +160,6 @@ class connect(threading.Thread):
            for key in buttons_default["data"][button_query]:
              buttons["data"][button_query][key] = buttons_default["data"][button_query][key]
 
-        #logging.debug(buttons["data"][button_query][button])
-
         # check for errors or return button code
         if "ERROR" in buttons or "ERROR" in active:         return "ERROR"
         elif button in buttons["data"][button_query]:       return buttons["data"][button_query][button]

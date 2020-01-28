@@ -58,3 +58,19 @@ error_messages = {
           "802" : "Update required: " + APPversion + ". Delete your browser cache, please."
          }
 
+#---------------------------
+
+def ErrorMsg(code):
+    m = rm3config.error_messages
+    return m[code]
+
+#---------------------------
+
+def time_since_start():
+    current_time = time.time()
+    time_info    = int((current_time - start_time))
+    return "  ("+ str(time_info) +"s)"
+
+#---------------------------
+# EOF
+
