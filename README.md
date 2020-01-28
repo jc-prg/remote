@@ -61,6 +61,6 @@ $ ./start
 
 ## Disclaimer
 
-At the moment I'm reengineering the code. The goal is make it usable for other interested people also, and to integrate additional devices (e.g. ONKYO Receiver via API). 
+At the moment I'm reengineering the code. The goal is make it usable for other interested people also, and to integrate additional devices (e.g. ONKYO Receiver via API).
 
 A more detailed description will follow. Feel free already to try ... and stay tuned.
