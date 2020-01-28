@@ -4,9 +4,9 @@ import time
 # ---------------------------------
 
 APIname    = "jc://remote/"
-APIversion = "v1.6.5"
-APPversion = "v2.2.4"
-APPsupport = [APPversion, "v2.2.3", "v2.2.3"]  # other supported versions
+APIversion = "v1.6.6"
+APPversion = "v2.2.5"
+APPsupport = [APPversion, "v2.2.4", "v2.2.3"]  # other supported versions
 
 # ---------------------------------
 
@@ -61,7 +61,7 @@ error_messages = {
 #---------------------------
 
 def ErrorMsg(code):
-    m = rm3config.error_messages
+    m = error_messages
     return m[code]
 
 #---------------------------

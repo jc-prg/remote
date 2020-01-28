@@ -8,6 +8,7 @@ as my new ONKYO receiver come with their own API and I started to rework my soft
 
 * Broadlink RM 3 Mini - Infrared receiver/sender
 * Several ONKYO devices with API (see section modelsets in the file eiscp-commands.yaml in https://github.com/miracle2k/onkyo-eiscp)
+* KODI server (e.g. also installed on the Raspberry PI)
 * *Other devices easily can be integrated*
 
 ## Used Sources
@@ -44,16 +45,15 @@ $ git clone https://github.com/jc-prg/modules.git
 
 ```bash
 $ cd remote\config
-$ cp sample.config_prod config.prod
-$ ./create_prod
+$ cp sample.config_prod config_prod
+$ ./create prod
 ```
 
 3. Start via docker-compose ..
 
 ```bash
 $ cd ..
-$ sudo docker-compose build
-$ sudo docker-compose up -d
+$ ./start
 ```
 
 4. Open in browser, e.g. http://localhost:81/

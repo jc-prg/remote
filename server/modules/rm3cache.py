@@ -10,13 +10,12 @@ import threading
 import modules.rm3config     as rm3config
 import modules.rm3json       as rm3json
 import modules.rm3stage      as rm3stage
-#import modules.rm3status     as rm3status
 
 #-------------------------------------------------
 # read / write configuratioh
 #-------------------------------------------------
 
-class configuration (threading.Thread):
+class configCache (threading.Thread):
     '''
     class to read and write configurations using a cache
     '''
