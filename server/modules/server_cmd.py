@@ -24,16 +24,7 @@ import modules
 # init vars ... check all, if still required after redesign
 #---------------------------
 
-status_cache          = {}
-status_cache_time     = 0
-status_cache_interval = 5
-
-rm_data               = {}  # new cache variable
-rm_data_update        = True
-rm_data_last          = time.time()
-
 Status                = "Starting"
-lastButton            = ""
 
 #---------------------------
 
@@ -50,10 +41,7 @@ def refreshCache():
     Reset vars to enforce a refresh of all cached data
     '''
     
-    global status_cache_time, rm_data_update
-    rm_data_update         = True
-    status_cache_time      = 0
-    configFiles.cache_time = 0
+    configFiles.cache_update = True
 
 #---------------------------
 # Read data
@@ -63,14 +51,12 @@ def refreshCache():
 def RmReadData(selected=[]):
     '''Read all relevant data and create data structure'''
 
-    global rm_data, rm_data_update, rm_data_last
-
     data    = {}
     makros  = ["dev-on","dev-off","scene-on","scene-off","makro"]
     btnfile = ["buttons","queries","values"]
 
     # if update required
-    if rm_data_update: 
+    if configFiles.cache_update or "_api" not in configFiles.cache: 
     
         data["devices"] = configFiles.read(modules.devices + modules.active)
         data["scenes"]  = configFiles.read(modules.scenes  + modules.active)
@@ -156,15 +142,15 @@ def RmReadData(selected=[]):
 
         # update cache data
         if selected == []:
-          rm_data        = data
-          rm_data_update = False         
+          configFiles.cache["_api"] = data
+          configFiles.cache_update  = False
 
     # if no update required read from cache
-    else: data           = rm_data
+    else: data = configFiles.cache["_api"]
 
     # Update status data        
-    data["devices"] = devicesGetStatus(data["devices"])
-    rm_data         = data
+    data["devices"]           = devicesGetStatus(data["devices"])
+    configFiles.cache["_api"] = data
     
     return data
 
@@ -178,8 +164,6 @@ def addDevice(device,interface,description):
     '''
     add new device to config file and create command/remote files
     '''
-    
-    global rm_data_update
     
     ## Check if exists    
     active_json         = configFiles.read(modules.devices + modules.active)
@@ -235,7 +219,6 @@ def addDevice(device,interface,description):
     except Exception as e:
       return "ERROR: " + str(e)
             
-    rm_data_update = True
     return("OK: Device " + device + " added.")
 
 
@@ -249,8 +232,6 @@ def addCommand2Button(device,button,command):
     add new command to button or change existing
     '''
 
-    global rm_data_update
-
     config      = configFiles.read(modules.devices+modules.active)
     interface   = config[device]["interface"]  
     device_code = config[device]["device"]  
@@ -262,7 +243,6 @@ def addCommand2Button(device,button,command):
         else:
             data["data"]["buttons"][button] = command
             configFiles.write(modules.commands+interface+"/"+device_code,data)
-            rm_data_update = True
             return "OK: Button '" + device + "_" + button + "' recorded and saved: " + command
     else:
         return "ERROR: Device '" + device + "' does not exists."
@@ -274,8 +254,6 @@ def addButton(device,button):
     add new button to remote layout
     '''
     
-    global rm_data_update
-
     config      = configFiles.read(modules.devices+modules.active)
     interface   = config[device]["interface"]  
     device_code = config[device]["device"]  
@@ -288,7 +266,6 @@ def addButton(device,button):
             if button == "DOT": button = "."
             data["data"]["remote"].append(button)
             configFiles.write(modules.remotes+interface+"/"+device_code,data)
-            rm_data_update = True
             return "OK: Button '" + device + "_" + button + "' added."
     else:
         return "ERROR: Device '" + device + "' does not exists."        
@@ -358,8 +335,6 @@ def changeVisibility(device,visibility):
     change visibility in device configuration (yes/no)
     '''
 
-    global rm_data_update
-    
     data = configFiles.read(modules.devices + modules.active)
     
     if device not in data.keys():
@@ -368,7 +343,6 @@ def changeVisibility(device,visibility):
     elif visibility == "yes" or visibility == "no":
         data[device]["visible"] = visibility
         configFiles.write(modules.devices + modules.active, data)
-        rm_data_update = True
         return "OK: Change visibility for '" + device + "': " + visibility
         
     else:
@@ -382,8 +356,6 @@ def deleteDevice(device):
     delete device from json config file and delete device related files
     '''
     
-    global rm_data_update
-
     devices              = {}
     active_json          = configFiles.read(modules.devices + modules.active)
     interface            = active_json[device]["interface"]
@@ -404,7 +376,6 @@ def deleteDevice(device):
     try:    
       modules.delete(modules.remotes  + interface + "/" + device_code)
       modules.delete(modules.commands + interface + "/" + device_code)
-      rm_data_update = True
       
       if not modules.ifexist(modules.commands + interface + "/" + device_code) and not modules.ifexist(modules.remotes + interface + "/" + device_code):
         return "OK: Device '" + device + "' deleted."
@@ -420,8 +391,6 @@ def editDevice(device,info):
     '''
     delete device from json config file and delete device related files
     '''
-    
-    global rm_data_update
     
     keys_active   = ["label","description","main-audio","interface"]
     keys_commands = ["description","method"]
@@ -575,15 +544,10 @@ def devicesGetStatus(data):
     data -> data["DATA"]["devices"]
     '''
 
-    global status_cache, status_cache_time, status_cache_interval
-
-    devices       = configFiles.read(modules.devices + modules.active)
     relevant_keys = ["status","visible","description","image","interface","label","device","main-audio"]
+    devices       = configFiles.read(modules.devices + modules.active)
     
-    # if cache is older than 5 seconds or cache time is not set
-    if (status_cache_time == 0) or (time.time() - status_cache_time >= status_cache_interval):
-    
-      for device in devices: 
+    for device in devices: 
         if "status" in devices[device] and "method" in data[device]:
           
           # if method == record read from file
@@ -612,23 +576,16 @@ def devicesGetStatus(data):
               else:
                    devices[device]["status"][value] = "Not connected"
       
-      # workaround: delete keys that are not required
-      devices_temp = {}
-      for device in devices:
-          devices_temp[device] = {}
-          for key in devices[device]:
-              if key in relevant_keys:
-                 devices_temp[device][key] = devices[device][key]
-                  
-      devices = devices_temp
-                               
-      status_cache = devices
-      configFiles.write(modules.devices + modules.active, devices)
-
-    else:
-      devices = status_cache
-                
-    status_cache_time = time.time()
+    # workaround: delete keys that are not required
+    devices_temp = {}
+    for device in devices:
+        devices_temp[device] = {}
+        for key in devices[device]:
+            if key in relevant_keys:
+               devices_temp[device][key] = devices[device][key]                 
+    devices = devices_temp
+                            
+    configFiles.write(modules.devices + modules.active, devices)
     return data
 
 #-----------------------------------------------
@@ -638,9 +595,8 @@ def deviceStatusGet(device,button):
     Get Status from device for a specific button or display value (first step if method = "record")
     '''
     
-    global rm_data
     power_buttons = ["on","on-off","off"]
-    method        = rm_data["devices"][device]["method"]
+    method        = configFiles.cache["_api"]["devices"][device]["method"]
     
     if method == "record":
       if button in power_buttons: button = "power"
@@ -689,7 +645,7 @@ def remoteAPI_start(setting=[]):
     create data structure for API response and read relevant data from config files
     '''
 
-    global Status, lastButton
+    global Status
     
     data                                   = configFiles.api_init
     data["DATA"]                           = RmReadData(setting)
@@ -702,7 +658,7 @@ def remoteAPI_start(setting=[]):
     
     data["REQUEST"]                        = {}
     data["REQUEST"]["start-time"]          = time.time()
-    data["REQUEST"]["Button"]              = lastButton 
+    data["REQUEST"]["Button"]              = sendRemote.last_button 
 
     data["STATUS"]                         = {}
     data["STATUS"]["interfaces"]           = deviceAPIs.status()
@@ -821,7 +777,7 @@ def Remote(device,button):
         '''
         
         data                      = remoteAPI_start(["no-data"])
-        interface                 = rm_data["devices"][device]["interface"]
+        interface                 = configFiles.cache["_api"]["devices"][device]["interface"]
         
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Button"] = button

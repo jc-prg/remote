@@ -29,6 +29,7 @@ class sendCmd (threading.Thread):
        self.stopProcess = False
        self.wait        = 0.1
        self.device_apis = device_apis
+       self.last_button = "<none>"
        self.callback    = callback
 
     #------------------       
@@ -62,6 +63,7 @@ class sendCmd (threading.Thread):
           result = self.device_apis.send(interface,device,button)
           if not "ERROR" in str(result) and state != "":
             self.callback(device,button,state) 
+            self.last_button = device + "_" + button
           
        else:
           time.sleep(float(command))

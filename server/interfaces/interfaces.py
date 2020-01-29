@@ -151,19 +151,22 @@ class connect(threading.Thread):
 
         # read data -> to be moved to cache?!
         active       = rm3json.read(rm3config.devices + rm3config.active)
-        device_code  = active[device]["device"]
-        buttons      = rm3json.read(rm3config.commands + api + "/" + device_code)
+        
+        if device in active:
+          device_code  = active[device]["device"]
+          buttons      = rm3json.read(rm3config.commands + api + "/" + device_code)
     
-        # add button definitions from default.json if exist
-        if rm3json.ifexist(rm3config.commands + api + "/default"):
-           buttons_default = rm3json.read(rm3config.commands + api + "/default")
-           for key in buttons_default["data"][button_query]:
-             buttons["data"][button_query][key] = buttons_default["data"][button_query][key]
+          # add button definitions from default.json if exist
+          if rm3json.ifexist(rm3config.commands + api + "/default"):
+             buttons_default = rm3json.read(rm3config.commands + api + "/default")
+             for key in buttons_default["data"][button_query]:
+               buttons["data"][button_query][key] = buttons_default["data"][button_query][key]
 
-        # check for errors or return button code
-        if "ERROR" in buttons or "ERROR" in active:         return "ERROR"
-        elif button in buttons["data"][button_query]:       return buttons["data"][button_query][button]
-        else:                                               return "ERROR"      
+          # check for errors or return button code
+          if "ERROR" in buttons or "ERROR" in active:         return "ERROR get_command: buttons not defined for device ("+device+")"
+          elif button in buttons["data"][button_query]:       return buttons["data"][button_query][button]
+          else:                                               return "ERROR get_command: button not defined ("+device+"_"+button+")"
+        else:                                                 return "ERROR get_command: device not found ("+device+")"
 
 
 #-------------------------------------------------

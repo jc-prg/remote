@@ -30,8 +30,9 @@ class configCache (threading.Thread):
        self.stopProcess    = False
        self.wait           = 1
        self.cache          = {}
-       self.cache_time     = time.time()
-       self.cache_interval = 60
+       self.cache_time     = time.time()        # initial time for timebased update
+       self.cache_interval = (5*60)             # update interval in seconds (reread files)
+       self.cache_update   = False              # foster manual update of files
        self.configMethods  = {}
        self.api_init       = { "API" : {
                                      "name"     : rm3config.APIname,
@@ -50,14 +51,16 @@ class configCache (threading.Thread):
        logging.info( "Starting " + self.name )
        while not self.stopProcess:
        
-           if (self.cache_time == 0) or (time.time() - self.cache_time >= self.cache_interval):
+           if self.cache_update or (time.time() - self.cache_time >= self.cache_interval):
                logging.info("Re-read config files: ...")
                i = 0
                for key in self.cache:
-                  self.cache[key] = rm3json.read(key)
-                  i += 1
+                  if key != "_api":
+                    self.cache[key] = rm3json.read(key)
+                    i += 1
                logging.info("... ("+str(i)+")")
-               self.cache_time = time.time()
+               self.cache_time   = time.time()
+               self.cache_update = False
            else:
                time.sleep(self.wait)
              

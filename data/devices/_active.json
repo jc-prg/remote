@@ -89,7 +89,7 @@
             "temperature": "C 30",
             "timer": "N/A",
             "video-info": "HDMI 2,1920 x 1080i  50 Hz,YCbCr444,24bit,MAIN,1920 x 1080i  50 Hz,YCbCr444,24bit,,",
-            "vol": "31"
+            "vol": "36"
         },
         "visible": "yes"
     },
@@ -103,7 +103,7 @@
             "mute": "OFF",
             "power": "ON",
             "radiotv": "TV",
-            "vol": 3
+            "vol": 18
         },
         "visible": "yes"
     }
