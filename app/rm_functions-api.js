@@ -249,6 +249,8 @@ function sendCmd(cmdButton, sync="", callback="") {
 		if (showButton) {setTextById("audio4", cmdButton);}
 		}
 
+	setTimeout(function(){ check_status_fresh(); }, 500);
+
 	// check, if device inactive and change color of buttons (if on/off-button)
 	if (onoff) { setTimeout(function(){ check_status_inactive(); }, 3000); }
 	}
@@ -262,6 +264,13 @@ function sendMakro( makro ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
 
 	rm3msg.wait_small("Please wait ...<br/>");
 	console.log( "Send makro: " + makro );
+	
+	dc = [ "makro", makro ];
+	rm3app.requestAPI( "GET", dc );
+	rm3msg.hide();
+	return;
+	
+	// old definition, server side execution off the command
 	
 	var makro_def = dataAll["DATA"]["makros"];
 
@@ -360,6 +369,8 @@ function sendMakro( makro ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
 				}
 			}
 		rm3msg.hide();
+
+		setTimeout(function(){ check_status_fresh(); }, 500);
 
 		// wait ms before starting makro execution
 		}, 500 );

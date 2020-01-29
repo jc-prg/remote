@@ -4,9 +4,9 @@ import time
 # ---------------------------------
 
 APIname    = "jc://remote/"
-APIversion = "v1.6.1"
-APPversion = "v2.2.0"
-APPsupport = [APPversion, "v2.1.3"]  # other supported versions
+APIversion = "v1.7.0"
+APPversion = "v2.3.0"
+APPsupport = [APPversion, "v2.2.5", "v2.2.4"]  # other supported versions
 
 # ---------------------------------
 
@@ -23,16 +23,16 @@ config_status  = "status.json"
 
 # ---------------------------------
 
-interfaces = "interfaces/"
-devices    = "devices/"
-commands   = "devices/commands/"
-remotes    = "devices/remotes/"
-scenes     = "scenes/"
-scenes_def = "scenes/scenes/"
-makros     = "scenes/makros/"
-templates  = "scenes/templates/"
-buttons    = "scenes/buttons/"
-active     = "_active"
+interfaces = "interfaces/"  # interface definition
+devices    = "devices/"     # devices, overview in "_active.json"
+commands   = "devices/"     # device definition (queries and commands)
+remotes    = "remotes/"     # remote layouts for devices
+scenes     = "scenes/"      # scenes, overview in "_active.json"
+scenes_def = "scenes/"      # remote layouts for scenes
+makros     = "makros/"      # makros (to be used in scenes)
+buttons    = "buttons/"     # button configuration files
+templates  = "templates/"   # templates for remote layouts
+active     = "_active"      # overview file name
 
 # ---------------------------------
 
@@ -57,4 +57,20 @@ error_messages = {
           "801" : "Update available: " + APPversion + ".",
           "802" : "Update required: " + APPversion + ". Delete your browser cache, please."
          }
+
+#---------------------------
+
+def ErrorMsg(code):
+    m = error_messages
+    return m[code]
+
+#---------------------------
+
+def time_since_start():
+    current_time = time.time()
+    time_info    = int((current_time - start_time))
+    return "  ("+ str(time_info) +"s)"
+
+#---------------------------
+# EOF
 

@@ -12,7 +12,7 @@ var RESTip         = location.host; var ip = RESTip.split(":");
 var RESTurl_test   = "http://"+ip[0]+":5003/";
 var RESTurl_prod   = "http://"+ip[0]+":5002/";
 var RESTurl        = "http://"+ip[0]+":"+stage_port+"/";
-var rm3version     = "v2.2.0";
+var rm3version     = "v2.3.0";
 var rm3title       = "jc://remote/";
 var rm3update      = false;
 var rm3background  = "img/remote2.png";
@@ -35,6 +35,12 @@ var showEditRemote   = false;   // show / hide edit panel
 
 var colors         = [ "red", "green", "darkgreen", "blue", "darkblue" ];
 var colors_dev     = [];
+var colors_power   = {	"ON" 	: "darkgreen",
+			"OFF"	: "darkred",
+			"OTHER"	: "purple",
+			"ERROR"	: "orangered",
+			}
+// color definitions: https://www.w3schools.com/cssref/css_colors.asp			
 
 var show_error     = ""; // onClick=\"javascript:showErrorLog();\""; // not implemented any more
 var status_green   = "<div id='green' "+show_error+"></div>";
@@ -52,11 +58,8 @@ var status_vol_max = 74;         // -> calculate in percent		// changed based on
 
 var button_color = {};
 var button_img = {};
-
 var makro_def = {};
-
 var device_status = {};
-
 var remote_def = {};
 var remote_mix_def = {};
 var remote_std = [
@@ -71,7 +74,7 @@ var remote_std = [
 // ------------------------------------------
 
 function image(file) {
-        return "<img src='icon/"+file+"' style='height:15px;margin:0px;padding:0px;' alt='"+file+"' />";
+        return "<img src='icon/"+file+"' style='max-height:18px;max-width:24px;margin:0px;padding:0px;' alt='"+file+"' />";
         }
 
 // ------------------------------------------

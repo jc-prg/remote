@@ -14,7 +14,7 @@ import modules.rm3config               as rm3config
 # API-class
 #-------------------------------------------------
 
-class testAPI():
+class sampleAPI():
    '''
    Integration of sample API to be use by jc://remote/
    '''
@@ -23,28 +23,28 @@ class testAPI():
        '''Initialize API / check connect to device'''
        
        self.api_name        = api_name       
-       self.api_description = "Test API Description for automatic testing"
+       self.api_description = "Sample API Description"
        self.working         = False
        
        logging.info("... "+self.api_name+" - " + self.api_description)
-              
+       
        self.connect()
             
-
    #-------------------------------------------------
    
    def connect(self):
        '''Connect / check connection'''
+       
+       # commands to connect and to check, if connection works - if not, return error message
 
        self.status = "Connected"
-
-
+       
+       
    #-------------------------------------------------
    
    def wait_if_working(self):
        '''Some devices run into problems, if send several requests at the same time'''
-
-       while working:
+       while self.working:
          logging.debug(".")
          time.sleep(0.2)
        return
@@ -55,8 +55,12 @@ class testAPI():
    def send(self,device,command):
        '''Send command to API'''
 
-       print("SEND: " + device + "/" + command)
-       return("OK: send test-"+device+"-"+command)
+       self.wait_if_working()
+       self.working = True
+
+
+       self.working = False
+       return "OK"
        
        
    #-------------------------------------------------
@@ -64,7 +68,12 @@ class testAPI():
    def query(self,device,command):
        '''Send command to API and wait for answer'''
 
-       return "WARN: Not supported by this API"
+       self.wait_if_working()
+       self.working = True
+
+
+       self.working = False
+       return "Command"
        
        
    #-------------------------------------------------
@@ -72,8 +81,12 @@ class testAPI():
    def record(self,device,command):
        '''Record command, especially build for IR devices'''
 
-       print("RECORD: " + device + "/" + command)
-       return("OK: record test-"+device+"-"+command)
+       self.wait_if_working()
+       self.working = True
+
+
+       self.working = False
+       return "OK"
 
        
    #-------------------------------------------------
@@ -81,8 +94,12 @@ class testAPI():
    def test(self):
        '''Test device by sending a couple of commands'''
 
-       print("TEST:" + self.api_name + "/" + self.api_description + " (no further action)")
-       return("OK: test commands")
+       self.wait_if_working()
+       self.working = True
+
+
+       self.working = False
+       return "OK"
 
 #-------------------------------------------------
 # EOF

@@ -66,7 +66,7 @@ function rmRemote(name) {
 			// create remote for scene
 			this.scene_remote("remote1",rm_id);
 			this.scene_channels("remote2",rm_id);
-			this.empty("remote_edit");              elementHidden("remote_edit","scene"); // not implemented yet
+			this.scene_edit("remote_edit",rm_id);
 			this.empty("remote3");
 
 			// show
@@ -84,11 +84,14 @@ function rmRemote(name) {
 	
 	//console.error("device_remote");
 	
-		var remote            = "";
-		var remote_label      = this.data["DATA"]["devices"][device]["label"];
-		var remote_definition = this.data["DATA"]["devices"][device]["remote"];
-		var remote_buttons    = this.data["DATA"]["devices"][device]["buttons"];
-
+		var remote             = "";
+		var remote_displaysize = "middle";
+		var remote_label       = this.data["DATA"]["devices"][device]["label"];
+		var remote_definition  = this.data["DATA"]["devices"][device]["remote"];
+		var remote_buttons     = this.data["DATA"]["devices"][device]["button_list"];
+		
+		if (this.data["DATA"]["devices"][device]["display-size"]) { remote_displaysize = this.data["DATA"]["devices"][device]["display-size"]; }
+		
 		rm3cookie.set("remote","device::"+device+"::"+remote_label);
 
 		for (var i=0; i<remote_definition.length; i++) {
@@ -96,15 +99,13 @@ function rmRemote(name) {
 			var button = remote_definition[i];
 			var cmd    = device + "_" + button;
 
-			if (button == "LINE") 			{ remote += "<div style='width:100%;float:left;'><hr/></div>"; }
-			else if (button == ".") 		{ remote += this.button_device( device+i, ".", "empty", "", "disabled" ) }
-			else if (button == "DISPLAY")		{ remote += this.display(id,device,"middle"); }
-			else if (button in remote_buttons) 	{ remote += this.button_device( cmd, button, "", cmd, "" ); this.active_buttons.push(cmd); }
-			else if (this.edit_mode)        	{ remote += this.button_device_add( cmd, button, "notfound", cmd, "" ); }
-			else                            	{ remote += this.button_device( cmd, button, "notfound", cmd, "disabled" ); }
-
+			if (button == "LINE") 				{ remote += "<div style='width:100%;float:left;'><hr/></div>"; }
+			else if (button == ".") 			{ remote += this.button_device( device+i, ".", "empty", "", "disabled" ) }
+			else if (button == "DISPLAY")			{ remote += this.display(id,device,remote_displaysize); }
+			else if (remote_buttons.includes(button)) 	{ remote += this.button_device( cmd, button, "", cmd, "" ); this.active_buttons.push(cmd); }
+			else if (this.edit_mode)        		{ remote += this.button_device_add( cmd, button, "notfound", cmd, "" ); }
+			else                            		{ remote += this.button_device( cmd, button, "notfound", cmd, "disabled" ); }
 									//NEU: function( id, label, style, cmd, disabled ) {
-									//ALT: function( id, cmd, label, style, disabled ) {
 			}
 
 		setTextById(id,remote);
@@ -141,6 +142,18 @@ function rmRemote(name) {
 			else 					{ remote += this.button_device( cmd, button[1], "", cmd, "" );
 								  this.active_buttons.push(cmd); }
 			}
+
+		setTextById(id,remote);
+		}
+
+
+	this.scene_edit = function(id, device) {
+	
+		remote = "Edit mode for scenes not implemented yet!";
+	        document.getElementById(id).style.display = "block";
+	
+	        if (this.edit_mode)     { elementVisible(id); }
+	        else                    { elementHidden(id,"device_edit"); return; }
 
 		setTextById(id,remote);
 		}
@@ -186,7 +199,7 @@ function rmRemote(name) {
 
 		var remote            = "";
 		var remote_buttons    = this.data["DATA"]["devices"][device]["remote"];
-		var device_buttons    = Object.keys(this.data["DATA"]["devices"][device]["buttons"]);
+		var device_buttons    = this.data["DATA"]["devices"][device]["button_list"];
 		var notused           = [];
 
 		// difference of arrays
@@ -218,7 +231,7 @@ function rmRemote(name) {
 
 		var remote            = "";
 		var remote_buttons    = this.data["DATA"]["devices"][device]["remote"];
-		var device_buttons    = Object.keys(this.data["DATA"]["devices"][device]["buttons"]);
+		var device_buttons    = this.data["DATA"]["devices"][device]["button_list"];
 
 		this.input_width      = "180px";
 		this.button_width     = "120px";
@@ -240,7 +253,7 @@ function rmRemote(name) {
 		remote  += this.tab_row("start");
 
 		remote  += this.tab_row(
-				"Set main AUDIO device",
+				"Set as main AUDIO device",
 				this.button_edit("alert('Not implemented yet.');","set main device","disabled")
 				);
 
@@ -309,16 +322,14 @@ function rmRemote(name) {
 	// specific selects ...
 	//--------------------
 	
-        this.button_select = function (id,filter="") {
+        this.button_select = function (id,device="") {
                 var list = {};
-                if (filter != "" && filter in this.data["DATA"]["devices"]) {
-                
-console.error(this.data["DATA"]["devices"][filter]);  
-
-                        for (var key in this.data["DATA"]["devices"][filter]["buttons"]){
-                                list[filter+"_"+key] = key;
-                                }
-                        }
+                if (device != "" && device in this.data["DATA"]["devices"]) {
+			button_list = this.button_list(device);
+			for (var i=0;i<button_list.length;i++) {
+                                list[device+"_"+button_list[i]] = button_list[i];
+				}
+			}
                 return this.select(id,"button",list);
                 }
                 
@@ -366,7 +377,7 @@ console.error(this.data["DATA"]["devices"][filter]);
 		else							{ display_data["Error"] = "No display defined"; } 
 
         	var text  = "";
-        	text += "<button class='display "+style+"'>"
+        	text += "<button class=\"display "+style+"\" onclick=\"" + this.app_name + ".display_alert('"+id+"','"+device+"','"+style+"');\">";
         	for (var key in display_data) {
         		var label = "<data class='display-label'>"+key+":</data>";
 			var input = "<data class='display-input' id='display_"+device+"_"+display_data[key]+"'>no data</data>";
@@ -374,6 +385,29 @@ console.error(this.data["DATA"]["devices"][filter]);
 	        	}
         	text += "</button>";
         	return text;
+        	}
+        	
+        // display all information
+        this.display_alert = function( id, device, style="" ) {
+        
+		var display_data = [];
+		if (this.data["DATA"]["devices"][device]["query_list"])	{ display_data = this.data["DATA"]["devices"][device]["query_list"]; }
+		else							{ display_data = ["ERROR","No display defined"]; } 
+
+        	var text = "Device Information: "+device +"<hr/>";
+        	text  += "<div style='width:100%;height:200px;overflow-y:scroll;'>";
+        	text  += this.tab_row("start","100%");
+
+        	for (var i=0; i<display_data.length; i++) {
+        		var label = "<data class='display-label'>"+display_data[i]+":</data>";
+			var input = "<data class='display-input' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>";
+	        	//text += "<div class='display-element alert'>"+label+input+"</div><br/>";
+	        	text += this.tab_row("<div style='width:100px;'>"+label+"</div>",input);
+	        	}
+        	text  += this.tab_row("end");
+        	text  += "</div>";
+		rm3msg.confirm(text,"",300);
+		check_status(this.data);
         	}
           
 
@@ -391,7 +425,8 @@ console.error(this.data["DATA"]["devices"][filter]);
 	                onContext  = "oncontextmenu=\"return false;\"";
 	                }
 	
-		var button = "<button id='" + id.toLowerCase() + "' class='button " + style + "' " + onClick + " " + onContext + " " + disabled + " style='float:left;'>" + label + "</button>";
+		if (style != "") { style = " " + style; }
+		var button = "<button id='" + id.toLowerCase() + "' class='button" + style + "' " + onClick + " " + onContext + " " + disabled + " >" + label + "</button>"; // style='float:left;'
 		//console.debug(button);
 		return button;
 		}
@@ -494,7 +529,8 @@ console.error(this.data["DATA"]["devices"][filter]);
 
 	// return list of buttons for a device
 	this.button_list = function(device) {
-		return Object.keys(this.data["DATA"]["devices"][device]["buttons"]);
+		if (this.data["DATA"]["devices"][device]) 	{ return this.data["DATA"]["devices"][device]["button_list"]; }
+		else						{ return ["error:"+device]; }
 		}
 
 	// handle messages for console
@@ -516,7 +552,7 @@ console.error(this.data["DATA"]["devices"][filter]);
 
         // write table tags
 	this.tab_row = function (td1,td2="")  { 
-		if (td1 == "start")	{ return "<table border=\"0\">"; }
+		if (td1 == "start")	{ return "<table border=\"0\" width=\""+td2+"\">"; }
 		else if (td1 == "end")	{ return "</table>"; }
 		else			{ return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
 		}

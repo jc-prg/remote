@@ -37,17 +37,6 @@
   font-weight: none; 
 }
 
-/* buttons */
-
-button {
-  background      : #000044;
-  color           : white;
-  height          : 30px;
-  overflow        : hidden;
-  border-radius   : 5px;
-  font-size       : 12px;
-}
-
 /* height of app start screen */
 
 .app_background {
@@ -96,6 +85,17 @@ button {
 }
 
 
+/* buttons */
+
+button {
+   background      : #000044;
+   color           : white;
+   height          : 30px;
+   overflow        : hidden;
+   border-radius   : 5px;
+   font-size       : 12px;
+}
+
 /* buttons for remote controls */
 
 .button {
@@ -109,6 +109,7 @@ button {
    background-color: #111111;
    font-size       : 13px;
    overflow        : hidden;
+   float           : inherit;
 }
 
 .button:hover {
@@ -196,9 +197,10 @@ button {
    float	: left;
    color	: white;
    //border       : blue 1px solid;  
-   text-align        : left;
+   text-align   : left;
 }
 
+.display-element.alert   { color : black; }
 .display-element.small   { width : 56px; }
 .display-element.middle  { width : 118px; }
 .display-element.big     { width : 118px; }

@@ -3,7 +3,9 @@
 	    "label" : "Kino",
 	    "devices": ["rec2","beam","lw"],
             "remote": [
-                "makro_bluray", "makro_pc", "scene-on_cinema", "scene-off_cinema",
+                ".", ".", "scene-on_cinema", "scene-off_cinema",
+                "LINE",
+                "makro_bluray", "makro_pc", "makro_kodi", ".",
                 "LINE",
                 "bd_fbw",      "bd_play",  "bd_ffw",   "makro_vol+",
                 "bd_last",     "bd_pause", "bd_next",  "makro_mute",

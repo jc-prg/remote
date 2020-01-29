@@ -1,82 +1,132 @@
 #-----------------------------------
-# API commands defined in swagger.yml
+# Sample API integration for jc://remote/
 #-----------------------------------
 # (c) Christoph Kloth
 #-----------------------------------
 
-import codecs, json, netaddr
 import logging, time
-
-import interfaces.broadlink.broadlink  as broadlink
+import codecs, json, netaddr
 import modules.rm3json                 as rm3json
 import modules.rm3config               as rm3config
 
+import interfaces.broadlink.broadlink  as broadlink
 
-#---------------------------
-# initialize variables
-#---------------------------
+#-------------------------------------------------
+# API-class
+#-------------------------------------------------
 
-def init():
-    '''init RM3 IR device'''
+shorten_info_to = 30
 
-    global RM3Device, Status
+#-------------------------------------------------
 
-    config_file = rm3config.interfaces+"BROADLINK"
+class broadlinkAPI():
+   '''
+   Integration of BROADLINK API to be use by jc://remote/
+   '''
+
+   def __init__(self,api_name):
+       '''Initialize API / check connect to device'''
+       
+       self.api_name        = api_name       
+       self.api_description = "Infrared Broadlink RM3"
+       self.api_config      = rm3json.read(rm3config.interfaces+self.api_name)
+       self.working         = False
+       
+       self.api_config["Port"]       = int(self.api_config["Port"])
+       self.api_config["MACAddress"] = netaddr.EUI(self.api_config["MACAddress"])
+       self.api_config["Timeout"]    = int(self.api_config["Timeout"])
+
+       logging.info("... "+self.api_name+" - " + self.api_description)
+       logging.debug(str(self.api_config["IPAddress"])+":"+str(self.api_config["Port"]))
+       
+       self.connect()
+            
+   #-------------------------------------------------
    
-    config               = rm3json.read(config_file)
-    config["Name"]       = "Broadlink"
-    config["Port"]       = int(config["Port"])
-    config["MACAddress"] = netaddr.EUI(config["MACAddress"])
-    config["Timeout"]    = int(config["Timeout"])
+   def connect(self):
+       '''Connect / check connection'''
+       
+       self.api  = broadlink.rm((self.api_config["IPAddress"], self.api_config["Port"]), self.api_config["MACAddress"])     
+       if self.api.auth(): self.status = "Connected"
+       else:               self.status = "IR Device not available (not found or no access)"
     
-    RM3Device    = broadlink.rm((config["IPAddress"], config["Port"]), config["MACAddress"])
-    
-    if RM3Device.auth(): Status = "Connected"
-    else:                Status = "IR Device not available (not found or no access)"
-    
-    return Status
+       return self.status
+       
+       
+   #-------------------------------------------------
+   
+   def wait_if_working(self):
+       '''Some devices run into problems, if send several requests at the same time'''
+       while self.working:
+         logging.debug(".")
+         time.sleep(0.2)
+       return
+       
+       
+   #-------------------------------------------------
+   
+   def send(self,device,command):
+       '''Send command to API'''
+
+       self.wait_if_working()
+       self.working = True
+
+       if self.status == "Connected":
+         logging.info("Button-Code: " + command[:shorten_info_to]+"...")
+         DecodedCommand = codecs.decode(command,'hex')  # python3
+         try: 
+           self.api.send_data(DecodedCommand)
+         except Exception as e:
+           return "ERROR "+self.api_name+" - send: " + str(e)
+           
+       else:
+         return "ERROR "+self.api_name+": Not connected"
+
+       self.working = False
+       return("OK")
+       
+       
+   #-------------------------------------------------
+   
+   def query(self,device,command):
+       '''Send command to API and wait for answer'''
+
+       return "WARN: Not supported for this API"
 
 
-#-------------------------------------------------
-# Execute IR command
-#-------------------------------------------------
 
-def send(device,button_code):
-    '''send IR command'''
-    
-    global RM3Device, Status
-    if button_code == "ERROR":  return "Button not available"
-    
-    logging.info("Button-Code: " + button_code)
-    DecodedCommand = codecs.decode(button_code,'hex')  # python3
-    RM3Device.send_data(DecodedCommand)
-    return("OK")
-    
-#-------------------------------------------------
+   #-------------------------------------------------
+   
+   def record(self,device,command):
+       '''Record command, especially build for IR devices'''
 
-def record(device,button):
-    '''record new command'''
+       self.wait_if_working()
+       self.working = True
 
-    global RM3Device, Status
+       if self.status == "Connected":
 
-    code = device + "_" + button
-    RM3Device.enter_learning()
-    time.sleep(5)
-    LearnedCommand = RM3Device.check_data()
+         code = device + "_" + command
+         self.api.enter_learning()
+         time.sleep(5)
+         LearnedCommand = self.api.check_data()
+         if LearnedCommand is None:
+            return('ERROR: Learn Button (' + code + '): No IR command received')
+            sys.exit()
+         EncodedCommand = codecs.encode(LearnedCommand,'hex')   # python3
 
-    if LearnedCommand is None:
-        return('Learn Button (' + code + '): No IR command received')
-        sys.exit()
+       else:
+         return "ERROR "+self.api_name+": Not connected"
 
-    #EncodedCommand = LearnedCommand.encode('hex')         # python2
-    EncodedCommand = codecs.encode(LearnedCommand,'hex')   # python3
-    return EncodedCommand
+       self.working = False
+       return EncodedCommand
 
-#-------------------------------------------------
+       
+   #-------------------------------------------------
+   
+   def test(self):
+       '''Test device by sending a couple of commands'''
 
-def query():
-    return "Not supported"
-
+       return "WARN: Not implemented for this API"
 
 #-------------------------------------------------
 # EOF

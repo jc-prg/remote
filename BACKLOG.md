@@ -3,11 +3,9 @@
 ## project
 
 * OK - create configuration base on config-files and templates
+* OK - configure and clean-up for git-project
+* OK - create a new / license free icon set (to be improved continuously)
 
-* IN PROGRESS - configure and clean-up for git-project
-
-* create a new / license free icon set
-* create github-project
 
 ## server
 
@@ -29,21 +27,25 @@
 * OK - BROADLINK: optimized integration (as EISCP API)
 * OK - simplified and optimized data structure
 * OK - EISCP - process multiple requests
+* OK - Execute makros server-side (and show OK in client, when done / close menu ...)
+* OK - Cache config files
+* OK - Use queue to execute commands
+* OK - redesign / simplify module structure
+* OK - Config files analog to mbox
 
-* Execute makros server-side (and show OK in client, when done / close menu ...)
-* EISCP - add configuriation file including time out (for multiple onkyo devices ?!)
+* IN PROGRESS - add KODIjson (basic commands work, to be tested and additional commands to be added)
+
 * SONY  - add API
-* Config files analog to mbox
 
-- app side configuration handling in JSON -> sendCmd() / sendMakro() / check_status() / check_status_inactive()
-- check status in menu (device button) via data from JSON
 
 ## automated testing
 
 * OK - data files (JSON) are correctly formatted
+* OK - add test device, test buttons ... and delete
+* OK - reset device status / audio settings
+* OK - all API calls return a code 200 (instead of 404 or 500)
 
 * main structure of data files is OK
-* all API calls return a code 200 (instead of 404 or 500)
 * more detailled API testing (e.g. creating, modifing, changing a remote control)
 * all defined image files are available
 
@@ -99,14 +101,20 @@
 * OK - migrate to python3
 * OK - server to docker-container
 * OK - server side configuration handling: status in json file
-* OK - migrate to jc-co* OKie
+* OK - migrate to jc-cookie
 * OK - optimized directory structure to prepare additional device/API integration
 * OK - added display (with queried information from API)
 * OK - correct show / hide menu
+* OK - get display size (small,middle,big) from remote config file
+* OK - create license free icon set (sources see README.md)
+* OK - check device status when pressed button / send command or makro
+* OK - check / show if device API is connected
+* OK - basic dark scheme (to be optimized)
 
-* IN PROGRESS - create license free icon set
 * IN PROGRESS - edit device parameters via settings page (description, driver, image)
 
+- dark scheme for menu
+- dark scheme for jc-msg
 - edit device parameters via settings page (status definition)
 - edit device parameters via settings page (remote control)
 

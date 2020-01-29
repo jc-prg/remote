@@ -10,3 +10,4 @@ Crypto
 pycryptodome
 connexion[swagger-ui]
 netifaces
+kodi-json

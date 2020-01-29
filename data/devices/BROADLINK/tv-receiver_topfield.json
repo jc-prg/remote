@@ -39,6 +39,8 @@
         "description": "TOPFIELD",
         "method" : "record",
         "queries" : {},
-        "values" : {}
+        "values" : {
+        	"radiotv" : [ "RADIO","TV"]
+        }
     }
 }
