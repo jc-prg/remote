@@ -2,26 +2,11 @@
 // jc://remote/
 //--------------------------------
 
-// Warten
-//--------------------------------
-
-function pausecomp(ms) {
-    ms += new Date().getTime();
-    while (new Date() < ms){}
-    }
-
-function pausecmd(s) {
-    s = s*1000;
-    s += new Date().getTime();
-    while (new Date() < s){
-		}
-    }
-
 //--------------------------------
 // create menus & landing page & setting page
 //--------------------------------
 
-function showRemote(show=false) {
+function showRemoteInBackground(show=false) {
     var body   = document.getElementById("app_background");
     var width  = window.innerWidth;
 
@@ -30,8 +15,8 @@ function showRemote(show=false) {
         body.style.backgroundRepeat     = "no-repeat";
         body.style.backgroundPosition   = "bottom center";
         body.style.backgroundAttachment = "fixed";
-        if (width < 400)	{ body.style.backgroundSize     = "100%"; }
-        else 			{ body.style.backgroundSize     = "400px"; }
+        if (width < 350)	{ body.style.backgroundSize     = "100%"; }
+        else 			{ body.style.backgroundSize     = "350px"; }
         }
     else {
         body.style.backgroundImage    = "";

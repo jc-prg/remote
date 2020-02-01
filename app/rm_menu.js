@@ -6,17 +6,27 @@
 
 function rmMenu(name, menu) {
 
-	this.menuItems = menu;
-        this.app_name  = name;
-	this.data      = {};
-	this.edit_mode = false;
+	this.menuItems   = menu;
+        this.app_name    = name;
+	this.data        = {};
+	this.edit_mode   = false;
+	this.inital_load = true;
 
 
         // load data with devices (deviceConfig["devices"])
         this.init = function(data) {
 
-                this.data = data;
-                this.log("Initialized new class 'rmMenu'.");
+        	if (data["DATA"]) 	{ this.data = data; }
+        	else			{ return; }
+
+                if (this.initial_load) { 
+                	this.log("Initialized new class 'rmMenu'.");
+                	this.inital_load = false;
+                	}
+                else {
+                	this.log("Reload data 'rmMenu'.");
+                	}
+                
     		this.writeMenu("");
                 }
 
@@ -25,7 +35,7 @@ function rmMenu(name, menu) {
 	this.add_devices = function(data) {
 
 		// return if no data
-    		if (data) {} else { return; }
+    		if (!data) { return; }
 
 		// set vars
     		var menu = this.readMenu();
@@ -55,7 +65,9 @@ function rmMenu(name, menu) {
 
     		var i    = 0;
 		for (var key in data) {
-			menu  += this.entry_scene( key, data[key]["label"] );
+			if (data[key]["label"]) {
+				menu  += this.entry_scene( key, data[key]["label"] );
+				}
         		}
     		this.writeMenu(menu + "<li><hr/></li>");
 		}
@@ -128,11 +140,21 @@ function rmStart(name) {
 	this.data        = {}
         this.app_name    = name;
         this.edit_mode   = false;
+        this.inital_load = true;
 
         // load data with devices (deviceConfig["devices"])
         this.init = function(data) {
-                this.data = data;
-                this.log("Initialized new class 'rmStart'.");
+        
+        	if (data["DATA"]) 	{ this.data = data; }
+        	else			{ return; }
+                
+                if (this.initial_load) { 
+                	this.log("Initialized new class 'rmStart'.");
+                	this.inital_load = false;
+                	}
+                else {
+                	this.log("Reload data 'rmStart'.");
+                	}
                 }
 
 

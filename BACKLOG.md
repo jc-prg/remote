@@ -35,6 +35,7 @@
 
 * IN PROGRESS - add KODIjson (basic commands work, to be tested and additional commands to be added)
 
+* Return message and code for each API call (to be processed by client) -> to be checked if own or HTML return code
 * SONY  - add API
 
 

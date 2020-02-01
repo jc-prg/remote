@@ -14,18 +14,29 @@ function rmRemote(name) {
 	this.active_type    = "";
 	this.active_buttons = [];
 	this.edit_mode      = false;
+	this.initial_load   = true;
 
 	// load data with devices (deviceConfig["devices"])
 	//--------------------
 
-	this.init = function(data,templates) {
-		this.data           = data;
-                this.templates      = templates;
+	this.init = function(data) {
+	
+		if (data["DATA"]) {
+			this.data           = data;
+        	        this.templates      = data["DATA"]["template_list"];
+        	        }
+        	else { return; }
                 
-                this.button_tooltip = new jcTooltip(this.app_name + ".button_tooltip");
-                this.button_tooltip.settings("onclick","120px","80px",50);
-                
-		this.log("Initialized new class 'rmRemotes'."); // ... to add number of devices and scenes ...
+                if (this.initial_load) { 
+	                this.button_tooltip = new jcTooltip(this.app_name + ".button_tooltip");
+	                this.button_tooltip.settings("onclick","120px","80px",50);
+	                
+                	this.log("Initialized new class 'rmRemotes'.");
+                	this.inital_load = false;
+                	}
+                else {
+                	this.log("Reload data 'rmRemotes'.");
+                	}
 		}
 
 
@@ -34,6 +45,12 @@ function rmRemote(name) {
 
 	this.create = function(type="",rm_id="") {
 	
+		if ("DATA" in this.data == false) {
+			console.warn("Data not loaded yet.");
+			show_status("red", showButtonTime);
+			return;
+			}
+
 	        if (type == "")   { type = this.active_type; }
 	        if (rm_id == "")  { rm_id = this.active_name; }
 
@@ -75,14 +92,11 @@ function rmRemote(name) {
 		}
 
 
-
 	// create remotes
 	//--------------------
 
 	// create remote for a specific device
 	this.device_remote = function(id="", device="") {
-	
-	//console.error("device_remote");
 	
 		var remote             = "";
 		var remote_displaysize = "middle";
@@ -166,7 +180,7 @@ function rmRemote(name) {
 	this.device_description = function(id, device) {
 		var label = this.data["DATA"]["devices"][device]["label"];
 		var descr = this.data["DATA"]["devices"][device]["description"];
-		var str   = "<center>" + label + ": " + descr + "</center>";
+		var str   = "<center>" + descr + "</center>";
 		setTextById(id,str);
 		}
 
@@ -338,7 +352,7 @@ function rmRemote(name) {
                 item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
                 for (var key in data) {
                         if (key != "default") {
-                                item += "<option value=\"" + key + "\">" + data[key]["description"] + "</option>";
+                                item += "<option value=\"" + key + "\">" + data[key] + "</option>";
                         }       }
                 item     += "</select>";
                 return item;
@@ -541,11 +555,9 @@ function rmRemote(name) {
 	// ensure, that all elements are visible and settings are hidden
 	this.show = function (device="") {
 
-		check_status();				// ... check if part of class ...
-		check_status_inactive(device);		// ... check if part of class ...
-
+		check_status(this.data);		// ... check if part of class ...
 		setTextById("buttons_all","");		// ... move to showRemote() ...
-		showRemote(0);				// ... check if part of this class ...
+		showRemoteInBackground(0);		// ... check if part of this class ...
 		rm3settings.hide();			// ... check if part of another class ...
 
 		}

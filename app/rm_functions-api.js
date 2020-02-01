@@ -6,7 +6,6 @@
 //-----------------------------
 // function check_for_updates_msg(data) {}
 // function check_for_updates() {}
-// function checkUpdates(version) {}  // --> check if still required
 //
 // function addDevice(device, description) {}
 // function addButton(device_id, button_id) {}
@@ -26,23 +25,22 @@
 function check_for_updates() {
 
 	rm3msg.wait("Loading App ...", "initRemote();" );
-	rm3app.requestAPI("GET",["version",rm3version], "", check_for_updates_msg, "wait" );
+	rm3app.requestAPI("GET", ["version",rm3version], "", check_for_updates_msg, "wait" ); 	// doesn't work asynchronuous yet ... -> "wait" as param
 	}
 
 
-function check_for_updates_msg(data) {
+function check_for_updates_msg( data ) {
 
-	msg = data["ReturnMsg"];
+	msg = data["REQUEST"]["Return"];
 	msg = "<br/></b><i>"+msg+"</i>";
 
 	rm3msg.wait("Loading App ..."+msg, "initRemote();" );
-	if (data["REQUEST"]["ReturnCode"] == "802") { rm3update = true; }
+
+	if (data["REQUEST"]["ReturnCode"] != "802") {
+		setTimeout(function(){ rm3msg.hide(); }, 3000);
+		}
 	}
 
-function checkUpdates(version) {
-
-	rm3app.requestAPI("GET",["version",version], "", rm3msg.alertReturn, "wait" );       
-	}
 	
 //--------------------------------
 // send add commands
@@ -75,6 +73,7 @@ function changeVisibilityDevice(device_id, value_id) {
 	
 //--------------------------------
 
+function addTemplate_exe(device,template) { rm3app.requestAPI("PUT",["template",device,template], "", alertReturn); }
 function addTemplate(device_id, template_id) {
 
         device   = check_if_element_or_value(device_id);
@@ -89,10 +88,6 @@ function addTemplate(device_id, template_id) {
 	rm3msg.confirm(question,"addTemplate_exe('" + device + "','" + template + "'); ");
 	}
 	
-function addTemplate_exe(device,template) {
-
-	rm3app.requestAPI("PUT",["template",device,template], "", alertReturn);	
-	}
 	
 //--------------------------------
 
@@ -136,6 +131,7 @@ function addButton(device_id, button_id) {
 // send delete commands
 //--------------------------------
 
+function deleteButton_exe(button) { b = button.split("_"); rm3app.requestAPI("DELETE",["button",b[0],b[1]], "", alertReturn); }
 function deleteButton(device_id, button_id) {
 
 	var device1 = document.getElementById(device_id);
@@ -157,14 +153,10 @@ function deleteButton(device_id, button_id) {
 	rm3msg.confirm(question,"deleteButton_exe('" + button + "'); ");
 	}
 
-function deleteButton_exe(button) {
-
-        b = button.split("_");
-	rm3app.requestAPI("DELETE",["button",b[0],b[1]], "", alertReturn);
-	}
 
 //--------------------------------
 
+function deleteDevice_exe(device) { rm3app.requestAPI("DELETE",["device",device], "", alertReturn); }      
 function deleteDevice(device_id) {
 
 	var device1 = document.getElementById(device_id);
@@ -177,26 +169,13 @@ function deleteDevice(device_id) {
 	rm3msg.confirm(question,"deleteDevice_exe('" + device + "');");
 	}
 
-function deleteDevice_exe(device) {
 
-	rm3app.requestAPI("DELETE",["device",device], "", alertReturn);       
-	}
-
+//--------------------------------
 
 function check_if_element_or_value(name_value) {
         if (name_value == "")                                                                   { console.error("check_if_element_or_value: no value"); return; }
 	if (document.getElementById(name_value) && document.getElementById(name_value).value) 	{ return document.getElementById(name_value).value.toLowerCase(); }
 	else					                                                { return name_value; }
-	}
-
-
-//--------------------------------------------
-// reload, reconnect to device
-//--------------------------------------------
-
-function loadRemote(cmd,callback="") {
-
-	rm3app.requestAPI( "GET", [cmd], "", callback );
 	}
 
 
@@ -206,53 +185,35 @@ function loadRemote(cmd,callback="") {
 
 function sendCmd(cmdButton, sync="", callback="") {
 
-        console.warn("use of sendCmd -> try to reduce or eliminate");
-
+  
 	var dc; 	// device & command
 	var ee, vv;
 	var onoff = false;
 
-	if (cmdButton) {
-		// split into device and button
-
-		if (Array.isArray(cmdButton))	{ dc = cmdButton; }
-		else				{ dc = cmdButton.split("_"); }
-
-		// Send command only, if device is active (ON), else return
-		if ((device_status[dc[0]] == "OFF" && dc[1] != "on-off" && dc[1] != "on" && dc[1] != "off") && (deactivateButton == false)) { 
-			show_status("red", showButtonTime);
-			return;
-			}
-		if (dc[1] == "on-off" || dc[1] == "on" || dc[1] == "off") { onoff = true; }
-		}
-	else {
-		// unkar, wofür benötigt ... ?! aber ohne funktionierts auch nicht
-		ee = document.getElementById("goSelect");
-		vv = ee.options[ee.selectedIndex].value;
-		dc = vv.split("_");
-		}
+	// split into device and button
+	if (Array.isArray(cmdButton))	{ dc = cmdButton; }
+	else				{ dc = cmdButton.split("_"); }
 
 	// check, if manual mode (with out checking the device status) or intelligent mode (with checking the device status)
 	if (deactivateButton) 	{ dc = ["send" , dc[0] , dc[1]]; }
         else 			{ dc = ["send_check" , dc[0] , dc[1]]; }
+        
+        if (callback == "")	{ callback = remoteReload_load; }
 
 	// send via app
-	if (sync == "sync") 	{
-		rm3app.sendCmdSync( dc, callback );
+	if (sync == "sync") { 							// check, if still required ....
+  		console.warn("use of sendCmd with sync -> try to reduce or eliminate");
+  		
+		rm3app.requestAPI("GET",dc,"",callback,"wait");		// send command and reload data when done
 		show_status("green", showButtonTime);
 		if (showButton) {setTextById("audio4", cmdButton);}
 		}
 
-	else                	{
-		rm3app.sendCmd( dc, callback );
+	else {
+		rm3app.requestAPI("GET",dc,"",callback);		// send command and reload data when done
 		show_status("green", showButtonTime);
 		if (showButton) {setTextById("audio4", cmdButton);}
 		}
-
-	setTimeout(function(){ check_status_fresh(); }, 500);
-
-	// check, if device inactive and change color of buttons (if on/off-button)
-	if (onoff) { setTimeout(function(){ check_status_inactive(); }, 3000); }
 	}
 
 
@@ -266,114 +227,15 @@ function sendMakro( makro ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
 	console.log( "Send makro: " + makro );
 	
 	dc = [ "makro", makro ];
-	rm3app.requestAPI( "GET", dc );
+	rm3app.requestAPI( "GET", dc, "", sendMakro_hide );
+	
+	// if request takes more time, hide message after 5 seconds
+	setTimeout(function(){ rm3msg.hide(); }, 5000);
+	}
+	
+	
+function sendMakro_hide( data ) {
 	rm3msg.hide();
-	return;
-	
-	// old definition, server side execution off the command
-	
-	var makro_def = dataAll["DATA"]["makros"];
-
-    	setTimeout(function(){
-
-		// set vars
-		var wait  = 0;
-		var test = "";
-		var list  = makro.split("::");
-		var list2 = [];
-
-		// for each key check if it is a "sub-makro" and translate in real commands
-		for (var i=0; i<list.length; i++) {
-        		// if not a number ...
-			if (isNaN(list[i])) {
-				var dev = list[i].split("_");
-
-				// if makro for switch on/off a device
-				if (dev[0] == "dev-on" || dev[0] == "dev-off" || dev[0] == "makro") {
-					// add commands from device makro
-					if (dev[1] in makro_def[dev[0]]) {
-						var list3 = makro_def[dev[0]][dev[1]];
-						for (var a=0; a<list3.length; a++) { list2.push(list3[a]); }
-						}
-					else { console.error("Did not find makro: " + dev[1]); }
-					}
-				else {
-					// already a command
-					list2.push(list[i]);
-					}
-				}
-			else 	{ list2.push(list[i]); } // add existing number
-			}
-
-		// for each command execute / for each number wait
-		for (var i=0; i<list2.length; i++) {
-
-			test += list2[i] + "\n";
-			var last = false;
-			if (i == list2.length) { last = true; }
-
-        		// if is not a number, then execute command
-			if (isNaN(list2[i])) {
-				// split into button and device state to achive
-				var button = list2[i].split("||");
-				var device = button[0].split("_");
-				var send   = true;
-				var onoff  = false;
-
-				if (button[1] == "ON" || button[1] == "OFF") {
-					// check if device switched ON or OFF
-					// if state already reached -> then send = false
-					if (button[1] == check_status_dev(device[0])) { send = false; }
-					//alert("test "+device[0]+"- on/off: " + check_status_dev(device[0]));
-					}
-				else if (button[1]) {
-					// check if specific mode set (e.g. switch between TV / RADIO with the same button)
-					// if state already reached -> then send = false
-					if (button[1] == check_status_dev(button[0])) { send = false; }
-					//alert("test "+button[0]+"-"+button[1]+": " + check_status_dev(button[0]));
-					}
-
-				// check if on/off button then check_status()
-				if (device[1] == "on" || device[1] == "off" || device[1] == "on-off") {	onoff = true; }
-
-				if (send && onoff) {
-					// send command, if state not already reached and on/off button
-					//pausecomp(1000);
-					sendCmd(button[0], "sync", check_status); // callback -> check device status
-					wait = 0;
-					//console.log("-> cmd: "+button[0]);
-					}
-				else if (send) {
-					// send command, if state not already reached
-					//pausecomp(1000);
-					sendCmd(button[0], "sync"); // "sync" - synchron/sequentiel command execution
-					wait = 0;
-					//console.log("-> cmd: "+button[0]);
-					}
-				else {
-					// dont sent command, if state already reached
-					show_status("yellow", showButtonTime);
-					if (showButton) {setTextById("audio4", "<strike>" + button[0] + " (" + button[1] + ")</strike>");}
-					//console.log("-> not cmd: "+button[0]);
-					}
-				}
-			// if is a number, then wait number as seconds
-			else {
-				if (showButton) {setTextById("audio4", "wait:" + list2[i]);}
-				wait = list2[i] * 1000;
-				if (wait>0) {
-					pausecomp(wait);
-					wait=wait/1000;
-					}
-				//console.log("-> wait: "+wait);
-				}
-			}
-		rm3msg.hide();
-
-		setTimeout(function(){ check_status_fresh(); }, 500);
-
-		// wait ms before starting makro execution
-		}, 500 );
 	}
 
 // --------------------

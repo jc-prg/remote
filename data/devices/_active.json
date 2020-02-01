@@ -17,7 +17,7 @@
         "interface": "BROADLINK",
         "label": "Beamer",
         "status": {
-            "power": "ON"
+            "power": "OFF"
         },
         "visible": "yes"
     },
@@ -40,7 +40,7 @@
         "interface": "BROADLINK",
         "label": "Leinwand",
         "status": {
-            "power": "ON"
+            "power": "OFF"
         },
         "visible": "yes"
     },
@@ -54,6 +54,7 @@
             "mute": "False",
             "name": "Kodi",
             "power": "ON",
+            "test": "Error",
             "version": "{'major': 18, 'minor': 4, 'revision': '20191027-06c77692ee', 'tag': 'stable'}",
             "vol": "100"
         },
@@ -80,16 +81,16 @@
         "label": "AV Receiver",
         "main-audio": "yes",
         "status": {
-            "audio-info": "HDMI 2,PCM,48 kHz,2.0 ch,Theater-Dimensional,3.1 ch,",
+            "audio-info": "ANALOG,,,,All Ch Stereo,5.1 ch,",
             "dimmer": "dark",
             "display": "('selector-volume-1line', 'default-2line')",
             "mute": "off",
-            "power": "on",
-            "source": "cbl",
+            "power": "('standby', 'off')",
+            "source": "bd",
             "temperature": "C 31",
             "timer": "N/A",
-            "video-info": "HDMI 2,1920 x 1080i  50 Hz,YCbCr444,24bit,MAIN,1920 x 1080i  50 Hz,YCbCr444,24bit,,",
-            "vol": "36"
+            "video-info": "No Video,Unknown,,24bit,,Unknown,,24bit,,",
+            "vol": "54"
         },
         "visible": "yes"
     },
@@ -101,7 +102,7 @@
         "label": "TV/Radio",
         "status": {
             "mute": "OFF",
-            "power": "ON",
+            "power": "OFF",
             "radiotv": "TV",
             "vol": 18
         },

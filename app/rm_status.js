@@ -36,10 +36,25 @@ function showRestStatus(color) {
 	setTextById("rest_status", color_html);
 	}
 
+//-----------------------------------------
+
 function show_status( color, wait ) {
 	showRestStatus( color );
 	pausecmd(wait);
 	setTimeout(function(){ showRestStatus("gray"); }, wait*1000);
+	}
+	
+//-----------------------------------------
+
+function show_volume (volume, maximum, vol_color, novol_color="") {
+
+	var volume  = Math.round( volume * 20 / maximum );
+	var vol_str = "<font color='" + vol_color + "'>";
+	for (var i=0; i<volume; i++) { vol_str += "I"; }
+	vol_str += "</font>";
+	if (novol_color != "") { vol_str += "<font color='" + novol_color + "'>"; }
+	for (var i=0; i<20-volume; i++) { vol_str += "I"; }
+	return vol_str;
 	}
 
 //-----------------------------------------
@@ -49,37 +64,52 @@ function show_status( color, wait ) {
 // change button color
 function set_button_status(id,active) {
 	if (document.getElementById(id)) {
-		if (active) 	{ document.getElementById(id).style.backgroundColor = ""; }  // reset to CSS color
-		else 		{ document.getElementById(id).style.backgroundColor = "#666666"; }
+		if (active) 	{ document.getElementById(id).style.backgroundColor = ""; } 			// reset to CSS color
+		else 		{ document.getElementById(id).style.backgroundColor = color_button_inactive; }	// color defined in rm_config.js
 		}
 	}
 	
+//-----------------------------------------
+// check if device status
+//-----------------------------------------
 	
 // check if device status is off
-function check_status_inactive(device="") {
+function check_status_inactive(data) {
 
-	var dev            = dataAll["DATA"]["devices"];
+	if (deactivateButton)	{ return; }
+
+	if (!data["DATA"]) {
+		console.error("check_status_inactive: data not loaded.");
+		show_status("red", showButtonTime);
+		return;
+		}
+
+	var device         = data["DATA"]["devices"];
 	var device_status  = {};
 	var filter         = false;
 	var scene_status   = {};
 
-	if (deactivateButton)	{ return; }
-	if (device != "")	{ filter = "true"; }
-
 	// get scene status from devices status and definition (see check_status) -> move to rm_remote.js
-	for (var key in dataAll["DATA"]["scenes"]) {
+	for (var key in data["DATA"]["scenes"]) {
+		if (data["DATA"]["scenes"][key]["devices"]) {
 
-		var required = dataAll["DATA"]["scenes"][key]["devices"];
-		var all_dev  = Object.keys(dataAll["DATA"]["devices"]);
-		var dev_on   = 0;
+			var required = data["DATA"]["scenes"][key]["devices"];
+			var all_dev  = Object.keys(data["DATA"]["devices"]);
+			var dev_on   = 0;
 		
-		for (var i=0;i<all_dev.length;i++)  { device_status[all_dev[i]] = dev[all_dev[i]]["status"]["power"].toUpperCase();  }
-		for (var i=0;i<required.length;i++) { if (device_status[required[i]] == "ON") { dev_on += 1; } }
+			for (var i=0;i<all_dev.length;i++)  { device_status[all_dev[i]] = device[all_dev[i]]["status"]["power"].toUpperCase();  }
+			for (var i=0;i<required.length;i++) { if (device_status[required[i]] == "ON") { dev_on += 1; } }
 
-		if (dev_on == required.length) 	{ scene_status[key] = "ON"; }
-		else if (dev_on > 0)		{ scene_status[key] = "OTHER"; }
-		else				{ scene_status[key] = "OFF"; }
-		//console.debug(key + " - on:" + dev_on + " / off:" + required.length + " / " + scene_status[key]);
+			if (dev_on == required.length) 	{ scene_status[key] = "ON"; }
+			else if (dev_on > 0)		{ scene_status[key] = "OTHER"; }
+			else				{ scene_status[key] = "OFF"; }
+			//console.debug(key + " - on:" + dev_on + " / off:" + required.length + " / " + scene_status[key]);
+			}
+		else {
+			console.error("ERROR check_status_inactive");
+			console.error(data["DATA"]["scenes"][key]);
+			required = [];
+			}
 		}
 		
 	// deactive makro_buttons (check scene status, deactivate all buttons from list starting with "makro")
@@ -103,8 +133,8 @@ function check_status_inactive(device="") {
 		if (filter == false) { 
 
 			// if device off -> set all buttons off
-			if (dev[key]["button_list"] && device_status[key] != "ON") {
-				var buttons = dev[key]["button_list"];
+			if (device[key]["button_list"] && device_status[key] != "ON") {
+				var buttons = device[key]["button_list"];
 				for (var i=0; i<buttons.length; i++) {
 					if (buttons[i] != "red" && buttons[i] != "blue" && buttons[i] != "yellow" && buttons[i] != "green"
 						&& buttons[i] != "on" && buttons[i] != "off" && buttons[i] != "on-off") {
@@ -113,8 +143,8 @@ function check_status_inactive(device="") {
 				}
 			}
 			// if device on -> set all buttons on
-			else if (dev[key] && typeof dev[key]["button_list"] == "object") {
-				var buttons = dev[key]["button_list"];
+			else if (device[key] && typeof device[key]["button_list"] == "object") {
+				var buttons = device[key]["button_list"];
 				for (var i=0; i<buttons.length; i++) {
 					if (buttons[i] != "red" && buttons[i] != "blue" && buttons[i] != "yellow" && buttons[i] != "green"
 						&& buttons[i] != "on" && buttons[i] != "off" && buttons[i] != "on-off") {
@@ -128,18 +158,22 @@ function check_status_inactive(device="") {
 
 //-----------------------------------------
 
-function check_status_fresh() {	rm3app.requestAPI("GET",["list"], "", printRmStatus, "" ); }
+function check_status_load() {	rm3app.requestAPI("GET",["list"], "", check_status, "" ); }
 function check_status(data={}) {
 
 	if (deactivateButton)			{ return; }     // if manual mode <- deactivateButton == true
-	if (!dataAll["DATA"]["devices"]) 	{ return; }	// if no data loaded return
-	
-        var devices        = dataAll["DATA"]["devices"];
+	if (!data["DATA"]) {
+		console.error("check_status: data not loaded.");
+		show_status("red", showButtonTime);
+		return;
+		}
+			
+        var devices        = data["DATA"]["devices"];
 	var scene_status   = {};
 	var device_status  = {}
 
 	// get data from main audio device
-	var main_audio      = dataAll["CONFIG"]["main-audio"];  // get main audio device from file
+	var main_audio      = data["CONFIG"]["main-audio"];  // get main audio device from file
 	var main_audio_max  = "";
 	var main_audio_vol  = devices[main_audio]["status"]["vol"];
 	var main_audio_mute = devices[main_audio]["status"]["mute"].toUpperCase();
@@ -153,14 +187,13 @@ function check_status(data={}) {
 	var novol_color    = "lightblue";
 	
 	// if data -> callback of sendCmd (ON/OFF) -> check_status_inactive()
-	if ("Device" in data)	{ check_status_inactive(data["Device"]); }
-	else			{ check_status_inactive(); }
+	check_status_inactive(data);
 
 	// get scene status from devices status and definition (see check_status) -> move to rm_remote.js
-	for (var key in dataAll["DATA"]["scenes"]) {
+	for (var key in data["DATA"]["scenes"]) {
 
 		var dev_on   = 0;
-		var required = dataAll["DATA"]["scenes"][key]["devices"];
+		var required = data["DATA"]["scenes"][key]["devices"];
 		for (var i=0;i<required.length;i++) {
 		        device_status[required[i]] = devices[required[i]]["status"]["power"].toUpperCase();
 		        if (device_status[required[i]] == "ON") { dev_on += 1; }
@@ -206,7 +239,7 @@ function check_status(data={}) {
 				}
 			else if (check_button.includes("OFF")) {
 				show_status_button( "device_" + key, "OFF" ); // main menu button
-				show_status_button( key + "_on-off", "OFF" ); // on-off device button		
+				show_status_button( key + "_on-off", "OFF" ); // on-o:16
 				show_status_button( key + "_off", "OFF" );
 				show_status_button( key + "_on",  "" );
 				}	
@@ -295,30 +328,8 @@ function check_status(data={}) {
 		}	
 	}
 	
-function show_volume (volume, maximum, vol_color, novol_color="") {
 
-	var volume  = Math.round( volume * 20 / maximum );
-	var vol_str = "<font color='" + vol_color + "'>";
-	for (var i=0; i<volume; i++) { vol_str += "I"; }
-	vol_str += "</font>";
-	if (novol_color != "") { vol_str += "<font color='" + novol_color + "'>"; }
-	for (var i=0; i<20-volume; i++) { vol_str += "I"; }
-	return vol_str;
-	}
 
-function check_status_dev(device) {
-
-	loadRemote("list");
-	var Status = dataAll["STATUS"]["devices"];
-
-	return Status[device];
-	}
 
 //--------------------------------
-// Refresh Status every x seconds ...
-//--------------------------------
-
-//setInterval(function(){check_status()}, 1000 * reloadInterval);
-
-//--------------------------------
-
+// EOF

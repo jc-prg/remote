@@ -24,10 +24,7 @@ else {
 //--------------------------------
 
 var rm3app     = new jcApp( "rm3app", RESTurl, "list", "api/");     // cmd: <device>/<cmd>
-rm3app.init( "data_log", "error_log", reloadInterval, printRmStatus );
-rm3app.load( );
-rm3app.setAutoupdate( );
-
+rm3app.init( "data_log", "error_log", reloadInterval, remoteReload );
 
 //--------------------------------
 // additional apps to write menus, remotes, messages
@@ -40,47 +37,98 @@ var rm3settings = new rmSettings( "rm3settings" );
 var rm3msg      = new jcMsg(      "rm3msg" );
 var rm3cookie   = new jcCookie(   "rm3cookie");
 
-check_for_updates();
+//--------------------------------
+// initialize
+//--------------------------------
 
+check_for_updates();
+initRemote(first_load=true);
+
+//----------------------------------
+// initiale settings and load menus
+//----------------------------------
+
+function initRemote (first_load=true) {
+
+	setNavTitle(rm3title);
+
+	setTextById("rest_status",status_gray);
+	setTextById("menuItems","");
+	setTextById("remote1","");
+	setTextById("remote2","");
+	setTextById("remote3","");
+	setTextById("remote_edit","");
+
+	if (first_load) {
+		showRemoteInBackground(1);		// show start screen
+		setTextById("remote2","<center>Loading data ...</center>");
+
+		rm3app.requestAPI("GET",["list"],"",initRemoteFirstLoad);	// 
+		rm3app.setAutoupdate( );					// set auto update interval to active
+		}
+	}
+	
+//----------------------------------
+
+function initRemoteFirstLoad(data) {
+	remoteReload(data);			// initial load of data incl. remotes, settings
+	remoteStartMenu(data);			// initial load start menu
+	remoteDropDown(data);			// initial load drop down menu
+	}
+
+//----------------------------------
+
+function remoteInitData(data) {
+
+	if (data["DATA"]) {
+		// init and reload data 
+		rm3remotes.init(  data );
+		rm3settings.init( data );
+		rm3menu.init(     data );
+		rm3start.init(    data );
+		}
+	}
+	
+	
 //--------------------------------
 // print after loading data (callback)
 //--------------------------------
 
-function printRmStatus(data) {
+function remoteReload_load() { rm3app.requestAPI("GET",["list"],"",remoteReload); }
+function remoteReload(data) {
 
-	// set vars
-	dataAll			  = data;
-	dataConfig                = data["DeviceConfig"];
-	
-	if ("DATA" in data) {
-		dataDevices               = data["DATA"]["devices"];
-		dataTemplates             = data["DATA"]["templates"];
-		dataScenes                = data["DATA"]["scenes"];
-		}
-	if ("STATUS" in data) {
-		dataStatus		  = data["STATUS"];
+	if (!data["DATA"]) {
+		console.error("remoteReload: data not loaded.");
+		show_status("red", showButtonTime);
+		return;
 		}
 
-	// init / reload data 
-	rm3remotes.init( dataAll, dataTemplates);	        // load data to class
-	rm3start.init(   dataAll);	                        // load data to class
-	rm3settings.init(dataAll);
+	// check if still used in a function -> to be removed
+	dataAll                   = data;		
+
+	// init and reload data
+	remoteInitData(data);
 	
 	// update drop down menu
-        rmDropDownMenu(data);
+        remoteDropDown(data);
         
 	// check device & audio status
-	check_status();
+	check_status(data);
 
 	// reset button info in header
 	setTimeout(function(){setTextById("audio4", "");}, 1000);
-
 	}
 	
 //--------------------------------
 
-function rmDropDownMenu_update() { rm3app.requestAPI( "GET", ["list"], "", rmDropDownMenu ); }
-function rmDropDownMenu(data) {
+function remoteDropDown_load() { rm3app.requestAPI( "GET", ["list"], "", remoteDropDown ); }
+function remoteDropDown(data) {
+
+	if (!data["DATA"]) {
+		console.error("remoteDropDown: data not loaded.");
+		show_status("red", showButtonTime);
+		return;
+		}
 
 	// data for links
 	var deact_link         = "Intelligent Mode";
@@ -102,72 +150,24 @@ function rmDropDownMenu(data) {
 
 //--------------------------------
 
-function printRmMenu(data) {
+function remoteStartMenu_load() { rm3app.requestAPI( "GET", ["list"], "", remoteStartMenu ); }
+function remoteStartMenu(data) {
 
-	// set vars
-	dataAll		= data;
-	dataConfig 	= data["DeviceConfig"];
-	dataDevices	= data["DATA"]["devices"];
-	dataScenes	= data["DATA"]["scenes"];
-
-        // create drop down menu
-        rmDropDownMenu(data);
+	if (!data["DATA"]) {
+		console.error("remoteStartMenu: data not loaded.");
+		show_status("red", showButtonTime);
+		return;
+		}
 
 	// load buttons on start page
 	rm3start.init(        data);	// load data to class
 	rm3start.add_scenes(  data["DATA"]["scenes"],  "remote1" );
 	rm3start.add_devices( data["DATA"]["devices"], "remote2" );
-
-	// check main audio device
-	for (var key in dataDevices) {
-		if ("audio" in dataDevices[key] && dataDevices[key]["audio"] == "main") {
-			status_mute    = key+"_mute"; // -> show in <nav-info id="audio2">
-			status_vol     = key+"_vol";  // -> show in <nav-info id="audio1">
-			status_vol_max = dataDevices[key]["status"]["vol"]["max"];
-			}
-		}
-
-	// check device & audio status
-	check_status();
-
-	//initial check, if loaded
-	setTimeout(function(){
-		if (!rm3update) {
-			rm3msg.hide();
-			lastRemoteCookie();
-			}
-		}, 2000);
-		
-        rm3app.requestAPI( "GET", ["list"], "", printRmStatus );
+	
+	// check status and change button color
+	check_status(data);
 	}
 
-//--------------------------------
-// initialize
-//--------------------------------
-
-initRemote(true);
-
-//----------------------------------
-// initiale settings and load menus
-//----------------------------------
-
-function initRemote (first_load=true) {
-
-	if (first_load) {
-		showRemote(1);		// show start screen
-		}
-
-	setNavTitle(rm3title);
-
-	setTextById("rest_status",status_gray);
-	setTextById("menuItems","");
-	setTextById("remote1","");
-	setTextById("remote2","");
-	setTextById("remote3","");
-	setTextById("remote_edit","");
-
-	rm3app.requestAPI( "GET", ["list"], "", printRmMenu );
-	}
 
 //--------------------------------
 

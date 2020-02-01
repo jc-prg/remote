@@ -40,6 +40,8 @@ var colors_power   = {	"ON" 	: "darkgreen",
 			"OTHER"	: "purple",
 			"ERROR"	: "orangered",
 			}
+var color_button_inactive = "#666666";
+
 // color definitions: https://www.w3schools.com/cssref/css_colors.asp			
 
 var show_error     = ""; // onClick=\"javascript:showErrorLog();\""; // not implemented any more

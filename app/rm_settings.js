@@ -1,5 +1,4 @@
-//--------------------------------
-// jc://remote/
+//--------------------------------// jc://remote/
 //--------------------------------
 // (c) Christoph Kloth
 // settings page & functions
@@ -9,25 +8,35 @@
 function rmSettings (name) {	// IN PROGRESS
 
 	// preset vars
-	this.data       = {};
-	this.active     = false;
-	this.app_name   = name;
-	this.e_settings = ["setting1","setting2","setting3","setting4"];
-	this.e_remotes  = ["remote1","remote2","remote3","remote_edit"];
-	this.input_width= "110px";
+	this.data         = {};
+	this.active       = false;
+	this.app_name     = name;
+	this.e_settings   = ["setting1","setting2","setting3","setting4"];
+	this.e_remotes    = ["remote1","remote2","remote3","remote_edit"];
+	this.input_width  = "110px";
+	this.initial_load = true;
+
 
 	// init settings / set vars
 	this.init = function(data) {
 		// set data
 		this.data = data;
-
-		// check if test
-		if (rm3_test) 	{this.test_info = "Test Stage";}
-		else 		{this.test_info = "Prod Stage";}
-
+		
 		// status
 		if (data)	{this.app_stat = data["STATUS"]["system"]["message"]; this.app_last = data["REQUEST"]["Button"];}
 		else		{this.app_stat = "ERROR: no connection to server!";}
+
+                if (this.initial_load) { 
+			// check if test
+			if (rm3_test) 	{this.test_info = "Test Stage";}
+			else 		{this.test_info = "Prod Stage";}
+			
+                	this.inital_load = false;
+                	console.log("Initialized new class 'rmSettings'.");
+                	}
+                else {
+                	console.log("Reload data 'rmSettings'.");
+                	}
 		}
 
 	//------------------------------
@@ -36,17 +45,17 @@ function rmSettings (name) {	// IN PROGRESS
 	this.create = function() {
 
 		// Set Vars
-		var setting;
+		var setting    = "";
 
 		// Show Server Infos
-		var main_audio = dataAll["CONFIG"]["main-audio"];  // get main audio device from file
+		var main_audio = this.data["CONFIG"]["main-audio"];  // get main audio device from file
 		var audio_max  = "";
-		if (dataAll["DATA"]["devices"][main_audio]["values"]) {
-			audio_max  = dataAll["DATA"]["devices"][main_audio]["values"]["vol"]["max"];
+		if (this.data["DATA"]["devices"][main_audio]["values"]) {
+			audio_max  = this.data["DATA"]["devices"][main_audio]["values"]["vol"]["max"];
 			}
-		var audio1     = "Power: "  + dataAll["DATA"]["devices"][main_audio]["status"]["power"] + " / "
-		               + "Volume: " + dataAll["DATA"]["devices"][main_audio]["status"]["vol"] + " (" + audio_max + ")";
-		var audio2     = dataAll["DATA"]["devices"][main_audio]["label"];
+		var audio1     = "Power: "  + this.data["DATA"]["devices"][main_audio]["status"]["power"] + " / "
+		               + "Volume: " + this.data["DATA"]["devices"][main_audio]["status"]["vol"] + " (" + audio_max + ")";
+		var audio2     = this.data["DATA"]["devices"][main_audio]["label"];
 		var cookie     = rm3cookie.get("remote");
 
 		setting  = this.tab_row( 	"Status:", 		this.app_stat );
@@ -120,13 +129,13 @@ function rmSettings (name) {	// IN PROGRESS
 
 	//------------------------------
 
-	this.show  = function() { if (this.active == false) { this.onoff(); showRemote(0); } }
+	this.show  = function() { if (this.active == false) { this.onoff(); showRemoteInBackground(0); } }
 	this.hide  = function() { if (this.active == true ) { this.onoff(); } }
 
 	this.onoff = function() {
 
-		if (this.active)	{ this.active = false; if (rm3remotes.active_type == "start") { showRemote(1); } }
-		else			{ this.active = true;  this.create(); showRemote(0); }
+		if (this.active)	{ this.active = false; if (rm3remotes.active_type == "start") { showRemoteInBackground(1); } }
+		else			{ this.active = true;  this.create(); showRemoteInBackground(0); }
 
 		for (var i=0; i<this.e_remotes.length; i++)  { changeVisibility(this.e_remotes[i]);  }
 		for (var i=0; i<this.e_settings.length; i++) { changeVisibility(this.e_settings[i]); }
