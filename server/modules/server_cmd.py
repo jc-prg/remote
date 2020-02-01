@@ -116,6 +116,8 @@ def RmReadData(selected=[]):
  
                 for key in keys:
                     data["scenes"][scene][key] = thescene[scene][key]
+              else:
+                logging.error("Scene not found: "+str(scene)+" / "+str(selected))
           
         # read data for makros
         for makro in makros:        
