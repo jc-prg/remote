@@ -113,10 +113,10 @@ def RmReadData(selected=[]):
 
                 thescene      = configFiles.read(modules.scenes_def + scene)
                 keys          = ["remote","channel","devices","label"]
-                
+ 
                 for key in keys:
                     data["scenes"][scene][key] = thescene[scene][key]
-           
+          
         # read data for makros
         for makro in makros:        
             temp                      = configFiles.read(modules.makros + makro)
@@ -125,16 +125,20 @@ def RmReadData(selected=[]):
         # read data for templates
         data["templates"]               = {}
         data["template_list"]           = {}
+        
         if selected == []:
           templates                     = modules.available(modules.templates)
           for template in templates:    
             template_keys = template.split("/")
             template_key  = template_keys[len(template_keys)-1]
             template_data = configFiles.read(modules.templates + template)
+            
+            logging.debug(modules.templates+template)
 
             if "ERROR" in template_data:  data["templates"][template] = template_data
             else: 
                 if template_key in template_data: data["templates"][template] = template_data[template_key]
+                elif "data" in template_data:     data["templates"][template] = template_data["data"]
                 else:                             data["templates"][template] = { "ERROR" : "JSON file not correct, key missing: "+template_key }
                 data["template_list"][template] = data["templates"][template]["description"]
         
@@ -703,6 +707,15 @@ def remoteAPI_end(data):
     # Update device status (e.g. if send command and cache maybe is not up-to-date any more)      
     if "DATA" in data and "devices" in data["DATA"]:
         data["DATA"]["devices"] = devicesGetStatus(data["DATA"]["devices"])
+        
+#------------------------------------ ERROR -----------
+#remote_server_test    |   File "/usr/src/app/server/modules/server_cmd.py", line 767, in RemoteList
+#remote_server_test    |     data                      = remoteAPI_end(data)
+#remote_server_test    |   File "/usr/src/app/server/modules/server_cmd.py", line 705, in remoteAPI_end
+#remote_server_test    |     data["DATA"]["devices"] = devicesGetStatus(data["DATA"]["devices"])
+#remote_server_test    | KeyError: 'DATA'
+#remote_server_test    | INFO:werkzeug:172.21.0.1 - - [01/Feb/2020 07:57:57] "GET /api/list/ HTTP/1.1" 500 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~        
 
     return data
 
@@ -733,21 +746,22 @@ def RemoteCheckUpdate(APPversion):
         Check if app is supported by this server version
         '''
 
-        data = remoteAPI_start(["no-data"])
+        d    = {}
+        data = remoteAPI_start(["no-data","no-config"])
 
         if (APPversion == modules.APPversion):
-            data["ReturnCode"]   = "800"
-            data["ReturnMsg"]    = "OK: "+modules.ErrorMsg("800")
+            d["ReturnCode"]   = "800"
+            d["ReturnMsg"]    = "OK: "+modules.ErrorMsg("800")
         elif (APPversion in modules.APPsupport):
-            data["ReturnCode"]   = "801"
-            data["ReturnMsg"]    = "WARN: "+modules.ErrorMsg("801")
+            d["ReturnCode"]   = "801"
+            d["ReturnMsg"]    = "WARN: "+modules.ErrorMsg("801")
         else:
-            data["ReturnCode"]   = "802"
-            data["ReturnMsg"]    = "WARN: "+modules.ErrorMsg("802")
+            d["ReturnCode"]   = "802"
+            d["ReturnMsg"]    = "WARN: "+modules.ErrorMsg("802")
 
 
-        data["REQUEST"]["Return"]     = data["ReturnMsg"]
-        data["REQUEST"]["ReturnCode"] = data["ReturnCode"]
+        data["REQUEST"]["Return"]     = d["ReturnMsg"]
+        data["REQUEST"]["ReturnCode"] = d["ReturnCode"]
         data                          = remoteAPI_end(data)
         return data
 
@@ -804,7 +818,7 @@ def RemoteMakro(makro):
 
         data                      = remoteAPI_start()
         data["REQUEST"]["Button"] = makro
-        data["REQUEST"]["Return"] = "ERROR: not implemented yet." #deviceAPIs.send(interface,device,button)
+        data["REQUEST"]["Return"] = "ERROR: Started but not finished..." #deviceAPIs.send(interface,device,button)
         
         commands_1st              = makro.split("::")
         commands_2nd              = []
@@ -855,9 +869,12 @@ def RemoteMakro(makro):
             # check if future state defined
             if "||" in button_status:   button,status = button_status.split("||",1)                              # split button and future state           
             else:                       button        = button_status
-            
+
             if button in power_buttons: status_var    = "power"
             else:                       status_var    = button
+
+            if button == "on":          status        = "ON"
+            elif button == "off":       status        = "OFF"
 
             # if future state not already in place add command to queue              
             logging.warn(" ...i:"+interface+" ...d:"+device+" ...b:"+button+" ...s:"+status)
