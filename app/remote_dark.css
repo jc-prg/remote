@@ -2,6 +2,15 @@
 
 @media (prefers-color-scheme: dark) {
 
+/* Element for theme check */
+
+#theme_check {
+	background-color : black;
+	display : none;
+	color : black;
+	}
+
+
 /* default elements */
 
   img        { opacity: .75;   transition: opacity .5s ease-in-out; }

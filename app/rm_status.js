@@ -40,7 +40,6 @@ function showRestStatus(color) {
 
 function show_status( color, wait ) {
 	showRestStatus( color );
-	pausecmd(wait);
 	setTimeout(function(){ showRestStatus("gray"); }, wait*1000);
 	}
 	

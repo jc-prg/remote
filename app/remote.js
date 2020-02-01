@@ -113,7 +113,8 @@ function remoteReload(data) {
         remoteDropDown(data);
         
 	// check device & audio status
-	check_status(data);
+	check_status(data);	
+	check_theme();
 
 	// reset button info in header
 	setTimeout(function(){setTextById("audio4", "");}, 1000);

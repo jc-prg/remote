@@ -85,11 +85,11 @@
             "dimmer": "dark",
             "display": "('selector-volume-1line', 'default-2line')",
             "mute": "off",
-            "power": "('standby', 'off')",
+            "power": "on",
             "source": "bd",
             "temperature": "C 31",
             "timer": "N/A",
-            "video-info": "No Video,Unknown,,24bit,,Unknown,,24bit,,",
+            "video-info": "COMPONENT 1,Unknown,,24bit,,Unknown,,24bit,,",
             "vol": "54"
         },
         "visible": "yes"

@@ -33,16 +33,7 @@ var deactivateButton = false;   // default: deactivate buttons if device is not 
 
 var showEditRemote   = false;   // show / hide edit panel
 
-var colors         = [ "red", "green", "darkgreen", "blue", "darkblue" ];
-var colors_dev     = [];
-var colors_power   = {	"ON" 	: "darkgreen",
-			"OFF"	: "darkred",
-			"OTHER"	: "purple",
-			"ERROR"	: "orangered",
-			}
-var color_button_inactive = "#666666";
 
-// color definitions: https://www.w3schools.com/cssref/css_colors.asp			
 
 var show_error     = ""; // onClick=\"javascript:showErrorLog();\""; // not implemented any more
 var status_green   = "<div id='green' "+show_error+"></div>";
@@ -50,10 +41,29 @@ var status_yellow  = "<div id='yellow' "+show_error+"></div>";
 var status_gray    = "<div id='gray' "+show_error+"></div>";
 var status_red     = "<div id='red' "+show_error+"></div>";
 
-var status_mute    = "rec_mute"; // -> show in <nav-info id="audio2"> 	// changed based on server settings
-var status_vol     = "rec_vol";  // -> show in <nav-info id="audio1"> 	// changed based on server settings
-var status_vol_max = 74;         // -> calculate in percent		// changed based on server settings
+// Theme detection and color setting
+//----------------------------------
 
+var theme          = "default";
+
+function check_theme() {
+	element = document.getElementById("theme_check");
+	style   = window.getComputedStyle(element)["background-color"];
+	if (style == "rgb(255, 255, 255)")	{ theme = "default"; }
+	else					{ theme = "dark"; }
+	console.log("Theme: "+theme);
+	}
+
+// color definitions: https://www.w3schools.com/cssref/css_colors.asp			
+
+var colors		= [ "red", "green", "darkgreen", "blue", "darkblue" ];
+var colors_dev		= [];
+var colors_power	= {	"ON" 	: "darkgreen",
+			"OFF"	: "darkred",
+			"OTHER"	: "purple",
+			"ERROR"	: "orangered",
+			}
+var color_button_inactive	= "#666666";
 
 // Standard-Definition für RemoteControl
 //----------------------------------
