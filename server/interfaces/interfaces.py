@@ -138,8 +138,8 @@ class connect(threading.Thread):
         if self.api[call_api].status == "Connected":       
             button_code = self.get_command( call_api, "queries", device, button )
             if call_api in self.api: return self.api[call_api].query(device,button_code)
-            else:                    return "ERROR: API not available ("+call_api+")"
-        else:                        return "ERROR: API not connected ("+call_api+")"
+            else:                    return "ERROR: API not available ("+str(call_api)+")"
+        else:                        return "ERROR: API not connected ("+str(call_api)+")"
 
 
 #-------------------------------------------------

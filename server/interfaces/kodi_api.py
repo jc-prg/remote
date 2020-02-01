@@ -119,7 +119,7 @@ class kodiAPI():
            if len(command_param) > 1: result_param = eval("result"+command_param[1])
            else:                      result_param = str(result)
            
-         except Exception as e:       return "ERROR "+self.api_name+" - query: " + str(e)
+         except Exception as e:       return "ERROR "+self.api_name+" - query: " + str(e) + " | " + command
        else:                          return "ERROR "+self.api_name+": Not connected"
        
        self.working = False
