@@ -44,26 +44,35 @@ var status_red     = "<div id='red' "+show_error+"></div>";
 // Theme detection and color setting
 //----------------------------------
 
-var theme          = "default";
-
-function check_theme() {
-	element = document.getElementById("theme_check");
-	style   = window.getComputedStyle(element)["background-color"];
-	if (style == "rgb(255, 255, 255)")	{ theme = "default"; }
-	else					{ theme = "dark"; }
-	console.log("Theme: "+theme);
-	}
-
 // color definitions: https://www.w3schools.com/cssref/css_colors.asp			
 
-var colors		= [ "red", "green", "darkgreen", "blue", "darkblue" ];
-var colors_dev		= [];
-var colors_power	= {	"ON" 	: "darkgreen",
-			"OFF"	: "darkred",
-			"OTHER"	: "purple",
-			"ERROR"	: "orangered",
-			}
-var color_button_inactive	= "#666666";
+var colors			= [ "red", "green", "darkgreen", "blue", "darkblue" ];
+var colors_dev			= [];
+var color_button_inactive 	= "#666666";
+var colors_power		= { 
+				"ON"	: "darkgreen",
+				"OFF"	: "darkred",
+				"OTHER"	: "purple",
+				"ERROR"	: "orangered",
+				}
+
+var theme	          	= "default";
+
+function check_theme() {
+	old_theme	= theme;
+	element		= document.getElementById("theme_check");
+	style		= window.getComputedStyle(element)["background-color"];
+	
+	if (style == "rgb(255, 255, 255)")	{ theme = "default"; }
+	else					{ theme = "dark"; }
+	if (old_theme != theme)			{ console.log("Change theme to: "+theme); }
+	
+	if (theme == "dark") {
+		color_button_inactive 	= "#111111";
+		colors_power["ERROR"]	= "lightpink";		
+		}
+	}
+
 
 // Standard-Definition für RemoteControl
 //----------------------------------

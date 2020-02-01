@@ -18,6 +18,25 @@
   body       { background: #111111; }
   hr         { border: #444444 solid 1px; }
 
+
+/* alert and confirm from jc-msg */
+
+.jcMsgBody	{ background : #666666; }
+.jcMsgImg	{ opacity    : 0.3; }
+.jcMsgText	{ color      : #dddddd; }
+.jcMsgButton	{ background : #333333; }
+
+
+/* drop down menu */
+
+nav > ul > li > ul {
+	background: #666666;
+	}
+  
+nav ul > li > ul > li a {
+	color: #dddddd;
+	}
+
 /* elements from remote.css */
   
   .remote {
@@ -44,8 +63,8 @@
   .button.bgyellow 	{ opacity: 0.7; }
   .button.bgblue   	{ opacity: 0.7; }
   
-  .button.notfound          { border : solid 1px #dd0000; }
-  .button.notfound:disabled { border : solid 1px #dd0000; background-color : #444444; }
+  .button.notfound          { border : solid 1px #990000; }
+  .button.notfound:disabled { border : solid 1px #990000; background-color : #221111; }
 
   .display {
   	background : #000088;
