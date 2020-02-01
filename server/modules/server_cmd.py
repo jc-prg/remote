@@ -654,7 +654,7 @@ def remoteAPI_start(setting=[]):
     global Status
     
     data                                   = configFiles.api_init
-    data["DATA"]                           = RmReadData(setting)
+    data["DATA"]                           = RmReadData()#setting)
     
     data["CONFIG"]                         = {}  
     data["CONFIG"]["button_images"]        = configFiles.read(modules.icons_dir + "/index")
