@@ -52,8 +52,8 @@ function updateRemote(data) {
         }
         
 function alertReturn(data) {
-        rm3app.requestAPI( "GET", ["list"], "", updateRemote, "wait" );
-        rm3app.requestAPI( "GET", ["list"], "", rmDropDownMenu );
+        rm3app.requestAPI( "GET", ["list"], "", remoteReload, "" );
+        rm3app.requestAPI( "GET", ["list"], "", remoteDropDown );
         rm3msg.alertReturn(data);
         }
         
@@ -90,8 +90,11 @@ function addTemplate(device_id, template_id) {
 	
 	
 //--------------------------------
+// create new device
+//--------------------------------
 
 function addDevice(device, api, description) {
+        
 	device 		= document.getElementById(device).value.toLowerCase();
 	description 	= document.getElementById(description).value;
 	api	 	= document.getElementById(api).value;
@@ -104,6 +107,27 @@ function addDevice(device, api, description) {
 	rm3app.requestAPI("PUT",["device",device,api,description], "", alertReturn);
 	}
 
+//--------------------------------
+// edit device data
+//--------------------------------
+
+function editDevice(device,prefix,fields) {
+
+	var info        = {}
+	var field_list  = fields.split(",");
+
+	for (var i=0;i<field_list.length;i++) {
+		if (document.getElementById(prefix+"_"+field_list[i])) {
+			var value = document.getElementById(prefix+"_"+field_list[i]).value;
+			info[field_list[i]] = value;	
+			}
+		}
+
+	rm3app.requestAPI("POST",["device",device], info, alertReturn);
+	}
+
+//--------------------------------
+// add button to device
 //--------------------------------
 
 function addButton(device_id, button_id) {
@@ -131,7 +155,32 @@ function addButton(device_id, button_id) {
 // send delete commands
 //--------------------------------
 
-function deleteButton_exe(button) { b = button.split("_"); rm3app.requestAPI("DELETE",["button",b[0],b[1]], "", alertReturn); }
+function deleteCommand_exe(button) { b = button.split("_"); rm3app.requestAPI("DELETE",["command",b[0],b[1]], "", alertReturn); }
+function deleteCommand(device_id, button_id) {
+
+	var device1 = document.getElementById(device_id);
+	if (device1) {
+		if (device1.selectedIndex) 	{ var device  = device1.options[device1.selectedIndex].value; }
+		else 				{ var device  = device1.value; }
+		}
+	else 					{ var device  = device_id; }
+
+	if (device == "") { rm3msg.alert("Please select device!"); return; }
+
+	var button1 = document.getElementById(button_id);
+	var button  = button1.options[button1.selectedIndex].value;
+	if (button == "") { rm3msg.alert("Please select button (for command)!"); return; }
+
+	button1  = button.split("_");
+	question = "Do you realy want to delete button '" + button1[1] + "' from '" + device + "'?";
+
+	rm3msg.confirm(question,"deleteCommand_exe('" + button + "'); ");
+	}
+
+
+//--------------------------------
+
+function deleteButton_exe(device,button) { rm3app.requestAPI("DELETE",["button",device,button], "", alertReturn); }
 function deleteButton(device_id, button_id) {
 
 	var device1 = document.getElementById(device_id);
@@ -148,9 +197,9 @@ function deleteButton(device_id, button_id) {
 	if (button == "") { rm3msg.alert("Please select button!"); return; }
 
 	button1  = button.split("_");
-	question = "Do you realy want to delete button '" + button1[1] + "' from '" + device + "'?";
+	question = "Do you realy want to delete button number [" + button + "] from '" + device + "'?";
 
-	rm3msg.confirm(question,"deleteButton_exe('" + button + "'); ");
+	rm3msg.confirm(question,"deleteButton_exe('"+device+"'," + button + "); ");
 	}
 
 

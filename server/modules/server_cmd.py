@@ -74,6 +74,8 @@ def RmReadData(selected=[]):
                 remote           = configFiles.read(modules.remotes  + interface + "/" + key) # remote layout & display
                 buttons          = configFiles.read(modules.commands + interface + "/" + key) # button definitions, presets, queries ...
                 
+                logging.info(interface + "/" + key)
+                
                 # if default.json exists, add values to device specific values
                 if modules.ifexist(modules.commands + interface + "/default"):   
                 
@@ -87,7 +89,8 @@ def RmReadData(selected=[]):
                           buttons["data"][x][y] = buttons_default["data"][x][y]
                         
                 #print(buttons)
-                        
+
+	                        
                 if "method"  in buttons["data"]:   data_temp["method"]  = buttons["data"]["method"]              
                 if "values"  in buttons["data"]:   data_temp["values"]  = buttons["data"]["values"]              
                 if "queries" in buttons["data"]:
@@ -280,8 +283,7 @@ def addButton(device,button):
 
 def deleteCmd(device, button):
     '''
-    delete command (button) from json config file
-    -> not yet implemented, delete from remote file also
+    delete command (not button) from json config file
     '''
 
     config      = configFiles.read(modules.devices+modules.active)
@@ -294,9 +296,33 @@ def deleteCmd(device, button):
         
             data["data"]["buttons"].pop(button,None)
             data = configFiles.write(modules.commands+interface+"/"+device_code,data)
-            return "OK: Button '" + device + "_" + button + "' deleted."
+            return "OK: Command '" + device + "_" + button + "' deleted."
         else:
-            return "ERROR: Button '" + device + "_" + button + "' does not exist."
+            return "ERROR: Command '" + device + "_" + button + "' does not exist."
+    else:
+        return "ERROR: Device '" + device + "' does not exist."
+
+
+#---------------------------------------
+
+def deleteButton(device, button_number):
+    '''
+    delete button (not command) from json config file
+    '''
+
+    buttonNumber = int(button_number)
+    config       = configFiles.read(modules.devices+modules.active)
+    interface    = config[device]["interface"]  
+    device_code  = config[device]["device"]  
+    data         = configFiles.read(modules.remotes+interface+"/"+device_code)
+    
+    if data["data"] and data["data"]["remote"]:
+        if buttonNumber >= 0 and buttonNumber < len(data["data"]["remote"]):
+            data["data"]["remote"].pop(buttonNumber)
+            data = configFiles.write(modules.remotes+interface+"/"+device_code,data)
+            return "OK: Button '" + device + " [" + str(buttonNumber) + "] deleted."
+        else:
+            return "ERROR: Button '" + device + " [" + str(buttonNumber) + "] does not exist."
     else:
         return "ERROR: Device '" + device + "' does not exist."
 
@@ -395,13 +421,13 @@ def deleteDevice(device):
 
 def editDevice(device,info):
     '''
-    delete device from json config file and delete device related files
+    edit device data in json file
     '''
     
     keys_active   = ["label","description","main-audio","interface"]
     keys_commands = ["description","method"]
     keys_remotes  = ["description"]
-
+    
     # read central config file
     active_json          = configFiles.read(modules.devices + modules.active)
     if "ERROR" in active_json: return("ERROR: Device " + device + " doesn't exists (active).")
@@ -422,6 +448,8 @@ def editDevice(device,info):
       if key in info: 
         active_json[device][key] = info[key]
         i+=1
+        
+    logging.info(str(active_json[device]))
       
     for key in keys_commands: 
       if key in info: 
@@ -435,15 +463,21 @@ def editDevice(device,info):
     
     # write central config file
     try:                    configFiles.write(modules.devices + modules.active, active_json)
-    except Exception as e:  return("ERROR: could not write changes (active) - "+str(e))
+    except Exception as e:  
+      logging.error("ERROR: could not write changes (active) - "+str(e))
+      return("ERROR: could not write changes (active) - "+str(e))
 
     # write command definition
     try:                    configFiles.write(modules.commands +interface+"/"+device_code, commands)
-    except Exception as e:  return("ERROR: could not write changes (commands) - "+str(e))
+    except Exception as e:
+      logging.error("ERROR: could not write changes (commands) - "+str(e))
+      return("ERROR: could not write changes (commands) - "+str(e))
 
     # write remote layout definition
     try:                    configFiles.write(modules.remotes +interface+"/"+device_code, remotes)
-    except Exception as e:  return("ERROR: could not write changes (remotes) - "+str(e))
+    except Exception as e:
+      logging.error("ERROR: could not write changes (remotes) - "+str(e))
+      return("ERROR: could not write changes (remotes) - "+str(e))
 
     if i > 0: return("OK: Edited device paramenters of "+device+" ("+str(i)+" changes)")
     else:     return("ERROR: no data key matched with keys from config-files ("+str(info.keys)+")")
@@ -1064,7 +1098,7 @@ def RemoteRecordCommand(device,button):
 
 #-------------------------------------------------
 
-def RemoteDeleteButton(device,button):
+def RemoteDeleteCommand(device,button):
         '''
         Delete button from layout file
         '''
@@ -1073,6 +1107,22 @@ def RemoteDeleteButton(device,button):
         data["REQUEST"]["Return"]    = deleteCmd(device,button)
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Parameter"] = button
+
+        refreshCache()
+        data                         = remoteAPI_end(data)        
+        return data
+
+#-------------------------------------------------
+
+def RemoteDeleteButton(device,button_number):
+        '''
+        Delete button from layout file
+        '''
+
+        data                         = remoteAPI_start(["no-data"])
+        data["REQUEST"]["Return"]    = deleteButton(device,button_number)
+        data["REQUEST"]["Device"]    = device
+        data["REQUEST"]["Parameter"] = button_number
 
         refreshCache()
         data                         = remoteAPI_end(data)        
@@ -1135,7 +1185,7 @@ def RemoteEditDevice(device,info):
         '''
         Edit data of device
         '''
-        logging.info(info)
+        logging.info(str(info))
         
         data                         = remoteAPI_start(["no-data"])
         data["REQUEST"]["Return"]    = editDevice(device,info)

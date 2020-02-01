@@ -245,7 +245,15 @@ function rmRemote(name) {
 
 		var remote            = "";
 		var remote_buttons    = this.data["DATA"]["devices"][device]["remote"];
-		var device_buttons    = this.data["DATA"]["devices"][device]["button_list"];
+		var device_commands   = this.data["DATA"]["devices"][device]["button_list"];
+		var device_buttons    = [];
+		
+		for (var i=0;i<this.data["DATA"]["devices"][device]["remote"].length;i++) {
+		        var button = this.data["DATA"]["devices"][device]["remote"][i];
+			if (device_buttons.indexOf(button) < 0) { device_buttons.push(button); }
+			}
+			
+		device_buttons.sort();
 
 		this.input_width      = "180px";
 		this.button_width     = "120px";
@@ -259,7 +267,7 @@ function rmRemote(name) {
 		remote  += this.tab_row( "Interface:",   	this.select("edit_interface", "interface", this.data["CONFIG"]["interfaces"], "", this.data["DATA"]["devices"][device]["interface"]) );
 		remote  += this.tab_row( "Status request:",	this.select("edit_method",    "method",    this.data["CONFIG"]["methods"],    "", this.data["DATA"]["devices"][device]["method"]) );
 		remote  += this.tab_row(
-				this.button_edit("alert('Not implemented yet.');","change data","disabled")
+				this.button_edit("editDevice('"+device+"','edit','description,label,interface,method');","change data")
 				);
 
 		remote  += this.tab_row("end");
@@ -267,7 +275,7 @@ function rmRemote(name) {
 		remote  += this.tab_row("start");
 
 		remote  += this.tab_row(
-				"Set as main AUDIO device",
+				"Set as main AUDIO device (change from &quot;"+this.data["CONFIG"]["main-audio"]+"&quot;)",
 				this.button_edit("alert('Not implemented yet.');","set main device","disabled")
 				);
 
@@ -278,21 +286,25 @@ function rmRemote(name) {
 				this.button_edit("addButton('"+device+"','add_button');","add button")
 				);
 		remote  += this.tab_row(
-		
-// ERROR -> buttons / button_list not filled ::: for test 1 (new devices?)
+				this.button_select("del_button",device),
+				this.button_edit("deleteButton('"+device+"','del_button');","delete button")
+				);
 
-				this.button_select("rec_button",device),
+		remote  += "<tr><td colspan='2'><hr/></td></tr>";
+
+		remote  += this.tab_row(		
+				this.command_select("rec_button",device),
 				this.button_edit("alert('Not implemented yet.');","record command","disabled")
 				);
 		remote  += this.tab_row(
-				this.button_select("del_button",device),
-				this.button_edit("deleteButton('"+device+"','del_button');","*delete button")
+				this.command_select("del_command",device),
+				this.button_edit("deleteCommand('"+device+"','del_command');","delete command")
 				);
 
 		remote  += "<tr><td colspan='2'><hr/></td></tr>";
 
 		remote  += this.tab_row(
-				this.template_select("change_visibility","visibility",{"yes":{"description":"visible"},"no":{"description":"hidden"}}),
+				this.template_select("change_visibility","visibility",{"yes":"visible","no":"hidden"}),
 				this.button_edit("changeVisibilityDevice('"+device+"','change_visibility');","change visibility")
 				);
 		remote  += this.tab_row(
@@ -318,8 +330,6 @@ function rmRemote(name) {
 */
 			
 		setTextById(id,remote);
-		
-//	console.error("device_edit_ende");
 		}
 
 
@@ -336,12 +346,27 @@ function rmRemote(name) {
 	// specific selects ...
 	//--------------------
 	
-        this.button_select = function (id,device="") {
+        this.command_select = function (id,device="") {
                 var list = {};
                 if (device != "" && device in this.data["DATA"]["devices"]) {
 			button_list = this.button_list(device);
 			for (var i=0;i<button_list.length;i++) {
                                 list[device+"_"+button_list[i]] = button_list[i];
+				}
+			}
+                return this.select(id,"command",list);
+                }
+                
+        this.button_select = function (id,device="") {
+
+               	var list = {};
+		var device_buttons    = [];		
+                if (device != "" && device in this.data["DATA"]["devices"]) {
+                
+			button_list = this.data["DATA"]["devices"][device]["remote"];
+			for (var i=0;i<button_list.length;i++) {
+				if (i<10) { a = "0"; } else { a = ""; }
+                                list[i] = "["+a+i+"]  "+button_list[i];
 				}
 			}
                 return this.select(id,"button",list);

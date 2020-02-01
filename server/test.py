@@ -25,18 +25,19 @@ test_chain =  {
     "PUT:api/device/test_device/TEST/test_description/" : "",	# create test device
     "PUT:api/template/test_device/default/" : "",               # add the default template to the remote
     "PUT:api/button/test_device/test1/" : "",			# add button to layout
-    "POST:api/button/test_device/test1/" : "",			# record command to button
+    "POST:api/command/test_device/test1/" : "",			# record command to button
     "PUT:api/button/test_device/test2/" : "",			# add button to layout
-    "POST:api/button/test_device/test2/" : "",			# record command to button
+    "POST:api/command/test_device/test2/" : "",			# record command to button
     "PUT:api/visibility/test_device/no/" : "",			# change visibility
     "GET:api/send/test_device/test2/" : "",			# check send buttons
     "GET:api/send_check/test_device/test2/" : "",		# check send buttons
     "POST:api/device/test_device/" : { "label" : "test label" },
     					                        # delete test device
 #    "GET:api/audi-device/test_device/no/" : "",                # change to main audio device
-#    "GET:api/makro/vol+/" : "",                                 # send makro (that should be defined)
-#    "GET:api/makro/vol-/" : ""                                  # send makro (that should be defined)
-    "DELETE:api/button/test_device/test1/" : "",                # delete button
+#    "GET:api/makro/vol+/" : "",                                # send makro (that should be defined)
+#    "GET:api/makro/vol-/" : ""                                 # send makro (that should be defined)
+    "DELETE:api/command/test_device/test1/" : "",               # delete command
+    "DELETE:api/button/test_device/1/" : "",                    # delete button
     "DELETE:api/device/test_device/" : "",                      # delete test device
     }
 

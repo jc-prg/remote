@@ -181,12 +181,42 @@ paths:
                 $ref: "#/definitions/REQUEST"
               STATUS:
                 $ref: "#/definitions/STATUS"
+  /button/{device}/{button_number}/:
+    delete:
+      operationId: modules.server_cmd.RemoteDeleteButton
+      tags:
+        - edit
+      summary: delete button
+      description: delete button from device from database
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: button_number
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully deleted button
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              CONFIG:
+                $ref: "#/definitions/CONFIG"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
                 
+  /command/{device}/{button}/:
     post:
       operationId: modules.server_cmd.RemoteRecordCommand
       tags:
         - edit
-      summary: record comannd
+      summary: record command for button
       description: record button command of an existing device
       parameters:
         - name: device
@@ -210,13 +240,12 @@ paths:
                 $ref: "#/definitions/REQUEST"
               STATUS:
                 $ref: "#/definitions/STATUS"
-                
     delete:
-      operationId: modules.server_cmd.RemoteDeleteButton
+      operationId: modules.server_cmd.RemoteDeleteCommand
       tags:
         - edit
-      summary: delete button
-      description: delete button from device from database
+      summary: delete command for button
+      description: delete command from device from database
       parameters:
         - name: device
           in: path
@@ -269,7 +298,7 @@ paths:
       operationId: modules.server_cmd.RemoteEditDevice
       tags:
         - edit
-      summary: edit device
+      summary: edit device data
       description: edit device data in database
       parameters:
         - name: device
@@ -306,6 +335,7 @@ paths:
                 $ref: "#/definitions/REQUEST"
               STATUS:
                 $ref: "#/definitions/STATUS"
+
 
   /device/{device}/{interface}/{description}/:
     put:

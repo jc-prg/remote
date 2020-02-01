@@ -58,7 +58,7 @@
             "version": "{'major': 18, 'minor': 4, 'revision': '20191027-06c77692ee', 'tag': 'stable'}",
             "vol": "100"
         },
-        "visible": "yes"
+        "visible": "no"
     },
     "rec": {
         "description": "AV-Receiver: ONKYO TX-NR686(B)",
@@ -81,15 +81,15 @@
         "label": "AV Receiver",
         "main-audio": "yes",
         "status": {
-            "audio-info": "ANALOG,,,,All Ch Stereo,5.1 ch,",
+            "audio-info": "HDMI 5,PCM,44.1 kHz,2.0 ch,Direct,2.0 ch,",
             "dimmer": "dark",
             "display": "('selector-volume-1line', 'default-2line')",
             "mute": "off",
             "power": "on",
-            "source": "bd",
-            "temperature": "C 30",
+            "source": "pc",
+            "temperature": "C 38",
             "timer": "N/A",
-            "video-info": "COMPONENT 1,Unknown,,24bit,,Unknown,,24bit,,",
+            "video-info": "HDMI 5,1280 x 720p   60 Hz,RGB,36bit,MAIN,1280 x 720p   60 Hz,RGB,36bit,,",
             "vol": "54"
         },
         "visible": "yes"
@@ -104,7 +104,7 @@
             "mute": "OFF",
             "power": "OFF",
             "radiotv": "TV",
-            "vol": 18
+            "vol": 0
         },
         "visible": "yes"
     }
