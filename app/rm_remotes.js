@@ -113,7 +113,13 @@ function rmRemote(name) {
 			var button = remote_definition[i];
 			var cmd    = device + "_" + button;
 
-			if (button == "LINE") 				{ remote += "<div style='width:100%;float:left;'><hr/></div>"; }
+			if (button == "LINE") 				{ remote += "<div class='remote-line'><hr/></div>"; }
+			else if (button.indexOf("LINE||") == 0) {
+				text = button.split("||")[1];
+				remote += "<div class='remote-line'><hr/>";
+				remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>";
+				remote += "</div>";
+				}
 			else if (button == ".") 			{ remote += this.button_device( device+i, ".", "empty", "", "disabled" ) }
 			else if (button == "DISPLAY")			{ remote += this.display(id,device,remote_displaysize); }
 			else if (remote_buttons.includes(button)) 	{ remote += this.button_device( cmd, button, "", cmd, "" ); this.active_buttons.push(cmd); }

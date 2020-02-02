@@ -2,7 +2,23 @@
 
 @media (prefers-color-scheme: dark) {
 
-nav {
-  }
+/* alert and confirm from jc-msg */
+
+.jcMsgBody	{ background : #666666; }
+.jcMsgImg	{ opacity    : 0.3; }
+.jcMsgText	{ color      : #dddddd; }
+.jcMsgButton	{ background : #333333; }
+
+
+/* drop down menu */
+
+nav > ul > li > ul {
+	background: #666666;
+	}
+  
+nav ul > li > ul > li a {
+	color: #dddddd;
+	}
+
 
 }

@@ -69,6 +69,25 @@
    width : 100%;
 }
 
+.remote-line {
+	width		 : 100%;
+	height           : 15px;
+	overflow         : hidden;
+	float		 : left;
+	position	 : relative;
+	}
+	
+.remote-line-text {
+	position	 : relative;
+	right		 : -10px;
+	top		 : -15px;
+	background-color : #dddddd;
+	color            : #333333;
+	font-size	 : 10px;
+	float		 : left;
+	clear		 : left;
+	}
+
 /* entries for channel lists */
 
 .channel-entry {
