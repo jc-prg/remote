@@ -30,7 +30,7 @@ class connect(threading.Thread):
         self.api         = {}
         self.available   = {}
         self.stopProcess = False
-        self.wait        = 10
+        self.wait        = 60       # time for reconnects
         self.name        = "jc://remote/interfaces/"
 
         self.methods   = {
@@ -65,14 +65,17 @@ class connect(threading.Thread):
 
     #-------------------------------------------------
     
-    def reconnect(self):
+    def reconnect(self,interface=""):
         '''
         reconnect all devices
         '''
         
-        for key in self.api:
-          if self.api[key].status != "Connected":
-            self.api[key].connect()
+        if interface == "":
+          for key in self.api:
+            if self.api[key].status != "Connected":
+              self.api[key].connect()
+        else:
+          self.api[interface].connect()
                
     #-------------------------------------------------
     
@@ -105,14 +108,18 @@ class connect(threading.Thread):
 
     def send(self, call_api, device, button ):
         '''check if API exists and send command'''
-    
+        
+        return_msg = ""
         logging.debug("SEND "+call_api+" / "+device+" - "+button)
 
         if self.api[call_api].status == "Connected":       
             button_code = self.get_command( call_api, "buttons", device, button ) 
-            if call_api in self.api: return self.api[call_api].send(device,button_code)
-            else:                    return "ERROR: API not available ("+call_api+")"
-        else:                        return "ERROR: API not connected ("+call_api+")"
+            if call_api in self.api: return_msg = self.api[call_api].send(device,button_code)
+            else:                    return_msg = "ERROR: API not available ("+call_api+")"
+        else:                        return_msg = "ERROR: API not connected ("+call_api+")"
+        
+        if "ERROR" in str(return_msg): logging.warn(return_msg)
+        return return_msg
 
 
     #-------------------------------------------------
@@ -120,27 +127,33 @@ class connect(threading.Thread):
     def record(self, call_api, device, button ):
         '''record a command'''
     
+        return_msg = ""
         logging.debug("RECORD "+call_api+" / "+device+" - "+button)
 
         if self.api[call_api].status == "Connected":       
-            if call_api in self.api: return self.api[call_api].send(device,button)
-            else:                    return "ERROR: API not available ("+call_api+")"
-        else:                        return "ERROR: API not connected ("+call_api+")"
+            if call_api in self.api: return_msg = self.api[call_api].send(device,button)
+            else:                    return_msg = "ERROR: API not available ("+call_api+")"
+        else:                        return_msg = "ERROR: API not connected ("+call_api+")"
 
+        if "ERROR" in str(return_msg): logging.warn(return_msg)
+        return return_msg
 
 #-------------------------------------------------
 
     def query(self, call_api, device, button):
         '''query an information'''
 
+        return_msg = ""
         logging.debug("QUERY "+call_api+" / "+device+" - "+button)
 
         if self.api[call_api].status == "Connected":       
             button_code = self.get_command( call_api, "queries", device, button )
-            if call_api in self.api: return self.api[call_api].query(device,button_code)
-            else:                    return "ERROR: API not available ("+str(call_api)+")"
-        else:                        return "ERROR: API not connected ("+str(call_api)+")"
+            if call_api in self.api: return_msg = self.api[call_api].query(device,button_code)
+            else:                    return_msg = "ERROR: API not available ("+str(call_api)+")"
+        else:                        return_msg = "ERROR: API not connected ("+str(call_api)+")"
 
+        if "ERROR" in str(return_msg): logging.warn(return_msg)
+        return return_msg
 
 #-------------------------------------------------
 

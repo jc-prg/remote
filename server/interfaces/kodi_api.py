@@ -84,10 +84,21 @@ class kodiAPI():
          try:
            result = eval(command)
            logging.debug(str(result))
-           if "error" in result:      return "ERROR "+self.api_name+" - " + result["error"]["message"]
-           if not "result" in result: return "ERROR "+self.api_name+" - unexpected result format."           
-         except Exception as e: return "ERROR "+self.api_name+" - query: " + str(e)
-       else:                    return "ERROR "+self.api_name+": Not connected"
+           
+           if "error" in result:
+             self.working = False
+             return "ERROR "+self.api_name+" - " + result["error"]["message"]
+             
+           if not "result" in result:
+             self.working = False
+             return "ERROR "+self.api_name+" - unexpected result format."           
+             
+         except Exception as e:
+           self.working = False
+           return "ERROR "+self.api_name+" - query: " + str(e)
+       else:
+           self.working = False
+           return "ERROR "+self.api_name+": Not connected"
 
        self.working = False
        return "OK"
@@ -113,14 +124,23 @@ class kodiAPI():
            result = eval(command)
            logging.debug(str(result))
            
-           if "error" in result:      return "ERROR "+self.api_name+" - " + result["error"]["message"]
-           if not "result" in result: return "ERROR "+self.api_name+" - unexpected result format."
+           if "error" in result:      
+             self.working = False
+             return "ERROR "+self.api_name+" - " + result["error"]["message"]
+             
+           if not "result" in result: 
+             self.working = False
+             return "ERROR "+self.api_name+" - unexpected result format."
            
            if len(command_param) > 1: result_param = eval("result"+command_param[1])
            else:                      result_param = str(result)
            
-         except Exception as e:       return "ERROR "+self.api_name+" - query: " + str(e) + " | " + command
-       else:                          return "ERROR "+self.api_name+": Not connected"
+         except Exception as e:
+           self.working = False
+           return "ERROR "+self.api_name+" - query: " + str(e) + " | " + command
+       else:
+           self.working = False
+           return "ERROR "+self.api_name+": Not connected"
        
        self.working = False
        return result_param
@@ -145,6 +165,7 @@ class kodiAPI():
          self.api.GUI.ActivateWindow({"window":"home"})
          self.api.GUI.ActivateWindow({"window":"weather"})
        except Exception as e:
+         self.working = False
          return "ERROR "+self.api_name+": "+str(e)
 
        self.working = False

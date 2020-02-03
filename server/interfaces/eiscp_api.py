@@ -38,25 +38,34 @@ class eiscpAPI():
        self.connect()
             
    #-------------------------------------------------
+
+   def reconnect(self):
+       self.api.command_socket = None
+       self.connect()
    
+   #-------------------------------------------------
+
    def connect(self):
        '''Connect / check connection'''
        
        # Create a receiver object, connecting to the host
        
        try:
+          print("(Re)Connect eISCP ONKYO "+self.api_ip)
           self.api    = eiscp.eISCP(self.api_ip)
+          #self.api    = eiscp.Receiver(self.api_ip)
+          #self.api.on_message = callback_method
           self.status = "Connected"
        except Exception as e:
           self.status = "Error connecting to ONKYO device: " + str(e)
-          logging.warn(self.status)
+          logging.warning(self.status)
 
        try:
           self.api.command("system-power query") # send a command to check if connected
           self.status = "Connected"
        except Exception as e:
           self.status = "Error connecting to ONKYO device: " + str(e)
-          logging.warn(self.status)
+          logging.warning(self.status)
    
    
    #-------------------------------------------------
@@ -85,9 +94,12 @@ class eiscpAPI():
            self.api.command(button_code)
            self.api.disconnect()
          except Exception as e:
+           self.api.disconnect()
+           self.working = False
            return "ERROR "+self.api_name+" - send: " + str(e)
            
        else:
+         self.working = False
          return "ERROR "+self.api_name+": Not connected"
 
        self.working = False
@@ -111,10 +123,16 @@ class eiscpAPI():
          logging.debug("Button-Code: "+button_code[:shorten_info_to]+"... ("+self.api_name+")")
          try:
            result  = self.api.command(button_code)          # ??????????????????
+           self.api.disconnect()
          except Exception as e:
+           self.api.disconnect()
+           self.working = False
            return "ERROR "+self.api_name+" - query: " + str(e)
            
-         self.api.disconnect()                            # ??????????????????
+         if "ERROR" in result: 
+           self.working = False
+           return result
+           
          result = result[1]
          logging.debug(str(result))
 
@@ -124,9 +142,10 @@ class eiscpAPI():
              result2 = eval("result"+command_param[1])
              result  = result2
            except:
-             logging.warn("Not able to extract data: result"+command_param[1])
+             logging.warning("Not able to extract data: result"+command_param[1])
            
        else:
+         self.working = False
          return "ERROR "+self.api_name+": Not connected"
 
        self.working = False

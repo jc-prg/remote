@@ -39,7 +39,16 @@ class sampleAPI():
 
        self.status = "Connected"
        
-       
+# ---- change for your api ----
+#       try:
+#           result  = self.api.command(xxx)
+#       except Exception as e:
+#           self.status = "ERROR "+self.api_name+" - send: " + str(e)
+#           return self.status
+
+       return self.status
+
+
    #-------------------------------------------------
    
    def wait_if_working(self):
@@ -58,6 +67,16 @@ class sampleAPI():
        self.wait_if_working()
        self.working = True
 
+# ---- change for your api ----
+#       if self.status == "Connected":
+#         try:
+#           result  = self.api.command(xxx)
+#         except Exception as e:
+#           self.working = True
+#           return "ERROR "+self.api_name+" - send: " + str(e)                     
+#       else:
+#         self.working = True
+#         return "ERROR "+self.api_name+": Not connected"
 
        self.working = False
        return "OK"
@@ -68,12 +87,23 @@ class sampleAPI():
    def query(self,device,command):
        '''Send command to API and wait for answer'''
 
+       result = ""
        self.wait_if_working()
        self.working = True
 
+# ---- change for your api ----
+#       if self.status == "Connected":
+#         try:
+#           result  = self.api.command(xxx)
+#         except Exception as e:
+#           self.working = True
+#           return "ERROR "+self.api_name+" - query: " + str(e)                     
+#       else:
+#         self.working = True
+#         return "ERROR "+self.api_name+": Not connected"
 
        self.working = False
-       return "Command"
+       return result
        
        
    #-------------------------------------------------
@@ -84,6 +114,16 @@ class sampleAPI():
        self.wait_if_working()
        self.working = True
 
+# ---- change for your api ----
+#       if self.status == "Connected":
+#         try:
+#           result  = self.api.command(xxx)
+#         except Exception as e:
+#           self.working = True
+#           return "ERROR "+self.api_name+" - record: " + str(e)                     
+#       else:
+#         self.working = True
+#         return "ERROR "+self.api_name+": Not connected"
 
        self.working = False
        return "OK"
@@ -97,6 +137,16 @@ class sampleAPI():
        self.wait_if_working()
        self.working = True
 
+# ---- change for your api ----
+#       if self.status == "Connected":
+#         try:
+#           result  = self.api.command(xxx)
+#         except Exception as e:
+#           self.working = True
+#           return "ERROR "+self.api_name+" - test: " + str(e)                     
+#       else:
+#         self.working = True
+#         return "ERROR "+self.api_name+": Not connected"
 
        self.working = False
        return "OK"
