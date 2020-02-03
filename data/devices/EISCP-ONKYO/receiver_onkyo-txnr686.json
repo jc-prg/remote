@@ -26,16 +26,30 @@
         	"down"          : "setup=down",
         	"q"             : "setup=quick",
         	"right"         : "setup=right",
-        	"left"          : "setup=left"
+        	"left"          : "setup=left",
+	       	"movie-tv-mode" : "listening-mode=movie",
+	       	"game-mode"     : "listening-mode=game"
        		},
+        "buttons_error" : {
+	       	"music-mode"    : "listening-mode=music"
+        	},
        	"queries" : {
         	"display" 	: "display-mode=query",
         	"source"  	: "input-selector=query||[1]",
+        	"audio-source" 	: "audio-selector=query",
         	"temperature"	: "temperature-data=query||[4:]",
 		"timer"		: "sleep-set=qstn",
 	       	"dimmer"        : "dimmer-level=query",
 	       	"audio-info"    : "audio-information=query",
-	       	"video-info"    : "video-information=query"
+	       	"video-info"    : "video-information=query",
+	       	"a-v-sync"	: "a-v-sync=query",
+	       	"tuning"	: "tuning=query",
+	       	"sleep-set"	: "sleep-set=qstn",
+	       	"listening"     : "listening-mode=query"
+    	       	},
+       	"queries_error" : {
+	       	"video-output"  : "video-output-selector=query",
+	       	"dolby-volume"	: "dolby-volume=query"
        		},
         "values": {
         	}

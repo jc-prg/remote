@@ -5,7 +5,7 @@ config="config_$1"
 
 echo
 echo "-------------------------------------"
-echo " Create jc://mbox/ configuration"
+echo " Create jc://remote/ configuration"
 echo " (by Christoph Kloth)"
 echo "-------------------------------------"
 

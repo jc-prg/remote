@@ -5,7 +5,6 @@
         "image": "bd",
         "interface": "BROADLINK",
         "label": "Bluray Player",
-        "method": "record",
         "status": {
             "power": "OFF"
         },
@@ -17,14 +16,12 @@
         "image": "beam",
         "interface": "BROADLINK",
         "label": "Beamer",
-        "method": "record",
         "status": {
-            "power": "OFF"
+            "power": "ON"
         },
         "visible": "yes"
     },
     "default": {
-        "connected": "No connection yet.",
         "device": "",
         "image": "",
         "interface": "",
@@ -42,9 +39,8 @@
         "image": "lw",
         "interface": "BROADLINK",
         "label": "Leinwand",
-        "method": "record",
         "status": {
-            "power": "OFF"
+            "power": "ON"
         },
         "visible": "yes"
     },
@@ -54,11 +50,11 @@
         "image": "",
         "interface": "KODI",
         "label": "Media-Center",
-        "method": "query",
         "status": {
             "mute": "False",
             "name": "Kodi",
             "power": "ON",
+            "test": "Error",
             "version": "{'major': 18, 'minor': 4, 'revision': '20191027-06c77692ee', 'tag': 'stable'}",
             "vol": "100"
         },
@@ -70,11 +66,9 @@
         "image": "rec",
         "interface": "BROADLINK",
         "label": "AV Receiver (alt)",
-        "main-audio": "no",
-        "method": "record",
         "status": {
             "mute": "OFF",
-            "power": "OFF",
+            "power": "ON",
             "vol": 0
         },
         "visible": "no"
@@ -86,31 +80,34 @@
         "interface": "EISCP-ONKYO",
         "label": "AV Receiver",
         "main-audio": "yes",
-        "method": "query",
         "status": {
-            "audio-info": "HDMI 2,PCM,48 kHz,2.0 ch,Theater-Dimensional,3.1 ch,",
+            "a-v-sync": "0",
+            "audio-info": "HDMI 2,PCM,48 kHz,2.0 ch,Full Mono,5.1 ch,",
+            "audio-source": "hdmi",
             "dimmer": "dark",
             "display": "('selector-volume-1line', 'default-2line')",
+            "listening": "full-mono",
             "mute": "off",
             "power": "on",
+            "sleep-set": "N/A",
             "source": "cbl",
-            "temperature": "C 30",
+            "temperature": "C 32",
             "timer": "N/A",
+            "tuning": "36864",
             "video-info": "HDMI 2,1920 x 1080i  50 Hz,YCbCr444,24bit,MAIN,1920 x 1080i  50 Hz,YCbCr444,24bit,,",
-            "vol": "31"
+            "vol": "42"
         },
         "visible": "yes"
     },
     "tv": {
-        "description": "TV-Receiver: TOPFIELD",
+        "description": "TV-Receiver: TOPFIELD1",
         "device": "tv-receiver_topfield",
         "image": "tv",
         "interface": "BROADLINK",
         "label": "TV/Radio",
-        "method": "record",
         "status": {
             "mute": "OFF",
-            "power": "OFF",
+            "power": "ON",
             "radiotv": "TV",
             "vol": 0
         },

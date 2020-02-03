@@ -1268,9 +1268,9 @@ configFiles.start()
 sendRemote  = modules.sendCmd("sendRemote",deviceAPIs,deviceStatusSet,deviceStatusGet)
 sendRemote.start()
 
-queryRemote  = modules.queryQueue("queryRemote",deviceAPIs,deviceStatusSet,deviceStatusGet)
-queryRemote.start()
-queryRemote.configFiles = configFiles
+#queryRemote  = modules.queryQueue("queryRemote",deviceAPIs,deviceStatusSet,deviceStatusGet)
+#queryRemote.start()
+#queryRemote.configFiles = configFiles
 
 #-------------------------------------------------
 # EOF
