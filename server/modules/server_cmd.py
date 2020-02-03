@@ -588,22 +588,31 @@ def devicesGetStatus(data):
     devices       = configFiles.read(modules.devices + modules.active)
     
     for device in devices: 
+    
         if "status" in devices[device] and "method" in data[device]:
           
-          # if method == record read from file
-          if data[device]["method"] == "record":
-
-              for value in devices[device]["status"]:
-                  data[device]["status"][value] = devices[device]["status"][value]
+          for value in devices[device]["status"]:
+              data[device]["status"][value] = devices[device]["status"][value]
                
-          # else request status from API 
-          elif data[device]["method"] == "query":
+          # else request status from API -> using the queue
+          if data[device]["method"] == "query":
           
               interface = data[device]["interface"]
+
+# ---- tried out --- using a queue for queries -----------------------------------
+#
+#             querylist = ""
+#             for x in data[device]["query_list"]: querylist += x+"||"
+#             queryRemote.add2queue( [[interface,device,querylist]] );
+#
+# ---- old code --- direct call --------------------------------------------------          
+
               if deviceAPIs.status(interface) == "Connected":
 
                   for value in data[device]["query_list"]:              
+                  
                       result = deviceAPIs.query(interface,device,value)
+                      
                       if not "ERROR" in str(result):
                           devices[device]["status"][value]      = str(result)
                           data[device]["status"][value]         = str(result)
@@ -615,8 +624,11 @@ def devicesGetStatus(data):
                   
               else:
                    devices[device]["status"][value] = "Not connected"
+
+# ---- end old code --- direct call ----------------------------------------------
+
       
-    # workaround: delete keys that are not required
+    # workaround: delete keys that are not required -> not sure, where other keys are added
     devices_temp = {}
     for device in devices:
         devices_temp[device] = {}
@@ -636,12 +648,15 @@ def deviceStatusGet(device,button):
     '''
     
     power_buttons = ["on","on-off","off"]
+    if button in power_buttons: button = "power"
     method        = configFiles.cache["_api"]["devices"][device]["method"]
+    interface     = configFiles.cache["_api"]["devices"][device]["interface"]
     
     if method == "record":
-      if button in power_buttons: button = "power"
       getStatus(device,button)
       return "OK"
+    elif method == "query":
+      return deviceAPIs.query(interface,device,button)
     else:
       return "ERROR: Wrong method ("+method+")"
     
@@ -686,13 +701,18 @@ def remoteAPI_start(setting=[]):
     '''
 
     global Status
-    
+
+    logging.info("Start API CALL")
+
     data                                   = configFiles.api_init
     data["DATA"]                           = RmReadData()#setting)
     
+    logging.info("Start API CALL - 1")
+
     data["CONFIG"]                         = {}  
     data["CONFIG"]["button_images"]        = configFiles.read(modules.icons_dir + "/index")
     data["CONFIG"]["button_colors"]        = configFiles.read(modules.buttons  + "button_colors")
+
     data["CONFIG"]["interfaces"]           = deviceAPIs.available
     data["CONFIG"]["methods"]              = deviceAPIs.methods
     
@@ -703,6 +723,8 @@ def remoteAPI_start(setting=[]):
     data["STATUS"]                         = {}
     data["STATUS"]["interfaces"]           = deviceAPIs.status()
     data["STATUS"]["system"]               = {} #  to be filled in remoteAPI_end()
+
+    logging.info("Start API CALL - 2")
 
     for device in data["DATA"]["devices"]:
       if "main-audio" in data["DATA"]["devices"][device] and data["DATA"]["devices"][device]["main-audio"] == "yes": data["CONFIG"]["main-audio"] = device
@@ -719,7 +741,9 @@ def remoteAPI_start(setting=[]):
     
     if "no-data" in setting:   del data["DATA"]
     if "no-config" in setting: del data["CONFIG"]
-        
+
+    logging.info("Start API CALL - 3")
+
     return data
     
 
@@ -810,7 +834,6 @@ def RemoteList():
         Load and list all data
         '''
 
-        #refreshCache()
         data                      = remoteAPI_start()
         data["REQUEST"]["Return"] = "OK: Returned list and status data."
         data                      = remoteAPI_end(data)        
@@ -839,7 +862,6 @@ def Remote(device,button):
         data["DeviceStatus"]      = getStatus(device,"power")  # to be removed
         data["ReturnMsg"]         = data["REQUEST"]["Return"]    # to be removed
 
-        #refreshCache()
         data                      = remoteAPI_end(data)      
         
         return data
@@ -930,7 +952,7 @@ def RemoteMakro(makro):
           elif command_str.isnumeric():
             data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([float(command)])
 
-        #refreshCache()
+        refreshCache()
         data["DATA"]              = {}
         data                      = remoteAPI_end(data)        
         return data
@@ -972,6 +994,7 @@ def RemoteOnOff(device,button):
         data["DATA"]    = {}
         status          = ""
 
+        #logging.info("Start API CALL - 4 - " + method)
 
 ############### need for action ##
  # - if multiple values, check definition
@@ -1017,12 +1040,18 @@ def RemoteOnOff(device,button):
           logging.info("RemoteOnOff: " +device+"/"+button+" ("+interface+"/"+method+")")
           status = ""
         
+        #logging.info("Start API CALL - 5 - " + method)
+
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
         data["REQUEST"]["Return"]    = sendRemote.add2queue([[interface,device,button,status]])
 
+        #logging.info("Start API CALL - 6 - " + method)
+
         refreshCache()
         data                         = remoteAPI_end(data)        
+
+        #logging.info("End   API CALL - 7 - " + method)
 
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
         return data
@@ -1233,11 +1262,15 @@ def RemoteDeleteDevice(device):
 deviceAPIs  = interfaces.connect()
 deviceAPIs.start()
 
-sendRemote  = modules.sendCmd("sendRemote",deviceAPIs,deviceStatusSet)
-sendRemote.start()
-
 configFiles = modules.configCache("Config")
 configFiles.start()
+
+sendRemote  = modules.sendCmd("sendRemote",deviceAPIs,deviceStatusSet,deviceStatusGet)
+sendRemote.start()
+
+queryRemote  = modules.queryQueue("queryRemote",deviceAPIs,deviceStatusSet,deviceStatusGet)
+queryRemote.start()
+queryRemote.configFiles = configFiles
 
 #-------------------------------------------------
 # EOF

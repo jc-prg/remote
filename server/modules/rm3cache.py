@@ -52,6 +52,7 @@ class configCache (threading.Thread):
        while not self.stopProcess:
        
            if self.cache_update or (time.time() - self.cache_time >= self.cache_interval):
+               time.sleep(5)
                logging.info("Re-read config files: ...")
                i = 0
                for key in self.cache:
