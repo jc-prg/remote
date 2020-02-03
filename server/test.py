@@ -5,15 +5,28 @@
 
 import unittest
 import requests
-import json, os
+import json, os, time
 
+import interfaces
 import modules.rm3stage  as rm3stage
 import modules.rm3config as rm3config
 
 
 # -----------------------------
+# define which test cases should be used and if silent
+# -----------------------------
 
-silent     = False                                              # True, if more detailled information for the test should be displayed
+silent       = False                                            # True, if more detailled information for the test should be displayed
+active_cases = {
+	"1" : "yes",
+	"2" : "yes",
+	"3" : "no",
+	}
+
+# -----------------------------
+# define test data
+# -----------------------------
+
 test_chain =  {
     #"METHOD:url/" : "data as json",
     "GET:api/list/" : "",                                       # default list command incl. device status
@@ -40,15 +53,52 @@ test_chain =  {
     "DELETE:api/button/test_device/1/" : "",                    # delete button
     "DELETE:api/device/test_device/" : "",                      # delete test device
     }
+    
+test_chain_api = {}
+test_chain_api["EISCP-ONKYO"] = [
+    "system-power on",
+    "input-selector query",
+    "master-volume=level-up",
+    "master-volume=level-down",
+#    "input-selector pc",
+    "listening-mode game",
+#    "audio-muting toggle",
+#    "audio-muting toggle",
+    "master-volume=level-up",
+    "master-volume=level-down",
+    "dolby-volume query",
+#    "system-power off",
+    "system-power query",
+    ]
 
 # -----------------------------
+# Helping functions
+# -----------------------------
 
-def info(nr,info):
+nr = 0
+
+def info(info):
     '''
     Print information to describe the test case, if activated
     '''
+    
+    global nr
+    nr += 1
+    
     if not silent: print("\nTEST CASE "+str(nr)+": "+info+"\n---------------------")
+    
+    if str(nr) in active_cases and active_cases[str(nr)] == "no":
+      print("-> skip test\n\n")
+      return active_cases[str(nr)]
+    elif str(nr) in active_cases:
+      return active_cases[str(nr)]
+    else:
+      print("-> skip test (no setting in [active_cases] yet)\n\n")
+      return "no"
 
+
+# -----------------------------
+# Test Class
 # -----------------------------
 
 class MyFirstTest(unittest.TestCase):
@@ -71,43 +121,79 @@ class MyFirstTest(unittest.TestCase):
         self.server_url      = "http://localhost:"+str(rm3stage.server_port)+"/"
         self.server_requests = test_chain
         
-
     def tearDown(self):
         return
         
-    def testCase1(self):
+    #-------------------
+        
+    def testCase_json(self):
         '''
         Check if files are readable and contain JSON content
         '''
-        info(1,"Check JSON files")
+        if info("Check JSON files") == "no": return
+        
         for filename in self.files:
            if not silent: print(filename)
            with open(filename) as json_data:
              data = json.load(json_data)
            #assertIsNotNone(data)
            
-    def testCase2(self):
+    #-------------------
+
+    def testCase_onkyo(self):
+        '''
+        Check a chain of requests to API directly
+        '''
+         
+        if info("Check API for ONKYO") == "no": return
+
+        api       = interfaces.eiscp_api.eiscpAPI("EISCP-ONKYO")
+        errors    = 0
+        error_msg = ""
+
+        self.assertIn("Connected",api.status)
+        for call in test_chain_api["EISCP-ONKYO"]:
+           time.sleep(0.5)	
+           print(call)
+           response = api.query("dummy",call)
+           #print(str(response))
+           if "ERROR" in str(response): 
+             errors    += 1
+             error_msg += "... [" + call + "] " + response
+           
+        if errors > 2: 
+           response = "ERROR: "+str(errors)+" error messages found ... " + error_msg
+           self.assertNotIn("ERROR",str(response))
+
+    #-------------------
+
+    def testCase_restApi(self):
         '''
         Check a chain of HTTP requests to the REST API
         '''
-        info(2,"Check REST API")
+        
+        if info("Check REST API") == "no": return
+        
         for value in self.server_requests.keys():
           (method,call) = value.split(":")
           data     = self.server_requests[value]
-          #print(edit_data)
+         
           if not silent: print(method + ":" + self.server_url + call)
           headers = {'content-type' : 'application/json'}	
           if method == "GET":    response = requests.get(   self.server_url + call, json = data)
           if method == "POST":   response = requests.post(  self.server_url + call, json = data)
           if method == "PUT":    response = requests.put(   self.server_url + call, json = data)
           if method == "DELETE": response = requests.delete(self.server_url + call, json = data)
-          
           self.assertIn("200",str(response))
+          
           data = json.loads(response.text)
           self.assertIsNotNone(data["REQUEST"]["Return"])
           self.assertNotIn("ERROR:",data["REQUEST"]["Return"])
           if not "OK:" in data["REQUEST"]["Return"]:
             print("-> "+data["REQUEST"]["Return"])
-        
+
+
+
+
 if __name__ == "__main__": 
     unittest.main()
