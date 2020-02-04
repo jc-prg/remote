@@ -154,11 +154,14 @@ def RmReadData(selected=[]):
           configFiles.cache["_api"] = data
           configFiles.cache_update  = False
 
+        data["devices"] = devicesGetStatus(data["devices"],readAPI=False)
+
     # if no update required read from cache
-    else: data = configFiles.cache["_api"]
+    else: 
+        data            = configFiles.cache["_api"]
+        data["devices"] = devicesGetStatus(data["devices"],readAPI=False)
 
     # Update status data        
-    data["devices"]           = devicesGetStatus(data["devices"])
     configFiles.cache["_api"] = data
     
     return data
@@ -578,7 +581,7 @@ def getStatus(device,key):
 # Device status
 #-----------------------------------------------
 
-def devicesGetStatus(data):
+def devicesGetStatus(data,readAPI=False):
     '''
     read status data from config file (method=record) and/or device APIs (method=query)
     data -> data["DATA"]["devices"]
@@ -595,7 +598,7 @@ def devicesGetStatus(data):
               data[device]["status"][value] = devices[device]["status"][value]
                
           # else request status from API -> using the queue
-          if data[device]["method"] == "query":
+          if data[device]["method"] == "query" and readAPI == True:
           
               interface = data[device]["interface"]
 
@@ -670,7 +673,7 @@ def deviceStatusSet(device,button,state):
     power_buttons = ["on","on-off","off"]
     vol_buttons   = ["vol+","vol-"]
     
-    logging.warn("....d:"+device)
+    logging.debug("....d:"+device)
     method        = configFiles.get_method(device)
     
     logging.debug(" ...m:"+method+" ...d:"+device+" ...b:"+button+" ...s:"+str(state))
@@ -702,12 +705,8 @@ def remoteAPI_start(setting=[]):
 
     global Status
 
-    logging.info("Start API CALL")
-
     data                                   = configFiles.api_init
     data["DATA"]                           = RmReadData()#setting)
-    
-    logging.info("Start API CALL - 1")
 
     data["CONFIG"]                         = {}  
     data["CONFIG"]["button_images"]        = configFiles.read(modules.icons_dir + "/index")
@@ -724,8 +723,6 @@ def remoteAPI_start(setting=[]):
     data["STATUS"]["interfaces"]           = deviceAPIs.status()
     data["STATUS"]["system"]               = {} #  to be filled in remoteAPI_end()
 
-    logging.info("Start API CALL - 2")
-
     for device in data["DATA"]["devices"]:
       if "main-audio" in data["DATA"]["devices"][device] and data["DATA"]["devices"][device]["main-audio"] == "yes": data["CONFIG"]["main-audio"] = device
       if "templates"  in data["DATA"]["devices"][device]:  del data["DATA"]["devices"][device]["templates"]
@@ -741,8 +738,6 @@ def remoteAPI_start(setting=[]):
     
     if "no-data" in setting:   del data["DATA"]
     if "no-config" in setting: del data["CONFIG"]
-
-    logging.info("Start API CALL - 3")
 
     return data
     
@@ -765,8 +760,8 @@ def remoteAPI_end(data):
         }
   
     # Update device status (e.g. if send command and cache maybe is not up-to-date any more)      
-    if "DATA" in data and "devices" in data["DATA"]:
-        data["DATA"]["devices"] = devicesGetStatus(data["DATA"]["devices"])
+    if configFiles.cache_update and "DATA" in data and "devices" in data["DATA"]:
+        data["DATA"]["devices"] = devicesGetStatus(data["DATA"]["devices"],readAPI=True)
         
 #------------------------------------ ERROR -----------
 #remote_server_test    |   File "/usr/src/app/server/modules/server_cmd.py", line 767, in RemoteList
@@ -912,7 +907,7 @@ def RemoteMakro(makro):
             else:                        commands_4th.extend([command])
           else:                          commands_4th.extend([command])
           
-        logging.warn(str(commands_4th))
+        logging.debug("Decoded makro-string: "+str(commands_4th))
                   
         # execute buttons
         for command in commands_4th:
@@ -935,10 +930,10 @@ def RemoteMakro(makro):
             elif button == "off":       status        = "OFF"
 
             # if future state not already in place add command to queue              
-            logging.warn(" ...i:"+interface+" ...d:"+device+" ...b:"+button+" ...s:"+status)
+            logging.debug(" ...i:"+interface+" ...d:"+device+" ...b:"+button+" ...s:"+status)
 
             if device in data["DATA"]["devices"] and status_var in data["DATA"]["devices"][device]["status"]:
-              logging.warn(" ...y:"+status_var+"="+str(data["DATA"]["devices"][device]["status"][status_var])+" -> "+status)
+              logging.debug(" ...y:"+status_var+"="+str(data["DATA"]["devices"][device]["status"][status_var])+" -> "+status)
               
               if data["DATA"]["devices"][device]["status"][status_var] != status:
               

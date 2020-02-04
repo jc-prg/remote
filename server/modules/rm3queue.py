@@ -100,7 +100,7 @@ class sendCmd (threading.Thread):
        command_str = str(command)
        if "," in str(command):
           interface,device,button,state = command
-          logging.info("Execute "+self.name+" - "+interface+":"+device+":"+button)
+          logging.debug("Queue: Execute "+self.name+" - "+interface+":"+device+":"+button)
           
           try:
             result = self.device_apis.send(interface,device,button)
