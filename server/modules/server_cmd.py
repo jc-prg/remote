@@ -154,7 +154,7 @@ def RmReadData(selected=[]):
           configFiles.cache["_api"] = data
           configFiles.cache_update  = False
 
-        data["devices"] = devicesGetStatus(data["devices"],readAPI=False)
+        data["devices"] = devicesGetStatus(data["devices"],readAPI=True)
 
     # if no update required read from cache
     else: 
@@ -601,6 +601,8 @@ def devicesGetStatus(data,readAPI=False):
           if data[device]["method"] == "query" and readAPI == True:
           
               interface = data[device]["interface"]
+              queueQuery.add2queue ([4])                                  # wait a few seconds before queries
+              queueQuery.add2queue ([[interface,device,data[device]["query_list"],""]])  # add querylist per device
 
 # ---- tried out --- using a queue for queries -----------------------------------
 #
@@ -609,24 +611,24 @@ def devicesGetStatus(data,readAPI=False):
 #             queryRemote.add2queue( [[interface,device,querylist]] );
 #
 # ---- old code --- direct call --------------------------------------------------          
-
-              if deviceAPIs.status(interface) == "Connected":
-
-                  for value in data[device]["query_list"]:              
-                  
-                      result = deviceAPIs.query(interface,device,value)
-                      
-                      if not "ERROR" in str(result):
-                          devices[device]["status"][value]      = str(result)
-                          data[device]["status"][value]         = str(result)
-
-                      else:
-                          devices[device]["status"][value]      = "Error"
-                          data[device]["status"][value]         = "Error"
-                          logging.error(result)
-                  
-              else:
-                   devices[device]["status"][value] = "Not connected"
+#
+#              if deviceAPIs.status(interface) == "Connected":
+#
+#                  for value in data[device]["query_list"]:              
+#                  
+#                      result = deviceAPIs.query(interface,device,value)
+#                      
+#                      if not "ERROR" in str(result):
+#                          devices[device]["status"][value]      = str(result)
+#                          data[device]["status"][value]         = str(result)
+#
+#                      else:
+#                          devices[device]["status"][value]      = "Error"
+#                          data[device]["status"][value]         = "Error"
+#                          logging.error(result)
+#                  
+#              else:
+#                   devices[device]["status"][value] = "Not connected"
 
 # ---- end old code --- direct call ----------------------------------------------
 
@@ -643,40 +645,44 @@ def devicesGetStatus(data,readAPI=False):
     configFiles.write(modules.devices + modules.active, devices)
     return data
 
+
+#-----------------------------------------------
+# get / set status of specific value
 #-----------------------------------------------
 
-def deviceStatusGet(device,button):
+def getButtonValue(device,button):
     '''
-    Get Status from device for a specific button or display value (first step if method = "record")
+    Get Status from device for a specific button or display value
     '''
     
     power_buttons = ["on","on-off","off"]
     if button in power_buttons: button = "power"
+    
     method        = configFiles.cache["_api"]["devices"][device]["method"]
     interface     = configFiles.cache["_api"]["devices"][device]["interface"]
     
-    if method == "record":
-      getStatus(device,button)
-      return "OK"
-    elif method == "query":
-      return deviceAPIs.query(interface,device,button)
-    else:
-      return "ERROR: Wrong method ("+method+")"
+    logging.debug("getButtonValue: ...m:"+method+" ...d:"+device+" ...b:"+button+" ...s:"+str(state))
+
+    if method == "record":   getStatus(device,button)
+    elif method == "query":  return deviceAPIs.query(interface,device,button)
+    else:                    return "ERROR: Wrong method ("+method+")"
+    
+    return "OK"
+    
     
 #-----------------------------------------------
 
-def deviceStatusSet(device,button,state):
+def setButtonValue(device,button,state):
     '''
-    Set Status of device for a specific button or display value (first step if method = "record")
+    Set Status of device for a specific button or display value (method = "record")
+    used via callback from queueSend also
     '''
     
     power_buttons = ["on","on-off","off"]
     vol_buttons   = ["vol+","vol-"]
+    method        = configFiles.cache["_api"]["devices"][device]["method"]
     
-    logging.debug("....d:"+device)
-    method        = configFiles.get_method(device)
-    
-    logging.debug(" ...m:"+method+" ...d:"+device+" ...b:"+button+" ...s:"+str(state))
+    logging.debug("setButtonValue: ...m:"+method+" ...d:"+device+" ...b:"+button+" ...s:"+str(state))
     
     if method == "record":
 
@@ -688,8 +694,9 @@ def deviceStatusSet(device,button,state):
         setStatus(device,button,state)
         configFiles.cache_time = 0
         return "OK"
+        
     else:
-        logging.warn("deviceStatusSet: Wrong method ("+method+")")
+        logging.warn("setButtonValue: Wrong method ("+method+")")
         return "ERROR: Wrong method ("+method+")"
 
 
@@ -717,7 +724,7 @@ def remoteAPI_start(setting=[]):
     
     data["REQUEST"]                        = {}
     data["REQUEST"]["start-time"]          = time.time()
-    data["REQUEST"]["Button"]              = sendRemote.last_button 
+    data["REQUEST"]["Button"]              = queueSend.last_button 
 
     data["STATUS"]                         = {}
     data["STATUS"]["interfaces"]           = deviceAPIs.status()
@@ -850,7 +857,7 @@ def Remote(device,button):
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Button"] = button
         #data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,button)
-        data["REQUEST"]["Return"] = sendRemote.add2queue([[interface,device,button,""]])
+        data["REQUEST"]["Return"] = queueSend.add2queue([[interface,device,button,""]])
         
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
 
@@ -937,15 +944,15 @@ def RemoteMakro(makro):
               
               if data["DATA"]["devices"][device]["status"][status_var] != status:
               
-                  data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([[interface,device,button,status]])
+                  data["REQUEST"]["Return"]  += ";" + queueSend.add2queue([[interface,device,button,status]])
             
             # if no future state is defined just add command to queue
             elif status == "":
-                data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([[interface,device,button,""]])
+                data["REQUEST"]["Return"]  += ";" + queueSend.add2queue([[interface,device,button,""]])
                 
           # if command is numeric, add to queue directly (time to wait)
           elif command_str.isnumeric():
-            data["REQUEST"]["Return"]  += ";" + sendRemote.add2queue([float(command)])
+            data["REQUEST"]["Return"]  += ";" + queueSend.add2queue([float(command)])
 
         refreshCache()
         data["DATA"]              = {}
@@ -1039,7 +1046,7 @@ def RemoteOnOff(device,button):
 
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
-        data["REQUEST"]["Return"]    = sendRemote.add2queue([[interface,device,button,status]])
+        data["REQUEST"]["Return"]    = queueSend.add2queue([[interface,device,button,status]])
 
         #logging.info("Start API CALL - 6 - " + method)
 
@@ -1257,11 +1264,15 @@ def RemoteDeleteDevice(device):
 deviceAPIs  = interfaces.connect()
 deviceAPIs.start()
 
-configFiles = modules.configCache("Config")
+configFiles       = modules.configCache("configCache")
 configFiles.start()
 
-sendRemote  = modules.sendCmd("sendRemote",deviceAPIs,deviceStatusSet,deviceStatusGet)
-sendRemote.start()
+queueSend         = modules.queueApiCalls("queueSend","send",deviceAPIs,setButtonValue)
+queueSend.start()
+
+queueQuery        = modules.queueApiCalls("queueQuery","query",deviceAPIs,getButtonValue)
+queueQuery.config = configFiles
+queueQuery.start()
 
 #queryRemote  = modules.queryQueue("queryRemote",deviceAPIs,deviceStatusSet,deviceStatusGet)
 #queryRemote.start()

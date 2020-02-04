@@ -11,28 +11,29 @@ import modules
 import modules.rm3config     as rm3config
 import modules.rm3json       as rm3json
 
+
 #-------------------------------------------------
-# send commands
+# QUEUE 1: send commands
 #-------------------------------------------------
 
-class sendCmd (threading.Thread):
+class queueApiCalls (threading.Thread):
     '''
     class to create a queue to send commands (or a chain of commands) to the devices
     '''
     
-    def __init__(self, name, device_apis,callback_send,callback_query):
+    def __init__(self, name, query_send, device_apis, callback ):
        '''create queue, set name'''
     
        threading.Thread.__init__(self)
-       self.queue_send     = []
-       self.queue_query    = []
+       self.queue          = []
        self.name           = name
        self.stopProcess    = False
        self.wait           = 0.1
        self.device_apis    = device_apis
        self.last_button    = "<none>"
-       self.callback_send  = callback_send
-       self.callback_query = callback_query
+       self.callback       = callback
+       self.config         = ""
+       self.query_send     = query_send
 
     #------------------       
        
@@ -44,76 +45,71 @@ class sendCmd (threading.Thread):
        
            logging.debug(".")
            
-           if len(self.queue_send) > 0:
-             command = self.queue_send.pop(0)
+           if len(self.queue) > 0:
+             command = self.queue.pop(0)
              self.execute(command)
              #logging.info("."+command[1]+command[2])
              
            else:
-             time.sleep(self.wait)
-
-           if len(self.queue_query) > 0:
-             command = self.queue_query.pop(0)
-             self.query_list(command)
-             
+             time.sleep(self.wait)             
              
        logging.info( "Exiting " + self.name )
-
-
-    #------------------       
-    
-    def query_list(self,command):
-       '''read information from APIs'''
        
-       logging.info("Query "+self.name+" - "+str(command))
-       
-       error                    = False
-       interface,device,queries = command
-       query_list               = queries.split("||")
-
-       logging.debug("Query "+self.name+" - "+interface+":"+device+":"+str(query_list))
-       devices = self.configFiles.read(modules.devices + modules.active)
-    
-       for value in query_list:
-         if value != "" and error == False:
-           try:    
-             result = self.callback_query(device,value)
-           except Exception as e:
-             result = "ERROR queue query_list: " + str(e)
-         
-         if not "ERROR" in str(result):  
-           devices[device]["status"][value]      = str(result)
-
-         else:
-           devices[device]["status"][value]      = "Error"
-           error                                 = True
-           logging.error(value+":"+str(result))
-
-       self.configFiles.write(modules.devices + modules.active, devices)
-    
-    
     #------------------       
     
     def execute(self,command):
-       '''execute command or wait -> command = number or command = [interface,device,button]'''
+       '''
+       execute command or wait 
+       SEND  -> command = number or command = [interface,device,button,state]
+       QUERY -> command = number or command = [interface,device,[query1,query2,query3,...],state]
+
+       '''
        
-       command_str = str(command)
+       # read device infos if query
+       if self.config != "" and self.query_send == "query": 
+          devices  = self.config.read(modules.devices + modules.active)
+
+       # if is an array / not a number
        if "," in str(command):
+       
           interface,device,button,state = command
-          logging.debug("Queue: Execute "+self.name+" - "+interface+":"+device+":"+button)
           
-          try:
-            result = self.device_apis.send(interface,device,button)
-          except Exception as e:
-             result = "ERROR queue query_list: " + str(e)
-             
-          if not "ERROR" in str(result) and state != "":
-            self.callback_send(device,button,state) 
-            self.last_button = device + "_" + button
+          logging.debug("Queue: Execute "+self.name+" - "+str(interface)+":"+str(device)+":"+str(button))
+          logging.debug(str(command))
           
+          if self.query_send == "send":   
+             try:
+                result = self.device_apis.send(interface,device,button)
+             except Exception as e:
+                result = "ERROR queue query_list: " + str(e)
+
+             if not "ERROR" in str(result) and state != "":
+                self.callback(device,button,state) 
+                self.last_button = device + "_" + button
+               
+          elif self.query_send == "query":
+             for value in button:
+                try:    
+                   result = self.device_apis.query(interface,device,value)
+                   logging.debug(str(device)+": "+str(result))
+                   
+                except Exception as e:
+                   result = "ERROR queue query_list: " + str(e)             
+
+                if not "ERROR" in str(result):  devices[device]["status"][value] = str(result)
+                else:                           devices[device]["status"][value] = "Error"
+                 
+                self.last_query = device + "_" + value
+                pass
+       
+       # if is a number
        else:
           time.sleep(float(command))
         
+       # read device infos if query
+       if self.config != "" and self.query_send == "query": 
+          self.config.write(modules.devices + modules.active, devices)
+          #logging.warn(str(devices))
     
     #------------------       
 
@@ -121,19 +117,9 @@ class sendCmd (threading.Thread):
        '''add single command or list of commands to queue'''
        
        logging.debug("Add to queue "+self.name+": "+str(commands))
-       self.queue_send.extend(commands)
+       self.queue.extend(commands)
        return "OK: Added command(s) to the queue:"+str(commands)
    
-
-    #------------------       
-
-    def add2queryQueue(self,commands):
-       '''add single command or list of commands to queue'''
-       
-       logging.debug("Add to query queue "+self.name+": "+str(commands))
-       self.queue_query.extend(commands)
-       return "OK: Added command(s) to the query queue:"+str(commands)
-
     #------------------       
 
     def stop(self):
