@@ -52,12 +52,12 @@
         "label": "Media-Center",
         "status": {
             "": "ON",
-            "mute": "False",
-            "name": "Kodi",
-            "power": "ON",
+            "mute": "Error",
+            "name": "Error",
+            "power": "Error",
             "test": "Error",
-            "version": "{'major': 18, 'minor': 4, 'revision': '20191027-06c77692ee', 'tag': 'stable'}",
-            "vol": "Not connected"
+            "version": "Error",
+            "vol": "Error"
         },
         "visible": "yes"
     },
@@ -89,7 +89,7 @@
             "dimmer": "dark",
             "display": "('selector-volume-1line', 'default-2line')",
             "listening": "all-ch-stereo",
-            "mute": "on",
+            "mute": "off",
             "power": "on",
             "sleep-set": "N/A",
             "source": "pc",
@@ -97,7 +97,7 @@
             "timer": "N/A",
             "tuning": "36864",
             "video-info": "HDMI 5,1280 x 720p   60 Hz,RGB,36bit,MAIN,1280 x 720p   60 Hz,RGB,36bit,,",
-            "vol": "52"
+            "vol": "40"
         },
         "visible": "yes"
     },
