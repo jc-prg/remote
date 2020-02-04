@@ -91,8 +91,8 @@ function rmSettings (name) {	// IN PROGRESS
 						this.button("rm3app.requestAPI('GET',['version','" + rm3version +"'], '', rm3msg.alertReturn,'wait');", "Check Updates")
 					);
 		setting += this.tab_row( 	"Reset:",
-						this.button("rm3msg.confirm('" + q1 + "', 'loadRemote( [#reset#] );' );" , "Dev ON/OFF") +
-						this.button("rm3msg.confirm('" + q1 + "', 'loadRemote( [#reset-audio#] );' );" , "Audio Level")
+						this.button("rm3msg.confirm('" + q1 + "', 'rm3app.requestAPI(#GET#,[#reset#],##,alertReturn );' );" , "Dev ON/OFF") +
+						this.button("rm3msg.confirm('" + q2 + "', 'rm3app.requestAPI(#GET#,[#reset-audio#],##,alertReturn );' );" , "Audio Level")
 					);
 		setting += this.tab_row( 	"Buttons:",
 						this.button(this.app_name+".button_show();",  b_show ) +
