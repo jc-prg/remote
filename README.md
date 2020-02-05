@@ -16,21 +16,26 @@ Dark theme on iPhone XS
 ## Main features
 ### App v2.3 / Server v1.7
 
-This is the first really good working version with API connection to devices.
+This is the first working release with stable API connection to devices:
 
-* remote control for devices
-* remote control for scenes incl. makros
-* control devices via API (IR-Sender, Onkyo-API, KODI)
+* control devices via API (Onkyo-API, KODI)
 * create and edit remote controls for devices (initial)
 * record IR commands for devices
 * record status for devices controlled via IR (not a direct API)
 * read information for devices via API
 * light / dark theme based on device preset (Safari)
 * basic automatic tests (check data format, check server API requests, check Onky API)
+* docker environment for app and server incl. central configuration for multiple stages
 
 The definition of devices and scenes at the moment should be done based a set of JSON files. 
 The code comes with several sample device and scene definitions that explain the possible options.
 The integration of the device APIs is done in an easy way, so that the integration of additional device API should be easy also.
+
+### App & Server 1.x
+
+* remote control for devices
+* remote control for scenes incl. makros
+* control devices via IR sender/receiver (Broadlink RM3 Mini)
 
 ## Supported Hardware
 
