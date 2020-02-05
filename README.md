@@ -2,7 +2,8 @@
 
 Looking a remote control to control several devices I got disappointed ... and decided to develop my own web-app  running on my smartphone.
 Therefore I found the **Broadlink RM 3 Mini** and sources on Github to control this IR device via API. About two years later several devices
-as my new ONKYO receiver come with their own API and I started to rework my software and to integrate the first device via API directly ...
+as my new ONKYO receiver come with their own API and I started to rework my software and to integrate the first device via API directly.
+The next device was a low level integration of a KODI server ... other might follow.
 
 ## Screenshots 
 
