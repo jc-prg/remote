@@ -37,7 +37,7 @@ function check_for_updates_msg( data ) {
 	rm3msg.wait("Loading App ..."+msg, "initRemote();" );
 
 	if (data["REQUEST"]["ReturnCode"] != "802") {
-		setTimeout(function(){ rm3msg.hide(); }, 3000);
+		rm3update = true;
 		}
 	}
 

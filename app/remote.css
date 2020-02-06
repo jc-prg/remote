@@ -201,7 +201,7 @@ button {
    color           : yellow;
    padding         :   2px;
    margin          :   4px;
-   font-size       :  10px;
+   font-size       :   9px; 
    border-radius   :   6px; 
    background-color: #000044;
    overflow        : hidden;
@@ -211,10 +211,14 @@ button {
 }
 
 .display.right  { float  : right; }
-.display.small  { width  : 133px;   height  :  40px; }
-.display.middle { width  : 133px;   height  :  88px; }
-.display.big    { width  : 276px;   height  :  88px; }
 
+.display.small  { width  : 133px;   height  :  40px; } 
+.display.middle { width  : 133px;   height  :  88px; } 
+.display.big    { width  : 276px;   height  :  88px; } 
+
+.display.h1w2   { width  : 133px;   height  :  40px; } 
+.display.h2w2   { width  : 133px;   height  :  88px; } 
+.display.h2w4   { width  : 276px;   height  :  88px; } 
 
 .display-element {
    width	: 56px;
@@ -291,14 +295,21 @@ button {
   .button.big     { width  : 105px; }
   .button.small   { width  :  62px; }
   
+  .display        { font-size : 10px; }
   .display.small  { width  : 160px; }
   .display.middle { width  : 160px; }
   .display.big    { width  : 328px; }
   
+  .display.h1w2   { width  : 160px; }
+  .display.h2w2   { width  : 160px; }
+  .display.h2w4   { width  : 328px; }
+
   .display-element        { width : 70px; }
   .display-element.small  { width : 70px; }
   .display-element.middle { width : 146px; }
   .display-element.big    { width : 146px; }
+
+
 }
 
 /* format for iPhone XS in landscape and bigger devices */

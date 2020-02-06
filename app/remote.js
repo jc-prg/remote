@@ -58,6 +58,11 @@ function initRemote (first_load=true) {
 	setTextById("remote2","");
 	setTextById("remote3","");
 	setTextById("remote_edit","");
+	
+	if (rm3update) {
+		setTimeout(function(){ rm3msg.hide(); }, 2000);
+		rm3update = false;
+		}
 
 	if (first_load) {
 		showRemoteInBackground(1);		// show start screen
@@ -74,6 +79,7 @@ function initRemoteFirstLoad(data) {
 	remoteReload(data);			// initial load of data incl. remotes, settings
 	remoteStartMenu(data);			// initial load start menu
 	remoteDropDown(data);			// initial load drop down menu
+	lastRemoteCookie();
 	}
 
 //----------------------------------
@@ -175,26 +181,28 @@ function remoteStartMenu(data) {
 function lastRemoteCookie() {
 
 	// read cookie if exist
-	var test   = rm3cookie.get("remote");
+	var cookie   = rm3cookie.get("remote");
 
 	// if cookie ...
-	if (test) {
-		var remote = test.split("::");
+	if (cookie) {
+		var remote = cookie.split("::");
+		console.log("Load Cookie:");
+		console.log(remote);
 
 		// start remote if cookie is set (reopen with last remote control)
 		if (remote[0] == "scene") 	{
 			rm3remotes.create('scene',remote[1]);
 			rm3settings.hide();
-			clickMenu();
 			setNavTitle(remote[2]);
+			//clickMenu();
 			}
 		else if (remote[0] == "device") {
 			rm3remotes.create('device',remote[1]);
 			rm3settings.hide();
-			clickMenu();
 			setNavTitle(remote[2]);
+			//clickMenu();
 			}
-		else 				{}
+		else 	{}
 		}
 	}
 

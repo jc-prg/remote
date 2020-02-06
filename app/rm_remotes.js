@@ -134,7 +134,7 @@ function rmRemote(name) {
 
 	// create remote for a specific scene
 	this.scene_remote  = function(id="", scene="") {
-     
+	    
 		var remote            	= "";
 		var remote_definition 	= this.data["DATA"]["scenes"][scene]["remote"];
 		var remote_label 	= this.data["DATA"]["scenes"][scene]["label"];
