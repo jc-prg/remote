@@ -1,0 +1,16 @@
+#!/bin/bash
+
+external=""
+mountpoint=""
+
+echo
+echo "-------------------------------------"
+echo " Start jc://remote/prod/"
+echo " (by Christoph Kloth)"
+echo "-------------------------------------"
+
+
+/usr/local/bin/docker-compose -f /projects/prod/remote/docker-compose.yml up -d
+
+echo
+echo "Done."

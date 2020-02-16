@@ -59,7 +59,7 @@
             "version": "{'major': 18, 'minor': 4, 'revision': '20191027-06c77692ee', 'tag': 'stable'}",
             "vol": "100"
         },
-        "visible": "yes"
+        "visible": "no"
     },
     "rec": {
         "description": "AV-Receiver: ONKYO TX-NR686(B)",
@@ -86,7 +86,7 @@
             "a-v-sync": "0",
             "audio-info": "HDMI 2,PCM,48 kHz,2.0 ch,TV Logic,5.1 ch,",
             "audio-source": "hdmi",
-            "dimmer": "dark",
+            "dimmer": "dim",
             "display": "('selector-volume-1line', 'default-2line')",
             "listening": "tv-logic",
             "mute": "off",
@@ -95,9 +95,9 @@
             "source": "cbl",
             "temperature": "C 30",
             "timer": "N/A",
-            "tuning": "36864",
+            "tuning": "67584",
             "video-info": "HDMI 2,1920 x 1080i  50 Hz,YCbCr444,24bit,MAIN,1920 x 1080i  50 Hz,YCbCr444,24bit,,",
-            "vol": "40"
+            "vol": "45"
         },
         "visible": "yes"
     },

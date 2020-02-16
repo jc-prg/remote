@@ -1,8 +1,8 @@
 {
 	"description" :	     "In this file you can define all makros you need: <device>_<button>||<target_status>",
 	"makro": {
-                "bluray":    ["dev-on_bd",  "dev-on_rec", 1, "rec2_bluray"],
-                "cd":        ["dev-on_bd",  "dev-on_rec", 1, "rec2_bluray"],
+                "bluray":    ["dev-on_bd",  "dev-on_rec", 1, "rec2_bd"],
+                "cd":        ["dev-on_bd",  "dev-on_rec", 1, "rec2_bd"],
                 "pc":        ["dev-off_bd", "dev-on_rec", 1, "rec2_pc"],
                 "aux":       ["dev-off_bd", "dev-on_rec", 1, "rec2_aux"],
                 "bluetooth": ["dev-off_bd", "dev-on_rec", 1, "rec2_bluetooth"],
