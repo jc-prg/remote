@@ -62,7 +62,6 @@ class queueApiCalls (threading.Thread):
        execute command or wait 
        SEND  -> command = number or command = [interface,device,button,state]
        QUERY -> command = number or command = [interface,device,[query1,query2,query3,...],state]
-
        '''
        
        # read device infos if query

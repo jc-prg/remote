@@ -24,7 +24,7 @@ import modules
 # init vars ... check all, if still required after redesign
 #---------------------------
 
-Status                = "Starting"
+Status                 = "Starting"
 
 #---------------------------
 
@@ -808,6 +808,7 @@ def RemoteCheckUpdate(APPversion):
         Check if app is supported by this server version
         '''
 
+	refreshCache()
         d    = {}
         data = remoteAPI_start(["no-data","no-config"])
 
