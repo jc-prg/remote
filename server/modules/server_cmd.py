@@ -808,7 +808,7 @@ def RemoteCheckUpdate(APPversion):
         Check if app is supported by this server version
         '''
 
-	refreshCache()
+        refreshCache()
         d    = {}
         data = remoteAPI_start(["no-data","no-config"])
 
