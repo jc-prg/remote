@@ -40,8 +40,9 @@ def refreshCache():
     '''
     Reset vars to enforce a refresh of all cached data
     '''
-    
-    configFiles.cache_update = True
+
+    configFiles.update()
+
 
 #---------------------------
 # Read data
@@ -152,7 +153,7 @@ def RmReadData(selected=[]):
         # update cache data
         if selected == []:
           configFiles.cache["_api"] = data
-          configFiles.cache_update  = False
+          #configFiles.cache_update  = False
 
         data["devices"] = devicesGetStatus(data["devices"],readAPI=True)
 
@@ -790,6 +791,8 @@ def RemoteReload():
         '''
         reload interfaces and reload config data in cache
         '''
+
+        logging.warn("Request cache reload and device reconnect.")
         
         deviceAPIs.reconnect()
         refreshCache()
@@ -1265,7 +1268,7 @@ def RemoteDeleteDevice(device):
 deviceAPIs  = interfaces.connect()
 deviceAPIs.start()
 
-configFiles       = modules.configCache("configCache")
+configFiles       = modules.configCache("configFiles")
 configFiles.start()
 
 queueSend         = modules.queueApiCalls("queueSend","send",deviceAPIs,setButtonValue)

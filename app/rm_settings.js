@@ -85,7 +85,8 @@ function rmSettings (name) {	// IN PROGRESS
 		if (deactivateButton) { b_deact = "allways enabled"; }  else { b_deact = "enabled if ON"; }
 
 		setting  = this.tab_row( 	"Server:",
-						this.button("initRemote(false);" + this.app_name + ".show();", "reload") +
+						//this.button("initRemote(false);" + this.app_name + ".show();", "reload") +
+						this.button("window.open('" + RESTurl + "api/reload/','_blank');", "reload") +
 						this.button("window.open('" + RESTurl + "api/list/','_blank');", "REST API") +
 						this.button("window.open('" + RESTurl + "api/ui/','_blank');",   "Swagger/UI") +
 						this.button("rm3app.requestAPI('GET',['version','" + rm3version +"'], '', rm3msg.alertReturn,'wait');", "Check Updates")

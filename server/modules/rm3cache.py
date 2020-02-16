@@ -40,35 +40,52 @@ class configCache (threading.Thread):
                                      "stage"    : rm3config.initial_stage,
                                      "rollout"  : rm3stage.rollout
                                      } }
-       
+
     #------------------       
-       
+
     def run(self):
        '''
        loop running in the background
        '''
-       
+
        logging.info( "Starting " + self.name )
        while not self.stopProcess:
-       
-           if self.cache_update or (time.time() - self.cache_time >= self.cache_interval):
+
+           if time.time() - self.cache_time >= self.cache_interval:
+               self.cache_update = True
+
+           if self.cache_update == True:
                time.sleep(1)
-               logging.warn("Re-read config files: ...")
+               logging.info("Re-read config files ('" + self.name + "'): ...")
                i = 0
                for key in self.cache:
                   if key != "_api":
                     self.cache[key] = rm3json.read(key)
                     i += 1
+
                logging.info("... ("+str(i)+")")
                self.cache_time   = time.time()
                self.cache_update = False
+
            else:
                time.sleep(self.wait)
-             
+               #logging.warn("."+str(self.cache_update))
+
        logging.info( "Exiting " + self.name )
-       
+
     #------------------       
-       
+
+    def update(self):
+        '''
+        set var to enforce update
+        '''
+
+        self.cache_update = True
+        logging.info("Enforce cache update (" + self.name + ") "+str(self.cache_update))
+
+
+    #------------------       
+
     def read(self,config_file,from_file=False):
         '''
         read config from cache if not empty and not to old
