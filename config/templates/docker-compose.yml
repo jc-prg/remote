@@ -15,6 +15,7 @@ services:
       - ${REMOTE_DIR_DATA}:${REMOTE_DIR_DATA}
       - ${REMOTE_DIR_ICONS}:${REMOTE_DIR_ICONS}
       - ${REMOTE_DIR_ICON_INDEX}:${REMOTE_DIR_ICON_INDEX}
+      - ./log:/log
     ports:
       - ${REMOTE_SERVER_PORT}:${REMOTE_SERVER_PORT}
 

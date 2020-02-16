@@ -20,3 +20,5 @@ app/img/remote.jpg
 *.save
 
 /docker-compose.yml
+
+*.png~

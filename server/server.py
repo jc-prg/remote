@@ -19,15 +19,23 @@ print("--------------------------------")
 #----------------------------------------------
 import logging
 if stage.test:
-    if remote.DEBUG:
+    if mbox.DEBUG:
        logging.basicConfig(level=logging.DEBUG)  # DEBUG, INFO, WARNING, ERROR, CRITICAL
-       logging.info("Start - Log-Level DEBUG ...")
+       logging.debug("REMOTE Start (Log-Level DEBUG) ...")
     else:
        logging.basicConfig(level=logging.INFO)   # DEBUG, INFO, WARNING, ERROR, CRITICAL
-       logging.info("Start - Log-Level INFO ...")
+       logging.info("REMOTE Start (Log-Level INFO) ...")
 else:
-   logging.basicConfig(level=logging.WARN)    # DEBUG, INFO, WARNING, ERROR, CRITICAL
-   logging.info("Start - Log-Level WARN ...")
+   logging.basicConfig(filename='/log/server.log',
+                       filemode='a',
+                       format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                       datefmt='%d.%m.%y %H:%M:%S',
+                       level=logging.WARN)
+
+   log = logging.getLogger("werkzeug")
+   log.setLevel(logging.WARN)
+
+   logging.warn("REMOTE Start (Log-Level WARN) ...")
 
 
 # load API modules

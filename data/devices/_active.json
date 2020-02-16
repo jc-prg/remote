@@ -52,12 +52,12 @@
         "label": "Media-Center",
         "status": {
             "": "ON",
-            "mute": "Error",
-            "name": "Error",
-            "power": "Error",
+            "mute": "False",
+            "name": "Kodi",
+            "power": "ON",
             "test": "Error",
-            "version": "Error",
-            "vol": "Error"
+            "version": "{'major': 18, 'minor': 4, 'revision': '20191027-06c77692ee', 'tag': 'stable'}",
+            "vol": "100"
         },
         "visible": "yes"
     },
@@ -84,19 +84,19 @@
         "status": {
             "": "Error",
             "a-v-sync": "0",
-            "audio-info": "HDMI 5,PCM,44.1 kHz,2.0 ch,All Ch Stereo,5.1 ch,",
+            "audio-info": "HDMI 2,PCM,48 kHz,2.0 ch,TV Logic,5.1 ch,",
             "audio-source": "hdmi",
             "dimmer": "dark",
             "display": "('selector-volume-1line', 'default-2line')",
-            "listening": "all-ch-stereo",
+            "listening": "tv-logic",
             "mute": "off",
             "power": "on",
             "sleep-set": "N/A",
-            "source": "pc",
-            "temperature": "C 32",
+            "source": "cbl",
+            "temperature": "C 30",
             "timer": "N/A",
             "tuning": "36864",
-            "video-info": "HDMI 5,1280 x 720p   60 Hz,RGB,36bit,MAIN,1280 x 720p   60 Hz,RGB,36bit,,",
+            "video-info": "HDMI 2,1920 x 1080i  50 Hz,YCbCr444,24bit,MAIN,1920 x 1080i  50 Hz,YCbCr444,24bit,,",
             "vol": "40"
         },
         "visible": "yes"
