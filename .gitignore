@@ -5,6 +5,8 @@ server/interfaces/broadlink/__pycache__/
 
 server/server_org.py
 
+log/server.log
+
 config/config_test
 
 app/_sicher/
