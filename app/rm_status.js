@@ -11,6 +11,61 @@
 // and show buttons in different colors
 //-----------------------------------------
 
+// slider for volume control
+
+function slider ( name, container, min, max, callOnChange ) {
+
+	this.appName      = name;
+	this.appContainer = container;
+	
+	this.sliderHTML   =  "<div id=\""+name+"_container\" class=\"slidecontainer\" style=\"visibility:hidden\">";
+  	this.sliderHTML   += "<input type=\"range\" min=\""+min+"\" max=\""+max+"\" value=\"50\" class=\"slider\" id=\""+name+"\">";
+  	this.sliderHTML   += "<br/><div id=\""+name+"_value\" class=\"slidervalue\">xx</div>";
+	this.sliderHTML   += "</div>";
+	
+	this.container    = document.getElementById(container);
+	this.container.innerHTML = this.sliderHTML;
+	
+	this.slider       = document.getElementById(name);
+	this.slider_value = document.getElementById(name+"_value");
+	this.slider_cont  = document.getElementById(name+"_container");
+	this.slider_value.innerHTML = this.slider.value;
+
+	this.callOnChange = callOnChange;
+	
+	this.slider.oninput = function() {
+		rm3slider.slider_value.innerHTML	= rm3slider.slider.value;
+		//this.slider_value.innerHTML 		= this.slider.value;
+		}
+		
+	this.slider.onmouseup = function() {
+		//this.callOnChange( this.slider.value );
+		//rm3slider.callOnChange( this.slider.value );
+		alert("not implemented yet!");	
+		}
+		
+	this.set_value = function( value ) {
+		this.slider.value = value;
+		this.slider_value.innerHTML = value;
+		}
+		
+	this.show_hide = function() {
+		if (this.slider_cont.style.visibility == "hidden") 	{ this.slider_cont.style.visibility = "visible"; }
+		else							{ this.slider_cont.style.visibility = "hidden"; }
+		}
+		
+	}
+
+// Update the current slider value (each time you drag the slider handle)
+slider.oninput = function() {
+  output.innerHTML = this.value;
+}
+
+slider.onmouseup = function() {
+   console.log("Set Volume: " + slider.value);  
+}
+
+//-----------------------------------------
 
 function show_status_button(id, status) {
 
@@ -294,6 +349,7 @@ function check_status(data={}) {
 		}
 		
 	// check volume and show in navigation bar
+	rm3slider.set_value( main_audio_vol );
 	vol_str = show_volume( main_audio_vol, main_audio_max, vol_color );
 	document.getElementById("audio3").innerHTML = vol_str;
 

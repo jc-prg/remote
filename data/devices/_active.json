@@ -512,20 +512,20 @@
         "status": {
             "": "Error",
             "a-v-sync": "0",
-            "audio-info": "HDMI 2,PCM,48 kHz,2.0 ch,TV Logic,5.1 ch,",
+            "audio-info": "ANALOG,,,,All Ch Stereo,5.1 ch,",
             "audio-source": "hdmi",
             "dimmer": "dim",
             "display": "('selector-volume-1line', 'default-2line')",
-            "listening": "tv-logic",
+            "listening": "all-ch-stereo",
             "mute": "off",
             "power": "on",
             "sleep-set": "N/A",
-            "source": "cbl",
-            "temperature": "C 30",
+            "source": "game/tv",
+            "temperature": "C 31",
             "timer": "N/A",
             "tuning": "67584",
-            "video-info": "HDMI 2,1920 x 1080i  50 Hz,YCbCr444,24bit,MAIN,1920 x 1080i  50 Hz,YCbCr444,24bit,,",
-            "vol": "38"
+            "video-info": "HDMI 3,1920 x 1080p  60 Hz,RGB,24bit,MAIN,1920 x 1080p  60 Hz,RGB,24bit,,",
+            "vol": "29"
         },
         "values": {
             "power": [

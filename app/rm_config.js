@@ -24,7 +24,7 @@ var dataConfig	= {};
 
 var showImg          = true;	// preset: show images if defined (otherwise text)
 var eMsg             = false;
-var reloadInterval   = 15;	// reload data every x seconds
+var reloadInterval   = 10;	// reload data every x seconds
 var connect2stage    = "Prod";	// default stage to connect to (changed if rm3_test == true)
 
 var showButtonTime   = 0.2;     // time to show LED when button pressed

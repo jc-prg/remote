@@ -32,6 +32,7 @@
 <link rel="stylesheet" href="remote.css">
 <link rel="stylesheet" href="rm_menu.css">
 <link rel="stylesheet" href="rm_settings.css">
+<link rel="stylesheet" href="rm_volume.css">
 
 <link rel="stylesheet" href="remote_dark.css">
 <link rel="stylesheet" href="rm_menu_dark.css">
@@ -44,9 +45,9 @@
 <nav id="nav">
 <nav-logo id="rest_status"></nav-logo>
 
-<nav-info id="audio1"></nav-info><!--icon-->
-<nav-info id="audio2"></nav-info><!--icon-->
-<nav-info id="audio3">IIIIIIIIIIIIIIIIIIII</nav-info>
+<nav-info id="audio1" onClick="rm3slider.show_hide();" style="cursor:pointer;"></nav-info><!--icon-->
+<nav-info id="audio2" onClick="rm3slider.show_hide();" style="cursor:pointer;"></nav-info><!--icon-->
+<nav-info id="audio3" onClick="rm3slider.show_hide();" style="cursor:pointer;">IIIIIIIIIIIIIIIIIIII</nav-info>
 <nav-info id="audio4"></nav-info><!--icon-->
 
 <nav-title id="navTitle">...</nav-title>
@@ -102,6 +103,7 @@
     <div id='error_msg'></div>
   </div>
   
+<div id="audio_slider"></div>
 <script src="remote.js"></script>
 
 </div>
