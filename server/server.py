@@ -19,7 +19,7 @@ print("--------------------------------")
 #----------------------------------------------
 import logging
 if stage.test:
-    if mbox.DEBUG:
+    if remote.DEBUG:
        logging.basicConfig(level=logging.DEBUG)  # DEBUG, INFO, WARNING, ERROR, CRITICAL
        logging.debug("REMOTE Start (Log-Level DEBUG) ...")
     else:

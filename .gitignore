@@ -24,3 +24,5 @@ app/img/remote.jpg
 /docker-compose.yml
 
 *.png~
+
+start
