@@ -44,6 +44,12 @@ function slider ( name, container, min, max, callOnChange ) {
 		alert("not implemented yet!");	
 		}
 		
+	this.slider.ontouchend = function() {
+		//this.callOnChange( this.slider.value );
+		//rm3slider.callOnChange( this.slider.value );
+		alert("not implemented yet!");	
+		}
+		
 	this.set_value = function( value ) {
 		this.slider.value = value;
 		this.slider_value.innerHTML = value;
