@@ -106,14 +106,16 @@ class connect(threading.Thread):
     
     #-------------------------------------------------
 
-    def send(self, call_api, device, button ):
+    def send(self, call_api, device, button, value="" ):
         '''check if API exists and send command'''
         
         return_msg = ""
         logging.debug("SEND "+call_api+" / "+device+" - "+button)
 
-        if self.api[call_api].status == "Connected":       
-            button_code = self.get_command( call_api, "buttons", device, button ) 
+        if self.api[call_api].status == "Connected":
+            if value == "":  button_code = self.get_command( call_api, "buttons", device, button ) 
+            else:            button_code = self.create_command( call_api, device, button, value ) 
+            
             if call_api in self.api: return_msg = self.api[call_api].send(device,button_code)
             else:                    return_msg = "ERROR: API not available ("+call_api+")"
         else:                        return_msg = "ERROR: API not connected ("+call_api+")"
@@ -180,6 +182,52 @@ class connect(threading.Thread):
           elif button in buttons["data"][button_query]:       return buttons["data"][button_query][button]
           else:                                               return "ERROR get_command: button not defined ("+device+"_"+button+")"
         else:                                                 return "ERROR get_command: device not found ("+device+")"
+
+#-------------------------------------------------
+
+    def create_command(self,api,device,command,value):
+        '''
+        create command with "button" and value, including check if value is correct
+        '''
+        
+        # read data -> to be moved to cache?!
+        active       = rm3json.read(rm3config.devices + rm3config.active)
+        
+        if device in active:
+          device_code  = active[device]["device"]
+          buttons      = rm3json.read(rm3config.commands + api + "/" + device_code)
+    
+          # add button definitions from default.json if exist
+          if rm3json.ifexist(rm3config.commands + api + "/default"):
+             buttons_default = rm3json.read(rm3config.commands + api + "/default")
+             if not "commands" in buttons["data"]: buttons["data"]["commands"] = {}
+             if not "values"   in buttons["data"]: buttons["data"]["values"]   = {}
+             
+             if "commands" in buttons_default["data"]:
+               for key in buttons_default["data"]["commands"]:
+                 buttons["data"]["commands"][key] = buttons_default["data"]["commands"][key]
+                
+             if "values" in buttons_default["data"]:
+               for key in buttons_default["data"]["values"]:
+                 buttons["data"]["values"][key]   = buttons_default["data"]["values"][key]
+
+          # check for errors or return button code
+          if "ERROR" in buttons or "ERROR" in active:         return "ERROR create_command: buttons not defined for device ("+device+")"
+          elif command in buttons["data"]["commands"]:
+   
+             cmd_ok     = False       
+             cmd_type   = buttons["data"]["commands"][command]["type"]
+             cmd_values = buttons["data"]["values"][command]
+             cmd        = buttons["data"]["commands"][command]["command"] + value
+                          
+             if cmd_type == "integer" and int(value) >= cmd_values["min"] and int(value) <= cmd_values["max"]:  cmd_ok = True
+             elif cmd_type == "enum"  and value in cmd_values:                                                  cmd_ok = True
+
+             if cmd_ok == False:                              return "ERROR create_command: values not valid ("+device+", "+command+", "+value+")"
+             else:                                            return cmd
+
+          else:                                               return "ERROR create_command: command not defined ("+device+", "+command+")"
+        else:                                                 return "ERROR create_command: device not found ("+device+")"
 
 
 #-------------------------------------------------

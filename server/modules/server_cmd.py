@@ -852,7 +852,7 @@ def RemoteList():
 
 def Remote(device,button):
         '''
-        send IR command and return JSON msg
+        send command and return JSON msg
         '''
         
         data                      = remoteAPI_start(["no-data"])
@@ -865,11 +865,35 @@ def Remote(device,button):
         
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
 
-        data["DeviceStatus"]      = getStatus(device,"power")  # to be removed
+        data["DeviceStatus"]      = getStatus(device,"power")    # to be removed
         data["ReturnMsg"]         = data["REQUEST"]["Return"]    # to be removed
 
         data                      = remoteAPI_end(data)      
         
+        return data
+
+
+#-------------------------------------------------
+
+def RemoteSet(device,command,value):
+        '''
+        send command incl. value and return JSON msg
+        '''
+        
+        data                      = remoteAPI_start(["no-data"])
+        interface                 = configFiles.cache["_api"]["devices"][device]["interface"]
+        
+        data["REQUEST"]["Device"] = device
+        data["REQUEST"]["Button"] = command
+        data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,command,value)
+        #data["REQUEST"]["Return"] = queueSend.add2queue([[interface,device,command,value]])
+        
+        logging.error(data["REQUEST"]["Return"])
+        
+        if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
+
+        refreshCache()
+        data                      = remoteAPI_end(data)       
         return data
 
 
