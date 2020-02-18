@@ -49,13 +49,11 @@ function slider ( name, container, main_audio, min, max, callOnChange ) {
 	this.slider.onmouseup = function() {
 		//this.callOnChange( this.slider.value );
 		rm3slider.callOnChange( rm3slider.appMainAudio, rm3slider.slider.value );
-		//alert("not implemented yet!");	
 		}
 		
 	this.slider.ontouchend = function() {
 		//this.callOnChange( this.slider.value );
-		//rm3slider.callOnChange( this.slider.value );
-		alert("not implemented yet!");	
+		rm3slider.callOnChange( rm3slider.appMainAudio, rm3slider.slider.value );
 		}
 		
 	this.set_value = function( value ) {
