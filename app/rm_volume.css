@@ -1,7 +1,7 @@
 .slidecontainer {
   display       : block;
   
-  position      : absolute;
+  position      : fixed;
   right         : 10px;
   top           : 40px;
   

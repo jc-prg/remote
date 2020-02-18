@@ -36,7 +36,7 @@ var rm3remotes  = new rmRemote(   "rm3remotes" );
 var rm3settings = new rmSettings( "rm3settings" );
 var rm3msg      = new jcMsg(      "rm3msg" );
 var rm3cookie   = new jcCookie(   "rm3cookie");
-var rm3slider   = new slider( name="rm3slider", container="audio_slider", main_audio="rec2", min="1", max="60", callOnChange=setVolume );
+var rm3slider   = new slider( name="rm3slider", container="audio_slider", main_audio="rec2", min="1", max="70", callOnChange=setVolume );
 
 //--------------------------------
 // initialize

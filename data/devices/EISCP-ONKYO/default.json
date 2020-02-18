@@ -22,7 +22,7 @@
        	},
        	"values" : {
        		"power"   : [ "on", "off" ],
-       		"vol"     : { "min" : 0, "max" : 60 },
+       		"vol"     : { "min" : 0, "max" : 70 },
        		"mute"    : [ "on", "off", "toggle" ]
        	},
        	"display" : {
