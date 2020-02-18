@@ -57,6 +57,11 @@ function alertReturn(data) {
         rm3msg.alertReturn(data);
         }
         
+function setVolume(main_audio,volume) {
+        console.error("TEST");
+	rm3app.requestAPI( "GET", ["set",main_audio,"vol",volume], "", check_status_load );
+	}
+        
 //--------------------------------
 
 function changeVisibilityDevice(device_id, value_id) {
