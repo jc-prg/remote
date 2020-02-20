@@ -118,7 +118,7 @@ class queueApiCalls (threading.Thread):
        
        logging.debug("Add to queue "+self.name+": "+str(commands))
        self.queue.extend(commands)
-       return "OK: Added command(s) to the queue:"+str(commands)
+       return "OK: Added command(s) to the queue '"+self.name+': "+str(commands)
    
     #------------------       
 

@@ -697,7 +697,7 @@ def setButtonValue(device,button,state):
         return "OK"
         
     else:
-        logging.warn("setButtonValue: Wrong method ("+method+")")
+        logging.warn("setButtonValue: Wrong method ("+method+","+device+","+button+")")
         return "ERROR: Wrong method ("+method+")"
 
 
