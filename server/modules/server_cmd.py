@@ -885,8 +885,8 @@ def RemoteSet(device,command,value):
         
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Button"] = command
-        data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,command,value)
-        #data["REQUEST"]["Return"] = queueSend.add2queue([[interface,device,command,value]])
+        #data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,command,value)
+        data["REQUEST"]["Return"] = queueSend.add2queue([[interface,device,command,value]])
         
         logging.error(data["REQUEST"]["Return"])
         
