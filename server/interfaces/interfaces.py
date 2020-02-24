@@ -106,15 +106,15 @@ class connect(threading.Thread):
     
     #-------------------------------------------------
 
-    def send(self, call_api, device, button, value="" ):
+    def send(self, call_api, device, button, value="", mode="button" ):
         '''check if API exists and send command'''
         
         return_msg = ""
         logging.debug("SEND "+call_api+" / "+device+" - "+button)
 
         if self.api[call_api].status == "Connected":
-            if value == "":  button_code = self.get_command( call_api, "buttons", device, button ) 
-            else:            button_code = self.create_command( call_api, device, button, value ) 
+            if mode == "button":   button_code = self.get_command( call_api, "buttons", device, button ) 
+            elif mode == "value":  button_code = self.create_command( call_api, device, button, value ) 
             
             if call_api in self.api: return_msg = self.api[call_api].send(device,button_code)
             else:                    return_msg = "ERROR: API not available ("+call_api+")"
@@ -223,7 +223,7 @@ class connect(threading.Thread):
              if cmd_type == "integer" and int(value) >= cmd_values["min"] and int(value) <= cmd_values["max"]:  cmd_ok = True
              elif cmd_type == "enum"  and value in cmd_values:                                                  cmd_ok = True
 
-             if cmd_ok == False:                              return "ERROR create_command: values not valid ("+device+", "+command+", "+value+")"
+             if cmd_ok == False:                              return "ERROR create_command: values not valid ("+device+", "+command+", "+str(value)+")"
              else:                                            return cmd
 
           else:                                               return "ERROR create_command: command not defined ("+device+", "+command+")"

@@ -15,7 +15,7 @@ import interfaces.broadlink.broadlink  as broadlink
 # API-class
 #-------------------------------------------------
 
-shorten_info_to = 30
+shorten_info_to = rm3config.shorten_info_to
 
 #-------------------------------------------------
 

@@ -17,9 +17,10 @@ DEBUG          = False
 
 # ---------------------------------
 
-config_dir     = rm3stage.data_dir+"/"
-config_server  = "server.json"
-config_status  = "status.json"
+config_dir      = rm3stage.data_dir+"/"
+config_server   = "server.json"
+config_status   = "status.json"
+shorten_info_to = 50
 
 # ---------------------------------
 

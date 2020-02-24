@@ -634,7 +634,7 @@ def devicesGetStatus(data,readAPI=False):
 # ---- end old code --- direct call ----------------------------------------------
 
       
-    # workaround: delete keys that are not required -> not sure, where other keys are added
+    # workaround: delete keys that are not required -> remoteAPI_end()
     devices_temp = {}
     for device in devices:
         devices_temp[device] = {}
@@ -767,19 +767,6 @@ def remoteAPI_end(data):
         "server_running"        :  time.time() - modules.start_time
         }
   
-    # Update device status (e.g. if send command and cache maybe is not up-to-date any more)      
-    if configFiles.cache_update and "DATA" in data and "devices" in data["DATA"]:
-        data["DATA"]["devices"] = devicesGetStatus(data["DATA"]["devices"],readAPI=True)
-        
-#------------------------------------ ERROR -----------
-#remote_server_test    |   File "/usr/src/app/server/modules/server_cmd.py", line 767, in RemoteList
-#remote_server_test    |     data                      = remoteAPI_end(data)
-#remote_server_test    |   File "/usr/src/app/server/modules/server_cmd.py", line 705, in remoteAPI_end
-#remote_server_test    |     data["DATA"]["devices"] = devicesGetStatus(data["DATA"]["devices"])
-#remote_server_test    | KeyError: 'DATA'
-#remote_server_test    | INFO:werkzeug:172.21.0.1 - - [01/Feb/2020 07:57:57] "GET /api/list/ HTTP/1.1" 500 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~        
-
     return data
 
 
@@ -860,8 +847,8 @@ def Remote(device,button):
         
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Button"] = button
-        #data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,button)
-        data["REQUEST"]["Return"] = queueSend.add2queue([[interface,device,button,""]])
+        data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,button)
+        #data["REQUEST"]["Return"] = queueSend.add2queue([[interface,device,button,""]])
         
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
 
@@ -1072,6 +1059,7 @@ def RemoteOnOff(device,button):
 
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
+        #data["REQUEST"]["Return"]    = deviceAPIs.send(interface,device,button)
         data["REQUEST"]["Return"]    = queueSend.add2queue([[interface,device,button,status]])
 
         #logging.info("Start API CALL - 6 - " + method)

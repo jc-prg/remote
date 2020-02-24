@@ -41,6 +41,7 @@ class queueApiCalls (threading.Thread):
        '''loop running in the background'''
        
        logging.info( "Starting " + self.name )
+       count = 0
        while not self.stopProcess:
        
            logging.debug(".")
@@ -51,7 +52,15 @@ class queueApiCalls (threading.Thread):
              #logging.info("."+command[1]+command[2])
              
            else:
-             time.sleep(self.wait)             
+             time.sleep(self.wait)
+             
+             # send life sign from time to time
+             if count * self.wait > 360:
+                tt = time.time()
+                logging.warn("Queue running "+str(tt))
+                count = 0
+
+           count += 1             
              
        logging.info( "Exiting " + self.name )
        
