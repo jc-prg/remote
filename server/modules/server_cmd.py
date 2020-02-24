@@ -697,7 +697,7 @@ def setButtonValue(device,button,state):
         return "OK"
         
     else:
-        logging.warn("setButtonValue: Wrong method ("+method+")")
+        logging.warn("setButtonValue: Wrong method ("+method+","+device+","+button+")")
         return "ERROR: Wrong method ("+method+")"
 
 
@@ -887,8 +887,6 @@ def RemoteSet(device,command,value):
         data["REQUEST"]["Button"] = command
         #data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,command,value)
         data["REQUEST"]["Return"] = queueSend.add2queue([[interface,device,command,value]])
-        
-        logging.error(data["REQUEST"]["Return"])
         
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
 
