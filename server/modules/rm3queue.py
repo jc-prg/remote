@@ -87,8 +87,13 @@ class queueApiCalls (threading.Thread):
           
           if self.query_send == "send":   
              try:
-                value  = state
-                result = self.device_apis.send(interface,device,button,value)
+                if state == "":
+                  value = ""
+                  mode  = "button"
+                else:
+                  value = state
+                  mode  = "value"
+                result = self.device_apis.send(interface,device,button,value,mode)
              except Exception as e:
                 result = "ERROR queue query_list: " + str(e)
 
