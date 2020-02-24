@@ -46,9 +46,13 @@ class broadlinkAPI():
    def connect(self):
        '''Connect / check connection'''
        
-       self.api  = broadlink.rm((self.api_config["IPAddress"], self.api_config["Port"]), self.api_config["MACAddress"])     
-       if self.api.auth(): self.status = "Connected"
-       else:               self.status = "IR Device not available (not found or no access)"
+       try:
+         self.api  = broadlink.rm((self.api_config["IPAddress"], self.api_config["Port"]), self.api_config["MACAddress"])     
+         if self.api.auth(): self.status = "Connected"
+         else:               self.status = "IR Device not available (not found or no access)"
+       except e as Exception:
+         self.status = "ERROR IR Device: "+str(e)
+         logging.error(self.status)
     
        return self.status
        
