@@ -6,6 +6,7 @@
 
 export REMOTE_CURRENT_STAGE="test"
 export REMOTE_IS_TEST="True"
+export REMOTE_GIT_BRANCH="dev"
 
 # Ports
 export REMOTE_CLIENT_PORT=83
@@ -34,4 +35,5 @@ export REMOTE_DOCKERIMAGE_CLIENT="php:7.1-apache"
 #---------------------------------------------
 export THIS_IS_THE_PROJECT_TEMPLATE="Please edit not here, but the orginial configuration file. This files is created using a template."
 export DOLLAR="$"
+export D="$"
 
