@@ -819,8 +819,8 @@ def Remote(device,button):
         
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Button"] = button
-        data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,button)
-        #data["REQUEST"]["Return"] = queueSend.add2queue([[interface,device,button,""]])
+        #data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,button)
+        data["REQUEST"]["Return"] = queueSend.add2queue([[interface,device,button,""]])
         
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
 
@@ -978,10 +978,7 @@ def RemoteOnOff(device,button):
         else:                                             presets = {}
         
         # delete DATA (less data to be returned via API)
-        data["DATA"]    = {}
         status          = ""
-
-        #logging.info("Start API CALL - 4 - " + method)
 
 ############### need for action ##
  # - if multiple values, check definition
@@ -991,55 +988,49 @@ def RemoteOnOff(device,button):
         if method == "record":
         
           logging.info("RemoteOnOff: " +device+"/"+button+" ("+interface+"/"+method+")")
+          
+          if button == "on-off" or button == "on" or button == "off":  value = "power"
+          else:                                                        value = button
+          
+          device_status  = getStatus(device,value)
         
-          statPower = getStatus(device,"power")
-          statTV    = getStatus(device,"radiotv")
-          statMute  = getStatus(device,"mute")
-          statVol   = getStatus(device,"vol")
-   
           # buttons ON / OFF
           if button == "on-off":
-              if statPower == "OFF": status = "ON" 
-              else:                  status = "OFF"
-          elif button == "on":       status = "ON" 
-          elif button == "off":      status = "OFF" 
+              if device_status == "OFF": status = "ON" 
+              else:                      status = "OFF"
+          elif button == "on":           status = "ON" 
+          elif button == "off":          status = "OFF" 
               
           # TV - change mode between TV and Radio (specific for Authors receiver from TOPFIELD!)
           elif button == "radiotv":
-              if statTV == "TV":     status = "RADIO"
-              else:                  status = "TV"
+              if device_status == "TV":  status = "RADIO"
+              else:                      status = "TV"
               
           # change mute on/off
           elif button == "mute":
-              if statMute == "OFF":  status = "ON"
-              else:                  status = "OFF"
+              if device_status == "OFF": status = "ON"
+              else:                      status = "OFF"
           
           # document volume
           elif "vol-" in button:
-              status = statVol
-              if statVol > 0:        status = statVol - 1
+              status = device_status
+              if device_status > 0:        status = device_status - 1
           elif "vol+" in button:
-              status = statVol
-              if statVol < 69:       status = statVol + 1  # max base on receiver -> change to setting per device # !!!!
+              status = status
+              if device_status < 69:       status = device_status + 1  # max base on receiver -> change to setting per device # !!!!
              
         # if values via API, no additional need for checks (as done by API ...)
         elif method == "query":
           logging.info("RemoteOnOff: " +device+"/"+button+" ("+interface+"/"+method+")")
           status = ""
-        
-        #logging.info("Start API CALL - 5 - " + method)
-
+          
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
-        #data["REQUEST"]["Return"]    = deviceAPIs.send(interface,device,button)
         data["REQUEST"]["Return"]    = queueSend.add2queue([[interface,device,button,status]])
-
-        #logging.info("Start API CALL - 6 - " + method)
-
+        
         refreshCache()
+        data["DATA"]                 = {}
         data                         = remoteAPI_end(data)        
-
-        #logging.info("End   API CALL - 7 - " + method)
 
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
         return data

@@ -82,18 +82,15 @@ class queueApiCalls (threading.Thread):
        
           interface,device,button,state = command
           
-          logging.debug("Queue: Execute "+self.name+" - "+str(interface)+":"+str(device)+":"+str(button))
+          logging.debug("Queue: Execute "+self.name+" - "+str(interface)+":"+str(device)+":"+str(button)+":"+str(state))
           logging.debug(str(command))
           
           if self.query_send == "send":   
              try:
-                if state == "":
-                  value = ""
-                  mode  = "button"
-                else:
-                  value = state
-                  mode  = "value"
-                result = self.device_apis.send(interface,device,button,value,mode)
+                result = self.device_apis.send(interface,device,button,state)
+                # -> if query and state ist set, create command
+                # -> if record and state is set, record new value
+                
              except Exception as e:
                 result = "ERROR queue query_list: " + str(e)
 
