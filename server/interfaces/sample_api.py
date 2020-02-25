@@ -24,6 +24,7 @@ class sampleAPI():
        
        self.api_name        = api_name       
        self.api_description = "Sample API Description"
+       self.method          = "query" # or "record"
        self.working         = False
        
        logging.info("... "+self.api_name+" - " + self.api_description)

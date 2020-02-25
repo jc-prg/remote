@@ -31,6 +31,7 @@ class eiscpAPI():
        self.api_config      = rm3json.read(rm3config.interfaces+self.api_name)
        self.api_ip          = self.api_config["IPAddress"]
        self.api_timeout     = 5
+       self.method          = "query"
        self.working         = False
        
        logging.info("... "+self.api_name+" - " + self.api_description)

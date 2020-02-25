@@ -32,7 +32,8 @@ class kodiAPI():
        self.api_url         = "http://"+str(self.api_config["IPAddress"])+":"+str(self.api_config["Port"])+"/jsonrpc"
        self.working         = False
        self.status          = "Started"
-       
+       self.method          = "query"
+
        logging.info("... "+self.api_name+" - " + self.api_description)
        logging.debug(self.api_url)
        

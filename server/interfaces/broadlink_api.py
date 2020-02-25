@@ -39,6 +39,7 @@ class broadlinkAPI():
        self.api_description = "Infrared Broadlink RM3"
        self.api_config      = rm3json.read(rm3config.interfaces+self.api_name)
        self.working         = False
+       self.method          = "record"
        
        self.api_config["Port"]       = int(self.api_config["Port"])
        self.api_config["MACAddress"] = netaddr.EUI(self.api_config["MACAddress"])
