@@ -595,55 +595,27 @@ def devicesGetStatus(data,readAPI=False):
     
         if "status" in devices[device] and "method" in data[device]:
           
+          # get status values from config files
           for value in devices[device]["status"]:
               data[device]["status"][value] = devices[device]["status"][value]
                
-          # else request status from API -> using the queue
+          # request update of status from API -> will be written via "interface.py"
           if data[device]["method"] == "query" and readAPI == True:
           
               interface = data[device]["interface"]
-              queueQuery.add2queue ([4])                                  # wait a few seconds before queries
+              queueQuery.add2queue ([2])                                                 # wait a few seconds before queries
               queueQuery.add2queue ([[interface,device,data[device]["query_list"],""]])  # add querylist per device
-
-# ---- tried out --- using a queue for queries -----------------------------------
-#
-#             querylist = ""
-#             for x in data[device]["query_list"]: querylist += x+"||"
-#             queryRemote.add2queue( [[interface,device,querylist]] );
-#
-# ---- old code --- direct call --------------------------------------------------          
-#
-#              if deviceAPIs.status(interface) == "Connected":
-#
-#                  for value in data[device]["query_list"]:              
-#                  
-#                      result = deviceAPIs.query(interface,device,value)
-#                      
-#                      if not "ERROR" in str(result):
-#                          devices[device]["status"][value]      = str(result)
-#                          data[device]["status"][value]         = str(result)
-#
-#                      else:
-#                          devices[device]["status"][value]      = "Error"
-#                          data[device]["status"][value]         = "Error"
-#                          logging.error(result)
-#                  
-#              else:
-#                   devices[device]["status"][value] = "Not connected"
-
-# ---- end old code --- direct call ----------------------------------------------
-
-      
+   
     # workaround: delete keys that are not required -> remoteAPI_end()
-    devices_temp = {}
-    for device in devices:
-        devices_temp[device] = {}
-        for key in devices[device]:
-            if key in relevant_keys:
-               devices_temp[device][key] = devices[device][key]                 
-    devices = devices_temp
-                            
-    configFiles.write(modules.devices + modules.active, devices)
+    #devices_temp = {}
+    #for device in devices:
+    #    devices_temp[device] = {}
+    #    for key in devices[device]:
+    #        if key in relevant_keys:
+    #           devices_temp[device][key] = devices[device][key]                 
+    #devices = devices_temp
+    #                        
+    #configFiles.write(modules.devices + modules.active, devices)
     return data
 
 
