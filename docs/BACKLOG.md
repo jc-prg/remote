@@ -32,6 +32,9 @@
 * OK - Use queue to execute commands
 * OK - redesign / simplify module structure
 * OK - Config files analog to mbox
+* OK - Queue for send and query
+* OK - Caching for interfaces
+* OK - Set value via API (e.g. volume)
 
 * IN PROGRESS - add KODIjson (basic commands work, to be tested and additional commands to be added)
 
@@ -46,6 +49,7 @@
 * OK - reset device status / audio settings
 * OK - all API calls return a code 200 (instead of 404 or 500)
 
+* container based testing
 * main structure of data files is OK
 * more detailled API testing (e.g. creating, modifing, changing a remote control)
 * all defined image files are available
@@ -111,11 +115,12 @@
 * OK - check device status when pressed button / send command or makro
 * OK - check / show if device API is connected
 * OK - basic dark scheme (to be optimized)
+* OK - dark scheme for menu
+* OK - dark scheme for jc-msg
+* OK - audio volume via slider
 
 * IN PROGRESS - edit device parameters via settings page (description, driver, image)
 
-- dark scheme for menu
-- dark scheme for jc-msg
 - edit device parameters via settings page (status definition)
 - edit device parameters via settings page (remote control)
 
