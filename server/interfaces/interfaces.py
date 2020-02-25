@@ -116,9 +116,10 @@ class connect(threading.Thread):
             if mode == "button":   button_code = self.get_command( call_api, "buttons", device, button ) 
             elif mode == "value":  button_code = self.create_command( call_api, device, button, value ) 
             
-            if call_api in self.api: return_msg = self.api[call_api].send(device,button_code)
-            else:                    return_msg = "ERROR: API not available ("+call_api+")"
-        else:                        return_msg = "ERROR: API not connected ("+call_api+")"
+            if "ERROR" in button_code: return_msg = "ERROR: could not read/create command from button code (send/"+mode+"/"+button_code+")"
+            elif call_api in self.api: return_msg = self.api[call_api].send(device,button_code)
+            else:                      return_msg = "ERROR: API not available ("+call_api+")"
+        else:                          return_msg = "ERROR: API not connected ("+call_api+")"
         
         if "ERROR" in str(return_msg): logging.warn(return_msg)
         return return_msg
@@ -150,9 +151,11 @@ class connect(threading.Thread):
 
         if self.api[call_api].status == "Connected":       
             button_code = self.get_command( call_api, "queries", device, button )
-            if call_api in self.api: return_msg = self.api[call_api].query(device,button_code)
-            else:                    return_msg = "ERROR: API not available ("+str(call_api)+")"
-        else:                        return_msg = "ERROR: API not connected ("+str(call_api)+")"
+            
+            if "ERROR" in button_code: return_msg = "ERROR: could not read/create command from button code (query/"+device+"/"+button+")"
+            elif call_api in self.api: return_msg = self.api[call_api].query(device,button_code)
+            else:                      return_msg = "ERROR: API not available ("+str(call_api)+")"
+        else:                          return_msg = "ERROR: API not connected ("+str(call_api)+")"
 
         if "ERROR" in str(return_msg): logging.warn(return_msg)
         return return_msg

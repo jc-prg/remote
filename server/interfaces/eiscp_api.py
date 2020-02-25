@@ -96,7 +96,7 @@ class eiscpAPI():
          except Exception as e:
            self.api.disconnect()
            self.working = False
-           return "ERROR "+self.api_name+" - send: " + str(e)
+           return "ERROR "+self.api_name+" - send ("+button_code+"): " + str(e)
            
        else:
          self.working = False
@@ -127,7 +127,7 @@ class eiscpAPI():
          except Exception as e:
            self.api.disconnect()
            self.working = False
-           return "ERROR "+self.api_name+" - query: " + str(e)
+           return "ERROR "+self.api_name+" - query ("+button_code+"): " + str(e)
            
          if "ERROR" in result: 
            self.working = False
@@ -173,7 +173,7 @@ class eiscpAPI():
          self.api.command('source pc')
          self.api.disconnect()
        except Exception as e:
-         return "ERROR "+self.api_name+": "+str(e)
+         return "ERROR "+self.api_name+" test: "+str(e)
 
        self.working = False
        return "OK"
