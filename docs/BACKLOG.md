@@ -110,7 +110,7 @@
 * OK - optimized directory structure to prepare additional device/API integration
 * OK - added display (with queried information from API)
 * OK - correct show / hide menu
-* OK - get display size (small,middle,big) from remote config file
+* OK - get display size (small,middle,big) from remote config file -> "DISPLAY||big"
 * OK - create license free icon set (sources see README.md)
 * OK - check device status when pressed button / send command or makro
 * OK - check / show if device API is connected
@@ -118,6 +118,7 @@
 * OK - dark scheme for menu
 * OK - dark scheme for jc-msg
 * OK - audio volume via slider
+* OK - description on line in remote -> "LINE||select device"
 
 * IN PROGRESS - edit device parameters via settings page (description, driver, image)
 
