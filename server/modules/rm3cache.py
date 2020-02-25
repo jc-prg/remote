@@ -170,8 +170,6 @@ class configCache (threading.Thread):
         write status
         '''
         
-        logging.info("WRITE STATUS ...")
-
         config_file = rm3config.devices + rm3config.active
         
         # clear config file ...

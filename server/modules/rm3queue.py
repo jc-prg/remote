@@ -114,8 +114,6 @@ class queueApiCalls (threading.Thread):
        else:
           time.sleep(float(command))
         
-       # save device infos if query
-          #logging.warn(str(devices))
     
     #------------------       
 

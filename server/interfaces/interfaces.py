@@ -58,7 +58,6 @@ class connect(threading.Thread):
            self.available[key] = self.api[key].api_description
 
         while not self.stopProcess:
-        
            time.sleep(self.wait)
            self.reconnect()
              
@@ -145,7 +144,9 @@ class connect(threading.Thread):
     #-------------------------------------------------
 
     def record(self, call_api, device, button ):
-        '''record a command'''
+        '''
+        record a command (e.g. from IR device)
+        '''
     
         return_msg = ""
         logging.debug("RECORD "+call_api+" / "+device+" - "+button)
@@ -161,7 +162,9 @@ class connect(threading.Thread):
 #-------------------------------------------------
 
     def query(self, call_api, device, button):
-        '''query an information'''
+        '''
+        query an information from device via API
+        '''
 
         return_msg = ""
         logging.debug("QUERY "+call_api+" / "+device+" - "+button)
@@ -180,6 +183,10 @@ class connect(threading.Thread):
 #-------------------------------------------------
 
     def save_status(self, device, button, status):
+        '''
+        save status of button to active.json
+        '''
+    
         return_msg = ""
         active        = self.configFiles.read_status()
         
