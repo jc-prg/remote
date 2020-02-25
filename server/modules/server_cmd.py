@@ -1039,7 +1039,7 @@ def RemoteOnOff(device,button):
                
                  if   direction == "+" and current_status < maximum: status = current_status + 1
                  elif direction == "+":                              dont_send = True
-                 elif direction == "-" and current_status < minimum: status = current_status - 1
+                 elif direction == "-" and current_status > minimum: status = current_status - 1
                  elif direction == "-":                              dont_send = True
                  
             else:
