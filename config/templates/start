@@ -2,7 +2,7 @@
 
 external="${EXTERNAL_DRIVE}"
 mountpoint="${EXTERNAL_MOUNT}"
-option=${D}1
+config^=${D}1
 
 echo
 echo "-------------------------------------"
@@ -16,7 +16,7 @@ if [ whoami != root ]; then
   exit 0
 fi
 
-if [ ! ${D}option ]; then
+if [ ! ${D}config ]; then
   echo
   echo "Press key - your options:"
   echo " 'q' - exit"
@@ -30,7 +30,7 @@ if [ ! ${D}option ]; then
        printf "\n... quitting the program.\n"
        exit 0
     elif [[ ${D}k = s ]] ; then
-       option="start"
+       config="start"
        printf "\n... starting (via docker-compose).\n"
        break
     elif [[ ${D}k = r ]] ; then
@@ -59,7 +59,7 @@ elif [ ${D}config == "update" ]; then
     cd ${DOCKERCOMPOSE_DIR}
     docker-compose -f ${REMOTE_DIR}/docker-compose.yml stop
     git stash
-    git pull -b ${REMOTE_GIT_BRANCH}
+    git pull
     cd config/
     ./create ${REMOTE_CURRENT_STAGE}
     cd ..
