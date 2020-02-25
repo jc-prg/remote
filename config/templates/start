@@ -57,14 +57,20 @@ elif [ ${D}config == "restart" ]; then
     ${DOCKERCOMPOSE_DIR}/docker-compose -f ${REMOTE_DIR}/docker-compose.yml restart
     
 elif [ ${D}config == "update" ]; then
-    cd ${DOCKERCOMPOSE_DIR}
-    docker-compose -f ${REMOTE_DIR}/docker-compose.yml stop
+
+    echo "Change dir"
+    cd ${REMOTE_DIR}
+    echo "Stop docker"
+    ${DOCKERCOMPOSE_DIR}/docker-compose -f ${REMOTE_DIR}/docker-compose.yml stop
+    echo "Update from repository"
     git stash
     git pull
+    echo "Create new configuration"
     cd config/
     ./create ${REMOTE_CURRENT_STAGE}
     cd ..
-    docker-compose -f ${REMOTE_DIR}/docker-compose.yml up -d
+    echo "Restart docker"
+    ${DOCKERCOMPOSE_DIR}/docker-compose -f ${REMOTE_DIR}/docker-compose.yml up -d
 
 else
     echo "not found."
