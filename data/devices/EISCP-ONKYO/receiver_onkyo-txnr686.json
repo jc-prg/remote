@@ -43,7 +43,7 @@
 	       	"audio-info"    : "audio-information=query",
 	       	"video-info"    : "video-information=query",
 	       	"a-v-sync"	: "a-v-sync=query",
-	       	"tuning"	: "tuning=query",
+	       	"tuning"	: "tuning=query||+' Hz'",
 	       	"sleep-set"	: "sleep-set=qstn",
 	       	"listening"     : "listening-mode=query"
     	       	},

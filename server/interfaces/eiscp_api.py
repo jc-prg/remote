@@ -123,7 +123,7 @@ class eiscpAPI():
          button_code = command_param[0].replace("="," ")        
          logging.debug("Button-Code: "+button_code[:shorten_info_to]+"... ("+self.api_name+")")
          try:
-           result  = self.api.command(button_code)          # ??????????????????
+           result  = self.api.command(button_code)
            self.api.disconnect()
          except Exception as e:
            self.api.disconnect()
@@ -138,12 +138,16 @@ class eiscpAPI():
          logging.debug(str(result))
 
          # if || try to extract data from the result
-         if "||" in command: 
+         if "||" in command:
+           if "+'" in command_param[1]: new_cmd = "str(result)"+command_param[1]
+           else:                        new_cmd = "result"+command_param[1]
+           
            try:
-             result2 = eval("result"+command_param[1])
+             result2 = eval(new_cmd)
              result  = result2
-           except:
-             logging.warning("Not able to extract data: result"+command_param[1])
+             logging.debug(new_cmd+": "+str(result))
+           except Exception as e:
+             logging.warning("Not able to extract data: "+new_cmd+" / "+str(e))
            
        else:
          self.working = False

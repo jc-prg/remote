@@ -1,8 +1,9 @@
 {
     "data": {
 	"description" : "Kodi Media-Center",
-        "method"  : "query",
-        "buttons"   : {
+        "method"      : "query",
+        "url"         : "http://media-center:8080/",
+        "buttons"     : {
 		"home"		: "GUI.ActivateWindow({'window':'home'})",
 		"weather"	: "GUI.ActivateWindow({'window':'weather'})",
 		"pictures"	: "GUI.ActivateWindow({'window':'pictures'})",
@@ -37,7 +38,16 @@
 	        "mute"		: "Application.GetProperties({'properties': ['muted']})||['result']['muted']",
 	        "power"		: "jc.PowerStatus()||['result']['power']"
 		},
-	"values" : {},
+	"commands": {
+		"power"		: { "type" : "enum" },
+		"mute"		: { "type" : "enum" },
+		"vol"		: { "type" : "integer" }
+		},
+	"values"  : {
+		"power"		: [ "ON" ],
+		"mute"		: [ "False", "True" ],
+		"vol"		: { "min" : 0 , "max" : 100 }
+		},
 	"display" : {}
 	}
 }

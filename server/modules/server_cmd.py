@@ -54,7 +54,7 @@ def RmReadData(selected=[]):
 
     data    = {}
     makros  = ["dev-on","dev-off","scene-on","scene-off","makro"]
-    btnfile = ["buttons","queries","values","commands"]
+    btnfile = ["buttons","queries","values","commands","url"]
 
     # if update required
     if configFiles.cache_update or "_api" not in configFiles.cache: 
@@ -96,6 +96,7 @@ def RmReadData(selected=[]):
                 if "method"   in buttons["data"]:   data_temp["method"]    = buttons["data"]["method"]              
                 if "values"   in buttons["data"]:   data_temp["values"]    = buttons["data"]["values"]              
                 if "commands" in buttons["data"]:   data_temp["commands"]  = buttons["data"]["commands"] 
+                if "url"      in buttons["data"]:   data_temp["url"]       = buttons["data"]["url"] 
                 
                 if "queries"  in buttons["data"]:
                     data_temp["queries"]         = buttons["data"]["queries"]
