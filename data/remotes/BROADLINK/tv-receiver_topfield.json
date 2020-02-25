@@ -1,7 +1,11 @@
 {
     "data": {
         "description": "TV-Receiver: TOPFIELD1",
-        "display": {},
+        "display": {
+            "Source": "radiotv",
+            "Mute": "mute",
+            "Volume": "vol"
+            },
         "remote": [
             "radiotv",
             ".",
@@ -38,6 +42,7 @@
             "subtitle",
             "exit",
             "LINE",
+            "DISPLAY",
             "red",
             "green",
             "yellow",

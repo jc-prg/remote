@@ -39,11 +39,17 @@
         "description": "TV-Receiver: TOPFIELD1",
         "method": "record",
         "queries": {},
-        "values": {
-            "radiotv": [
-                "RADIO",
-                "TV"
-            ]
+       	"commands" :{
+       		"vol"	  : { "command" : "",  "type" : "integer" },
+       		"power"   : { "command" : "",  "type" : "enum" },
+       		"radiotv" : { "command" : "",  "type" : "enum" },
+       		"mute"    : { "command" : "",  "type" : "enum" }
+       	},
+       	"values" : {
+       		"power"   : [ "ON", "OFF" ],
+       		"vol"     : { "min" : 1, "max" : 69 },
+       		"mute"    : [ "ON", "OFF" ],
+                "radiotv" : [ "RADIO", "TV" ]
         }
     }
 }
