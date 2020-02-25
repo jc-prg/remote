@@ -112,7 +112,7 @@ function show_status( color, wait ) {
 	
 //-----------------------------------------
 
-function show_volume (volume, maximum, vol_color, novol_color="") {
+function show_volume( volume, maximum, vol_color, novol_color="" ) {
 
 	var volume  = Math.round( volume * 20 / maximum );
 	var vol_str = "<font color='" + vol_color + "'>";
@@ -250,7 +250,7 @@ function check_status(data={}) {
 	// set colors
 	var vol_color	   = "white";
 	var vol_color2	   = "yellow";
-	var novol_color    = "lightblue";
+	var novol_color    = "darkgray";
 	
 	// if data -> callback of sendCmd (ON/OFF) -> check_status_inactive()
 	check_status_inactive(data);
