@@ -11,7 +11,7 @@ echo " Start jc://remote/${REMOTE_CURRENT_STAGE}/"
 echo " (by Christoph Kloth)"
 echo "-------------------------------------"
 
-if [ $user != root ]; then 
+if [ ${D}user != "root" ]; then 
   echo
   echo "Please run as root!"
   exit 0
