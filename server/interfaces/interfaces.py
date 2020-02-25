@@ -21,7 +21,7 @@ class connect(threading.Thread):
     class to control all interfaces including a continuous check if interfaces still available
     '''
 
-    def __init__(self):
+    def __init__(self,configFiles):
         '''
         Initialize Interfaces
         '''
@@ -31,6 +31,7 @@ class connect(threading.Thread):
         self.available   = {}
         self.stopProcess = False
         self.wait        = 60       # time for reconnects
+        self.configFiles = configFiles
         self.name        = "jc://remote/interfaces/"
 
         self.methods   = {
@@ -70,10 +71,8 @@ class connect(threading.Thread):
         return method of interface
         '''
         
-        if interface in self.api:
-          return self.api[interface].method
-        else:
-          return "ERROR: interface not defined ("+interface+")"
+        if interface in self.api:   return self.api[interface].method
+        else:                       return "ERROR: interface not defined ("+interface+")"
     
     #-------------------------------------------------
     
@@ -104,17 +103,16 @@ class connect(threading.Thread):
     
     def status(self,interface=""):
         '''
-        return status of all devices
+        return status of all devices or a selected device
         '''
         
-        if interface == "":
-           status = {}
-           for key in self.api: status[key] = self.api[key].status
-           return status
-        elif interface in self.api:
-           return self.api[interface].status
-        else:
-           return "ERROR: API not found ("+interface+")."
+        status_all_interfaces = {}
+        for key in self.api: 
+           status_all_interfaces[key] = self.api[key].status
+
+        if interface == "":          return status_all_interfaces
+        elif interface in self.api:  return self.api[interface].status
+        else:                        return "ERROR: API not found ("+interface+")."
     
     #-------------------------------------------------
 
@@ -122,20 +120,21 @@ class connect(threading.Thread):
         '''check if API exists and send command'''
         
         return_msg = ""
-        logging.info("SEND "+call_api+" / "+device+" - "+button)
 
         if self.api[call_api].status == "Connected":
             method = self.method(call_api)
-            if  method == "record":            button_code = self.get_command( call_api, "buttons", device, button ) 
-            elif method(call_api) == "query":  button_code = self.get_command( call_api, "buttons", device, button )
-            else:                              button_code = self.create_command( call_api, device, button, value ) 
+            logging.info("SEND "+call_api+" / "+device+" - "+button+" ("+str(value)+")")
+            
+            if  method == "record":                  button_code = self.get_command( call_api, "buttons", device, button ) 
+            elif method == "query" and value == "":  button_code = self.get_command( call_api, "buttons", device, button )
+            else:                                    button_code = self.create_command( call_api, device, button, value ) 
             
             if "ERROR" in button_code: return_msg = "ERROR: could not read/create command from button code (send/"+mode+"/"+button+"); " + button_code
             elif call_api in self.api: return_msg = self.api[call_api].send(device,button_code)
             else:                      return_msg = "ERROR: API not available ("+call_api+")"
             
             if not "ERROR" in return_msg and self.api[call_api].method == "record" and value != "":
-              self.save_status(device, button, value)
+               self.save_status(device, button, value)
            
         else:                          return_msg = "ERROR: API not connected ("+call_api+")"
         
@@ -182,16 +181,20 @@ class connect(threading.Thread):
 
     def save_status(self, device, button, status):
         return_msg = ""
-        active       = rm3json.read(rm3config.devices + rm3config.active)
+        active        = self.configFiles.read_status()
         
+        if button == "on" or button == "off" or button == "on-off":
+           button = "power"
+
         if device in active:
           if not "status" in active[device]: active[device]["status"] = {}
           active[device]["status"][button] = status
           return_msg = "OK"
+          
         else:
           return_msg = "ERROR record_status: device not found"
         
-        rm3json.write( rm3config.devices + rm3config.active, active)
+        self.configFiles.write_status(active)
         return return_msg
 
 
@@ -203,15 +206,15 @@ class connect(threading.Thread):
         '''
 
         # read data -> to be moved to cache?!
-        active       = rm3json.read(rm3config.devices + rm3config.active)
+        active        = self.configFiles.read_status()
         
         if device in active:
           device_code  = active[device]["device"]
-          buttons      = rm3json.read(rm3config.commands + api + "/" + device_code)
+          buttons      = self.configFiles.read(rm3config.commands + api + "/" + device_code)
     
           # add button definitions from default.json if exist
           if rm3json.ifexist(rm3config.commands + api + "/default"):
-             buttons_default = rm3json.read(rm3config.commands + api + "/default")
+             buttons_default = self.configFiles.read(rm3config.commands + api + "/default")
              for key in buttons_default["data"][button_query]:
                buttons["data"][button_query][key] = buttons_default["data"][button_query][key]
 
@@ -229,15 +232,15 @@ class connect(threading.Thread):
         '''
         
         # read data -> to be moved to cache?!
-        active       = rm3json.read(rm3config.devices + rm3config.active)
+        active        = self.configFiles.read_status()
         
         if device in active:
           device_code  = active[device]["device"]
-          buttons      = rm3json.read(rm3config.commands + api + "/" + device_code)
+          buttons      = self.configFiles.read(rm3config.commands + api + "/" + device_code)
     
           # add button definitions from default.json if exist
           if rm3json.ifexist(rm3config.commands + api + "/default"):
-             buttons_default = rm3json.read(rm3config.commands + api + "/default")
+             buttons_default = self.configFiles.read(rm3config.commands + api + "/default")
              if not "commands" in buttons["data"]: buttons["data"]["commands"] = {}
              if not "values"   in buttons["data"]: buttons["data"]["values"]   = {}
              

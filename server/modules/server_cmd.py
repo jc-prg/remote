@@ -59,7 +59,7 @@ def RmReadData(selected=[]):
     # if update required
     if configFiles.cache_update or "_api" not in configFiles.cache: 
     
-        data["devices"] = configFiles.read(modules.devices + modules.active)
+        data["devices"] = configFiles.read_status()
         data["scenes"]  = configFiles.read(modules.scenes  + modules.active)
         data["makros"]  = {}
     
@@ -179,7 +179,7 @@ def addDevice(device,interface,description):
     '''
     
     ## Check if exists    
-    active_json         = configFiles.read(modules.devices + modules.active)
+    active_json         = configFiles.read_status()
     
     if device in active_json:                                        return("WARN: Device " + device + " already exists (active).")
     if modules.ifexist(modules.commands +interface+"/"+device):    return("WARN: Device " + device + " already exists (devices).")
@@ -198,7 +198,7 @@ def addDevice(device,interface,description):
         "visible"   : "yes"    	
         }
     try:
-      configFiles.write(modules.devices + modules.active, active_json)
+      configFiles.write_status(active_json)
     except Exception as e:
       return "ERROR: " + str(e)
         
@@ -245,7 +245,7 @@ def addCommand2Button(device,button,command):
     add new command to button or change existing
     '''
 
-    config      = configFiles.read(modules.devices+modules.active)
+    config      = configFiles.read_status()
     interface   = config[device]["interface"]  
     device_code = config[device]["device"]  
     data        = configFiles.read(modules.commands+interface+"/"+device_code)
@@ -267,7 +267,7 @@ def addButton(device,button):
     add new button to remote layout
     '''
     
-    config      = configFiles.read(modules.devices+modules.active)
+    config      = configFiles.read_status()
     interface   = config[device]["interface"]  
     device_code = config[device]["device"]  
     data        = configFiles.read(modules.remotes+interface+"/"+device_code)
@@ -290,7 +290,7 @@ def deleteCmd(device, button):
     delete command (not button) from json config file
     '''
 
-    config      = configFiles.read(modules.devices+modules.active)
+    config      = configFiles.read_status()
     interface   = config[device]["interface"]  
     device_code = config[device]["device"]  
     data        = configFiles.read(modules.commands+interface+"/"+device_code)
@@ -315,7 +315,7 @@ def deleteButton(device, button_number):
     '''
 
     buttonNumber = int(button_number)
-    config       = configFiles.read(modules.devices+modules.active)
+    config       = configFiles.read_status()
     interface    = config[device]["interface"]  
     device_code  = config[device]["device"]  
     data         = configFiles.read(modules.remotes+interface+"/"+device_code)
@@ -338,7 +338,7 @@ def addTemplate(device,template):
     '''
 
     templates   = configFiles.read(modules.templates + template)
-    config      = configFiles.read(modules.devices + modules.active)
+    config      = configFiles.read_status()
     interface   = config[device]["interface"]
     device_code = config[device]["device"]
     data       = configFiles.read(modules.remotes + interface + "/" + device_code)
@@ -371,14 +371,14 @@ def changeVisibility(device,visibility):
     change visibility in device configuration (yes/no)
     '''
 
-    data = configFiles.read(modules.devices + modules.active)
+    data = configFiles.read_status()
     
     if device not in data.keys():
         return "Device '" + device + "' does not exists."
         
     elif visibility == "yes" or visibility == "no":
         data[device]["visible"] = visibility
-        configFiles.write(modules.devices + modules.active, data)
+        configFiles.write_status(data)
         return "OK: Change visibility for '" + device + "': " + visibility
         
     else:
@@ -393,7 +393,7 @@ def deleteDevice(device):
     '''
     
     devices              = {}
-    active_json          = configFiles.read(modules.devices + modules.active)
+    active_json          = configFiles.read_status()
     interface            = active_json[device]["interface"]
     device_code          = active_json[device]["device"]  
     
@@ -407,7 +407,7 @@ def deleteDevice(device):
         devices[entry] = active_json[entry]
         
     active_json = devices
-    configFiles.write(modules.devices + modules.active, active_json)
+    configFiles.write_status(active_json)
 
     try:    
       modules.delete(modules.remotes  + interface + "/" + device_code)
@@ -433,7 +433,7 @@ def editDevice(device,info):
     keys_remotes  = ["description"]
     
     # read central config file
-    active_json          = configFiles.read(modules.devices + modules.active)
+    active_json          = configFiles.read_status()
     if "ERROR" in active_json: return("ERROR: Device " + device + " doesn't exists (active).")
     
     interface            = active_json[device]["interface"]
@@ -466,7 +466,7 @@ def editDevice(device,info):
         i+=1
     
     # write central config file
-    try:                    configFiles.write(modules.devices + modules.active, active_json)
+    try:                    configFiles.write_status(active_json)
     except Exception as e:  
       logging.error("ERROR: could not write changes (active) - "+str(e))
       return("ERROR: could not write changes (active) - "+str(e))
@@ -498,7 +498,8 @@ def setStatus(device,key,value):
     '''
 
     status = configFiles.read_status()
-    
+        
+    # set status
     if key == "":
         key = "power"
       
@@ -589,7 +590,7 @@ def devicesGetStatus(data,readAPI=False):
     '''
 
     relevant_keys = ["status","visible","description","image","interface","label","device","main-audio"]
-    devices       = configFiles.read(modules.devices + modules.active)
+    devices       = configFiles.read_status()
     
     for device in devices: 
     
@@ -606,16 +607,6 @@ def devicesGetStatus(data,readAPI=False):
               queueQuery.add2queue ([2])                                                 # wait a few seconds before queries
               queueQuery.add2queue ([[interface,device,data[device]["query_list"],""]])  # add querylist per device
    
-    # workaround: delete keys that are not required -> remoteAPI_end()
-    #devices_temp = {}
-    #for device in devices:
-    #    devices_temp[device] = {}
-    #    for key in devices[device]:
-    #        if key in relevant_keys:
-    #           devices_temp[device][key] = devices[device][key]                 
-    #devices = devices_temp
-    #                        
-    #configFiles.write(modules.devices + modules.active, devices)
     return data
 
 
@@ -1238,22 +1229,18 @@ def RemoteDeleteDevice(device):
 
 #-------------------------------------------------
 
-deviceAPIs  = interfaces.connect()
-deviceAPIs.start()
-
 configFiles       = modules.configCache("configFiles")
 configFiles.start()
 
-queueSend         = modules.queueApiCalls("queueSend","send",deviceAPIs,setButtonValue)
+deviceAPIs        = interfaces.connect(configFiles)
+deviceAPIs.start()
+
+queueSend         = modules.queueApiCalls("queueSend", "send", deviceAPIs)
 queueSend.start()
 
-queueQuery        = modules.queueApiCalls("queueQuery","query",deviceAPIs,getButtonValue)
+queueQuery        = modules.queueApiCalls("queueQuery","query",deviceAPIs)
 queueQuery.config = configFiles
 queueQuery.start()
-
-#queryRemote  = modules.queryQueue("queryRemote",deviceAPIs,deviceStatusSet,deviceStatusGet)
-#queryRemote.start()
-#queryRemote.configFiles = configFiles
 
 #-------------------------------------------------
 # EOF

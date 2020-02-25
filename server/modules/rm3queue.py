@@ -9,7 +9,6 @@ import threading
 
 import modules
 import modules.rm3config     as rm3config
-import modules.rm3json       as rm3json
 
 
 #-------------------------------------------------
@@ -21,7 +20,7 @@ class queueApiCalls (threading.Thread):
     class to create a queue to send commands (or a chain of commands) to the devices
     '''
     
-    def __init__(self, name, query_send, device_apis, callback ):
+    def __init__(self, name, query_send, device_apis ):
        '''create queue, set name'''
     
        threading.Thread.__init__(self)
@@ -31,7 +30,6 @@ class queueApiCalls (threading.Thread):
        self.wait           = 0.1
        self.device_apis    = device_apis
        self.last_button    = "<none>"
-       self.callback       = callback
        self.config         = ""
        self.query_send     = query_send
 
@@ -75,7 +73,7 @@ class queueApiCalls (threading.Thread):
        
        # read device infos if query
        if self.config != "" and self.query_send == "query": 
-          devices  = self.config.read(modules.devices + modules.active)
+          devices  = self.config.read_status()
 
        # if is an array / not a number
        if "," in str(command):
@@ -94,10 +92,6 @@ class queueApiCalls (threading.Thread):
              except Exception as e:
                 result = "ERROR queue query_list: " + str(e)
 
-             if not "ERROR" in str(result) and state != "":
-                self.callback(device,button,state) 
-                self.last_button = device + "_" + button
-               
           elif self.query_send == "query":
              for value in button:
                 try:    
@@ -109,6 +103,9 @@ class queueApiCalls (threading.Thread):
 
                 if not "ERROR" in str(result):  devices[device]["status"][value] = str(result)
                 else:                           devices[device]["status"][value] = "Error"
+
+                if self.config != "" and not "ERROR" in str(result):
+                   self.config.write_status(devices)
                  
                 self.last_query = device + "_" + value
                 pass
@@ -117,9 +114,7 @@ class queueApiCalls (threading.Thread):
        else:
           time.sleep(float(command))
         
-       # read device infos if query
-       if self.config != "" and self.query_send == "query": 
-          self.config.write(modules.devices + modules.active, devices)
+       # save device infos if query
           #logging.warn(str(devices))
     
     #------------------       

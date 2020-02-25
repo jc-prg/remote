@@ -6,6 +6,7 @@
         "interface": "BROADLINK",
         "label": "Bluray Player",
         "status": {
+            "on-off": "ON",
             "power": "OFF"
         },
         "visible": "yes"
@@ -17,7 +18,7 @@
         "interface": "BROADLINK",
         "label": "Beamer",
         "status": {
-            "power": "ON"
+            "power": "OFF"
         },
         "visible": "yes"
     },
@@ -40,7 +41,8 @@
         "interface": "BROADLINK",
         "label": "Leinwand",
         "status": {
-            "power": "ON"
+            "on": "ON",
+            "power": "OFF"
         },
         "visible": "yes"
     },
@@ -84,7 +86,7 @@
         "status": {
             "": "Error",
             "a-v-sync": "0",
-            "audio-info": "HDMI 5,PCM,48 kHz,2.0 ch,All Ch Stereo,5.1 ch,",
+            "audio-info": "ANALOG,,,,All Ch Stereo,5.1 ch,",
             "audio-source": "hdmi",
             "dimmer": "dark",
             "display": "('selector-volume-1line', 'default-2line')",
@@ -93,11 +95,11 @@
             "power": "on",
             "sleep-set": "N/A",
             "source": "pc",
-            "temperature": "C 31",
+            "temperature": "C 32",
             "timer": "N/A",
             "tuning": "67584",
-            "video-info": "HDMI 5,1280 x 720p   60 Hz,RGB,24bit,MAIN,1280 x 720p   60 Hz,RGB,24bit,,",
-            "vol": "50"
+            "video-info": "No Video,Unknown,,24bit,,Unknown,,24bit,,",
+            "vol": "43"
         },
         "visible": "yes"
     },
