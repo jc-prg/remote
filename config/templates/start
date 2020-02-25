@@ -2,7 +2,8 @@
 
 external="${EXTERNAL_DRIVE}"
 mountpoint="${EXTERNAL_MOUNT}"
-config^=${D}1
+config=${D}1
+user=`whoami`
 
 echo
 echo "-------------------------------------"
@@ -10,7 +11,7 @@ echo " Start jc://remote/${REMOTE_CURRENT_STAGE}/"
 echo " (by Christoph Kloth)"
 echo "-------------------------------------"
 
-if [ whoami != root ]; then 
+if [ $user != root ]; then 
   echo
   echo "Please run as root!"
   exit 0
