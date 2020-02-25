@@ -185,7 +185,7 @@ def addDevice(device,interface,description):
     ## Check if exists    
     active_json         = configFiles.read_status()
     
-    if device in active_json:                                        return("WARN: Device " + device + " already exists (active).")
+    if device in active_json:                                      return("WARN: Device " + device + " already exists (active).")
     if modules.ifexist(modules.commands +interface+"/"+device):    return("WARN: Device " + device + " already exists (devices).")
     if modules.ifexist(modules.remotes  +interface+"/"+device):    return("WARN: Device " + device + " already exists (remotes).") 
     
@@ -659,9 +659,11 @@ def setButtonValue(device,button,state):
         if button == "on":          state  = "ON"
         if button == "off":         state  = "OFF"
         
-        setStatus(device,button,state)
+        msg = setStatus(device,button,state)
         configFiles.cache_time = 0
-        return "OK"
+        
+        if "ERROR" in msg: return msg
+        else:              return "OK"
         
     else:
         logging.warn("setButtonValue: Wrong method ("+method+","+device+","+button+")")
@@ -777,13 +779,13 @@ def RemoteCheckUpdate(APPversion):
 
         if (APPversion == modules.APPversion):
             d["ReturnCode"]   = "800"
-            d["ReturnMsg"]    = "OK: "+modules.ErrorMsg("800")
+            d["ReturnMsg"]    = "OK: "  + modules.ErrorMsg("800")
         elif (APPversion in modules.APPsupport):
             d["ReturnCode"]   = "801"
-            d["ReturnMsg"]    = "WARN: "+modules.ErrorMsg("801")
+            d["ReturnMsg"]    = "WARN: "+ modules.ErrorMsg("801")
         else:
             d["ReturnCode"]   = "802"
-            d["ReturnMsg"]    = "WARN: "+modules.ErrorMsg("802")
+            d["ReturnMsg"]    = "WARN: "+ modules.ErrorMsg("802")
 
 
         data["REQUEST"]["Return"]     = d["ReturnMsg"]
@@ -842,11 +844,17 @@ def RemoteSet(device,command,value):
         
         data                      = remoteAPI_start()
         interface                 = configFiles.cache["_api"]["devices"][device]["interface"]
+        method                    = deviceAPIs.method(interface)
         
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Button"] = command
-        #data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,command,value)
-        data["REQUEST"]["Return"] = queueSend.add2queue([[interface,device,command,value]])
+        
+        if method == "query":
+          #data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,command,value)
+          data["REQUEST"]["Return"] = queueSend.add2queue([[interface,device,command,value]])
+          
+        elif method == "record":
+          data["REQUEST"]["Return"] = setStatus(device,command,value)
         
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
 
