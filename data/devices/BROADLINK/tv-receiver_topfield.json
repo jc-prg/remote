@@ -47,7 +47,7 @@
        	},
        	"values" : {
        		"power"   : [ "ON", "OFF" ],
-       		"vol"     : { "min" : 1, "max" : 69 },
+       		"vol"     : { "min" : 0, "max" : 17 },
        		"mute"    : [ "ON", "OFF" ],
                 "radiotv" : [ "RADIO", "TV" ]
         }
