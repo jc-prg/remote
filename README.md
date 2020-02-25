@@ -91,7 +91,13 @@ $ ./start start
 
 4. Open in browser, e.g. http://localhost:81/
 
-5. Update from Github
+5. Install via autostart - add the following line to /etc/rc.local
+
+```bash
+/<your_path_to_remote>/start start
+```
+
+6. Update from Github (works, if configuration file has not changed)
 
 ```bash
 $ ./start update
