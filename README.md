@@ -86,11 +86,16 @@ $ ./create prod
 ```bash
 $ cd ..
 $ docker-compose build
-$ ./start
+$ ./start start
 ```
 
 4. Open in browser, e.g. http://localhost:81/
 
+5. Update from Github
+
+```bash
+$ ./start update
+```
 
 ## Disclaimer
 
