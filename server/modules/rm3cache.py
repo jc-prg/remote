@@ -102,12 +102,12 @@ class configCache (threading.Thread):
 
     #---------------------------
 
-    def write(self,config_file,value):
+    def write(self,config_file,value,source=""):
         '''
         write config to file and update cache
         '''
         
-        rm3json.write(config_file,value,"cache.write")
+        rm3json.write(config_file,value,"cache.write "+source)
         self.cache[config_file] = value
 
 
@@ -165,9 +165,9 @@ class configCache (threading.Thread):
     
     #---------------------------
     
-    def write_status(self,status):
+    def write_status(self,status,source=""):
         '''
-        write status
+        write status and make sure only valid keys are saved
         '''
         
         config_file = rm3config.devices + rm3config.active
@@ -183,7 +183,7 @@ class configCache (threading.Thread):
                status_temp[dev][key] = status[dev][key]                        
 
         # write status
-        rm3json.write(config_file,status_temp,"cache.write_status")
+        rm3json.write(config_file,status_temp,"cache.write_status "+source)
         self.cache[config_file] = status_temp
     
 #-------------------------------------------------

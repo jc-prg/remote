@@ -104,11 +104,12 @@ class queueApiCalls (threading.Thread):
                 if not "ERROR" in str(result):  devices[device]["status"][value] = str(result)
                 else:                           devices[device]["status"][value] = "Error"
 
-                if self.config != "" and not "ERROR" in str(result):
-                   self.config.write_status(devices)
                  
                 self.last_query = device + "_" + value
                 pass
+                
+             if self.config != "" and not "ERROR" in str(result):
+                self.config.write_status(devices,"execute ("+str(command)+")")
        
        # if is a number
        else:

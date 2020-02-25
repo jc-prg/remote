@@ -90,7 +90,9 @@ class connect(threading.Thread):
     #-------------------------------------------------
     
     def test(self):
-        '''test all APIs'''
+        '''
+        test all APIs
+        '''
       
         for key in self.api: 
           status = self.api[key].test()
@@ -116,7 +118,9 @@ class connect(threading.Thread):
     #-------------------------------------------------
 
     def send(self, call_api, device, button, value=""):
-        '''check if API exists and send command'''
+        '''
+        check if API exists and send command
+        '''
         
         return_msg = ""
 
@@ -190,18 +194,19 @@ class connect(threading.Thread):
         return_msg = ""
         active        = self.configFiles.read_status()
         
-        if button == "on" or button == "off" or button == "on-off":
-           button = "power"
+        if button == "on" or button == "off" or button == "on-off":  value  = "power"
+        elif button[-1:] == "+" or button[-1:] == "-":               value  = button[:-1]
+        else:                                                        value  = button
 
         if device in active:
           if not "status" in active[device]: active[device]["status"] = {}
-          active[device]["status"][button] = status
+          active[device]["status"][value] = status
           return_msg = "OK"
           
         else:
           return_msg = "ERROR record_status: device not found"
         
-        self.configFiles.write_status(active)
+        self.configFiles.write_status(active,"save_status "+device+"/"+button)
         return return_msg
 
 
