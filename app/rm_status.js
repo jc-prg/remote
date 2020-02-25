@@ -376,11 +376,13 @@ function check_status(data={}) {
 				var status  = devices[key]["status"][vkey];
 				
 				if (devices[key]["values"] && devices[key]["values"][vkey] && vkey == "vol") {
-					if (devices[key]["values"][vkey]["max"]) { status = show_volume( devices[key]["status"][vkey], devices[key]["values"][vkey]["max"], vol_color2, novol_color ) + " &nbsp; ["+devices[key]["status"][vkey]+"]"; }
+					if (devices[key]["values"][vkey]["max"]) { 
+							status = show_volume( devices[key]["status"][vkey], devices[key]["values"][vkey]["max"], vol_color2, novol_color ) + " &nbsp; ["+devices[key]["status"][vkey]+"]"; 
+							}
 					}
 				
 				if (element)  { element.innerHTML  = status; }
-				if (element2) { element2.innerHTML = status; }
+				if (element2) { element2.innerHTML = status.replace(/,/g,"; "); }
 				}
 			}
 		if (devices[key]["status"] && devices[key]["query_list"]) {
@@ -389,7 +391,7 @@ function check_status(data={}) {
 				var vkey    = display[i];
 				var element2 = document.getElementById("display_full_" + key + "_" + vkey);
 				var status  = devices[key]["status"][vkey];		
-				if (element2) { element2.innerHTML = status; }
+				if (element2) { element2.innerHTML = status.replace(/,/g,", "); }
 				}
 			}
 		}	

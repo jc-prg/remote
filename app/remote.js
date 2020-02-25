@@ -37,6 +37,7 @@ var rm3settings = new rmSettings( "rm3settings" );
 var rm3msg      = new jcMsg(      "rm3msg" );
 var rm3cookie   = new jcCookie(   "rm3cookie");
 var rm3slider   = new slider( name="rm3slider", container="audio_slider", main_audio="rec2", min="1", max="70", callOnChange=setVolume );
+// -> create slider based on default values ...
 
 //--------------------------------
 // initialize
@@ -152,7 +153,7 @@ function remoteDropDown(data) {
 	rm3menu.add_devices( data["DATA"]["devices"] );
 	rm3menu.add_script( "rm3settings.onoff();", "Settings" );
 	rm3menu.add_script( "rm3remotes.toggleEditMode();rm3menu.toggleEditMode();rm3start.toggleEditMode();rmDropDownMenu_update();", "Edit Remote" + edit_on );
-	rm3menu.add_script( "rm3settings.button_deact(true);", deact_link);        
+	rm3menu.add_script( "rm3settings.button_deact(true);initRemote();", deact_link);        
         }
 
 
