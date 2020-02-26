@@ -24,16 +24,21 @@ shorten_info_to = 50
 
 # ---------------------------------
 
-interfaces = "interfaces/"  # interface definition
-devices    = "devices/"     # devices, overview in "_active.json"
-commands   = "devices/"     # device definition (queries and commands)
-remotes    = "remotes/"     # remote layouts for devices
-scenes     = "scenes/"      # scenes, overview in "_active.json"
-scenes_def = "scenes/"      # remote layouts for scenes
-makros     = "makros/"      # makros (to be used in scenes)
-buttons    = "buttons/"     # button configuration files
-templates  = "templates/"   # templates for remote layouts
-active     = "_active"      # overview file name
+interfaces = "interfaces/"          # interface definition
+
+devices    = "devices/"             # devices, overview in "_active.json"
+commands   = "devices/"             # device definition (queries and commands)
+remotes    = "remotes/"             # remote layouts for devices
+
+scenes     = "remotes/_SCENES/"     # remote layouts for scenes
+makros     = "remotes/_MAKROS/"     # makros (to be used in scenes)
+templates  = "remotes/_TEMPLATES/"  # templates for remote layouts
+
+buttons    = "buttons/"             # button configuration files
+active     = "_active"              # overview file name
+
+active_scenes  = "interfaces/_ACTIVE-SCENES"
+active_devices = "interfaces/_ACTIVE-DEVICES"
 
 # ---------------------------------
 

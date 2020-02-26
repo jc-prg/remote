@@ -1,0 +1,14 @@
+{
+	"cinema" : {
+		"description"	: "Kino",
+		"visible"	: "yes"
+	},
+	"music" : {
+		"description" 	: "Musik",
+		"visible"	: "yes"
+	},
+	"tv" : {
+		"description" 	: "Fernsehen",
+		"visible"	: "yes"
+	}
+}

@@ -118,7 +118,7 @@ class configCache (threading.Thread):
         get device name as file name
         '''
 
-        status = self.read(rm3config.devices + rm3config.active)
+        status = self.read(rm3config.active_devices)
         if device in status: return status[device]["device"]
         else:                return ""
         
@@ -129,7 +129,7 @@ class configCache (threading.Thread):
         get method for device
         '''
 
-        status     = self.read(rm3config.devices + rm3config.active)
+        status     = self.read(rm3config.active_devices)
         interface  = status[device]["interface"]
         device     = status[device]["device"]
         definition = self.read(rm3config.devices + interface + "/" + device)
@@ -142,7 +142,7 @@ class configCache (threading.Thread):
         read and return array
         '''
 
-        config_file = rm3config.devices + rm3config.active
+        config_file = rm3config.active_devices
         status      = self.read(config_file)
     
         # initial load of methods (record vs. query)
@@ -170,7 +170,7 @@ class configCache (threading.Thread):
         write status and make sure only valid keys are saved
         '''
         
-        config_file = rm3config.devices + rm3config.active
+        config_file = rm3config.active_devices
         
         # clear config file ...
         status_temp   = {}

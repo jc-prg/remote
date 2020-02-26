@@ -1,0 +1,8 @@
+{
+    "data": {
+        "description": "test device",
+        "display": {},
+        "remote": []
+    },
+    "info": "jc://remote/ - In this files the remote layout and a display layout is defined."
+}

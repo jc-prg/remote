@@ -60,7 +60,7 @@ def RmReadData(selected=[]):
     if configFiles.cache_update or "_api" not in configFiles.cache: 
     
         data["devices"] = configFiles.read_status()
-        data["scenes"]  = configFiles.read(modules.scenes  + modules.active)
+        data["scenes"]  = configFiles.read(modules.active_scenes)
         data["makros"]  = {}
     
         # read data for active devices
@@ -119,7 +119,7 @@ def RmReadData(selected=[]):
             if data["scenes"][scene]["visible"] == "yes":
               if selected == [] or scene in selected:
 
-                thescene      = configFiles.read(modules.scenes_def + scene)
+                thescene      = configFiles.read(modules.scenes + scene)
                 keys          = ["remote","channel","devices","label"]
  
                 for key in keys:
