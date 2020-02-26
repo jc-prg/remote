@@ -31,6 +31,7 @@ class eiscpAPI():
        self.api_config      = rm3json.read(rm3config.interfaces+self.api_name)
        self.api_ip          = self.api_config["IPAddress"]
        self.api_timeout     = 5
+       self.method          = "query"
        self.working         = False
        
        logging.info("... "+self.api_name+" - " + self.api_description)
@@ -96,7 +97,7 @@ class eiscpAPI():
          except Exception as e:
            self.api.disconnect()
            self.working = False
-           return "ERROR "+self.api_name+" - send: " + str(e)
+           return "ERROR "+self.api_name+" - send ("+button_code+"): " + str(e)
            
        else:
          self.working = False
@@ -122,12 +123,12 @@ class eiscpAPI():
          button_code = command_param[0].replace("="," ")        
          logging.debug("Button-Code: "+button_code[:shorten_info_to]+"... ("+self.api_name+")")
          try:
-           result  = self.api.command(button_code)          # ??????????????????
+           result  = self.api.command(button_code)
            self.api.disconnect()
          except Exception as e:
            self.api.disconnect()
            self.working = False
-           return "ERROR "+self.api_name+" - query: " + str(e)
+           return "ERROR "+self.api_name+" - query ("+button_code+"): " + str(e)
            
          if "ERROR" in result: 
            self.working = False
@@ -137,12 +138,16 @@ class eiscpAPI():
          logging.debug(str(result))
 
          # if || try to extract data from the result
-         if "||" in command: 
+         if "||" in command:
+           if "+'" in command_param[1]: new_cmd = "str(result)"+command_param[1]
+           else:                        new_cmd = "result"+command_param[1]
+           
            try:
-             result2 = eval("result"+command_param[1])
+             result2 = eval(new_cmd)
              result  = result2
-           except:
-             logging.warning("Not able to extract data: result"+command_param[1])
+             logging.debug(new_cmd+": "+str(result))
+           except Exception as e:
+             logging.warning("Not able to extract data: "+new_cmd+" / "+str(e))
            
        else:
          self.working = False
@@ -173,7 +178,7 @@ class eiscpAPI():
          self.api.command('source pc')
          self.api.disconnect()
        except Exception as e:
-         return "ERROR "+self.api_name+": "+str(e)
+         return "ERROR "+self.api_name+" test: "+str(e)
 
        self.working = False
        return "OK"

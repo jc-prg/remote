@@ -57,6 +57,7 @@ class configCache (threading.Thread):
            if self.cache_update == True:
                time.sleep(1)
                logging.info("Re-read config files ('" + self.name + "'): ...")
+               
                i = 0
                for key in self.cache:
                   if key != "_api":
@@ -101,12 +102,12 @@ class configCache (threading.Thread):
 
     #---------------------------
 
-    def write(self,config_file,value):
+    def write(self,config_file,value,source=""):
         '''
         write config to file and update cache
         '''
-
-        rm3json.write(config_file,value)
+        
+        rm3json.write(config_file,value,"cache.write "+source)
         self.cache[config_file] = value
 
 
@@ -141,7 +142,8 @@ class configCache (threading.Thread):
         read and return array
         '''
 
-        status = self.read(rm3config.devices + rm3config.active)
+        config_file = rm3config.devices + rm3config.active
+        status      = self.read(config_file)
     
         # initial load of methods (record vs. query)
         if self.configMethods == {} and selected_device == "":
@@ -163,13 +165,26 @@ class configCache (threading.Thread):
     
     #---------------------------
     
-    def write_status(self,status):
+    def write_status(self,status,source=""):
         '''
-        write status
+        write status and make sure only valid keys are saved
         '''
+        
+        config_file = rm3config.devices + rm3config.active
+        
+        # clear config file ...
+        status_temp   = {}
+        relevant_keys = ["status","visible","description","image","interface","label","device","main-audio"]   
+        
+        for dev in status:
+          status_temp[dev] = {}
+          for key in status[dev]:
+            if key in relevant_keys:
+               status_temp[dev][key] = status[dev][key]                        
 
-        self.write(rm3config.devices + rm3config.active,status)
-
+        # write status
+        rm3json.write(config_file,status_temp,"cache.write_status "+source)
+        self.cache[config_file] = status_temp
     
 #-------------------------------------------------
 # EOF

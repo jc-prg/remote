@@ -9,6 +9,8 @@ log/server.log
 
 config/config_test
 
+config/config_prod
+
 app/_sicher/
 
 app/icon/

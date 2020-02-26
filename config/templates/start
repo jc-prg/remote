@@ -2,6 +2,8 @@
 
 external="${EXTERNAL_DRIVE}"
 mountpoint="${EXTERNAL_MOUNT}"
+config=${D}1
+user=`whoami`
 
 echo
 echo "-------------------------------------"
@@ -9,8 +11,71 @@ echo " Start jc://remote/${REMOTE_CURRENT_STAGE}/"
 echo " (by Christoph Kloth)"
 echo "-------------------------------------"
 
+if [ ${D}user != "root" ]; then 
+  echo
+  echo "Please run as root!"
+  exit 0
+fi
 
-${DOCKERCOMPOSE_DIR}/docker-compose -f ${REMOTE_DIR}/docker-compose.yml up -d
+if [ ! ${D}config ]; then
+  echo
+  echo "Press key - your options:"
+  echo " 'q' - exit"
+  echo " 's' - start"
+  echo " 'r' - restart"
+  echo " 'u' - update (from github)"
+  count=0
+  while : ; do
+    read -n 1 k <&1
+    if [[ ${D}k = q ]] ; then
+       printf "\n... quitting the program.\n"
+       exit 0
+    elif [[ ${D}k = s ]] ; then
+       config="start"
+       printf "\n... starting (via docker-compose).\n"
+       break
+    elif [[ ${D}k = r ]] ; then
+       config="restart"
+       printf "\n... restarting.\n"
+       break
+    elif [[ ${D}k = u ]] ; then
+       config="update"
+       printf "\n... update from Github.\n"
+       break
+    else
+       ((count=${D}count+1))
+       printf "\nIterate for $count times\n"
+       echo "Press 'q' to exit"
+    fi
+  done
+fi
+
+if [ ${D}config == "start" ]; then
+    ${DOCKERCOMPOSE_DIR}/docker-compose -f ${REMOTE_DIR}/docker-compose.yml up -d
+
+elif [ ${D}config == "restart" ]; then
+    ${DOCKERCOMPOSE_DIR}/docker-compose -f ${REMOTE_DIR}/docker-compose.yml restart
+    
+elif [ ${D}config == "update" ]; then
+
+    echo "Change dir"
+    cd ${REMOTE_DIR}
+    echo "Stop docker"
+    ${DOCKERCOMPOSE_DIR}/docker-compose -f ${REMOTE_DIR}/docker-compose.yml stop
+    echo "Update from repository"
+    git stash
+    git pull
+    echo "Create new configuration"
+    cd config/
+    ./create ${REMOTE_CURRENT_STAGE}
+    cd ..
+    echo "Restart docker"
+    ${DOCKERCOMPOSE_DIR}/docker-compose -f ${REMOTE_DIR}/docker-compose.yml up -d
+
+else
+    echo "not found."
+fi
 
 echo
 echo "Done."
+

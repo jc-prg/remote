@@ -15,7 +15,16 @@ import interfaces.broadlink.broadlink  as broadlink
 # API-class
 #-------------------------------------------------
 
+# Shorten Button Code for logging.info
 shorten_info_to = rm3config.shorten_info_to
+
+# commands to check on startup if IR devices runs (e.g. screen down and up)
+check_on_startup = False
+check_on_startup_commands = [
+	"2600c60028112810281028100e2a0e290e2a0e2a0e2928100e2a0e2a0e2927110e2a27112711271127110d2a2711281028100e2a271127110e290f2927110e2a0e29270003d028102810281028100e2a0e290f290e2a0e2928110d2a0e2a0e2927110e2a27112711271127110e292810281028100e2a271127110e2a0d2a27110e2a0e29280003d027112711271127110d2a0e2a0e290e2a0e2a27110d2a0e2a0e2928100e2a27112711271127110e2a2711271127110d2a271128100e2a0e2928100e2a0e2928000d050000",
+	"2600c60028112711271126120d2b0d2a0d2b0d2b0d2a0d2b26120d2a0d2b26120d2b2612261226120d2a2711271127110d2b261226120d2a27110d2b26120d2b0d2a260003d127112711271127110d2b0d2b0d2a0d2b0d2a0d2b26120d2b0d2a27110d2b2612261226120d2a2711271127110d2b261226120d2b26120d2a26120d2b0d2a270003d126122612261127110d2b0d2b0d2a0d2b0d2b0d2a26120d2b0d2a27110d2b2612261226120d2b2612261226110d2b261226120d2b26120d2a27110d2b0d2a28000d050000" 
+	]
+
 
 #-------------------------------------------------
 
@@ -31,6 +40,7 @@ class broadlinkAPI():
        self.api_description = "Infrared Broadlink RM3"
        self.api_config      = rm3json.read(rm3config.interfaces+self.api_name)
        self.working         = False
+       self.method          = "record"
        
        self.api_config["Port"]       = int(self.api_config["Port"])
        self.api_config["MACAddress"] = netaddr.EUI(self.api_config["MACAddress"])
@@ -53,6 +63,15 @@ class broadlinkAPI():
        except e as Exception:
          self.status = "ERROR IR Device: "+str(e)
          logging.error(self.status)
+       
+       if check_on_startup:
+         try:
+           for command in check_on_startup_commands:
+             self.send("broadlink_test",command)
+             time.sleep(0.5)
+         except e as Exception:
+           self.status = "ERROR IR Device: "+str(e)
+           logging.error(self.status)
     
        return self.status
        

@@ -186,6 +186,8 @@ function rmRemote(name) {
 	this.device_description = function(id, device) {
 		var label = this.data["DATA"]["devices"][device]["label"];
 		var descr = this.data["DATA"]["devices"][device]["description"];
+		var url   = this.data["DATA"]["devices"][device]["url"];
+		if (url) { descr = "<a href=\""+url+"\">"+descr+"</a>"; }
 		var str   = "<center>" + descr + "</center>";
 		setTextById(id,str);
 		}

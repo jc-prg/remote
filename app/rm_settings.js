@@ -183,7 +183,16 @@ function rmSettings (name) {	// IN PROGRESS
 	        var filter_list = document.getElementById(id_filter);
 	        var filter      = filter_list.options[filter_list.selectedIndex].value;
 		for (var key in this.data["DATA"]["devices"][filter]["status"]) {
-			if (key != "presets") {
+			if (key == "power") {
+				command_on    = "rm3app.requestAPI('GET',['set','"+filter+"','"+key+"','ON'], '', '', '' );rm3settings.onoff();initRemote();";
+				command_off   = "rm3app.requestAPI('GET',['set','"+filter+"','"+key+"','OFF'], '', '', '' );rm3settings.onoff();initRemote();";
+				status_value  = this.data["DATA"]["devices"][filter]["status"][key];
+				if (status_value == "ON")	{ command_link = "<div onclick=\""+command_off+"\" style=\"cursor:pointer\">"+key+": <u>ON</u></div>"; }
+				else if (status_value == "OFF")	{ command_link = "<div onclick=\""+command_on +"\" style=\"cursor:pointer\">"+key+": <u>OFF</u></div>"; }
+				else				{ command_link = key + ": " + status_value + "</br>"; }
+				status += command_link;
+				}
+			else if (key != "presets") {
 				status += key + ": " + this.data["DATA"]["devices"][filter]["status"][key] + "<br/>";
 				}
 			}
