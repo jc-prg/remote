@@ -70,6 +70,7 @@
 }
 
 .remote-line {
+        margin-top       : 5px;
 	width		 : 100%;
 	height           : 15px;
 	overflow         : hidden;
@@ -141,7 +142,7 @@ button {
 .button:hover {
    color            : yellow;
    background-color : #555555;
-   box-shadow       : 0 8px 8px 0 rgba(0,0,0,0.24), 0 8px 8px 0 rgba(0,0,0,0.19);
+   box-shadow       : 0 4px 4px 0 rgba(0,0,0,0.24), 0 4px 4px 0 rgba(0,0,0,0.19);
 }
 
 .button:disabled {
@@ -174,14 +175,31 @@ button {
 }
 
 .button.big {
-   width  : 88px;
-   height : 66px;
+    width  		: 88px;
+    height 		: 66px;
+}
+
+.button.big_edit {
+    width  		: 88px;
+    height 		: 66px;
+    border           	: blue;
+    border-style     	: solid;
+    border-width     	: 2px;
 }
 
 .button.small {
-   width  : 51px;
-   height : 50px;
-   margin :  3px;
+    width  		: 51px;
+    height 		: 50px;
+    margin 		:  3px;
+}
+
+.button.small_edit { 
+    width  		: 60px; 
+    height 		: 50px;
+    margin 		:  3px;
+    border           	: blue;
+    border-style     	: solid;
+    border-width     	: 2px;
 }
 
 
@@ -294,7 +312,8 @@ button {
   .button 	  { width  :  76px; }
   .button.big     { width  : 105px; }
   .button.small   { width  :  62px; }
-  
+  .button.small_edit { width  :  62px; }
+    
   .display        { font-size : 10px; }
   .display.small  { width  : 160px; }
   .display.middle { width  : 160px; }
@@ -316,16 +335,17 @@ button {
 
 @media (min-width: 720px) {
 
-  .remote         { width  : 335px; }
-  .channel-entry  { width  : 160px; }
+  .remote         	{ width  : 335px; }
+  .channel-entry 	{ width  : 160px; }
 
-  .button         { width  :  74px; }
-  .button.big     { width  : 102px; }
-  .button.small   { width  :  60px; }
+  .button         	{ width  :  74px; }
+  .button.big     	{ width  : 102px; }
+  .button.small   	{ width  :  60px; }
+  .button.small_edit	{ width  :  60px; }
 
-  .display.small  { width  : 156px; }
-  .display.middle { width  : 156px; }
-  .display.big    { width  : 320px; }
+  .display.small  	{ width  : 156px; }
+  .display.middle 	{ width  : 156px; }
+  .display.big    	{ width  : 320px; }
   
   .display-element        { width : 68px; }
   .display-element.small  { width : 68px; }

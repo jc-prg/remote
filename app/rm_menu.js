@@ -169,10 +169,16 @@ function rmStart(name) {
 
 		// create small buttons for devices
 	    	for ( var key in data ) {
-			if (key != "default" && data[key]["visible"] == "yes") {
-				var id     = "device_"+key;
-        			menu  += this.entry_device( data, id, key, "small" );
-				}
+			if (key != "default") {
+				if (data[key]["visible"] == "yes") {
+					var id     = "device_"+key;
+        				menu  += this.entry_device( data, id, key, "small" );
+					}
+			        else if (this.edit_mode && data[key]["visible"] == "no") { 
+					var id     = "device_"+key;
+			        	menu  += this.entry_device( data, id, key, "small_edit" );
+			        	}
+			        }
 		}
 
 		// replace old menu
@@ -208,7 +214,7 @@ function rmStart(name) {
 		if (data[button[1]]["label"]) { label2 = data[button[1]]["label"]; }
 
 		var d = this.button_image( label, style );
- 		return this.button( id, d[0], "small", 'rm3remotes.create("device","' + button[1] + '");setNavTitle("' + label2 + '");', "" );
+ 		return this.button( id, d[0], style, 'rm3remotes.create("device","' + button[1] + '");setNavTitle("' + label2 + '");', "" );
 		}
 
 	// write big button for scene

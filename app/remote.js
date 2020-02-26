@@ -152,7 +152,7 @@ function remoteDropDown(data) {
 	rm3menu.add_scenes(  data["DATA"]["scenes"] );
 	rm3menu.add_devices( data["DATA"]["devices"] );
 	rm3menu.add_script( "rm3settings.onoff();", "Settings" );
-	rm3menu.add_script( "rm3remotes.toggleEditMode();rm3menu.toggleEditMode();rm3start.toggleEditMode();rmDropDownMenu_update();", "Edit Remote" + edit_on );
+	rm3menu.add_script( "rm3remotes.toggleEditMode();rm3menu.toggleEditMode();rm3start.toggleEditMode();remoteDropDown_load();remoteStartMenu_load();", "Edit Remote" + edit_on );
 	rm3menu.add_script( "rm3settings.button_deact(true);initRemote();", deact_link);        
         }
 

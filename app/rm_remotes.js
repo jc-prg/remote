@@ -149,7 +149,13 @@ function rmRemote(name) {
 			var button = remote_definition[i].split("_");
 			var cmd    = button[0] + "_" + button[1];
 
-			if (button[0] == "LINE") 		{ remote += "<div style='width:100%;float:left;'><hr/></div>"; }
+			if (button[0] == "LINE") 				{ remote += "<div class='remote-line'><hr/></div>"; }
+			else if (button[0].indexOf("||") > 0) {
+				text = button[0].split("||")[1];
+				remote += "<div class='remote-line'><hr/>";
+				remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>";
+				remote += "</div>";
+				}
 			//else if (button[0] == "makro")  { remote += sendButtonMakro( cmd, makros[button[1]], button[1], "", "" ); }
 			else if (button[0] == ".") 		{ remote += this.button_device( scene+i, ".", "", "", "disabled" ); }
 			else if (button[0] == "makro")		{ remote += this.button_makro(  cmd, button[1], "", makros[button[1]], "" ); 
