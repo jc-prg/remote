@@ -215,6 +215,7 @@ paths:
                 $ref: "#/definitions/REQUEST"
               STATUS:
                 $ref: "#/definitions/STATUS"
+                
   /button/{device}/{button_number}/:
     delete:
       operationId: modules.server_cmd.RemoteDeleteButton
@@ -228,6 +229,41 @@ paths:
           type: string
           required: true
         - name: button_number
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully deleted button
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              CONFIG:
+                $ref: "#/definitions/CONFIG"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+                
+  /move/{type}/{device}/{direction}/:
+    post:
+      operationId: modules.server_cmd.RemoteMove
+      tags:
+        - edit
+      summary: move device or scene in menu
+      description: move device or scene in menu
+      parameters:
+        - name: type
+          in: path
+          type: string
+          enum: ["device","scene"]
+          required: true
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: direction
           in: path
           type: string
           required: true

@@ -426,6 +426,7 @@ def deleteDevice(device):
     except Exception as e:
       return "ERROR: Could not delete device '" + device + "': " + str(e)
 
+
 #---------------------------------------
 
 def editDevice(device,info):
@@ -492,6 +493,56 @@ def editDevice(device,info):
     else:     return("ERROR: no data key matched with keys from config-files ("+str(info.keys)+")")
 
       
+#-----------------------------------------------
+
+def moveDevice(device,direction):
+    '''
+    move device button, direction => -x steps backward / x steps forward
+    '''
+    
+    status     = configFiles.read_status()
+    position   = True
+    direction  = int(direction)
+    return_msg = ""
+    
+    # check if device is defined
+    if device not in status:
+      return "ERROR: device not defined."
+    
+    # check if position is defined and add, if not existing
+    for key in status: 
+      if not "position" in status[key]: 
+        position = False
+        
+    i = 1
+    if position == False:
+       for key in status:
+          status[key]["position"] = i
+          i += 1
+       configFiles.write_status(status)
+       return_msg = "WARN: Position wasn't existing. Has been set, please move again."
+      
+    # get position and move into direction
+    else:
+       i = 1
+       for key in status: i += 1
+
+       if status[device]["position"] + direction > 0 and status[device]["position"] + direction < i:
+          old_position = status[device]["position"]
+          new_position = status[device]["position"] + direction
+         
+          for key in status:
+            if status[key]["position"] == new_position: status[key]["position"] = old_position
+           
+          status[device]["position"] = new_position
+          return_msg = "OK. Moved "+device+" from "+str(old_position)+" to "+str(new_position)+"."
+ 
+       else:
+          return_msg = "WARN: Out of range."
+         
+    configFiles.write_status(status)
+    return return_msg
+
 
 #-----------------------------------------------
 # Read and set status
@@ -521,6 +572,26 @@ def setStatus(device,key,value):
     
 #-----------------------------------------------
 
+def getStatus(device,key):
+    '''get status of device'''
+
+    status = configFiles.read_status()
+    
+    if not device in status: 
+      logging.error("Get status - Device not defined: " +device + " (" + key + ")")
+      return 0
+    
+    if device in status and key in status[device]["status"]:
+      logging.info("Get status: " + key + " = " + str(status[device]["status"][key]))
+      return status[device]["status"][key]
+      
+    else:
+      logging.error("Get status: " + key + "/" + device)
+      return 0    
+
+
+#-----------------------------------------------
+
 def resetStatus():
     '''set status for all devices to OFF'''
 
@@ -539,6 +610,7 @@ def resetStatus():
 
     configFiles.write_status(status,"resetStatus")
     return "TBC: Reset POWER to OFF for devices without API"
+
 
 #-----------------------------------------------
 
@@ -562,26 +634,6 @@ def resetAudio():
 
     configFiles.write_status(status,"resetAudio")
     return "TBC: Reset AUDIO to 0 for devices without API"
-
-#-----------------------------------------------
-
-def getStatus(device,key):
-    '''get status of device'''
-
-    status = configFiles.read_status()
-    
-    if not device in status: 
-      logging.error("Get status - Device not defined: " +device + " (" + key + ")")
-      return 0
-    
-    if device in status and key in status[device]["status"]:
-      logging.info("Get status: " + key + " = " + str(status[device]["status"][key]))
-      return status[device]["status"][key]
-      
-    else:
-      logging.error("Get status: " + key + "/" + device)
-      return 0    
-
 
 
 #-----------------------------------------------
@@ -1105,6 +1157,25 @@ def RemoteResetAudio():
 
         refreshCache()
         data                         = remoteAPI_end(data,["no-data"])        
+        return data
+
+
+#-------------------------------------------------
+
+def RemoteMove(type,device,direction):
+        '''
+        Move position of device in start menu and drop down menu
+        '''
+
+        data                         = remoteAPI_start()
+
+        if type == "device": 
+          data["REQUEST"]["Return"]  = moveDevice(device,direction)
+        else:
+          data["REQUEST"]["Return"]  = "Not implemented yet."
+
+        refreshCache()
+        data                         = remoteAPI_end(data,["no-data","no-config"])
         return data
 
 
