@@ -3,6 +3,30 @@
 //--------------------------------
 
 //--------------------------------
+// sort dictionary
+//--------------------------------
+
+function sortDict(dict,sort_key) {
+
+	var sorted = {};
+	for (key in dict) {
+		sorted[dict[key][sort_key]+"_"] = key;
+		console.log(dict[key][sort_key] +"/"+ key);
+		console.log(sorted[dict[key][sort_key]+"_"] +"="+ dict[key][sort_key]);
+		}
+		
+	var order  = [];
+	var i = 1;
+	for (key in sorted) {
+		if (sorted[i+"_"]) { order.push( sorted[i+"_"] ); }
+		i++;
+		}
+	console.log(order);
+
+	return order;
+	}
+
+//--------------------------------
 // create menus & landing page & setting page
 //--------------------------------
 

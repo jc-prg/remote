@@ -113,6 +113,17 @@ function rmSettings (name) {	// IN PROGRESS
 						"Descript.: &nbsp; "            + this.input("add_device_descr"),
 						this.button("addDevice('add_device','add_device_api','add_device_descr');","Add Device")
 					);
+		setting += "</table><hr/><table width=\"100%\">";
+		
+		var order  = sortDict(this.data["DATA"]["devices"],"position");
+		var i      = 0;
+		for (key in order) {
+			var button = "";			
+			if (i > 0)  		{ button += this.button_small("movePosition(#device#,#"+order[key]+"#,#-1#);","up"); }
+			if (i < order.length-1)	{ button += this.button_small("movePosition(#device#,#"+order[key]+"#,#1#);","down"); }
+			setting += this.tab_row("<b>" + order[key] + "</b> ("+this.data["DATA"]["devices"][order[key]]["visible"]+")",button);
+			i++;
+			}
 
 		this.write(2,"Add Remote Control",setting);
 		}
@@ -235,7 +246,9 @@ function rmSettings (name) {	// IN PROGRESS
 
 	//------------------------------
 
-	this.button  = function (onclick,label) { return "<button style=\"width:" + this.input_width + ";margin:1px;\" onClick=\"javascript:"+onclick+"\">"+label+"</button>"; }
+	this.button        = function (onclick,label) { onclick = onclick.replace(/#/g,"'"); return "<button style=\"width:" + this.input_width + ";margin:1px;\" onClick=\"javascript:"+onclick+"\">"+label+"</button>"; }
+	this.button_small  = function (onclick,label) { onclick = onclick.replace(/#/g,"'"); return "<button style=\"width:" + this.input_width + ";margin:1px;width:60px;\" onClick=\"javascript:"+onclick+"\">"+label+"</button>"; }
+	
 	this.tab_row = function (td1,td2) 	{ return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
 	this.input   = function (id) 		{ return "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;'>"; }
 

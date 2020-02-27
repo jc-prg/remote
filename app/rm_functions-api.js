@@ -64,6 +64,13 @@ function setVolume(main_audio,volume) {
         
 //--------------------------------
 
+function movePosition(type,device,direction) {
+	rm3app.requestAPI( "POST", ["move",type,device,direction], "", remoteInitData_load );
+	}
+
+
+//--------------------------------
+
 function changeVisibilityDevice(device_id, value_id) {
 
         device   = check_if_element_or_value(device_id);

@@ -86,6 +86,7 @@ function initRemoteFirstLoad(data) {
 
 //----------------------------------
 
+function remoteInitData_load() { rm3app.requestAPI("GET",["list"],"",remoteInitData); }
 function remoteInitData(data) {
 
 	if (data["DATA"]) {
@@ -94,6 +95,7 @@ function remoteInitData(data) {
 		rm3settings.init( data );
 		rm3menu.init(     data );
 		rm3start.init(    data );
+		rm3settings.create();
 		}
 	}
 	

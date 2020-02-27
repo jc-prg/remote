@@ -39,11 +39,14 @@ function rmMenu(name, menu) {
 
 		// set vars
     		var menu = this.readMenu();
-    		var i    = 0;
-		for (var key in data) {
-			if (key != "default") {
-			        if (data[key]["visible"] != "no")  { menu  += this.entry_device( key, data[key]["label"] ); }
-			        else if (this.edit_mode)           { menu  += this.entry_device( key, "<div class=#hidden_entry_edit#>.(" + data[key]["label"] + ").</div>" ); }
+
+		var order  = sortDict(data,"position");
+    		var i      = 0;
+		for (var key in order) {
+			device = order[key];
+			if (device != "default") {
+			        if (data[device]["visible"] != "no")  { menu  += this.entry_device( device, data[device]["label"] ); }
+			        else if (this.edit_mode)              { menu  += this.entry_device( device, "<div class=#hidden_entry_edit#>.(" + data[device]["label"] + ").</div>" ); }
 				}
         		}
     		this.writeMenu(menu + "<li><hr/></li>");
@@ -167,16 +170,19 @@ function rmStart(name) {
     		var menu    = "";
 		rm3remotes.active_type = "start";
 
+
 		// create small buttons for devices
-	    	for ( var key in data ) {
-			if (key != "default") {
-				if (data[key]["visible"] == "yes") {
-					var id     = "device_"+key;
-        				menu  += this.entry_device( data, id, key, "small" );
+		var order  = sortDict(data,"position");
+		for (var key in order) {
+			device = order[key];
+			if (device != "default") {
+				if (data[device]["visible"] == "yes") {
+					var id     = "device_"+device;
+        				menu  += this.entry_device( data, id, device, "small" );
 					}
-			        else if (this.edit_mode && data[key]["visible"] == "no") { 
-					var id     = "device_"+key;
-			        	menu  += this.entry_device( data, id, key, "small_edit" );
+			        else if (this.edit_mode && data[device]["visible"] == "no") { 
+					var id     = "device_"+device;
+			        	menu  += this.entry_device( data, id, device, "small_edit" );
 			        	}
 			        }
 		}
