@@ -11,8 +11,6 @@ function sortDict(dict,sort_key) {
 	var sorted = {};
 	for (key in dict) {
 		sorted[dict[key][sort_key]+"_"] = key;
-		console.log(dict[key][sort_key] +"/"+ key);
-		console.log(sorted[dict[key][sort_key]+"_"] +"="+ dict[key][sort_key]);
 		}
 		
 	var order  = [];
@@ -21,8 +19,13 @@ function sortDict(dict,sort_key) {
 		if (sorted[i+"_"]) { order.push( sorted[i+"_"] ); }
 		i++;
 		}
-	console.log(order);
-
+		
+	if (order.length == 0) {
+		for (key in dict) {
+			order.push( key );
+			}	
+		}
+		
 	return order;
 	}
 
