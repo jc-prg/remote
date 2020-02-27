@@ -15,7 +15,7 @@ function rmSettings (name) {	// IN PROGRESS
 	this.e_remotes    = ["remote1","remote2","remote3","remote_edit"];
 	this.input_width  = "110px";
 	this.initial_load = true;
-
+	this.edit_mode    = false;
 
 	// init settings / set vars
 	this.init = function(data) {
@@ -43,7 +43,11 @@ function rmSettings (name) {	// IN PROGRESS
 
 	// write settings page
 	this.create = function() {
+		if (this.edit_mode) 	{ this.create_edit(); }
+		else			{ this.create_setting(); }
+		}
 
+	this.create_setting = function() {
 		// Set Vars
 		var setting    = "";
 
@@ -105,16 +109,18 @@ function rmSettings (name) {	// IN PROGRESS
 					);
 
 		this.write(1,"Change Settings",setting);
+		}
 
+	this.create_edit = function() {
 		// Edit Remote Settings
 		setting = "";
-		setting += this.tab_row( 	"Device: &nbsp; &nbsp; &nbsp; " + this.input("add_device")     + "<br/>" +
-		                                "Interface: &nbsp; "            + this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"]) + "<br/>" +
-						"Label: &nbsp; &nbsp; &nbsp; &nbsp; "            + this.input("add_device_descr"),
-						this.button("addDevice('add_device','add_device_api','add_device_descr');","Add Device")
-					);
-		setting += "</table><hr/><table width=\"100%\">";
-		
+		setting += this.tab_row( 	"Device:",	this.input("add_device") );
+		setting += this.tab_row( 	"Interface:",   this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"]) );
+		setting += this.tab_row( 	"Label:", 	this.input("add_device_descr") );
+		setting += this.tab_row(	this.button("addDevice('add_device','add_device_api','add_device_descr');","Add Device"), "" );
+		this.write(0,"Add Remote Control",setting);
+					
+		setting = "";	
 		var order  = sortDict(this.data["DATA"]["devices"],"position");
 		var i      = 0;
 		for (key in order) {
@@ -125,7 +131,7 @@ function rmSettings (name) {	// IN PROGRESS
 			i++;
 			}
 
-		this.write(2,"Add Remote Control",setting);
+		this.write(1,"Change Order of Devices",setting);
 		}
 
 	// write settings category
@@ -263,6 +269,11 @@ function rmSettings (name) {	// IN PROGRESS
 		return item;
 		}
 
+	// show hide edit mode for remotes
+	this.toggleEditMode = function() {
+		if (this.edit_mode)  { this.edit_mode = false; }
+		else                 { this.edit_mode = true; }
+		}	
 	}
 
 
