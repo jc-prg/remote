@@ -110,7 +110,7 @@ function rmSettings (name) {	// IN PROGRESS
 		setting = "";
 		setting += this.tab_row( 	"Device: &nbsp; &nbsp; &nbsp; " + this.input("add_device")     + "<br/>" +
 		                                "Interface: &nbsp; "            + this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"]) + "<br/>" +
-						"Descript.: &nbsp; "            + this.input("add_device_descr"),
+						"Label: &nbsp; &nbsp; &nbsp; &nbsp; "            + this.input("add_device_descr"),
 						this.button("addDevice('add_device','add_device_api','add_device_descr');","Add Device")
 					);
 		setting += "</table><hr/><table width=\"100%\">";
@@ -121,7 +121,7 @@ function rmSettings (name) {	// IN PROGRESS
 			var button = "";			
 			if (i > 0)  		{ button += this.button_small("movePosition(#device#,#"+order[key]+"#,#-1#);","up"); }
 			if (i < order.length-1)	{ button += this.button_small("movePosition(#device#,#"+order[key]+"#,#1#);","down"); }
-			setting += this.tab_row("<b>" + order[key] + "</b> ("+this.data["DATA"]["devices"][order[key]]["visible"]+")",button);
+			setting += this.tab_row("<b>" + this.data["DATA"]["devices"][order[key]]["label"] + "</b> ("+this.data["DATA"]["devices"][order[key]]["visible"]+")",button);
 			i++;
 			}
 
