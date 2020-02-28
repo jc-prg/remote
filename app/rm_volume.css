@@ -9,7 +9,7 @@
   border-radius : 5px;
   box-shadow    : 3px 3px 3px rgba(0, 0, 0, 0.25);
   
-  width         : 50px;
+  width         : 65px;
   height        : 250px;
   z-index       : 90;
 }
@@ -53,6 +53,19 @@
   border-radius  : 5px;
   opacity        : 0.9; /* Set transparency (for mouse-over effects on hover) */
 }
+
+.sliderlabel {
+	height		: 150px;
+	width		: 150px;
+	transform	: rotate(270deg);
+	position	: relative;
+	top		: 70px;
+	left		: 5px;
+	z-index		: 92;
+	font-family	: Sans-serif, Arial, Helvetica;
+	font-size	: 12px;	
+	color		: #444444;
+	}
 
 /* Mouse-over effects */
 .slider:hover {

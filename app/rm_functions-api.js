@@ -57,17 +57,11 @@ function alertReturn(data) {
         rm3msg.alertReturn(data);
         }
         
-function setVolume(main_audio,volume) {
-        console.error("TEST");
-	rm3app.requestAPI( "GET", ["set",main_audio,"vol",volume], "", check_status_load );
-	}
-        
 //--------------------------------
 
-function movePosition(type,device,direction) {
-	rm3app.requestAPI( "POST", ["move",type,device,direction], "", remoteInitData_load );
-	}
-
+function setVolume(main_audio,volume)		{ rm3app.requestAPI( "GET",  ["set",main_audio,"vol",volume], 	"", check_status_load ); }
+function setMainAudio(device) 			{ rm3app.requestAPI( "POST", ["main-audio",device], 		"", alertReturn ); }
+function movePosition(type,device,direction) 	{ rm3app.requestAPI( "POST", ["move",type,device,direction], 	"", remoteInitData_load ); }
 
 //--------------------------------
 

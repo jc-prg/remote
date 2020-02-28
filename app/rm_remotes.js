@@ -288,10 +288,17 @@ function rmRemote(name) {
 		remote  += "<hr/>";
 		remote  += this.tab_row("start");
 
-		remote  += this.tab_row(
+		if (device != this.data["CONFIG"]["main-audio"] && this.data["DATA"]["devices"][device]["status"]["vol"] != undefined) {
+			remote  += this.tab_row(
 				"Set as main AUDIO device (change from &quot;"+this.data["CONFIG"]["main-audio"]+"&quot;)",
-				this.button_edit("alert('Not implemented yet.');","set main device","disabled")
+				this.button_edit("setMainAudio('"+device+"');","set main device","")
 				);
+			}
+		else if (device == this.data["CONFIG"]["main-audio"]) {
+			remote  += this.tab_row("This device is defined as main AUDIO device.",false);
+			}
+		else {	remote  += this.tab_row("This device can't be set as main AUDIO device, no audio volume control available.",false);
+			}
 
 		remote  += "<tr><td colspan='2'><hr/></td></tr>";
 
@@ -605,6 +612,7 @@ function rmRemote(name) {
 	this.tab_row = function (td1,td2="")  { 
 		if (td1 == "start")	{ return "<table border=\"0\" width=\""+td2+"\">"; }
 		else if (td1 == "end")	{ return "</table>"; }
+		else if (td2 == false)	{ return "<tr><td valign=\"top\" colspan=\"2\">" + td1 + "</td></tr>"; }
 		else			{ return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
 		}
 	}

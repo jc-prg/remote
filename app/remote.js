@@ -36,8 +36,9 @@ var rm3remotes  = new rmRemote(   "rm3remotes" );
 var rm3settings = new rmSettings( "rm3settings" );
 var rm3msg      = new jcMsg(      "rm3msg" );
 var rm3cookie   = new jcCookie(   "rm3cookie");
-var rm3slider   = new slider( name="rm3slider", container="audio_slider", main_audio="rec2", min="1", max="70", callOnChange=setVolume );
 // -> create slider based on default values ...
+var rm3slider   = new slider( name="rm3slider", container="audio_slider", callOnChange=setVolume );
+
 
 //--------------------------------
 // initialize
@@ -95,7 +96,12 @@ function remoteInitData(data) {
 		rm3settings.init( data );
 		rm3menu.init(     data );
 		rm3start.init(    data );
+		rm3slider.init(   data );
 		rm3settings.create();
+
+		}
+	else {
+		console.error("remoteInitData: no data loaded!");
 		}
 	}
 	
@@ -154,7 +160,7 @@ function remoteDropDown(data) {
 	rm3menu.add_scenes(  data["DATA"]["scenes"] );
 	rm3menu.add_devices( data["DATA"]["devices"] );
 	rm3menu.add_script( "rm3settings.onoff();", "Settings" );
-	rm3menu.add_script( "toggleEditMode();remoteDropDown_load();remoteStartMenu_load();", "Edit Remote" + edit_on );
+	rm3menu.add_script( "toggleEditMode();", "Edit Remote" + edit_on );
 	rm3menu.add_script( "rm3settings.button_deact(true);initRemote();", deact_link);        
         }
         
@@ -164,6 +170,10 @@ function toggleEditMode() {
 	rm3start.toggleEditMode();
 	rm3settings.toggleEditMode();
 	rm3settings.create();
+	
+	remoteDropDown_load();
+//	remoteStartMenu_load();
+//	initRemote();
 	}
 
 

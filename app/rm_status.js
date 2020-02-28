@@ -13,49 +13,63 @@
 
 // slider for volume control
 
-function slider ( name, container, main_audio, min, max, callOnChange ) {
+function slider ( name, container, callOnChange ) {
 
 	this.appName      = name;
 	this.appContainer = container;
-	this.appMainAudio = main_audio;
-	
-	this.sliderHTML   =  "<div id=\""+name+"_container\" class=\"slidecontainer\" style=\"visibility:hidden\">";
-  	this.sliderHTML   += "<input type=\"range\" min=\""+min+"\" max=\""+max+"\" value=\"50\" class=\"slider\" id=\""+name+"\">";
-  	this.sliderHTML   += "<br/><div id=\""+name+"_value\" class=\"slidervalue\">xx</div>";
-	this.sliderHTML   += "</div>";
-	
-	this.container    = document.getElementById(container);
-	this.container.innerHTML = this.sliderHTML;
-	
-	this.slider       = document.getElementById(name);
-	this.slider_value = document.getElementById(name+"_value");
-	this.slider_cont  = document.getElementById(name+"_container");
-	this.slider_value.innerHTML = this.slider.value;
-	
-	this.audioMin     = min;
-	this.audioMax     = max;
-
 	this.callOnChange = callOnChange;
 	
-	this.slider.oninput = function() {
-		rm3slider.slider_value.innerHTML	= rm3slider.slider.value;
-		//this.slider_value.innerHTML 		= this.slider.value;
+
+	this.init    = function( data ) {
+		main_audio = data["CONFIG"]["main-audio"];
+		min        = data["DATA"]["devices"][main_audio]["values"]["vol"]["min"];
+		max        = data["DATA"]["devices"][main_audio]["values"]["vol"]["max"];		
+		label      = data["DATA"]["devices"][main_audio]["label"];		
+		name	   = this.appName;
+	
+		this.sliderHTML   =  "<div id=\""+name+"_container\" class=\"slidecontainer\" style=\"visibility:hidden\">";
+  		this.sliderHTML   += "<input type=\"range\" min=\""+min+"\" max=\""+max+"\" value=\"50\" class=\"slider\" id=\""+name+"\">";
+  		this.sliderHTML   += "<br/><div id=\""+name+"_value\" class=\"slidervalue\">xx</div>";
+  		this.sliderHTML   += "<div  id=\""+name+"_label\" class=\"sliderlabel\">"+label+"</div>";
+		this.sliderHTML   += "</div>";
+	
+		this.container    		= document.getElementById(this.appContainer);
+		this.container.innerHTML	= this.sliderHTML;
+
+		this.slider       = document.getElementById(name);
+		this.slider_value = document.getElementById(name+"_value");
+		this.slider_cont  = document.getElementById(name+"_container");
+		this.slider_label = document.getElementById(name+"_label");
+
+		this.slider_value.innerHTML	= this.slider.value;
+		this.slider_label.innerHTML	= label + " (" + main_audio + ")";
+	
+		this.appMainAudio 	= main_audio;
+		this.appMainAudioLabel	= label;
+		this.audioMin     	= min;
+		this.audioMax     	= max;
+
+		this.slider.oninput = function( ) {
+			rm3slider.slider_value.innerHTML	= rm3slider.slider.value;
+			//this.slider_value.innerHTML 		= this.slider.value;
 		
-		vol_color = "white";
-		vol_str   = show_volume( rm3slider.slider.value, rm3slider.audioMax, vol_color );
-		document.getElementById("audio3").innerHTML = vol_str;
+			vol_color = "white";
+			vol_str   = show_volume( rm3slider.slider.value, rm3slider.audioMax, vol_color );
+			document.getElementById("audio3").innerHTML = vol_str;
+			}
+		
+		this.slider.onmouseup = function() {
+			//this.callOnChange( this.slider.value );
+			rm3slider.callOnChange( rm3slider.appMainAudio, rm3slider.slider.value );
+			}
+		
+		this.slider.ontouchend = function() {
+			//this.callOnChange( this.slider.value );
+			rm3slider.callOnChange( rm3slider.appMainAudio, rm3slider.slider.value );
+			}
+
 		}
-		
-	this.slider.onmouseup = function() {
-		//this.callOnChange( this.slider.value );
-		rm3slider.callOnChange( rm3slider.appMainAudio, rm3slider.slider.value );
-		}
-		
-	this.slider.ontouchend = function() {
-		//this.callOnChange( this.slider.value );
-		rm3slider.callOnChange( rm3slider.appMainAudio, rm3slider.slider.value );
-		}
-		
+				
 	this.set_value = function( value ) {
 		this.slider.value = value;
 		this.slider_value.innerHTML = value;
