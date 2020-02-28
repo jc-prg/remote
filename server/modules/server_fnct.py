@@ -489,7 +489,7 @@ def moveDeviceScene(button_type,device,direction):
     '''
     
     if button_type == "device":  status = configFiles.read_status()
-    elif button_type == "scene": status = configFiles.read(active_scenes)
+    elif button_type == "scene": status = configFiles.read(modules.active_scenes)
     else:                        return "ERROR: type "+button_type+" is unknown."
     
     position   = True
@@ -511,7 +511,7 @@ def moveDeviceScene(button_type,device,direction):
           status[key]["position"] = i
           i += 1
        if button_type == "device":  configFiles.write_status(status)
-       elif button_type == "scene": configFiles.write(active_scenes,status)
+       elif button_type == "scene": configFiles.write(modules.active_scenes,status)
        
        return_msg = "WARN: Position wasn't existing. Has been set, please move again."
       
@@ -534,7 +534,7 @@ def moveDeviceScene(button_type,device,direction):
           return_msg = "WARN: Out of range."
          
     if button_type == "device":  configFiles.write_status(status)
-    elif button_type == "scene": configFiles.write(active_scenes,status)
+    elif button_type == "scene": configFiles.write(modules.active_scenes,status)
 
     return return_msg
 
@@ -630,6 +630,27 @@ def resetAudio():
     configFiles.write_status(status,"resetAudio")
     return "TBC: Reset AUDIO to 0 for devices without API"
 
+
+#-----------------------------------------------
+
+def setMainAudioDevice(device):
+    '''
+    set device as main audio device
+    '''
+
+    return_msg = ""
+    status     = configFiles.read_status()
+    
+    if device in status:
+       for key in status:
+          if key == device: status[key]["main-audio"] = "yes"
+          else:             status[key]["main-audio"] = "no"
+       return_msg = "OK: Set "+device+" as main-audio device."
+    else:
+       return_msg = "ERROR: device not defined."
+
+    configFiles.write_status(status,"resetAudio")
+    return return_msg
 
 #-----------------------------------------------
 # Device status

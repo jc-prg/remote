@@ -472,6 +472,21 @@ def RemoteResetAudio():
 
 #-------------------------------------------------
 
+def RemoteChangeMainAudio(device):
+        '''
+        set device as main audio device (and reset other)
+        '''
+
+        data                         = remoteAPI_start()
+        data["REQUEST"]["Return"]    = setMainAudioDevice(device)
+
+        refreshCache()
+        data                         = remoteAPI_end(data,["no-data","no-config"])        
+        return data
+
+
+#-------------------------------------------------
+
 def RemoteMove(type,device,direction):
         '''
         Move position of device in start menu and drop down menu
@@ -569,25 +584,10 @@ def RemoteChangeVisibility(device,value):
         data["REQUEST"]["Parameter"] = value
 
         refreshCache()
-        data                         = remoteAPI_end(data,["no-data"])        
+        data                         = remoteAPI_end(data,["no-data","no-config"])        
         return data
 
         
-#-------------------------------------------------
-
-def RemoteChangeMainAudio(device,value):
-        '''
-        change main audio device in config file
-        '''
-
-        data                         = remoteAPI_start()
-        data["REQUEST"]["Return"]    = "ERROR: Not implemented yet." #changeVisibility(device,value)
-        data["REQUEST"]["Device"]    = device
-        data["REQUEST"]["Parameter"] = value
-
-        refreshCache()
-        data                         = remoteAPI_end(data,["no-data"])        
-        return data
 
  #-------------------------------------------------
 

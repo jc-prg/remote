@@ -494,26 +494,20 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
                 $ref: "#/definitions/STATUS"
 
-  /main-audio/{device}/{value}/:
-    put:
+  /main-audio/{device}/:
+    post:
       operationId: modules.server_cmd.RemoteChangeMainAudio
       tags:
         - edit
       summary: change main audio device
-      description: add template to device
+      description: change main audio device
       parameters:
         - name: device
-          in: path
-          type: string
-          required: true
-        - name: value
           in: path
           type: string
           required: true
@@ -524,8 +518,6 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
