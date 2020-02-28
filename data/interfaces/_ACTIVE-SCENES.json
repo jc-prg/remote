@@ -1,14 +1,370 @@
 {
-	"cinema" : {
-		"description"	: "Kino",
-		"visible"	: "yes"
-	},
-	"music" : {
-		"description" 	: "Musik",
-		"visible"	: "yes"
-	},
-	"tv" : {
-		"description" 	: "Fernsehen",
-		"visible"	: "yes"
-	}
+    "cinema": {
+        "channel": {},
+        "description": "Kino",
+        "devices": [
+            "rec2",
+            "beam",
+            "lw"
+        ],
+        "label": "Kino",
+        "position": 2,
+        "remote": [
+            ".",
+            ".",
+            "scene-on_cinema",
+            "scene-off_cinema",
+            "LINE",
+            "makro_bluray",
+            "makro_pc",
+            "makro_kodi",
+            ".",
+            "LINE||bluray playback",
+            "bd_fbw",
+            "bd_play",
+            "bd_ffw",
+            "makro_vol+",
+            "bd_last",
+            "bd_pause",
+            "bd_next",
+            "makro_mute",
+            "bd_subtitle",
+            "bd_stop",
+            "bd_audio",
+            "makro_vol-",
+            "LINE||bluray navigation",
+            "bd_open",
+            "bd_up",
+            ".",
+            "bd_topmenu",
+            "bd_left",
+            "bd_enter",
+            "bd_right",
+            "bd_menu",
+            "bd_setup",
+            "bd_down",
+            "bd_display",
+            "bd_back",
+            "LINE",
+            "bd_red",
+            "bd_green",
+            "bd_yellow",
+            "bd_blue"
+        ],
+        "visible": "yes"
+    },
+    "music": {
+        "channel": {
+            "Antenne Bayern": [
+                "makro_recradio",
+                "tv_9",
+                "tv_5"
+            ],
+            "BR-Klassik": [
+                "makro_recradio",
+                "tv_4"
+            ],
+            "Bayern 1": [
+                "makro_recradio",
+                "tv_1"
+            ],
+            "Bayern 2": [
+                "makro_recradio",
+                "tv_2"
+            ],
+            "Bayern 3": [
+                "makro_recradio",
+                "tv_3"
+            ],
+            "MDR JUMP": [
+                "makro_recradio",
+                "tv_2",
+                "tv_0"
+            ],
+            "N-JOY": [
+                "makro_recradio",
+                "tv_2",
+                "tv_7"
+            ],
+            "NDR 2": [
+                "makro_recradio",
+                "tv_2",
+                "tv_4"
+            ],
+            "rbb Fritz": [
+                "makro_recradio",
+                "tv_4",
+                "tv_1"
+            ],
+            "rbb radio1": [
+                "makro_recradio",
+                "tv_4",
+                "tv_0"
+            ]
+        },
+        "description": "Musik",
+        "devices": [
+            "tv",
+            "rec2"
+        ],
+        "label": "Musik",
+        "position": 3,
+        "remote": [
+            ".",
+            ".",
+            "scene-on_music",
+            "scene-off_music",
+            "LINE||input device",
+            "makro_radio",
+            "makro_bluetooth",
+            "makro_cd",
+            "makro_aux",
+            "LINE||radio playback",
+            "tv_prg+",
+            "tv_back",
+            "tv_prg-",
+            "makro_stereo",
+            "LINE||bluray playback",
+            "bd_fbw",
+            "bd_play",
+            "bd_ffw",
+            "makro_vol+",
+            "bd_last",
+            "bd_pause",
+            "bd_next",
+            "makro_mute",
+            ".",
+            "bd_stop",
+            ".",
+            "makro_vol-"
+        ],
+        "visible": "yes"
+    },
+    "tv": {
+        "channel": {
+            "3sat HD": [
+                "makro_rectv",
+                "tv_3",
+                "tv_1"
+            ],
+            "ARD HD": [
+                "makro_rectv",
+                "tv_1"
+            ],
+            "ARD-alpha HD": [
+                "makro_rectv",
+                "tv_1",
+                "tv_9"
+            ],
+            "BR": [
+                "makro_rectv",
+                "tv_2",
+                "tv_4"
+            ],
+            "Disney Channel": [
+                "makro_rectv",
+                "tv_4",
+                "tv_1"
+            ],
+            "KiKA HD": [
+                "makro_rectv",
+                "tv_3",
+                "tv_2"
+            ],
+            "MDR": [
+                "makro_rectv",
+                "tv_3",
+                "tv_6"
+            ],
+            "NDR HD": [
+                "makro_rectv",
+                "tv_2",
+                "tv_7"
+            ],
+            "ONE HD": [
+                "makro_rectv",
+                "tv_1",
+                "tv_8"
+            ],
+            "ProSieben": [
+                "makro_rectv",
+                "tv_7"
+            ],
+            "ProSieben MAXX": [
+                "makro_rectv",
+                "tv_6"
+            ],
+            "RTL": [
+                "makro_rectv",
+                "tv_5"
+            ],
+            "RTL2": [
+                "makro_rectv",
+                "tv_1",
+                "tv_0"
+            ],
+            "RTLnitro": [
+                "makro_rectv",
+                "tv_1",
+                "tv_4"
+            ],
+            "RTLplus": [
+                "makro_rectv",
+                "tv_1",
+                "tv_5"
+            ],
+            "Radio Bremen HD": [
+                "makro_rectv",
+                "tv_2",
+                "tv_1"
+            ],
+            "SR HD": [
+                "makro_rectv",
+                "tv_2",
+                "tv_0"
+            ],
+            "SWR BW HD": [
+                "makro_rectv",
+                "tv_2",
+                "tv_2"
+            ],
+            "Sat.1": [
+                "makro_rectv",
+                "tv_4"
+            ],
+            "Sat.1 GOLD": [
+                "makro_rectv",
+                "tv_1",
+                "tv_1"
+            ],
+            "Super RTL": [
+                "makro_rectv",
+                "tv_3",
+                "tv_7"
+            ],
+            "TLC": [
+                "makro_rectv",
+                "tv_4",
+                "tv_0"
+            ],
+            "Tagesschau24 HD": [
+                "makro_rectv",
+                "tv_1",
+                "tv_7"
+            ],
+            "VOX": [
+                "makro_rectv",
+                "tv_9"
+            ],
+            "WDR HD": [
+                "makro_rectv",
+                "tv_1",
+                "tv_3",
+                "tv_5"
+            ],
+            "WELT": [
+                "makro_rectv",
+                "tv_1",
+                "tv_6"
+            ],
+            "ZDF HD": [
+                "makro_rectv",
+                "tv_2"
+            ],
+            "ZDFinfo HD": [
+                "makro_rectv",
+                "tv_3",
+                "tv_3"
+            ],
+            "ZDFneo HD": [
+                "makro_rectv",
+                "tv_3",
+                "tv_4"
+            ],
+            "arte HD": [
+                "makro_rectv",
+                "tv_3"
+            ],
+            "hr": [
+                "makro_rectv",
+                "tv_3",
+                "tv_8"
+            ],
+            "kabel eins": [
+                "makro_rectv",
+                "tv_8"
+            ],
+            "kabel eins Doku": [
+                "makro_rectv",
+                "tv_1",
+                "tv_2"
+            ],
+            "n-tv": [
+                "makro_rectv",
+                "tv_3",
+                "tv_9"
+            ],
+            "phoenix HD": [
+                "makro_rectv",
+                "tv_3",
+                "tv_0"
+            ],
+            "sixx": [
+                "makro_rectv",
+                "tv_1",
+                "tv_3"
+            ]
+        },
+        "description": "Fernsehen",
+        "devices": [
+            "tv",
+            "rec2",
+            "beam",
+            "lw"
+        ],
+        "label": "Fernsehen",
+        "position": 1,
+        "remote": [
+            "makro_tv",
+            ".",
+            "scene-on_tv",
+            "scene-off_tv",
+            "LINE||channel",
+            "tv_1",
+            "tv_2",
+            "tv_3",
+            "makro_vol+",
+            "tv_4",
+            "tv_5",
+            "tv_6",
+            "makro_mute",
+            "tv_7",
+            "tv_8",
+            "tv_9",
+            "makro_vol-",
+            "tv_back",
+            "tv_0",
+            "tv_info",
+            ".",
+            "LINE||navigation",
+            ".",
+            "tv_prg+",
+            ".",
+            "tv_menu",
+            "tv_left",
+            "tv_enter",
+            "tv_right",
+            "tv_guide",
+            ".",
+            "tv_prg-",
+            ".",
+            "tv_exit",
+            "LINE",
+            "tv_red",
+            "tv_green",
+            "tv_yellow",
+            "tv_blue"
+        ],
+        "visible": "yes"
+    }
 }

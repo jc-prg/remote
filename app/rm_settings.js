@@ -130,6 +130,18 @@ function rmSettings (name) {	// IN PROGRESS
 			setting += this.tab_row("<b>" + this.data["DATA"]["devices"][order[key]]["label"] + "</b> ("+this.data["DATA"]["devices"][order[key]]["visible"]+")",button);
 			i++;
 			}
+		setting += "</table>"
+			 + "<hr><center><b>Change Order of Scenes</b></center><hr/>"
+			 + "<table width=\"100%\">";
+		order  = sortDict(this.data["DATA"]["scenes"],"position");
+		i      = 0;
+		for (key in order) {
+			var button = "";			
+			if (i > 0)  		{ button += this.button_small("movePosition(#scene#,#"+order[key]+"#,#-1#);","up"); }
+			if (i < order.length-1)	{ button += this.button_small("movePosition(#scene#,#"+order[key]+"#,#1#);","down"); }
+			setting += this.tab_row("<b>" + this.data["DATA"]["scenes"][order[key]]["label"] + "</b> ("+this.data["DATA"]["scenes"][order[key]]["visible"]+")",button);
+			i++;
+			}
 
 		this.write(1,"Change Order of Devices",setting);
 		}

@@ -66,10 +66,12 @@ function rmMenu(name, menu) {
     		if (data) {} else { return; }
     		var menu = this.readMenu();
 
+		var order  = sortDict(data,"position");
     		var i    = 0;
-		for (var key in data) {
-			if (data[key]["label"]) {
-				menu  += this.entry_scene( key, data[key]["label"] );
+		for (var key in order) {
+			scene = order[key];
+			if (data[scene]["label"]) {
+				menu  += this.entry_scene( key, data[scene]["label"] );
 				}
         		}
     		this.writeMenu(menu + "<li><hr/></li>");
@@ -201,9 +203,11 @@ function rmStart(name) {
 		rm3remotes.active_type = "start";
 
 		// create big buttons for scenes
-	        for ( var key in data ) {
-        	        var id = "scene_"+key;
-                	menu  += this.entry_scene( data, id, data[key]["label"], "big" );
+		var order  = sortDict(data,"position");
+	        for (var key in order) {
+			scene  = order[key];
+        	        var id = "scene_"+scene;
+                	menu  += this.entry_scene( data, id, data[scene]["label"], "big" );
 	                }
 
 		// replace old menu

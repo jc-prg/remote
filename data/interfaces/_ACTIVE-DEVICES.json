@@ -5,6 +5,7 @@
         "image": "bd",
         "interface": "BROADLINK",
         "label": "Bluray Player",
+        "position": 3,
         "status": {
             "power": "OFF"
         },
@@ -16,6 +17,7 @@
         "image": "beam",
         "interface": "BROADLINK",
         "label": "Beamer",
+        "position": 2,
         "status": {
             "power": "ON"
         },
@@ -26,6 +28,7 @@
         "image": "",
         "interface": "",
         "label": "Sample Device",
+        "position": 7,
         "status": {
             "mute": "OFF",
             "power": "OFF",
@@ -39,6 +42,7 @@
         "image": "lw",
         "interface": "BROADLINK",
         "label": "Leinwand",
+        "position": 4,
         "status": {
             "power": "ON"
         },
@@ -50,6 +54,7 @@
         "image": "",
         "interface": "KODI",
         "label": "Media-Center",
+        "position": 5,
         "status": {
             "mute": "False",
             "name": "Kodi",
@@ -65,6 +70,7 @@
         "image": "rec",
         "interface": "BROADLINK",
         "label": "AV Receiver (alt)",
+        "position": 8,
         "status": {
             "mute": "OFF",
             "power": "OFF",
@@ -79,22 +85,23 @@
         "interface": "EISCP-ONKYO",
         "label": "AV Receiver",
         "main-audio": "yes",
+        "position": 1,
         "status": {
             "a-v-sync": "0",
-            "audio-info": "ANALOG,,,,All Ch Stereo,5.1 ch,",
+            "audio-info": "HDMI 2,PCM,48 kHz,2.0 ch,Game-RPG,5.1 ch,",
             "audio-source": "hdmi",
             "dimmer": "dark",
             "display": "('selector-volume-1line', 'default-2line')",
-            "listening": "all-ch-stereo",
+            "listening": "('film', 'game-rpg')",
             "mute": "off",
             "power": "on",
             "sleep-set": "N/A",
-            "source": "pc",
+            "source": "cbl",
             "temperature": "C 31",
             "timer": "N/A",
             "tuning": "67584 Hz",
-            "video-info": "HDMI 5,Unknown,,24bit,MAIN,1920 x 1080p,RGB,24bit,,",
-            "vol": "54"
+            "video-info": "HDMI 2,1920 x 1080i  50 Hz,YCbCr444,24bit,MAIN,1920 x 1080i  50 Hz,YCbCr444,24bit,,",
+            "vol": "47"
         },
         "visible": "yes"
     },
@@ -105,6 +112,7 @@
         "interface": "TEST",
         "label": "test device",
         "main-audio": "no",
+        "position": 9,
         "status": {
             "power": "OFF"
         },
@@ -116,6 +124,7 @@
         "image": "tv",
         "interface": "BROADLINK",
         "label": "TV/Radio",
+        "position": 6,
         "status": {
             "mute": "ON",
             "power": "ON",
