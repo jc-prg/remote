@@ -36,7 +36,6 @@ var rm3remotes  = new rmRemote(   "rm3remotes" );
 var rm3settings = new rmSettings( "rm3settings" );
 var rm3msg      = new jcMsg(      "rm3msg" );
 var rm3cookie   = new jcCookie(   "rm3cookie");
-// -> create slider based on default values ...
 var rm3slider   = new slider( name="rm3slider", container="audio_slider", callOnChange=setVolume );
 
 
@@ -71,20 +70,28 @@ function initRemote (first_load=true) {
 		showRemoteInBackground(1);		// show start screen
 		setTextById("remote2","<center>Loading data ...</center>");
 
-		rm3app.requestAPI("GET",["list"],"",initRemoteFirstLoad);	// 
-		rm3app.setAutoupdate( );					// set auto update interval to active
+		remoteFirstLoad_load();			// init load of data
+		rm3app.setAutoupdate( );		// set auto update interval to active
 		}
 	}
 	
 //----------------------------------
 
-function initRemoteFirstLoad(data) {
+function remoteFirstLoad_load() {rm3app.requestAPI("GET",["list"],"",remoteFirstLoad); }
+function remoteFirstLoad(data) {
 	remoteReload(data);			// initial load of data incl. remotes, settings
 	remoteStartMenu(data);			// initial load start menu
 	remoteDropDown(data);			// initial load drop down menu
-	lastRemoteCookie();
+	lastRemoteCookie();			// get data from cookie
 	}
 
+//----------------------------------
+
+function updateRemote(data) {
+        rm3remotes.data = data["DATA"]["devices"]; //["DeviceConfig"];
+        rm3remotes.create();
+        }
+        
 //----------------------------------
 
 function remoteInitData_load() { rm3app.requestAPI("GET",["list"],"",remoteInitData); }
@@ -98,10 +105,10 @@ function remoteInitData(data) {
 		rm3start.init(    data );
 		rm3slider.init(   data );
 		rm3settings.create();
-
 		}
 	else {
 		console.error("remoteInitData: no data loaded!");
+		show_status("red", showButtonTime);
 		}
 	}
 	
@@ -120,13 +127,10 @@ function remoteReload(data) {
 		}
 
 	// check if still used in a function -> to be removed
-	dataAll                   = data;		
-
-	// init and reload data
-	remoteInitData(data);
+	dataAll = data;		
 	
-	// update drop down menu
-        remoteDropDown(data);
+	remoteInitData(data);	// init and reload data
+        remoteDropDown(data);	// update drop down menu
         
 	// check device & audio status
 	check_status(data);	
@@ -164,16 +168,14 @@ function remoteDropDown(data) {
 	rm3menu.add_script( "rm3settings.button_deact(true);initRemote();", deact_link);        
         }
         
+
 function toggleEditMode() {
 	rm3remotes.toggleEditMode();
 	rm3menu.toggleEditMode();
 	rm3start.toggleEditMode();
 	rm3settings.toggleEditMode();
 	rm3settings.create();
-	
 	remoteDropDown_load();
-//	remoteStartMenu_load();
-//	initRemote();
 	}
 
 

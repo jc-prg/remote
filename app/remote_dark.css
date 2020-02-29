@@ -64,6 +64,7 @@
   .slidecontainer { background: #666666; }
   .slider         { border: solid 1px black; }
   .slidervalue    { border: solid 1px black; }
+  .sliderlabel    { color: #dddddd; }
   }
   
 /* elements from rm_menu.css */

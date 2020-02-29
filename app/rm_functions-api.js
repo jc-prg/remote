@@ -6,6 +6,11 @@
 //-----------------------------
 // function check_for_updates_msg(data) {}
 // function check_for_updates() {}
+// function alertReturn(data) {}
+//
+// function setVolume(main_audio,volume)		{}
+// function setMainAudio(device) 			{}
+// function movePosition(type,device,direction) 	{}
 //
 // function addDevice(device, description) {}
 // function addButton(device_id, button_id) {}
@@ -41,27 +46,20 @@ function check_for_updates_msg( data ) {
 		}
 	}
 
+//--------------------------------
+
+function alertReturn(data) {
+        rm3msg.alertReturn(data);
+	remoteReload_load();
+        }
 	
 //--------------------------------
-// send add commands
+// send add commands       
 //--------------------------------
 
-function updateRemote(data) {
-        rm3remotes.data = data["DATA"]["devices"]; //["DeviceConfig"];
-        rm3remotes.create();
-        }
-        
-function alertReturn(data) {
-        rm3app.requestAPI( "GET", ["list"], "", remoteReload, "" );
-        rm3app.requestAPI( "GET", ["list"], "", remoteDropDown );
-        rm3msg.alertReturn(data);
-        }
-        
-//--------------------------------
-
-function setVolume(main_audio,volume)		{ rm3app.requestAPI( "GET",  ["set",main_audio,"vol",volume], 	"", check_status_load ); }
 function setMainAudio(device) 			{ rm3app.requestAPI( "POST", ["main-audio",device], 		"", alertReturn ); }
-function movePosition(type,device,direction) 	{ rm3app.requestAPI( "POST", ["move",type,device,direction], 	"", remoteInitData_load ); }
+function setVolume(main_audio,volume)		{ rm3app.requestAPI( "GET",  ["set",main_audio,"vol",volume], 	"", remoteReload_load ); }
+function movePosition(type,device,direction) 	{ rm3app.requestAPI( "POST", ["move",type,device,direction], 	"", remoteReload_load ); }
 
 //--------------------------------
 
