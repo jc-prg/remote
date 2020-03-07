@@ -281,6 +281,7 @@ def RemoteMakro(makro):
             power_buttons               = ["on","on-off","off"]
             device,button_status        = command.split("_",1)                         # split device and button
             interface                   = data["DATA"]["devices"][device]["interface"] # get interface / API
+            method                      = data["DATA"]["devices"][device]["method"]
 
             # check if future state defined
             if "||" in button_status:   button,status = button_status.split("||",1)                              # split button and future state           
@@ -289,8 +290,11 @@ def RemoteMakro(makro):
             if button in power_buttons: status_var    = "power"
             else:                       status_var    = button
 
-            if button == "on":          status        = "ON"
-            elif button == "off":       status        = "OFF"
+            if method != "query":
+              if button == "on":          status        = "ON"
+              elif button == "off":       status        = "OFF"
+            else:
+              status = ""
 
             # if future state not already in place add command to queue              
             logging.debug(" ...i:"+interface+" ...d:"+device+" ...b:"+button+" ...s:"+status)
