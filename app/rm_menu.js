@@ -5,30 +5,30 @@
 //--------------------------------
 /* INDEX:
 function rmMenu(name, menu)
-        this.init = function(data)
-	this.add_devices = function(data)
+        this.init                 = function(data)
+	this.add_devices          = function(data)
 	this.remoteToggleEditMode = function()
-	this.add_scenes = function(data)
-	this.add_script = function(script,label)
-	this.add_link = function(link,label)
-	this.entry_link   = function (link,label)
-	this.entry_script = function (script,label)
-	this.entry_device = function (device,label)
-	this.entry_scene  = function (scene,label)
-        this.log = function(msg)
-        this.writeMenu = function(menutext)
-        this.readMenu = function()
+	this.add_scenes           = function(data)
+	this.add_script           = function(script,label)
+	this.add_link             = function(link,label)
+	this.entry_link           = function(link,label)
+	this.entry_script         = function(script,label)
+	this.entry_device         = function(device,label)
+	this.entry_scene          = function(scene,label)
+        this.log                  = function(msg)
+        this.writeMenu            = function(menutext)
+        this.readMenu             = function()
 function rmStart(name)
-        this.init = function(data)
-	this.add_devices = function(data,menuItems)
-	this.add_scenes = function(data,menuItems)
-	this.entry_device = function(data, id, label, style)
-	this.entry_scene = function(data, id, label, style)
-        this.button = function( id, label, style, script_sendCmd, disabled )
-        this.button_image = function(label,style)
+        this.init                 = function(data)
+	this.add_devices          = function(data,menuItems)
+	this.add_scenes           = function(data,menuItems)
+	this.entry_device         = function(data, id, label, style)
+	this.entry_scene          = function(data, id, label, style)
+        this.button               = function(id, label, style, script_sendCmd, disabled )
+        this.button_image         = function(label,style)
 	this.remoteToggleEditMode = function()
-        this.log = function(msg)
-	this.image = function(file)
+        this.log                  = function(msg)
+	this.image                = function(file)
 */
 //--------------------------------
 
@@ -42,7 +42,7 @@ function rmMenu(name, menu) {
 
 
         // load data with devices (deviceConfig["devices"])
-        this.init = function(data) {
+        this.init                 = function(data) {
 
         	if (data["DATA"]) 	{ this.data = data; }
         	else			{ return; }
@@ -60,7 +60,7 @@ function rmMenu(name, menu) {
 
 
 	// add links to devices to drop down menu
-	this.add_devices = function(data) {
+	this.add_devices          = function(data) {
 
 		// return if no data
     		if (!data) { return; }
@@ -88,7 +88,7 @@ function rmMenu(name, menu) {
 
 
 	// add links to scenes to drop down menu
-	this.add_scenes = function(data) {
+	this.add_scenes           = function(data) {
 
 		// return if no data
     		if (data) {} else { return; }
@@ -107,7 +107,7 @@ function rmMenu(name, menu) {
 
 
 	// add links to scenes to drop down menu
-	this.add_script = function(script,label) {
+	this.add_script           = function(script,label) {
 
     		var menu = this.readMenu();
 		menu += this.entry_script(script,label);
@@ -116,7 +116,7 @@ function rmMenu(name, menu) {
 
 
 	// add links to scenes to drop down menu
-	this.add_link = function(link,label) {
+	this.add_link             = function(link,label) {
 
     		var menu = this.readMenu();
 		menu += menuEntry(link,label);
@@ -124,30 +124,28 @@ function rmMenu(name, menu) {
 		}
 
 	// menu entries
-	this.entry_link   = function (link,label) {
+	this.entry_link           = function(link,label) {
    		return "<li><a href=\"" + link + "\" target=\"_blank\">" + label + "</a></li>";
 		}
 
-	this.entry_script = function (script,label) {
+	this.entry_script         = function(script,label) {
   		return "<li><a onClick=\"javascript:" + script + ";clickMenu();setNavTitle('" + label + "');\">"+label+"</a></li>";
 		}
 
-	this.entry_device = function (device,label) {
-		//return "<li><a onclick=\"javascript:writeRemote(dataDevices,'" + device + "');clickMenu();setNavTitle('" + label + "');\" >" + label + "</a></li>";
+	this.entry_device         = function(device,label) {
 		return "<li><a onclick=\"rm3remotes.create('device','" + device + "');rm3settings.hide();clickMenu();setNavTitle('" + label + "');\" >" + label.replace(/#/g,"'") + "</a></li>";
 		}
 
-	this.entry_scene  = function (scene,label) {
-		//return "<li><a onclick=\"javascript:writeMixRemote(dataConfig,'" + remote + "');clickMenu();setNavTitle('" + remote + "');\" >" + remote + "</a></li>";
+	this.entry_scene          = function(scene,label) {
 		return "<li><a onclick=\"rm3remotes.create('scene','" + scene + "');rm3settings.hide();clickMenu();setNavTitle('" + label + "');\" >" + label.replace(/#/g,"'") + "</a></li>";
 		}
 
         // handle messages for console
-        this.log = function(msg) {
+        this.log                  = function(msg) {
                 console.log(this.app_name + ": " + msg);
                 }
                 
-        this.writeMenu = function(menutext) {
+        this.writeMenu            = function(menutext) {
         	if (typeof this.menuItems == "string") {
         		setTextById(this.menuItems,menutext);
         		}
@@ -157,7 +155,7 @@ function rmMenu(name, menu) {
         			}
         		}
         	}
-        this.readMenu = function() {
+        this.readMenu             = function() {
         	if (typeof this.menuItems == "string") {
         		return getTextById(this.menuItems);
         		}
@@ -176,7 +174,7 @@ function rmStart(name) {
         this.inital_load = true;
 
         // load data with devices (deviceConfig["devices"])
-        this.init = function(data) {
+        this.init                 = function(data) {
         
         	if (data["DATA"]) 	{ this.data = data; }
         	else			{ return; }
@@ -192,7 +190,7 @@ function rmStart(name) {
 
 
 	// add links to devices to drop down menu
-	this.add_devices = function(data,menuItems) {
+	this.add_devices          = function(data,menuItems) {
 	
 		elementHidden("remote_edit"); // no edit mode in start menu
 
@@ -224,7 +222,7 @@ function rmStart(name) {
 
 
 	// add links to scenes to drop down menu
-	this.add_scenes = function(data,menuItems) {
+	this.add_scenes           = function(data,menuItems) {
 
 		// set vars
     		var menu = "";
@@ -243,7 +241,7 @@ function rmStart(name) {
 		}
 
 	// write small button for device
-	this.entry_device = function(data, id, label, style) {
+	this.entry_device         = function(data, id, label, style) {
 		var disabled, label2;
 		var button = id.split("_");
 		
@@ -256,7 +254,7 @@ function rmStart(name) {
 		}
 
 	// write big button for scene
-	this.entry_scene = function(data, id, label, style) {
+	this.entry_scene          = function(data, id, label, style) {
 		var disabled;
 		var d = this.button_image( label, style );
 		var i = id.split("_");
@@ -264,12 +262,12 @@ function rmStart(name) {
 		}
 
         // standard standard button
-        this.button = function( id, label, style, script_sendCmd, disabled ){
+        this.button               = function(id, label, style, script_sendCmd, disabled ){
                 return "<button id='" + id + "' class='button " + style + "' onclick='javascript:" + script_sendCmd + "' " + disabled + ">" + label + "</button>";
                 }
 
         // check if image exists for button
-        this.button_image = function(label,style) {
+        this.button_image         = function(label,style) {
 
                 // set vars
                 var button_color = this.data["CONFIG"]["button_colors"];  // definition of button color
@@ -290,12 +288,12 @@ function rmStart(name) {
 		}	
 
         // handle messages for console
-        this.log = function(msg) {
+        this.log                  = function(msg) {
                 console.log(this.app_name + ": " + msg);
                 }
 
 	// create image tag for icons
-	this.image = function(file) {
+	this.image                = function(file) {
 	        return "<img src='icon/"+file+"' style='height:15px;margin:0px;padding:0px;' alt='"+file+"' />";
 	        }
 	}

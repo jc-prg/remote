@@ -9,13 +9,12 @@ function rmRemote(name)
 	this.init                 = function (data)
 	this.create               = function (type="",rm_id="")
 	this.device_remote        = function (id="", device="")
-									//NEU: function( id, label, style, cmd, disabled )
-	this.scene_remote         = function (id="", scene="")
-	this.scene_edit           = function (id, device)
 	this.device_description   = function (id, device)
-	this.scene_channels       = function (id, scene)
 	this.device_notused       = function (id, device)
 	this.device_edit          = function (id, device)
+	this.scene_remote         = function (id="", scene="")
+	this.scene_edit           = function (id, device)
+	this.scene_channels       = function (id, scene)
 	this.remoteToggleEditMode = function ()
         this.command_select       = function (id,device="")
         this.button_select        = function (id,device="")
@@ -34,7 +33,6 @@ function rmRemote(name)
 	this.check_status_buttons = function ()
 	this.check_status_devices = function ()
 	this.check_status_scenes  = function ()
-	// helping functions)
 	this.empty                = function (id,comment="")
 	this.button_list          = function (device)
 	this.log                  = function (msg)
@@ -81,7 +79,6 @@ function rmRemote(name) {
 
 	// create complete remote setup (for scenes and devices)
 	//--------------------
-
 	this.create               = function (type="",rm_id="") {
 	
 		if ("DATA" in this.data == false) {
@@ -130,8 +127,7 @@ function rmRemote(name) {
 			}
 		}
 
-
-	// create remotes
+	// remotes for devices
 	//--------------------
 
 	// create remote for a specific device
@@ -170,62 +166,6 @@ function rmRemote(name) {
 		}
 
 
-	// create remote for a specific scene
-	this.scene_remote         = function (id="", scene="") {
-	    
-		var remote            	= "";
-		var remote_definition 	= this.data["DATA"]["scenes"][scene]["remote"];
-		var remote_label 	= this.data["DATA"]["scenes"][scene]["label"];
-		var makros 		= this.data["DATA"]["makros"]["makro"];
-		var makros_sceneOn	= this.data["DATA"]["makros"]["scene-on"];
-		var makros_sceneOff	= this.data["DATA"]["makros"]["scene-off"];
-		
-		rm3cookie.set("remote","scene::"+scene+"::"+remote_label);
-
-		for (var i=0; i<remote_definition.length; i++) {
-
-			var button = remote_definition[i].split("_");
-			var cmd    = button[0] + "_" + button[1];
-
-			if (button[0] == "LINE") 				{ remote += "<div class='remote-line'><hr/></div>"; }
-			else if (button[0].indexOf("||") > 0) {
-				text = button[0].split("||")[1];
-				remote += "<div class='remote-line'><hr/>";
-				remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>";
-				remote += "</div>";
-				}
-			//else if (button[0] == "makro")  { remote += sendButtonMakro( cmd, makros[button[1]], button[1], "", "" ); }
-			else if (button[0] == ".") 		{ remote += this.button_device( scene+i, ".", "", "", "disabled" ); }
-			else if (button[0] == "makro")		{ remote += this.button_makro(  cmd, button[1], "", makros[button[1]], "" ); 
-								  this.active_buttons.push(cmd); 
-								  }
-			else if (button[0] == "scene-on")	{ remote += this.button_makro(  "scene_on_"+button[1],  "on",  "", makros_sceneOn[button[1]], "" );
-								  this.active_buttons.push("scene_on_"+button[1]); }
-			else if (button[0] == "scene-off")	{ remote += this.button_makro(  "scene_off_"+button[1], "off", "", makros_sceneOff[button[1]], "" );
-								  this.active_buttons.push("scene_off_"+button[1]); }
-			else 					{ remote += this.button_device( cmd, button[1], "", cmd, "" );
-								  this.active_buttons.push(cmd); }
-			}
-
-		setTextById(id,remote);
-		}
-
-
-	this.scene_edit           = function (id, device) {
-	
-		remote = "Edit mode for scenes not implemented yet!";
-	        document.getElementById(id).style.display = "block";
-	
-	        if (this.edit_mode)     { elementVisible(id); }
-	        else                    { elementHidden(id,"device_edit"); return; }
-
-		setTextById(id,remote);
-		}
-
-
-	// set description
-	//--------------------
-
 	// write description for device remote
 	this.device_description   = function (id, device) {
 		var label = this.data["DATA"]["devices"][device]["label"];
@@ -234,28 +174,6 @@ function rmRemote(name) {
 		if (url) { descr = "<a href=\""+url+"\">"+descr+"</a>"; }
 		var str   = "<center>" + descr + "</center>";
 		setTextById(id,str);
-		}
-
-
-	// create lists
-	//--------------------
-
-	// create list of channels (for scenes)
-	this.scene_channels       = function (id, scene) {
-		// set vars
-		var remote   = "";
-		var makros   = this.data["DATA"]["scenes"][scene]["channel"];
-		var channels = Object.keys(this.data["DATA"]["scenes"][scene]["channel"]);
-		channels     = channels.sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase());});
-
-    		// create list of channel buttons
-    		for (var i=0; i<channels.length; i++) {
-        		var cmd   = channels[i];
-			remote += this.button_channel(cmd, channels[i], makros[channels[i]],"","");
-        		}
-
-		// print
-		setTextById(id,remote);
 		}
 
 
@@ -285,10 +203,7 @@ function rmRemote(name) {
 
 	// edit panel per remote ...
 	this.device_edit          = function (id, device) {
-	
-//	console.error("device_edit");
-//	console.error(this.edit_mode);
-	
+
 	        document.getElementById(id).style.display = "block";
 	
 	        if (this.edit_mode)     { elementVisible(id); }
@@ -387,6 +302,83 @@ function rmRemote(name) {
 		remote  += tooltip.create("TEST ZUM<br/> TESTEN","Infotext","name");
 */
 			
+		setTextById(id,remote);
+		}
+
+
+	// remotes for scenes
+	//--------------------
+
+	// create remote for a specific scene
+	this.scene_remote         = function (id="", scene="") {
+	    
+		var remote            	= "";
+		var remote_definition 	= this.data["DATA"]["scenes"][scene]["remote"];
+		var remote_label 	= this.data["DATA"]["scenes"][scene]["label"];
+		var makros 		= this.data["DATA"]["makros"]["makro"];
+		var makros_sceneOn	= this.data["DATA"]["makros"]["scene-on"];
+		var makros_sceneOff	= this.data["DATA"]["makros"]["scene-off"];
+		
+		rm3cookie.set("remote","scene::"+scene+"::"+remote_label);
+
+		for (var i=0; i<remote_definition.length; i++) {
+
+			var button = remote_definition[i].split("_");
+			var cmd    = button[0] + "_" + button[1];
+
+			if (button[0] == "LINE") 				{ remote += "<div class='remote-line'><hr/></div>"; }
+			else if (button[0].indexOf("||") > 0) {
+				text = button[0].split("||")[1];
+				remote += "<div class='remote-line'><hr/>";
+				remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>";
+				remote += "</div>";
+				}
+			//else if (button[0] == "makro")  { remote += sendButtonMakro( cmd, makros[button[1]], button[1], "", "" ); }
+			else if (button[0] == ".") 		{ remote += this.button_device( scene+i, ".", "", "", "disabled" ); }
+			else if (button[0] == "makro")		{ remote += this.button_makro(  cmd, button[1], "", makros[button[1]], "" ); 
+								  this.active_buttons.push(cmd); 
+								  }
+			else if (button[0] == "scene-on")	{ remote += this.button_makro(  "scene_on_"+button[1],  "on",  "", makros_sceneOn[button[1]], "" );
+								  this.active_buttons.push("scene_on_"+button[1]); }
+			else if (button[0] == "scene-off")	{ remote += this.button_makro(  "scene_off_"+button[1], "off", "", makros_sceneOff[button[1]], "" );
+								  this.active_buttons.push("scene_off_"+button[1]); }
+			else 					{ remote += this.button_device( cmd, button[1], "", cmd, "" );
+								  this.active_buttons.push(cmd); }
+			}
+
+		setTextById(id,remote);
+		}
+
+
+	this.scene_edit           = function (id, device) {
+	
+		remote = "Edit mode for scenes not implemented yet!";
+	        document.getElementById(id).style.display = "block";
+	
+	        if (this.edit_mode)     { elementVisible(id); }
+	        else                    { elementHidden(id,"device_edit"); return; }
+
+		setTextById(id,remote);
+		}
+
+	// create lists
+	//--------------------
+
+	// create list of channels (for scenes)
+	this.scene_channels       = function (id, scene) {
+		// set vars
+		var remote   = "";
+		var makros   = this.data["DATA"]["scenes"][scene]["channel"];
+		var channels = Object.keys(this.data["DATA"]["scenes"][scene]["channel"]);
+		channels     = channels.sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase());});
+
+    		// create list of channel buttons
+    		for (var i=0; i<channels.length; i++) {
+        		var cmd   = channels[i];
+			remote += this.button_channel(cmd, channels[i], makros[channels[i]],"","");
+        		}
+
+		// print
 		setTextById(id,remote);
 		}
 

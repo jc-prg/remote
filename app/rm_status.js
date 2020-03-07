@@ -9,11 +9,11 @@
 /* INDEX:
 function slider ( name, container, callOnChange )
 	this.init    = function( data )
-		this.slider.oninput = function( )
-		this.slider.onmousedown = function()
-		this.slider.onmouseup = function()
+		this.slider.oninput      = function()
+		this.slider.onmousedown  = function()
+		this.slider.onmouseup    = function()
 		this.slider.ontouchstart = function()
-		this.slider.ontouchend = function()
+		this.slider.ontouchend   = function()
 	this.set_value = function( value )
 	this.show_hide = function()
 function show_status_button(id, status)
@@ -70,7 +70,7 @@ function slider ( name, container, callOnChange ) {
 		this.audioMin     		= min;
 		this.audioMax     		= max;
 		
-		this.slider.oninput = function( ) {
+		this.slider.oninput      = function() {
 			rm3slider.slider_value.innerHTML	= rm3slider.slider.value;
 			console.log("Set Volume: " + rm3slider.slider.value);  
 			//this.slider_value.innerHTML 		= this.slider.value;
@@ -80,15 +80,15 @@ function slider ( name, container, callOnChange ) {
 			document.getElementById("audio3").innerHTML = vol_str;
 			}
 		
-		this.slider.onmousedown = function() { rm3slider.slider_active = true; }
-		this.slider.onmouseup = function() {
+		this.slider.onmousedown  = function() { rm3slider.slider_active = true; }
+		this.slider.onmouseup    = function() {
 			//this.callOnChange( this.slider.value );
 			rm3slider.callOnChange( rm3slider.appMainAudio, rm3slider.slider.value );
 			rm3slider.slider_active = false;
 			}
 
 		this.slider.ontouchstart = function() {	rm3slider.slider_active = true;	}
-		this.slider.ontouchend = function() {
+		this.slider.ontouchend   = function() {
 			//this.callOnChange( this.slider.value );
 			rm3slider.callOnChange( rm3slider.appMainAudio, rm3slider.slider.value );
 			rm3slider.slider_active = false;
