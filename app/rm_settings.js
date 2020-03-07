@@ -1,7 +1,34 @@
-//--------------------------------// jc://remote/
+//--------------------------------
+// jc://remote/
 //--------------------------------
 // (c) Christoph Kloth
 // settings page & functions
+//--------------------------------
+/* INDEX:
+function rmSettings (name)
+	this.init               = function (data)
+	this.create             = function ()
+	this.create_setting     = function ()
+	this.create_edit        = function ()
+	this.write              = function (nr,label,text)
+	this.show               = function ()
+	this.hide               = function ()
+	this.onoff              = function ()
+	this.device_list        = function (id,onchange="")
+	this.interface_list     = function ()
+	this.button_list        = function (id,filter="")
+	this.button_list_change = function (id_filter, id_list, id_list_container)
+	this.device_list_status = function (id_filter, id_list_container)
+	this.button_show        = function ()
+	this.button_deact       = function (menu_entry=false)
+	this.button_stage       = function ()
+	this.button             = function (onclick,label)
+	this.button_small       = function (onclick,label)
+	this.tab_row            = function (td1,td2)
+	this.input              = function (id)
+	this.select             = function (id,title,data,onchange="")
+	this.remoteToggleEditMode = function ()
+*/
 //--------------------------------
 
 
@@ -18,7 +45,7 @@ function rmSettings (name) {	// IN PROGRESS
 	this.edit_mode    = false;
 
 	// init settings / set vars
-	this.init = function(data) {
+	this.init               = function (data) {
 		// set data
 		this.data = data;
 		
@@ -42,12 +69,12 @@ function rmSettings (name) {	// IN PROGRESS
 	//------------------------------
 
 	// write settings page
-	this.create = function() {
+	this.create             = function () {
 		if (this.edit_mode) 	{ this.create_edit(); }
 		else			{ this.create_setting(); }
 		}
 
-	this.create_setting = function() {
+	this.create_setting     = function () {
 		// Set Vars
 		var setting    = "";
 
@@ -89,7 +116,7 @@ function rmSettings (name) {	// IN PROGRESS
 		if (deactivateButton) { b_deact = "allways enabled"; }  else { b_deact = "enabled if ON"; }
 
 		setting  = this.tab_row( 	"Server:",
-						//this.button("initRemote(false);" + this.app_name + ".show();", "reload") +
+						//this.button("remoteInit(false);" + this.app_name + ".show();", "reload") +
 						this.button("window.open('" + RESTurl + "api/reload/','_blank');", "reload") +
 						this.button("window.open('" + RESTurl + "api/list/','_blank');", "REST API") +
 						this.button("window.open('" + RESTurl + "api/ui/','_blank');",   "Swagger/UI") +
@@ -111,7 +138,7 @@ function rmSettings (name) {	// IN PROGRESS
 		this.write(1,"Change Settings",setting);
 		}
 
-	this.create_edit = function() {
+	this.create_edit        = function () {
 		// Edit Remote Settings
 		setting = "";
 		setting += this.tab_row( 	"Device:",	this.input("add_device") );
@@ -147,7 +174,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	// write settings category
-	this.write = function(nr,label,text) {
+	this.write              = function (nr,label,text) {
 
 		var element 	= this.e_settings[nr];
 		var content 	= "<center><table width=\"100%\">"
@@ -159,11 +186,10 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	//------------------------------
+	this.show               = function () { if (this.active == false) { this.onoff(); showRemoteInBackground(0); } }
+	this.hide               = function () { if (this.active == true ) { this.onoff(); } }
 
-	this.show  = function() { if (this.active == false) { this.onoff(); showRemoteInBackground(0); } }
-	this.hide  = function() { if (this.active == true ) { this.onoff(); } }
-
-	this.onoff = function() {
+	this.onoff              = function () {
 
 		if (this.active)	{ this.active = false; if (rm3remotes.active_type == "start") { showRemoteInBackground(1); } }
 		else			{ this.active = true;  this.create(); showRemoteInBackground(0); }
@@ -173,16 +199,15 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	//------------------------------
-
-	this.device_list  = function (id,onchange="") {
+	this.device_list        = function (id,onchange="") {
 		var list = {};
 		for (var key in this.data["DATA"]["devices"]){
 			list[key] = this.data["DATA"]["devices"][key]["label"];
 			}
 		return this.select(id,"device",list,onchange);
 		}
-		
-	this.interface_list  = function () {
+
+	this.interface_list     = function () {
 		var text = "";
 		for (var key in this.data["STATUS"]["interfaces"]) {
 			text += key + ": " + this.data["STATUS"]["interfaces"][key] + "<br/>";
@@ -190,7 +215,7 @@ function rmSettings (name) {	// IN PROGRESS
 		return text;
 		}
 
-	this.button_list  = function (id,filter="") {
+	this.button_list        = function (id,filter="") {
 		var list = {};
 		if (filter != "" && filter in this.data["DATA"]["devices"]) {
 			for (var key in this.data["DATA"]["devices"][filter]["buttons"]){
@@ -200,21 +225,21 @@ function rmSettings (name) {	// IN PROGRESS
 		return this.select(id,"button",list);
 		}
 
-	this.button_list_change = function( id_filter, id_list, id_list_container) {
+	this.button_list_change = function (id_filter, id_list, id_list_container) {
 	        var filter_list = document.getElementById(id_filter);
 	        var filter      = filter_list.options[filter_list.selectedIndex].value;
 	        var list        = this.button_list( id_list, filter );
 	        setTextById( id_list_container, list );
         	}
 
-	this.device_list_status = function( id_filter, id_list_container) {
+	this.device_list_status = function (id_filter, id_list_container) {
 		var status = "<br/>";
 	        var filter_list = document.getElementById(id_filter);
 	        var filter      = filter_list.options[filter_list.selectedIndex].value;
 		for (var key in this.data["DATA"]["devices"][filter]["status"]) {
 			if (key == "power") {
-				command_on    = "rm3app.requestAPI('GET',['set','"+filter+"','"+key+"','ON'], '', '', '' );rm3settings.onoff();initRemote();";
-				command_off   = "rm3app.requestAPI('GET',['set','"+filter+"','"+key+"','OFF'], '', '', '' );rm3settings.onoff();initRemote();";
+				command_on    = "rm3app.requestAPI('GET',['set','"+filter+"','"+key+"','ON'], '', '', '' );rm3settings.onoff();remoteInit();";
+				command_off   = "rm3app.requestAPI('GET',['set','"+filter+"','"+key+"','OFF'], '', '', '' );rm3settings.onoff();remoteInit();";
 				status_value  = this.data["DATA"]["devices"][filter]["status"][key];
 				if (status_value == "ON")	{ command_link = "<div onclick=\""+command_off+"\" style=\"cursor:pointer\">"+key+": <u>ON</u></div>"; }
 				else if (status_value == "OFF")	{ command_link = "<div onclick=\""+command_on +"\" style=\"cursor:pointer\">"+key+": <u>OFF</u></div>"; }
@@ -232,7 +257,8 @@ function rmSettings (name) {	// IN PROGRESS
 	//------------------------------
 
 	// show button code in header if pressed button
-	this.button_show  = function () {
+
+	this.button_show        = function () {
 		if (showButton) { showButton = false; }
 		else		{ showButton = true; }
 		this.create();
@@ -240,7 +266,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	// deactivate buttons if device / scene is switched off
-	this.button_deact = function (menu_entry=false) {
+	this.button_deact       = function (menu_entry=false) {
 		if (deactivateButton) 	{ deactivateButton = false; }
 		else			{ deactivateButton = true; }
 		if (menu_entry == false) {
@@ -248,29 +274,28 @@ function rmSettings (name) {	// IN PROGRESS
 			this.show();
 			}
 		else {
-			initRemote(false);	// reload data
+			remoteInit(false);	// reload data
 			}
 		}
 
 	// switch server connection between test and prod stage
-	this.button_stage = function () {
+	this.button_stage       = function () {
 		if (connect2stage == "Test")	{ connect2stage = "Prod"; rm3app.appUrl = RESTurl_prod; }
 		else				{ connect2stage = "Test"; rm3app.appUrl = RESTurl_test; }
 
-		initRemote(false);	// reload data
+		remoteInit(false);	// reload data
 		this.create();
 		this.show();		// recreate settings page
 		}
 
 	//------------------------------
-
-	this.button        = function (onclick,label) { onclick = onclick.replace(/#/g,"'"); return "<button style=\"width:" + this.input_width + ";margin:1px;\" onClick=\"javascript:"+onclick+"\">"+label+"</button>"; }
-	this.button_small  = function (onclick,label) { onclick = onclick.replace(/#/g,"'"); return "<button style=\"width:" + this.input_width + ";margin:1px;width:60px;\" onClick=\"javascript:"+onclick+"\">"+label+"</button>"; }
+	this.button             = function (onclick,label) { onclick = onclick.replace(/#/g,"'"); return "<button style=\"width:" + this.input_width + ";margin:1px;\" onClick=\"javascript:"+onclick+"\">"+label+"</button>"; }
+	this.button_small       = function (onclick,label) { onclick = onclick.replace(/#/g,"'"); return "<button style=\"width:" + this.input_width + ";margin:1px;width:60px;\" onClick=\"javascript:"+onclick+"\">"+label+"</button>"; }
 	
-	this.tab_row = function (td1,td2) 	{ return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
-	this.input   = function (id) 		{ return "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;'>"; }
+	this.tab_row            = function (td1,td2) 	{ return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
+	this.input              = function (id) 		{ return "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;'>"; }
 
-	this.select  = function (id,title,data,onchange="") {
+	this.select             = function (id,title,data,onchange="") {
 		var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
 		item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
 		for (var key in data) {
@@ -282,7 +307,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	// show hide edit mode for remotes
-	this.toggleEditMode = function() {
+	this.remoteToggleEditMode = function () {
 		if (this.edit_mode)  { this.edit_mode = false; }
 		else                 { this.edit_mode = true; }
 		}	

@@ -6,6 +6,23 @@
 // WebApp Remote Control for RM3
 // from Broadlink (requires server app)
 //--------------------------------
+/* INDEX:
+function remoteInit (first_load=true)
+function remoteFirstLoad_load()
+function remoteFirstLoad(data)
+function remoteUpdate(data)
+function remoteInitData_load()
+function remoteInitData(data)
+function remoteReload_load()
+function remoteReload(data)
+function remoteDropDown_load()
+function remoteDropDown(data)
+function remoteToggleEditMode()
+function remoteStartMenu_load()
+function remoteStartMenu(data)
+function remoteLastFromCookie()
+*/
+//--------------------------------
 
 if (rm3_test) 	{
 	//RESTurl 	= RESTurl_test;
@@ -44,13 +61,13 @@ var rm3slider   = new slider( name="rm3slider", container="audio_slider", callOn
 //--------------------------------
 
 check_for_updates();
-initRemote(first_load=true);
+remoteInit(first_load=true);
 
 //----------------------------------
 // initiale settings and load menus
 //----------------------------------
 
-function initRemote (first_load=true) {
+function remoteInit (first_load=true) {
 
 	setNavTitle(rm3title);
 
@@ -82,12 +99,12 @@ function remoteFirstLoad(data) {
 	remoteReload(data);			// initial load of data incl. remotes, settings
 	remoteStartMenu(data);			// initial load start menu
 	remoteDropDown(data);			// initial load drop down menu
-	lastRemoteCookie();			// get data from cookie
+	remoteLastFromCookie();			// get data from cookie
 	}
 
 //----------------------------------
 
-function updateRemote(data) {
+function remoteUpdate(data) {
         rm3remotes.data = data["DATA"]["devices"]; //["DeviceConfig"];
         rm3remotes.create();
         }
@@ -126,7 +143,7 @@ function remoteReload(data) {
 		return;
 		}
 
-	// check if still used in a function -> to be removed
+	// check if still used in a fct. -> to be removed
 	dataAll = data;		
 	
 	remoteInitData(data);	// init and reload data
@@ -164,16 +181,16 @@ function remoteDropDown(data) {
 	rm3menu.add_scenes(  data["DATA"]["scenes"] );
 	rm3menu.add_devices( data["DATA"]["devices"] );
 	rm3menu.add_script( "rm3settings.onoff();", "Settings" );
-	rm3menu.add_script( "toggleEditMode();", "Edit Remote" + edit_on );
-	rm3menu.add_script( "rm3settings.button_deact(true);initRemote();", deact_link);        
+	rm3menu.add_script( "remoteToggleEditMode();", "Edit Remote" + edit_on );
+	rm3menu.add_script( "rm3settings.button_deact(true);remoteInit();", deact_link);        
         }
         
 
-function toggleEditMode() {
-	rm3remotes.toggleEditMode();
-	rm3menu.toggleEditMode();
-	rm3start.toggleEditMode();
-	rm3settings.toggleEditMode();
+function remoteToggleEditMode() {
+	rm3remotes.remoteToggleEditMode();
+	rm3menu.remoteToggleEditMode();
+	rm3start.remoteToggleEditMode();
+	rm3settings.remoteToggleEditMode();
 	rm3settings.create();
 	remoteDropDown_load();
 	}
@@ -202,7 +219,7 @@ function remoteStartMenu(data) {
 
 //--------------------------------
 
-function lastRemoteCookie() {
+function remoteLastFromCookie() {
 
 	// read cookie if exist
 	var cookie   = rm3cookie.get("remote");

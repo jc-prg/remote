@@ -4,6 +4,45 @@
 // (c) Christoph Kloth
 // Build standard Remote Controls
 //-----------------------------
+/* INDEX:
+function rmRemote(name)
+	this.init                 = function (data)
+	this.create               = function (type="",rm_id="")
+	this.device_remote        = function (id="", device="")
+									//NEU: function( id, label, style, cmd, disabled )
+	this.scene_remote         = function (id="", scene="")
+	this.scene_edit           = function (id, device)
+	this.device_description   = function (id, device)
+	this.scene_channels       = function (id, scene)
+	this.device_notused       = function (id, device)
+	this.device_edit          = function (id, device)
+	this.remoteToggleEditMode = function ()
+        this.command_select       = function (id,device="")
+        this.button_select        = function (id,device="")
+        this.template_select      = function (id,title,data,onchange="")
+        this.input                = function (id,value="")
+        this.button_edit          = function (onclick,label,disabled="")
+        this.select               = function (id,title,data,onchange="",selected_value="")
+        this.display              = function (id, device, style="" )
+        this.display_alert        = function (id, device, style="" )
+	this.button               = function (id, label, style, script_sendCmd, disabled )
+	this.button_device        = function (id, label, style, cmd, disabled )
+	this.button_device_add    = function (id, label, style, cmd, disabled )
+	this.button_makro         = function (id, label, style, makro, disabled )
+	this.button_channel       = function (id, label, makro, style, disabled="")
+	this.button_image         = function (label,style)
+	this.check_status_buttons = function ()
+	this.check_status_devices = function ()
+	this.check_status_scenes  = function ()
+	// helping functions)
+	this.empty                = function (id,comment="")
+	this.button_list          = function (device)
+	this.log                  = function (msg)
+	this.show                 = function (device="")
+	this.tab_row              = function (td1,td2="")
+function writeMakroButton ()
+*/
+//--------------------------------
 
 function rmRemote(name) {
 
@@ -19,7 +58,7 @@ function rmRemote(name) {
 	// load data with devices (deviceConfig["devices"])
 	//--------------------
 
-	this.init = function(data) {
+	this.init                 = function (data) {
 	
 		if (data["DATA"]) {
 			this.data           = data;
@@ -43,7 +82,7 @@ function rmRemote(name) {
 	// create complete remote setup (for scenes and devices)
 	//--------------------
 
-	this.create = function(type="",rm_id="") {
+	this.create               = function (type="",rm_id="") {
 	
 		if ("DATA" in this.data == false) {
 			console.warn("Data not loaded yet.");
@@ -96,7 +135,7 @@ function rmRemote(name) {
 	//--------------------
 
 	// create remote for a specific device
-	this.device_remote = function(id="", device="") {
+	this.device_remote        = function (id="", device="") {
 	
 		var remote             = "";
 		var remote_displaysize = "middle";
@@ -125,7 +164,6 @@ function rmRemote(name) {
 			else if (remote_buttons.includes(button)) 	{ remote += this.button_device( cmd, button, "", cmd, "" ); this.active_buttons.push(cmd); }
 			else if (this.edit_mode)        		{ remote += this.button_device_add( cmd, button, "notfound", cmd, "" ); }
 			else                            		{ remote += this.button_device( cmd, button, "notfound", cmd, "disabled" ); }
-									//NEU: function( id, label, style, cmd, disabled ) {
 			}
 
 		setTextById(id,remote);
@@ -133,7 +171,7 @@ function rmRemote(name) {
 
 
 	// create remote for a specific scene
-	this.scene_remote  = function(id="", scene="") {
+	this.scene_remote         = function (id="", scene="") {
 	    
 		var remote            	= "";
 		var remote_definition 	= this.data["DATA"]["scenes"][scene]["remote"];
@@ -173,7 +211,7 @@ function rmRemote(name) {
 		}
 
 
-	this.scene_edit = function(id, device) {
+	this.scene_edit           = function (id, device) {
 	
 		remote = "Edit mode for scenes not implemented yet!";
 	        document.getElementById(id).style.display = "block";
@@ -189,7 +227,7 @@ function rmRemote(name) {
 	//--------------------
 
 	// write description for device remote
-	this.device_description = function(id, device) {
+	this.device_description   = function (id, device) {
 		var label = this.data["DATA"]["devices"][device]["label"];
 		var descr = this.data["DATA"]["devices"][device]["description"];
 		var url   = this.data["DATA"]["devices"][device]["url"];
@@ -203,8 +241,7 @@ function rmRemote(name) {
 	//--------------------
 
 	// create list of channels (for scenes)
-	this.scene_channels = function(id, scene) {
-
+	this.scene_channels       = function (id, scene) {
 		// set vars
 		var remote   = "";
 		var makros   = this.data["DATA"]["scenes"][scene]["channel"];
@@ -223,7 +260,7 @@ function rmRemote(name) {
 
 
 	// create list of buttons not used in RM definition (for devices)
-	this.device_notused = function(id, device) {
+	this.device_notused       = function (id, device) {
 
 		var remote            = "";
 		var remote_buttons    = this.data["DATA"]["devices"][device]["remote"];
@@ -247,7 +284,7 @@ function rmRemote(name) {
 		}
 
 	// edit panel per remote ...
-	this.device_edit = function(id, device) {
+	this.device_edit          = function (id, device) {
 	
 //	console.error("device_edit");
 //	console.error(this.edit_mode);
@@ -355,7 +392,7 @@ function rmRemote(name) {
 
 
 	// show hide edit mode for remotes
-	this.toggleEditMode = function() {
+	this.remoteToggleEditMode = function () {
 	
 		if (this.edit_mode)  { this.edit_mode = false; }
 		else                 { this.edit_mode = true; }
@@ -367,7 +404,7 @@ function rmRemote(name) {
 	// specific selects ...
 	//--------------------
 	
-        this.command_select = function (id,device="") {
+        this.command_select       = function (id,device="") {
                 var list = {};
                 if (device != "" && device in this.data["DATA"]["devices"]) {
 			button_list = this.button_list(device);
@@ -377,8 +414,8 @@ function rmRemote(name) {
 			}
                 return this.select(id,"command",list);
                 }
-                
-        this.button_select = function (id,device="") {
+        
+        this.button_select        = function (id,device="") {
 
                	var list = {};
 		var device_buttons    = [];		
@@ -393,7 +430,7 @@ function rmRemote(name) {
                 return this.select(id,"button",list);
                 }
                 
-        this.template_select = function (id,title,data,onchange="") {
+        this.template_select      = function (id,title,data,onchange="") {
                 var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
                 item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
                 for (var key in data) {
@@ -407,15 +444,15 @@ function rmRemote(name) {
 	// create basic buttons & inputs
 	//--------------------
 
-        this.input         = function (id,value="")   { return "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"'>"; }
+        this.input                = function (id,value="")   { return "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"'>"; }
 
-        this.button_edit   = function (onclick,label,disabled="") {
+        this.button_edit          = function (onclick,label,disabled="") {
         	var style = "width:" + this.button_width + ";margin:1px;";
         	if (disabled == "disabled") { style += "background-color:gray;"; }
         	return "<button style=\""+style+"\" onClick=\""+onclick+"\" "+disabled+">"+label+"</button>";
         	}
-
-        this.select  = function (id,title,data,onchange="",selected_value="") {
+//--------------------------------
+        this.select               = function (id,title,data,onchange="",selected_value="") {
                 var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
                 item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
                 for (var key in data) {
@@ -427,9 +464,9 @@ function rmRemote(name) {
                 item     += "</select>";
                 return item;
                 }
-                
+
         // show display with informations
-        this.display = function( id, device, style="" ) {
+        this.display              = function (id, device, style="" ) {
 
 		var display_data = {}
 		
@@ -448,7 +485,7 @@ function rmRemote(name) {
         	}
         	
         // display all information
-        this.display_alert = function( id, device, style="" ) {
+        this.display_alert        = function (id, device, style="" ) {
         
 		var display_data = [];
 		if (this.data["DATA"]["devices"][device]["query_list"])	{ display_data = this.data["DATA"]["devices"][device]["query_list"]; }
@@ -470,9 +507,8 @@ function rmRemote(name) {
 		check_status(this.data);
         	}
           
-
 	// standard standard button with option to left and right click
-	this.button = function( id, label, style, script_sendCmd, disabled ){
+	this.button               = function (id, label, style, script_sendCmd, disabled ){
 	
 	        var onContext  = "";
 	        var onClick    = "";
@@ -493,9 +529,9 @@ function rmRemote(name) {
 		
 	// create buttons & inputs
 	//--------------------
-	
+
 	// create button for single command
-	this.button_device = function( id, label, style, cmd, disabled ) {
+	this.button_device        = function (id, label, style, cmd, disabled ) {
 
 		var label2 	= this.button_image( label, style );
 		if (label == ".") {
@@ -509,7 +545,7 @@ function rmRemote(name) {
 		}
 		
 	// create button for single command -> if no command assigned yet to record command for button
-	this.button_device_add = function( id, label, style, cmd, disabled ) {
+	this.button_device_add    = function (id, label, style, cmd, disabled ) {
 
 		var label2 	= this.button_image( label, style );
 		if (label == ".") {
@@ -527,7 +563,7 @@ function rmRemote(name) {
 		}		
 
 	// create button for multiple commands (makro)
-	this.button_makro = function( id, label, style, makro, disabled ) {	// ALT: ( id, makro, label, style, disabled ) {
+	this.button_makro         = function (id, label, style, makro, disabled ) {	// ALT: ( id, makro, label, style, disabled ) {
 	        if (makro) {
         	        var d = this.button_image( label, style );
                 	var makro_string = "";
@@ -543,7 +579,7 @@ function rmRemote(name) {
 		}
 
 	// create button for channel (makro)
-	this.button_channel = function(id, label, makro, style, disabled="") {
+	this.button_channel       = function (id, label, makro, style, disabled="") {
     		var makro_string = "";
 		for (var i=0; i<makro.length; i++) { makro_string = makro_string + makro[i] + "::"; }
 
@@ -553,7 +589,7 @@ function rmRemote(name) {
 		}
 
 	// check if image exists for button
-	this.button_image = function(label,style) {
+	this.button_image         = function (label,style) {
 
 		// set vars
         	var button_color = this.data["CONFIG"]["button_colors"];  // definition of button color
@@ -573,33 +609,32 @@ function rmRemote(name) {
 
 	// check status (channel button color or disable buttons)
 	//--------------------
+	this.check_status_buttons = function () {}
+	this.check_status_devices = function () {}
+	this.check_status_scenes  = function () {}
 
-	this.check_status_buttons = function() {}
-	this.check_status_devices = function() {}
-	this.check_status_scenes  = function() {}
 
-
-	// helping functions
+	// helping fcts.
 	//--------------------
 
 	// empty field
-	this.empty = function(id,comment="") {
+	this.empty                = function (id,comment="") {
 		setTextById(id,comment);
 		}
 
 	// return list of buttons for a device
-	this.button_list = function(device) {
+	this.button_list          = function (device) {
 		if (this.data["DATA"]["devices"][device]) 	{ return this.data["DATA"]["devices"][device]["button_list"]; }
 		else						{ return ["error:"+device]; }
 		}
 
 	// handle messages for console
-	this.log = function(msg) {
+	this.log                  = function (msg) {
 		console.log(this.app_name + ": " + msg);
 		}
 
 	// ensure, that all elements are visible and settings are hidden
-	this.show = function (device="") {
+	this.show                 = function (device="") {
 
 		check_status(this.data);		// ... check if part of class ...
 		setTextById("buttons_all","");		// ... move to showRemote() ...
@@ -609,7 +644,7 @@ function rmRemote(name) {
 		}
 
         // write table tags
-	this.tab_row = function (td1,td2="")  { 
+	this.tab_row              = function (td1,td2="")  { 
 		if (td1 == "start")	{ return "<table border=\"0\" width=\""+td2+"\">"; }
 		else if (td1 == "end")	{ return "</table>"; }
 		else if (td2 == false)	{ return "<tr><td valign=\"top\" colspan=\"2\">" + td1 + "</td></tr>"; }
@@ -625,7 +660,7 @@ function rmRemote(name) {
 
 // Makroseiten schreiben
 
-function writeMakroButton() {
+function writeMakroButton () {
     var buttons = "";
     var makro   = makro_def["Main"];
 

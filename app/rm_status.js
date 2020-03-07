@@ -6,11 +6,26 @@
 // - change color of on/off buttons based on status
 // - deactivate buttons if device OFF
 //--------------------------------
-
-// Check if devices are ON or OFF
-// and show buttons in different colors
-//-----------------------------------------
-
+/* INDEX:
+function slider ( name, container, callOnChange )
+	this.init    = function( data )
+		this.slider.oninput = function( )
+		this.slider.onmousedown = function()
+		this.slider.onmouseup = function()
+		this.slider.ontouchstart = function()
+		this.slider.ontouchend = function()
+	this.set_value = function( value )
+	this.show_hide = function()
+function show_status_button(id, status)
+function showRestStatus(color)
+function show_status( color, wait )
+function show_volume( volume, maximum, vol_color, novol_color="" )
+function set_button_status(id,active)
+function check_status_inactive(data)
+function check_status_load()
+function check_status(data={})
+*/
+//--------------------------------
 
 //-----------------------------------------
 // slider for volume control
@@ -98,6 +113,9 @@ function slider ( name, container, callOnChange ) {
 	}
 
 
+//-----------------------------------------
+// Check if devices are ON or OFF
+// and show buttons in different colors
 //-----------------------------------------
 
 function show_status_button(id, status) {

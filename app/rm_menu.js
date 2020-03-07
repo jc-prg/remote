@@ -3,6 +3,34 @@
 //--------------------------------
 // class for drop down menu
 //--------------------------------
+/* INDEX:
+function rmMenu(name, menu)
+        this.init = function(data)
+	this.add_devices = function(data)
+	this.remoteToggleEditMode = function()
+	this.add_scenes = function(data)
+	this.add_script = function(script,label)
+	this.add_link = function(link,label)
+	this.entry_link   = function (link,label)
+	this.entry_script = function (script,label)
+	this.entry_device = function (device,label)
+	this.entry_scene  = function (scene,label)
+        this.log = function(msg)
+        this.writeMenu = function(menutext)
+        this.readMenu = function()
+function rmStart(name)
+        this.init = function(data)
+	this.add_devices = function(data,menuItems)
+	this.add_scenes = function(data,menuItems)
+	this.entry_device = function(data, id, label, style)
+	this.entry_scene = function(data, id, label, style)
+        this.button = function( id, label, style, script_sendCmd, disabled )
+        this.button_image = function(label,style)
+	this.remoteToggleEditMode = function()
+        this.log = function(msg)
+	this.image = function(file)
+*/
+//--------------------------------
 
 function rmMenu(name, menu) {
 
@@ -53,7 +81,7 @@ function rmMenu(name, menu) {
 		}
 		
 	// show hide edit mode for remotes
-	this.toggleEditMode = function() {
+	this.remoteToggleEditMode = function() {
 		if (this.edit_mode)  { this.edit_mode = false; }
 		else                 { this.edit_mode = true; }
 		}		
@@ -256,7 +284,7 @@ function rmStart(name) {
                 }
                 
 	// show hide edit mode for remotes
-	this.toggleEditMode = function() {
+	this.remoteToggleEditMode = function() {
 		if (this.edit_mode)  { this.edit_mode = false; }
 		else                 { this.edit_mode = true; }
 		}	

@@ -4,24 +4,31 @@
 // (c) Christoph Kloth
 // All complex commands to call API
 //-----------------------------
-// function check_for_updates_msg(data) {}
-// function check_for_updates() {}
-// function alertReturn(data) {}
-//
-// function setVolume(main_audio,volume)		{}
-// function setMainAudio(device) 			{}
-// function movePosition(type,device,direction) 	{}
-//
-// function addDevice(device, description) {}
-// function addButton(device_id, button_id) {}
-// function deleteButton(device_id, button_id) {}
-// function deleteButton_exe(button) {}
-// function deleteDevice(device_id) {}
-// function deleteDevice_exe(device) {}
-//
-// function loadRemote(cmd,callback="") {}
-// function sendCmd(cmdButton, sync="", callback="") {}
-// function sendMakro( makro ) {}
+/* INDEX:
+function check_for_updates()
+function check_for_updates_msg( data )
+function alertReturn(data)
+function setMainAudio(device)
+function setVolume(main_audio,volume)
+function movePosition(type,device,direction)
+function changeVisibilityDevice(device_id, value_id)
+function addTemplate_exe(device,template)
+function addTemplate(device_id, template_id)
+function addDevice(device, api, description)
+function editDevice(device,prefix,fields)
+function addButton(device_id, button_id)
+function deleteCommand_exe(button)
+function deleteCommand(device_id, button_id)
+function deleteButton_exe(device,button)
+function deleteButton(device_id, button_id)
+function deleteDevice_exe(device)
+function deleteDevice(device_id)
+function check_if_element_or_value(name_value)
+function sendCmd(cmdButton, sync="", callback="")
+function sendMakro( makro )
+function sendMakro_hide( data )
+*/
+//--------------------------------
 
 //--------------------------------
 // check if updates available
@@ -29,7 +36,7 @@
 
 function check_for_updates() {
 
-	rm3msg.wait("Loading App ...", "initRemote();" );
+	rm3msg.wait("Loading App ...", "remoteInit();" );
 	rm3app.requestAPI("GET", ["version",rm3version], "", check_for_updates_msg, "wait" ); 	// doesn't work asynchronuous yet ... -> "wait" as param
 	}
 
@@ -39,7 +46,7 @@ function check_for_updates_msg( data ) {
 	msg = data["REQUEST"]["Return"];
 	msg = "<br/></b><i>"+msg+"</i>";
 
-	rm3msg.wait("Loading App ..."+msg, "initRemote();" );
+	rm3msg.wait("Loading App ..."+msg, "remoteInit();" );
 
 	if (data["REQUEST"]["ReturnCode"] != "802") {
 		rm3update = true;

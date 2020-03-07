@@ -4,6 +4,11 @@
 // (c) Christoph Kloth
 // main configuration file, check rm_config_stage.js also
 //--------------------------------
+/* INDEX:
+function check_theme()
+function image(file)
+*/
+//--------------------------------
 
 
 // REST API configuration

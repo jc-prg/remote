@@ -1,3 +1,10 @@
+//-----------------------------------------
+/* INDEX:
+function check_status_dev_old(device)
+function loadRemote2(cmd,callback="")
+*/
+//-----------------------------------------
+
 function check_status_dev_old(device) {
 
 	loadRemote("list");

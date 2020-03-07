@@ -1,6 +1,14 @@
 //--------------------------------
 // jc://remote/
 //--------------------------------
+/* INDEX:
+function sortDict(dict,sort_key)
+function showRemoteInBackground(show=false)
+function clickMenu ()
+function setNavTitle (title)
+function writeKeyBoard ()
+*/
+//--------------------------------
 
 //--------------------------------
 // sort dictionary
@@ -67,7 +75,7 @@ function clickMenu () {
 //--------------------------------------
 
 function setNavTitle (title) {
-        setTextById("navTitle", "<div onClick=\"javascript:rm3settings.hide();rm3cookie.erase('remote');initRemote();\">"+title.replace(/#/g,"\"")+"</div>");
+        setTextById("navTitle", "<div onClick=\"javascript:rm3settings.hide();rm3cookie.erase('remote');remoteInit();\">"+title.replace(/#/g,"\"")+"</div>");
         }
 
 //--------------------------------------
