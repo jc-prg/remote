@@ -60,15 +60,24 @@ elif [ ${D}config == "update" ]; then
 
     echo "Change dir"
     cd ${REMOTE_DIR}
+    
     echo "Stop docker"
     ${DOCKERCOMPOSE_DIR}/docker-compose -f ${REMOTE_DIR}/docker-compose.yml stop
-    echo "Update from repository"
+    
+    echo "Update REMOTE from repository"
     git stash
     git pull
+    
+    echo "Update MODULES from repository"
+    cd ${REMOTE_DIR_JCMODULES}
+    git pull
+    
     echo "Create new configuration"
+    cd ${REMOTE_DIR}
     cd config/
     ./create ${REMOTE_CURRENT_STAGE}
     cd ..
+    
     echo "Restart docker"
     ${DOCKERCOMPOSE_DIR}/docker-compose -f ${REMOTE_DIR}/docker-compose.yml up -d
 
