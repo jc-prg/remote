@@ -93,13 +93,12 @@ function rmMenu(name, menu) {
 		// return if no data
     		if (data) {} else { return; }
     		var menu = this.readMenu();
-
+    		
 		var order  = sortDict(data,"position");
-    		var i    = 0;
-		for (var key in order) {
+  		for (var key in order) {
 			scene = order[key];
 			if (data[scene]["label"]) {
-				menu  += this.entry_scene( key, data[scene]["label"] );
+				menu  += this.entry_scene( scene, data[scene]["label"] );
 				}
         		}
     		this.writeMenu(menu + "<li><hr/></li>");
