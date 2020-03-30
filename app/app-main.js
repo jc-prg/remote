@@ -55,6 +55,17 @@ var rm3msg      = new jcMsg(      "rm3msg" );
 var rm3cookie   = new jcCookie(   "rm3cookie");
 var rm3slider   = new slider( name="rm3slider", container="audio_slider", callOnChange=setVolume );
 
+/* PREPARE IMPLEMENTATION OF CENTRAL SLIDER
+
+var rm3slider  = new jcSlider( name="rm3sider", container="audio_slider");	// create slider
+rm3slider.init(min=0,max=100,label=mbox_device);				// set device information
+rm3slider.setPosition(top="45px",bottom=false,left=false,right="10px");		// set position (if not default)
+rm3slider.setOnChange(mboxVolumeSet);						// -> setVolume (api call to set volume -> this.callOnChange( this.value ))
+rm3slider.setShowVolume(mboxVolumeShow);					// -> showVolume e.g. in header
+
+*/
+
+
 
 //--------------------------------
 // initialize

@@ -11,7 +11,7 @@
   
   width         : 65px;
   height        : 250px;
-  z-index       : 90;
+  z-index       : 100;
 }
 
 /* The slider itself */
@@ -33,7 +33,7 @@
   right     : -79px;
   
   transform : rotate(-90deg);
-  z-index   : 91;
+  z-index   : 101;
 }
 
 .slidervalue {
