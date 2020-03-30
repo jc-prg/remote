@@ -1,7 +1,7 @@
 <?xml version=„1.0“ encoding=„utf-8“?>
 <!doctype html>
 <html>
-<!-- <html manifest="config/cache.manifest"> // not really used at the moment -->
+<!-- <html manifest="config/cache.manifest"> // leads to update problems on iOS -->
 <head>
 <title>jc://remote/</title>
 
@@ -13,30 +13,36 @@
 <LINK rel=apple-touch-icon href="img/remote3.jpg" />
 <LINK rel=apple-touch-icon-precomposed href="img/remote3.jpg" />
 
-<script src="/modules/jc-app/jc-app-1.3.8.js"></script>
-<script src="/modules/jc-msg/jc-msg-1.1.4.js"></script>
-<script src="/modules/jc-cookie/jc-cookie.js"></script>
-<script src="/modules/jc-functions/jc-functions-0.1.0.js"></script>
+<!-- jc modules -->
 
-<link rel="stylesheet" href="/modules/jc-msg/jc-msg-1.1.3.css">
-<link rel="stylesheet" href="/modules/jc-functions/jc-functions-0.1.0.css">
+<script src="/modules/jc-app/jc-app-1.3.9.js"></script>
+<script src="/modules/jc-cookie/jc-cookie.js"></script>
+<script src="/modules/jc-msg/jc-msg-1.1.4.js"></script>			<link rel="stylesheet" href="/modules/jc-msg/jc-msg-1.1.4.css">
+<script src="/modules/jc-functions/jc-functions-0.1.1.js"></script>	<link rel="stylesheet" href="/modules/jc-functions/jc-functions-0.1.1.css">
+
+<!-- remote modules -->
 
 <script src="rm_config_stage.js"></script>
-<script src="rm_config.js"></script>
 <script src="rm_functions.js"></script>
 <script src="rm_functions-api.js"></script>
-<script src="rm_menu.js"></script>
 <script src="rm_remotes.js"></script>
 <script src="rm_status.js"></script>
-<script src="rm_settings.js"></script>
+<script src="rm_settings.js"></script>		
 
-<link rel="stylesheet" href="remote.css">
-<link rel="stylesheet" href="rm_menu.css">
 <link rel="stylesheet" href="rm_settings.css">
 <link rel="stylesheet" href="rm_volume.css">
 
-<link rel="stylesheet" href="remote_dark.css">
-<link rel="stylesheet" href="rm_menu_dark.css">
+<!-- app modules -->
+
+<script src="app-menu.js"></script>	
+<script src="app-config.js"></script>
+	
+<link rel="stylesheet" href="app-menu.css">		
+<link rel="stylesheet" href="app-menu.dark.css">
+<link rel="stylesheet" href="app-main.css">
+<link rel="stylesheet" href="app-main.dark.css">
+
+<!-- end of module section -->
 
 </head>
 <body id="app_background">
@@ -105,7 +111,7 @@
   </div>
   
 <div id="audio_slider" class="audio_slider"></div>
-<script src="remote.js"></script>
+<script src="app-main.js"></script>
 
 </div>
 <div id="theme_check"><!-- used to check theme via JavaScript --></div>
