@@ -13,7 +13,23 @@ Light theme on iPhone XS
 ![dark theme](docs/remote_dark.png)
 Dark theme on iPhone XS
 
+## Supported Hardware
+
+* Broadlink RM 3 Mini - Infrared receiver/sender
+* Several ONKYO devices with API (see section modelsets in the file eiscp-commands.yaml in https://github.com/miracle2k/onkyo-eiscp)
+* KODI server (e.g. also installed on the Raspberry PI)
+* *Other devices easily can be integrated*
+
 ## Main features
+
+### App v2.4 / Server v1.8
+
+* stablized app and API connection incl. better performance
+* integrated volume slider
+* smaller UI optimizations
+* start script including update from GitHub
+* cleaned up code
+
 ### App v2.3 / Server v1.7
 
 This is the first working release with stable API connection to devices:
@@ -37,13 +53,6 @@ The integration of the device APIs is done in an easy way, so that the integrati
 * remote control for scenes incl. makros
 * control devices via IR sender/receiver (Broadlink RM3 Mini)
 
-## Supported Hardware
-
-* Broadlink RM 3 Mini - Infrared receiver/sender
-* Several ONKYO devices with API (see section modelsets in the file eiscp-commands.yaml in https://github.com/miracle2k/onkyo-eiscp)
-* KODI server (e.g. also installed on the Raspberry PI)
-* *Other devices easily can be integrated*
-
 ## Used Sources
 
 Many thanks to the authors ...
@@ -52,6 +61,7 @@ Many thanks to the authors ...
 * eiscp-onkyo (https://github.com/miracle2k/onkyo-eiscp)
 * KodiJson (https://github.com/jcsaaddupuy/python-kodijson)
 * Free icons from (https://icon-icons.com/), (https://www.freeicons.io/), (https://www.flaticon.com/), and (https://icons8.com/)
+* jc://modules/ (https://github.com/jc-prg/modules)
 
 
 ## How to setup the software
