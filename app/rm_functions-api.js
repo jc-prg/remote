@@ -56,7 +56,7 @@ function apiCheckUpdates_msg( data ) {
 //--------------------------------
 
 function apiAlertReturn(data) {
-        rm3msg.apiAlertReturn(data);
+        rm3msg.alertReturn(data);
 	remoteReload_load();
         }
 	
@@ -246,7 +246,7 @@ function apiButtonAdd(device_id, button_id) {
 							  }
 	else					        { var button    = button_id; i++; }	
 	
-        cmd = "rm3app.requestAPI('PUT',['button','"+device+"','"+button+"'], '', rm3msg.apiAlertReturn );";
+        cmd = "rm3app.requestAPI('PUT',['button','"+device+"','"+button+"'], '', rm3msg.alertReturn );";
 
 	if (device == "") { rm3msg.alert("Please select device."); return; }
 	if (button == "") { rm3msg.alert("Please insert name for button."); return; }

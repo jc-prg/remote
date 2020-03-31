@@ -121,7 +121,7 @@ function rmSettings (name) {	// IN PROGRESS
 						this.button("window.open('" + RESTurl + "api/reload/','_blank');", "reload") +
 						this.button("window.open('" + RESTurl + "api/list/','_blank');", "REST API") +
 						this.button("window.open('" + RESTurl + "api/ui/','_blank');",   "Swagger/UI") +
-						this.button("rm3app.requestAPI('GET',['version','" + rm3version +"'], '', rm3msg.apiAlertReturn,'wait');", "Check Updates")
+						this.button("rm3app.requestAPI('GET',['version','" + rm3version +"'], '', rm3msg.alertReturn,'wait');", "Check Updates")
 					);
 		setting += this.tab_row( 	"Reset:",
 						this.button("rm3msg.confirm('" + q1 + "', 'rm3app.requestAPI(#GET#,[#reset#],##,apiAlertReturn );' );" , "Dev ON/OFF") +
