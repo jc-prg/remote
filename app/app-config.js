@@ -6,7 +6,6 @@
 //--------------------------------
 /* INDEX:
 function check_theme()
-function image(file)
 */
 //--------------------------------
 
@@ -16,7 +15,7 @@ var RESTip         = location.host; var ip = RESTip.split(":");
 var RESTurl_test   = "http://"+ip[0]+":5003/";
 var RESTurl_prod   = "http://"+ip[0]+":5002/";
 var RESTurl        = "http://"+ip[0]+":"+stage_port+"/";
-var rm3version     = "v2.3.5";
+var rm3version     = "v2.4.0";
 var rm3title       = "jc://remote/";
 var rm3update      = false;
 var rm3background  = "img/remote2.png";
@@ -60,24 +59,6 @@ var colors_power		= {
 				"ERROR"	: "orangered",
 				}
 
-var theme	          	= "default";
-
-function check_theme() {
-	old_theme	= theme;
-	element		= document.getElementById("theme_check");
-	style		= window.getComputedStyle(element)["background-color"];
-	
-	if (style == "rgb(255, 255, 255)")	{ theme = "default"; }
-	else					{ theme = "dark"; }
-	if (old_theme != theme)			{ console.log("Change theme to: "+theme); }
-	
-	if (theme == "dark") {
-		color_button_inactive 	= "#111111";
-		colors_power["ERROR"]	= "lightpink";		
-		}
-	}
-
-
 // Standard-Definition für RemoteControl
 //----------------------------------
 
@@ -96,11 +77,26 @@ var remote_std = [
               ".", "0", ".", ".",
               ];
 
-// ------------------------------------------
+//--------------------------------------
+// check theme (if dark scheme)
+//--------------------------------------
 
-function image(file) {
-        return "<img src='icon/"+file+"' style='max-height:18px;max-width:24px;margin:0px;padding:0px;' alt='"+file+"' />";
-        }
+var theme = "default";
+
+function check_theme() {
+	old_theme	= theme;
+	element		= document.getElementById("theme_check");
+	style		= window.getComputedStyle(element)["background-color"];
+	
+	if (style == "rgb(255, 255, 255)")	{ theme = "default"; }
+	else					{ theme = "dark"; }
+	if (old_theme != theme)			{ console.log("Change theme to: "+theme); }
+	
+	if (theme == "dark") {
+		color_button_inactive 	= "#111111";
+		colors_power["ERROR"]	= "lightpink";		
+		}
+	}
 
 // ------------------------------------------
 // EOF

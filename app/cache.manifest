@@ -1,9 +1,8 @@
 CACHE MANIFEST
-# 2020-03-29 Version not found
+# 2020-03-31 Version not found
 
 CACHE:
-./remote_dark.css
-./rm_menu_dark.css
+./app-menu.js
 ./rm_volume.css
 ./index.html
 ./_sicher.js
@@ -11,17 +10,18 @@ CACHE:
 ./rm_settings.js
 ./rm_status.js
 ./rm_functions-api.js
-./remote.css
+./app-config.js
+./app-menu.dark.css
 ./rm_remotes.js
+./app-main.css
 ./rm_settings.css
 ./00-maintain.py
+./app-menu.css
 ./cache.manifest
-./rm_config.js
-./rm_menu.js
-./remote.js
-./rm_menu.css
 ./00-index-js.txt
 ./rm_functions.js
+./app-main.dark.css
+./app-main.js
 
 NETWORK:
 

@@ -1,0 +1,225 @@
+----------------------------
+./_sicher.js (26)
+----------------------------
+function statusCheck_dev_old(device)
+function loadRemote2(cmd,callback="")
+----------------------------
+./app-config.js (106)
+----------------------------
+function check_theme()
+----------------------------
+./app-main.js (280)
+----------------------------
+function remoteInit (first_load=true)
+function remoteFirstLoad_load()
+function remoteFirstLoad(data)
+function remoteUpdate(data)
+function remoteInitData_load()
+function remoteInitData(data)
+function remoteReload_load()
+function remoteReload(data)
+function remoteSetSliderDevice(data)
+function remoteDropDown_load()
+function remoteDropDown(data)
+function remoteToggleEditMode()
+function remoteStartMenu_load()
+function remoteStartMenu(data)
+function remoteLastFromCookie()
+----------------------------
+./app-menu.js (305)
+----------------------------
+function rmMenu(name, menu)
+        this.init                 = function(data)
+	this.add_devices          = function(data)
+	this.remoteToggleEditMode = function()
+	this.add_scenes           = function(data)
+	this.add_script           = function(script,label)
+	this.add_link             = function(link,label)
+	this.entry_link           = function(link,label)
+	this.entry_script         = function(script,label)
+	this.entry_device         = function(device,label)
+	this.entry_scene          = function(scene,label)
+        this.log                  = function(msg)
+        this.writeMenu            = function(menutext)
+        this.readMenu             = function()
+function rmStart(name)
+        this.init                 = function(data)
+	this.add_devices          = function(data,menuItems)
+	this.add_scenes           = function(data,menuItems)
+	this.entry_device         = function(data, id, label, style)
+	this.entry_scene          = function(data, id, label, style)
+        this.button               = function(id, label, style, script_apiCommandSend, disabled )
+        this.button_image         = function(label,style)
+	this.remoteToggleEditMode = function()
+        this.log                  = function(msg)
+	this.image                = function(file)
+----------------------------
+./rm_config_stage.js (-1)
+----------------------------
+----------------------------
+./rm_functions-api.js (310)
+----------------------------
+function apiCheckUpdates()
+function apiCheckUpdates_msg( data )
+function apiAlertReturn(data)
+function setMainAudio(device)
+function setVolume(main_audio,volume)
+function apiSetVolume(volume)
+function apiTemplateAdd_exe(device,template)
+function apiTemplateAdd(device_id, template_id)
+function apiDeviceEdit(device,prefix,fields)
+function apiDeviceMovePosition(type,device,direction)
+function apiDeviceChangeVisibility(device_id, value_id)
+function apiDeviceAdd(device, api, description)
+function apiDeviceDelete_exe(device)
+function apiDeviceDelete(device_id)
+function apiCommandSend(cmdButton, sync="", callback="")
+function apiCommandDelete_exe(button)
+function apiCommandDelete(device_id, button_id)
+function apiButtonAdd(device_id, button_id)
+function apiButtonDelete_exe(device,button)
+function apiButtonDelete(device_id, button_id)
+function apiMakroSend( makro )
+function apiMakroSend_hide( data )
+----------------------------
+./rm_functions.js (99)
+----------------------------
+function sortDict(dict,sort_key)
+function showRemoteInBackground(show=false)
+function clickMenu ()
+function setNavTitle (title)
+function image(file)
+function writeKeyBoard ()
+----------------------------
+./rm_remotes.js (670)
+----------------------------
+function rmRemote(name)
+	this.init                 = function (data)
+	this.create               = function (type="",rm_id="")
+	this.device_remote        = function (id="", device="")
+	this.device_description   = function (id, device)
+	this.device_notused       = function (id, device)
+	this.device_edit          = function (id, device)
+	this.scene_remote         = function (id="", scene="")
+	this.scene_edit           = function (id, device)
+	this.scene_channels       = function (id, scene)
+		channels     = channels.sort(function (a, b)
+	this.remoteToggleEditMode = function ()
+        this.command_select       = function (id,device="")
+        this.button_select        = function (id,device="")
+        this.template_select      = function (id,title,data,onchange="")
+        this.input                = function (id,value="")
+        this.button_edit          = function (onclick,label,disabled="")
+        this.select               = function (id,title,data,onchange="",selected_value="")
+        this.display              = function (id, device, style="" )
+        this.display_alert        = function (id, device, style="" )
+	this.button               = function (id, label, style, script_apiCommandSend, disabled )
+	this.button_device        = function (id, label, style, cmd, disabled )
+	this.button_device_add    = function (id, label, style, cmd, disabled )
+	this.button_makro         = function (id, label, style, makro, disabled )
+	this.button_channel       = function (id, label, makro, style, disabled="")
+	this.button_image         = function (label,style)
+	this.statusCheck_buttons = function ()
+	this.statusCheck_devices = function ()
+	this.statusCheck_scenes  = function ()
+	this.empty                = function (id,comment="")
+	this.button_list          = function (device)
+	this.log                  = function (msg)
+	this.show                 = function (device="")
+	this.tab_row              = function (td1,td2="")
+function writeMakroButton ()
+----------------------------
+./rm_settings.js (320)
+----------------------------
+function rmSettings (name)
+	this.init               = function (data)
+	this.create             = function ()
+	this.create_setting     = function ()
+	this.create_edit        = function ()
+	this.write              = function (nr,label,text)
+	this.show               = function ()
+	this.hide               = function ()
+	this.onoff              = function ()
+	this.device_list        = function (id,onchange="")
+	this.interface_list     = function ()
+	this.button_list        = function (id,filter="")
+	this.button_list_change = function (id_filter, id_list, id_list_container)
+	this.device_list_status = function (id_filter, id_list_container)
+	this.button_show        = function ()
+	this.button_deact       = function (menu_entry=false)
+	this.button_stage       = function ()
+	this.button             = function (onclick,label)
+	this.button_small       = function (onclick,label)
+	this.tab_row            = function (td1,td2)
+	this.input              = function (id)
+	this.select             = function (id,title,data,onchange="")
+	this.remoteToggleEditMode = function ()
+----------------------------
+./rm_status.js (368)
+----------------------------
+function statusShowApiStatusLED(color)
+function statusShowApiStatus( color, wait )
+function statusShowVolume_old( volume, maximum, vol_color, novol_color="" )
+function statusShowVolume( volume )
+function statusButtonActiveInactive(id,active)
+function statusButtonSetColor(id, status)
+function statusCheck_inactive(data)
+function statusCheck_load()
+function statusCheck(data={})
+----------------------------
+ USAGE ...
+----------------------------
+  6 - apiAlertReturn
+  3 - apiButtonAdd
+  2 - apiButtonDelete
+  2 - apiButtonDelete_exe
+  2 - apiCheckUpdates
+  1 - apiCheckUpdates_msg
+  2 - apiCommandDelete
+  2 - apiCommandDelete_exe
+  2 - apiDeviceAdd
+  2 - apiDeviceChangeVisibility
+  2 - apiDeviceDelete
+  2 - apiDeviceDelete_exe
+  2 - apiDeviceEdit
+  5 - apiDeviceMovePosition
+  3 - apiMakroSend
+  2 - apiMakroSend_hide
+  1 - apiSetVolume
+  2 - apiTemplateAdd
+  2 - apiTemplateAdd_exe
+  2 - check_theme
+  6 - clickMenu
+ 18 - image
+  4 - remoteDropDown
+  2 - remoteDropDown_load
+  1 - remoteFirstLoad
+  2 - remoteFirstLoad_load
+  2 - remoteInitData
+  1 - remoteInitData_load
+  2 - remoteLastFromCookie
+  3 - remoteReload
+  5 - remoteReload_load
+  2 - remoteSetSliderDevice
+  3 - remoteStartMenu
+  1 - remoteStartMenu_load
+ 14 - remoteToggleEditMode
+  1 - remoteUpdate
+  2 - rmMenu
+  2 - rmRemote
+  2 - rmSettings
+  2 - rmStart
+  2 - setMainAudio
+  9 - setNavTitle
+  4 - setVolume
+  7 - sortDict
+  5 - statusButtonActiveInactive
+ 27 - statusButtonSetColor
+  1 - statusCheck_dev_old
+  3 - statusCheck_inactive
+  1 - statusCheck_load
+ 12 - statusShowApiStatus
+  3 - statusShowApiStatusLED
+  1 - statusShowVolume
+  1 - writeKeyBoard
+  1 - writeMakroButton

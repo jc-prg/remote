@@ -15,6 +15,7 @@ function rmRemote(name)
 	this.scene_remote         = function (id="", scene="")
 	this.scene_edit           = function (id, device)
 	this.scene_channels       = function (id, scene)
+		channels     = channels.sort(function (a, b)
 	this.remoteToggleEditMode = function ()
         this.command_select       = function (id,device="")
         this.button_select        = function (id,device="")
@@ -24,15 +25,15 @@ function rmRemote(name)
         this.select               = function (id,title,data,onchange="",selected_value="")
         this.display              = function (id, device, style="" )
         this.display_alert        = function (id, device, style="" )
-	this.button               = function (id, label, style, script_sendCmd, disabled )
+	this.button               = function (id, label, style, script_apiCommandSend, disabled )
 	this.button_device        = function (id, label, style, cmd, disabled )
 	this.button_device_add    = function (id, label, style, cmd, disabled )
 	this.button_makro         = function (id, label, style, makro, disabled )
 	this.button_channel       = function (id, label, makro, style, disabled="")
 	this.button_image         = function (label,style)
-	this.check_status_buttons = function ()
-	this.check_status_devices = function ()
-	this.check_status_scenes  = function ()
+	this.statusCheck_buttons = function ()
+	this.statusCheck_devices = function ()
+	this.statusCheck_scenes  = function ()
 	this.empty                = function (id,comment="")
 	this.button_list          = function (device)
 	this.log                  = function (msg)
@@ -83,7 +84,7 @@ function rmRemote(name) {
 	
 		if ("DATA" in this.data == false) {
 			console.warn("Data not loaded yet.");
-			show_status("red", showButtonTime);
+			statusShowApiStatus("red", showButtonTime);
 			return;
 			}
 
@@ -233,7 +234,7 @@ function rmRemote(name) {
 		remote  += this.tab_row( "Interface:",   	this.select("edit_interface", "interface", this.data["CONFIG"]["interfaces"], "", this.data["DATA"]["devices"][device]["interface"]) );
 		remote  += this.tab_row( "Status request:",	this.select("edit_method",    "method",    this.data["CONFIG"]["methods"],    "", this.data["DATA"]["devices"][device]["method"]) );
 		remote  += this.tab_row(
-				this.button_edit("editDevice('"+device+"','edit','description,label,interface,method');","change data")
+				this.button_edit("apiDeviceEdit('"+device+"','edit','description,label,interface,method');","change data")
 				);
 
 		remote  += this.tab_row("end");
@@ -256,11 +257,11 @@ function rmRemote(name) {
 
 		remote  += this.tab_row(
 				this.input("add_button"),
-				this.button_edit("addButton('"+device+"','add_button');","add button")
+				this.button_edit("apiButtonAdd('"+device+"','add_button');","add button")
 				);
 		remote  += this.tab_row(
 				this.button_select("del_button",device),
-				this.button_edit("deleteButton('"+device+"','del_button');","delete button")
+				this.button_edit("apiButtonDelete('"+device+"','del_button');","delete button")
 				);
 
 		remote  += "<tr><td colspan='2'><hr/></td></tr>";
@@ -271,25 +272,25 @@ function rmRemote(name) {
 				);
 		remote  += this.tab_row(
 				this.command_select("del_command",device),
-				this.button_edit("deleteCommand('"+device+"','del_command');","delete command")
+				this.button_edit("apiCommandDelete('"+device+"','del_command');","delete command")
 				);
 
 		remote  += "<tr><td colspan='2'><hr/></td></tr>";
 
 		remote  += this.tab_row(
 				this.template_select("change_visibility","visibility",{"yes":"visible","no":"hidden"}),
-				this.button_edit("changeVisibilityDevice('"+device+"','change_visibility');","change visibility")
+				this.button_edit("apiDeviceChangeVisibility('"+device+"','change_visibility');","change visibility")
 				);
 		remote  += this.tab_row(
 				this.template_select("add_template","template",this.templates),
-				this.button_edit("addTemplate('"+device+"','add_template');","*clone template")
+				this.button_edit("apiTemplateAdd('"+device+"','add_template');","*clone template")
 				);
 
 		remote  += "<tr><td colspan='2'><hr/></td></tr>";
 
 		remote  += this.tab_row(
 				this.input("del_device",device),
-				this.button_edit("deleteDevice('del_device');","delete device")
+				this.button_edit("apiDeviceDelete('del_device');","delete device")
 				);
 
 		remote  += this.tab_row("end");
@@ -496,19 +497,19 @@ function rmRemote(name) {
         	text  += this.tab_row("end");
         	text  += "</div>";
 		rm3msg.confirm(text,"",300);
-		check_status(this.data);
+		statusCheck(this.data);
         	}
           
 	// standard standard button with option to left and right click
-	this.button               = function (id, label, style, script_sendCmd, disabled ){
+	this.button               = function (id, label, style, script_apiCommandSend, disabled ){
 	
 	        var onContext  = "";
 	        var onClick    = "";
-	        if (script_sendCmd != "") { onClick    = "onclick='" + script_sendCmd + "'"; }
+	        if (script_apiCommandSend != "") { onClick    = "onclick='" + script_apiCommandSend + "'"; }
 	        
-	        if (Array.isArray(script_sendCmd)) {
+	        if (Array.isArray(script_apiCommandSend)) {
 	                var test   = "onmousedown_left_right(event,'alert(#left#);','alert(#right#);');"
-	                onClick    = "onmousedown_left_right(event,\"" + script_sendCmd[0].replace(/\"/g,"#") + "\",\"" + script_sendCmd[1].replace(/\"/g,"#") + "\");";
+	                onClick    = "onmousedown_left_right(event,\"" + script_apiCommandSend[0].replace(/\"/g,"#") + "\",\"" + script_apiCommandSend[1].replace(/\"/g,"#") + "\");";
 	                onClick    = "onmousedown='"+onClick+"'";
 	                onContext  = "oncontextmenu=\"return false;\"";
 	                }
@@ -531,7 +532,7 @@ function rmRemote(name) {
 			label2[0] = "&nbsp;";
 			}
 		if (cmd != "") {
-			cmd = 'sendCmd("'+cmd+'");';
+			cmd = 'apiCommandSend("'+cmd+'");';
 			}
 		return this.button( id, label2[0], label2[1], cmd, disabled );
 		}
@@ -546,7 +547,7 @@ function rmRemote(name) {
 			}
 	        device_button = cmd.split("_");
 	        
-	        var button = this.button( id, label2[0], label2[1], ['addButton("'+device_button[0]+'","'+device_button[1]+'");', this.app_name + '.button_tooltip.toggleAll("' + cmd + '");'], disabled );
+	        var button = this.button( id, label2[0], label2[1], ['apiButtonAdd("'+device_button[0]+'","'+device_button[1]+'");', this.app_name + '.button_tooltip.toggleAll("' + cmd + '");'], disabled );
 	        button     = this.button_tooltip.create( button, "not implemented yet: " +cmd, cmd );
 	        
 		// console.error(button);	        
@@ -561,7 +562,7 @@ function rmRemote(name) {
                 	var makro_string = "";
 
                 	for (var i=0; i<makro.length; i++) { makro_string = makro_string + makro[i] + "::"; }
-                	var b = this.button( id, d[0], d[1], 'sendMakro("'+makro_string+'");', disabled );
+                	var b = this.button( id, d[0], d[1], 'apiMakroSend("'+makro_string+'");', disabled );
 			this.log(b);
 			return b;
                 	}
@@ -577,7 +578,7 @@ function rmRemote(name) {
 
 		//console.log(label+" - "+makro_string);
 
-		return "<button id='" + id + "' class='channel-entry " + style + "' " + disabled + " onclick=\"javascript:sendMakro('" + makro_string + "');\">" + label + "</button>";
+		return "<button id='" + id + "' class='channel-entry " + style + "' " + disabled + " onclick=\"javascript:apiMakroSend('" + makro_string + "');\">" + label + "</button>";
 		}
 
 	// check if image exists for button
@@ -601,9 +602,9 @@ function rmRemote(name) {
 
 	// check status (channel button color or disable buttons)
 	//--------------------
-	this.check_status_buttons = function () {}
-	this.check_status_devices = function () {}
-	this.check_status_scenes  = function () {}
+	this.statusCheck_buttons = function () {}
+	this.statusCheck_devices = function () {}
+	this.statusCheck_scenes  = function () {}
 
 
 	// helping fcts.
@@ -628,7 +629,7 @@ function rmRemote(name) {
 	// ensure, that all elements are visible and settings are hidden
 	this.show                 = function (device="") {
 
-		check_status(this.data);		// ... check if part of class ...
+		statusCheck(this.data);		// ... check if part of class ...
 		setTextById("buttons_all","");		// ... move to showRemote() ...
 		showRemoteInBackground(0);		// ... check if part of this class ...
 		rm3settings.hide();			// ... check if part of another class ...

@@ -7,131 +7,22 @@
 // - deactivate buttons if device OFF
 //--------------------------------
 /* INDEX:
-function slider ( name, container, callOnChange )
-	this.init    = function( data )
-		this.slider.oninput      = function()
-		this.slider.onmousedown  = function()
-		this.slider.onmouseup    = function()
-		this.slider.ontouchstart = function()
-		this.slider.ontouchend   = function()
-	this.set_value = function( value )
-	this.show_hide = function()
-function show_status_button(id, status)
-function showRestStatus(color)
-function show_status( color, wait )
-function show_volume( volume, maximum, vol_color, novol_color="" )
-function set_button_status(id,active)
-function check_status_inactive(data)
-function check_status_load()
-function check_status(data={})
+function statusShowApiStatusLED(color)
+function statusShowApiStatus( color, wait )
+function statusShowVolume_old( volume, maximum, vol_color, novol_color="" )
+function statusShowVolume( volume )
+function statusButtonActiveInactive(id,active)
+function statusButtonSetColor(id, status)
+function statusCheck_inactive(data)
+function statusCheck_load()
+function statusCheck(data={})
 */
 //--------------------------------
 
-//-----------------------------------------
-// slider for volume control
-//-----------------------------------------
-
-function slider ( name, container, callOnChange ) {
-
-	this.appName      = name;
-	this.appContainer = container;
-	this.callOnChange = callOnChange;
-
-	// initialize slider
-	this.init    = function( data ) {
-		main_audio 			= data["CONFIG"]["main-audio"];
-		min        			= data["DATA"]["devices"][main_audio]["values"]["vol"]["min"];
-		max        			= data["DATA"]["devices"][main_audio]["values"]["vol"]["max"];		
-		label      			= data["DATA"]["devices"][main_audio]["label"];		
-		name	   			= this.appName;
-
-		if (this.container == undefined) {
-			this.sliderHTML   		=  "<div id=\""+name+"_container\" class=\"slidecontainer\" style=\"visibility:hidden\">";
-  			this.sliderHTML   		+= "<input type=\"range\" min=\""+min+"\" max=\""+max+"\" value=\"50\" class=\"slider\" id=\""+name+"\">";
-  			this.sliderHTML   		+= "<br/><div id=\""+name+"_value\" class=\"slidervalue\">xx</div>";
-  			this.sliderHTML   		+= "<div  id=\""+name+"_label\" class=\"sliderlabel\">"+label+"</div>";
-			this.sliderHTML   		+= "</div>";
-	
-			this.container    		= document.getElementById(this.appContainer);
-			this.container.innerHTML	= this.sliderHTML;
-
-			this.slider       		= document.getElementById(name);
-			this.slider_value 		= document.getElementById(name+"_value");
-			this.slider_cont  		= document.getElementById(name+"_container");
-			this.slider_label 		= document.getElementById(name+"_label");
-			this.slider_active		= false;
-			}
-
-		this.slider_value.innerHTML	= this.slider.value;
-		this.slider_label.innerHTML	= label + " (" + main_audio + ")";
-	
-		this.appMainAudio 		= main_audio;
-		this.appMainAudioLabel		= label;
-		this.audioMin     		= min;
-		this.audioMax     		= max;
-		
-		this.slider.oninput      = function() {
-			rm3slider.slider_value.innerHTML	= rm3slider.slider.value;
-			console.log("Set Volume: " + rm3slider.slider.value);  
-			//this.slider_value.innerHTML 		= this.slider.value;
-
-			vol_color = "white";
-			vol_str   = show_volume( rm3slider.slider.value, rm3slider.audioMax, vol_color );
-			document.getElementById("audio3").innerHTML = vol_str;
-			}
-		
-		this.slider.onmousedown  = function() { rm3slider.slider_active = true; }
-		this.slider.onmouseup    = function() {
-			//this.callOnChange( this.slider.value );
-			rm3slider.callOnChange( rm3slider.appMainAudio, rm3slider.slider.value );
-			rm3slider.slider_active = false;
-			}
-
-		this.slider.ontouchstart = function() {	rm3slider.slider_active = true;	}
-		this.slider.ontouchend   = function() {
-			//this.callOnChange( this.slider.value );
-			rm3slider.callOnChange( rm3slider.appMainAudio, rm3slider.slider.value );
-			rm3slider.slider_active = false;
-			}
-		}
-				
-	// set value from outside (update data)
-	this.set_value = function( value ) {
-		if (this.slider_active == false) {
-			this.slider.value		= value;
-			this.slider_value.innerHTML	= value;
-			}
-		console.log("Set Volume: " + this.slider.value);  
-		}
-		
-	// show or hide slider
-	this.show_hide = function() {
-		if (this.slider_cont.style.visibility == "hidden") 	{ this.slider_cont.style.visibility = "visible"; }
-		else							{ this.slider_cont.style.visibility = "hidden"; }
-		}
-		
-	}
-
-
-//-----------------------------------------
-// Check if devices are ON or OFF
-// and show buttons in different colors
-//-----------------------------------------
-
-function show_status_button(id, status) {
-
-	if (status in colors_power)	{ color = colors_power[status]; }	// color defined in rm_config.js
-	else				{ color = ""; } 			// reset to CSS color
-
-	var button = document.getElementById(id);
-	if (typeof(button) != 'undefined' && button != null) {
-		button.style.backgroundColor      = color;
-		}
-	}
 
 //-----------------------------------------
 
-function showRestStatus(color) {
+function statusShowApiStatusLED(color) {
 	var color_html = "";
 
 	if (color == "red")   { color_html = status_red; }
@@ -144,14 +35,14 @@ function showRestStatus(color) {
 
 //-----------------------------------------
 
-function show_status( color, wait ) {
-	showRestStatus( color );
-	setTimeout(function(){ showRestStatus("gray"); }, wait*1000);
+function statusShowApiStatus( color, wait ) {
+	statusShowApiStatusLED( color );
+	setTimeout(function(){ statusShowApiStatusLED("gray"); }, wait*1000);
 	}
 	
 //-----------------------------------------
 
-function show_volume( volume, maximum, vol_color, novol_color="" ) {
+function statusShowVolume_old( volume, maximum, vol_color, novol_color="" ) {
 
 	var volume  = Math.round( volume * 20 / maximum );
 	var vol_str = "<font color='" + vol_color + "'>";
@@ -163,11 +54,29 @@ function show_volume( volume, maximum, vol_color, novol_color="" ) {
 	}
 
 //-----------------------------------------
+
+function statusShowVolume( volume ) {
+
+	var vol_color   = "white";
+	var novol_color = "#333333";
+
+	var volume  = Math.round( volume * 20 / rm3slider.audioMax );
+	var vol_str = "<font color='" + vol_color + "'>";
+	for (var i=0; i<volume; i++) { vol_str += "I"; }
+	vol_str += "</font>";
+	
+	if (novol_color != "") { vol_str += "<font color='" + novol_color + "'>"; }
+	for (var i=0; i<20-volume; i++) { vol_str += "I"; }
+	
+	setTextById("audio3",vol_str);
+	}
+
+//-----------------------------------------
 // check if device status is off -> change color to gray
 //-----------------------------------------
 
 // change button color
-function set_button_status(id,active) {
+function statusButtonActiveInactive(id,active) {
 	if (document.getElementById(id)) {
 		if (active) 	{ document.getElementById(id).style.backgroundColor = ""; } 			// reset to CSS color
 		else 		{ document.getElementById(id).style.backgroundColor = color_button_inactive; }	// color defined in rm_config.js
@@ -175,17 +84,32 @@ function set_button_status(id,active) {
 	}
 	
 //-----------------------------------------
+// show buttons in different colors (depending if devices are ON or OFF)
+//-----------------------------------------
+
+function statusButtonSetColor(id, status) {
+
+	if (status in colors_power)	{ color = colors_power[status]; }	// color defined in rm_config.js
+	else				{ color = ""; } 			// reset to CSS color
+
+	var button = document.getElementById(id);
+	if (typeof(button) != 'undefined' && button != null) {
+		button.style.backgroundColor      = color;
+		}
+	}
+
+//-----------------------------------------
 // check if device status
 //-----------------------------------------
 	
 // check if device status is off
-function check_status_inactive(data) {
+function statusCheck_inactive(data) {
 
 	if (deactivateButton)	{ return; }
 
 	if (!data["DATA"]) {
-		console.error("check_status_inactive: data not loaded.");
-		show_status("red", showButtonTime);
+		console.error("statusCheck_inactive: data not loaded.");
+		statusShowApiStatus("red", showButtonTime);
 		return;
 		}
 
@@ -194,7 +118,7 @@ function check_status_inactive(data) {
 	var filter         = false;
 	var scene_status   = {};
 
-	// get scene status from devices status and definition (see check_status) -> move to rm_remote.js
+	// get scene status from devices status and definition (see statusCheck) -> move to rm_remote.js
 	for (var key in data["DATA"]["scenes"]) {
 		if (data["DATA"]["scenes"][key]["devices"]) {
 
@@ -211,7 +135,7 @@ function check_status_inactive(data) {
 			//console.debug(key + " - on:" + dev_on + " / off:" + required.length + " / " + scene_status[key]);
 			}
 		else {
-			console.error("ERROR check_status_inactive");
+			console.error("ERROR statusCheck_inactive");
 			console.error(data["DATA"]["scenes"][key]);
 			required = [];
 			}
@@ -221,13 +145,13 @@ function check_status_inactive(data) {
 	if (rm3remotes.active_type == "scene" && scene_status[rm3remotes.active_name] != "ON") {
 		for (var i=0; i<rm3remotes.active_buttons.length; i++) {
 			var button1 = rm3remotes.active_buttons[i].split("_");
-			if (button1[0] == "makro") { set_button_status(button1[0]+"_"+button1[1],false); }
+			if (button1[0] == "makro") { statusButtonActiveInactive(button1[0]+"_"+button1[1],false); }
 			}
 		}
 	else {
 		for (var i=0; i<rm3remotes.active_buttons.length; i++) {
 			var button1 = rm3remotes.active_buttons[i].split("_");
-			if (button1[0] == "makro") { set_button_status(button1[0]+"_"+button1[1],true); }
+			if (button1[0] == "makro") { statusButtonActiveInactive(button1[0]+"_"+button1[1],true); }
 			}
 		}
 
@@ -243,7 +167,7 @@ function check_status_inactive(data) {
 				for (var i=0; i<buttons.length; i++) {
 					if (buttons[i] != "red" && buttons[i] != "blue" && buttons[i] != "yellow" && buttons[i] != "green"
 						&& buttons[i] != "on" && buttons[i] != "off" && buttons[i] != "on-off") {
-						set_button_status(key+"_"+buttons[i],false);
+						statusButtonActiveInactive(key+"_"+buttons[i],false);
 						}
 				}
 			}
@@ -253,7 +177,7 @@ function check_status_inactive(data) {
 				for (var i=0; i<buttons.length; i++) {
 					if (buttons[i] != "red" && buttons[i] != "blue" && buttons[i] != "yellow" && buttons[i] != "green"
 						&& buttons[i] != "on" && buttons[i] != "off" && buttons[i] != "on-off") {
-						set_button_status(key+"_"+buttons[i],true);
+						statusButtonActiveInactive(key+"_"+buttons[i],true);
 						}
 					}
 				}
@@ -263,13 +187,13 @@ function check_status_inactive(data) {
 
 //-----------------------------------------
 
-function check_status_load() {	rm3app.requestAPI("GET",["list"], "", check_status, "" ); }
-function check_status(data={}) {
+function statusCheck_load() {	rm3app.requestAPI("GET",["list"], "", statusCheck, "" ); }
+function statusCheck(data={}) {
 
 	if (deactivateButton)			{ return; }     // if manual mode <- deactivateButton == true
 	if (!data["DATA"]) {
-		console.error("check_status: data not loaded.");
-		show_status("red", showButtonTime);
+		console.error("statusCheck: data not loaded.");
+		statusShowApiStatus("red", showButtonTime);
 		return;
 		}
 			
@@ -291,10 +215,10 @@ function check_status(data={}) {
 	var vol_color2	   = "yellow";
 	var novol_color    = "darkgray";
 	
-	// if data -> callback of sendCmd (ON/OFF) -> check_status_inactive()
-	check_status_inactive(data);
+	// if data -> callback of apiCommandSend (ON/OFF) -> statusCheck_inactive()
+	statusCheck_inactive(data);
 
-	// get scene status from devices status and definition (see check_status) -> move to rm_remote.js
+	// get scene status from devices status and definition (see statusCheck) -> move to rm_remote.js
 	for (var key in data["DATA"]["scenes"]) {
 
 		var dev_on   = 0;
@@ -327,41 +251,41 @@ function check_status(data={}) {
 		connection   = devices[device]["connected"].toLowerCase();
 		
 		if (connection != "connected") {
-			show_status_button( "device_" + key, "ERROR" ); // main menu button
-			show_status_button( key + "_on-off", "ERROR" ); // on-off device button		
-			show_status_button( key + "_on",     "ERROR" );
-			show_status_button( key + "_off",    "ERROR" );
+			statusButtonSetColor( "device_" + key, "ERROR" ); // main menu button
+			statusButtonSetColor( key + "_on-off", "ERROR" ); // on-off device button		
+			statusButtonSetColor( key + "_on",     "ERROR" );
+			statusButtonSetColor( key + "_off",    "ERROR" );
 			}
 
 		else if (typeof check_button == "string") {
 			check_button = check_button.toUpperCase()
 			
 			if (check_button.includes("ON")) {
-				show_status_button( "device_" + key, "ON" ); // main menu button
-				show_status_button( key + "_on-off", "ON" ); // on-off device button		
-				show_status_button( key + "_on",  "ON" );
-				show_status_button( key + "_off", "" );
+				statusButtonSetColor( "device_" + key, "ON" ); // main menu button
+				statusButtonSetColor( key + "_on-off", "ON" ); // on-off device button		
+				statusButtonSetColor( key + "_on",  "ON" );
+				statusButtonSetColor( key + "_off", "" );
 				}
 			else if (check_button.includes("OFF")) {
-				show_status_button( "device_" + key, "OFF" ); // main menu button
-				show_status_button( key + "_on-off", "OFF" ); // on-o:16
-				show_status_button( key + "_off", "OFF" );
-				show_status_button( key + "_on",  "" );
+				statusButtonSetColor( "device_" + key, "OFF" ); // main menu button
+				statusButtonSetColor( key + "_on-off", "OFF" ); // on-o:16
+				statusButtonSetColor( key + "_off", "OFF" );
+				statusButtonSetColor( key + "_on",  "" );
 				}	
 			}
 			
 		else if (typeof check_button == "object") {
 			if (check_button.indexOf("off") >= 0) {
-				show_status_button( "device_" + key, "OFF" ); // main menu button
-				show_status_button( key + "_on-off", "OFF" ); // on-off device button		
-				show_status_button( key + "_off", "OFF" );
-				show_status_button( key + "_on",  "" );
+				statusButtonSetColor( "device_" + key, "OFF" ); // main menu button
+				statusButtonSetColor( key + "_on-off", "OFF" ); // on-off device button		
+				statusButtonSetColor( key + "_off", "OFF" );
+				statusButtonSetColor( key + "_on",  "" );
 				}	
 			else if (check_button.indexOf("on") >= 0) {
-				show_status_button( "device_" + key, "ON" ); // main menu button
-				show_status_button( key + "_on-off", "ON" ); // on-off device button		
-				show_status_button( key + "_on",  "ON" );
-				show_status_button( key + "_off", "" );
+				statusButtonSetColor( "device_" + key, "ON" ); // main menu button
+				statusButtonSetColor( key + "_on-off", "ON" ); // on-off device button		
+				statusButtonSetColor( key + "_on",  "ON" );
+				statusButtonSetColor( key + "_off", "" );
 				}
 			}	
 		}
@@ -372,16 +296,16 @@ function check_status(data={}) {
 	// check scene status and change color of power buttons
 	for (var key in scene_status) {
 		if (scene_status[key] == "ON") {
-			show_status_button( "scene_on_"+key,  scene_status[key] );
-			show_status_button( "scene_off_"+key, "" );
+			statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
+			statusButtonSetColor( "scene_off_"+key, "" );
 			}
 		if (scene_status[key] == "OTHER") {
-			show_status_button( "scene_on_"+key,  scene_status[key] );
-			show_status_button( "scene_off_"+key, "" );
+			statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
+			statusButtonSetColor( "scene_off_"+key, "" );
 			}
 		if (scene_status[key] == "OFF") {
-			show_status_button( "scene_off_"+key,  scene_status[key] );
-			show_status_button( "scene_on_"+key, "" );
+			statusButtonSetColor( "scene_off_"+key,  scene_status[key] );
+			statusButtonSetColor( "scene_on_"+key, "" );
 
 			// -> loop to deactivate all makro buttons?!
 			}
@@ -401,7 +325,7 @@ function check_status(data={}) {
 		
 	// check volume and show in navigation bar
 	rm3slider.set_value( main_audio_vol );
-	vol_str = show_volume( main_audio_vol, main_audio_max, vol_color );
+	vol_str = statusShowVolume_old( main_audio_vol, main_audio_max, vol_color );
 	document.getElementById("audio3").innerHTML = vol_str;
 
 	// check status for displays
@@ -416,7 +340,7 @@ function check_status(data={}) {
 				
 				if (devices[key]["values"] && devices[key]["values"][vkey] && vkey == "vol") {
 					if (devices[key]["values"][vkey]["max"]) { 
-							status = show_volume( devices[key]["status"][vkey], devices[key]["values"][vkey]["max"], vol_color2, novol_color ) + " &nbsp; ["+devices[key]["status"][vkey]+"]"; 
+							status = statusShowVolume_old( devices[key]["status"][vkey], devices[key]["values"][vkey]["max"], vol_color2, novol_color ) + " &nbsp; ["+devices[key]["status"][vkey]+"]"; 
 							}
 					}
 				

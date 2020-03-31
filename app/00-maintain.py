@@ -13,9 +13,12 @@ import glob
 
 #----------------------------------------------
 
-js_dir             = "./"
-js_overall_index   = "00-index-js.txt"
-appVersion         = "\"not found\""
+js_dir                   = "./"
+js_overall_index         = "00-index-js.txt"
+jc_overall_index_list    = {}
+jc_overall_index_content = ""
+jc_all_functions         = {}
+appVersion               = "\"not found\""
 
 cache_manifest     = "cache.manifest"
 cache_manifest_dir = [
@@ -24,10 +27,12 @@ cache_manifest_dir = [
 
 text_to_replace = [
 #	[ "appPrintMenu", "appPrint_menu" ], # sample
-	[ "updateRemote","remoteUpdate" ],
-	[ "toggleEditMode","remoteToggleEditMode" ],
-	[ "lastRemoteCookie","remoteLastFromCookie" ],
-	[ "initRemote","remoteInit" ],
+	[ "movePosition", "apiDeviceMovePosition" ],
+	[ "deleteButton", "apiButtonDelete" ],
+	[ "addCommand", "apiCommandAdd" ],
+	[ "deleteCommand", "apiCommandDelete" ],
+	[ "sendCmd", "apiCommandSend" ],
+	
 	]
 
 
@@ -82,7 +87,7 @@ def create_index_file(filename):
     create index index in file
     '''
 
-    global js_overall_index, appVersion
+    global jc_overall_index_content,js_overall_index, appVersion, jc_all_functions, jc_overall_index_list
 
     content = read_file(filename)
     index   = read_file(js_overall_index)
@@ -97,11 +102,13 @@ def create_index_file(filename):
     end         = False
     content     = replace_in_file(content)
 
+    # if file with INDEX analyse and update INDEX
     if "/* INDEX" in content:
 
        lines       = content.split("\n")
        length      = len(lines)
 
+       # split file into HEADER, INDEX-LIST, and BODY
        for line in lines:
           if  "*/" in line and start == True:        end   = True
           if start == False and end == False:        new_lines_header.append( line )
@@ -109,18 +116,29 @@ def create_index_file(filename):
           if "/* INDEX" in line and start == False:  start = True
           if "appVersion" in line and "var" in line: appVersion = line
 
+       # search for functions in BODY
        for line in new_lines_body:
-          if ("function" in line) and not "setTimeout" in line and not "(function" in line and not "setInterval" in line:
-             parts = line.split(")")
-             new_lines_index.append( parts[0]+")" )
+          if "function " in line or "function	" in line or "function(" in line and not "setTimeout" in line and not "setInterval" in line:
+             parts1  = line.split(")")
+             new_lines_index.append( parts1[0]+")" )
+             if "=" not in parts1[0]:
+               parts2 = parts1[0].split("ction ")
+               parts3 = parts2[1].split("(")
+               parts4 = parts3[0].split(" ")
+               print(parts4[0])
+               jc_all_functions[parts4[0]] = 0
 
+       # write HEADER
        for line in new_lines_header:
           new_content += line
           new_content += "\n"
+          
+       # write INDEX
        for line in new_lines_index:
           new_content += line
           new_content += "\n"
-          
+       
+       # write BODY
        i = 0
        for line in new_lines_body:
           i           += 1
@@ -128,18 +146,23 @@ def create_index_file(filename):
           if (i != len(new_lines_body)): 
             new_content += "\n"
 
+    # else search for appVersion
     else:
        lines       = content.split("\n")
        for line in lines:
          if "appVersion" in line and "var" in line: appVersion = line
 
-    index += "----------------------------\n"
-    index += filename + " (" + str(length) + ")\n"
-    index += "----------------------------\n"
+    # create INDEX file entry
+    key = filename + " (" + str(length) + ")"
+    jc_overall_index_list[key] = []
+    
+    jc_overall_index_content += "----------------------------\n"
+    jc_overall_index_content += key + "\n"
+    jc_overall_index_content += "----------------------------\n"
 
-    for line in new_lines_index:    index += line + "\n"
-
-    write_file(js_overall_index,index)
+    for line in new_lines_index:    
+      jc_overall_index_content += line + "\n"
+      jc_overall_index_list[key].append(str(line))
 
     if start and end:
       #create_file(filename+".test",new_content)
@@ -147,22 +170,71 @@ def create_index_file(filename):
 
 #----------------------------------------------
 
+def count_functions(filename):
+
+    global jc_all_functions
+
+    content = read_file(filename)
+    for key in jc_all_functions:
+       jc_all_functions[key] += content.count(key+"(")
+       jc_all_functions[key] += content.count(key+" ")
+    
+
+#----------------------------------------------
+
+
+def create_overall_index():
+
+    global jc_overall_index_content, jc_overall_index_list
+    
+    index = ""
+    for key in jc_overall_index_list:
+        key = str(key)
+        index += "----------------------------\n"
+        index += key + "\n"
+        index += "----------------------------\n"
+        
+        for entry in jc_overall_index_list[key]:
+           index += entry + "\n"
+           
+    index += "----------------------------\n"
+    index += " USAGE ...\n"
+    index += "----------------------------\n"
+    
+    for key in sorted(jc_all_functions):
+      if jc_all_functions[key] > 100:  index += str(jc_all_functions[key]-1) + " - " + key + "\n"
+      elif jc_all_functions[key] > 10: index += " " + str(jc_all_functions[key]-1) + " - " + key + "\n"
+      else:                            index += "  " + str(jc_all_functions[key]-1) + " - " + key + "\n"
+
+    write_file(js_overall_index,index) #jc_overall_index_content)
+
+
+
+#----------------------------------------------
+
+def create_manifest(files,version):
+
+    global cache_manifest
+
+    content = ""
+    content += "CACHE MANIFEST\n"
+    content += "# "+str(datetime.date.today())+" Version "+version[1]+"\n"
+    content += "\nCACHE:\n"
+    content += "\n".join(files)
+    content += "\n"
+    content += "\nNETWORK:\n"
+    content += "\nFALLBACK:\n"
+
+    create_file(cache_manifest,content)
+
+#----------------------------------------------
+
 create_file(js_overall_index,"")
 
 files = get_js_files()
-for file in files: create_index_file(file)
+for file in sorted(files): create_index_file(file)
+for file in sorted(files): count_functions(file)
 
-content = ""
-files   = get_cache_files()
-version = appVersion.split("\"")
-
-content += "CACHE MANIFEST\n"
-content += "# "+str(datetime.date.today())+" Version "+version[1]+"\n"
-content += "\nCACHE:\n"
-content += "\n".join(files)
-content += "\n"
-content += "\nNETWORK:\n"
-content += "\nFALLBACK:\n"
-
-create_file(cache_manifest,content)
+create_overall_index()
+create_manifest(get_cache_files(),appVersion.split("\""))
 

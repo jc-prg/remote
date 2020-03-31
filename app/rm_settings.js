@@ -92,10 +92,11 @@ function rmSettings (name) {	// IN PROGRESS
 		setting  = this.tab_row( 	"Status:", 		this.app_stat );
 		setting += this.tab_row( 	"Versions:",
 						"App: " 		+ rm3version + " / " + this.test_info + " (" + rm3_rollout + ")<br/>" +
-						"API: " 		+ this.data["API"]["version"] + " / " + this.data["API"]["stage"] + "<br/>" +
-						"Modules: jcMsg " 	+ rm3msg.appVersion + " / jcApp " + rm3app.appVersion + "<br/>" +
-						"Cookie: " 		+ cookie
-						);
+						"API: " 		+ this.data["API"]["version"] + " / " + this.data["API"]["rollout"] + "<br/>" +
+						"Modules: jcMsg " 	+ rm3msg.appVersion +  
+						" / jcApp "		+ rm3app.appVersion +
+						" / jcSlider "		+ rm3slider.appVersion );
+		setting += this.tab_row( 	"Cookie:", 		cookie );
 		setting += this.tab_row( 	"Button:", 		this.app_last );
 		setting += this.tab_row( 	"Audio:",		 audio2 + "<br/>" + audio1 );
 		setting += this.tab_row( 	"Window:", 		document.body.clientWidth + "x" + document.body.clientHeight );
@@ -120,19 +121,19 @@ function rmSettings (name) {	// IN PROGRESS
 						this.button("window.open('" + RESTurl + "api/reload/','_blank');", "reload") +
 						this.button("window.open('" + RESTurl + "api/list/','_blank');", "REST API") +
 						this.button("window.open('" + RESTurl + "api/ui/','_blank');",   "Swagger/UI") +
-						this.button("rm3app.requestAPI('GET',['version','" + rm3version +"'], '', rm3msg.alertReturn,'wait');", "Check Updates")
+						this.button("rm3app.requestAPI('GET',['version','" + rm3version +"'], '', rm3msg.apiAlertReturn,'wait');", "Check Updates")
 					);
 		setting += this.tab_row( 	"Reset:",
-						this.button("rm3msg.confirm('" + q1 + "', 'rm3app.requestAPI(#GET#,[#reset#],##,alertReturn );' );" , "Dev ON/OFF") +
-						this.button("rm3msg.confirm('" + q2 + "', 'rm3app.requestAPI(#GET#,[#reset-audio#],##,alertReturn );' );" , "Audio Level")
+						this.button("rm3msg.confirm('" + q1 + "', 'rm3app.requestAPI(#GET#,[#reset#],##,apiAlertReturn );' );" , "Dev ON/OFF") +
+						this.button("rm3msg.confirm('" + q2 + "', 'rm3app.requestAPI(#GET#,[#reset-audio#],##,apiAlertReturn );' );" , "Audio Level")
 					);
 		setting += this.tab_row( 	"Buttons:",
 						this.button(this.app_name+".button_show();",  b_show ) +
 						this.button(this.app_name+".button_deact();", b_deact )
 					);
 		setting += this.tab_row( 	"Test:",
-						this.button("show_status('red',1);","LED red") +
-						this.button("show_status('yellow',1);","LED yellow")
+						this.button("statusShowApiStatus('red',1);","LED red") +
+						this.button("statusShowApiStatus('yellow',1);","LED yellow")
 					);
 
 		this.write(1,"Change Settings",setting);
@@ -144,7 +145,7 @@ function rmSettings (name) {	// IN PROGRESS
 		setting += this.tab_row( 	"Device:",	this.input("add_device") );
 		setting += this.tab_row( 	"Interface:",   this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"]) );
 		setting += this.tab_row( 	"Label:", 	this.input("add_device_descr") );
-		setting += this.tab_row(	this.button("addDevice('add_device','add_device_api','add_device_descr');","Add Device"), "" );
+		setting += this.tab_row(	this.button("apiDeviceAdd('add_device','add_device_api','add_device_descr');","Add Device"), "" );
 		this.write(0,"Add Remote Control",setting);
 					
 		setting = "";	
@@ -152,8 +153,8 @@ function rmSettings (name) {	// IN PROGRESS
 		var i      = 0;
 		for (key in order) {
 			var button = "";			
-			if (i > 0)  		{ button += this.button_small("movePosition(#device#,#"+order[key]+"#,#-1#);","up"); }
-			if (i < order.length-1)	{ button += this.button_small("movePosition(#device#,#"+order[key]+"#,#1#);","down"); }
+			if (i > 0)  		{ button += this.button_small("apiDeviceMovePosition(#device#,#"+order[key]+"#,#-1#);","up"); }
+			if (i < order.length-1)	{ button += this.button_small("apiDeviceMovePosition(#device#,#"+order[key]+"#,#1#);","down"); }
 			setting += this.tab_row("<b>" + this.data["DATA"]["devices"][order[key]]["label"] + "</b> ("+this.data["DATA"]["devices"][order[key]]["visible"]+")",button);
 			i++;
 			}
@@ -164,8 +165,8 @@ function rmSettings (name) {	// IN PROGRESS
 		i      = 0;
 		for (key in order) {
 			var button = "";			
-			if (i > 0)  		{ button += this.button_small("movePosition(#scene#,#"+order[key]+"#,#-1#);","up"); }
-			if (i < order.length-1)	{ button += this.button_small("movePosition(#scene#,#"+order[key]+"#,#1#);","down"); }
+			if (i > 0)  		{ button += this.button_small("apiDeviceMovePosition(#scene#,#"+order[key]+"#,#-1#);","up"); }
+			if (i < order.length-1)	{ button += this.button_small("apiDeviceMovePosition(#scene#,#"+order[key]+"#,#1#);","down"); }
 			setting += this.tab_row("<b>" + this.data["DATA"]["scenes"][order[key]]["label"] + "</b> ("+this.data["DATA"]["scenes"][order[key]]["visible"]+")",button);
 			i++;
 			}
@@ -293,7 +294,7 @@ function rmSettings (name) {	// IN PROGRESS
 	this.button_small       = function (onclick,label) { onclick = onclick.replace(/#/g,"'"); return "<button style=\"width:" + this.input_width + ";margin:1px;width:60px;\" onClick=\"javascript:"+onclick+"\">"+label+"</button>"; }
 	
 	this.tab_row            = function (td1,td2) 	{ return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
-	this.input              = function (id) 		{ return "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;'>"; }
+	this.input              = function (id) 	{ return "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;'>"; }
 
 	this.select             = function (id,title,data,onchange="") {
 		var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";

@@ -24,7 +24,7 @@ function rmStart(name)
 	this.add_scenes           = function(data,menuItems)
 	this.entry_device         = function(data, id, label, style)
 	this.entry_scene          = function(data, id, label, style)
-        this.button               = function(id, label, style, script_sendCmd, disabled )
+        this.button               = function(id, label, style, script_apiCommandSend, disabled )
         this.button_image         = function(label,style)
 	this.remoteToggleEditMode = function()
         this.log                  = function(msg)
@@ -261,8 +261,8 @@ function rmStart(name) {
 		}
 
         // standard standard button
-        this.button               = function(id, label, style, script_sendCmd, disabled ){
-                return "<button id='" + id + "' class='button " + style + "' onclick='javascript:" + script_sendCmd + "' " + disabled + ">" + label + "</button>";
+        this.button               = function(id, label, style, script_apiCommandSend, disabled ){
+                return "<button id='" + id + "' class='button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + ">" + label + "</button>";
                 }
 
         // check if image exists for button

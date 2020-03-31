@@ -6,6 +6,7 @@ function sortDict(dict,sort_key)
 function showRemoteInBackground(show=false)
 function clickMenu ()
 function setNavTitle (title)
+function image(file)
 function writeKeyBoard ()
 */
 //--------------------------------
@@ -76,6 +77,12 @@ function clickMenu () {
 
 function setNavTitle (title) {
         setTextById("navTitle", "<div onClick=\"javascript:rm3settings.hide();rm3cookie.erase('remote');remoteInit();\">"+title.replace(/#/g,"\"")+"</div>");
+        }
+
+// ------------------------------------------
+
+function image(file) {
+        return "<img src='icon/"+file+"' style='max-height:18px;max-width:24px;margin:0px;padding:0px;' alt='"+file+"' />";
         }
 
 //--------------------------------------

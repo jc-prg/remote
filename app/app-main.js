@@ -15,6 +15,7 @@ function remoteInitData_load()
 function remoteInitData(data)
 function remoteReload_load()
 function remoteReload(data)
+function remoteSetSliderDevice(data)
 function remoteDropDown_load()
 function remoteDropDown(data)
 function remoteToggleEditMode()
@@ -53,25 +54,27 @@ var rm3remotes  = new rmRemote(   "rm3remotes" );
 var rm3settings = new rmSettings( "rm3settings" );
 var rm3msg      = new jcMsg(      "rm3msg" );
 var rm3cookie   = new jcCookie(   "rm3cookie");
-var rm3slider   = new slider( name="rm3slider", container="audio_slider", callOnChange=setVolume );
+// var rm3slider   = new slider( name="rm3slider", container="audio_slider", callOnChange=setVolume );
 
 /* PREPARE IMPLEMENTATION OF CENTRAL SLIDER
 
-var rm3slider  = new jcSlider( name="rm3sider", container="audio_slider");	// create slider
-rm3slider.init(min=0,max=100,label=mbox_device);				// set device information
-rm3slider.setPosition(top="45px",bottom=false,left=false,right="10px");		// set position (if not default)
-rm3slider.setOnChange(mboxVolumeSet);						// -> setVolume (api call to set volume -> this.callOnChange( this.value ))
-rm3slider.setShowVolume(mboxVolumeShow);					// -> showVolume e.g. in header
-
 */
 
+var rm3slider  = new jcSlider( name="rm3sider", container="audio_slider");	// create slider
+rm3slider.init(min=0,max=100,label="loading");					// set device information
+rm3slider.setPosition(top="45px",bottom=false,left=false,right="10px");		// set position (if not default)
+rm3slider.setOnChange(apiSetVolume);						// -> setVolume (api call to set volume -> this.callOnChange( this.value ))
+rm3slider.setShowVolume(statusShowVolume);					// -> showVolume e.g. in header
+
+//statusShowVolume_old( rm3slider.slider.value, rm3slider.audioMax, vol_color );
+//setVolume( rm3slider.appMainAudio, rm3slider.slider.value );
 
 
 //--------------------------------
 // initialize
 //--------------------------------
 
-check_for_updates();
+apiCheckUpdates();
 remoteInit(first_load=true);
 
 //----------------------------------
@@ -131,12 +134,12 @@ function remoteInitData(data) {
 		rm3settings.init( data );
 		rm3menu.init(     data );
 		rm3start.init(    data );
-		rm3slider.init(   data );
+//		rm3slider.init(   data );
 		rm3settings.create();
 		}
 	else {
 		console.error("remoteInitData: no data loaded!");
-		show_status("red", showButtonTime);
+		statusShowApiStatus("red", showButtonTime);
 		}
 	}
 	
@@ -150,22 +153,35 @@ function remoteReload(data) {
 
 	if (!data["DATA"]) {
 		console.error("remoteReload: data not loaded.");
-		show_status("red", showButtonTime);
+		statusShowApiStatus("red", showButtonTime);
 		return;
 		}
 
 	// check if still used in a fct. -> to be removed
-	dataAll = data;		
+	dataAll = data;
 	
-	remoteInitData(data);	// init and reload data
-        remoteDropDown(data);	// update drop down menu
+	remoteInitData(data);		// init and reload data
+        remoteDropDown(data);		// update drop down menu
+        remoteSetSliderDevice(data);	// set device for volume slider
         
 	// check device & audio status
-	check_status(data);	
+	statusCheck(data);	
 	check_theme();
 
 	// reset button info in header
 	setTimeout(function(){setTextById("audio4", "");}, 1000);
+	}
+	
+//--------------------------------
+
+function remoteSetSliderDevice(data) {
+	main_audio 	= data["CONFIG"]["main-audio"];
+	min        	= data["DATA"]["devices"][main_audio]["values"]["vol"]["min"];
+	max        	= data["DATA"]["devices"][main_audio]["values"]["vol"]["max"];		
+	label      	= data["DATA"]["devices"][main_audio]["label"];
+	
+	rm3slider.init(min,max,label+" ("+main_audio+")");
+	rm3slider.device = main_audio;
 	}
 	
 //--------------------------------
@@ -175,7 +191,7 @@ function remoteDropDown(data) {
 
 	if (!data["DATA"]) {
 		console.error("remoteDropDown: data not loaded.");
-		show_status("red", showButtonTime);
+		statusShowApiStatus("red", showButtonTime);
 		return;
 		}
 
@@ -214,7 +230,7 @@ function remoteStartMenu(data) {
 
 	if (!data["DATA"]) {
 		console.error("remoteStartMenu: data not loaded.");
-		show_status("red", showButtonTime);
+		statusShowApiStatus("red", showButtonTime);
 		return;
 		}
 
@@ -224,7 +240,7 @@ function remoteStartMenu(data) {
 	rm3start.add_devices( data["DATA"]["devices"], "remote2" );
 	
 	// check status and change button color
-	check_status(data);
+	statusCheck(data);
 	}
 
 
