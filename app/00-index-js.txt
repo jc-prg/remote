@@ -4,7 +4,7 @@
 function statusCheck_dev_old(device)
 function loadRemote2(cmd,callback="")
 ----------------------------
-./app-config.js (106)
+./app-config.js (105)
 ----------------------------
 function check_theme()
 ----------------------------
@@ -169,7 +169,7 @@ function statusCheck(data={})
 ----------------------------
  USAGE ...
 ----------------------------
-  6 - apiAlertReturn
+  4 - apiAlertReturn
   3 - apiButtonAdd
   2 - apiButtonDelete
   2 - apiButtonDelete_exe

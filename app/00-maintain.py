@@ -27,7 +27,7 @@ cache_manifest_dir = [
 
 text_to_replace = [
 #	[ "appPrintMenu", "appPrint_menu" ], # sample
-	[ "movePosition", "apiDeviceMovePosition" ],
+	[ "rm3msg.apiAlertReturn", "rm3msg.alertReturn" ],
 	[ "deleteButton", "apiButtonDelete" ],
 	[ "addCommand", "apiCommandAdd" ],
 	[ "deleteCommand", "apiCommandDelete" ],
