@@ -12,6 +12,23 @@
         },
         "visible": "yes"
     },
+    "bd-api": {
+        "description": "Bluray: SONY BDP-S4500 Bluray Player",
+        "device": "bluray_sony-bdp-s4500",
+        "image": "bd",
+        "interface": "SONY",
+        "label": "Bluray Player (2)",
+        "main-audio": "no",
+        "position": 10,
+        "status": {
+            "media-duration": "Error",
+            "media_duration": "00:00:00",
+            "playing": "PLAYING",
+            "playing2": "PLAYING",
+            "power": "ON"
+        },
+        "visible": "yes"
+    },
     "beam": {
         "description": "Beamer: Optoma HD27",
         "device": "beamer_optoma-hd27",
@@ -61,11 +78,11 @@
         "main-audio": "no",
         "position": 5,
         "status": {
-            "mute": "False",
-            "name": "Kodi",
-            "power": "ON",
-            "version": "{'major': 18, 'minor': 4, 'revision': '20191027-06c77692ee', 'tag': 'stable'}",
-            "vol": "100"
+            "mute": "Error",
+            "name": "Error",
+            "power": "Error",
+            "version": "Error",
+            "vol": "Error"
         },
         "visible": "no"
     },
@@ -103,11 +120,11 @@
             "power": "on",
             "sleep-set": "N/A",
             "source": "cbl",
-            "temperature": "C 31",
+            "temperature": "C 32",
             "timer": "N/A",
             "tuning": "67584 Hz",
             "video-info": "HDMI 2,1920 x 1080i  50 Hz,YCbCr444,24bit,MAIN,1920 x 1080i  50 Hz,YCbCr444,24bit,,",
-            "vol": "37"
+            "vol": "43"
         },
         "visible": "yes"
     },
@@ -133,7 +150,7 @@
         "main-audio": "no",
         "position": 6,
         "status": {
-            "mute": "ON",
+            "mute": "OFF",
             "power": "ON",
             "radiotv": "TV",
             "vol": 17

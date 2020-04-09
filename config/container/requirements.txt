@@ -11,3 +11,4 @@ pycryptodome
 connexion[swagger-ui]
 netifaces
 kodi-json
+sonyapilib
