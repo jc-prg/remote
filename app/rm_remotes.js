@@ -185,6 +185,11 @@ function rmRemote(name) {
 		var remote_buttons    = this.data["DATA"]["devices"][device]["remote"];
 		var device_buttons    = this.data["DATA"]["devices"][device]["button_list"];
 		var notused           = [];
+		
+		// show / hide elements that are not used
+		var onclick = this.app_name + ".device_notused_showhide();";
+		remote += "<div id='show_hide_not_used' onclick='" + onclick + "'>+</div>";
+		remote += "<div id='buttons_not_used' style='display:none;'>";
 
 		// difference of arrays
 		for (var i=0;i<device_buttons.length;i++) {
@@ -197,9 +202,16 @@ function rmRemote(name) {
 			var cmd    = device + "_" + button;
 			remote += this.button_device( cmd, button, "", cmd, "" );
 			}
+		remote += "</div>";
 
 		// print
 		setTextById(id,remote);
+		}
+		
+	this.device_notused_showhide = function () {
+		element = document.getElementById("buttons_not_used");
+		if (element.style.display == "block") 	{ element.style.display = "none"; }
+		else					{ element.style.display = "block"; }
 		}
 
 	// edit panel per remote ...
