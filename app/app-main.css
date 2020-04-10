@@ -301,6 +301,7 @@ button {
 
 #show_hide_not_used {
 	width: 17px;
+	max-width: 17px;
 	height: 17px;
 
 	border: solid 1px #333333;
@@ -320,6 +321,7 @@ button {
 	
 	cursor:pointer;
 	overflow:hidden;
+	display:inline-block;
 	}
 
 

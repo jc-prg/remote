@@ -186,15 +186,22 @@ function rmRemote(name) {
 		var device_buttons    = this.data["DATA"]["devices"][device]["button_list"];
 		var notused           = [];
 		
-		// show / hide elements that are not used
-		var onclick = this.app_name + ".device_notused_showhide();";
-		remote += "<div id='show_hide_not_used' onclick='" + onclick + "'>+</div>";
-		remote += "<div id='buttons_not_used' style='display:none;'>";
-
 		// difference of arrays
 		for (var i=0;i<device_buttons.length;i++) {
 			if (remote_buttons.includes(device_buttons[i]) == false) { notused.push(device_buttons[i]); }
 			}
+
+		// show / hide buttons that are not used
+		if (notused.length > 0) {
+			var onclick = this.app_name + ".device_notused_showhide();";
+			remote += "<div id='show_hide_not_used' onclick='" + onclick + "'>+</div>";
+			}
+		remote += "<div id='buttons_not_used' style='display:none;position:relative;top:-7px;'>";
+		
+		var text    = "not used in remote control"
+		remote += "<div class='remote-line'><hr/>";
+		remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>";
+		remote += "</div>";
 
 		// create buttons not used
 		for (var i=0; i<notused.length; i++) {
@@ -207,11 +214,13 @@ function rmRemote(name) {
 		// print
 		setTextById(id,remote);
 		}
-		
+	
+	// show / hide buttons that are not used
 	this.device_notused_showhide = function () {
 		element = document.getElementById("buttons_not_used");
-		if (element.style.display == "block") 	{ element.style.display = "none"; }
-		else					{ element.style.display = "block"; }
+		button  = document.getElementById("show_hide_not_used");
+		if (element.style.display == "block") 	{ element.style.display = "none";  button.innerHTML = "+"; }
+		else					{ element.style.display = "block"; button.innerHTML = "−"; }
 		}
 
 	// edit panel per remote ...
