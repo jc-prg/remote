@@ -57,10 +57,12 @@ def RmReadData(selected=[]):
               if selected == [] or device in selected:
 	
                 key        = data["devices"][device]["config_device"]
+                key_remote = data["devices"][device]["config_remote"]
                 interface  = data["devices"][device]["interface"]
                 data_temp  = data["devices"][device]
 
-                remote           = configFiles.read(modules.remotes  + interface + "/" + key) # remote layout & display
+#                remote           = configFiles.read(modules.remotes  + interface + "/" + key) # remote layout & display
+                remote           = configFiles.read(modules.remotes  + "/" + key_remote)      # remote layout & display
                 buttons          = configFiles.read(modules.commands + interface + "/" + key) # button definitions, presets, queries ...
                 
                 logging.info(interface + "/" + key)
@@ -94,11 +96,17 @@ def RmReadData(selected=[]):
                 data_temp["button_list"]         = list(buttons["data"]["buttons"].keys())
                                 
                 # REMOTE : get remote layout & display # logging.info(device)
-                data_temp["description"]         = remote["data"]["description"]              
-                data_temp["remote"]              = remote["data"]["remote"]
+                if "data" in remote:
+                   data_temp["description"]         = remote["data"]["description"]              
+                   data_temp["remote"]              = remote["data"]["remote"]
+                   
+                   if "display" in remote["data"]:       data_temp["display"]       = remote["data"]["display"]              
+                   if "display-size" in remote["data"]:  data_temp["display-size"]  = remote["data"]["display-size"]              
+                   
+                else:
+                   data_temp["description"]         = "N/A"
+                   data_temp["remote"]              = []
 
-                if "display" in remote["data"]:       data_temp["display"]       = remote["data"]["display"]              
-                if "display-size" in remote["data"]:  data_temp["display-size"]  = remote["data"]["display-size"]              
            
                 data["devices"][device] = data_temp
  
@@ -107,7 +115,8 @@ def RmReadData(selected=[]):
             if data["scenes"][scene]["visible"] == "yes":
               if selected == [] or scene in selected:
 
-                thescene      = configFiles.read(modules.scenes + scene)
+                #thescene      = configFiles.read(modules.scenes + scene)
+                thescene      = configFiles.read(modules.scenes + data["scenes"][scene]["config_scene"])
                 keys          = ["remote","channel","devices","label"]
  
                 for key in keys:
@@ -175,7 +184,8 @@ def addDevice(device,interface,description):
     
     if device in active_json:                                      return("WARN: Device " + device + " already exists (active).")
     if modules.ifexist(modules.commands +interface+"/"+device):    return("WARN: Device " + device + " already exists (devices).")
-    if modules.ifexist(modules.remotes  +interface+"/"+device):    return("WARN: Device " + device + " already exists (remotes).") 
+#    if modules.ifexist(modules.remotes  +interface+"/"+device):    return("WARN: Device " + device + " already exists (remotes).") 
+    if modules.ifexist(modules.remotes            +"/"+device):    return("WARN: Device " + device + " already exists (remotes).") 
     
     logging.info(device+" add")
     
@@ -222,7 +232,8 @@ def addDevice(device,interface,description):
            }
         }    
     try:
-      configFiles.write(modules.remotes +interface+"/"+description,remote)
+#      configFiles.write(modules.remotes +interface+"/"+description,remote)
+      configFiles.write(modules.remotes +"/"+description,remote)
     except Exception as e:
       return "ERROR: " + str(e)
             
@@ -239,10 +250,11 @@ def addCommand2Button(device,button,command):
     add new command to button or change existing
     '''
 
-    config      = configFiles.read_status()
-    interface   = config[device]["interface"]  
-    device_code = config[device]["config_device"]  
-    data        = configFiles.read(modules.commands+interface+"/"+device_code)
+    config        = configFiles.read_status()
+    interface     = config[device]["interface"]  
+    device_code   = config[device]["config_device"]  
+    device_remote = config[device]["config_remote"]  
+    data          = configFiles.read(modules.commands+interface+"/"+device_code)
     
     if "data" in data:
         if button in data["data"]["buttons"].keys():
@@ -261,10 +273,12 @@ def addButton(device,button):
     add new button to remote layout
     '''
     
-    config      = configFiles.read_status()
-    interface   = config[device]["interface"]  
-    device_code = config[device]["config_device"]  
-    data        = configFiles.read(modules.remotes+interface+"/"+device_code)
+    config        = configFiles.read_status()
+    interface     = config[device]["interface"]  
+    device_code   = config[device]["config_device"]  
+    device_remote = config[device]["config_remote"]  
+    data          = configFiles.read(modules.remotes+"/"+device_remote)
+#    data        = configFiles.read(modules.remotes+interface+"/"+device_code)
     
     if "data" in data:
         if button != "DOT" and button != "LINE" and button in data["data"]["remote"]:
@@ -272,7 +286,8 @@ def addButton(device,button):
         else:
             if button == "DOT": button = "."
             data["data"]["remote"].append(button)
-            configFiles.write(modules.remotes+interface+"/"+device_code,data)
+            #configFiles.write(modules.remotes+interface+"/"+device_code,data)
+            configFiles.write(modules.remotes+"/"+device_remote,data)
             return "OK: Button '" + device + "_" + button + "' added."
     else:
         return "ERROR: Device '" + device + "' does not exists."        
@@ -308,16 +323,19 @@ def deleteButton(device, button_number):
     delete button (not command) from json config file
     '''
 
-    buttonNumber = int(button_number)
-    config       = configFiles.read_status()
-    interface    = config[device]["interface"]  
-    device_code  = config[device]["config_device"]  
-    data         = configFiles.read(modules.remotes+interface+"/"+device_code)
+    buttonNumber  = int(button_number)
+    config        = configFiles.read_status()
+    interface     = config[device]["interface"]  
+    device_code   = config[device]["config_device"]  
+    device_remote = config[device]["config_remote"]  
+    data          = configFiles.read(modules.remotes+"/"+device_remote)
+#    data         = configFiles.read(modules.remotes+interface+"/"+device_code)
     
     if data["data"] and data["data"]["remote"]:
         if buttonNumber >= 0 and buttonNumber < len(data["data"]["remote"]):
             data["data"]["remote"].pop(buttonNumber)
-            data = configFiles.write(modules.remotes+interface+"/"+device_code,data)
+            data = configFiles.write(modules.remotes+"/"+device_remote,data)
+#            data = configFiles.write(modules.remotes+interface+"/"+device_code,data)
             return "OK: Button '" + device + " [" + str(buttonNumber) + "] deleted."
         else:
             return "ERROR: Button '" + device + " [" + str(buttonNumber) + "] does not exist."
@@ -331,11 +349,13 @@ def addTemplate(device,template):
     add / overwrite remote layout definition by template
     '''
 
-    templates   = configFiles.read(modules.templates + template)
-    config      = configFiles.read_status()
-    interface   = config[device]["interface"]
-    device_code = config[device]["config_device"]
-    data       = configFiles.read(modules.remotes + interface + "/" + device_code)
+    templates     = configFiles.read(modules.templates + template)
+    config        = configFiles.read_status()
+    interface     = config[device]["interface"]
+    device_code   = config[device]["config_device"]
+    device_remote = config[device]["config_remote"]  
+    data          = configFiles.read(modules.remotes+"/"+device_remote)
+#    data       = configFiles.read(modules.remotes + interface + "/" + device_code)
 
     # check if error
     if "data" not in data.keys():  return "ERROR: Device '" + device + "' does not exists."
@@ -344,14 +364,16 @@ def addTemplate(device,template):
     elif template in templates and data["data"] == []:
     
         data["data"]["remote"]           = templates[template]["remote"]
-        configFiles.write(modules.remotes + interface + "/" + device_code, data)
+        configFiles.write(modules.remotes+"/"+device_remote,data)
+#       configFiles.write(modules.remotes + interface + "/" + device_code, data)
         return "OK: Template '" + template + "' added to '" + device + "'."
             
     # overwrite layout from template
     elif template in templates and data["data"] != []:
 
         data["data"]["remote"]           = templates[template]["remote"]
-        configFiles.write(modules.remotes + interface + "/" + device_code, data)
+        configFiles.write(modules.remotes+"/"+device_remote,data)
+#        configFiles.write(modules.remotes + interface + "/" + device_code, data)
         return "OK: Remote definition of '" + device + "' overwritten by template '" + template + "'."
         
     # template doesn't exist
@@ -390,10 +412,12 @@ def deleteDevice(device):
     active_json          = configFiles.read_status()
     interface            = active_json[device]["interface"]
     device_code          = active_json[device]["config_device"]  
+    device_remote        = active_json[device]["config_remote"]  
     
     if not device in active_json:                                             return("ERROR: Device " + device + " doesn't exists (active).")
-    if not modules.ifexist(modules.commands +interface+"/"+device_code):    return("ERROR: Device " + device + " doesn't exists (commands).")
-    if not modules.ifexist(modules.remotes  +interface+"/"+device_code):    return("ERROR: Device " + device + " doesn't exists (remotes).") 
+    if not modules.ifexist(modules.commands +interface+"/"+device_code):      return("ERROR: Device " + device + " doesn't exists (commands).")
+    if not modules.ifexist(modules.remotes            +"/"+device_remote):    return("ERROR: Device " + device + " doesn't exists (remotes).") 
+#    if not modules.ifexist(modules.remotes  +interface+"/"+device_code):    return("ERROR: Device " + device + " doesn't exists (remotes).") 
 
     interface = active_json[device]["interface"]  ############# funtioniert nicht so richtig ...
     for entry in active_json:
@@ -404,10 +428,12 @@ def deleteDevice(device):
     configFiles.write_status(active_json,"deleteDevice")
 
     try:    
-      modules.delete(modules.remotes  + interface + "/" + device_code)
+#      modules.delete(modules.remotes  + interface + "/" + device_code)
+      modules.delete(modules.remotes               + "/" + device_remote)
       modules.delete(modules.commands + interface + "/" + device_code)
       
-      if not modules.ifexist(modules.commands + interface + "/" + device_code) and not modules.ifexist(modules.remotes + interface + "/" + device_code):
+#      if not modules.ifexist(modules.commands + interface + "/" + device_code) and not modules.ifexist(modules.remotes + interface + "/" + device_code):
+      if not modules.ifexist(modules.commands + interface + "/" + device_code) and not modules.ifexist(modules.remotes + "/" + device_remote):
         return "OK: Device '" + device + "' deleted."
       else:
         return "ERROR: Could not delete device '" + device + "'"
@@ -433,13 +459,15 @@ def editDevice(device,info):
     
     interface            = active_json[device]["interface"]
     device_code          = active_json[device]["config_device"]  
+    device_remote        = active_json[device]["config_remote"]  
     
     # read command definition
     commands             = configFiles.read(modules.commands +interface+"/"+device_code)
     if "ERROR" in commands: return("ERROR: Device " + device + " doesn't exists (commands).")
 
     # read remote layout definitions
-    remotes              = configFiles.read(modules.remotes +interface+"/"+device_code)
+    remotes              = configFiles.read(modules.remotes +"/"+device_remote)
+#    remotes              = configFiles.read(modules.remotes +interface+"/"+device_code)
     if "ERROR" in remotes: return("ERROR: Device " + device + " doesn't exists (remotes).") 
     
     i = 0
@@ -473,7 +501,8 @@ def editDevice(device,info):
       return("ERROR: could not write changes (commands) - "+str(e))
 
     # write remote layout definition
-    try:                    configFiles.write(modules.remotes +interface+"/"+device_code, remotes)
+    try:                    configFiles.write(modules.remotes +"/"+device_remote, remotes)
+#    try:                    configFiles.write(modules.remotes +interface+"/"+device_code, remotes)
     except Exception as e:
       logging.error("ERROR: could not write changes (remotes) - "+str(e))
       return("ERROR: could not write changes (remotes) - "+str(e))

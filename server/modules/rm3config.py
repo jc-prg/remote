@@ -30,9 +30,9 @@ devices    = "devices/"             # devices, overview in "_active.json"
 commands   = "devices/"             # device definition (queries and commands)
 remotes    = "remotes/"             # remote layouts for devices
 
-scenes     = "remotes/_SCENES/"     # remote layouts for scenes
-makros     = "remotes/_MAKROS/"     # makros (to be used in scenes)
-templates  = "remotes/_TEMPLATES/"  # templates for remote layouts
+scenes     = "remotes/"     # remote layouts for scenes
+makros     = "makros/"     # makros (to be used in scenes)
+templates  = "templates/"  # templates for remote layouts
 
 buttons    = "buttons/"             # button configuration files
 active     = "_active"              # overview file name

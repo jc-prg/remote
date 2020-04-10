@@ -174,7 +174,7 @@ class configCache (threading.Thread):
         
         # clear config file ...
         status_temp   = {}
-        relevant_keys = ["status","visible","description","image","interface","label","config_device","config_device","main-audio","position"]   
+        relevant_keys = ["status","visible","description","image","interface","label","config_device","config_remote","main-audio","position"]   
         
         for dev in status:
           status_temp[dev] = {}
