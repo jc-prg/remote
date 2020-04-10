@@ -3,10 +3,19 @@
         "description": "SONY BDP-S4500 Bluray Player", 
         "method" : "query",
         "queries" : {
-            "power"          : "power",
-            "playing"        : "playing",
-            "playing_soap"   : "SOAP=GetTransportInfo::CurrentTransportState",
-            "media_duration" : "SOAP=GetMediaInfo::MediaDuration"
+            "power"             : "power",
+            "playing"           : "playing",
+            "playing_soap"      : "SOAP=GetTransportInfo::CurrentTransportState",
+            "media_duration"    : "SOAP=GetMediaInfo::MediaDuration",
+            "media_tracks"      : "SOAP=GetMediaInfo::NrTracks",
+            "media_medium"      : "SOAP=GetMediaInfo::PlayMedium",
+            "position_duration" : "SOAP=GetPositionInfo::TrackDuration",
+            "position_track"    : "SOAP=GetPositionInfo::Track",
+            "position_metadata" : "SOAP=GetPositionInfo::TrackMetaData",
+            "position_rel_time" : "SOAP=GetPositionInfo::RelTime",
+            "position_abs_time" : "SOAP=GetPositionInfo::AbsTime",
+            "position_rel_cnt"  : "SOAP=GetPositionInfo::RelCount",
+            "position_abs_cnt"  : "SOAP=GetPositionInfo::AbsCount"
         },
         "values" : {},
         "buttons": {

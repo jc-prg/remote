@@ -8,6 +8,8 @@
             "left", "enter", "right", "menu", 
             ".",    "down",  ".",     "back", 
             "LINE", 
+            "DISPLAY", 
+            "LINE", 
             "fbw",  "play",  "ffw",  ".", 
             "last", "pause", "next", ".", 
             ".",    "stop",  ".",    "mute", 
@@ -16,7 +18,11 @@
             "LINE", 
             "red",   "green",    "yellow", "blue"
         ],
-        "display" : {}
+        "display" : {
+            "Playing"  : "playing",
+            "Medium"   : "media_medium",
+            "Duration" : "media_duration"
+        }
 
     }
 }
