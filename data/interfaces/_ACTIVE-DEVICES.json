@@ -1,8 +1,8 @@
 {
     "bd": {
-        "description": "Bluray: SONY BDP-S4500 Bluray Player",
         "config_device": "bluray_sony-bdp-s4500",
         "config_remote": "bluray_sony-bdp-s4500_ir",
+        "description": "Bluray: SONY BDP-S4500 Bluray Player",
         "image": "bd",
         "interface": "BROADLINK",
         "label": "Bluray Player",
@@ -14,9 +14,9 @@
         "visible": "yes"
     },
     "bd-api": {
-        "description": "Bluray: SONY BDP-S4500 Bluray Player",
         "config_device": "bluray_sony-bdp-s4500",
         "config_remote": "bluray_sony-bdp-s4500_api",
+        "description": "Bluray: SONY BDP-S4500 Bluray Player",
         "image": "bd",
         "interface": "SONY",
         "label": "Bluray Player (2)",
@@ -27,9 +27,9 @@
             "media_duration": "00:00:00",
             "media_medium": "NONE",
             "media_tracks": "0",
-            "playing": "NO_MEDIA_PRESENT",
+            "playing": "PLAYING",
             "playing2": "Error",
-            "playing_soap": "NO_MEDIA_PRESENT",
+            "playing_soap": "PLAYING",
             "position_abs_cnt": "0",
             "position_abs_time": "00:00:00",
             "position_duration": "00:00:00",
@@ -42,9 +42,9 @@
         "visible": "yes"
     },
     "beam": {
-        "description": "Beamer: Optoma HD27",
         "config_device": "beamer_optoma-hd27",
         "config_remote": "beamer_optoma-hd27_ir",
+        "description": "Beamer: Optoma HD27",
         "image": "beam",
         "interface": "BROADLINK",
         "label": "Beamer",
@@ -71,9 +71,9 @@
         "visible": "no"
     },
     "lw": {
-        "description": "Screens: Elite Screens 100\"",
         "config_device": "screen_elite-screens-100",
         "config_remote": "screen_elite-screens-100_ir",
+        "description": "Screens: Elite Screens 100\"",
         "image": "lw",
         "interface": "BROADLINK",
         "label": "Leinwand",
@@ -85,9 +85,9 @@
         "visible": "yes"
     },
     "media-center": {
-        "description": "Kodi Media-Center",
         "config_device": "kodi",
         "config_remote": "kodi_api",
+        "description": "Kodi Media-Center",
         "image": "",
         "interface": "KODI",
         "label": "Media-Center",
@@ -103,9 +103,9 @@
         "visible": "no"
     },
     "rec": {
-        "description": "AV-Receiver: ONKYO TX-NR686(B)",
         "config_device": "receiver_onkyo-txnr686",
         "config_remote": "receiver_onkyo-txnr686_ir",
+        "description": "AV-Receiver: ONKYO TX-NR686(B)",
         "image": "rec",
         "interface": "BROADLINK",
         "label": "AV Receiver (alt)",
@@ -119,9 +119,9 @@
         "visible": "no"
     },
     "rec2": {
-        "description": "AV-Receiver: ONKYO TX-NR686(B)",
         "config_device": "receiver_onkyo-txnr686",
         "config_remote": "receiver_onkyo-txnr686_api",
+        "description": "AV-Receiver: ONKYO TX-NR686(B)",
         "image": "rec",
         "interface": "EISCP-ONKYO",
         "label": "AV Receiver",
@@ -129,27 +129,27 @@
         "position": 1,
         "status": {
             "a-v-sync": "0",
-            "audio-info": "HDMI 1,PCM,48 kHz,2.0 ch,All Ch Stereo,5.1 ch,",
+            "audio-info": "HDMI 2,PCM,48 kHz,2.0 ch,Game-RPG,5.1 ch,",
             "audio-source": "hdmi",
             "dimmer": "dark",
             "display": "('selector-volume-1line', 'default-2line')",
-            "listening": "all-ch-stereo",
+            "listening": "('film', 'game-rpg')",
             "mute": "off",
             "power": "on",
             "sleep-set": "N/A",
-            "source": "bd",
-            "temperature": "C 29",
+            "source": "cbl",
+            "temperature": "C 31",
             "timer": "N/A",
             "tuning": "67584 Hz",
-            "video-info": "HDMI 1,1920 x 1080p  59 Hz,YCbCr444,24bit,,Unknown,,24bit,,",
-            "vol": "7"
+            "video-info": "HDMI 2,1920 x 1080i  50 Hz,YCbCr444,24bit,MAIN,1920 x 1080i  50 Hz,YCbCr444,24bit,,",
+            "vol": "47"
         },
         "visible": "yes"
     },
     "test": {
-        "description": "test device",
         "config_device": "test device",
-        "config_remote": "test device",
+        "config_remote": "test_device",
+        "description": "test device",
         "image": "test",
         "interface": "TEST",
         "label": "test device",
@@ -161,9 +161,9 @@
         "visible": "no"
     },
     "tv": {
-        "description": "TV-Receiver: TOPFIELD1",
         "config_device": "tv-receiver_topfield",
         "config_remote": "tv-receiver_topfield_ir",
+        "description": "TV-Receiver: TOPFIELD1",
         "image": "tv",
         "interface": "BROADLINK",
         "label": "TV/Radio",
