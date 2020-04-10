@@ -162,7 +162,15 @@ class eiscpAPI():
    def record(self,device,command):
        '''Record command, especially build for IR devices'''
 
-       return "WARN: Not supported by this API"
+       return "ERROR "+self.api_name+": Not supported by this API"
+
+       
+   #-------------------------------------------------
+   
+   def register(self,command,pin=""):
+       '''Register command if device requires registration to initialize authentification'''
+
+       return "ERROR "+self.api_name+": Not supported by this API"
 
        
    #-------------------------------------------------

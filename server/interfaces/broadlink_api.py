@@ -146,6 +146,14 @@ class broadlinkAPI():
        
    #-------------------------------------------------
    
+   def register(self,command,pin=""):
+       '''Register command if device requires registration to initialize authentification'''
+
+       return "ERROR "+self.api_name+": Not supported by this API"
+
+       
+   #-------------------------------------------------
+   
    def test(self):
        '''Test device by sending a couple of commands'''
 
