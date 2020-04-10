@@ -23,7 +23,7 @@ class sonyAPI():
        '''Initialize API / check connect to device'''
        
        self.api_name          = api_name       
-       self.api_description   = "Sony API based on SonyAPILib"
+       self.api_description   = "API for SONY Devices (SonyAPILib)"
        self.api_config        = rm3json.read(rm3config.interfaces+self.api_name)
        self.api_device        = device
        self.method            = "query" # or "record"
@@ -126,11 +126,31 @@ class sonyAPI():
        
        
    #-------------------------------------------------
-   
+       
    def record(self,device,command):
        '''Record command, especially build for IR devices'''
+       
+       return "ERROR "+self.api_name+": Not supported by this API"
 
-       return "ERROR "+self.api_name+": Not implemented"
+       
+   #-------------------------------------------------
+   
+   def register(self,command,pin=""):
+       '''Register command if device requires registration to initialize authentification'''
+
+       self.wait_if_working()
+       self.working = True
+
+       if self.status == "Connected":
+          if   command == "start":    result = self.api.register_start()
+          elif command == "finish":   result = self.api.register_finish(pin)
+          else:                       result = "ERROR "+self.api_name+": Register command not available ("+command+")"          
+          self.working = False
+          return result
+                    
+       else:
+          self.working = False
+          return "ERROR "+self.api_name+": Not connected"
 
        
    #-------------------------------------------------
@@ -141,19 +161,23 @@ class sonyAPI():
        self.wait_if_working()
        self.working = True
 
-# ---- change for your api ----
-#       if self.status == "Connected":
-#         try:
-#           result  = self.api.command(xxx)
-#         except Exception as e:
-#           self.working = True
-#           return "ERROR "+self.api_name+" - test: " + str(e)                     
-#       else:
-#         self.working = True
-#         return "ERROR "+self.api_name+": Not connected"
+       if self.status == "Connected":
+         try:
+            self.api.send("PowerOn")
+            time.sleep(5)
+            self.api.send("Eject")
+            time.sleep(5)
+            self.api.send("PowerOff")
+         except Exception as e:
+            self.working = True
+            return "ERROR "+self.api_name+" - test: " + str(e)                     
+       else:
+         self.working = True
+         return "ERROR "+self.api_name+": Not connected"
 
        self.working = False
        return "OK"
+
 
 #-------------------------------------------------
 # EOF

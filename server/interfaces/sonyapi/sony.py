@@ -44,7 +44,43 @@ class sonyDevice():
         self.device_config = config
         self.device        = self.load_device()
         
-        self.available_commands = []
+        self.cache         = {}
+        self.cache_time    = 0
+        
+        self.available_commands       = []
+        self.waiting_for_registration = False       
+
+        # SOAPcalls // tested with SONY BDP S4500
+
+        self.SOAPcalls = {
+             "GetTransportInfo"			: ["CurrentTransportState","CurrentTransportStatus","CurrentSpeed"],
+             "GetMediaInfo"			: ["NrTracks","MediaDuration","CurrentURI","CurrentURIMetaData","NextURI","NextURIMetaData","PlayMedium","RecordMedium","WriteStatus"],
+             "GetDeviceCapabilities"		: ["PlayMedia","RecMedia","RecQualityModes"],
+             "GetTransportSettings"		: ["PlayMode","RecQualityMode"],
+             "GetPositionInfo"			: ["Track","TrackDuration","TrackMetaData","TrackURI","RelTime","AbsTime","RelCount","AbsCount"],
+             "GetCurrentTransportActions"	: ["Actions"]
+             }
+             
+        # IRRCcalls // tested with SONY BDP S4500
+
+        self.IRRCcalls = {
+             "getContentInformation" : {
+                   "command" : "getContentInformation",
+                   "main"    : "contentInformation",
+                   "items"   : ["infoItem||class","infoItem||source","infoItem||mediaType","infoItem||mediaFormat"]
+                   },
+             "getSystemInformation"  : {
+                   "command" : "getSystemInformation",
+                   "main"    : "systemInformation",
+                   "items"   : ["name","generation","supportContentsClass::class","supportSource::source"]
+                   },
+             "getStatus"             : {
+                   "command" : "getStatus",
+                   "main"    : "statusList",
+                   "items"   : ["status||disc::statusItem||type","status||disc::statusItem||mediaType","status||disc::statusItem||mediaFormat"]
+                   }
+             }
+
         
     #-----------------------------
 
@@ -86,32 +122,34 @@ class sonyDevice():
 
     #-----------------------------
     
-    def register(self,pin):
+    def registration_start(self):
         '''
-        register device
+        register device / device must be on for registration
+        -> request registration
         '''
-        if not device:
-            # device must be on for registration
-            self.device = SonyDevice(self.device_ip, self.device_name)
-            self.device.register()
+        logging.info("SONY Start Registration")
+        
+        self.device = SonyDevice(self.device_ip, self.device_name)
+        self.device.register()
+        self.waiting_for_registration = True
             
-            #pin = input("Enter the PIN displayed at your device: ")
-            if self.device.send_authentication(pin):
-               self.save_device()
-            else:
-               print("Registration failed")
-               return "Registration failed"
+        return "SONY Device is waiting for PIN"
 
     #-----------------------------
+    
+    def registration_finish(self,pin):
+        '''
+        register device / device must be on for registration
+        -> return PIN for registration and save data
+        '''
+        logging.info("SONY Finish Registration")
+        
+        if self.wating_for_registration:        
+            if self.device.send_authentication(pin):  self.save_device()
+            else:                                     return "ERROR: SONY Registration failed"               
+        else:
+            return "ERROR: SONY Not waiting for registration"
 
-    def wake_on_lan(self):
-        '''
-        Wake device on LAN if off
-        '''
-        is_on = self.device.get_power_status()
-        if not is_on:
-            self.device.power(True)
-            
     #-----------------------------
             
     def power(self,power_on):
@@ -129,8 +167,7 @@ class sonyDevice():
         if   cmd == "PowerOn"  and self.get_status("power") == False: 
           try:
             logging.info("SONY wake on lan: START ("+self.device.mac+"/"+self.device_ip+")")
-            wakeonlan.send_magic_packet(self.device.mac,ip_address=self.device_ip)
-            # self.device.wakeonlan()
+            self.device.wakeonlan(self.device_ip)
             time.sleep(3)
 
           except Exception as e:
@@ -142,7 +179,7 @@ class sonyDevice():
         elif self.get_status("power"):
            if self.available_commands == []:  self.available_commands = self.get_values("commands")
            if cmd in self.available_commands: self.device._send_command(cmd)
-           else:                              return "ERROR: command not available for this device ("+cmd+")"
+           else:                              return "ERROR: command not available for this device ("+cmd+")"          
            return "OK"
            
         else:
@@ -158,8 +195,15 @@ class sonyDevice():
         '''
         if self.get_status("power"):
            if   cmd == "apps":            return self.device.get_apps()
-           elif cmd == "commands":        return self.device.commands.keys()
            elif cmd == "actions":         return self.device.actions.keys()
+           elif cmd == "commands":        
+              self.available_commands = []
+              commands = self.device.commands.keys()
+              for key in commands:
+                  self.available_commands.append(key)
+              self.available_commands.append("PowerOn")
+              self.available_commands.append("PowerOff")
+              return self.available_commands
            else:                          return "ERROR: no values available ("+cmd+")"
         else:
            return "ERROR: Device is off."
@@ -175,12 +219,20 @@ class sonyDevice():
         data    = '<m:'+params[0]+' xmlns:m="urn:schemas-upnp-org:service:AVTransport:1"><InstanceID>0</InstanceID></m:'+params[0]+'>' 
         action  = "urn:schemas-upnp-org:service:AVTransport:1#"+params[0]
         
+        
         if self.get_status("power"):
-           try:
-              content = self.device._post_soap_request(url=self.device.av_transport_url, params=data, action=action)
-           except Exception as e:
-              return "ERROR: Request failed ("+str(e)+")"
-              
+           if "SOAP_"+params[0] not in self.cache or self.cache_time + 5 < time.time():
+             try:
+               content = self.device._post_soap_request(url=self.device.av_transport_url, params=data, action=action)
+               self.cache["SOAP_"+params[0]] = content
+               self.cache_time               = time.time()
+               
+             except Exception as e:
+               return "ERROR: Request failed ("+str(e)+")"
+               
+           else:
+               content = self.cache["SOAP_"+params[0]]
+               
            if params[1]: result = find_in_xml(content, [".//"+params[1]]).text
            else:         result = str(content)
            return result
@@ -235,41 +287,18 @@ class sonyDevice():
         
         self.send("PowerOn")
         
-        SOAPcalls = {
-             "GetTransportInfo"			: ["CurrentTransportState","CurrentTransportStatus","CurrentSpeed"],
-             "GetMediaInfo"			: ["NrTracks","MediaDuration","CurrentURI","CurrentURIMetaData","NextURI","NextURIMetaData","PlayMedium","RecordMedium","WriteStatus"],
-             "GetDeviceCapabilities"		: ["PlayMedia","RecMedia","RecQualityModes"],
-             "GetTransportSettings"		: ["PlayMode","RecQualityMode"],
-             "GetPositionInfo"			: ["Track","TrackDuration","TrackMetaData","TrackURI","RelTime","AbsTime","RelCount","AbsCount"],
-             "GetCurrentTransportActions"	: ["Actions"]
-             }
-             
+        SOAPcalls = self.SOAPcalls
+        IRRCcalls = self.IRRCcalls
+
+
         print(" ---- SOAP Calls ---- ")
         for key in SOAPcalls:
              for param in SOAPcalls[key]:
                  value = self.get_status("SOAP",key+"::"+param)
                  print(key+"::"+param+" = "+str(value))
         
-        #-------------------
 
-        IRRCcalls = {
-             "getContentInformation" : {
-                   "command" : "getContentInformation",
-                   "main"    : "contentInformation",
-                   "items"   : ["infoItem||class","infoItem||source","infoItem||mediaType","infoItem||mediaFormat"]
-                   },
-             "getSystemInformation"  : {
-                   "command" : "getSystemInformation",
-                   "main"    : "systemInformation",
-                   "items"   : ["name","generation","supportContentsClass::class","supportSource::source"]
-                   },
-             "getStatus"             : {
-                   "command" : "getStatus",
-                   "main"    : "statusList",
-                   "items"   : ["status||disc::statusItem||type","status||disc::statusItem||mediaType","status||disc::statusItem||mediaFormat"]
-                   }
-             }
-
+        print(" ---- IRRC Calls ---- ")
         for key in IRRCcalls:
               value = self.get_status("IRRC",key)
               print(key+" = "+str(value))
