@@ -36,10 +36,10 @@
 * OK - Caching for interfaces
 * OK - Set value via API (e.g. volume)
 
+* IN PROGRESS - Integrate sonyapilib: basic function; registration via web-interface open
 * IN PROGRESS - add KODIjson (basic commands work, to be tested and additional commands to be added)
 
 * Return message and code for each API call (to be processed by client) -> to be checked if own or HTML return code
-* SONY  - add API
 
 
 ## automated testing
@@ -119,6 +119,7 @@
 * OK - dark scheme for jc-msg
 * OK - audio volume via slider
 * OK - description on line in remote -> "LINE||select device"
+* OK - hide not used buttons per default with button to show/hide
 
 * IN PROGRESS - edit device parameters via settings page (description, driver, image)
 
