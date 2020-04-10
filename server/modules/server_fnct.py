@@ -56,7 +56,7 @@ def RmReadData(selected=[]):
             if data["devices"][device]["interface"] != "":
               if selected == [] or device in selected:
 	
-                key        = data["devices"][device]["device"]
+                key        = data["devices"][device]["config_device"]
                 interface  = data["devices"][device]["interface"]
                 data_temp  = data["devices"][device]
 
@@ -181,7 +181,8 @@ def addDevice(device,interface,description):
     
     ## add to _active.json 
     active_json[device] = {
-        "device"    : description,
+        "config_device"    : description,
+        "config_remote"    : description,
         "image"     : device,
         "interface" : interface,
         "label"     : description,       # to be edited later
@@ -240,7 +241,7 @@ def addCommand2Button(device,button,command):
 
     config      = configFiles.read_status()
     interface   = config[device]["interface"]  
-    device_code = config[device]["device"]  
+    device_code = config[device]["config_device"]  
     data        = configFiles.read(modules.commands+interface+"/"+device_code)
     
     if "data" in data:
@@ -262,7 +263,7 @@ def addButton(device,button):
     
     config      = configFiles.read_status()
     interface   = config[device]["interface"]  
-    device_code = config[device]["device"]  
+    device_code = config[device]["config_device"]  
     data        = configFiles.read(modules.remotes+interface+"/"+device_code)
     
     if "data" in data:
@@ -285,7 +286,7 @@ def deleteCmd(device, button):
 
     config      = configFiles.read_status()
     interface   = config[device]["interface"]  
-    device_code = config[device]["device"]  
+    device_code = config[device]["config_device"]  
     data        = configFiles.read(modules.commands+interface+"/"+device_code)
     
     if data["data"]:
@@ -310,7 +311,7 @@ def deleteButton(device, button_number):
     buttonNumber = int(button_number)
     config       = configFiles.read_status()
     interface    = config[device]["interface"]  
-    device_code  = config[device]["device"]  
+    device_code  = config[device]["config_device"]  
     data         = configFiles.read(modules.remotes+interface+"/"+device_code)
     
     if data["data"] and data["data"]["remote"]:
@@ -333,7 +334,7 @@ def addTemplate(device,template):
     templates   = configFiles.read(modules.templates + template)
     config      = configFiles.read_status()
     interface   = config[device]["interface"]
-    device_code = config[device]["device"]
+    device_code = config[device]["config_device"]
     data       = configFiles.read(modules.remotes + interface + "/" + device_code)
 
     # check if error
@@ -388,7 +389,7 @@ def deleteDevice(device):
     devices              = {}
     active_json          = configFiles.read_status()
     interface            = active_json[device]["interface"]
-    device_code          = active_json[device]["device"]  
+    device_code          = active_json[device]["config_device"]  
     
     if not device in active_json:                                             return("ERROR: Device " + device + " doesn't exists (active).")
     if not modules.ifexist(modules.commands +interface+"/"+device_code):    return("ERROR: Device " + device + " doesn't exists (commands).")
@@ -431,7 +432,7 @@ def editDevice(device,info):
     if "ERROR" in active_json: return("ERROR: Device " + device + " doesn't exists (active).")
     
     interface            = active_json[device]["interface"]
-    device_code          = active_json[device]["device"]  
+    device_code          = active_json[device]["config_device"]  
     
     # read command definition
     commands             = configFiles.read(modules.commands +interface+"/"+device_code)

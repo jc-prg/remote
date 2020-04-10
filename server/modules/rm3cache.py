@@ -119,7 +119,7 @@ class configCache (threading.Thread):
         '''
 
         status = self.read(rm3config.active_devices)
-        if device in status: return status[device]["device"]
+        if device in status: return status[device]["config_device"]
         else:                return ""
         
     #---------------------------
@@ -131,7 +131,7 @@ class configCache (threading.Thread):
 
         status     = self.read(rm3config.active_devices)
         interface  = status[device]["interface"]
-        device     = status[device]["device"]
+        device     = status[device]["config_device"]
         definition = self.read(rm3config.devices + interface + "/" + device)
         return definition["data"]["method"]
     
@@ -149,7 +149,7 @@ class configCache (threading.Thread):
         if self.configMethods == {} and selected_device == "":
     
           for device in status:
-              key       = status[device]["device"]
+              key       = status[device]["config_device"]
               interface = status[device]["interface"]
         
               if interface != "" and key != "":
@@ -174,7 +174,7 @@ class configCache (threading.Thread):
         
         # clear config file ...
         status_temp   = {}
-        relevant_keys = ["status","visible","description","image","interface","label","device","main-audio","position"]   
+        relevant_keys = ["status","visible","description","image","interface","label","config_device","config_device","main-audio","position"]   
         
         for dev in status:
           status_temp[dev] = {}

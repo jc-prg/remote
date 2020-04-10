@@ -223,7 +223,7 @@ class connect(threading.Thread):
         active        = self.configFiles.read_status()
         
         if device in active:
-          device_code  = active[device]["device"]
+          device_code  = active[device]["config_device"]
           buttons      = self.configFiles.read(rm3config.commands + api + "/" + device_code)
     
           # add button definitions from default.json if exist
@@ -249,7 +249,7 @@ class connect(threading.Thread):
         active        = self.configFiles.read_status()
         
         if device in active:
-          device_code  = active[device]["device"]
+          device_code  = active[device]["config_device"]
           buttons      = self.configFiles.read(rm3config.commands + api + "/" + device_code)
     
           # add button definitions from default.json if exist
