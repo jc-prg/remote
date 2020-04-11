@@ -123,6 +123,7 @@ def RemoteReload():
 
         data                          = remoteAPI_start()
         data["REQUEST"]["Return"]     = "OK: Configuration reloaded"
+        data["REQUEST"]["Command"]    = "Reload"
         data                          = remoteAPI_end(data,["no-data"])
         return data
 
@@ -152,6 +153,8 @@ def RemoteCheckUpdate(APPversion):
 
         data["REQUEST"]["Return"]     = d["ReturnMsg"]
         data["REQUEST"]["ReturnCode"] = d["ReturnCode"]
+        data["REQUEST"]["Command"]    = "CheckUpdate"
+        
         data                          = remoteAPI_end(data,["no-data","no-config"])
         return data
 
@@ -164,9 +167,10 @@ def RemoteList():
         Load and list all data
         '''
 
-        data                      = remoteAPI_start()
-        data["REQUEST"]["Return"] = "OK: Returned list and status data."
-        data                      = remoteAPI_end(data)        
+        data                       = remoteAPI_start()
+        data["REQUEST"]["Return"]  = "OK: Returned list and status data."
+        data["REQUEST"]["Command"] = "List"
+        data                       = remoteAPI_end(data)        
         return data
 
 
@@ -179,20 +183,21 @@ def Remote(device,button):
         send command and return JSON msg
         '''
         
-        data                      = remoteAPI_start()
-        interface                 = configFiles.cache["_api"]["devices"][device]["interface"]
+        data                       = remoteAPI_start()
+        interface                  = configFiles.cache["_api"]["devices"][device]["interface"]
         
-        data["REQUEST"]["Device"] = device
-        data["REQUEST"]["Button"] = button
+        data["REQUEST"]["Device"]  = device
+        data["REQUEST"]["Button"]  = button
         #data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,button)
-        data["REQUEST"]["Return"] = queueSend.add2queue([[interface,device,button,""]])
+        data["REQUEST"]["Return"]  = queueSend.add2queue([[interface,device,button,""]])
+        data["REQUEST"]["Command"] = "Remote"
         
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
 
-        data["DeviceStatus"]      = getStatus(device,"power")    # to be removed
-        data["ReturnMsg"]         = data["REQUEST"]["Return"]    # to be removed
+        data["DeviceStatus"]       = getStatus(device,"power")    # to be removed
+        data["ReturnMsg"]          = data["REQUEST"]["Return"]    # to be removed
 
-        data                      = remoteAPI_end(data,["no-data"])      
+        data                       = remoteAPI_end(data,["no-data"])      
         
         return data
 
@@ -208,8 +213,9 @@ def RemoteSet(device,command,value):
         interface                 = configFiles.cache["_api"]["devices"][device]["interface"]
         method                    = deviceAPIs.method(interface)
         
-        data["REQUEST"]["Device"] = device
-        data["REQUEST"]["Button"] = command
+        data["REQUEST"]["Device"]  = device
+        data["REQUEST"]["Button"]  = command
+        data["REQUEST"]["Command"] = "Set"
         
         if method == "query":
           #data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,command,value)
@@ -232,9 +238,10 @@ def RemoteMakro(makro):
         send makro (list of commands)
         '''
 
-        data                      = remoteAPI_start()
-        data["REQUEST"]["Button"] = makro
-        data["REQUEST"]["Return"] = "ERROR: Started but not finished..." #deviceAPIs.send(interface,device,button)
+        data                       = remoteAPI_start()
+        data["REQUEST"]["Button"]  = makro
+        data["REQUEST"]["Return"]  = "ERROR: Started but not finished..." #deviceAPIs.send(interface,device,button)
+        data["REQUEST"]["Command"] = "Makro"
         
         commands_1st              = makro.split("::")
         commands_2nd              = []
@@ -327,10 +334,11 @@ def RemoteTest():
         Test new functions
         '''
 
-        data                      = remoteAPI_start()
-        data["TEST"]              = RmReadData("")
-        data["REQUEST"]["Return"] = "OK: Test - show complete data structure"
-        data                      = remoteAPI_end(data,["no-data"])                
+        data                       = remoteAPI_start()
+        data["TEST"]               = RmReadData("")
+        data["REQUEST"]["Return"]  = "OK: Test - show complete data structure"
+        data["REQUEST"]["Command"] = "Test"
+        data                       = remoteAPI_end(data,["no-data"])                
         deviceAPIs.test()
         
         return data
@@ -432,6 +440,7 @@ def RemoteOnOff(device,button):
           
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
+        data["REQUEST"]["Command"]   = "OnOff"
         
         if dont_send: data["REQUEST"]["Return"] = "Dont send "+device+"/"+button+" as values not valid ("+str(current_status)+")."
         else:         data["REQUEST"]["Return"] = queueSend.add2queue([[interface,device,button,status]])
@@ -453,6 +462,7 @@ def RemoteReset():
 
         data                         = remoteAPI_start()
         data["REQUEST"]["Return"]    = resetStatus()
+        data["REQUEST"]["Command"]   = "Reset"
 
         refreshCache()
         data                         = remoteAPI_end(data,["no-data"])
@@ -468,6 +478,7 @@ def RemoteResetAudio():
 
         data                         = remoteAPI_start()
         data["REQUEST"]["Return"]    = resetAudio()
+        data["REQUEST"]["Command"]   = "ResetAudio"
 
         refreshCache()
         data                         = remoteAPI_end(data,["no-data"])        
@@ -483,6 +494,7 @@ def RemoteChangeMainAudio(device):
 
         data                         = remoteAPI_start()
         data["REQUEST"]["Return"]    = setMainAudioDevice(device)
+        data["REQUEST"]["Command"]   = "ChangeMainAudio"
 
         refreshCache()
         data                         = remoteAPI_end(data,["no-data","no-config"])        
@@ -498,6 +510,7 @@ def RemoteMove(type,device,direction):
 
         data                         = remoteAPI_start()
         data["REQUEST"]["Return"]    = moveDeviceScene(type,device,direction)
+        data["REQUEST"]["Command"]   = "RemoteMove"
 
         refreshCache()
         data                         = remoteAPI_end(data,["no-data","no-config"])
@@ -516,6 +529,7 @@ def RemoteAddButton(device,button):
         data["REQUEST"]["Return"]    = addButton(device,button)
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
+        data["REQUEST"]["Command"]   = "AddButton"
 
         refreshCache()
         data                         = remoteAPI_end(data,["no-data"])
@@ -536,6 +550,7 @@ def RemoteRecordCommand(device,button):
         data["REQUEST"]["Return"]    = addCommand2Button(device,button,EncodedCommand)       
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
+        data["REQUEST"]["Command"]   = "RecordCommand"
 
         refreshCache()
         data                         = remoteAPI_end(data)
@@ -553,6 +568,7 @@ def RemoteDeleteCommand(device,button):
         data["REQUEST"]["Return"]    = deleteCmd(device,button)
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Parameter"] = button
+        data["REQUEST"]["Command"]   = "DeleteCommand"
 
         refreshCache()
         data                         = remoteAPI_end(data,["no-data"])        
@@ -569,6 +585,7 @@ def RemoteDeleteButton(device,button_number):
         data["REQUEST"]["Return"]    = deleteButton(device,button_number)
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Parameter"] = button_number
+        data["REQUEST"]["Command"]   = "DeleteButton"
 
         refreshCache()
         data                         = remoteAPI_end(data,["no-data"])        
@@ -586,6 +603,7 @@ def RemoteChangeVisibility(device,value):
         data["REQUEST"]["Return"]    = changeVisibility(device,value)
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Parameter"] = value
+        data["REQUEST"]["Command"]   = "ChangeVisibility"
 
         refreshCache()
         data                         = remoteAPI_end(data,["no-data","no-config"])        
@@ -593,7 +611,7 @@ def RemoteChangeVisibility(device,value):
 
         
 
- #-------------------------------------------------
+#-------------------------------------------------
 
 def RemoteAddDevice(device,device_data):
         '''
@@ -604,6 +622,7 @@ def RemoteAddDevice(device,device_data):
         data["REQUEST"]["Return"]    = addDevice(device,device_data)
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Parameter"] = device_data
+        data["REQUEST"]["Command"]   = "AddDevice"
 
         refreshCache()
         data                         = remoteAPI_end(data,["no-data"])        
@@ -621,6 +640,7 @@ def RemoteEditDevice(device,info):
         data                         = remoteAPI_start()
         data["REQUEST"]["Return"]    = editDevice(device,info)
         data["REQUEST"]["Device"]    = device
+        data["REQUEST"]["Command"]   = "EditDevice"
 
         refreshCache()
         data                         = remoteAPI_end(data,["no-data"])
@@ -637,6 +657,7 @@ def RemoteAddTemplate(device,template):
         data["REQUEST"]["Return"]    = addTemplate(device,template)
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Parameter"] = template
+        data["REQUEST"]["Command"]   = "AddTemplate"
 
         refreshCache()
         data                         = remoteAPI_end(data,["no-data"])        
@@ -653,6 +674,7 @@ def RemoteDeleteDevice(device):
         data                         = remoteAPI_start()
         data["REQUEST"]["Return"]    = deleteDevice(device)
         data["REQUEST"]["Device"]    = device
+        data["REQUEST"]["Command"]   = "DeleteDevice"
 
         refreshCache()
         data                         = remoteAPI_end(data,["no-data"])
