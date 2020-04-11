@@ -87,6 +87,11 @@ function rmRemote(name) {
 			statusShowApiStatus("red", showButtonTime);
 			return;
 			}
+		if (rm_id != "" && this.data["DATA"]["devices"][rm_id] == undefined && this.data["DATA"]["scenes"][rm_id] == undefined) {
+			console.warn("Remote ID "+rm_id+" not found.");
+			rm3cookie.set("remote",""); //device::"+device+"::"+remote_label);
+			return;
+			}
 
 	        if (type == "")   { type = this.active_type; }
 	        if (rm_id == "")  { rm_id = this.active_name; }
