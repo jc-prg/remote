@@ -595,15 +595,15 @@ def RemoteChangeVisibility(device,value):
 
  #-------------------------------------------------
 
-def RemoteAddDevice(device,interface,description):
+def RemoteAddDevice(device,device_data):
         '''
         add device in config file and create config files for remote and command
         '''
 
         data                         = remoteAPI_start()
-        data["REQUEST"]["Return"]    = addDevice(device,interface,description)
+        data["REQUEST"]["Return"]    = addDevice(device,device_data)
         data["REQUEST"]["Device"]    = device
-        data["REQUEST"]["Parameter"] = description
+        data["REQUEST"]["Parameter"] = device_data
 
         refreshCache()
         data                         = remoteAPI_end(data,["no-data"])        

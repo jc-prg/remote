@@ -62,7 +62,7 @@ def RmReadData(selected=[]):
                 data_temp  = data["devices"][device]
 
 #                remote           = configFiles.read(modules.remotes  + interface + "/" + key) # remote layout & display
-                remote           = configFiles.read(modules.remotes  + "/" + key_remote)      # remote layout & display
+                remote           = configFiles.read(modules.remotes  + key_remote)      # remote layout & display
                 buttons          = configFiles.read(modules.commands + interface + "/" + key) # button definitions, presets, queries ...
                 
                 logging.info(interface + "/" + key)
@@ -174,32 +174,45 @@ def RmReadData(selected=[]):
 # add / delete devices & buttons to config
 #---------------------------
 
-def addDevice(device,interface,description):
+def addDevice(device,device_data):
     '''
     add new device to config file and create command/remote files
     '''
     
+    interface     = device_data["api"]
+    config_remote = device_data["config_remote"]
+    config_device = device_data["config_device"]
+    
     ## Check if exists    
     active_json         = configFiles.read_status()
     
-    if device in active_json:                                      return("WARN: Device " + device + " already exists (active).")
-    if modules.ifexist(modules.commands +interface+"/"+device):    return("WARN: Device " + device + " already exists (devices).")
-#    if modules.ifexist(modules.remotes  +interface+"/"+device):    return("WARN: Device " + device + " already exists (remotes).") 
-    if modules.ifexist(modules.remotes            +"/"+device):    return("WARN: Device " + device + " already exists (remotes).") 
+    if device in active_json:                                                            return("WARN: Device " + device + " already exists (active).")
+    if modules.ifexist(modules.commands +interface+"/"+device_data["config_device"]):    return("WARN: Device " + device + " already exists (devices).")
+    if modules.ifexist(modules.remotes  +device_data["config_remote"]):    return("WARN: Device " + device + " already exists (remotes).") 
     
     logging.info(device+" add")
     
+    ## set position
+    active_json_position = 0
+    for key in active_json:
+       if active_json[key]["position"] > active_json_position:
+         active_json_position = active_json[key]["position"]
+    active_json_position += 1
+    
     ## add to _active.json 
-    active_json[device] = {
-        "config_device"    : description,
-        "config_remote"    : description,
-        "image"     : device,
-        "interface" : interface,
-        "label"     : description,       # to be edited later
-        "main-audio": "no",
-        "status"    : { "power" : "OFF" },
-        "visible"   : "yes"    	
+    active_json[device]  = {
+        "image"            : device,
+        "config_device"    : device_data["config_device"],
+        "config_remote"    : device_data["config_remote"],
+        "interface"        : device_data["api"],
+        "description"      : device_data["label"] + ": " + device_data["device"],
+        "label"            : device_data["label"],
+        "main-audio"       : "no",
+        "status"           : { "power" : "OFF" },
+        "position"         : active_json_position,
+        "visible"          : "yes"    	
         }
+        
     try:
       configFiles.write_status(active_json,"addDevice")
     except Exception as e:
@@ -209,8 +222,9 @@ def addDevice(device,interface,description):
     buttons = {
         "info" : "jc://remote/ - In this files the commands foreach button, queries, the query method is defined.",
         "data" : {
-            "description" : description,
-            "method"      : "record", #-> to be changed
+            "description" : device_data["label"] + ": " + device_data["device"],
+            "method"      : deviceAPIs.api[device_data["api"]].method,
+            "interface"   : device_data["api"],
             "buttons"     : {},
             "queries"     : {},
             "commands"    : {},
@@ -218,7 +232,7 @@ def addDevice(device,interface,description):
             }
         }
     try:
-      configFiles.write(modules.commands + interface+"/"+description,buttons)
+      configFiles.write(modules.commands + interface+"/"+device_data["config_device"],buttons)
     except Exception as e:
       return "ERROR: " + str(e)
 
@@ -226,14 +240,14 @@ def addDevice(device,interface,description):
     remote = {
         "info" : "jc://remote/ - In this files the remote layout and a display layout is defined.",
         "data" : {
-           "description" : description,
+           "description" : device_data["label"] + ": " + device_data["device"],
            "remote"      : [],
            "display"     : {}
            }
         }    
     try:
 #      configFiles.write(modules.remotes +interface+"/"+description,remote)
-      configFiles.write(modules.remotes +"/"+description,remote)
+      configFiles.write(modules.remotes +device_data["config_remote"],remote)
     except Exception as e:
       return "ERROR: " + str(e)
             
@@ -277,7 +291,7 @@ def addButton(device,button):
     interface     = config[device]["interface"]  
     device_code   = config[device]["config_device"]  
     device_remote = config[device]["config_remote"]  
-    data          = configFiles.read(modules.remotes+"/"+device_remote)
+    data          = configFiles.read(modules.remotes+device_remote)
 #    data        = configFiles.read(modules.remotes+interface+"/"+device_code)
     
     if "data" in data:
@@ -287,7 +301,7 @@ def addButton(device,button):
             if button == "DOT": button = "."
             data["data"]["remote"].append(button)
             #configFiles.write(modules.remotes+interface+"/"+device_code,data)
-            configFiles.write(modules.remotes+"/"+device_remote,data)
+            configFiles.write(modules.remotes+device_remote,data)
             return "OK: Button '" + device + "_" + button + "' added."
     else:
         return "ERROR: Device '" + device + "' does not exists."        
@@ -328,13 +342,13 @@ def deleteButton(device, button_number):
     interface     = config[device]["interface"]  
     device_code   = config[device]["config_device"]  
     device_remote = config[device]["config_remote"]  
-    data          = configFiles.read(modules.remotes+"/"+device_remote)
+    data          = configFiles.read(modules.remotes+device_remote)
 #    data         = configFiles.read(modules.remotes+interface+"/"+device_code)
     
     if data["data"] and data["data"]["remote"]:
         if buttonNumber >= 0 and buttonNumber < len(data["data"]["remote"]):
             data["data"]["remote"].pop(buttonNumber)
-            data = configFiles.write(modules.remotes+"/"+device_remote,data)
+            data = configFiles.write(modules.remotes+device_remote,data)
 #            data = configFiles.write(modules.remotes+interface+"/"+device_code,data)
             return "OK: Button '" + device + " [" + str(buttonNumber) + "] deleted."
         else:
@@ -354,7 +368,7 @@ def addTemplate(device,template):
     interface     = config[device]["interface"]
     device_code   = config[device]["config_device"]
     device_remote = config[device]["config_remote"]  
-    data          = configFiles.read(modules.remotes+"/"+device_remote)
+    data          = configFiles.read(modules.remotes+device_remote)
 #    data       = configFiles.read(modules.remotes + interface + "/" + device_code)
 
     # check if error
@@ -364,7 +378,7 @@ def addTemplate(device,template):
     elif template in templates and data["data"] == []:
     
         data["data"]["remote"]           = templates[template]["remote"]
-        configFiles.write(modules.remotes+"/"+device_remote,data)
+        configFiles.write(modules.remotes+device_remote,data)
 #       configFiles.write(modules.remotes + interface + "/" + device_code, data)
         return "OK: Template '" + template + "' added to '" + device + "'."
             
@@ -372,7 +386,7 @@ def addTemplate(device,template):
     elif template in templates and data["data"] != []:
 
         data["data"]["remote"]           = templates[template]["remote"]
-        configFiles.write(modules.remotes+"/"+device_remote,data)
+        configFiles.write(modules.remotes+device_remote,data)
 #        configFiles.write(modules.remotes + interface + "/" + device_code, data)
         return "OK: Remote definition of '" + device + "' overwritten by template '" + template + "'."
         
@@ -416,7 +430,7 @@ def deleteDevice(device):
     
     if not device in active_json:                                             return("ERROR: Device " + device + " doesn't exists (active).")
     if not modules.ifexist(modules.commands +interface+"/"+device_code):      return("ERROR: Device " + device + " doesn't exists (commands).")
-    if not modules.ifexist(modules.remotes            +"/"+device_remote):    return("ERROR: Device " + device + " doesn't exists (remotes).") 
+    if not modules.ifexist(modules.remotes  +device_remote):    return("ERROR: Device " + device + " doesn't exists (remotes).") 
 #    if not modules.ifexist(modules.remotes  +interface+"/"+device_code):    return("ERROR: Device " + device + " doesn't exists (remotes).") 
 
     interface = active_json[device]["interface"]  ############# funtioniert nicht so richtig ...
@@ -429,11 +443,11 @@ def deleteDevice(device):
 
     try:    
 #      modules.delete(modules.remotes  + interface + "/" + device_code)
-      modules.delete(modules.remotes               + "/" + device_remote)
+      modules.delete(modules.remotes  + device_remote)
       modules.delete(modules.commands + interface + "/" + device_code)
       
 #      if not modules.ifexist(modules.commands + interface + "/" + device_code) and not modules.ifexist(modules.remotes + interface + "/" + device_code):
-      if not modules.ifexist(modules.commands + interface + "/" + device_code) and not modules.ifexist(modules.remotes + "/" + device_remote):
+      if not modules.ifexist(modules.commands + interface + "/" + device_code) and not modules.ifexist(modules.remotes + device_remote):
         return "OK: Device '" + device + "' deleted."
       else:
         return "ERROR: Could not delete device '" + device + "'"
@@ -466,7 +480,7 @@ def editDevice(device,info):
     if "ERROR" in commands: return("ERROR: Device " + device + " doesn't exists (commands).")
 
     # read remote layout definitions
-    remotes              = configFiles.read(modules.remotes +"/"+device_remote)
+    remotes              = configFiles.read(modules.remotes +device_remote)
 #    remotes              = configFiles.read(modules.remotes +interface+"/"+device_code)
     if "ERROR" in remotes: return("ERROR: Device " + device + " doesn't exists (remotes).") 
     
@@ -501,7 +515,7 @@ def editDevice(device,info):
       return("ERROR: could not write changes (commands) - "+str(e))
 
     # write remote layout definition
-    try:                    configFiles.write(modules.remotes +"/"+device_remote, remotes)
+    try:                    configFiles.write(modules.remotes +device_remote, remotes)
 #    try:                    configFiles.write(modules.remotes +interface+"/"+device_code, remotes)
     except Exception as e:
       logging.error("ERROR: could not write changes (remotes) - "+str(e))
@@ -522,6 +536,24 @@ def moveDeviceScene(button_type,device,direction):
     elif button_type == "scene": status = configFiles.read(modules.active_scenes)
     else:                        return "ERROR: type "+button_type+" is unknown."
     
+    # normalize position (required, if remotes have been deleted)
+    order      = {}
+    order_keys = []
+    for key in status:
+      pos = status[key]["position"]
+      if pos < 10:    pos = "00" + str(pos)
+      elif pos < 100: pos = "0" + str(pos)
+      else:           pos = str(pos)
+      order[pos] = key
+      order_keys.append(pos)
+      
+    order_keys.sort()
+    i=1
+    for key in order_keys:
+      status[order[key]]["position"] = i
+      i += 1
+    
+    # start move
     position   = True
     direction  = int(direction)
     return_msg = ""

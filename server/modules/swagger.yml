@@ -377,7 +377,7 @@ paths:
           required: true
         - name: info
           in: body
-          description: paramenters of device that can be edited
+          description: parameters of device that can be edited
           schema:
             type: object     
 #            properties:
@@ -406,8 +406,6 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
 
-
-  /device/{device}/{interface}/{description}/:
     put:
       operationId: modules.server_cmd.RemoteAddDevice
       tags:
@@ -419,14 +417,11 @@ paths:
           in: path
           type: string
           required: true
-        - name: interface
-          in: path
-          type: string
-          required: true
-        - name: description
-          in: path
-          type: string
-          required: true
+        - name: device_data
+          in: body
+          description: parameters of device that should be added
+          schema:
+            type: object     
       responses:
         200:
           description: Successfully added device
