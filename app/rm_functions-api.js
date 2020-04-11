@@ -57,6 +57,9 @@ function apiCheckUpdates_msg( data ) {
 
 function apiAlertReturn(data) {
         rm3msg.alertReturn(data);
+        
+        if (data["REQUEST"]["Command"] == "AddTemplate") { setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, 2000); }
+
 	remoteReload_load();
         }
 	
@@ -78,9 +81,9 @@ function apiTemplateAdd(device_id, template_id) {
         device   = check_if_element_or_value(device_id);
         template = check_if_element_or_value(template_id);
         
-	if (!dataConfig["devices"][device]) 	{ rm3msg.alert("Device '" + device + "' doesn't exists!"); return; }
-	else if (device == "") 			{ rm3msg.alert("Please insert/select name for device (no space, no special cases)."); return; }
-	else if (template == "") 		{ rm3msg.alert("Please insert/select template name."); 	return;	}
+	if (!dataAll["DATA"]["devices"][device]) 	{ rm3msg.alert("Device '" + device + "' doesn't exists!"); return; }
+	else if (device == "")	 			{ rm3msg.alert("Please insert/select name for device (no space, no special cases)."); return; }
+	else if (template == "") 			{ rm3msg.alert("Please insert/select template name."); 	return;	}
 
 	//rm3app.requestAPI("PUT",["template",device,template], "", apiAlertReturn);
 	question = "Do you really want overwrite buttons of '" + device + "' with template '" + template + "'?";
@@ -136,7 +139,9 @@ function apiDeviceChangeVisibility(device_id, value_id) {
 // create new device
 //--------------------------------
 
-function apiDeviceAdd(data) {
+function apiDeviceAdd(data,onchange) {
+
+	if (getValueById(data[4]) == "" || getValueById(data[5]) == "") { onchange(); }
 
 	send_data		   = {};
 	send_data["id"]            = getValueById(data[0]);
@@ -160,7 +165,7 @@ function apiDeviceAdd(data) {
 // delete device
 //--------------------------------
 
-function apiDeviceDelete_exe(device) { rm3app.requestAPI("DELETE",["device",device], "", apiAlertReturn); }      
+function apiDeviceDelete_exe(device) { rm3app.requestAPI("DELETE",["device",device], "", apiAlertReturn); remoteInit(); }      
 function apiDeviceDelete(device_id) {
 
 	var device1 = document.getElementById(device_id);
