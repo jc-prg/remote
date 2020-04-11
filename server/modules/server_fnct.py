@@ -424,6 +424,9 @@ def deleteDevice(device):
     
     devices              = {}
     active_json          = configFiles.read_status()
+    
+    if device not in active_json: return "ERROR: Could not delete, device not available ("+device+")"
+    
     interface            = active_json[device]["interface"]
     device_code          = active_json[device]["config_device"]  
     device_remote        = active_json[device]["config_remote"]  
