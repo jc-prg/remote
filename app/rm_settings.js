@@ -146,7 +146,8 @@ function rmSettings (name) {	// IN PROGRESS
 
 	this.create_edit        = function () {
 	
-		var onchange = this.app_name + ".create_edit_FileNames()";
+		var onchange  = this.app_name + ".create_edit_FileNames()";
+		var onchange2 = this.app_name + ".create_edit_FileNames";
 		
 		// Edit Remote Settings
 		setting = "";
@@ -157,7 +158,8 @@ function rmSettings (name) {	// IN PROGRESS
 		setting += "<tr><td colspan='2'><hr/></td></tr>";
 		setting += this.tab_row( 	"Device-Config:",	this.input("add_device_device")+".json" );
 		setting += this.tab_row( 	"Remote-Config:",	this.input("add_device_remote")+".json" );
-		setting += this.tab_row(	this.button("apiDeviceAdd(['add_device_id','add_device_descr','add_device_api','add_device','add_device_device','add_device_remote']);","Add Device"), "" );
+		setting += this.tab_row(	this.button("apiDeviceAdd(['add_device_id','add_device_descr','add_device_api','add_device','add_device_device','add_device_remote'],"+onchange2+");","Add Device"), "" );
+//		setting += this.tab_row(	this.button("apiDeviceAdd(['add_device_id','add_device_descr','add_device_api','add_device','add_device_device','add_device_remote']);","Add Device"), "" );
 
 		this.write(0,"Add Remote Control (Device)",setting);					
 			
