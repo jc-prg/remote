@@ -2,7 +2,6 @@
 // jc://remote/
 //--------------------------------
 /* INDEX:
-function sortDict(dict,sort_key)
 function showRemoteInBackground(show=false)
 function clickMenu ()
 function setNavTitle (title)
