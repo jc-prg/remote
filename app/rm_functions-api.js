@@ -112,8 +112,13 @@ function apiDeviceEdit(device,prefix,fields) {
 
 //--------------------------------
 
-function apiDeviceMovePosition(type,device,direction) 	{ rm3app.requestAPI( "POST", ["move",type,device,direction], 	"", remoteReload_load ); }
-
+function apiDeviceMovePosition_exe(type,device,direction) { rm3app.requestAPI( "POST", ["move",type,device,direction], "", apiDeviceMovePosition); }
+function apiDeviceMovePosition(data) {
+	rm3settings.mode = "";
+	rm3settings.create();
+	remoteReload_load();
+	}
+	
 //--------------------------------
 
 function apiDeviceChangeVisibility(device_id, value_id) {
@@ -131,18 +136,25 @@ function apiDeviceChangeVisibility(device_id, value_id) {
 // create new device
 //--------------------------------
 
-function apiDeviceAdd(device, api, description) {
+function apiDeviceAdd(data) {
+
+	send_data		   = {};
+	send_data["id"]            = getValueById(data[0]);
+	send_data["label"]         = getValueById(data[1]);
+	send_data["api"]           = getValueById(data[2]);
+	send_data["device"]        = getValueById(data[3]);
+	send_data["config_device"] = getValueById(data[4]);
+	send_data["config_remote"] = getValueById(data[5]);
+	
+	console.error(send_data);
         
-	device 		= document.getElementById(device).value.toLowerCase();
-	description 	= document.getElementById(description).value;
-	api	 	= document.getElementById(api).value;
+	if (dataAll["DATA"]["devices"][send_data["id"]]){ rm3msg.alert("Device '" + device + "' already exists!"); return; }
+	else if (send_data["id"] == "")			{ rm3msg.alert("Please insert ID for device (no special cases)."); return; }
+	else if (send_data["label"] == "")		{ rm3msg.alert("Please insert label for device."); return; }
+	else if (send_data["api"] == "") 		{ rm3msg.alert("Please select API for device."); return; }
+	else if (send_data["device"] == "") 		{ rm3msg.alert("Please insert name of device."); return;	}
 
-	if (dataAll["DATA"]["devices"][device])	{ rm3msg.alert("Device '" + device + "' already exists!"); return; }
-	else if (device == "") 			{ rm3msg.alert("Please insert name for device (no space, no special cases)."); return; }
-	else if (api == "") 			{ rm3msg.alert("Please insert API for device (no space, no special cases)."); return; }
-	else if (description == "") 		{ rm3msg.alert("Please insert short description for device."); 	return;	}
-
-	rm3app.requestAPI("PUT",["device",device,api,description], "", apiAlertReturn);
+	rm3app.requestAPI("PUT",["device",send_data["id"]], send_data, apiAlertReturn);
 	}
 
 // delete device

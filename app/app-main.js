@@ -207,19 +207,23 @@ function remoteDropDown(data) {
 	rm3menu.init(        data );	// load data to class
 	rm3menu.add_scenes(  data["DATA"]["scenes"] );
 	rm3menu.add_devices( data["DATA"]["devices"] );
-	rm3menu.add_script( "rm3settings.onoff();", "Settings" );
+	rm3menu.add_script( "rm3settings.onoff();rm3settings.mode='';", "Settings" );
 	rm3menu.add_script( "remoteToggleEditMode();", "Edit Remote" + edit_on );
 	rm3menu.add_script( "rm3settings.button_deact(true);remoteInit();", deact_link);        
         }
         
 
 function remoteToggleEditMode() {
+	var settings = rm3settings.active;
+	
 	rm3remotes.remoteToggleEditMode();
 	rm3menu.remoteToggleEditMode();
 	rm3start.remoteToggleEditMode();
 	rm3settings.remoteToggleEditMode();
 	rm3settings.create();
 	remoteDropDown_load();
+	
+	if (settings) {rm3settings.onoff();}  // when settings -> don't switch back to remotes (workaround)
 	}
 
 

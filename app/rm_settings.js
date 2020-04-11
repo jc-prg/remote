@@ -38,11 +38,12 @@ function rmSettings (name) {	// IN PROGRESS
 	this.data         = {};
 	this.active       = false;
 	this.app_name     = name;
-	this.e_settings   = ["setting1","setting2","setting3","setting4"];
+	this.e_settings   = ["setting1","setting2","setting3","setting4"]; 
 	this.e_remotes    = ["remote1","remote2","remote3","remote_edit"];
 	this.input_width  = "110px";
 	this.initial_load = true;
 	this.edit_mode    = false;
+	this.mode         = "";
 
 	// init settings / set vars
 	this.init               = function (data) {
@@ -70,8 +71,10 @@ function rmSettings (name) {	// IN PROGRESS
 
 	// write settings page
 	this.create             = function () {
-		if (this.edit_mode) 	{ this.create_edit(); }
-		else			{ this.create_setting(); }
+	
+		if (this.edit_mode && this.mode != "edit") 		{ this.create_edit();    this.mode = "edit"; }
+		else if (!this.edit_mode && this.mode != "setting")	{ this.create_setting(); this.mode = "setting"; }
+		else if (this.mode == "setting")			{ this.interface_list_update(); }
 		}
 
 	this.create_setting     = function () {
@@ -139,40 +142,80 @@ function rmSettings (name) {	// IN PROGRESS
 		this.write(1,"Change Settings",setting);
 		}
 
+	//------------------------------
+
 	this.create_edit        = function () {
+	
+		var onchange = this.app_name + ".create_edit_FileNames()";
+		
 		// Edit Remote Settings
 		setting = "";
-		setting += this.tab_row( 	"Device:",	this.input("add_device") );
-		setting += this.tab_row( 	"Interface:",   this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"]) );
+		setting += this.tab_row( 	"ID:",  	this.input("add_device_id") );
 		setting += this.tab_row( 	"Label:", 	this.input("add_device_descr") );
-		setting += this.tab_row(	this.button("apiDeviceAdd('add_device','add_device_api','add_device_descr');","Add Device"), "" );
-		this.write(0,"Add Remote Control",setting);
-					
+		setting += this.tab_row( 	"Interface:",   this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"]) );
+		setting += this.tab_row( 	"Device Name:",	this.input("add_device",onchange) );
+		setting += "<tr><td colspan='2'><hr/></td></tr>";
+		setting += this.tab_row( 	"Device-Config:",	this.input("add_device_device")+".json" );
+		setting += this.tab_row( 	"Remote-Config:",	this.input("add_device_remote")+".json" );
+		setting += this.tab_row(	this.button("apiDeviceAdd(['add_device_id','add_device_descr','add_device_api','add_device','add_device_device','add_device_remote']);","Add Device"), "" );
+
+		this.write(0,"Add Remote Control (Device)",setting);					
+			
 		setting = "";	
 		var order  = sortDict(this.data["DATA"]["devices"],"position");
-		var i      = 0;
-		for (key in order) {
-			var button = "";			
-			if (i > 0)  		{ button += this.button_small("apiDeviceMovePosition(#device#,#"+order[key]+"#,#-1#);","up"); }
-			if (i < order.length-1)	{ button += this.button_small("apiDeviceMovePosition(#device#,#"+order[key]+"#,#1#);","down"); }
-			setting += this.tab_row("<b>" + this.data["DATA"]["devices"][order[key]]["label"] + "</b> ("+this.data["DATA"]["devices"][order[key]]["visible"]+")",button);
-			i++;
+		for (var i=0;i<order.length;i++) {
+			var key     = order[i];
+			var button  = "";			
+			var visible = this.data["DATA"]["devices"][key]["visible"];
+			
+			if (i > 0)  		{ button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#-1#);","up"); }
+			if (i < order.length-1)	{ button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#1#);","down"); }
+			
+			if (visible == "no")    { setting += this.tab_row("<i>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["label"] + "</i>",button); }
+			else                    { setting += this.tab_row("<b>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["label"] + "</b>",button); }		
 			}
+			
 		setting += "</table>"
 			 + "<hr><center><b>Change Order of Scenes</b></center><hr/>"
 			 + "<table width=\"100%\">";
+			 
 		order  = sortDict(this.data["DATA"]["scenes"],"position");
-		i      = 0;
-		for (key in order) {
-			var button = "";			
-			if (i > 0)  		{ button += this.button_small("apiDeviceMovePosition(#scene#,#"+order[key]+"#,#-1#);","up"); }
-			if (i < order.length-1)	{ button += this.button_small("apiDeviceMovePosition(#scene#,#"+order[key]+"#,#1#);","down"); }
-			setting += this.tab_row("<b>" + this.data["DATA"]["scenes"][order[key]]["label"] + "</b> ("+this.data["DATA"]["scenes"][order[key]]["visible"]+")",button);
-			i++;
+		for (var i=0;i<order.length;i++) {
+			var key     = order[i];
+			var button  = "";			
+			var visible = this.data["DATA"]["scenes"][key]["visible"];
+
+			if (i > 0)  		{ button += this.button_small("apiDeviceMovePosition_exe(#scene#,#"+key+"#,#-1#);"+this.app_name+".mode = '';","up"); }
+			if (i < order.length-1)	{ button += this.button_small("apiDeviceMovePosition_exe(#scene#,#"+key+"#,#1#);"+this.app_name+".mode = '';","down"); }
+			
+			if (visible == "no")    { setting += this.tab_row("<i>" + this.data["DATA"]["scenes"][key]["position"] + ". " + this.data["DATA"]["scenes"][key]["label"] + "</i>",button); }
+			else                    { setting += this.tab_row("<b>" + this.data["DATA"]["scenes"][key]["position"] + ". " + this.data["DATA"]["scenes"][key]["label"] + "</b>",button); }
 			}
 
 		this.write(1,"Change Order of Devices",setting);
 		}
+
+
+	this.create_edit_FileNames 	= function () {
+	
+		replace_minus   = [" ","/","\\",":","&","#","?"];
+		
+		label		= document.getElementById("add_device_descr").value;
+		api		= document.getElementById("add_device_api").value;
+		device		= document.getElementById("add_device").value;
+
+		device_file	 = label.toLowerCase();
+		device_file     += "_" + device.toLowerCase();	
+		
+		for (var i=0;i<replace_minus.length;i++) { for (var j=0;j<5;j++) { device_file = device_file.replace(replace_minus[i], "-" ); } }
+
+		remote_file      = device_file + "_" + api.toLowerCase();				
+		
+		document.getElementById("add_device_device").value = device_file;
+		document.getElementById("add_device_remote").value = remote_file;
+		}
+
+	//------------------------------
 
 	// write settings category
 	this.write              = function (nr,label,text) {
@@ -182,8 +225,15 @@ function rmSettings (name) {	// IN PROGRESS
 				+ "<center><b>" + label + "</b></center><hr/>"
 				+ text
 				+ "</table></center>";
+		if (label == "" && text == "") { content = ""; }
 
 		setTextById(element,content);
+		}
+		
+	this.is_filled		= function (nr) {
+		var element 	= this.e_settings[nr];
+		if (element.innerHTML != "")	{ return true; }
+		else				{ return false; }
 		}
 
 	//------------------------------
@@ -192,11 +242,27 @@ function rmSettings (name) {	// IN PROGRESS
 
 	this.onoff              = function () {
 
-		if (this.active)	{ this.active = false; if (rm3remotes.active_type == "start") { showRemoteInBackground(1); } }
-		else			{ this.active = true;  this.create(); showRemoteInBackground(0); }
+		if (this.active)	{ 
+			show_settings = false;
+			show_remotes  = true;
+			this.active   = false;
+			if (rm3remotes.active_type == "start") { showRemoteInBackground(1); }
+			}
+		else			{ 
+			show_settings = true;
+			show_remotes  = false;
+			this.active   = true;  
+			this.mode = ""; 
+			this.create(); 
+			showRemoteInBackground(0); 
+			}
 
-		for (var i=0; i<this.e_remotes.length; i++)  { changeVisibility(this.e_remotes[i]);  }
-		for (var i=0; i<this.e_settings.length; i++) { changeVisibility(this.e_settings[i]); }
+		for (var i=0; i<this.e_remotes.length; i++)  { changeVisibility(this.e_remotes[i],show_remotes);  }
+		for (var i=0; i<this.e_settings.length; i++) { changeVisibility(this.e_settings[i],show_settings); }
+		
+		if (this.edit_mode == true && show_remotes)   		{ elementVisible("remote_edit"); }
+		else if (this.edit_mode == false && show_remotes)	{ elementHidden("remote_edit"); }
+		else if (show_settings)					{ elementHidden("remote_edit"); }
 		}
 
 	//------------------------------
@@ -209,11 +275,16 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	this.interface_list     = function () {
-		var text = "";
+		var text = "<div id='setting_interface_list'>";
 		for (var key in this.data["STATUS"]["interfaces"]) {
 			text += key + ": " + this.data["STATUS"]["interfaces"][key] + "<br/>";
 			}
+		text += "</div>";
 		return text;
+		}
+		
+	this.interface_list_update = function () {
+		document.getElementById('setting_interface_list').innerHTML = this.interface_list();
 		}
 
 	this.button_list        = function (id,filter="") {
@@ -294,7 +365,22 @@ function rmSettings (name) {	// IN PROGRESS
 	this.button_small       = function (onclick,label) { onclick = onclick.replace(/#/g,"'"); return "<button style=\"width:" + this.input_width + ";margin:1px;width:60px;\" onClick=\"javascript:"+onclick+"\">"+label+"</button>"; }
 	
 	this.tab_row            = function (td1,td2) 	{ return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
-	this.input              = function (id) 	{ return "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;'>"; }
+	this.input              = function (id,onclick="") { 
+
+		text = "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;'>"; 
+		
+		if (onclick != "") {
+			text += "&nbsp;<button onclick=\""+onclick+"\">&gt;&gt;</button>";
+
+
+			//const inputChange = document.querySelector(id);
+			//const new_input   = document.getElementById("add_device_device");
+			//inputChange.addEventListener(id,input2);
+			}
+			
+		return text;
+		}
+		
 
 	this.select             = function (id,title,data,onchange="") {
 		var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
@@ -313,7 +399,6 @@ function rmSettings (name) {	// IN PROGRESS
 		else                 { this.edit_mode = true; }
 		}	
 	}
-
 
 //--------------------------------
 // EOF

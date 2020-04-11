@@ -12,33 +12,6 @@ function writeKeyBoard ()
 //--------------------------------
 
 //--------------------------------
-// sort dictionary
-//--------------------------------
-
-function sortDict(dict,sort_key) {
-
-	var sorted = {};
-	for (key in dict) {
-		sorted[dict[key][sort_key]+"_"] = key;
-		}
-		
-	var order  = [];
-	var i = 1;
-	for (key in sorted) {
-		if (sorted[i+"_"]) { order.push( sorted[i+"_"] ); }
-		i++;
-		}
-		
-	if (order.length == 0) {
-		for (key in dict) {
-			order.push( key );
-			}	
-		}
-		
-	return order;
-	}
-
-//--------------------------------
 // create menus & landing page & setting page
 //--------------------------------
 

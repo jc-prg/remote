@@ -70,8 +70,8 @@ function rmMenu(name, menu) {
 
 		var order  = sortDict(data,"position");
     		var i      = 0;
-		for (var key in order) {
-			device = order[key];
+		for (var j=0;j<order.length;j++) {
+			device = order[j];
 			if (device != "default") {
 			        if (data[device]["visible"] != "no")  { menu  += this.entry_device( device, data[device]["label"] ); }
 			        else if (this.edit_mode)              { menu  += this.entry_device( device, "<div class=#hidden_entry_edit#>.(" + data[device]["label"] + ").</div>" ); }
