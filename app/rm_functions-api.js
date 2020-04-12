@@ -148,9 +148,9 @@ function apiDeviceChangeVisibility(device_id, value_id) {
         device   = check_if_element_or_value(device_id,true);
         value    = check_if_element_or_value(value_id,false);
         
-	if (!dataAll["DATA"]["devices"][device]) 	{ rm3msg.alert("Device '" + device + "' doesn't exists!"); return; }
-	else if (device == "") 				{ rm3msg.alert("Please insert/select name for device (no space, no special cases)."); return; }
-	else if (value == "")   			{ rm3msg.alert("Please insert/select visibility."); return;	}
+	if (!dataAll["DATA"]["devices"][device]) 	{ rm3msg.alert(lang("DEVICE_DONT_EXISTS",[device])); return; }
+	else if (device == "") 				{ rm3msg.alert(lang("INSERT_DEVICE_ID")); return; }
+	else if (value == "")   			{ rm3msg.alert(lang("SELECT_DEVICE_VISIBLITY")); return;	}
 
 	rm3app.requestAPI("PUT",["visibility",device,value], "", apiAlertReturn);
 	}
@@ -172,11 +172,12 @@ function apiDeviceAdd(data,onchange) {
 	
 	console.error(send_data);
         
-	if (dataAll["DATA"]["devices"][send_data["id"]]){ rm3msg.alert("Device '" + device + "' already exists!"); return; }
-	else if (send_data["id"] == "")			{ rm3msg.alert("Please insert ID for device (no special cases)."); return; }
-	else if (send_data["label"] == "")		{ rm3msg.alert("Please insert label for device."); return; }
-	else if (send_data["api"] == "") 		{ rm3msg.alert("Please select API for device."); return; }
-	else if (send_data["device"] == "") 		{ rm3msg.alert("Please insert name of device."); return;	}
+//	if (dataAll["DATA"]["devices"][send_data["id"]]){ rm3msg.alert("Device '" + device + "' already exists!"); return; }
+	if (dataAll["DATA"]["devices"][send_data["id"]]){ rm3msg.alert(lang("DEVICE_EXISTS",[send_data["id"]])); return; }
+	else if (send_data["id"] == "")			{ rm3msg.alert(lang("INSERT_DEVICE_ID")); return; }
+	else if (send_data["label"] == "")		{ rm3msg.alert(lang("INSERT_DEVICE_LABEL")); return; }
+	else if (send_data["api"] == "") 		{ rm3msg.alert(lang("SELECT_DEVICE_API")); return; }
+	else if (send_data["device"] == "") 		{ rm3msg.alert(lang("INSERT_DEVICE_NAME")); return;	}
 
 	rm3app.requestAPI("PUT",["device",send_data["id"]], send_data, apiAlertReturn);
 	}
