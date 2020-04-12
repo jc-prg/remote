@@ -12,14 +12,27 @@ var language = {
 		"FORMAT_INCORRECT" : "Format nicht korrekt",
 		},
 	"EN" : {
-		"DEVICE_EXISTS"			: "Device '{0}' already exists!",
+		"BUTTON_ASK_DELETE"		: "Do you really want to delete the button '{0}' from '{1}'?",
+		"BUTTON_ASK_DELETE_NUMBER"	: "Do you really want to delete the button number [{0}] from '{1}'?",
+		"BUTTON_INSERT_NAME"		: "Please insert name for button.",
+		"BUTTON_RECORD"			: "Record button &quot;{0}&quot; for device &quot;{1}&quot;: click OK and then press button within the next 5 seconds."
+		"BUTTON_SELECT"			: "Please select button.",
+		
+		"DEVICE_ASK_DELETE"		: "Do you really want to delete device '{0}'?",
 		"DEVICE_DONT_EXISTS"		: "Device '{0}' doesn't exists!",
-		"FORMAT_INCORRECT"		: "format not correct",
-		"INSERT_DEVICE_ID"		: "Please insert ID for device (no special cases).",
-		"INSERT_DEVICE_LABEL"		: "Please insert label for device.",
-		"INSERT_DEVICE_NAME"		: "Please insert name of device.",
-		"SELECT_DEVICE_API"		: "Please select API for device.",
-		"SELECT_DEVICE_VISIBLITY"	: "Please select if device should be visible or hidden.",
+		"DEVICE_EXISTS"			: "Device '{0}' already exists!",
+		"DEVICE_INSERT_ID"		: "Please insert ID for device (no special cases).",
+		"DEVICE_INSERT_LABEL"		: "Please insert label for device.",
+		"DEVICE_INSERT_NAME"		: "Please insert name of device.",
+		"DEVICE_SELECT"			: "Please select device.",
+		"DEVICE_SELECT_API"		: "Please select API for device.",
+		"DEVICE_SELECT_TEMPLATE"	: "Please select template to create remote for device.",
+		"DEVICE_SELECT_VISIBLITY"	: "Please select if device should be visible or hidden.",
+
+		"FORMAT_INCORRECT"		: "format is not correct",
+		
+		"PLEASE_WAIT"			: "Please wait ... .",
+
 		}
 	}
 

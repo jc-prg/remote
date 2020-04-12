@@ -82,9 +82,9 @@ function apiTemplateAdd(device_id, template_id) {
         device   = check_if_element_or_value(device_id,false);
         template = check_if_element_or_value(template_id,false);
         
-	if (!dataAll["DATA"]["devices"][device]) 	{ rm3msg.alert("Device '" + device + "' doesn't exists!"); return; }
-	else if (device == "")	 			{ rm3msg.alert("Please insert/select name for device (no space, no special cases)."); return; }
-	else if (template == "") 			{ rm3msg.alert("Please insert/select template name."); 	return;	}
+	if (!dataAll["DATA"]["devices"][device]) 	{ rm3msg.alert(lang("DEVICE_DONT_EXISTS")); return; }
+	else if (device == "")	 			{ rm3msg.alert(lang("DEVICE_INSERT_NAME")); return; }
+	else if (template == "") 			{ rm3msg.alert(lang("DEVICE_SELECT_TEMPLATE")); 	return;	}
 
 	//rm3app.requestAPI("PUT",["template",device,template], "", apiAlertReturn);
 	question = "Do you really want overwrite buttons of '" + device + "' with template '" + template + "'?";
@@ -149,8 +149,8 @@ function apiDeviceChangeVisibility(device_id, value_id) {
         value    = check_if_element_or_value(value_id,false);
         
 	if (!dataAll["DATA"]["devices"][device]) 	{ rm3msg.alert(lang("DEVICE_DONT_EXISTS",[device])); return; }
-	else if (device == "") 				{ rm3msg.alert(lang("INSERT_DEVICE_ID")); return; }
-	else if (value == "")   			{ rm3msg.alert(lang("SELECT_DEVICE_VISIBLITY")); return;	}
+	else if (device == "") 				{ rm3msg.alert(lang("DEVICE_INSERT_ID")); return; }
+	else if (value == "")   			{ rm3msg.alert(lang("DEVICE_SELECT_VISIBLITY")); return;	}
 
 	rm3app.requestAPI("PUT",["visibility",device,value], "", apiAlertReturn);
 	}
@@ -174,10 +174,10 @@ function apiDeviceAdd(data,onchange) {
         
 //	if (dataAll["DATA"]["devices"][send_data["id"]]){ rm3msg.alert("Device '" + device + "' already exists!"); return; }
 	if (dataAll["DATA"]["devices"][send_data["id"]]){ rm3msg.alert(lang("DEVICE_EXISTS",[send_data["id"]])); return; }
-	else if (send_data["id"] == "")			{ rm3msg.alert(lang("INSERT_DEVICE_ID")); return; }
-	else if (send_data["label"] == "")		{ rm3msg.alert(lang("INSERT_DEVICE_LABEL")); return; }
-	else if (send_data["api"] == "") 		{ rm3msg.alert(lang("SELECT_DEVICE_API")); return; }
-	else if (send_data["device"] == "") 		{ rm3msg.alert(lang("INSERT_DEVICE_NAME")); return;	}
+	else if (send_data["id"] == "")			{ rm3msg.alert(lang("DEVICE_INSERT_ID")); return; }
+	else if (send_data["label"] == "")		{ rm3msg.alert(lang("DEVICE_INSERT_LABEL")); return; }
+	else if (send_data["api"] == "") 		{ rm3msg.alert(lang("DEVICE_SELECT_API")); return; }
+	else if (send_data["device"] == "") 		{ rm3msg.alert(lang("DEVICE_INSERT_NAME")); return;	}
 
 	rm3app.requestAPI("PUT",["device",send_data["id"]], send_data, apiAlertReturn);
 	}
@@ -192,10 +192,9 @@ function apiDeviceDelete(device_id) {
 
 	if (device1.selectedIndex) 	{ var device  = device1.options[device1.selectedIndex].value;	}
 	else 				{ var device  = device1.value;	}
-	if (device == "")               { rm3msg.alert("Please select device!"); return; }
+	if (device == "")               { rm3msg.alert(lang("DEVICE_SELECT")); return; }
 
-	var question = "Do you realy want to delete device '" + device + "'?";
-	rm3msg.confirm(question,"apiDeviceDelete_exe('" + device + "');");
+	rm3msg.confirm(lang("DEVICE_ASK_DELETE",[device]),"apiDeviceDelete_exe('" + device + "');");
 	}
 
 //================================
@@ -251,16 +250,14 @@ function apiCommandDelete(device_id, button_id) {
 		}
 	else 					{ var device  = device_id; }
 
-	if (device == "") { rm3msg.alert("Please select device!"); return; }
+	if (device == "") { rm3msg.alert(lang("DEVICE_SELECT")); return; }
 
 	var button1 = document.getElementById(button_id);
 	var button  = button1.options[button1.selectedIndex].value;
-	if (button == "") { rm3msg.alert("Please select button (for command)!"); return; }
+	if (button == "") { rm3msg.alert(lang("BUTTON_SELECT")); return; }
 
 	button1  = button.split("_");
-	question = "Do you realy want to delete button '" + button1[1] + "' from '" + device + "'?";
-
-	rm3msg.confirm(question,"apiCommandDelete_exe('" + button + "'); ");
+	rm3msg.confirm(lang("BUTTON_ASK_DELETE",[button1[1],device]),"apiCommandDelete_exe('" + button + "'); ");
 	}
 
 
@@ -285,10 +282,10 @@ function apiButtonAdd(device_id, button_id) {
 	
         cmd = "rm3app.requestAPI('PUT',['button','"+device+"','"+button+"'], '', rm3msg.alertReturn );";
 
-	if (device == "") { rm3msg.alert("Please select device."); return; }
-	if (button == "") { rm3msg.alert("Please insert name for button."); return; }
-	if (i == 2)       { rm3msg.confirm("Record button &quot;"+button+"&quot; for device &quot;"+device+"&quot;: click OK and then press button within the next 5 seconds.",cmd); return; } 
-
+	if (device == "") { rm3msg.alert(lang("DEVICE_SELECT")); return; }
+	if (button == "") { rm3msg.alert(lang("BUTTON_INSERT_NAME")); return; }
+	if (i == 2)       { rm3msg.confirm(lang("BUTTON_RECORD",[button,device]),cmd); return; } 
+	
 	rm3app.requestAPI("PUT",["button",device,button], "", apiAlertReturn);
 	}
 
@@ -305,16 +302,13 @@ function apiButtonDelete(device_id, button_id) {
 		}
 	else 					{ var device  = device_id; }
 
-	if (device == "") { rm3msg.alert("Please select device!"); return; }
+	if (device == "") { rm3msg.alert(lang("DEVICE_SELECT")); return; }
 
 	var button1 = document.getElementById(button_id);
 	var button  = button1.options[button1.selectedIndex].value;
-	if (button == "") { rm3msg.alert("Please select button!"); return; }
+	if (button == "") { rm3msg.alert(lang("BUTTON_SELECT")); return; }
 
-	button1  = button.split("_");
-	question = "Do you realy want to delete button number [" + button + "] from '" + device + "'?";
-
-	rm3msg.confirm(question,"apiButtonDelete_exe('"+device+"'," + button + "); ");
+	rm3msg.confirm(lang("BUTTON_ASK_DELETE_NUMBER",[button,device]),"apiButtonDelete_exe('"+device+"'," + button + "); ");
 	}
 
 //================================
@@ -326,7 +320,7 @@ function apiButtonDelete(device_id, button_id) {
 
 function apiMakroSend( makro ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
 
-	rm3msg.wait_small("Please wait ...<br/>");
+	rm3msg.wait_small(lang("PLEASE_WAIT") + "<br/>");
 	console.log( "Send makro: " + makro );
 	
 	dc = [ "makro", makro ];
