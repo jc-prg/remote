@@ -139,11 +139,12 @@ function rmRemote(name) {
 	// create remote for a specific device
 	this.device_remote        = function (id="", device="") {
 	
-		var remote             = "";
+		var remote             = "<div id='remote_button' display='block'>";
 		var remote_displaysize = "middle";
 		var remote_label       = this.data["DATA"]["devices"][device]["label"];
 		var remote_definition  = this.data["DATA"]["devices"][device]["remote"];
 		var remote_buttons     = this.data["DATA"]["devices"][device]["button_list"];
+		var remote_display     = this.data["DATA"]["devices"][device]["display"];
 		
 		if (this.data["DATA"]["devices"][device]["display-size"]) { remote_displaysize = this.data["DATA"]["devices"][device]["display-size"]; }
 		
@@ -167,10 +168,33 @@ function rmRemote(name) {
 			else if (this.edit_mode)        		{ remote += this.button_device_add( cmd, button, "notfound", cmd, "" ); }
 			else                            		{ remote += this.button_device( cmd, button, "notfound", cmd, "disabled" ); }
 			}
+			
+		remote += "</div>";			
+		remote += this.device_remote_json(id,device,remote_definition,remote_display);
 
 		setTextById(id,remote);
 		}
 
+	this.device_remote_json	  = function (id,device,remote_definition,remote_display,reset="") {
+	
+		this.button_width = "120px";
+
+		var remote = "";
+		remote += "<div id='remote_json' style='display:none;'>";
+		remote += "<b>JSON Button Definition:</b><br/>";
+		remote += this.display_json( "remote_json_buttons", remote_definition, "buttons" );
+		remote += "<ul>";
+		remote += "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>";
+		remote += "<li>Add &quot;DISPLAY&quot; to add a display that show status information.</li>";
+		remote += "</ul>";
+		remote += "<br/><b>JSON Diplay Definition:</b><br/>";
+		remote += this.display_json( "remote_json_display", remote_display );
+		remote += "<center>" + 
+				this.button_edit(this.app_name+".device_remote('"+id+"','"+device+"');changeVisibility('remote_json');changeVisibility('remote_button');","reset") + "&nbsp;" + 
+				this.button_edit("apiDeviceJsonEdit('"+device+"','remote_json_buttons','remote_json_display');","save") + "</center>";
+		remote += "</div>";			
+		return remote;
+		}
 
 	// write description for device remote
 	this.device_description   = function (id, device) {
@@ -201,12 +225,9 @@ function rmRemote(name) {
 			var onclick = this.app_name + ".device_notused_showhide();";
 			remote += "<div id='show_hide_not_used' onclick='" + onclick + "'>+</div>";
 			}
+			
 		remote += "<div id='buttons_not_used' style='display:none;position:relative;top:-7px;'>";
-		
-		var text    = "not used in remote control"
-		remote += "<div class='remote-line'><hr/>";
-		remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>";
-		remote += "</div>";
+		remote += this.line("not used in remote control");
 
 		// create buttons not used
 		for (var i=0; i<notused.length; i++) {
@@ -251,14 +272,17 @@ function rmRemote(name) {
 		this.input_width      = "180px";
 		this.button_width     = "120px";
 
-		remote  += "Edit &quot;<b>"+this.data["DATA"]["devices"][device]["label"]+" - "+this.data["DATA"]["devices"][device]["description"]+"</b>&quot; ("+device+"):<br/>&nbsp;<br/>";
+		remote  += "<center><b>Edit &quot;"+this.data["DATA"]["devices"][device]["label"]+"&quot;</b> ["+device+"]</center>";
+		remote  += "<hr/>";
 		remote  += this.tab_row("start");
 
 		remote  += this.tab_row( "Description:", 	this.input("edit_description",	this.data["DATA"]["devices"][device]["description"]) );
 		remote  += this.tab_row( "Label:",       	this.input("edit_label",	this.data["DATA"]["devices"][device]["label"]) );
-		//remote  += this.tab_row( "Interface:",   	this.input("edit_interface",	this.data["DATA"]["devices"][device]["interface"]) );
-		remote  += this.tab_row( "Interface:",   	this.select("edit_interface", "interface", this.data["CONFIG"]["interfaces"], "", this.data["DATA"]["devices"][device]["interface"]) );
-		remote  += this.tab_row( "Status request:",	this.select("edit_method",    "method",    this.data["CONFIG"]["methods"],    "", this.data["DATA"]["devices"][device]["method"]) );
+//		remote  += this.tab_row( "Interface:",   	this.select("edit_interface", "interface", this.data["CONFIG"]["interfaces"], "", this.data["DATA"]["devices"][device]["interface"]) );
+//		remote  += this.tab_row( "Status request:",	this.select("edit_method",    "method",    this.data["CONFIG"]["methods"],    "", this.data["DATA"]["devices"][device]["method"]) );
+		remote  += this.tab_row( "Interface:",   	this.data["DATA"]["devices"][device]["interface"] + " (" + this.data["DATA"]["devices"][device]["method"] + ")" );
+		remote  += this.tab_row( "Config-Device:",   	this.data["DATA"]["devices"][device]["config_device"]+".json" );
+		remote  += this.tab_row( "Config-Remote:",   	this.data["DATA"]["devices"][device]["config_remote"]+".json" );
 		remote  += this.tab_row(
 				this.button_edit("apiDeviceEdit('"+device+"','edit','description,label,interface,method');","change data")
 				);
@@ -279,8 +303,10 @@ function rmRemote(name) {
 		else {	remote  += this.tab_row("This device can't be set as main AUDIO device, no audio volume control available.",false);
 			}
 
-		remote  += "<tr><td colspan='2'><hr/></td></tr>";
+		remote  += this.tab_line();
+		remote  += this.tab_row( "Edit JSON", this.button_edit("changeVisibility('remote_json');changeVisibility('remote_button');","Edit JSON") );
 
+		remote  += this.tab_line();
 		remote  += this.tab_row(
 				this.input("add_button"),
 				this.button_edit("apiButtonAdd('"+device+"','add_button');","add button")
@@ -290,30 +316,31 @@ function rmRemote(name) {
 				this.button_edit("apiButtonDelete('"+device+"','del_button');","delete button")
 				);
 
-		remote  += "<tr><td colspan='2'><hr/></td></tr>";
-
-		remote  += this.tab_row(		
-				this.command_select("rec_button",device),
-				this.button_edit("alert('Not implemented yet.');","record command","disabled")
+		remote  += this.tab_line();
+		if (this.data["DATA"]["devices"][device]["method"] == "record") {
+			remote  += this.tab_row(		
+				this.command_select_record("rec_button",device),
+				this.button_edit("apiButtonAdd('"+device+"','rec_button');","record command","disabled")
 				);
+			remote  += this.tab_row( "<small>Undefined buttons are colored blue. Click to record an IR command for those buttons.</small>", "&nbsp;");
+			}
+			
 		remote  += this.tab_row(
 				this.command_select("del_command",device),
 				this.button_edit("apiCommandDelete('"+device+"','del_command');","delete command")
 				);
 
-		remote  += "<tr><td colspan='2'><hr/></td></tr>";
-
+		remote  += this.tab_line();
 		remote  += this.tab_row(
 				this.template_select("change_visibility","visibility",{"yes":"visible","no":"hidden"}),
-				this.button_edit("apiDeviceChangeVisibility('"+device+"','change_visibility');","change visibility")
+				this.button_edit("apiDeviceChangeVisibility('"+device+"','change_visibility');","set visibility")
 				);
 		remote  += this.tab_row(
 				this.template_select("add_template","template",this.templates),
-				this.button_edit("apiTemplateAdd('"+device+"','add_template');","*clone template")
+				this.button_edit("apiTemplateAdd('"+device+"','add_template');","clone template")
 				);
 
-		remote  += "<tr><td colspan='2'><hr/></td></tr>";
-
+		remote  += this.tab_line();
 		remote  += this.tab_row(
 				this.input("del_device",device),
 				this.button_edit("apiDeviceDelete('del_device');","delete device")
@@ -321,7 +348,6 @@ function rmRemote(name) {
 
 		remote  += this.tab_row("end");
 		
-		remote  += "&nbsp;<br/>If a template is loaded, click a blue button to record an IR command for this button. Templates have to be edited / added in the JSON files at the moment."
 		
 /*
 		tooltip = new jcTooltip("tooltip");
@@ -353,18 +379,11 @@ function rmRemote(name) {
 			var button = remote_definition[i].split("_");
 			var cmd    = button[0] + "_" + button[1];
 
-			if (button[0] == "LINE") 				{ remote += "<div class='remote-line'><hr/></div>"; }
-			else if (button[0].indexOf("||") > 0) {
-				text = button[0].split("||")[1];
-				remote += "<div class='remote-line'><hr/>";
-				remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>";
-				remote += "</div>";
-				}
-			//else if (button[0] == "makro")  { remote += sendButtonMakro( cmd, makros[button[1]], button[1], "", "" ); }
+			if (button[0] == "LINE") 		{ remote += "<div class='remote-line'><hr/></div>"; }
+			else if (button[0].indexOf("||") > 0)	{ text = button[0].split("||")[1]; remote += line(text); }
 			else if (button[0] == ".") 		{ remote += this.button_device( scene+i, ".", "", "", "disabled" ); }
 			else if (button[0] == "makro")		{ remote += this.button_makro(  cmd, button[1], "", makros[button[1]], "" ); 
-								  this.active_buttons.push(cmd); 
-								  }
+								  this.active_buttons.push(cmd); }
 			else if (button[0] == "scene-on")	{ remote += this.button_makro(  "scene_on_"+button[1],  "on",  "", makros_sceneOn[button[1]], "" );
 								  this.active_buttons.push("scene_on_"+button[1]); }
 			else if (button[0] == "scene-off")	{ remote += this.button_makro(  "scene_off_"+button[1], "off", "", makros_sceneOff[button[1]], "" );
@@ -420,7 +439,7 @@ function rmRemote(name) {
 		}
 
 
-	// specific selects ...
+	// specific drop downs
 	//--------------------
 	
         this.command_select       = function (id,device="") {
@@ -432,6 +451,22 @@ function rmRemote(name) {
 				}
 			}
                 return this.select(id,"command",list);
+                }
+        
+        this.command_select_record = function (id,device="") {
+               	var list = {};
+		var device_buttons    = [];		
+                if (device != "" && device in this.data["DATA"]["devices"]) {
+                
+			button_list = this.data["DATA"]["devices"][device]["remote"];
+			button_list.sort();
+			for (var i=0;i<button_list.length;i++) {
+				if (button_list[i].includes("LINE") == false && button_list[i] != "." && button_list[i].includes("DISPLAY") == false) {
+	                                list[i] = button_list[i];
+	                                }
+				}
+			}
+                return this.select(id,"button",list);
                 }
         
         this.button_select        = function (id,device="") {
@@ -460,17 +495,13 @@ function rmRemote(name) {
                 return item;
                 }
                 
-	// create basic buttons & inputs
-	//--------------------
+	// create basic inputs
+	//--------------------------------
 
+	// input for text
         this.input                = function (id,value="")   { return "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"'>"; }
 
-        this.button_edit          = function (onclick,label,disabled="") {
-        	var style = "width:" + this.button_width + ";margin:1px;";
-        	if (disabled == "disabled") { style += "background-color:gray;"; }
-        	return "<button style=\""+style+"\" onClick=\""+onclick+"\" "+disabled+">"+label+"</button>";
-        	}
-//--------------------------------
+	// select for different data 
         this.select               = function (id,title,data,onchange="",selected_value="") {
                 var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
                 item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
@@ -484,6 +515,17 @@ function rmRemote(name) {
                 return item;
                 }
 
+        // write line with text ... 
+	this.line		= function (text="") {
+          	var remote = "";
+		remote += "<div class='remote-line'><hr/>";
+		if (text != "") { remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>"; }
+		remote += "</div>";
+		return remote;
+		}
+
+	// create display
+	//--------------------------------
         // show display with informations
         this.display              = function (id, device, style="" ) {
 
@@ -525,8 +567,40 @@ function rmRemote(name) {
 		rm3msg.confirm(text,"",300);
 		statusCheck(this.data);
         	}
+        	
+        // show json for buttons in text field
+        this.display_json	= function ( id, json, format="" ) {
+        	var text = "";
+        	text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:320px;height:200px;\">";
+        	if (format == "buttons") {
+	        	var x=0;
+	        	text += "[\n";
+        		for (var i=0;i<json.length;i++) {
+        			x++;
+        			text += "\""+json[i]+"\"";
+        			if (i+1 < json.length)						{ text += ", "; }
+        			if (Number.isInteger((x)/4))   					{ text += "\n"; x = 0; }
+        			if (json.length > i+1 && json[i+1].includes("LINE") && x > 0)	{ text += "\n"; x = 0; }
+        			if (json[i].includes("LINE"))					{ text += "\n"; x = 0; }
+        			}
+	        	text += "]";
+        		}
+        	else {
+        		json = JSON.stringify(json);
+        		json = json.replace( /,/g, ",\n" );
+        		json = json.replace( /{/g, "{\n" );
+        		json = json.replace( /}/g, "\n}" );
+        		text += json;
+        		}
+		text += "</textarea></center>";
+        	return text;
+        	}
           
-	// standard standard button with option to left and right click
+          
+	// create buttons & inputs
+	//--------------------
+
+	// standard button with option to left and right click
 	this.button               = function (id, label, style, script_apiCommandSend, disabled ){
 	
 	        var onContext  = "";
@@ -545,9 +619,13 @@ function rmRemote(name) {
 		//console.debug(button);
 		return button;
 		}
-		
-	// create buttons & inputs
-	//--------------------
+
+	// button edit mode		
+        this.button_edit          = function (onclick,label,disabled="") {
+        	var style = "width:" + this.button_width + ";margin:1px;";
+        	if (disabled == "disabled") { style += "background-color:gray;"; }
+        	return "<button style=\""+style+"\" onClick=\""+onclick+"\" "+disabled+">"+label+"</button>";
+        	}
 
 	// create button for single command
 	this.button_device        = function (id, label, style, cmd, disabled ) {
@@ -625,6 +703,12 @@ function rmRemote(name) {
         	return [label, style];
 		}
 
+	// return list of buttons for a device
+	this.button_list          = function (device) {
+		if (this.data["DATA"]["devices"][device]) 	{ return this.data["DATA"]["devices"][device]["button_list"]; }
+		else						{ return ["error:"+device]; }
+		}
+
 
 	// check status (channel button color or disable buttons)
 	//--------------------
@@ -641,12 +725,6 @@ function rmRemote(name) {
 		setTextById(id,comment);
 		}
 
-	// return list of buttons for a device
-	this.button_list          = function (device) {
-		if (this.data["DATA"]["devices"][device]) 	{ return this.data["DATA"]["devices"][device]["button_list"]; }
-		else						{ return ["error:"+device]; }
-		}
-
 	// handle messages for console
 	this.log                  = function (msg) {
 		console.log(this.app_name + ": " + msg);
@@ -655,7 +733,7 @@ function rmRemote(name) {
 	// ensure, that all elements are visible and settings are hidden
 	this.show                 = function (device="") {
 
-		statusCheck(this.data);		// ... check if part of class ...
+		statusCheck(this.data);			// ... check if part of class ...
 		setTextById("buttons_all","");		// ... move to showRemote() ...
 		showRemoteInBackground(0);		// ... check if part of this class ...
 		rm3settings.hide();			// ... check if part of another class ...
@@ -663,12 +741,17 @@ function rmRemote(name) {
 		}
 
         // write table tags
-	this.tab_row              = function (td1,td2="")  { 
+	this.tab_row            = function (td1,td2="")  { 
 		if (td1 == "start")	{ return "<table border=\"0\" width=\""+td2+"\">"; }
 		else if (td1 == "end")	{ return "</table>"; }
 		else if (td2 == false)	{ return "<tr><td valign=\"top\" colspan=\"2\">" + td1 + "</td></tr>"; }
 		else			{ return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
 		}
+
+	this.tab_line		= function(text="") {
+		return "<tr><td colspan='2'><hr/></td></tr>";
+		}
+
 	}
 
 

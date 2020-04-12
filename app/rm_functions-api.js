@@ -58,7 +58,8 @@ function apiCheckUpdates_msg( data ) {
 function apiAlertReturn(data) {
         rm3msg.alertReturn(data);
         
-        if (data["REQUEST"]["Command"] == "AddTemplate") { setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, 2000); }
+        if (data["REQUEST"]["Command"] == "AddTemplate")  { setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, 2000); }
+        if (data["REQUEST"]["Command"] == "DeleteDevice") { setTimeout(function(){ rm3cookie.set("remote",""); rm3remotes.create( "", "" ); }, 2000); }
 
 	remoteReload_load();
         }
@@ -78,8 +79,8 @@ function apiSetVolume(volume)			{ rm3app.requestAPI( "GET",  ["set",rm3slider.de
 function apiTemplateAdd_exe(device,template) { rm3app.requestAPI("PUT",["template",device,template], "", apiAlertReturn); }
 function apiTemplateAdd(device_id, template_id) {
 
-        device   = check_if_element_or_value(device_id);
-        template = check_if_element_or_value(template_id);
+        device   = check_if_element_or_value(device_id,false);
+        template = check_if_element_or_value(template_id,false);
         
 	if (!dataAll["DATA"]["devices"][device]) 	{ rm3msg.alert("Device '" + device + "' doesn't exists!"); return; }
 	else if (device == "")	 			{ rm3msg.alert("Please insert/select name for device (no space, no special cases)."); return; }
@@ -113,6 +114,24 @@ function apiDeviceEdit(device,prefix,fields) {
 	rm3app.requestAPI("POST",["device",device], info, apiAlertReturn);
 	}
 
+// edit button and display data using JSON
+//--------------------------------
+
+function apiDeviceJsonEdit(device,json_buttons,json_display) {
+
+        buttons   = check_if_element_or_value(json_buttons,false);
+        display   = check_if_element_or_value(json_display,false);
+
+	try { json_buttons = JSON.parse(buttons); } catch(e) { rm3msg.alert("<b>JSON Buttons - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+	try { json_display = JSON.parse(display); } catch(e) { rm3msg.alert("<b>JSON Display - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+	
+	var info = {};
+	info["remote"]  = json_buttons;
+	info["display"] = json_display;
+	
+	rm3app.requestAPI("POST",["device",device], info, apiAlertReturn);	
+	}
+
 //--------------------------------
 
 function apiDeviceMovePosition_exe(type,device,direction) { rm3app.requestAPI( "POST", ["move",type,device,direction], "", apiDeviceMovePosition); }
@@ -126,8 +145,8 @@ function apiDeviceMovePosition(data) {
 
 function apiDeviceChangeVisibility(device_id, value_id) {
 
-        device   = check_if_element_or_value(device_id);
-        value    = check_if_element_or_value(value_id);
+        device   = check_if_element_or_value(device_id,true);
+        value    = check_if_element_or_value(value_id,false);
         
 	if (!dataAll["DATA"]["devices"][device]) 	{ rm3msg.alert("Device '" + device + "' doesn't exists!"); return; }
 	else if (device == "") 				{ rm3msg.alert("Please insert/select name for device (no space, no special cases)."); return; }

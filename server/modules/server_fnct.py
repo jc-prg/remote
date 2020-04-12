@@ -75,25 +75,25 @@ def RmReadData(selected=[]):
                   # COMMAND/BUTTON : get button definitions, presets, queries ... from default.json
                   if not "ERROR" in buttons_default:
                     for x in btnfile:
-                      if x in buttons_default["data"]:
+                      if x in buttons_default["data"] and "data" in buttons:
                         if x not in buttons["data"]:
                           buttons["data"][x] = {}
                         for y in buttons_default["data"][x]:
                           buttons["data"][x][y] = buttons_default["data"][x][y]
                         
-                #print(buttons)
-	                        
-                if "method"   in buttons["data"]:   data_temp["method"]    = buttons["data"]["method"]              
-                if "values"   in buttons["data"]:   data_temp["values"]    = buttons["data"]["values"]              
-                if "commands" in buttons["data"]:   data_temp["commands"]  = buttons["data"]["commands"] 
-                if "url"      in buttons["data"]:   data_temp["url"]       = buttons["data"]["url"] 
+                #print(buttons)                
+                if "data" in buttons:
+                  if "method"   in buttons["data"]:   data_temp["method"]    = buttons["data"]["method"]              
+                  if "values"   in buttons["data"]:   data_temp["values"]    = buttons["data"]["values"]              
+                  if "commands" in buttons["data"]:   data_temp["commands"]  = buttons["data"]["commands"] 
+                  if "url"      in buttons["data"]:   data_temp["url"]       = buttons["data"]["url"] 
                 
-                if "queries"  in buttons["data"]:
+                  if "queries"  in buttons["data"]:
                     data_temp["queries"]         = buttons["data"]["queries"]
                     data_temp["query_list"]      = list(buttons["data"]["queries"].keys())                 
                 
-                data_temp["buttons"]             = buttons["data"]["buttons"]
-                data_temp["button_list"]         = list(buttons["data"]["buttons"].keys())
+                  data_temp["buttons"]             = buttons["data"]["buttons"]
+                  data_temp["button_list"]         = list(buttons["data"]["buttons"].keys())
                                 
                 # REMOTE : get remote layout & display # logging.info(device)
                 if "data" in remote:
@@ -468,7 +468,7 @@ def editDevice(device,info):
     
     keys_active   = ["label","description","main-audio","interface"]
     keys_commands = ["description","method"]
-    keys_remotes  = ["description"]
+    keys_remotes  = ["description","remote","display"]
     
     # read central config file
     active_json          = configFiles.read_status()
@@ -483,9 +483,10 @@ def editDevice(device,info):
     if "ERROR" in commands: return("ERROR: Device " + device + " doesn't exists (commands).")
 
     # read remote layout definitions
-    remotes              = configFiles.read(modules.remotes +device_remote)
-#    remotes              = configFiles.read(modules.remotes +interface+"/"+device_code)
+    remotes              = configFiles.read(modules.remotes + device_remote)
     if "ERROR" in remotes: return("ERROR: Device " + device + " doesn't exists (remotes).") 
+    
+######## open issue: set method depending on device ... 
     
     i = 0
     for key in keys_active:   
@@ -731,7 +732,7 @@ def devicesGetStatus(data,readAPI=False):
    
     for device in devices: 
     
-        if "status" in devices[device] and "method" in data[device]:
+        if "status" in devices[device] and device in data and "method" in data[device]:
           
           # get status values from config files
           for value in devices[device]["status"]:
