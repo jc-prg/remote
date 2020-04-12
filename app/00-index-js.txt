@@ -1,14 +1,12 @@
 ----------------------------
-./_sicher.js (26)
-----------------------------
-function statusCheck_dev_old(device)
-function loadRemote2(cmd,callback="")
-----------------------------
 ./app-config.js (105)
 ----------------------------
 function check_theme()
 ----------------------------
-./app-main.js (280)
+./app-language.js (-1)
+----------------------------
+----------------------------
+./app-main.js (284)
 ----------------------------
 function remoteInit (first_load=true)
 function remoteFirstLoad_load()
@@ -57,7 +55,7 @@ function rmStart(name)
 ./rm_config_stage.js (-1)
 ----------------------------
 ----------------------------
-./rm_functions-api.js (310)
+./rm_functions-api.js (338)
 ----------------------------
 function apiCheckUpdates()
 function apiCheckUpdates_msg( data )
@@ -68,9 +66,11 @@ function apiSetVolume(volume)
 function apiTemplateAdd_exe(device,template)
 function apiTemplateAdd(device_id, template_id)
 function apiDeviceEdit(device,prefix,fields)
-function apiDeviceMovePosition(type,device,direction)
+function apiDeviceJsonEdit(device,json_buttons,json_display)
+function apiDeviceMovePosition_exe(type,device,direction)
+function apiDeviceMovePosition(data)
 function apiDeviceChangeVisibility(device_id, value_id)
-function apiDeviceAdd(device, api, description)
+function apiDeviceAdd(data,onchange)
 function apiDeviceDelete_exe(device)
 function apiDeviceDelete(device_id)
 function apiCommandSend(cmdButton, sync="", callback="")
@@ -82,23 +82,24 @@ function apiButtonDelete(device_id, button_id)
 function apiMakroSend( makro )
 function apiMakroSend_hide( data )
 ----------------------------
-./rm_functions.js (99)
+./rm_functions.js (71)
 ----------------------------
-function sortDict(dict,sort_key)
 function showRemoteInBackground(show=false)
 function clickMenu ()
 function setNavTitle (title)
 function image(file)
 function writeKeyBoard ()
 ----------------------------
-./rm_remotes.js (670)
+./rm_remotes.js (769)
 ----------------------------
 function rmRemote(name)
 	this.init                 = function (data)
 	this.create               = function (type="",rm_id="")
 	this.device_remote        = function (id="", device="")
+	this.device_remote_json	  = function (id,device,remote_definition,remote_display,reset="")
 	this.device_description   = function (id, device)
 	this.device_notused       = function (id, device)
+	this.device_notused_showhide = function ()
 	this.device_edit          = function (id, device)
 	this.scene_remote         = function (id="", scene="")
 	this.scene_edit           = function (id, device)
@@ -106,42 +107,49 @@ function rmRemote(name)
 		channels     = channels.sort(function (a, b)
 	this.remoteToggleEditMode = function ()
         this.command_select       = function (id,device="")
+        this.command_select_record = function (id,device="")
         this.button_select        = function (id,device="")
         this.template_select      = function (id,title,data,onchange="")
         this.input                = function (id,value="")
-        this.button_edit          = function (onclick,label,disabled="")
         this.select               = function (id,title,data,onchange="",selected_value="")
+	this.line		= function (text="")
         this.display              = function (id, device, style="" )
         this.display_alert        = function (id, device, style="" )
+        this.display_json	= function ( id, json, format="" )
 	this.button               = function (id, label, style, script_apiCommandSend, disabled )
+        this.button_edit          = function (onclick,label,disabled="")
 	this.button_device        = function (id, label, style, cmd, disabled )
 	this.button_device_add    = function (id, label, style, cmd, disabled )
 	this.button_makro         = function (id, label, style, makro, disabled )
 	this.button_channel       = function (id, label, makro, style, disabled="")
 	this.button_image         = function (label,style)
+	this.button_list          = function (device)
 	this.statusCheck_buttons = function ()
 	this.statusCheck_devices = function ()
 	this.statusCheck_scenes  = function ()
 	this.empty                = function (id,comment="")
-	this.button_list          = function (device)
 	this.log                  = function (msg)
 	this.show                 = function (device="")
-	this.tab_row              = function (td1,td2="")
+	this.tab_row            = function (td1,td2="")
+	this.tab_line		= function(text="")
 function writeMakroButton ()
 ----------------------------
-./rm_settings.js (320)
+./rm_settings.js (407)
 ----------------------------
 function rmSettings (name)
 	this.init               = function (data)
 	this.create             = function ()
 	this.create_setting     = function ()
 	this.create_edit        = function ()
+	this.create_edit_FileNames 	= function ()
 	this.write              = function (nr,label,text)
+	this.is_filled		= function (nr)
 	this.show               = function ()
 	this.hide               = function ()
 	this.onoff              = function ()
 	this.device_list        = function (id,onchange="")
 	this.interface_list     = function ()
+	this.interface_list_update = function ()
 	this.button_list        = function (id,filter="")
 	this.button_list_change = function (id_filter, id_list, id_list_container)
 	this.device_list_status = function (id_filter, id_list_container)
@@ -151,7 +159,7 @@ function rmSettings (name)
 	this.button             = function (onclick,label)
 	this.button_small       = function (onclick,label)
 	this.tab_row            = function (td1,td2)
-	this.input              = function (id)
+	this.input              = function (id,onclick="")
 	this.select             = function (id,title,data,onchange="")
 	this.remoteToggleEditMode = function ()
 ----------------------------
@@ -170,19 +178,21 @@ function statusCheck(data={})
  USAGE ...
 ----------------------------
   4 - apiAlertReturn
-  3 - apiButtonAdd
+  4 - apiButtonAdd
   2 - apiButtonDelete
   2 - apiButtonDelete_exe
   2 - apiCheckUpdates
   1 - apiCheckUpdates_msg
   2 - apiCommandDelete
   2 - apiCommandDelete_exe
-  2 - apiDeviceAdd
+  3 - apiDeviceAdd
   2 - apiDeviceChangeVisibility
   2 - apiDeviceDelete
   2 - apiDeviceDelete_exe
   2 - apiDeviceEdit
-  5 - apiDeviceMovePosition
+  2 - apiDeviceJsonEdit
+  1 - apiDeviceMovePosition
+  5 - apiDeviceMovePosition_exe
   3 - apiMakroSend
   2 - apiMakroSend_hide
   1 - apiSetVolume
@@ -212,10 +222,8 @@ function statusCheck(data={})
   2 - setMainAudio
   9 - setNavTitle
   4 - setVolume
-  7 - sortDict
   5 - statusButtonActiveInactive
  27 - statusButtonSetColor
-  1 - statusCheck_dev_old
   3 - statusCheck_inactive
   1 - statusCheck_load
  12 - statusShowApiStatus

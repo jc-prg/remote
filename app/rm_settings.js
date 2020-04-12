@@ -10,12 +10,15 @@ function rmSettings (name)
 	this.create             = function ()
 	this.create_setting     = function ()
 	this.create_edit        = function ()
+	this.create_edit_FileNames 	= function ()
 	this.write              = function (nr,label,text)
+	this.is_filled		= function (nr)
 	this.show               = function ()
 	this.hide               = function ()
 	this.onoff              = function ()
 	this.device_list        = function (id,onchange="")
 	this.interface_list     = function ()
+	this.interface_list_update = function ()
 	this.button_list        = function (id,filter="")
 	this.button_list_change = function (id_filter, id_list, id_list_container)
 	this.device_list_status = function (id_filter, id_list_container)
@@ -25,7 +28,7 @@ function rmSettings (name)
 	this.button             = function (onclick,label)
 	this.button_small       = function (onclick,label)
 	this.tab_row            = function (td1,td2)
-	this.input              = function (id)
+	this.input              = function (id,onclick="")
 	this.select             = function (id,title,data,onchange="")
 	this.remoteToggleEditMode = function ()
 */
@@ -161,7 +164,16 @@ function rmSettings (name) {	// IN PROGRESS
 		setting += this.tab_row(	this.button("apiDeviceAdd(['add_device_id','add_device_descr','add_device_api','add_device','add_device_device','add_device_remote'],"+onchange2+");","Add Device"), "" );
 //		setting += this.tab_row(	this.button("apiDeviceAdd(['add_device_id','add_device_descr','add_device_api','add_device','add_device_device','add_device_remote']);","Add Device"), "" );
 
-		this.write(0,"Add Remote Control (Device)",setting);					
+		setting += "<tr><td colspan='2'><center><hr/><b>"+lang("REMOTE_ADD")+" (Scene)</b><hr/></center></td></tr>";
+	
+		setting += this.tab_row( 	"ID:",  	this.input("add_device_id") );
+		setting += this.tab_row( 	"Label:", 	this.input("add_device_descr") );
+		setting += this.tab_row( 	"Description:", this.input("add_device",onchange) );
+		setting += "<tr><td colspan='2'><hr/></td></tr>";
+		setting += this.tab_row( 	"Scene-Config:",	this.input("add_device_remote")+".json" );
+		setting += this.tab_row(	this.button("apiDeviceAdd(['add_device_id','add_device_descr','add_device_api','add_device','add_device_device','add_device_remote'],"+onchange2+");","Add Scene","disabled"), "" );
+
+		this.write(0,lang("REMOTE_ADD")+" (Device)",setting);					
 			
 		setting = "";	
 		var order  = sortDict(this.data["DATA"]["devices"],"position");
@@ -363,8 +375,17 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	//------------------------------
-	this.button             = function (onclick,label) { onclick = onclick.replace(/#/g,"'"); return "<button style=\"width:" + this.input_width + ";margin:1px;\" onClick=\"javascript:"+onclick+"\">"+label+"</button>"; }
-	this.button_small       = function (onclick,label) { onclick = onclick.replace(/#/g,"'"); return "<button style=\"width:" + this.input_width + ";margin:1px;width:60px;\" onClick=\"javascript:"+onclick+"\">"+label+"</button>"; }
+	this.button             = function (onclick,label,disabled="")	{ 
+		onclick = onclick.replace(/#/g,"'"); 
+        	if (disabled == "disabled") { style = "background-color:gray;"; } else { style = ""; }
+		return "<button style=\"" + style + "width:"+ this.input_width + ";margin:1px;\" onClick=\"javascript:"+onclick+"\" "+disabled+">"+label+"</button>"; 
+		}
+		
+	this.button_small       = function (onclick,label,disabled="")	{ 
+		onclick = onclick.replace(/#/g,"'"); 
+        	if (disabled == "disabled") { style = "background-color:gray;"; } else { style = ""; }
+        	return "<button style=\"" + style + "width:"+ this.input_width + ";margin:1px;width:60px;\" onClick=\"javascript:"+onclick+"\"  "+disabled+">"+label+"</button>";
+		}
 	
 	this.tab_row            = function (td1,td2) 	{ return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
 	this.input              = function (id,onclick="") { 

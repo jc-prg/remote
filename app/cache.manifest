@@ -1,11 +1,11 @@
 CACHE MANIFEST
-# 2020-03-31 Version not found
+# 2020-04-12 Version not found
 
 CACHE:
 ./app-menu.js
 ./rm_volume.css
 ./index.html
-./_sicher.js
+./app-language.js
 ./rm_config_stage.js
 ./rm_settings.js
 ./rm_status.js

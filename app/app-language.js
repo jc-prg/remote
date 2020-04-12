@@ -9,13 +9,15 @@
 var LANG     = "EN";
 var language = {
 	"DE" : {
-		"FORMAT_INCORRECT" : "Format nicht korrekt",
 		},
 	"EN" : {
+		"AUDIO_IS_MAIN"			: "This device is defined as main AUDIO device.",
+		"AUDIO_SET_AS_MAIN"		: "Set as main AUDIO device (change from &quot;{0}&quot;).",
+		"AUDIO_N/A_AS_MAIN"		: "This device can't be set as main AUDIO device, no audio volume control available.",
 		"BUTTON_ASK_DELETE"		: "Do you really want to delete the button '{0}' from '{1}'?",
 		"BUTTON_ASK_DELETE_NUMBER"	: "Do you really want to delete the button number [{0}] from '{1}'?",
 		"BUTTON_INSERT_NAME"		: "Please insert name for button.",
-		"BUTTON_RECORD"			: "Record button &quot;{0}&quot; for device &quot;{1}&quot;: click OK and then press button within the next 5 seconds."
+		"BUTTON_RECORD"			: "Record button &quot;{0}&quot; for device &quot;{1}&quot;: click OK and then press button within the next 5 seconds.",
 		"BUTTON_SELECT"			: "Please select button.",
 		
 		"DEVICE_ASK_DELETE"		: "Do you really want to delete device '{0}'?",
@@ -27,11 +29,32 @@ var language = {
 		"DEVICE_SELECT"			: "Please select device.",
 		"DEVICE_SELECT_API"		: "Please select API for device.",
 		"DEVICE_SELECT_TEMPLATE"	: "Please select template to create remote for device.",
-		"DEVICE_SELECT_VISIBLITY"	: "Please select if device should be visible or hidden.",
+		"DEVICE_SELECT_VISIBLITY"	: "Please select if device should be visible or hidden.",		
 
 		"FORMAT_INCORRECT"		: "format is not correct",
 		
+		"MANUAL_CHANNEL"		: "<ul>" +
+						  "<li>Fill dict for channel definition using the JSON format: " +
+						  "<i>&quot;Channel Name&quot; : [ &quot;button&quot;, &quot;button&quot;, &quot;makro&quot;]</i></li>" +
+						  "</ul>",
+		"MANUAL_DISPLAY"		: "<ul>" +
+						  "<li>Fill dict for display definition using the JSON format: <i>&quot;Label&quot; : &quot;field_from_device&quot;</i>.</li>" +
+						  "</ul>",
+		"MANUAL_REMOTE"			: "<ul>" +
+						  "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
+						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
+						  "<li>Add &quot;DISPLAY&quot; to add a display that show status information (details defined below).</li>" +
+						  "</ul>",
+		
+		"MODE_EDIT"			: "Edit Mode",
+		"MODE_INTELLIGENT"		: "Intelligent Mode",
+		"MODE_MANUAL"			: "Manual Mode",
+
 		"PLEASE_WAIT"			: "Please wait ... .",
+		
+		"REMOTE_ADD"			: "Add Remote Control",
+		
+		"SETTINGS"			: "Settings",
 
 		}
 	}
