@@ -594,13 +594,13 @@ def RemoteDeleteButton(device,button_number):
 
 #-------------------------------------------------
 
-def RemoteChangeVisibility(device,value):
+def RemoteChangeVisibility(type,device,value):
         '''
         change visibility of device in config file
         '''
 
         data                         = remoteAPI_start()
-        data["REQUEST"]["Return"]    = changeVisibility(device,value)
+        data["REQUEST"]["Return"]    = changeVisibility(type,device,value)
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Parameter"] = value
         data["REQUEST"]["Command"]   = "ChangeVisibility"

@@ -466,7 +466,7 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
                 
-  /visibility/{device}/{value}/:
+  /visibility/{type}/{device}/{value}/:
     put:
       operationId: modules.server_cmd.RemoteChangeVisibility
       tags:
@@ -474,6 +474,10 @@ paths:
       summary: add template to device
       description: add template to device
       parameters:
+        - name: type
+          in: path
+          type: string
+          required: true
         - name: device
           in: path
           type: string

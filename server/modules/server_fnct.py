@@ -396,23 +396,42 @@ def addTemplate(device,template):
 
 #---------------------------------------
 
-def changeVisibility(device,visibility):
+def changeVisibility(type,device,visibility):
     '''
     change visibility in device configuration (yes/no)
     '''
 
-    data = configFiles.read_status()
-    
-    if device not in data.keys():
-        return "Device '" + device + "' does not exists."
+    if type == "remote":
+
+      data = configFiles.read_status()
+      if device not in data.keys():
+        return "Remote control '" + device + "' does not exists."
         
-    elif visibility == "yes" or visibility == "no":
+      elif visibility == "yes" or visibility == "no":
         data[device]["visible"] = visibility
         configFiles.write_status(data,"changeVisibility")
         return "OK: Change visibility for '" + device + "': " + visibility
         
-    else:
+      else:
         return "ERROR: Visibility value '" + visibility + "' does not exists."
+        
+
+    elif type == "scene":
+    
+      data = configFiles.read(modules.active_scenes)
+      if device not in data.keys():
+        return "Scene '" + device + "' does not exists."
+    
+      elif visibility == "yes" or visibility == "no":
+        data[device]["visible"] = visibility
+        configFiles.write(modules.active_scenes,data)
+        return "OK: Change visibility for '" + device + "': " + visibility
+        
+      else:
+        return "ERROR: Visibility value '" + visibility + "' does not exists."
+        
+    else:
+      return "ERROR: changeVisibility - Type doesn't exist ("+type+")."
 
 
 #---------------------------------------
