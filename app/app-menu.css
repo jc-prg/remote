@@ -21,47 +21,48 @@ nav {
 /* LOGO */
 
 nav-logo {
-  position: fixed;
-  top: 5px;
-  right: 10px;
-  display: block;
-  z-index: 100;
-  border: solid 1px;
+  position	: fixed;
+  top		: 5px;
+  right		: 10px;
+  display	: block;
+  z-index	: 100;
+  border	: solid 1px;
 }
 
 /* title */
 
 nav-title {
-  cursor : pointer;
-  color : #999999;
-  font-face : helvetica;
-  font-size : 14px;
-  position: absolute;
-  top: 11px;
-  left : 45px;
-  display: block;
-  z-index: 99;
-  width: 150px;
+  cursor 	: pointer;
+  color 	: #999999;
+  font-face 	: helvetica;
+  font-size 	: 14px;
+  position	: absolute;
+  top		: 11px;
+  left 		: 45px;
+  display	: block;
+  z-index	: 99;
+  width		: 150px;
 }
 
 nav-info {
-  position: fixed;
-  top: 10px;
-  right: 50px;
-  display: block;
-  z-index: 80;
-  color: #333333;
-  border: solid 0px;
-  font-weight: bold; 
-  font-size:   12px;
-  font-family: sans-serif;
+  position	: fixed;
+  top		: 10px;
+  right		: 50px;
+  display	: block;
+  z-index	: 80;
+  color		: #333333;
+  border	: solid 0px;
+  font-weight	: bold; 
+  font-size	: 12px;
+  font-family	: sans-serif;
 }
 
 .remote_nav {
-   float   :  left;
-   display :  none;
-   width   : 155px;
-   height  : 100vh;
+   float   	:  left;
+   display 	:  none;
+   width   	: 155px;
+   height  	: 2000px;
+   padding 	: 0px;
 }
 
 @media (min-width: 800px) {
@@ -74,101 +75,91 @@ nav-info {
 /* -------------------------------------------- */
 
 nav ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  cursor: pointer;
-  z-index: 90;
+  list-style	: none;
+  margin	: 0;
+  padding	: 0;
+  cursor	: pointer;
+  z-index	: 90;
 }
 
 /* Menüpunkte im Balken */
 
 nav > ul {
-  float: left;
-  overflow: hidden;
-  padding: 5px;
-  text-decoration: none;
+  float			: left;
+  overflow		: hidden;
+  padding		: 5px;
+  text-decoration	: none;
 }
 
 nav > ul a {
-  display: block;
-  white-space: nowrap;
-  padding: 3px;
-  text-decoration: none;
+  display		: block;
+  white-space		: nowrap;
+  padding		: 3px;
+  text-decoration	: none;
 }
 
 /* Erste Unterebene, ausklappbar */
 /* UL => Hintergrund; LI => Eintrag */
 
 nav > ul > li {
-   float: left;
+   float		: left;
 }
 
 nav > ul > li > ul > li > hr {
-   width : 90%;
+   width 		: 90%;
 }
 
 nav > ul > li > ul {
-  display    : block;
-  visibility : hidden;
-  position   : absolute;
-  left       : 5px;
-  top        : 38px;
-  background : #ddddee;
-  border-radius: 5px;
-  box-shadow : 3px 3px 3px rgba(0, 0, 0, 0.25);
-  min-width  : 150px;
-
-  overflow-x:hidden;
-  overflow-y:auto;
+  display    		: block;
+  visibility 		: hidden;
+  position   		: absolute;
+  left       		: 5px;
+  top        		: 42px;
+  background 		: #ddddee;
+  border-radius		: 5px;
+  box-shadow 		: 3px 3px 3px rgba(0, 0, 0, 0.25);
+  width  		: 150px;
+  overflow-x		: hidden;
+  overflow-y		: auto;
   }
 
 
-@media (min-width: 800px) {
-   nav > ul > li > ul {
-      visibility : visible;
-      width      : 100px;
-      top        : 50px;
-      left       : 10px;
-   }
-}
-
 nav > ul > li > ul > li {
-  position: relative;
+  position		: relative;
 }
 
 nav ul > li > ul > li a {
-   color: black;
-   padding: 8px 12px;
-   text-decoration: none;
-   display: block;
+   color		: black;
+   padding		: 8px 12px;
+   text-decoration	: none;
+   display		: block;
 }
 
 /* Tiefere Ebenen als aktuell relevant */
 
 nav > ul > li > ul > li > ul {
-  display: none;
+  display		: none;
 }
 
 nav > ul > li > ul > li:hover > ul {
-  display: block;
+  display		: block;
 }
 
 nav > ul > li > ul > li:hover > ul {
-  display: block;
-  position: absolute;
-  left: 100%;
-  top: 0;
+  display		: block;
+  position		: absolute;
+  left			: 100%;
+  top			: 0;
 }
 
 /* Element zum Aufklappen kennzeichnen */
 
 nav li > a:after {
-  content: " +";
+  content		: " +";
 }
 
 nav li > a:only-child:after {
-  content: "";
+  content		: "";
 }
 
 /* -------------------------------------------- */
@@ -176,22 +167,22 @@ nav li > a:only-child:after {
 /* -------------------------------------------- */
 
 nav-b {
-  position: fixed;
-  left: 0px;
-  top: 10px;
-  width: 0px;
+  position		: fixed;
+  left			: 0px;
+  top			: 10px;
+  width			: 0px;
   
-  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.25);
-  background: #111111;
-  padding: 0px;
-  z-index: 85;
-  text-decoration: none;
+  box-shadow		: 3px 3px 3px rgba(0, 0, 0, 0.25);
+  background		: #111111;
+  padding		: 0px;
+  z-index		: 85;
+  text-decoration	: none;
   
-  display: block;
-  font-family: sans-serif;
-  font-size: 14px;
+  display		: block;
+  font-family		: sans-serif;
+  font-size		: 14px;
 
-  border-top: 1px solid darkgray;
+  border-top		: 1px solid darkgray;
 }
 
 /* übergeordnete Formatierung DropDown-Menü */
@@ -208,71 +199,70 @@ nav-b ul {
 /* Menüpunkte im Balken */
 
 nav-b > ul {
-  float: left;
-  overflow: hidden;
-  padding: 5px;
-  text-decoration: none;
+  float			: left;
+  overflow		: hidden;
+  padding		: 5px;
+  text-decoration	: none;
 }
 
 nav-b > ul a {
-  display: block;
-  white-space: nowrap;
-  padding: 3px;
-  text-decoration: none;
+  display		: block;
+  white-space		: nowrap;
+  padding		: 3px;
+  text-decoration	: none;
 }
 
 /* Erste Unterebene, ausklappbar */
 /* UL => Hintergrund; LI => Eintrag */
 
 nav-b > ul > li {
-   float: left;
+   float		: left;
 }
 
 nav-b > ul > li > ul > li > hr {
-   width : 90%;
+   width 		: 90%;
 }
 
 nav-b > ul > li > ul {
-  display    : block;
-//  visibility : hidden;
-  position   : absolute;
-  left       : 5px;
-  top        : 38px;
-  background : #ddddee;
-  border-radius: 5px;
-  box-shadow : 3px 3px 3px rgba(0, 0, 0, 0.25);
-  min-width  : 150px;
+  display   		: block;
+  position   		: absolute;
+  left       		: 5px;
+  top        		: 40px;
+  background 		: #ddddee; 
+  border-radius		: 5px;
+  box-shadow 		: 3px 3px 3px rgba(0, 0, 0, 0.25);
+  width  		: 150px;
 
-  overflow-x:hidden;
-  overflow-y:auto;
+  overflow-x		: hidden;
+  overflow-y		: auto;
 }
 
 nav-b > ul > li > ul > li {
-  position: relative;
+  position		: relative;
 }
 
 nav-b ul > li > ul > li a {
-   color: black;
-   padding: 8px 12px;
-   text-decoration: none;
-   display: block;
+   color		: black;
+   padding		: 8px 12px;
+   text-decoration	: none;
+   display		: block;
 }
 
 /* Element zum Aufklappen kennzeichnen */
 
 nav-b li > a:after {
-  content: " +";
+  content		: " +";
 }
 
 nav-b li > a:only-child:after {
-  content: "";
+  content		: "";
 }
 
 /*-----------------------------*/
 
 .hidden_entry_edit {
-  color     : blue;
-  font-style: italic;
+  color     		: blue;
+  font-style		: italic;
 }
 
 
