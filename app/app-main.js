@@ -206,7 +206,7 @@ function remoteDropDown(data) {
 	// load drop down menu
 	rm3menu.init(        data );	// load data to class
 	rm3menu.add_scenes(  data["DATA"]["scenes"] );
-	rm3menu.add_devices( data["DATA"]["devices"] );
+	rm3menu.add_devices( data["DATA"]["devices"] );	
 	rm3menu.add_script( "rm3settings.onoff();rm3settings.mode='';", 	lang("SETTINGS") );
 	rm3menu.add_script( "remoteToggleEditMode();", 				lang("MODE_EDIT") + edit_on );
 	rm3menu.add_script( "rm3settings.button_deact(true);remoteInit();",	deact_link);        

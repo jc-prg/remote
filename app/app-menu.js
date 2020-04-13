@@ -51,11 +51,20 @@ function rmMenu(name, menu) {
                 	this.log("Initialized new class 'rmMenu'.");
                 	this.inital_load = false;
                 	}
-                else {
-                	this.log("Reload data 'rmMenu'.");
+                else {	this.log("Reload data 'rmMenu'.");
                 	}
                 
     		this.writeMenu("");
+    		
+    		// define variable menu size (scroll bars defined in app-menu.css)
+    		window.onresize = function(event) {
+    			height = (window.innerHeight - 70);
+    			document.getElementById("menuItems").style.maxHeight  = height + "px"; 
+    			document.getElementById("menuItems2").style.maxHeight = height + "px"; 		
+			};
+		height = (window.innerHeight - 70);
+		document.getElementById("menuItems").style.maxHeight  = height + "px"; 
+		document.getElementById("menuItems2").style.maxHeight = height + "px"; 		
                 }
 
 
@@ -66,8 +75,7 @@ function rmMenu(name, menu) {
     		if (!data) { return; }
 
 		// set vars
-    		var menu = this.readMenu();
-
+    		var menu   = this.readMenu();
 		var order  = sortDict(data,"position");
     		var i      = 0;
 		for (var j=0;j<order.length;j++) {
@@ -92,13 +100,15 @@ function rmMenu(name, menu) {
 
 		// return if no data
     		if (data) {} else { return; }
-    		var menu = this.readMenu();
     		
+    		var menu   = this.readMenu();
 		var order  = sortDict(data,"position");
-  		for (var key in order) {
-			scene = order[key];
+		for (var j=0;j<order.length;j++) {
+			scene = order[j];
 			if (data[scene]["label"]) {
-				menu  += this.entry_scene( scene, data[scene]["label"] );
+//				menu  += this.entry_scene( scene, data[scene]["label"] );			
+			        if (data[scene]["visible"] != "no")  { menu  += this.entry_scene( scene, data[scene]["label"] ); }
+			        else if (this.edit_mode)             { menu  += this.entry_scene( scene, "<div class=#hidden_entry_edit#>.(" + data[scene]["label"] + ").</div>" ); }
 				}
         		}
     		this.writeMenu(menu + "<li><hr/></li>");
