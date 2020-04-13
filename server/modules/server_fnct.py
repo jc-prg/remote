@@ -220,6 +220,8 @@ def addScene(scene,info):
     return ("OK: Scene " + scene + " added.")
 
 
+#---------------------------------------
+
 def editScene(scene,info):
     '''
     edit scene data in json file
@@ -264,6 +266,28 @@ def editScene(scene,info):
     if i > 0: return("OK: Edited device parameters of "+scene+" ("+str(i)+" changes)")
     else:     return("ERROR: no data key matched with keys from config-files ("+str(info.keys)+")")
 
+
+#---------------------------------------
+
+def deleteScene(scene):
+    '''
+    delete scene from json config file and scene device related files
+    '''
+    
+    active_json          = configFiles.read(modules.active_scenes)
+    if "ERROR" in active_json:                                     return("ERROR: Could not read ACTIVE_JSON (active).")
+    if not scene in active_json:                                   return("ERROR: Scene " + scene + " doesn't exists (active).")
+    if not modules.ifexist(modules.remotes  + "scene_" + scene):   return("ERROR: Scene " + scene + " doesn't exists (remotes).") 
+
+    del active_json[scene]        
+    configFiles.write(modules.active_scenes, active_json)
+
+    try:    
+      modules.delete(modules.remotes + "scene_" + scene)
+      if not modules.ifexist(modules.remotes + "scene_" + scene):  return "OK: Scene '" + scene + "' deleted."
+      else:                                                        return "ERROR: Could not delete scene '" + scene + "'"
+    except Exception as e:                                         return "ERROR: Could not delete scene '" + scene + "': " + str(e)
+    
 
 #---------------------------
 # EDIT DEVICE REMOTES
@@ -357,18 +381,15 @@ def deleteDevice(device):
     '''
     
     devices              = {}
-    active_json          = configFiles.read_status()
-    
-    if device not in active_json: return "ERROR: Could not delete, device not available ("+device+")"
-    
+    active_json          = configFiles.read_status()   
     interface            = active_json[device]["interface"]
     device_code          = active_json[device]["config_device"]  
     device_remote        = active_json[device]["config_remote"]  
     
+    if "ERROR" in active_json:                                                return("ERROR: Could not read ACTIVE_JSON (active).")
     if not device in active_json:                                             return("ERROR: Device " + device + " doesn't exists (active).")
     if not modules.ifexist(modules.commands +interface+"/"+device_code):      return("ERROR: Device " + device + " doesn't exists (commands).")
-    if not modules.ifexist(modules.remotes  +device_remote):    return("ERROR: Device " + device + " doesn't exists (remotes).") 
-#    if not modules.ifexist(modules.remotes  +interface+"/"+device_code):    return("ERROR: Device " + device + " doesn't exists (remotes).") 
+    if not modules.ifexist(modules.remotes  +device_remote):                  return("ERROR: Device " + device + " doesn't exists (remotes).") 
 
     interface = active_json[device]["interface"]  ############# funtioniert nicht so richtig ...
     for entry in active_json:
@@ -379,11 +400,9 @@ def deleteDevice(device):
     configFiles.write_status(active_json,"deleteDevice")
 
     try:    
-#      modules.delete(modules.remotes  + interface + "/" + device_code)
       modules.delete(modules.remotes  + device_remote)
       modules.delete(modules.commands + interface + "/" + device_code)
       
-#      if not modules.ifexist(modules.commands + interface + "/" + device_code) and not modules.ifexist(modules.remotes + interface + "/" + device_code):
       if not modules.ifexist(modules.commands + interface + "/" + device_code) and not modules.ifexist(modules.remotes + device_remote):
         return "OK: Device '" + device + "' deleted."
       else:

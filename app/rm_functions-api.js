@@ -66,6 +66,7 @@ function apiAlertReturn(data) {
 	if (data["REQUEST"]["Command"] == "ChangeVisibility" )	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, 2000); }
 	
         if (data["REQUEST"]["Command"] == "DeleteDevice") 	{ setTimeout(function(){ rm3cookie.set("remote",""); rm3remotes.create( "", "" ); }, 2000); }
+        if (data["REQUEST"]["Command"] == "DeleteScene") 	{ setTimeout(function(){ rm3cookie.set("remote",""); rm3remotes.create( "", "" ); }, 2000); }
 
 	remoteReload_load();
         }
@@ -157,6 +158,17 @@ function apiSceneJsonEdit(device,json_buttons,json_channel) {
 	rm3app.requestAPI("POST",["scene",device], info, apiAlertReturn);	
 	}
 
+// delete scene
+//--------------------------------
+
+function apiSceneDelete_exe(device) { rm3app.requestAPI("DELETE",["scene",device], "", apiAlertReturn); remoteInit(); }      
+function apiSceneDelete(scene_id) {
+
+	var scene = check_if_element_or_value(scene_id,true);
+	if (scene == "") { rm3msg.alert(lang("SCENE_SELECT")); return; }
+
+	rm3msg.confirm(lang("SCENE_ASK_DELETE",[scene]),"apiSceneDelete_exe('" + scene + "');");
+	}
 
 
 //================================

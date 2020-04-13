@@ -60,9 +60,11 @@ var language = {
 		
 		"REMOTE_ADD"			: "Add Remote Control",
 		
+		"SCENE_ASK_DELETE"		: "Do you really want to delete scene '{0}'?",
 		"SCENE_EXISTS"			: "Scene '{0}' already exists!",
 		"SCENE_INSERT_ID"		: "Please insert ID for scene (no special characters).",
 		"SCENE_INSERT_LABEL"		: "Please insert label for scene.",
+		"DEVICE_SELECT"			: "Please select scene.",
 
 		"SETTINGS"			: "Settings",
 

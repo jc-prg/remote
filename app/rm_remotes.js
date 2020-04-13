@@ -448,7 +448,7 @@ function rmRemote(name) {
 				"<input id='scene_visibility' value='"+this.data["DATA"]["scenes"][scene]["visible"]+"' style='display:none;'>"+
 				this.button_edit("apiRemoteChangeVisibility('scene','"+scene+"','scene_visibility');","show / hide") + "&nbsp;" +
 				this.button_edit("changeVisibility('scene_json');changeVisibility('scene_button');","edit JSON") + "&nbsp;" +
-				this.button_edit("apiDeviceDelete('"+device+"');","delete scene","disabled")
+				this.button_edit("apiSceneDelete('"+scene+"');","delete scene","")
 				);
 
 	        this.button_width = "120px";

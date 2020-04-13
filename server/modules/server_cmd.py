@@ -698,8 +698,8 @@ def RemoteDeleteScene(scene):
         '''
 
         data                         = remoteAPI_start()
-        data["REQUEST"]["Return"]    = deleteDevice(scene)
-        data["REQUEST"]["Scene"]    = Scene
+        data["REQUEST"]["Return"]    = deleteScene(scene)
+        data["REQUEST"]["Scene"]     = scene
         data["REQUEST"]["Command"]   = "DeleteScene"
 
         refreshCache()
