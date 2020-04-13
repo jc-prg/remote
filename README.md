@@ -17,10 +17,19 @@ Dark theme on iPhone XS
 
 * Broadlink RM 3 Mini - Infrared receiver/sender
 * Several ONKYO devices with API (see section modelsets in the file eiscp-commands.yaml in https://github.com/miracle2k/onkyo-eiscp)
+* Several SONY devices with API (see README in https://https://github.com/alexmohr/sonyapilib)
 * KODI server (e.g. also installed on the Raspberry PI)
 * *Other devices easily can be integrated*
 
 ## Main features
+
+### App v2.5 / Server v1.9 (in progress)
+
+* add/edit/delete device remote controls via web-client
+* add/edit/delete scene remote controls via web-client
+* API for Sony devices (sonyapilib)
+* optimized UI (e.g. menu)
+* ...
 
 ### App v2.4 / Server v1.8
 
@@ -60,6 +69,7 @@ Many thanks to the authors ...
 * BlackBeanControl (https://github.com/davorf/BlackBeanControl)
 * eiscp-onkyo (https://github.com/miracle2k/onkyo-eiscp)
 * KodiJson (https://github.com/jcsaaddupuy/python-kodijson)
+* SonyApiLib (https://https://github.com/alexmohr/sonyapilib)
 * Free icons from (https://icon-icons.com/), (https://www.freeicons.io/), (https://www.flaticon.com/), and (https://icons8.com/)
 * jc://modules/ (https://github.com/jc-prg/modules)
 

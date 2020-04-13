@@ -35,11 +35,11 @@
 * OK - Queue for send and query
 * OK - Caching for interfaces
 * OK - Set value via API (e.g. volume)
+* OK - Return message and code for each API call (to be processed by client) -> to be checked if own or HTML return code
 
+* IN PROGRESS - Add / edit scene ...
 * IN PROGRESS - Integrate sonyapilib: basic function; registration via web-interface open
 * IN PROGRESS - add KODIjson (basic commands work, to be tested and additional commands to be added)
-
-* Return message and code for each API call (to be processed by client) -> to be checked if own or HTML return code
 
 
 ## automated testing
@@ -120,9 +120,8 @@
 * OK - audio volume via slider
 * OK - description on line in remote -> "LINE||select device"
 * OK - hide not used buttons per default with button to show/hide
+* OK - edit device parameters via settings page (description, driver, image)
+* OK - menu with scrollbars
 
-* IN PROGRESS - edit device parameters via settings page (description, driver, image)
-
-- edit device parameters via settings page (status definition)
-- edit device parameters via settings page (remote control)
+* IN PROGRESS - add / edit scene
 
