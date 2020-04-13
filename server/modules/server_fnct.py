@@ -112,7 +112,7 @@ def RmReadData(selected=[]):
  
         # read data for active scenes
         for scene in data["scenes"]:
-            if data["scenes"][scene]["visible"] == "yes":
+#            if data["scenes"][scene]["visible"] == "yes":
               if selected == [] or scene in selected:
 
                 #thescene      = configFiles.read(modules.scenes + scene)
@@ -169,9 +169,104 @@ def RmReadData(selected=[]):
     return data
 
 
+#---------------------------
+# EDIT SCENE REMOTES
+#---------------------------
+
+def addScene(scene,info):
+    '''
+    add new scene in active_jsons and create scene remote layout
+    '''
+    active_json  =  configFiles.read(modules.active_scenes)
+    
+    if scene in active_json: 					return("WARN: Scene " + scene + " already exists (active).")
+    if modules.ifexist(modules.remotes + "scene_" + scene):	return("WARN: Scene " + scene + " already exists (remotes).")
+    
+    logging.info("addScene: add " + scene)
+
+    ## set position
+    active_json_position = 0
+    for key in active_json:
+       if active_json[key]["position"] > active_json_position:
+         active_json_position = active_json[key]["position"]
+    active_json_position += 1
+
+    ## add to _active.json 
+    active_json[scene]  = {
+        "config_scene"     : "scene_" + scene,
+        "description"      : info["description"],
+        "label"            : info["label"],
+        "position"         : active_json_position,
+        "visible"          : "yes"    	
+        }
+
+    try:                    configFiles.write(modules.active_scenes,active_json)
+    except Exception as e:  return "ERROR: " + str(e)
+        
+    ## add to devices = button definitions
+    remote = {
+        "info" : "jc://remote/ - In this file the remote layout and channel makros for the scene are defined.",
+        scene : {
+            "label"       : info["label"],
+            "remote"      : [],
+            "channel"     : {},
+            "devices"     : [],
+            }
+        }
+    
+    try:                    configFiles.write(modules.remotes + "scene_" + scene,remote)
+    except Exception as e:  return "ERROR: " + str(e)
+
+    return ("OK: Scene " + scene + " added.")
+
+
+def editScene(scene,info):
+    '''
+    edit scene data in json file
+    '''
+    
+    keys_active   = ["label","description","devices"]
+    keys_remotes  = ["label","remote","channel","devices"]
+    
+    # read central config file
+    active_json          = configFiles.read(modules.active_scenes)
+    if "ERROR" in active_json: return("ERROR: Scene " + scene + " doesn't exists (active).")
+
+    # read remote layout definitions
+    remotes              = configFiles.read(modules.remotes + "scene_" + scene)
+    if "ERROR" in remotes: return("ERROR: Scene " + scene + " doesn't exists (remotes).") 
+    
+    i = 0
+    for key in keys_active:   
+      if key in info: 
+        active_json[scene][key] = info[key]
+        i+=1
+        
+    logging.info(str(active_json[scene]))
+      
+    for key in keys_remotes:   
+      if key in info: 
+        remotes[scene][key] = info[key]
+        i+=1
+    
+    # write central config file
+    try:                    configFiles.write(modules.active_scenes,active_json)
+    except Exception as e:  
+      logging.error("ERROR: could not write changes (active) - "+str(e))
+      return("ERROR: could not write changes (active) - "+str(e))
+
+    # write remote layout definition
+    try:                    configFiles.write(modules.remotes + "scene_"+ scene, remotes)
+    except Exception as e:
+      logging.error("ERROR: could not write changes (remotes) - "+str(e))
+      return("ERROR: could not write changes (remotes) - "+str(e))
+    
+    if i > 0: return("OK: Edited device parameters of "+scene+" ("+str(i)+" changes)")
+    else:     return("ERROR: no data key matched with keys from config-files ("+str(info.keys)+")")
+
 
 #---------------------------
-# add / delete devices & buttons to config
+# EDIT DEVICE REMOTES
 #---------------------------
 
 def addDevice(device,device_data):
@@ -190,7 +285,7 @@ def addDevice(device,device_data):
     if modules.ifexist(modules.commands +interface+"/"+device_data["config_device"]):    return("WARN: Device " + device + " already exists (devices).")
     if modules.ifexist(modules.remotes  +device_data["config_remote"]):    return("WARN: Device " + device + " already exists (remotes).") 
     
-    logging.info(device+" add")
+    logging.info("addDevice: add " + device)
     
     ## set position
     active_json_position = 0
@@ -220,7 +315,7 @@ def addDevice(device,device_data):
         
     ## add to devices = button definitions
     buttons = {
-        "info" : "jc://remote/ - In this files the commands foreach button, queries, the query method is defined.",
+        "info" : "jc://remote/ - In this file the commands foreach button, queries, the query method is defined.",
         "data" : {
             "description" : device_data["label"] + ": " + device_data["device"],
             "method"      : deviceAPIs.api[device_data["api"]].method,
@@ -238,7 +333,7 @@ def addDevice(device,device_data):
 
     ## add to remotes = button layout
     remote = {
-        "info" : "jc://remote/ - In this files the remote layout and a display layout is defined.",
+        "info" : "jc://remote/ - In this file the remote layout and a display layout is defined.",
         "data" : {
            "description" : device_data["label"] + ": " + device_data["device"],
            "remote"      : [],
@@ -252,186 +347,6 @@ def addDevice(device,device_data):
       return "ERROR: " + str(e)
             
     return("OK: Device " + device + " added.")
-
-
-
-#---------------------------------------
-# add vars to config JSON (buttons & devices)
-#---------------------------------------
-
-def addCommand2Button(device,button,command):
-    '''
-    add new command to button or change existing
-    '''
-
-    config        = configFiles.read_status()
-    interface     = config[device]["interface"]  
-    device_code   = config[device]["config_device"]  
-    device_remote = config[device]["config_remote"]  
-    data          = configFiles.read(modules.commands+interface+"/"+device_code)
-    
-    if "data" in data:
-        if button in data["data"]["buttons"].keys():
-            return "WARN: Button '" + device + "_" + button + "' already exists."
-        else:
-            data["data"]["buttons"][button] = command
-            configFiles.write(modules.commands+interface+"/"+device_code,data)
-            return "OK: Button '" + device + "_" + button + "' recorded and saved: " + command
-    else:
-        return "ERROR: Device '" + device + "' does not exists."
-        
-#---------------------------------------
-
-def addButton(device,button):
-    '''
-    add new button to remote layout
-    '''
-    
-    config        = configFiles.read_status()
-    interface     = config[device]["interface"]  
-    device_code   = config[device]["config_device"]  
-    device_remote = config[device]["config_remote"]  
-    data          = configFiles.read(modules.remotes+device_remote)
-#    data        = configFiles.read(modules.remotes+interface+"/"+device_code)
-    
-    if "data" in data:
-        if button != "DOT" and button != "LINE" and button in data["data"]["remote"]:
-            return "WARN: Button '" + device + "_" + button + "' already exists."
-        else:
-            if button == "DOT": button = "."
-            data["data"]["remote"].append(button)
-            #configFiles.write(modules.remotes+interface+"/"+device_code,data)
-            configFiles.write(modules.remotes+device_remote,data)
-            return "OK: Button '" + device + "_" + button + "' added."
-    else:
-        return "ERROR: Device '" + device + "' does not exists."        
-
-#---------------------------------------
-
-def deleteCmd(device, button):
-    '''
-    delete command (not button) from json config file
-    '''
-
-    config      = configFiles.read_status()
-    interface   = config[device]["interface"]  
-    device_code = config[device]["config_device"]  
-    data        = configFiles.read(modules.commands+interface+"/"+device_code)
-    
-    if data["data"]:
-        if button in data["data"]["buttons"].keys():
-        
-            data["data"]["buttons"].pop(button,None)
-            data = configFiles.write(modules.commands+interface+"/"+device_code,data)
-            return "OK: Command '" + device + "_" + button + "' deleted."
-        else:
-            return "ERROR: Command '" + device + "_" + button + "' does not exist."
-    else:
-        return "ERROR: Device '" + device + "' does not exist."
-
-
-#---------------------------------------
-
-def deleteButton(device, button_number):
-    '''
-    delete button (not command) from json config file
-    '''
-
-    buttonNumber  = int(button_number)
-    config        = configFiles.read_status()
-    interface     = config[device]["interface"]  
-    device_code   = config[device]["config_device"]  
-    device_remote = config[device]["config_remote"]  
-    data          = configFiles.read(modules.remotes+device_remote)
-#    data         = configFiles.read(modules.remotes+interface+"/"+device_code)
-    
-    if data["data"] and data["data"]["remote"]:
-        if buttonNumber >= 0 and buttonNumber < len(data["data"]["remote"]):
-            data["data"]["remote"].pop(buttonNumber)
-            data = configFiles.write(modules.remotes+device_remote,data)
-#            data = configFiles.write(modules.remotes+interface+"/"+device_code,data)
-            return "OK: Button '" + device + " [" + str(buttonNumber) + "] deleted."
-        else:
-            return "ERROR: Button '" + device + " [" + str(buttonNumber) + "] does not exist."
-    else:
-        return "ERROR: Device '" + device + "' does not exist."
-
-#---------------------------------------
-
-def addTemplate(device,template):
-    '''
-    add / overwrite remote layout definition by template
-    '''
-
-    templates     = configFiles.read(modules.templates + template)
-    config        = configFiles.read_status()
-    interface     = config[device]["interface"]
-    device_code   = config[device]["config_device"]
-    device_remote = config[device]["config_remote"]  
-    data          = configFiles.read(modules.remotes+device_remote)
-#    data       = configFiles.read(modules.remotes + interface + "/" + device_code)
-
-    # check if error
-    if "data" not in data.keys():  return "ERROR: Device '" + device + "' does not exists."
-        
-    # add layout from template
-    elif template in templates and data["data"] == []:
-    
-        data["data"]["remote"]           = templates[template]["remote"]
-        configFiles.write(modules.remotes+device_remote,data)
-#       configFiles.write(modules.remotes + interface + "/" + device_code, data)
-        return "OK: Template '" + template + "' added to '" + device + "'."
-            
-    # overwrite layout from template
-    elif template in templates and data["data"] != []:
-
-        data["data"]["remote"]           = templates[template]["remote"]
-        configFiles.write(modules.remotes+device_remote,data)
-#        configFiles.write(modules.remotes + interface + "/" + device_code, data)
-        return "OK: Remote definition of '" + device + "' overwritten by template '" + template + "'."
-        
-    # template doesn't exist
-    else:
-        return "ERROR: Template '" + template + "' does't exists."
-
-#---------------------------------------
-
-def changeVisibility(type,device,visibility):
-    '''
-    change visibility in device configuration (yes/no)
-    '''
-
-    if type == "remote":
-
-      data = configFiles.read_status()
-      if device not in data.keys():
-        return "Remote control '" + device + "' does not exists."
-        
-      elif visibility == "yes" or visibility == "no":
-        data[device]["visible"] = visibility
-        configFiles.write_status(data,"changeVisibility")
-        return "OK: Change visibility for '" + device + "': " + visibility
-        
-      else:
-        return "ERROR: Visibility value '" + visibility + "' does not exists."
-        
-
-    elif type == "scene":
-    
-      data = configFiles.read(modules.active_scenes)
-      if device not in data.keys():
-        return "Scene '" + device + "' does not exists."
-    
-      elif visibility == "yes" or visibility == "no":
-        data[device]["visible"] = visibility
-        configFiles.write(modules.active_scenes,data)
-        return "OK: Change visibility for '" + device + "': " + visibility
-        
-      else:
-        return "ERROR: Visibility value '" + visibility + "' does not exists."
-        
-    else:
-      return "ERROR: changeVisibility - Type doesn't exist ("+type+")."
 
 
 #---------------------------------------
@@ -544,10 +459,195 @@ def editDevice(device,info):
       logging.error("ERROR: could not write changes (remotes) - "+str(e))
       return("ERROR: could not write changes (remotes) - "+str(e))
 
-    if i > 0: return("OK: Edited device paramenters of "+device+" ("+str(i)+" changes)")
+    if i > 0: return("OK: Edited device parameters of "+device+" ("+str(i)+" changes)")
     else:     return("ERROR: no data key matched with keys from config-files ("+str(info.keys)+")")
 
       
+#---------------------------
+# EDIT BUTTONS AND COMMANDS
+#---------------------------
+
+def addCommand2Button(device,button,command):
+    '''
+    add new command to button or change existing
+    '''
+
+    config        = configFiles.read_status()
+    interface     = config[device]["interface"]  
+    device_code   = config[device]["config_device"]  
+    device_remote = config[device]["config_remote"]  
+    data          = configFiles.read(modules.commands+interface+"/"+device_code)
+    
+    if "data" in data:
+        if button in data["data"]["buttons"].keys():
+            return "WARN: Button '" + device + "_" + button + "' already exists."
+        else:
+            data["data"]["buttons"][button] = command
+            configFiles.write(modules.commands+interface+"/"+device_code,data)
+            return "OK: Button '" + device + "_" + button + "' recorded and saved: " + command
+    else:
+        return "ERROR: Device '" + device + "' does not exists."
+        
+#---------------------------------------
+
+def addButton(device,button):
+    '''
+    add new button to remote layout
+    '''
+    
+    config        = configFiles.read_status()
+    interface     = config[device]["interface"]  
+    device_code   = config[device]["config_device"]  
+    device_remote = config[device]["config_remote"]  
+    data          = configFiles.read(modules.remotes+device_remote)
+#    data        = configFiles.read(modules.remotes+interface+"/"+device_code)
+    
+    if "data" in data:
+        if button != "DOT" and button != "LINE" and button in data["data"]["remote"]:
+            return "WARN: Button '" + device + "_" + button + "' already exists."
+        else:
+            if button == "DOT": button = "."
+            data["data"]["remote"].append(button)
+            #configFiles.write(modules.remotes+interface+"/"+device_code,data)
+            configFiles.write(modules.remotes+device_remote,data)
+            return "OK: Button '" + device + "_" + button + "' added."
+    else:
+        return "ERROR: Device '" + device + "' does not exists."        
+
+#---------------------------------------
+
+def deleteCmd(device, button):
+    '''
+    delete command (not button) from json config file
+    '''
+
+    config      = configFiles.read_status()
+    interface   = config[device]["interface"]  
+    device_code = config[device]["config_device"]  
+    data        = configFiles.read(modules.commands+interface+"/"+device_code)
+    
+    if data["data"]:
+        if button in data["data"]["buttons"].keys():
+        
+            data["data"]["buttons"].pop(button,None)
+            data = configFiles.write(modules.commands+interface+"/"+device_code,data)
+            return "OK: Command '" + device + "_" + button + "' deleted."
+        else:
+            return "ERROR: Command '" + device + "_" + button + "' does not exist."
+    else:
+        return "ERROR: Device '" + device + "' does not exist."
+
+
+#---------------------------------------
+
+def deleteButton(device, button_number):
+    '''
+    delete button (not command) from json config file
+    '''
+
+    buttonNumber  = int(button_number)
+    config        = configFiles.read_status()
+    interface     = config[device]["interface"]  
+    device_code   = config[device]["config_device"]  
+    device_remote = config[device]["config_remote"]  
+    data          = configFiles.read(modules.remotes+device_remote)
+#    data         = configFiles.read(modules.remotes+interface+"/"+device_code)
+    
+    if data["data"] and data["data"]["remote"]:
+        if buttonNumber >= 0 and buttonNumber < len(data["data"]["remote"]):
+            data["data"]["remote"].pop(buttonNumber)
+            data = configFiles.write(modules.remotes+device_remote,data)
+#            data = configFiles.write(modules.remotes+interface+"/"+device_code,data)
+            return "OK: Button '" + device + " [" + str(buttonNumber) + "] deleted."
+        else:
+            return "ERROR: Button '" + device + " [" + str(buttonNumber) + "] does not exist."
+    else:
+        return "ERROR: Device '" + device + "' does not exist."
+
+
+#---------------------------------------
+# TEMPLATES
+#---------------------------------------
+
+def addTemplate(device,template):
+    '''
+    add / overwrite remote layout definition by template
+    '''
+
+    templates     = configFiles.read(modules.templates + template)
+    config        = configFiles.read_status()
+    interface     = config[device]["interface"]
+    device_code   = config[device]["config_device"]
+    device_remote = config[device]["config_remote"]  
+    data          = configFiles.read(modules.remotes+device_remote)
+#    data       = configFiles.read(modules.remotes + interface + "/" + device_code)
+
+    # check if error
+    if "data" not in data.keys():  return "ERROR: Device '" + device + "' does not exists."
+        
+    # add layout from template
+    elif template in templates and data["data"] == []:
+    
+        data["data"]["remote"]           = templates[template]["remote"]
+        configFiles.write(modules.remotes+device_remote,data)
+#       configFiles.write(modules.remotes + interface + "/" + device_code, data)
+        return "OK: Template '" + template + "' added to '" + device + "'."
+            
+    # overwrite layout from template
+    elif template in templates and data["data"] != []:
+
+        data["data"]["remote"]           = templates[template]["remote"]
+        configFiles.write(modules.remotes+device_remote,data)
+#        configFiles.write(modules.remotes + interface + "/" + device_code, data)
+        return "OK: Remote definition of '" + device + "' overwritten by template '" + template + "'."
+        
+    # template doesn't exist
+    else:
+        return "ERROR: Template '" + template + "' does't exists."
+
+
+#---------------------------------------
+# REMOTES
+#---------------------------------------
+
+def changeVisibility(type,device,visibility):
+    '''
+    change visibility in device configuration (yes/no)
+    '''
+
+    if type == "remote":
+
+      data = configFiles.read_status()
+      if device not in data.keys():
+        return "Remote control '" + device + "' does not exists."
+        
+      elif visibility == "yes" or visibility == "no":
+        data[device]["visible"] = visibility
+        configFiles.write_status(data,"changeVisibility")
+        return "OK: Change visibility for '" + device + "': " + visibility
+        
+      else:
+        return "ERROR: Visibility value '" + visibility + "' does not exists."
+        
+
+    elif type == "scene":
+    
+      data = configFiles.read(modules.active_scenes)
+      if device not in data.keys():
+        return "Scene '" + device + "' does not exists."
+    
+      elif visibility == "yes" or visibility == "no":
+        data[device]["visible"] = visibility
+        configFiles.write(modules.active_scenes,data)
+        return "OK: Change visibility for '" + device + "': " + visibility
+        
+      else:
+        return "ERROR: Visibility value '" + visibility + "' does not exists."
+        
+    else:
+      return "ERROR: changeVisibility - Type doesn't exist ("+type+")."
+
+
 #-----------------------------------------------
 
 def moveDeviceScene(button_type,device,direction):

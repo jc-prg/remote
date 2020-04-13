@@ -108,6 +108,31 @@ def remoteAPI_end(data,setting=[]):
 
 
 #-------------------------------------------------
+
+def RemoteToggle(current_value,complete_list):
+        '''
+        get net value from list
+        '''
+        
+        logging.warn("Toggle: "+current_value+": "+str(complete_list))
+        
+        count = 0
+        match = -1
+        for element in complete_list:
+           if current_value != element: count += 1
+           else:                        match = count
+        
+        match += 1
+        
+        if match > -1 and match < len(complete_list): value = complete_list[match]
+        elif match == len(complete_list):             value = complete_list[0]
+        else:                                         value = "ERROR: value not found"
+
+        logging.warn("Toggle: "+current_value+": "+value)
+        return value
+                                 
+
+#-------------------------------------------------
 # Reload data
 #-------------------------------------------------
 
@@ -329,48 +354,6 @@ def RemoteMakro(makro):
 
 #-------------------------------------------------
 
-def RemoteTest():
-        '''
-        Test new functions
-        '''
-
-        data                       = remoteAPI_start()
-        data["TEST"]               = RmReadData("")
-        data["REQUEST"]["Return"]  = "OK: Test - show complete data structure"
-        data["REQUEST"]["Command"] = "Test"
-        data                       = remoteAPI_end(data,["no-data"])                
-        deviceAPIs.test()
-        
-        return data
-
-
-#-------------------------------------------------
-
-def RemoteToggle(current_value,complete_list):
-        '''
-        get net value from list
-        '''
-        
-        logging.warn("Toggle: "+current_value+": "+str(complete_list))
-        
-        count = 0
-        match = -1
-        for element in complete_list:
-           if current_value != element: count += 1
-           else:                        match = count
-        
-        match += 1
-        
-        if match > -1 and match < len(complete_list): value = complete_list[match]
-        elif match == len(complete_list):             value = complete_list[0]
-        else:                                         value = "ERROR: value not found"
-
-        logging.warn("Toggle: "+current_value+": "+value)
-        return value
-                                 
-
-#-------------------------------------------------
-
 def RemoteOnOff(device,button):
         '''
         check old status and document new status
@@ -454,6 +437,8 @@ def RemoteOnOff(device,button):
 
 
 #-------------------------------------------------
+# Set status data
+#-------------------------------------------------
 
 def RemoteReset():
         '''
@@ -501,6 +486,8 @@ def RemoteChangeMainAudio(device):
         return data
 
 
+#-------------------------------------------------
+# Edit Buttons & Commands
 #-------------------------------------------------
 
 def RemoteMove(type,device,direction):
@@ -591,7 +578,8 @@ def RemoteDeleteButton(device,button_number):
         data                         = remoteAPI_end(data,["no-data"])        
         return data
 
-
+#-------------------------------------------------
+# Change Remotes 
 #-------------------------------------------------
 
 def RemoteChangeVisibility(type,device,value):
@@ -611,6 +599,8 @@ def RemoteChangeVisibility(type,device,value):
 
         
 
+#-------------------------------------------------
+# Edit device remotes
 #-------------------------------------------------
 
 def RemoteAddDevice(device,device_data):
@@ -645,7 +635,80 @@ def RemoteEditDevice(device,info):
         refreshCache()
         data                         = remoteAPI_end(data,["no-data"])
         return data
+        
+#-------------------------------------------------
 
+def RemoteDeleteDevice(device):
+        '''
+        delete device from config file and delete device related files
+        '''
+
+        data                         = remoteAPI_start()
+        data["REQUEST"]["Return"]    = deleteDevice(device)
+        data["REQUEST"]["Device"]    = device
+        data["REQUEST"]["Command"]   = "DeleteDevice"
+
+        refreshCache()
+        data                         = remoteAPI_end(data,["no-data"])
+        return data
+
+
+#-------------------------------------------------
+# Edit scene remotes
+#-------------------------------------------------
+
+def RemoteAddScene(scene,info):
+        '''
+        add device in config file and create config files for remote and command
+        '''
+
+        data                         = remoteAPI_start()
+        data["REQUEST"]["Return"]    = addScene(scene,info)
+        data["REQUEST"]["Scene"]     = scene
+        data["REQUEST"]["Parameter"] = info
+        data["REQUEST"]["Command"]   = "AddDevice"
+
+        refreshCache()
+        data                         = remoteAPI_end(data,["no-data"])        
+        return data
+
+
+#-------------------------------------------------
+
+def RemoteEditScene(scene,info):
+        '''
+        Edit data of device
+        '''
+        logging.info(str(info))
+        
+        data                         = remoteAPI_start()
+        data["REQUEST"]["Return"]    = editScene(scene,info)
+        data["REQUEST"]["Scene"]     = scene
+        data["REQUEST"]["Command"]   = "EditScene"
+
+        refreshCache()
+        data                         = remoteAPI_end(data,["no-data"])
+        return data
+        
+#-------------------------------------------------
+
+def RemoteDeleteScene(scene):
+        '''
+        delete device from config file and delete device related files
+        '''
+
+        data                         = remoteAPI_start()
+        data["REQUEST"]["Return"]    = deleteDevice(scene)
+        data["REQUEST"]["Scene"]    = Scene
+        data["REQUEST"]["Command"]   = "DeleteScene"
+
+        refreshCache()
+        data                         = remoteAPI_end(data,["no-data"])
+        return data
+
+
+#-------------------------------------------------
+# Templates
 #-------------------------------------------------
 
 def RemoteAddTemplate(device,template):
@@ -663,22 +726,24 @@ def RemoteAddTemplate(device,template):
         data                         = remoteAPI_end(data,["no-data"])        
         return data
 
-        
+#-------------------------------------------------
+# Test command
 #-------------------------------------------------
 
-def RemoteDeleteDevice(device):
+def RemoteTest():
         '''
-        delete device from config file and delete device related files
+        Test new functions
         '''
 
-        data                         = remoteAPI_start()
-        data["REQUEST"]["Return"]    = deleteDevice(device)
-        data["REQUEST"]["Device"]    = device
-        data["REQUEST"]["Command"]   = "DeleteDevice"
-
-        refreshCache()
-        data                         = remoteAPI_end(data,["no-data"])
+        data                       = remoteAPI_start()
+        data["TEST"]               = RmReadData("")
+        data["REQUEST"]["Return"]  = "OK: Test - show complete data structure"
+        data["REQUEST"]["Command"] = "Test"
+        data                       = remoteAPI_end(data,["no-data"])                
+        deviceAPIs.test()
+        
         return data
+
 
 #-------------------------------------------------
 # EOF

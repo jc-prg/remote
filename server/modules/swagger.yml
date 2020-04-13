@@ -246,6 +246,8 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
                 
+#------------------------------------------------------
+
   /move/{type}/{device}/{direction}/:
     post:
       operationId: modules.server_cmd.RemoteMove
@@ -281,6 +283,8 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
                 
+#------------------------------------------------------
+
   /command/{device}/{button}/:
     post:
       operationId: modules.server_cmd.RemoteRecordCommand
@@ -339,6 +343,94 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
 
+#------------------------------------------------------
+
+  /scene/{scene}/:
+    delete:
+      operationId: modules.server_cmd.RemoteDeleteScene
+      tags:
+        - edit
+      summary: delete scene
+      description: delete scene including buttons from database
+      parameters:
+        - name: scene
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully deleted device
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              CONFIG:
+                $ref: "#/definitions/CONFIG"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"               
+    post:
+      operationId: modules.server_cmd.RemoteEditScene
+      tags:
+        - edit
+      summary: edit scene data
+      description: edit scene data in database
+      parameters:
+        - name: scene
+          in: path
+          type: string
+          required: true
+        - name: info
+          in: body
+          description: parameters of device that can be edited
+          schema:
+            type: object     
+      responses:
+        200:
+          description: Successfully edited scene
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              CONFIG:
+                $ref: "#/definitions/CONFIG"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+    put:
+      operationId: modules.server_cmd.RemoteAddScene
+      tags:
+        - edit
+      summary: add scene
+      description: add scene to database
+      parameters:
+        - name: scene
+          in: path
+          type: string
+          required: true
+        - name: info
+          in: body
+          description: parameters of device that should be added
+          schema:
+            type: object     
+      responses:
+        200:
+          description: Successfully added device
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              CONFIG:
+                $ref: "#/definitions/CONFIG"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+                
+#------------------------------------------------------
+
   /device/{device}/:
     delete:
       operationId: modules.server_cmd.RemoteDeleteDevice
@@ -380,18 +472,6 @@ paths:
           description: parameters of device that can be edited
           schema:
             type: object     
-#            properties:
-#              label:
-#                type: string
-#              method:
-#                type: string
-#                enum: ["record","query"]
-#              description:
-#                type: string
-#              image:
-#                type: string
-#              device:
-#                type: string
       responses:
         200:
           description: Successfully edited device
@@ -405,7 +485,6 @@ paths:
                 $ref: "#/definitions/REQUEST"
               STATUS:
                 $ref: "#/definitions/STATUS"
-
     put:
       operationId: modules.server_cmd.RemoteAddDevice
       tags:
@@ -436,6 +515,8 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
                 
+#------------------------------------------------------
+
   /template/{device}/{template}/:
     put:
       operationId: modules.server_cmd.RemoteAddTemplate
