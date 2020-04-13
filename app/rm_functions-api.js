@@ -146,33 +146,6 @@ function apiDeviceMovePosition(data) {
 	remoteReload_load();
 	}
 	
-//--------------------------------
-
-function apiDeviceChangeVisibility(device_id, value_id) {
-        device   = check_if_element_or_value(device_id,true);
-        value    = getValueById(value_id,false);
-        
-        if (value == "yes")	{ setValueById(value_id, "no"); }
-        else			{ setValueById(value_id, "yes"); }
-	
-        value    = getValueById(value_id,false);
-        
-	rm3app.requestAPI("PUT",["visibility",device,value], "", apiAlertReturn);
-	}
-	
-//--------------------------------
-	
-function apiDeviceChangeVisibility_old(device_id, value_id) {
-
-        device   = check_if_element_or_value(device_id,true);
-        value    = check_if_element_or_value(value_id,false);
-        
-	if (!dataAll["DATA"]["devices"][device]) 	{ rm3msg.alert(lang("DEVICE_DONT_EXISTS",[device])); return; }
-	else if (device == "") 				{ rm3msg.alert(lang("DEVICE_INSERT_ID")); return; }
-	else if (value == "")   			{ rm3msg.alert(lang("DEVICE_SELECT_VISIBLITY")); return;	}
-
-	rm3app.requestAPI("PUT",["visibility",device,value], "", apiAlertReturn);
-	}
 	
 // create new device
 //--------------------------------
@@ -213,6 +186,22 @@ function apiDeviceDelete(device_id) {
 	rm3msg.confirm(lang("DEVICE_ASK_DELETE",[device]),"apiDeviceDelete_exe('" + device + "');");
 	}
 
+//================================
+// REMOTES
+//================================
+
+function apiRemoteChangeVisibility(type, device_id, value_id) {
+        device   = check_if_element_or_value(device_id,true);
+        value    = getValueById(value_id,false);
+        
+        if (value == "yes")	{ setValueById(value_id, "no"); }
+        else			{ setValueById(value_id, "yes"); }
+	
+        value    = getValueById(value_id,false);
+        
+	rm3app.requestAPI("PUT",["visibility",type,device,value], "", apiAlertReturn);
+	}
+	
 //================================
 // COMMANDS
 //================================

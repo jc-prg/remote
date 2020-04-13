@@ -291,7 +291,7 @@ function rmRemote(name) {
 		
 		remote  += this.tab_row(
 				"<input id='remote_visibility' value='"+remote_visible+"' style='display:none;'>"+
-				this.button_edit("apiDeviceChangeVisibility('"+device+"','remote_visibility');","show / hide") + "&nbsp;" +
+				this.button_edit("apiRemoteChangeVisibility('remote','"+device+"','remote_visibility');","show / hide") + "&nbsp;" +
 				this.button_edit("changeVisibility('remote_json');changeVisibility('remote_button');","edit JSON") + "&nbsp;" +
 				this.button_edit("apiDeviceDelete('"+device+"');","delete device")
 				);
@@ -366,9 +366,12 @@ function rmRemote(name) {
 		var remote_definition 	= this.data["DATA"]["scenes"][scene]["remote"];
 		var remote_label 	= this.data["DATA"]["scenes"][scene]["label"];
 		var remote_channel 	= this.data["DATA"]["scenes"][scene]["channel"];
+		
 		var makros 		= this.data["DATA"]["makros"]["makro"];
 		var makros_sceneOn	= this.data["DATA"]["makros"]["scene-on"];
 		var makros_sceneOff	= this.data["DATA"]["makros"]["scene-off"];
+		
+	console.error(this.data["DATA"]["scenes"][scene]);
 		
 		rm3cookie.set("remote","scene::"+scene+"::"+remote_label);
 
@@ -423,7 +426,10 @@ function rmRemote(name) {
 	// edit scene
 	this.scene_edit           = function (id, scene) {
 	
-	        document.getElementById(id).style.display = "block";
+	        if (this.edit_mode)     { elementVisible(id); }
+	        else                    { elementHidden(id,"device_edit"); return; }
+	        
+	        //document.getElementById(id).style.display = "block";
 
 	        this.button_width = "100px";
 		this.input_width  = "180px";
@@ -442,7 +448,7 @@ function rmRemote(name) {
 
 		remote  += this.tab_row(
 				"<input id='scene_visibility' value='"+this.data["DATA"]["scenes"][scene]["visible"]+"' style='display:none;'>"+
-				this.button_edit("apiDeviceChangeVisibility('"+device+"','scene_visibility');","show / hide","disabled") + "&nbsp;" +
+				this.button_edit("apiRemoteChangeVisibility('scene','"+scene+"','scene_visibility');","show / hide") + "&nbsp;" +
 				this.button_edit("changeVisibility('scene_json');changeVisibility('scene_button');","edit JSON") + "&nbsp;" +
 				this.button_edit("apiDeviceDelete('"+device+"');","delete scene","disabled")
 				);
@@ -652,6 +658,7 @@ function rmRemote(name) {
         	
         // show json for buttons in text field
         this.display_json	= function ( id, json, format="" ) {
+        
         	var text = "";
         	text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:320px;height:200px;\">";
         	if (format == "buttons") {
