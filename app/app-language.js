@@ -23,7 +23,7 @@ var language = {
 		"DEVICE_ASK_DELETE"		: "Do you really want to delete device '{0}'?",
 		"DEVICE_DONT_EXISTS"		: "Device '{0}' doesn't exists!",
 		"DEVICE_EXISTS"			: "Device '{0}' already exists!",
-		"DEVICE_INSERT_ID"		: "Please insert ID for device (no special cases).",
+		"DEVICE_INSERT_ID"		: "Please insert ID for device (no special characters).",
 		"DEVICE_INSERT_LABEL"		: "Please insert label for device.",
 		"DEVICE_INSERT_NAME"		: "Please insert name of device.",
 		"DEVICE_SELECT"			: "Please select device.",
@@ -36,6 +36,7 @@ var language = {
 		"MANUAL_CHANNEL"		: "<ul>" +
 						  "<li>Fill dict for channel definition using the JSON format: " +
 						  "<i>&quot;Channel Name&quot; : [ &quot;button&quot;, &quot;button&quot;, &quot;makro&quot;]</i></li>" +
+						  "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;makro_type&gt;_&lt;button&gt;&quot; to define buttons in channel makro; makro types are: makro, scene-on, scene-off, dev-on, dev-off</li>" +
 						  "</ul>",
 		"MANUAL_DISPLAY"		: "<ul>" +
 						  "<li>Fill dict for display definition using the JSON format: <i>&quot;Label&quot; : &quot;field_from_device&quot;</i>.</li>" +
@@ -44,6 +45,11 @@ var language = {
 						  "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
 						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
 						  "<li>Add &quot;DISPLAY&quot; to add a display that show status information (details defined below).</li>" +
+						  "</ul>",
+		"MANUAL_SCENE"			: "<ul>" +
+						  "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
+						  "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;makro_type&gt;_&lt;button&gt;&quot; to define buttons in the remote layout; makro types are: makro, scene-on, scene-off, dev-on, dev-off</li>" +
+						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
 						  "</ul>",
 		
 		"MODE_EDIT"			: "Edit Mode",
@@ -54,6 +60,10 @@ var language = {
 		
 		"REMOTE_ADD"			: "Add Remote Control",
 		
+		"SCENE_EXISTS"			: "Scene '{0}' already exists!",
+		"SCENE_INSERT_ID"		: "Please insert ID for scene (no special characters).",
+		"SCENE_INSERT_LABEL"		: "Please insert label for scene.",
+
 		"SETTINGS"			: "Settings",
 
 		}

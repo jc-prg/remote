@@ -166,12 +166,10 @@ function rmSettings (name) {	// IN PROGRESS
 
 		setting += "<tr><td colspan='2'><center><hr/><b>"+lang("REMOTE_ADD")+" (Scene)</b><hr/></center></td></tr>";
 	
-		setting += this.tab_row( 	"ID:",  	this.input("add_device_id") );
-		setting += this.tab_row( 	"Label:", 	this.input("add_device_descr") );
-		setting += this.tab_row( 	"Description:", this.input("add_device",onchange) );
-		setting += "<tr><td colspan='2'><hr/></td></tr>";
-		setting += this.tab_row( 	"Scene-Config:",	this.input("add_device_remote")+".json" );
-		setting += this.tab_row(	this.button("apiDeviceAdd(['add_device_id','add_device_descr','add_device_api','add_device','add_device_device','add_device_remote'],"+onchange2+");","Add Scene","disabled"), "" );
+		setting += this.tab_row( 	"ID:",  	this.input("add_scene_id") );
+		setting += this.tab_row( 	"Label:", 	this.input("add_scene_label") );
+		setting += this.tab_row( 	"Description:", this.input("add_scene_descr") );
+		setting += this.tab_row(	this.button("apiSceneAdd(['add_scene_id','add_scene_label','add_scene_descr']);","Add Scene",""), "" );
 
 		this.write(0,lang("REMOTE_ADD")+" (Device)",setting);					
 			

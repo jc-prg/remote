@@ -61,10 +61,12 @@ function rmMenu(name, menu) {
     			height = (window.innerHeight - 70);
     			document.getElementById("menuItems").style.maxHeight  = height + "px"; 
     			document.getElementById("menuItems2").style.maxHeight = height + "px"; 		
+    			document.getElementById("remote_nav").style.maxHeight = window.innerHeight + "px"; 		
 			};
 		height = (window.innerHeight - 70);
 		document.getElementById("menuItems").style.maxHeight  = height + "px"; 
 		document.getElementById("menuItems2").style.maxHeight = height + "px"; 		
+		document.getElementById("remote_nav").style.maxHeight = window.innerHeight + "px"; 		
                 }
 
 

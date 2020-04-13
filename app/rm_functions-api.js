@@ -62,6 +62,7 @@ function apiAlertReturn(data) {
         
         if (data["REQUEST"]["Command"] == "AddTemplate")  	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, 2000); }
         if (data["REQUEST"]["Command"] == "EditDevice")   	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, 2000); }
+        if (data["REQUEST"]["Command"] == "EditScene")   	{ setTimeout(function(){ rm3remotes.create( "scene",  data["REQUEST"]["Scene"] ); }, 2000); }
 	if (data["REQUEST"]["Command"] == "ChangeVisibility" )	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, 2000); }
 	
         if (data["REQUEST"]["Command"] == "DeleteDevice") 	{ setTimeout(function(){ rm3cookie.set("remote",""); rm3remotes.create( "", "" ); }, 2000); }
@@ -97,6 +98,67 @@ function apiTemplateAdd(device_id, template_id) {
 	}
 	
 	
+//================================
+// SCENES
+//================================
+
+// create new device
+//--------------------------------
+
+function apiSceneAdd(data) {
+
+	send_data		   = {};
+	send_data["id"]            = getValueById(data[0]);
+	send_data["label"]         = getValueById(data[1]);
+	send_data["description"]   = getValueById(data[2]);
+	
+	console.error(send_data);
+        
+	if (dataAll["DATA"]["devices"][send_data["id"]]){ rm3msg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
+	else if (send_data["id"] == "")			{ rm3msg.alert(lang("SCENE_INSERT_ID")); return; }
+	else if (send_data["label"] == "")		{ rm3msg.alert(lang("SCENE_INSERT_LABEL")); return; }
+
+	rm3app.requestAPI("PUT",["scene",send_data["id"]], send_data, apiAlertReturn);
+	}
+
+// edit device data
+//--------------------------------
+
+function apiSceneEdit(device,prefix,fields) {
+
+	var info        = {}
+	var field_list  = fields.split(",");
+
+	for (var i=0;i<field_list.length;i++) {
+		if (document.getElementById(prefix+"_"+field_list[i])) {
+			var value = document.getElementById(prefix+"_"+field_list[i]).value;
+			info[field_list[i]] = value;	
+			}
+		}
+
+	rm3app.requestAPI("POST",["scene",device], info, apiAlertReturn);
+	}
+
+// edit button and display data using JSON
+//--------------------------------
+
+function apiSceneJsonEdit(device,json_buttons,json_channel) {
+
+        buttons   = check_if_element_or_value(json_buttons,false);
+        channel   = check_if_element_or_value(json_channel,false);
+
+	try { json_buttons = JSON.parse(buttons); } catch(e) { rm3msg.alert("<b>JSON Buttons - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+	try { json_channel = JSON.parse(channel); } catch(e) { rm3msg.alert("<b>JSON Channel - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+	
+	var info = {};
+	info["remote"]  = json_buttons;
+	info["channel"] = json_channel;
+	
+	rm3app.requestAPI("POST",["scene",device], info, apiAlertReturn);	
+	}
+
+
+
 //================================
 // DEVICES
 //================================
