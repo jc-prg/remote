@@ -179,9 +179,9 @@ function rmRemote(name) {
 			var link_move_right = this.app_name+".remote_move_button('device','remote_edit2','"+scene+"',"+i+",'remote_json_buttons','right');";
 
 			var contextmenu	= "["+i+"] " + cmd.split("||")[0] + "<br/><br/>";		
-			if (i > 0) 			  { contextmenu += this.button_edit( link_move_left  + link_preview, "&lt;",""); }
-							    contextmenu += this.button_edit( link_delete     + link_preview, "x","");
-			if (i < remote_definition.length) { contextmenu	+= this.button_edit( link_move_right + link_preview, "&gt;",""); }
+			if (i > 0) 			    { contextmenu += this.button_edit( link_move_left  + link_preview, "&lt;",""); }
+							      contextmenu += this.button_edit( link_delete     + link_preview, "x","");
+			if (i+1 < remote_definition.length) { contextmenu	+= this.button_edit( link_move_right + link_preview, "&gt;",""); }
 						
 			if (button == "LINE")	 			{ next_button = this.line(""); }
 			else if (button.indexOf("LINE||") == 0) 	{ next_button = this.line(button.split("||")[1]); }
@@ -431,9 +431,9 @@ function rmRemote(name) {
 			var link_move_right = this.app_name+".remote_move_button('scene','remote_edit2','"+scene+"',"+i+",'scene_json_buttons','right');";
 
 			var contextmenu	= "["+i+"] " + cmd.split("||")[0] + "<br/><br/>";						
-			if (i > 0) 			  { contextmenu += this.button_edit( link_move_left  + link_preview, "&lt;",""); }
-							    contextmenu += this.button_edit( link_delete     + link_preview, "x","");
-			if (i < remote_definition.length) { contextmenu	+= this.button_edit( link_move_right + link_preview, "&gt;",""); }
+			if (i > 0) 			    { contextmenu += this.button_edit( link_move_left  + link_preview, "&lt;",""); }
+							      contextmenu += this.button_edit( link_delete     + link_preview, "x","");
+			if (i+1 < remote_definition.length) { contextmenu	+= this.button_edit( link_move_right + link_preview, "&gt;",""); }
 
 												
 			if (button[0] == "LINE") 			{ next_button = this.line(""); }
