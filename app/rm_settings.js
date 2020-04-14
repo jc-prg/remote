@@ -42,7 +42,7 @@ function rmSettings (name) {	// IN PROGRESS
 	this.active       = false;
 	this.app_name     = name;
 	this.e_settings   = ["setting1","setting2","setting3","setting4"]; 
-	this.e_remotes    = ["remote1","remote2","remote3","remote_edit"];
+	this.e_remotes    = ["remote1","remote2","remote3","remote_edit1","remote_edit2"];
 	this.input_width  = "110px";
 	this.initial_load = true;
 	this.edit_mode    = false;
@@ -272,9 +272,9 @@ function rmSettings (name) {	// IN PROGRESS
 		for (var i=0; i<this.e_remotes.length; i++)  { changeVisibility(this.e_remotes[i],show_remotes);  }
 		for (var i=0; i<this.e_settings.length; i++) { changeVisibility(this.e_settings[i],show_settings); }
 		
-		if (this.edit_mode == true && show_remotes)   		{ elementVisible("remote_edit"); }
-		else if (this.edit_mode == false && show_remotes)	{ elementHidden("remote_edit"); }
-		else if (show_settings)					{ elementHidden("remote_edit"); }
+		if (this.edit_mode == true && show_remotes)   		{ elementVisible("remote_edit1"); elementVisible("remote_edit2"); }
+		else if (this.edit_mode == false && show_remotes)	{ elementHidden("remote_edit1");  elementHidden("remote_edit2"); }
+		else if (show_settings)					{ elementHidden("remote_edit1");  elementHidden("remote_edit2"); }
 		}
 
 	//------------------------------

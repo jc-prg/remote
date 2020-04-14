@@ -63,6 +63,7 @@
    opacity: 0.9;
    font-family:sans-serif;
    font-size: 12px;
+   z-index: 80;
 }
 
 .remoteblock {
@@ -71,11 +72,12 @@
 
 .remote-line {
         margin-top       : 5px;
-	width		 : 100%;
+	width		 : 330px;
 	height           : 15px;
 	overflow         : hidden;
 	float		 : left;
 	position	 : relative;
+	float            : inherit;
 	}
 	
 .remote-line-text {

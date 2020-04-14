@@ -90,8 +90,9 @@ function remoteInit (first_load=true) {
 	setTextById("remote1","");
 	setTextById("remote2","");
 	setTextById("remote3","");
-	setTextById("remote_edit","");
-	
+	setTextById("remote_edit1","");
+	setTextById("remote_edit2","");
+		
 	if (rm3update) {
 		setTimeout(function(){ rm3msg.hide(); }, 2000);
 		rm3update = false;

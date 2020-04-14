@@ -203,7 +203,8 @@ function rmStart(name) {
 	// add links to devices to drop down menu
 	this.add_devices          = function(data,menuItems) {
 	
-		elementHidden("remote_edit"); // no edit mode in start menu
+		elementHidden("remote_edit1"); // no edit mode in start menu
+		elementHidden("remote_edit2"); // no edit mode in start menu
 
 		// set vars
     		var menu    = "";
@@ -228,7 +229,8 @@ function rmStart(name) {
 
 		// replace old menu
     		setTextById(menuItems,menu);
-    		setTextById("remote_edit","");
+    		setTextById("remote_edit1","");
+    		setTextById("remote_edit2","");
 		}
 
 
