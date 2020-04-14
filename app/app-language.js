@@ -33,23 +33,25 @@ var language = {
 
 		"FORMAT_INCORRECT"		: "format is not correct",
 		
-		"MANUAL_CHANNEL"		: "<ul>" +
+		"MANUAL_CHANNEL"		: "<b>Edit Channels:</b><ul>" +
 						  "<li>Fill dict for channel definition using the JSON format: " +
 						  "<i>&quot;Channel Name&quot; : [ &quot;button&quot;, &quot;button&quot;, &quot;makro&quot;]</i></li>" +
 						  "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;makro_type&gt;_&lt;button&gt;&quot; to define buttons in channel makro; makro types are: makro, scene-on, scene-off, dev-on, dev-off</li>" +
 						  "</ul>",
-		"MANUAL_DISPLAY"		: "<ul>" +
+		"MANUAL_DISPLAY"		: "<b>Edit Display Definition</b><ul>" +
 						  "<li>Fill dict for display definition using the JSON format: <i>&quot;Label&quot; : &quot;field_from_device&quot;</i>.</li>" +
 						  "</ul>",
-		"MANUAL_REMOTE"			: "<ul>" +
+		"MANUAL_REMOTE"			: "<b>Edit Device Remote Control:</b><ul>" +
 						  "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
 						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
 						  "<li>Add &quot;DISPLAY&quot; to add a display that show status information (details defined below).</li>" +
+						  "<li>Add &quot;.&quot; to add an empty space.</li>" +
 						  "</ul>",
-		"MANUAL_SCENE"			: "<ul>" +
+		"MANUAL_SCENE"			: "<b>Edit Scene Remote Control:</b><ul>" +
 						  "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
 						  "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;makro_type&gt;_&lt;button&gt;&quot; to define buttons in the remote layout; makro types are: makro, scene-on, scene-off, dev-on, dev-off</li>" +
 						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
+						  "<li>Add &quot;.&quot; to add an empty space.</li>" +
 						  "</ul>",
 		
 		"MODE_EDIT"			: "Edit Mode",
