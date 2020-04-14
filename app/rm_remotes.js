@@ -172,19 +172,23 @@ function rmRemote(name) {
 			var button  	= remote_definition[i];
 			var cmd     	= device + "_" + button;
 			
-			this.button_width = "60px;";
-			var link_preview = this.app_name+".device_remote('remote1','"+device+"','remote_json_buttons','remote_json_display');";
-			var link_delete  = this.app_name+".remote_delete_button('device','remote_edit2','"+device+"','"+i+"','remote_json_buttons');";
+			this.button_width   = "30px;";
+			var link_preview    = this.app_name+".device_remote('remote1','"+device+"','remote_json_buttons','remote_json_display');";
+			var link_delete     = this.app_name+".remote_delete_button('device','remote_edit2','"+device+"','"+i+"','remote_json_buttons');";
+			var link_move_left  = this.app_name+".remote_move_button('device','remote_edit2','"+scene+"',"+i+",'remote_json_buttons','left');";
+			var link_move_right = this.app_name+".remote_move_button('device','remote_edit2','"+scene+"',"+i+",'remote_json_buttons','right');";
 
-			var contextmenu	= "["+i+"] " + cmd.split("||")[0] + "<br/><br/>";						
-			contextmenu	+= this.button_edit( link_delete + link_preview, "delete","");
+			var contextmenu	= "["+i+"] " + cmd.split("||")[0] + "<br/><br/>";		
+			if (i > 0) 			  { contextmenu += this.button_edit( link_move_left  + link_preview, "&lt;",""); }
+							    contextmenu += this.button_edit( link_delete     + link_preview, "x","");
+			if (i < remote_definition.length) { contextmenu	+= this.button_edit( link_move_right + link_preview, "&gt;",""); }
 						
 			if (button == "LINE")	 			{ next_button = this.line(""); }
 			else if (button.indexOf("LINE||") == 0) 	{ next_button = this.line(button.split("||")[1]); }
 			else if (button == ".") 			{ next_button = this.button_device( device+i, ".", "empty", "", "disabled" ) }
 			else if (button == "DISPLAY")			{ next_button = this.display(id,device,remote_displaysize); }
 			else if (remote_buttons.includes(button)) 	{ next_button = this.button_device( cmd, button, "", cmd, "" ); this.active_buttons.push(cmd); }
-			else if (this.edit_mode)         		{ next_button = this.button_device( cmd, button, "notfound", cmd, "" ); }
+			else if (this.edit_mode)         		{ next_button = this.button_device_add( cmd, button, "notfound", cmd, "" ); }
 			else                            		{ next_button = this.button_device( cmd, button, "notfound", cmd, "disabled" ); }
 
 			if (this.edit_mode) {
@@ -420,13 +424,18 @@ function rmRemote(name) {
 			var button 	= remote_definition[i].split("_");
 			var cmd    	= button[0] + "_" + button[1];
 
-			this.button_width = "60px;";
-			var link_preview = this.app_name+".scene_remote('remote1','"+scene+"','scene_json_buttons','scene_json_channels');";
-			var link_delete  = this.app_name+".remote_delete_button('device','remote_edit2','"+scene+"','"+i+"','scene_json_buttons');";
+			this.button_width   = "30px;";
+			var link_preview    = this.app_name+".scene_remote('remote1','"+scene+"','scene_json_buttons','scene_json_channels');";
+			var link_delete     = this.app_name+".remote_delete_button('scene','remote_edit2','"+scene+"','"+i+"','scene_json_buttons');";
+			var link_move_left  = this.app_name+".remote_move_button('scene','remote_edit2','"+scene+"',"+i+",'scene_json_buttons','left');";
+			var link_move_right = this.app_name+".remote_move_button('scene','remote_edit2','"+scene+"',"+i+",'scene_json_buttons','right');";
 
-			var contextmenu	 = "["+i+"] " + cmd.split("||")[0] + "<br/><br/>";						
-			contextmenu	+= this.button_edit( link_delete + link_preview, "delete","");
-						
+			var contextmenu	= "["+i+"] " + cmd.split("||")[0] + "<br/><br/>";						
+			if (i > 0) 			  { contextmenu += this.button_edit( link_move_left  + link_preview, "&lt;",""); }
+							    contextmenu += this.button_edit( link_delete     + link_preview, "x","");
+			if (i < remote_definition.length) { contextmenu	+= this.button_edit( link_move_right + link_preview, "&gt;",""); }
+
+												
 			if (button[0] == "LINE") 			{ next_button = this.line(""); }
 			else if (button[0].indexOf("LINE||") == 0)	{ next_button = this.line(button[0].split("||")[1]); }
 			else if (button[0] == ".") 			{ next_button = this.button_device( scene+i, ".", "", "", "disabled" ); }
@@ -438,9 +447,14 @@ function rmRemote(name) {
 									  this.active_buttons.push("scene_off_"+button[1]); }
 			else 						{ next_button = this.button_device( cmd, button[1], "", cmd, "" );
 									  this.active_buttons.push(cmd); }
-			if (this.edit_mode) {										  
+									  
+			if (this.edit_mode) {
+				if (button[0].indexOf("LINE") == 0)		{ this.button_tooltip.settings("onmouseover","120px","80px",20); }
+				else if (button[0].indexOf("DISPLAY") == 0)	{ this.button_tooltip.settings("onmouseover","120px","80px",90); }
+				else				    		{ this.button_tooltip.settings("onmouseover","120px","80px",47); }
 				next_button = this.button_tooltip.create( next_button, contextmenu, i );
 				}
+
 			remote += next_button;
 			}
 
@@ -564,7 +578,18 @@ function rmRemote(name) {
 
 		if (type == "scene")		{ this.scene_edit_json(id,scene,remote=value_new,channel=""); }
 		else if (type == "device")	{ this.device_edit_json(id,scene,remote=value_new,display=""); }
+		}
+	
+	this.remote_move_button	= function (type,id,scene,button,remote,left_right) {
+
+		value     = this.get_json_value(remote);
 		
+		var temp = value[button];
+		if (left_right == "left")  { if (button > 0)		{ var target = button - 1; value[button] = value[target]; value[target] = temp; } }
+		if (left_right == "right") { if (button < value.length) { var target = button + 1; value[button] = value[target]; value[target] = temp; } }
+		
+		if (type == "scene")		{ this.scene_edit_json(id,scene,remote=value,channel=""); }
+		else if (type == "device")	{ this.device_edit_json(id,scene,remote=value,display=""); }
 		}
 	
 
@@ -830,8 +855,9 @@ function rmRemote(name) {
 		var label2		= this.button_image( label, style );
 		if (label == ".")	{ disabled = "disabled"; label2[0] = "&nbsp;"; }
 	        
-	        var button = this.button( id, label2[0], label2[1], ['apiButtonAdd("'+device_button[0]+'","'+device_button[1]+'");', this.app_name + '.button_tooltip.toggleAll("' + cmd + '");'], disabled );
-	        button     = this.button_tooltip.create( button, "not implemented yet: " +cmd, cmd );
+	        var button = this.button( id, label2[0], label2[1], 'apiButtonAdd("'+device_button[0]+'","'+device_button[1]+'");', disabled );
+	        //var button = this.button( id, label2[0], label2[1], ['apiButtonAdd("'+device_button[0]+'","'+device_button[1]+'");', this.app_name + '.button_tooltip.toggleAll("' + cmd + '");'], disabled );
+	        //button     = this.button_tooltip.create( button, "not implemented yet: " +cmd, cmd );
 		return button;		
 		}		
 
