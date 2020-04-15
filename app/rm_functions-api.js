@@ -63,7 +63,10 @@ function apiAlertReturn(data) {
         if (data["REQUEST"]["Command"] == "AddTemplate")  	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, 2000); }
         if (data["REQUEST"]["Command"] == "EditDevice")   	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, 2000); }
         if (data["REQUEST"]["Command"] == "EditScene")   	{ setTimeout(function(){ rm3remotes.create( "scene",  data["REQUEST"]["Scene"] ); }, 2000); }
-	if (data["REQUEST"]["Command"] == "ChangeVisibility" )	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, 2000); }
+	if (data["REQUEST"]["Command"] == "ChangeVisibility" )	{ 
+		if (data["REQUEST"]["Device"] == "device") 	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, 2000); }
+		if (data["REQUEST"]["Device"] == "scene") 	{ setTimeout(function(){ rm3remotes.create( "scene", data["REQUEST"]["Device"] ); }, 2000); }
+		}
 	
         if (data["REQUEST"]["Command"] == "DeleteDevice") 	{ setTimeout(function(){ rm3cookie.set("remote",""); rm3remotes.create( "", "" ); }, 2000); }
         if (data["REQUEST"]["Command"] == "DeleteScene") 	{ setTimeout(function(){ rm3cookie.set("remote",""); rm3remotes.create( "", "" ); }, 2000); }
