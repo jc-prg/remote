@@ -36,8 +36,8 @@
 * OK - Caching for interfaces
 * OK - Set value via API (e.g. volume)
 * OK - Return message and code for each API call (to be processed by client) -> to be checked if own or HTML return code
+* OK - Add / edit scene ... (JSON)
 
-* IN PROGRESS - Add / edit scene ...
 * IN PROGRESS - Integrate sonyapilib: basic function; registration via web-interface open
 * IN PROGRESS - add KODIjson (basic commands work, to be tested and additional commands to be added)
 
@@ -122,6 +122,9 @@
 * OK - hide not used buttons per default with button to show/hide
 * OK - edit device parameters via settings page (description, driver, image)
 * OK - menu with scrollbars
+* OK - add / edit scene remote control; JSON
+* OK - edit remote controls including preview
 
-* IN PROGRESS - add / edit scene
+- add / edit remote control channel definition via UI
+- edit device definition (JSON)
 

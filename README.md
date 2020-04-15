@@ -30,6 +30,7 @@ Edit remote layouts in a browser
 
 * add/edit/delete device remote controls via web-client
 * add/edit/delete scene remote controls via web-client
+* edit remote layouts including preview in the browser
 * API for Sony devices (sonyapilib)
 * optimized UI (e.g. menu)
 * ...
