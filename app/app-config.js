@@ -15,7 +15,7 @@ var RESTip         = location.host; var ip = RESTip.split(":");
 var RESTurl_test   = "http://"+ip[0]+":5003/";
 var RESTurl_prod   = "http://"+ip[0]+":5002/";
 var RESTurl        = "http://"+ip[0]+":"+stage_port+"/";
-var rm3version     = "v2.4.2";
+var rm3version     = "v2.4.3";
 var rm3title       = "jc://remote/";
 var rm3update      = false;
 var rm3background  = "img/remote2.png";

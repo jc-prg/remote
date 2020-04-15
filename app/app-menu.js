@@ -6,6 +6,7 @@
 /* INDEX:
 function rmMenu(name, menu)
         this.init                 = function(data)
+    		window.onresize = function(event)
 	this.add_devices          = function(data)
 	this.remoteToggleEditMode = function()
 	this.add_scenes           = function(data)

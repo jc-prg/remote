@@ -6,7 +6,7 @@ function check_theme()
 ./app-language.js (-1)
 ----------------------------
 ----------------------------
-./app-main.js (284)
+./app-main.js (285)
 ----------------------------
 function remoteInit (first_load=true)
 function remoteFirstLoad_load()
@@ -24,10 +24,11 @@ function remoteStartMenu_load()
 function remoteStartMenu(data)
 function remoteLastFromCookie()
 ----------------------------
-./app-menu.js (305)
+./app-menu.js (319)
 ----------------------------
 function rmMenu(name, menu)
         this.init                 = function(data)
+    		window.onresize = function(event)
 	this.add_devices          = function(data)
 	this.remoteToggleEditMode = function()
 	this.add_scenes           = function(data)
@@ -55,7 +56,7 @@ function rmStart(name)
 ./rm_config_stage.js (-1)
 ----------------------------
 ----------------------------
-./rm_functions-api.js (338)
+./rm_functions-api.js (423)
 ----------------------------
 function apiCheckUpdates()
 function apiCheckUpdates_msg( data )
@@ -65,14 +66,19 @@ function setVolume(main_audio,volume)
 function apiSetVolume(volume)
 function apiTemplateAdd_exe(device,template)
 function apiTemplateAdd(device_id, template_id)
+function apiSceneAdd(data)
+function apiSceneEdit(device,prefix,fields)
+function apiSceneJsonEdit(device,json_buttons,json_channel)
+function apiSceneDelete_exe(device)
+function apiSceneDelete(scene_id)
 function apiDeviceEdit(device,prefix,fields)
 function apiDeviceJsonEdit(device,json_buttons,json_display)
 function apiDeviceMovePosition_exe(type,device,direction)
 function apiDeviceMovePosition(data)
-function apiDeviceChangeVisibility(device_id, value_id)
 function apiDeviceAdd(data,onchange)
 function apiDeviceDelete_exe(device)
 function apiDeviceDelete(device_id)
+function apiRemoteChangeVisibility(type, device_id, value_id)
 function apiCommandSend(cmdButton, sync="", callback="")
 function apiCommandDelete_exe(button)
 function apiCommandDelete(device_id, button_id)
@@ -90,19 +96,24 @@ function setNavTitle (title)
 function image(file)
 function writeKeyBoard ()
 ----------------------------
-./rm_remotes.js (769)
+./rm_remotes.js (1012)
 ----------------------------
 function rmRemote(name)
 	this.init                 = function (data)
 	this.create               = function (type="",rm_id="")
-	this.device_remote        = function (id="", device="")
-	this.device_remote_json	  = function (id,device,remote_definition,remote_display,reset="")
+	this.device_remote        = function (id="", device="", preview_remote="", preview_display="")
 	this.device_description   = function (id, device)
 	this.device_notused       = function (id, device)
 	this.device_notused_showhide = function ()
 	this.device_edit          = function (id, device)
-	this.scene_remote         = function (id="", scene="")
-	this.scene_edit           = function (id, device)
+	this.device_edit_json	  = function (id, device, remote="", display={})
+	this.get_json_value	  = function(id,default_data)
+	this.scene_remote         = function (id="", scene="", preview_remote="", preview_channel="")
+	this.scene_edit           = function (id, scene)
+	this.scene_edit_json	  = function (id,scene,remote="",channel="")
+	this.remote_add_button	= function (type,id,scene,button,remote,position="")
+	this.remote_delete_button	= function (type,id,scene,button,remote)
+	this.remote_move_button	= function (type,id,scene,button,remote,left_right)
 	this.scene_channels       = function (id, scene)
 		channels     = channels.sort(function (a, b)
 	this.remoteToggleEditMode = function ()
@@ -134,7 +145,7 @@ function rmRemote(name)
 	this.tab_line		= function(text="")
 function writeMakroButton ()
 ----------------------------
-./rm_settings.js (407)
+./rm_settings.js (426)
 ----------------------------
 function rmSettings (name)
 	this.init               = function (data)
@@ -156,14 +167,14 @@ function rmSettings (name)
 	this.button_show        = function ()
 	this.button_deact       = function (menu_entry=false)
 	this.button_stage       = function ()
-	this.button             = function (onclick,label)
-	this.button_small       = function (onclick,label)
+	this.button             = function (onclick,label,disabled="")
+	this.button_small       = function (onclick,label,disabled="")
 	this.tab_row            = function (td1,td2)
 	this.input              = function (id,onclick="")
 	this.select             = function (id,title,data,onchange="")
 	this.remoteToggleEditMode = function ()
 ----------------------------
-./rm_status.js (368)
+./rm_status.js (365)
 ----------------------------
 function statusShowApiStatusLED(color)
 function statusShowApiStatus( color, wait )
@@ -178,7 +189,7 @@ function statusCheck(data={})
  USAGE ...
 ----------------------------
   4 - apiAlertReturn
-  4 - apiButtonAdd
+  5 - apiButtonAdd
   2 - apiButtonDelete
   2 - apiButtonDelete_exe
   2 - apiCheckUpdates
@@ -186,7 +197,6 @@ function statusCheck(data={})
   2 - apiCommandDelete
   2 - apiCommandDelete_exe
   3 - apiDeviceAdd
-  2 - apiDeviceChangeVisibility
   2 - apiDeviceDelete
   2 - apiDeviceDelete_exe
   2 - apiDeviceEdit
@@ -195,8 +205,14 @@ function statusCheck(data={})
   5 - apiDeviceMovePosition_exe
   3 - apiMakroSend
   2 - apiMakroSend_hide
+  3 - apiRemoteChangeVisibility
+  2 - apiSceneAdd
+  2 - apiSceneDelete
+  2 - apiSceneDelete_exe
+  2 - apiSceneEdit
+  2 - apiSceneJsonEdit
   1 - apiSetVolume
-  2 - apiTemplateAdd
+  3 - apiTemplateAdd
   2 - apiTemplateAdd_exe
   2 - check_theme
   6 - clickMenu
