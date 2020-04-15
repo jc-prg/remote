@@ -13,6 +13,9 @@ Light theme on iPhone XS
 ![dark theme](docs/remote_dark.png)
 Dark theme on iPhone XS
 
+![edit mode](docs/remote_edit.png)
+Edit remote layouts in a browser
+
 ## Supported Hardware
 
 * Broadlink RM 3 Mini - Infrared receiver/sender
