@@ -18,9 +18,9 @@ function rmRemote(name)
 	this.scene_remote         = function (id="", scene="", preview_remote="", preview_channel="")
 	this.scene_edit           = function (id, scene)
 	this.scene_edit_json	  = function (id,scene,remote="",channel="")
-	this.remote_add_button	= function (type,id,scene,button,remote,position="")
-	this.remote_delete_button	= function (type,id,scene,button,remote)
-	this.remote_move_button	= function (type,id,scene,button,remote,left_right)
+	this.remote_add_button	  = function (type,id,scene,button,remote,position="")
+	this.remote_delete_button = function (type,id,scene,button,remote)
+	this.remote_move_button	  = function (type,id,scene,button,remote,left_right)
 	this.scene_channels       = function (id, scene)
 		channels     = channels.sort(function (a, b)
 	this.remoteToggleEditMode = function ()
@@ -30,10 +30,10 @@ function rmRemote(name)
         this.template_select      = function (id,title,data,onchange="")
         this.input                = function (id,value="")
         this.select               = function (id,title,data,onchange="",selected_value="")
-	this.line		= function (text="")
+	this.line		  = function (text="")
         this.display              = function (id, device, style="" )
         this.display_alert        = function (id, device, style="" )
-        this.display_json	= function ( id, json, format="" )
+        this.display_json	  = function ( id, json, format="" )
 	this.button               = function (id, label, style, script_apiCommandSend, disabled )
         this.button_edit          = function (onclick,label,disabled="")
 	this.button_device        = function (id, label, style, cmd, disabled )
@@ -48,8 +48,8 @@ function rmRemote(name)
 	this.empty                = function (id,comment="")
 	this.log                  = function (msg)
 	this.show                 = function (device="")
-	this.tab_row            = function (td1,td2="")
-	this.tab_line		= function(text="")
+	this.tab_row              = function (td1,td2="")
+	this.tab_line	  	  = function(text="")
 function writeMakroButton ()
 */
 //--------------------------------
@@ -584,7 +584,7 @@ function rmRemote(name) {
 	// edit remote in browser
 	//--------------------------------
 	
-	this.remote_add_button	= function (type,id,scene,button,remote,position="") {
+	this.remote_add_button	  = function (type,id,scene,button,remote,position="") {
 	
 		if (document.getElementById(button)) { button = getValueById(button); }
 		if (button == "") { rm3msg.alert(lang("BUTTON_INSERT_NAME")); return; }
@@ -602,7 +602,7 @@ function rmRemote(name) {
 		else if (type == "device")	{ this.device_edit_json(id,scene,remote=value_new,display=""); }
 		}
 	
-	this.remote_delete_button	= function (type,id,scene,button,remote) {
+	this.remote_delete_button = function (type,id,scene,button,remote) {
 
 		if (document.getElementById(button)) { button = getValueById(button); }
 		if (button == "") { rm3msg.alert(lang("BUTTON_SELECT")); return; }
@@ -617,7 +617,7 @@ function rmRemote(name) {
 		else if (type == "device")	{ this.device_edit_json(id,scene,remote=value_new,display=""); }
 		}
 	
-	this.remote_move_button	= function (type,id,scene,button,remote,left_right) {
+	this.remote_move_button	  = function (type,id,scene,button,remote,left_right) {
 
 		value     = this.get_json_value(remote);
 		
@@ -752,7 +752,7 @@ function rmRemote(name) {
                 }
 
         // write line with text ... 
-	this.line		= function (text="") {
+	this.line		  = function (text="") {
           	var remote = "";
 		remote += "<div class='remote-line'><hr/>";
 		if (text != "") { remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>"; }
@@ -804,7 +804,7 @@ function rmRemote(name) {
         	}
         	
         // show json for buttons in text field
-        this.display_json	= function ( id, json, format="" ) {
+        this.display_json	  = function ( id, json, format="" ) {
         
         	var text = "";
         	text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:320px;height:200px;\">";
@@ -979,14 +979,14 @@ function rmRemote(name) {
 		}
 
         // write table tags
-	this.tab_row            = function (td1,td2="")  { 
+	this.tab_row              = function (td1,td2="")  { 
 		if (td1 == "start")	{ return "<table border=\"0\" width=\""+td2+"\">"; }
 		else if (td1 == "end")	{ return "</table>"; }
 		else if (td2 == false)	{ return "<tr><td valign=\"top\" colspan=\"2\">" + td1 + "</td></tr>"; }
 		else			{ return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
 		}
 
-	this.tab_line		= function(text="") {
+	this.tab_line	  	  = function(text="") {
 		return "<tr><td colspan='2'><hr/></td></tr>";
 		}
 
