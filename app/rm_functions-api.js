@@ -151,18 +151,21 @@ function apiSceneEdit(device,prefix,fields) {
 // edit button and display data using JSON
 //--------------------------------
 
-function apiSceneJsonEdit(device,json_buttons,json_channel) {
+function apiSceneJsonEdit(device,json_buttons,json_channel,json_devices) {
 
         buttons   = check_if_element_or_value(json_buttons,false);
         channel   = check_if_element_or_value(json_channel,false);
+        devices   = check_if_element_or_value(json_devices,true);
 
 	try { json_buttons = JSON.parse(buttons); } catch(e) { rm3msg.alert("<b>JSON Buttons - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 	try { json_channel = JSON.parse(channel); } catch(e) { rm3msg.alert("<b>JSON Channel - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+	try { json_devices = JSON.parse(devices); } catch(e) { rm3msg.alert("<b>JSON Devices - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 	
 	var info = {};
 	info["remote"]  = json_buttons;
 	info["channel"] = json_channel;
-	
+	info["devices"] = json_devices;
+		
 	rm3app.requestAPI("POST",["scene",device], info, apiAlertReturn);	
 	}
 

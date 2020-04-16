@@ -20,6 +20,8 @@ var language = {
 		"BUTTON_RECORD"			: "Record button &quot;{0}&quot; for device &quot;{1}&quot;: click OK and then press button within the next 5 seconds.",
 		"BUTTON_SELECT"			: "Please select button.",
 		
+		"CHANNEL_USE_JSON"		: "Please use JSON to edit the channel list.",
+
 		"DEVICE_ASK_DELETE"		: "Do you really want to delete device '{0}'?",
 		"DEVICE_DONT_EXISTS"		: "Device '{0}' doesn't exists!",
 		"DEVICE_EXISTS"			: "Device '{0}' already exists!",
@@ -37,6 +39,9 @@ var language = {
 						  "<li>Fill dict for channel definition using the JSON format: " +
 						  "<i>&quot;Channel Name&quot; : [ &quot;button&quot;, &quot;button&quot;, &quot;makro&quot;]</i></li>" +
 						  "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;makro_type&gt;_&lt;button&gt;&quot; to define buttons in channel makro; makro types are: makro, scene-on, scene-off, dev-on, dev-off</li>" +
+						  "</ul>",
+		"MANUAL_DEVICES"		: "<b>Edit Devices for Scene</b><ul>" +
+						  "<li>Fill array of included devices using the JSON format: [&quot;device_id&quot;,&quot;device_id&quot;]</i>.</li>" +
 						  "</ul>",
 		"MANUAL_DISPLAY"		: "<b>Edit Display Definition</b><ul>" +
 						  "<li>Fill dict for display definition using the JSON format: <i>&quot;Label&quot; : &quot;field_from_device&quot;</i>.</li>" +
@@ -66,8 +71,8 @@ var language = {
 		"SCENE_EXISTS"			: "Scene '{0}' already exists!",
 		"SCENE_INSERT_ID"		: "Please insert ID for scene (no special characters).",
 		"SCENE_INSERT_LABEL"		: "Please insert label for scene.",
-		"DEVICE_SELECT"			: "Please select scene.",
-
+		"SCENE_SELECT"			: "Please select scene.",
+		
 		"SETTINGS"			: "Settings",
 
 		}
