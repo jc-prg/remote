@@ -127,9 +127,9 @@ function rmRemote(name) {
 			// create remote for device
 			this.device_remote("remote1",rm_id);
 			this.device_description("remote2",rm_id);
-			this.device_notused("remote3",rm_id);
       			this.device_edit("remote_edit1",rm_id);
       			this.device_edit_json("remote_edit2",rm_id);
+			this.device_notused("remote3",rm_id);
 
 			// show
 			this.show(rm_id);
@@ -241,11 +241,19 @@ function rmRemote(name) {
 	this.device_notused       = function (id, device) {
 
 		var remote            = "";
+		var link_preview      = this.app_name+".device_remote('remote1','"+device+"','remote_json_buttons','remote_json_display');";
+		link_preview         += this.app_name+".device_notused('"+id+"','"+device+"');";
 		var remote_buttons    = this.data["DATA"]["devices"][device]["remote"];
 		var device_buttons    = this.data["DATA"]["devices"][device]["button_list"];
 		var notused           = [];
 		
-		// difference of arrays
+		this.button_width     = "120px";
+		
+		// show not used buttons if edit mode
+		if (this.edit_mode)	{ display = "block"; sign = "−"; def = getValueById('remote_json_buttons'); remote_buttons  = JSON.parse(def); }
+		else			{ display = "none";  sign = "+"; }		
+
+		// identify difference of arrays
 		for (var i=0;i<device_buttons.length;i++) {
 			if (remote_buttons.includes(device_buttons[i]) == false) { notused.push(device_buttons[i]); }
 			}
@@ -253,18 +261,30 @@ function rmRemote(name) {
 		// show / hide buttons that are not used
 		if (notused.length > 0) {
 			var onclick = this.app_name + ".device_notused_showhide();";
-			remote += "<div id='show_hide_not_used' onclick='" + onclick + "'>+</div>";
+			remote += "<div id='show_hide_not_used' onclick='" + onclick + "'>"+sign+"</div>";
 			}
-			
-		remote += "<div id='buttons_not_used' style='display:none;position:relative;top:-7px;'>";
+		
+		remote += "<div id='buttons_not_used' style='display:"+display+";position:relative;top:-7px;'>";
 		remote += this.line("not used in remote control");
 
 		// create buttons not used
 		for (var i=0; i<notused.length; i++) {
-			var button = notused[i];
-			var cmd    = device + "_" + button;
-			remote += this.button_device( cmd, button, "", cmd, "" );
+			var button  = notused[i];
+			var cmd     = device + "_" + button;
+			next_button = this.button_device( "not_used"+i, button, "", cmd, "" );
+			
+			if (this.edit_mode) {
+				var link_add    = this.app_name+".remote_add_button('device', 'remote_edit2', '"+device+"', 'not_used_"+i+"', 'remote_json_buttons');";
+				var input_add   = "<input id='not_used_"+i+"' name='not_used_"+i+"' value='"+button+"' style='display:none;'>";
+				var contextmenu = input_add + "["+i+"] "+ cmd + "<br/><br/>" + this.button_edit( link_add + link_preview, "move to remote","");;
+				
+				this.button_tooltip.settings(this.tooltip_mode,this.tooltip_width,"80px",this.tooltip_distance);
+				next_button = this.button_tooltip.create( next_button, contextmenu, "not_used"+i );
+				}
+
+			remote     += next_button;
 			}
+
 		remote += "</div>";
 
 		// print
@@ -520,7 +540,7 @@ function rmRemote(name) {
 		// print
 		setTextById(id,remote);
 		}
-c
+
 
 	// edit scene
 	this.scene_edit           = function (id, scene) {
@@ -611,9 +631,10 @@ c
 		}
 
 
-	// edit remote in browser
+	// edit remote in browser (JSON)
 	//--------------------------------
-	
+
+	// add button to JSON	
 	this.remote_add_button	  = function (type,id,scene,button,remote,position="") {
 	
 		if (document.getElementById(button)) { button = getValueById(button); }
@@ -632,6 +653,7 @@ c
 		else if (type == "device")	{ this.device_edit_json(id,scene,remote=value_new,display=""); }
 		}
 	
+	// delete button from JSON
 	this.remote_delete_button = function (type,id,scene,button,remote) {
 
 		if (document.getElementById(button)) { button = getValueById(button); }
@@ -647,6 +669,7 @@ c
 		else if (type == "device")	{ this.device_edit_json(id,scene,remote=value_new,display=""); }
 		}
 	
+	// move button in JSON (left or right)
 	this.remote_move_button	  = function (type,id,scene,button,remote,left_right) {
 
 		value     = this.get_json_value(remote);
@@ -659,6 +682,7 @@ c
 		else if (type == "device")	{ this.device_edit_json(id,scene,remote=value,display=""); }
 		}
 	
+	// import remote definition from template to JSON
 	this.remote_import_templates = function (type,id,scene,template,remote) {
 		value      = getValueById(template);
 		if (value == "") { rm3msg.alert(lang("DEVICE_SELECT_TEMPLATE")); return; }
