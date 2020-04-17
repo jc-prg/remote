@@ -185,6 +185,7 @@ function rmRemote(name) {
 			if (this.edit_mode) {			
 				var contextmenu	     = "["+i+"] " + cmd.split("||")[0] + "<br/><br/>";		
 				var link_preview     = this.app_name+".device_remote('remote1','"+device+"','remote_json_buttons','remote_json_display');";
+				link_preview        += this.app_name+".device_notused('remote3','"+device+"');";
 				var link_delete      = this.app_name+".remote_delete_button('device','remote_edit2','"+device+"','"+i+"','remote_json_buttons');";
 				var link_move_left   = this.app_name+".remote_move_button('device','remote_edit2','"+device+"',"+i+",'remote_json_buttons','left');";
 				var link_move_right  = this.app_name+".remote_move_button('device','remote_edit2','"+device+"',"+i+",'remote_json_buttons','right');";
@@ -307,6 +308,7 @@ function rmRemote(name) {
 
 		var link_template = this.app_name+".remote_import_templates('device','remote_edit2','"+device+"','add_template','remote_json_buttons');";
 		var link_preview  = this.app_name+".device_remote('remote1','"+device+"','remote_json_buttons','remote_json_display');"
+		link_preview     += this.app_name+".device_notused('remote3','"+device+"');";
 		var remote        = "";
 		
 		var remote_buttons    = this.data["DATA"]["devices"][device]["remote"];
