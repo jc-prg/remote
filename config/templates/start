@@ -24,6 +24,7 @@ if [ ! ${D}config ]; then
   echo " 's' - start"
   echo " 'r' - restart"
   echo " 'u' - update (from github)"
+  echo " 'v' - update (from github) and rebuild container"
   count=0
   while : ; do
     read -n 1 k <&1
@@ -41,6 +42,10 @@ if [ ! ${D}config ]; then
     elif [[ ${D}k = u ]] ; then
        config="update"
        printf "\n... update from Github.\n"
+       break
+    elif [[ ${D}k = v ]] ; then
+       config="rebuild"
+       printf "\n... update from Github and rebuild docker container.\n"
        break
     else
        ((count=${D}count+1))
@@ -77,6 +82,34 @@ elif [ ${D}config == "update" ]; then
     cd config/
     ./create ${REMOTE_CURRENT_STAGE}
     cd ..
+    
+    echo "Restart docker"
+    ${DOCKERCOMPOSE_DIR}/docker-compose -f ${REMOTE_DIR}/docker-compose.yml up -d
+
+elif [ ${D}config == "rebuild" ]; then
+
+    echo "Change dir"
+    cd ${REMOTE_DIR}
+    
+    echo "Stop docker"
+    ${DOCKERCOMPOSE_DIR}/docker-compose -f ${REMOTE_DIR}/docker-compose.yml stop
+    
+    echo "Update REMOTE from repository"
+    git stash
+    git pull
+    
+    echo "Update MODULES from repository"
+    cd ${REMOTE_DIR_JCMODULES}
+    git pull
+    
+    echo "Create new configuration"
+    cd ${REMOTE_DIR}
+    cd config/
+    ./create ${REMOTE_CURRENT_STAGE}
+    cd ..
+    
+    echo "Rebuild docker container"
+    ${DOCKERCOMPOSE_DIR}/docker-compose -f ${REMOTE_DIR}/docker-compose.yml rebuild
     
     echo "Restart docker"
     ${DOCKERCOMPOSE_DIR}/docker-compose -f ${REMOTE_DIR}/docker-compose.yml up -d
