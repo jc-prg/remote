@@ -61,14 +61,19 @@ function rmMenu(name, menu) {
     		window.onresize = function(event) {
     			height = (window.innerHeight - 70);
     			document.getElementById("menuItems").style.maxHeight  = height + "px"; 
-    			document.getElementById("menuItems2").style.maxHeight = height + "px"; 		
-    			document.getElementById("remote_nav").style.maxHeight = window.innerHeight + "px"; 		
+    			document.getElementById("menuItems2").style.maxHeight = height + "px"; 
+    			this.menu_height();		
 			};
+
 		height = (window.innerHeight - 70);
 		document.getElementById("menuItems").style.maxHeight  = height + "px"; 
-		document.getElementById("menuItems2").style.maxHeight = height + "px"; 		
-		document.getElementById("remote_nav").style.maxHeight = window.innerHeight + "px"; 		
+		document.getElementById("menuItems2").style.maxHeight = height + "px";
+		this.menu_height();	
                 }
+                
+        this.menu_height	  = function() {
+   		document.getElementById("remote_nav").style.maxHeight = (pageHeight() - 10) + "px"; // window.innerHeight + "px"; // 
+        	}
 
 
 	// add links to devices to drop down menu

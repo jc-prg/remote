@@ -149,6 +149,7 @@ function rmRemote(name) {
 			// show
 			this.show();
 			}
+		rm3menu.menu_height();	
 		}
 
 	// remotes for devices
