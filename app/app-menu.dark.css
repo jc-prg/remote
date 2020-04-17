@@ -21,5 +21,9 @@
   nav-b                   	{ background  : #000000;  border-bottom : solid 1px #444444;  }
   nav-b > ul > li > ul 		{ background: #666666; }
   nav-b ul > li > ul > li a	{ color: #dddddd; }
+  
+  .hidden_entry_edit 		{ color  : yellow; }
+}
+
 
 }
