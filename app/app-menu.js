@@ -56,14 +56,16 @@ function rmMenu(name, menu) {
                 	}
                 
     		this.writeMenu("");
+    		menuApp = this;
     		
     		// define variable menu size (scroll bars defined in app-menu.css)
     		window.onresize = function(event) {
     			height = (window.innerHeight - 70);
     			document.getElementById("menuItems").style.maxHeight  = height + "px"; 
     			document.getElementById("menuItems2").style.maxHeight = height + "px"; 
-    			this.menu_height();		
-			};
+    			document.getElementById("remote_nav").style.maxHeight = "500px";
+    			rm3menu.menu_height();	
+			}
 
 		height = (window.innerHeight - 70);
 		document.getElementById("menuItems").style.maxHeight  = height + "px"; 
@@ -72,7 +74,10 @@ function rmMenu(name, menu) {
                 }
                 
         this.menu_height	  = function() {
-   		document.getElementById("remote_nav").style.maxHeight = (pageHeight() - 10) + "px"; // window.innerHeight + "px"; // 
+		document.getElementById("remote_nav").style.maxHeight = "100px";
+	        var height = pageHeight();
+	        height -= 50;
+   		document.getElementById("remote_nav").style.maxHeight = height+ "px"; // window.innerHeight + "px"; // 
         	}
 
 
