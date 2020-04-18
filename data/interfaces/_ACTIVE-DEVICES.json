@@ -9,7 +9,7 @@
         "main-audio": "no",
         "position": 3,
         "status": {
-            "power": "OFF"
+            "power": "OFF" 
         },
         "visible": "yes"
     },
