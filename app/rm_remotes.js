@@ -141,7 +141,7 @@ function rmRemote(name) {
 
 			// create remote for scene
 			this.scene_remote("remote1",rm_id);
-			this.empty("remote2");
+			this.scene_description("remote2",rm_id);
 			this.scene_channels("remote3",rm_id);
 			this.scene_edit("remote_edit1",rm_id);
 			this.scene_edit_json("remote_edit2",rm_id);
@@ -235,7 +235,7 @@ function rmRemote(name) {
 		var descr = this.data["DATA"]["devices"][device]["description"];
 		var url   = this.data["DATA"]["devices"][device]["url"];
 		if (url) { descr = "<a href=\""+url+"\">"+descr+"</a>"; }
-		var str   = "<center>" + descr + "</center>";
+		var str   = "<center>" + label + ": " + descr + "</center>";
 		setTextById(id,str);
 		}
 
@@ -544,6 +544,16 @@ function rmRemote(name) {
 
 		// print
 		setTextById(id,remote);
+		}
+
+	// write description for device remote
+	this.scene_description   = function (id, scene) {
+		var label = this.data["DATA"]["scenes"][scene]["label"];
+		var descr = this.data["DATA"]["scenes"][scene]["description"];
+		var url   = this.data["DATA"]["scenes"][scene]["url"];
+		if (url) { descr = "<a href=\""+url+"\">"+descr+"</a>"; }
+		var str   = "<center>" + label + ": " + descr + "</center>";
+		setTextById(id,str);
 		}
 
 
