@@ -1,16 +1,34 @@
 {
     "data": {
-        "description": "Beamer: Optoma HD27", 
+        "description": "Beamer: Optoma HD27",
+        "display": {},
         "remote": [
-            ".", ".", "on", "off", 
-            "LINE", 
-            "timer", "3d",     "aspect",   "menu", 
-            "eco",   "bright", "contrast", "mode", 
-            "LINE", 
-            ".",    "up",    ".",     ".", 
-            "left", "enter", "right", ".", 
-            ".",    "down",   ".",    "."
-        ],
-	"display" : {}
+            ".",
+            ".",
+            "on",
+            "off",
+            "LINE",
+            "timer",
+            "3d",
+            "aspect",
+            "menu",
+            "eco",
+            "bright",
+            "contrast",
+            "mode",
+            "LINE",
+            ".",
+            "up",
+            ".",
+            ".",
+            "left",
+            "enter",
+            "right",
+            ".",
+            ".",
+            "down",
+            ".",
+            "."
+        ]
     }
 }

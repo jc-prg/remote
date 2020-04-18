@@ -1,8 +1,8 @@
 {
 	"description" :	     "In define makros to switch on scenes: <device>_<button>",
 	"scene-on":{
-                "music":  ["dev-on_radio", "dev-on_rec2", "rec2_cable-sat", "dev-off_lw", "dev-off_beam"],
-                "tv":     ["dev-on_lw",  "dev-on_beam", "dev-on_tv",  "dev-on_rec2", "rec2_cable-sat", "dev-off_bd"],
-                "cinema": ["dev-on_lw", "dev-on_beam",  "dev-on_rec2", "rec2_pc", "dev-off_tv"]
+                "music":  ["dev-on_radio", "dev-on_rec2",  "rec2_cable-sat", "dev-off_lw",  "dev-off_beam"],
+                "tv":     ["dev-on_lw",    "dev-on_beam",  "dev-on_tv",      "dev-on_rec2", "rec2_cable-sat",  "dev-off_bd-api"],
+                "cinema": ["dev-on_lw",    "dev-on_beam",  "dev-on_rec2",    "dev-off_tv",  "rec2_pc"]
                 }
 }

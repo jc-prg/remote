@@ -7,6 +7,7 @@
 	        "tv":        ["tv_on-off||OFF"],
 	        "radio":     ["tv_on-off||OFF"],
 	        "bd":        ["bd_on-off||OFF"],
+	        "bd-api":    ["bd_off"],
 	        "lw":        ["lw_off||OFF"]
                 }
 }

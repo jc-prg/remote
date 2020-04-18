@@ -36,20 +36,44 @@
             "vol-": "2600580000012496101510151114101510141238111411141039113a11381039113a10141139113910391139101511141015101411141015111411141039113a1138103a113910391000051f0001244d10000c510001244d11000d05",
             "yellow": "2600500000012595121310170f1510150f15103911160f151039113910391238103a10151039103a11141039113911391015101510150f16103910151015111410391238103a10391200051d0001264a11000d050000000000000000"
         },
+        "commands": {
+            "mute": {
+                "command": "",
+                "type": "enum"
+            },
+            "power": {
+                "command": "",
+                "type": "enum"
+            },
+            "radiotv": {
+                "command": "",
+                "type": "enum"
+            },
+            "vol": {
+                "command": "",
+                "type": "integer"
+            }
+        },
         "description": "TV-Receiver: TOPFIELD1",
         "method": "record",
         "queries": {},
-       	"commands" :{
-       		"vol"	  : { "command" : "",  "type" : "integer" },
-       		"power"   : { "command" : "",  "type" : "enum" },
-       		"radiotv" : { "command" : "",  "type" : "enum" },
-       		"mute"    : { "command" : "",  "type" : "enum" }
-       	},
-       	"values" : {
-       		"power"   : [ "ON", "OFF" ],
-       		"vol"     : { "min" : 0, "max" : 17 },
-       		"mute"    : [ "ON", "OFF" ],
-                "radiotv" : [ "RADIO", "TV" ]
+        "values": {
+            "mute": [
+                "ON",
+                "OFF"
+            ],
+            "power": [
+                "ON",
+                "OFF"
+            ],
+            "radiotv": [
+                "RADIO",
+                "TV"
+            ],
+            "vol": {
+                "max": 17,
+                "min": 0
+            }
         }
     }
 }

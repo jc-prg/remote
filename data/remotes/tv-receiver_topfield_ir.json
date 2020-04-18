@@ -2,10 +2,10 @@
     "data": {
         "description": "TV-Receiver: TOPFIELD1",
         "display": {
-            "Source": "radiotv",
             "Mute": "mute",
+            "Source": "radiotv",
             "Volume": "vol"
-            },
+        },
         "remote": [
             "radiotv",
             ".",
