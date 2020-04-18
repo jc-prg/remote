@@ -315,6 +315,7 @@ function rmRemote(name) {
 		
 		var remote_buttons    = this.data["DATA"]["devices"][device]["remote"];
 		var remote_visible    = this.data["DATA"]["devices"][device]["visible"];
+		var remote_display    = this.data["DATA"]["devices"][device]["display"];
 		var device_commands   = this.data["DATA"]["devices"][device]["button_list"];
 		var device_buttons    = [];
 		
@@ -401,8 +402,8 @@ function rmRemote(name) {
 	        if (remote == "") 	{ var remote_definition  = this.data["DATA"]["devices"][device]["remote"]; }
 	        else			{ var remote_definition  = remote; }
 	        
-	        if (this.data["DATA"]["devices"][device] && this.data["DATA"]["devices"][device]["display"] && display == {})
-	        			{ var remote_display     = this.data["DATA"]["devices"][device]["display"] }
+	        if (this.data["DATA"]["devices"][device] && this.data["DATA"]["devices"][device]["display"])
+	        			{ var remote_display     = this.data["DATA"]["devices"][device]["display"] }			
 	        else if (display == "")	{ var remote_display	 = {}; }
 	        else			{ var remote_display	 = display; }
 
