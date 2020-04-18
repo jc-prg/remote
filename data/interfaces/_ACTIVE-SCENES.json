@@ -1,6 +1,6 @@
 {
     "cinema": {
-        "description": "Kino",
+        "description": "Bluray, PC, Kodi",
         "devices": [
             "rec2",
             "beam",
@@ -13,7 +13,7 @@
     },
     "music": {
         "config_scene":"scene_music",
-        "description": "Musik",
+        "description": "Bluray/CD, Bluetooth, AUX, Radio-Receiver",
         "devices": [
             "tv",
             "rec2"
@@ -24,7 +24,7 @@
     },
     "tv": {
         "config_scene":"scene_tv",
-        "description": "Fernsehen",
+        "description": "TV-Receiver",
         "devices": [
             "tv",
             "rec2",
