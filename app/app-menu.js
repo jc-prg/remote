@@ -256,8 +256,14 @@ function rmStart(name) {
 		var order  = sortDict(data,"position");
 	        for (var key in order) {
 			scene  = order[key];
-        	        var id = "scene_"+scene;
-                	menu  += this.entry_scene( data, id, data[scene]["label"], "big" );
+			if (data[scene]["visible"] == "yes") {
+	        	        var id = "scene_"+scene;
+        	        	menu  += this.entry_scene( data, id, data[scene]["label"], "big" );
+        	        	}
+        	        else if (this.edit_mode && data[scene]["visible"] == "no") {
+	        	        var id = "scene_"+scene;
+        	        	menu  += this.entry_scene( data, id, data[scene]["label"], "big" );
+        	        	}
 	                }
 
 		// replace old menu
