@@ -1,13 +1,25 @@
 {
     "data": {
-        "description": "Screens: Elite Screens 100\"", 
+        "description": "Elite Screens 100\"",
+        "display": {},
         "remote": [
-            ".",    ".", "on", "off", 
-            "LINE", 
-            "up",   ".", ".", ".", 
-            "stop", ".", ".", ".", 
-            "down", ".", ".", "."
-        ],
-        "display" : {}
+            ".",
+            ".",
+            "on",
+            "off",
+            "LINE",
+            "up",
+            ".",
+            ".",
+            ".",
+            "stop",
+            ".",
+            ".",
+            ".",
+            "down",
+            ".",
+            ".",
+            "."
+        ]
     }
 }

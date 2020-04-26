@@ -1,57 +1,59 @@
 {
     "data": {
-        "description" : "AV-Receiver: ONKYO TX-NR686(B)",
-        "method"  : "query",
-        "buttons" : {
-        	"display" 	: "display-mode=toggle",
-        	"pc"      	: "input-selector=pc",
-        	"tv"      	: "input-selector=tv",
-        	"phono"   	: "input-selector=phono",
-        	"usb"     	: "input-selector=usb",
-        	"game"    	: "input-selector=game",
-        	"cable-sat"     : "input-selector=cbl",
-        	"radio"         : "input-selector=fm",
-        	"bluetooth"	: "input-selector=bluetooth",
-        	"bd"		: "input-selector=bd",
-        	"aux"		: "input-selector=aux1",
-        	"prg+"		: "tuning=up",
-        	"prg-"		: "tuning=down",
-        	"timer"		: "sleep-set=up",
-        	"dimmer"        : "dimmer-level=dim",
-        	"settings"      : "setup=menu",
-        	"exit"          : "setup=exit",
-        	"home"          : "setup=home",
-        	"enter"         : "setup=enter",
-        	"up"            : "setup=up",
-        	"down"          : "setup=down",
-        	"q"             : "setup=quick",
-        	"right"         : "setup=right",
-        	"left"          : "setup=left",
-	       	"movie-tv-mode" : "listening-mode=movie",
-	       	"game-mode"     : "listening-mode=game"
-       		},
-        "buttons_error" : {
-	       	"music-mode"    : "listening-mode=music"
-        	},
-       	"queries" : {
-        	"display" 	: "display-mode=query",
-        	"source"  	: "input-selector=query||[1]",
-        	"audio-source" 	: "audio-selector=query",
-        	"temperature"	: "temperature-data=query||[4:]",
-		"timer"		: "sleep-set=qstn",
-	       	"dimmer"        : "dimmer-level=query",
-	       	"audio-info"    : "audio-information=query",
-	       	"video-info"    : "video-information=query",
-	       	"a-v-sync"	: "a-v-sync=query",
-	       	"tuning"	: "tuning=query||+' Hz'",
-	       	"sleep-set"	: "sleep-set=qstn",
-	       	"listening"     : "listening-mode=query"
-    	       	},
-       	"queries_error" : {
-	       	"video-output"  : "video-output-selector=query",
-	       	"dolby-volume"	: "dolby-volume=query"
-       		},
-        "values": {
-        	}
-   }
+        "buttons": {
+            "aux": "input-selector=aux1",
+            "bd": "input-selector=bd",
+            "bluetooth": "input-selector=bluetooth",
+            "cable-sat": "input-selector=cbl",
+            "dimmer": "dimmer-level=dim",
+            "display": "display-mode=toggle",
+            "down": "setup=down",
+            "enter": "setup=enter",
+            "exit": "setup=exit",
+            "game": "input-selector=game",
+            "game-mode": "listening-mode=game",
+            "home": "setup=home",
+            "left": "setup=left",
+            "movie-tv-mode": "listening-mode=movie",
+            "pc": "input-selector=pc",
+            "phono": "input-selector=phono",
+            "prg+": "tuning=up",
+            "prg-": "tuning=down",
+            "q": "setup=quick",
+            "radio": "input-selector=fm",
+            "right": "setup=right",
+            "settings": "setup=menu",
+            "timer": "sleep-set=up",
+            "tv": "input-selector=tv",
+            "up": "setup=up",
+            "usb": "input-selector=usb"
+        },
+        "buttons_error": {
+            "music-mode": "listening-mode=music"
+        },
+        "description": "ONKYO TX-NR686B (API)",
+        "method": "query",
+        "queries": {
+            "a-v-sync": "a-v-sync=query",
+            "audio-info": "audio-information=query",
+            "audio-source": "audio-selector=query",
+            "dimmer": "dimmer-level=query",
+            "display": "display-mode=query",
+            "listening": "listening-mode=query",
+            "mute": "audio-muting=query",
+            "power": "system-power=query",
+            "sleep-set": "sleep-set=qstn",
+            "source": "input-selector=query||[1]",
+            "temperature": "temperature-data=query||[4:]",
+            "timer": "sleep-set=qstn",
+            "tuning": "tuning=query||+' Hz'",
+            "video-info": "video-information=query",
+            "vol": "master-volume=query"
+        },
+        "queries_error": {
+            "dolby-volume": "dolby-volume=query",
+            "video-output": "video-output-selector=query"
+        },
+        "values": {}
+    }
 }

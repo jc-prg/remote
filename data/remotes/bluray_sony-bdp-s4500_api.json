@@ -1,6 +1,6 @@
 {
     "data": {
-        "description": "Bluray: SONY BDP-S4500 Bluray Player",
+        "description": "SONY BDP-S4500",
         "display": {
             "Duration": "media_duration",
             "Position": "position_abs_time",

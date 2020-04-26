@@ -53,7 +53,7 @@
             "zoomin": "ZoomIn",
             "zoomout": "ZoomOut"
         },
-        "description": "Bluray: SONY BDP-S4500 Bluray Player",
+        "description": "SONY BDP-S4500",
         "method": "query",
         "queries": {
             "media_duration": "SOAP=GetMediaInfo::MediaDuration",

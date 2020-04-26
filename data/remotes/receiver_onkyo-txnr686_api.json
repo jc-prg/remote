@@ -1,12 +1,12 @@
 {
     "data": {
-        "description": "AV-Receiver: ONKYO TX-NR686(B)",
+        "description": "ONKYO TX-NR686B (API)",
         "display": {
+            "Audio": "listening",
             "Input": "source",
             "Mute": "mute",
             "Temp": "temperature",
-            "Volume": "vol",
-            "Audio": "listening"
+            "Volume": "vol"
         },
         "remote": [
             ".",

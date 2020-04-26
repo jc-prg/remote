@@ -1,6 +1,6 @@
 {
     "data": {
-        "description": "Kodi Media-Center",
+        "description": "Kodi (API)",
         "display": {
             "Mute": "mute",
             "Name": "name",
