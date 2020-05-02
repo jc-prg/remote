@@ -44,21 +44,7 @@
             "settings",
             "down",
             "exit",
-            "dimmer",
-            "LINE",
-            "movie-tv-mode",
-            "music-mode",
-            "game-mode",
-            ".",
-            "fbw",
-            "play",
-            "ffw",
-            ".",
-            "toggle",
-            "memory",
-            "mode",
-            ".",
-            "test"
+            "dimmer"
         ]
     }
 }
