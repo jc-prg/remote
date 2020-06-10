@@ -46,7 +46,11 @@
             "name": "Application.GetProperties({'properties': ['name']})||['result']['name']",
             "power": "jc.PowerStatus()||['result']['power']",
             "version": "Application.GetProperties({'properties': ['version']})||['result']['version']",
-            "vol": "Application.GetProperties({'properties': ['volume']})||['result']['volume']"
+            "vol": "Application.GetProperties({'properties': ['volume']})||['result']['volume']",
+            "activePlayer": "Player.GetActivePlayers()||['result']['playerid']",
+            "detailsAudio": "Player.GetItem({'properties':['title','duration','album','artist'],'playerid':0})||['result']['item']",
+            "detailsVideo": "Player.GetItem({'properties':['title','duration','album','artist'],'playerid':1})||['result']['item']",
+            "addons": "Addons.GetAddons()||['result']"
         },
         "url": "http://media-center:8080/",
         "values": {
