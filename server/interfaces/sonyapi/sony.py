@@ -53,11 +53,11 @@ class sonyDevice():
         # SOAPcalls // tested with SONY BDP S4500
 
         self.SOAPcalls = {
-             "GetTransportInfo"			: ["CurrentTransportState","CurrentTransportStatus","CurrentSpeed"],
+             "GetTransportInfo"		: ["CurrentTransportState","CurrentTransportStatus","CurrentSpeed"],
              "GetMediaInfo"			: ["NrTracks","MediaDuration","CurrentURI","CurrentURIMetaData","NextURI","NextURIMetaData","PlayMedium","RecordMedium","WriteStatus"],
              "GetDeviceCapabilities"		: ["PlayMedia","RecMedia","RecQualityModes"],
              "GetTransportSettings"		: ["PlayMode","RecQualityMode"],
-             "GetPositionInfo"			: ["Track","TrackDuration","TrackMetaData","TrackURI","RelTime","AbsTime","RelCount","AbsCount"],
+             "GetPositionInfo"		: ["Track","TrackDuration","TrackMetaData","TrackURI","RelTime","AbsTime","RelCount","AbsCount"],
              "GetCurrentTransportActions"	: ["Actions"]
              }
              
