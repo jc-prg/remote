@@ -9,8 +9,8 @@ import logging
 import wakeonlan
 import time
 
-from sonyapilib.device import SonyDevice
-from enum import Enum
+from sonyapilib.device     import SonyDevice
+from enum                  import Enum
 from sonyapilib.xml_helper import find_in_xml
 
 try:
@@ -183,7 +183,7 @@ class sonyDevice():
            return "OK"
            
         else:
-           return "ERROR: Device is off."
+           return "ERROR: Device is off (SONY)."
            
         return "OK"
 
@@ -206,7 +206,7 @@ class sonyDevice():
               return self.available_commands
            else:                          return "ERROR: no values available ("+cmd+")"
         else:
-           return "ERROR: Device is off."
+           return "ERROR: Device is off (SONY)."
         
     #-----------------------------
 
@@ -238,7 +238,7 @@ class sonyDevice():
            return result
            
         else:
-           return "ERROR: Device is off."
+           return "ERROR: Device is off (SONY)."
 
     #-----------------------------
         
@@ -259,7 +259,7 @@ class sonyDevice():
         '''
         get status ...
         '''
-        
+    
         if cmd == "power":             return self.device.get_power_status()
         elif cmd == "playing":         return self.device.get_playing_status()  # OK, PLAYING, ... NO_MEDIA_PRESENT, ...
         elif cmd == "SOAP":            return self.get_status_SOAP(param)
@@ -276,7 +276,7 @@ class sonyDevice():
            self.device.start_app(app)
            return "OK"
         else:
-           return "ERROR: Device is off."
+           return "ERROR: Device is off (SONY)."
 
     #-----------------------------
 
