@@ -50,11 +50,11 @@ class connect(threading.Thread):
         
         logging.info( "Starting " + self.name )
         
-        self.api["KODI"]        = interfaces.kodi_api.kodiAPI("KODI")
-        self.api["TEST"]        = interfaces.test_api.testAPI("TEST")
-        self.api["EISCP-ONKYO"] = interfaces.eiscp_api.eiscpAPI("EISCP-ONKYO")
-        self.api["BROADLINK"]   = interfaces.broadlink_api.broadlinkAPI("BROADLINK")
-        self.api["SONY"]        = interfaces.sony_api.sonyAPI("SONY","SONY-BDP-S4500")
+        self.api["KODI"]        = interfaces.api_kodi.kodiAPI("KODI")
+        self.api["TEST"]        = interfaces.api_test.testAPI("TEST")
+        self.api["EISCP-ONKYO"] = interfaces.api_eiscp.eiscpAPI("EISCP-ONKYO")
+        self.api["BROADLINK"]   = interfaces.api_broadlink.broadlinkAPI("BROADLINK")
+        self.api["SONY"]        = interfaces.api_sony.sonyAPI("SONY","SONY-BDP-S4500")
 
         for key in self.api:
            self.available[key] = self.api[key].api_description
