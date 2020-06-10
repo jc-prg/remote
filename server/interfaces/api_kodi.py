@@ -1,5 +1,5 @@
 #-----------------------------------
-# API commands defined in swagger.yml
+# KODI API using kodijson
 #-----------------------------------
 # (c) Christoph Kloth
 #-----------------------------------
@@ -8,7 +8,7 @@ import logging, time
 import modules.rm3json                 as rm3json
 import modules.rm3config               as rm3config
 
-from kodijson import Kodi, PLAYER_VIDEO
+from   interfaces.kodi             import Kodi, PLAYER_VIDEO
 
 #-------------------------------------------------
 # Execute command
@@ -133,8 +133,8 @@ class kodiAPI():
              self.working = False
              return "ERROR "+self.api_name+" - unexpected result format."
            
-           if len(command_param) > 1: result_param = eval("result"+command_param[1])
-           else:                      result_param = str(result)
+           if len(command_param) > 1: result_param = eval("result['result']"+command_param[1])
+           else:                      result_param = str(result['result'])
            
          except Exception as e:
            self.working = False
@@ -242,13 +242,131 @@ class kodiAPIaddOn():
       '''Return Power Status'''
 
       self.power = {}
-      if self.status == "Connected": self.power["result"] = { "power" : "ON" }
-      else:                          self.power["result"] = { "power" : "OFF" }
+      if self.status == "Connected": self.power = "ON"
+      else:                          self.power = "OFF"
       
       logging.debug("TEST "+str(self.status))
 
-      return self.power
+      return { "result" : self.power }
+      
+   #-------------------------------------------------
+   
+   def KodiVersion(self):
+       '''Return Kodi Version as string'''
        
+       version = {}
+       version = self.api.Application.GetProperties({'properties': ['version']})['result']['version']
+       self.version = "KODI "+str(version['major'])+"."+str(version['minor'])+" "+str(version['tag'])
+       
+       return { "result" : self.version }        
+      
+   #-------------------------------------------------
+   
+   def Play(self):
+       '''Play active player'''
+
+       active     = self.api.Player.GetActivePlayers()['result']
+       player     = active[0]['playerid']
+             
+       if active == []:
+         return { "result" : "no media loaded" }
+       else:
+         self.api.Player.Play(player)
+         return { "result" : "OK" }
+         
+   #-------------------------------------------------
+   
+   def Pause(self):
+       '''Pause active player'''
+
+       active     = self.api.Player.GetActivePlayers()['result']
+       player     = active[0]['playerid']
+             
+       if active == []:
+         return { "result" : "no media loaded" }
+       else:
+         self.api.Player.PlayPause(player)
+         return { "result" : "OK" }         
+         
+   #-------------------------------------------------
+      
+   def Stop(self):
+       '''Stop active player'''
+
+       active     = self.api.Player.GetActivePlayers()['result']
+       player     = active[0]['playerid']
+             
+       if active == []:
+         return { "result" : "no media loaded" }
+       else:
+         self.api.Player.Stop(player)
+         return { "result" : "OK" }         
+
+   #-------------------------------------------------
+   
+   def PlayingMetadata(self,tag=""):
+       '''Return title of playing item'''
+       
+       active     = self.api.Player.GetActivePlayers()['result']
+ 
+       if active == []:
+          return { "result" : "no media loaded" }
+
+       elif tag == "playing":
+          return { "result" : [ active[0]['type'], active[0]['playerid'] ] }
+          
+       elif tag == "player":
+         player   = self.api.Player.GetProperties({'playerid' : active[0]['playerid'], 'properties' : ['live','speed','percentage','position'] })['result']
+         return { "result" : player }
+              
+       elif 'playerid' in active[0] and active[0]['playerid'] == 0 or active[0]['playerid'] == 1:
+       
+          playerid   = active[0]['playerid']
+          playertype = active[0]['type']   
+          metadata   = self.api.Player.GetItem({'properties':['title','duration','album','artist','thumbnail','file','fanart'],'playerid':playerid})['result']['item']
+          
+          if   tag == "info":
+            info = ""
+            if len(metadata['title']) > 0:                                  info += metadata['title']
+            elif len(metadata['label']) > 0:                                info += metadata['label']
+            else:                                                           info += "no title"
+            
+            if "album" in metadata and "artist" in metadata:
+              if len(metadata['album']) > 0 and len(metadata['artist']) > 0:  info += " ("+metadata['album']+" / "+metadata['artist'][0]+")"
+              elif len(metadata['album']) > 0:                                info += " ("+metadata['album']+")"
+              elif len(metadata['artist']) > 0:                               info += " ("+metadata['artist'][0]+")"
+              
+            metadata = info
+          
+          elif tag != "" and tag     in metadata:  metadata = metadata[tag]
+          elif tag != "" and tag not in metadata:  metadata = "tag '"+tag+"' not defined"
+          
+          return { "result" : metadata }
+          
+       else:
+          return { "result" : "unknown error ("+str(active)+")" }
+
+      
+   #-------------------------------------------------
+   
+   def AddOns(self,cmd=""):
+       '''get infos for addons'''
+       
+       data   = "not implemented yet"
+       data   = self.api.Addons.GetAddons()['result']['addons']
+       addons = []
+       
+       for item in data:
+          if item['type'] == 'xbmc.python.pluginsource':
+             details = self.api.Addons.GetAddonDetails({ 'addonid' : item['addonid'], 'properties' : ['name','description','enabled','installed'] })
+             details = details['result']['addon']
+             addons.append(details['name'])
+       
+       return { "result" : addons }
+   
+   
+          
+#            "addons": "Addons.GetAddons()||['result']"
 
 #-------------------------------------------------
 # EOF

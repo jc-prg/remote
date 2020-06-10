@@ -4,7 +4,8 @@
         "display": {
             "Mute": "mute",
             "Name": "name",
-            "Volume": "vol"
+            "Volume": "vol",
+            "Playing": "playing"
         },
         "display-size": "middle",
         "remote": [
@@ -18,7 +19,7 @@
             "videos",
             "pictures",
             "weather",
-            "settings",
+            "fav",
             "LINE",
             ".",
             "up",
@@ -33,7 +34,15 @@
             "back",
             "vol-",
             "LINE",
-            "DISPLAY"
+            "play",
+            "pause",
+            "stop",
+            "LINE",
+            "DISPLAY",
+            "topmenu",
+            "settings",
+            "info",
+            "menu"
         ]
     }
 }
