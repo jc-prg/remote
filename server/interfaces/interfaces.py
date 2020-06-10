@@ -9,11 +9,11 @@ import logging, time, threading
 import modules.rm3json                as rm3json
 import modules.rm3config              as rm3config
 
-import interfaces.test_api
-import interfaces.kodi_api
-import interfaces.eiscp_api
-import interfaces.broadlink_api
-import interfaces.sony_api
+import interfaces.api_test
+import interfaces.api_kodi
+import interfaces.api_eiscp
+import interfaces.api_broadlink
+import interfaces.api_sony
 	
 #-------------------------------------------------
 
@@ -50,7 +50,7 @@ class connect(threading.Thread):
         
         logging.info( "Starting " + self.name )
         
-#        self.api["KODI"]        = interfaces.kodi_api.kodiAPI("KODI")
+        self.api["KODI"]        = interfaces.kodi_api.kodiAPI("KODI")
         self.api["TEST"]        = interfaces.test_api.testAPI("TEST")
         self.api["EISCP-ONKYO"] = interfaces.eiscp_api.eiscpAPI("EISCP-ONKYO")
         self.api["BROADLINK"]   = interfaces.broadlink_api.broadlinkAPI("BROADLINK")
