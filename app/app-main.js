@@ -36,13 +36,30 @@ else {
 	connect2stage	= "Prod";
 	}
 
-
 //--------------------------------
 // app to load info and send cmd to IR device
 //--------------------------------
 
 var rm3app     = new jcApp( "rm3app", RESTurl, "list", "api/");     // cmd: <device>/<cmd>
 rm3app.init( "data_log", "error_log", reloadInterval, remoteReload );
+
+
+//--------------------------------
+// reload
+//--------------------------------
+
+window.addEventListener('scroll', function() {
+   position = window.pageYOffset;
+   setTextById('scrollPosition',position+" px");
+   if ( position <= -100 ) { 
+   	document.getElementById('reload_info').style.display="block";
+   	//alert("Reload!"); 
+   	setTimeout(function(){document.getElementById('reload_info').style.display="none";}, 3000);
+   	}
+   else {
+   	//document.getElementById('reload_info').style.display="none";
+   	}
+});
 
 //--------------------------------
 // additional apps to write menus, remotes, messages
@@ -54,11 +71,6 @@ var rm3remotes  = new rmRemote(   "rm3remotes" );
 var rm3settings = new rmSettings( "rm3settings" );
 var rm3msg      = new jcMsg(      "rm3msg" );
 var rm3cookie   = new jcCookie(   "rm3cookie");
-// var rm3slider   = new slider( name="rm3slider", container="audio_slider", callOnChange=setVolume );
-
-/* PREPARE IMPLEMENTATION OF CENTRAL SLIDER
-
-*/
 
 var rm3slider  = new jcSlider( name="rm3sider", container="audio_slider");	// create slider
 rm3slider.init(min=0,max=100,label="loading");					// set device information
@@ -278,6 +290,10 @@ function remoteLastFromCookie() {
 		else 	{}
 		}
 	}
+
+
+//-----------------------------
+
 
 
 //-----------------------------
