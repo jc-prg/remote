@@ -53,8 +53,8 @@ var colors			= [ "red", "green", "darkgreen", "blue", "darkblue" ];
 var colors_dev			= [];
 var color_button_inactive 	= "#666666";
 var colors_power		= { 
-				"ON"	: "darkgreen",
-				"OFF"	: "darkred",
+				"ON"		: "darkgreen",
+				"OFF"		: "darkred",
 				"OTHER"	: "purple",
 				"ERROR"	: "orangered",
 				}
@@ -94,7 +94,7 @@ function check_theme() {
 	
 	if (theme == "dark") {
 		color_button_inactive 	= "#111111";
-		colors_power["ERROR"]	= "lightpink";		
+		//colors_power["ERROR"]	= "lightpink";		
 		}
 	}
 

@@ -42,9 +42,9 @@
     opacity    : 0.8;
   }
   
-  button                { opacity: 1; color : #dddddd; background: #333333; }
+  button               { opacity: 1; color : #dddddd; background: #333333; }
   
-  .button               { opacity: 1; color : #dddddd; background: #333333; }
+  .button              { opacity: 1; color : #dddddd; background: #333333; }
   .button.empty 	{ background: #000000; }
   .button:disabled 	{ background: #000000; }
   
