@@ -234,7 +234,7 @@ function rmRemote(name) {
 		var label = this.data["DATA"]["devices"][device]["label"];
 		var descr = this.data["DATA"]["devices"][device]["description"];
 		var url   = this.data["DATA"]["devices"][device]["url"];
-		if (url) { descr = "<a href=\""+url+"\">"+descr+"</a>"; }
+		if (url) { descr = "<a href=\""+url+"\" target='_blank'>"+descr+"</a>"; }
 		var str   = "<center>" + label + ": " + descr + "</center>";
 		setTextById(id,str);
 		}
@@ -551,7 +551,7 @@ function rmRemote(name) {
 		var label = this.data["DATA"]["scenes"][scene]["label"];
 		var descr = this.data["DATA"]["scenes"][scene]["description"];
 		var url   = this.data["DATA"]["scenes"][scene]["url"];
-		if (url) { descr = "<a href=\""+url+"\">"+descr+"</a>"; }
+		if (url) { descr = "<a href=\""+url+"\" target='_blank'>"+descr+"</a>"; }
 		var str   = "<center>" + label + ": " + descr + "</center>";
 		setTextById(id,str);
 		}
