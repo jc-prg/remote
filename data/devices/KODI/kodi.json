@@ -57,7 +57,8 @@
             "power":   "jc.PowerStatus()",
             "version": "jc.KodiVersion()",
             "playing": "jc.PlayingMetadata('playing')",
-            "player": "jc.PlayingMetadata('player')",
+            "playlist":"jc.PlayingMetadata('playlist-position')",
+            "item":    "jc.PlayingMetadata('item-position')",
             "info":    "jc.PlayingMetadata('info')",
             "addons":  "jc.AddOns('list')"
         },

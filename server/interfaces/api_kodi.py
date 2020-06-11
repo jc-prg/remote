@@ -8,7 +8,7 @@ import logging, time
 import modules.rm3json                 as rm3json
 import modules.rm3config               as rm3config
 
-from   interfaces.kodi             import Kodi, PLAYER_VIDEO
+from   interfaces.kodi             import Kodi
 
 #-------------------------------------------------
 # Execute command
@@ -33,6 +33,7 @@ class kodiAPI():
        self.working         = False
        self.status          = "Started"
        self.method          = "query"
+       self.not_connected   = "Device not connected (KODI)."
 
        logging.info("... "+self.api_name+" - " + self.api_description)
        logging.debug(self.api_url)
@@ -50,8 +51,9 @@ class kodiAPI():
           self.api.jc = kodiAPIaddOn(self.api)
           logging.debug(str(self.api.JSONRPC.Ping()))
           
-          self.status        = "Connected"
-          self.api.jc.status = "Connected"
+          self.status               = "Connected"
+          self.api.jc.status        = "Connected"
+          self.api.jc.not_connected = self.not_connected
 
        except Exception as e:
           self.status          = "Error connecting to KODI server: " + str(e)
@@ -201,172 +203,196 @@ class kodiAPIaddOn():
    def IncreaseVolume(self,step):
       '''get current volume and increase by step'''
       
-      self.volume = self.api.Application.GetProperties({'properties': ['volume']})["result"]["volume"]
-      logging.debug("Increase Volume:"+str(self.volume))
+      if self.status == "Connected":
+         self.volume = self.api.Application.GetProperties({'properties': ['volume']})["result"]["volume"]
+         logging.debug("Increase Volume:"+str(self.volume))
       
-      if (self.volume + step) > 100: self.volume  = 100
-      else:                          self.volume += step
-      self.api.Application.SetVolume({ "volume" : int(self.volume) })
-      return({"result" : self.volume})
+         if (self.volume + step) > 100: self.volume  = 100
+         else:                          self.volume += step
+         self.api.Application.SetVolume({ "volume" : int(self.volume) })
+         return({"result" : self.volume})
+         
+      else:
+         return self.not_connected
 
    #-------------------------------------------------
        
    def DecreaseVolume(self,step):
       '''get current volume and increase by step'''
       
-      self.volume = self.api.Application.GetProperties({'properties': ['volume']})["result"]["volume"]
-      logging.debug("Decrease Volume:"+str(self.volume))
+      if self.status == "Connected":
+         self.volume = self.api.Application.GetProperties({'properties': ['volume']})["result"]["volume"]
+         logging.debug("Decrease Volume:"+str(self.volume))
 
-      if (self.volume - step) < 0:   self.volume  = 0
-      else:                          self.volume -= step
-      self.api.Application.SetVolume({ "volume" : int(self.volume) })
-      return({"result" : self.volume})
+         if (self.volume - step) < 0:   self.volume  = 0
+         else:                          self.volume -= step
+         self.api.Application.SetVolume({ "volume" : int(self.volume) })
+         return({"result" : self.volume})
+         
+      else:
+         return self.not_connected
 
    #-------------------------------------------------
        
    def ToggleMute(self):
       '''get muted value and set opposite state'''
       
-      self.mute = self.api.Application.GetProperties({'properties': ['muted']})["result"]["muted"]
-      logging.debug("Toggle Mute:"+str(self.mute))
+      if self.status == "Connected":
+         self.mute = self.api.Application.GetProperties({'properties': ['muted']})["result"]["muted"]
+         logging.debug("Toggle Mute:"+str(self.mute))
       
-      if self.mute: self.mute = False
-      else:         self.mute = True
+         if self.mute: self.mute = False
+         else:         self.mute = True
 
-      self.api.Application.SetMute({ "mute" : self.mute })
-      return({"result" : self.mute})
+         self.api.Application.SetMute({ "mute" : self.mute })
+         return({"result" : self.mute})
+         
+      else:
+         return self.not_connected
       
    #-------------------------------------------------
    
    def PowerStatus(self):
       '''Return Power Status'''
 
-      self.power = {}
-      if self.status == "Connected": self.power = "ON"
-      else:                          self.power = "OFF"
+      if self.status == "Connected":
+         self.power = {}
+         if self.status == "Connected": self.power = "ON"
+         else:                          self.power = "OFF"
+         return { "result" : self.power }
       
-      logging.debug("TEST "+str(self.status))
+      else:
+         return self.not_connected
 
-      return { "result" : self.power }
-      
    #-------------------------------------------------
    
    def KodiVersion(self):
-       '''Return Kodi Version as string'''
+      '''Return Kodi Version as string'''
        
-       version = {}
-       version = self.api.Application.GetProperties({'properties': ['version']})['result']['version']
-       self.version = "KODI "+str(version['major'])+"."+str(version['minor'])+" "+str(version['tag'])
-       
-       return { "result" : self.version }        
+      if self.status == "Connected":
+         version      = {}
+         version      = self.api.Application.GetProperties({'properties': ['version']})['result']['version']
+         self.version = "KODI "+str(version['major'])+"."+str(version['minor'])+" "+str(version['tag'])      
+         return { "result" : self.version }        
       
+      else:
+         return self.not_connected
+         
    #-------------------------------------------------
    
    def Play(self):
-       '''Play active player'''
+      '''Play active player'''
 
-       active     = self.api.Player.GetActivePlayers()['result']
-       player     = active[0]['playerid']
+      if self.status == "Connected":
+         active     = self.api.Player.GetActivePlayers()['result']
+         player     = active[0]['playerid']
              
-       if active == []:
-         return { "result" : "no media loaded" }
-       else:
-         self.api.Player.Play(player)
+         if active == []:  return { "result" : "no media loaded" }
+         else:             self.api.Player.Play(player)
          return { "result" : "OK" }
+
+      else:
+         return self.not_connected
          
    #-------------------------------------------------
    
    def Pause(self):
-       '''Pause active player'''
+      '''Pause active player'''
 
-       active     = self.api.Player.GetActivePlayers()['result']
-       player     = active[0]['playerid']
+      if self.status == "Connected":
+         active     = self.api.Player.GetActivePlayers()['result']
+         player     = active[0]['playerid']
              
-       if active == []:
-         return { "result" : "no media loaded" }
-       else:
-         self.api.Player.PlayPause(player)
+         if active == []:  return { "result" : "no media loaded" }
+         else:             self.api.Player.PlayPause(player)
          return { "result" : "OK" }         
+         
+      else:
+         return self.not_connected
          
    #-------------------------------------------------
       
    def Stop(self):
-       '''Stop active player'''
+      '''Stop active player'''
 
-       active     = self.api.Player.GetActivePlayers()['result']
-       player     = active[0]['playerid']
+      if self.status == "Connected":
+         active     = self.api.Player.GetActivePlayers()['result']
+         player     = active[0]['playerid']
              
-       if active == []:
-         return { "result" : "no media loaded" }
-       else:
-         self.api.Player.Stop(player)
+         if active == []:  return { "result" : "no media loaded" }
+         else:             self.api.Player.Stop(player)
          return { "result" : "OK" }         
+
+      else:
+         return self.not_connected
 
    #-------------------------------------------------
    
    def PlayingMetadata(self,tag=""):
-       '''Return title of playing item'''
+      '''Return title of playing item'''
        
-       active     = self.api.Player.GetActivePlayers()['result']
+      if self.status == "Connected":
+         active     = self.api.Player.GetActivePlayers()['result']
  
-       if active == []:
-          return { "result" : "no media loaded" }
+         if active == []:
+            return { "result" : "no media loaded" }
 
-       elif tag == "playing":
-          return { "result" : [ active[0]['type'], active[0]['playerid'] ] }
-          
-       elif tag == "player":
-         player   = self.api.Player.GetProperties({'playerid' : active[0]['playerid'], 'properties' : ['live','speed','percentage','position'] })['result']
-         return { "result" : player }
+         if 'playerid' in active[0]:     
+         
+            playerid   = active[0]['playerid']
+            playertype = active[0]['type']   
+            player     = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : ['live','speed','percentage','position','playlistid'] })['result']
+            playlistid = player['playlistid']
+            playlist   = self.api.Playlist.GetProperties({'playlistid' : playlistid, 'properties' : ['size','type'] })['result']
+            metadata   = self.api.Player.GetItem({'playerid' : playerid, 'properties':['title','duration','album','artist','thumbnail','file','fanart']})['result']['item']
+
+            if   tag == "playing":              result = [ playertype, playerid ]
+            elif tag == "player":               result = player
+            elif tag == "playlist":             result = playlist
+            elif tag == "playlist-position":    result = [ player['position'] + 1, playlist['size'] ]
+            elif tag == "item-position":        result = [ round(metadata['duration'] * player['percentage'] / 100,2), metadata['duration'] ]
+            elif tag == "info":          
+               if len(metadata['title']) > 0:                                     result  = metadata['title']
+               elif len(metadata['label']) > 0:                                   result  = metadata['label']
+               else:                                                              result  = "no title"
               
-       elif 'playerid' in active[0] and active[0]['playerid'] == 0 or active[0]['playerid'] == 1:
-       
-          playerid   = active[0]['playerid']
-          playertype = active[0]['type']   
-          metadata   = self.api.Player.GetItem({'properties':['title','duration','album','artist','thumbnail','file','fanart'],'playerid':playerid})['result']['item']
+               if "album" in metadata and "artist" in metadata:
+                  if len(metadata['album']) > 0 and len(metadata['artist']) > 0:  result += " ("+metadata['album']+" / "+metadata['artist'][0]+")"
+                  elif len(metadata['album']) > 0:                                result += " ("+metadata['album']+")"
+                  elif len(metadata['artist']) > 0:                               result += " ("+metadata['artist'][0]+")"  
           
-          if   tag == "info":
-            info = ""
-            if len(metadata['title']) > 0:                                  info += metadata['title']
-            elif len(metadata['label']) > 0:                                info += metadata['label']
-            else:                                                           info += "no title"
-            
-            if "album" in metadata and "artist" in metadata:
-              if len(metadata['album']) > 0 and len(metadata['artist']) > 0:  info += " ("+metadata['album']+" / "+metadata['artist'][0]+")"
-              elif len(metadata['album']) > 0:                                info += " ("+metadata['album']+")"
-              elif len(metadata['artist']) > 0:                               info += " ("+metadata['artist'][0]+")"
-              
-            metadata = info
+            elif tag != "" and tag in metadata: result = metadata[tag]
+            else:                               result = "tag '"+tag+"' not defined"          
+
+            return { "result" : result }
           
-          elif tag != "" and tag     in metadata:  metadata = metadata[tag]
-          elif tag != "" and tag not in metadata:  metadata = "tag '"+tag+"' not defined"
-          
-          return { "result" : metadata }
-          
-       else:
-          return { "result" : "unknown error ("+str(active)+")" }
+         else:
+            return { "result" : "unknown error ("+str(active)+")" }
+
+      else:
+         return self.not_connected
 
       
    #-------------------------------------------------
    
    def AddOns(self,cmd=""):
-       '''get infos for addons'''
+      '''get infos for addons'''
        
-       data   = "not implemented yet"
-       data   = self.api.Addons.GetAddons()['result']['addons']
-       addons = []
+      if self.status == "Connected":
+         data   = self.api.Addons.GetAddons()['result']['addons']
+         addons = []
        
-       for item in data:
-          if item['type'] == 'xbmc.python.pluginsource':
-             details = self.api.Addons.GetAddonDetails({ 'addonid' : item['addonid'], 'properties' : ['name','description','enabled','installed'] })
-             details = details['result']['addon']
-             addons.append(details['name'])
+         for item in data:
+            if item['type'] == 'xbmc.python.pluginsource':
+               details = self.api.Addons.GetAddonDetails({ 'addonid' : item['addonid'], 'properties' : ['name','description','enabled','installed'] })
+               details = details['result']['addon']
+               addons.append(details['name'])
        
-       return { "result" : addons }
+         return { "result" : addons }
    
+      else:
+         return self.not_connected
    
-          
-#            "addons": "Addons.GetAddons()||['result']"
 
 #-------------------------------------------------
 # EOF
