@@ -328,6 +328,20 @@ class kodiAPIaddOn():
 
    #-------------------------------------------------
    
+   def ReplaceHTML(self,text):
+      '''replace known html tags'''
+      
+      result = text
+      result = result.replace("[B]","<b>")
+      result = result.replace("[/B]","</b>")
+      result = result.replace("[I]","<i>")
+      result = result.replace("[/I]","</i>")
+      result = result.replace("[COLOR ","<font color=\"")
+      result = result.replace("[/COLOR]","</font>")
+      result = result.replace("]","\">")
+      
+      return result
+   
    def PlayingMetadata(self,tag=""):
       '''Return title of playing item'''
        
@@ -346,11 +360,13 @@ class kodiAPIaddOn():
             playlist   = self.api.Playlist.GetProperties({'playlistid' : playlistid, 'properties' : ['size','type'] })['result']
             metadata   = self.api.Player.GetItem({'playerid' : playerid, 'properties':['title','duration','album','artist','thumbnail','file','fanart']})['result']['item']
 
-            if   tag == "playing":              result = [ playertype, playerid ]
-            elif tag == "player":               result = player
-            elif tag == "playlist":             result = playlist
-            elif tag == "playlist-position":    result = [ player['position'] + 1, playlist['size'] ]
-            elif tag == "item-position":        result = [ round(metadata['duration'] * player['percentage'] / 100,2), metadata['duration'] ]
+            if   tag == "playing":                                      result = [ playertype, playerid ]
+            elif tag == "player":                                       result = player
+            elif tag == "playlist":                                     result = playlist
+            elif tag == "playlist-position":                            result = [ player['position'] + 1, playlist['size'] ]
+            elif tag == "item-position" and 'duration' in metadata:     result = [ round(metadata['duration'] * player['percentage'] / 100,2), metadata['duration'] ]
+            elif tag == "item-position":                                result = "N/A"
+            elif tag == "item-metadata":                                result = metadata
             elif tag == "info":          
                if len(metadata['title']) > 0:                                     result  = metadata['title']
                elif len(metadata['label']) > 0:                                   result  = metadata['label']
@@ -360,6 +376,8 @@ class kodiAPIaddOn():
                   if len(metadata['album']) > 0 and len(metadata['artist']) > 0:  result += " ("+metadata['album']+" / "+metadata['artist'][0]+")"
                   elif len(metadata['album']) > 0:                                result += " ("+metadata['album']+")"
                   elif len(metadata['artist']) > 0:                               result += " ("+metadata['artist'][0]+")"  
+                  
+               result = self.ReplaceHTML(result)
           
             elif tag != "" and tag in metadata: result = metadata[tag]
             else:                               result = "tag '"+tag+"' not defined"          
@@ -386,7 +404,9 @@ class kodiAPIaddOn():
             if item['type'] == 'xbmc.python.pluginsource':
                details = self.api.Addons.GetAddonDetails({ 'addonid' : item['addonid'], 'properties' : ['name','description','enabled','installed'] })
                details = details['result']['addon']
-               addons.append(details['name'])
+               
+               result = self.ReplaceHTML(details['name'])
+               addons.append(result)
        
          return { "result" : addons }
    
