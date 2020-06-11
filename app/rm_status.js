@@ -201,13 +201,6 @@ function statusCheck(data={}) {
 	var scene_status   = {};
 	var device_status  = {};
 	
-	// check reload status
-	if (data["CONFIG"]["reload_status"] == false) {
-		document.getElementById('reload_info').style.display="none";		 // hide loading message
-	   	rm3app.setAutoupdate();						 // set reload interval back to default
-	   	position_reload = false;						 // activate reload again
-		}
-
 	// get data from main audio device
 	var main_audio      = data["CONFIG"]["main-audio"];  // get main audio device from file
 	var main_audio_max  = "";

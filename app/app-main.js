@@ -46,18 +46,10 @@ rm3app.setAutoupdate();						 // set auto update interval to active
 
 
 //--------------------------------
-// reload
+// enforce reload on mobiles when scrolling down -100px
 //--------------------------------
 
-window.addEventListener('scroll', function() {
-   position = window.pageYOffset;
-   setTextById('scrollPosition',position+" px");
-   if ( position <= -100 && position_reload == false) { 
-	position_reload = true;
-   	document.getElementById('reload_info').style.display="block";
-	setTimeout(function(){ rm3app.setAutoupdate("",1); }, 2000);
-   	}   	
-});
+window.addEventListener('scroll', function() { remoteForceReload(); });
 
 //--------------------------------
 // additional apps to write menus, remotes, messages
@@ -122,7 +114,7 @@ function remoteFirstLoad(data) {
 	remoteReload(data);			// initial load of data incl. remotes, settings
 	remoteStartMenu(data);			// initial load start menu
 	remoteDropDown(data);			// initial load drop down menu
-	remoteLastFromCookie();			// get data from cookie
+	remoteLastFromCookie();		// get data from cookie
 	}
 
 //----------------------------------
@@ -168,10 +160,11 @@ function remoteReload(data) {
 
 	// check if still used in a fct. -> to be removed
 	dataAll = data;
-	
-	remoteInitData(data);		// init and reload data
-        remoteDropDown(data);		// update drop down menu
-        remoteSetSliderDevice(data);	// set device for volume slider
+
+	remoteForceReload_checkIfReady(data);	// check if reloaded
+	remoteInitData(data);			// init and reload data
+	remoteDropDown(data);			// update drop down menu
+	remoteSetSliderDevice(data);		// set device for volume slider
         
 	// check device & audio status
 	statusCheck(data);	
@@ -181,6 +174,44 @@ function remoteReload(data) {
 	setTimeout(function(){setTextById("audio4", "");}, 1000);
 	}
 	
+//--------------------------------
+
+function remoteForceReload(without_position=false) {
+	position = window.pageYOffset;
+	
+	if (document.getElementById('scrollPosition')) { setTextById('scrollPosition',position+" px"); }
+	if ((without_position || position <= -80) && reload_active == false) { 
+		reload_active  = true;
+		reload_waiting = 0;
+		elementVisible('reload_info');
+		setTextById('reload_msg','.');
+		rm3app.requestAPI( "GET", ["reload"], "", remoteReload );
+		rm3app.setAutoupdate("",1);
+		}   	
+	}
+
+//--------------------------------
+
+
+function remoteForceReload_checkIfReady(data) {
+	// check reload status
+	if (data["CONFIG"]["reload_status"] == false && reload_active) {
+	   	reload_active = false;			 // activate reload again
+		elementHidden('reload_info');			 // hide loading message
+	   	rm3app.setAutoupdate("",reloadInterval);	 // set reload interval back to default
+		}
+	else if (reload_active) {
+		reload_waiting += 1;
+		if (reload_waiting < 5)		{ addTextById('reload_msg','.'); }
+		else if (reload_waiting < 10)		{ setTextById('reload_msg','Reload takes longer than expected ...'); }
+		else if (reload_waiting < 15)		{ setTextById('reload_msg','Reload takes much longer than expected ...'); }
+		else { 
+			setTextById('reload_msg','Connection timed out.');
+		   	rm3app.setAutoupdate("",reloadInterval);		 // set reload interval back to default
+			}
+		}
+	}
+
 //--------------------------------
 
 function remoteSetSliderDevice(data) {
@@ -217,10 +248,13 @@ function remoteDropDown(data) {
 	rm3menu.add_scenes(  data["DATA"]["scenes"] );
 	rm3menu.add_devices( data["DATA"]["devices"] );	
 	rm3menu.add_script( "rm3settings.onoff();rm3settings.mode='';", 	lang("SETTINGS") );
-	rm3menu.add_script( "remoteToggleEditMode();", 				lang("MODE_EDIT") + edit_on );
+	rm3menu.add_script( "remoteToggleEditMode();", 			lang("MODE_EDIT") + edit_on );
 	rm3menu.add_script( "rm3settings.button_deact(true);remoteInit();",	deact_link);        
-        }
-        
+	//rm3menu.add_script( "remoteForceReload(true);", "Force Reload");
+        }        
+
+
+//--------------------------------
 
 function remoteToggleEditMode() {
 	var settings = rm3settings.active;
@@ -286,10 +320,6 @@ function remoteLastFromCookie() {
 		else 	{}
 		}
 	}
-
-
-//-----------------------------
-
 
 
 //-----------------------------

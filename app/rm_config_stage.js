@@ -2,7 +2,7 @@
 // jc://remote/
 //--------------------------------
 
-var stage_port  = "5008";
+var stage_port  = "5003";
 var rm3_rollout = "test";
 var rm3_test    = false;
 
