@@ -40,8 +40,9 @@ else {
 // app to load info and send cmd to IR device
 //--------------------------------
 
-var rm3app     = new jcApp( "rm3app", RESTurl, "list", "api/");     // cmd: <device>/<cmd>
-rm3app.init( "data_log", "error_log", reloadInterval, remoteReload );
+var rm3app     = new jcApp( "rm3app", RESTurl, "list", "api/");	 // create app
+rm3app.init( "data_log", "error_log", reloadInterval, remoteReload ); // set initial values
+rm3app.setAutoupdate();						 // set auto update interval to active
 
 
 //--------------------------------
@@ -51,14 +52,11 @@ rm3app.init( "data_log", "error_log", reloadInterval, remoteReload );
 window.addEventListener('scroll', function() {
    position = window.pageYOffset;
    setTextById('scrollPosition',position+" px");
-   if ( position <= -100 ) { 
+   if ( position <= -100 && position_reload == false) { 
+	position_reload = true;
    	document.getElementById('reload_info').style.display="block";
-   	//alert("Reload!"); 
-   	setTimeout(function(){document.getElementById('reload_info').style.display="none";}, 3000);
-   	}
-   else {
-   	//document.getElementById('reload_info').style.display="none";
-   	}
+	setTimeout(function(){ rm3app.setAutoupdate("",1); }, 2000);
+   	}   	
 });
 
 //--------------------------------
@@ -113,9 +111,7 @@ function remoteInit (first_load=true) {
 	if (first_load) {
 		showRemoteInBackground(1);		// show start screen
 		setTextById("remote2","<center>Loading data ...</center>");
-
 		remoteFirstLoad_load();			// init load of data
-		rm3app.setAutoupdate( );		// set auto update interval to active
 		}
 	}
 	
