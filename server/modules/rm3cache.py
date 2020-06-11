@@ -26,15 +26,16 @@ class configCache (threading.Thread):
        '''
        
        threading.Thread.__init__(self)
-       self.name           = name
-       self.stopProcess    = False
-       self.wait           = 1
-       self.cache          = {}
-       self.cache_time     = time.time()        # initial time for timebased update
-       self.cache_interval = (5*60)             # update interval in seconds (reread files)
-       self.cache_update   = False              # foster manual update of files
-       self.configMethods  = {}
-       self.api_init       = { "API" : {
+       self.name             = name
+       self.stopProcess      = False
+       self.wait             = 1
+       self.cache            = {}
+       self.cache_time       = time.time()        # initial time for timebased update
+       self.cache_interval   = (5*60)             # update interval in seconds (reread files)
+       self.cache_update     = False              # foster manual update of files
+       self.cache_update_run = False
+       self.configMethods    = {}
+       self.api_init         = { "API" : {
                                      "name"     : rm3config.APIname,
                                      "version"  : rm3config.APIversion,
                                      "stage"    : rm3config.initial_stage,
@@ -66,7 +67,8 @@ class configCache (threading.Thread):
 
                logging.info("... ("+str(i)+")")
                self.cache_time   = time.time()
-               self.cache_update = False
+               self.cache_update      = False
+               self.cache_update_run  = False
 
            else:
                time.sleep(self.wait)
@@ -81,7 +83,8 @@ class configCache (threading.Thread):
         set var to enforce update
         '''
 
-        self.cache_update = True
+        self.cache_update      = True
+        self.cache_update_run  = True
         logging.info("Enforce cache update (" + self.name + ") "+str(self.cache_update))
 
 

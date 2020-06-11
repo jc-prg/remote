@@ -50,7 +50,7 @@ def remoteAPI_start():
     data["CONFIG"]                         = {}  
     data["CONFIG"]["button_images"]        = configFiles.read(modules.icons_dir + "/index")
     data["CONFIG"]["button_colors"]        = configFiles.read(modules.buttons  + "button_colors")
-
+    
     data["CONFIG"]["interfaces"]           = deviceAPIs.available
     data["CONFIG"]["methods"]              = deviceAPIs.methods
     
@@ -88,6 +88,11 @@ def remoteAPI_end(data,setting=[]):
         "server_running"        :  time.time() - modules.start_time
         }
         
+    #--------------------------------
+
+    data["CONFIG"]["reload_status"]       = queueQuery.reload
+    data["CONFIG"]["reload_config"]       = configFiles.cache_update
+
     #--------------------------------
 
     if "devices" in data["DATA"]:
@@ -143,12 +148,15 @@ def RemoteReload():
 
         logging.warn("Request cache reload and device reconnect.")
         
-        deviceAPIs.reconnect()
-        refreshCache()
 
         data                          = remoteAPI_start()
         data["REQUEST"]["Return"]     = "OK: Configuration reloaded"
         data["REQUEST"]["Command"]    = "Reload"
+        
+        deviceAPIs.reconnect()
+        devicesGetStatus(data,readAPI=True)
+        refreshCache()
+        
         data                          = remoteAPI_end(data,["no-data"])
         return data
 

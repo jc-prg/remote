@@ -868,6 +868,10 @@ def devicesGetStatus(data,readAPI=False):
 
     devices = configFiles.read_status()
    
+    # set reload status
+    if readAPI == True: queueQuery.add2queue(["START_OF_RELOAD"])
+    
+    # read status of all devices
     for device in devices: 
     
         if "status" in devices[device] and device in data and "method" in data[device]:
@@ -878,10 +882,12 @@ def devicesGetStatus(data,readAPI=False):
                
           # request update of status from API -> will be written via "interface.py"
           if data[device]["method"] == "query" and readAPI == True:
-          
               interface = data[device]["interface"]
               queueQuery.add2queue ([2])                                                 # wait a few seconds before queries
               queueQuery.add2queue ([[interface,device,data[device]["query_list"],""]])  # add querylist per device
+
+    # set reload status
+    if readAPI == True: queueQuery.add2queue(["END_OF_RELOAD"])
    
     return data
 

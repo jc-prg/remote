@@ -32,6 +32,7 @@ class queueApiCalls (threading.Thread):
        self.last_button    = "<none>"
        self.config         = ""
        self.query_send     = query_send
+       self.reload         = False
 
     #------------------       
        
@@ -74,9 +75,13 @@ class queueApiCalls (threading.Thread):
        # read device infos if query
        if self.config != "" and self.query_send == "query": 
           devices  = self.config.read_status()
+          
+       # check, if reload is requested ...
+       if "END_OF_RELOAD" in str(command):
+          self.reload = False
 
        # if is an array / not a number
-       if "," in str(command):
+       elif "," in str(command):
        
           interface,device,button,state = command
           
@@ -122,7 +127,13 @@ class queueApiCalls (threading.Thread):
        '''add single command or list of commands to queue'''
        
        logging.debug("Add to queue "+self.name+": "+str(commands))
-       self.queue.extend(commands)
+       
+       # set reload status
+       if "START_OF_RELOAD" in str(commands): self.reload = True
+       
+       # or add command to queue
+       else: self.queue.extend(commands)
+       
        return "OK: Added command(s) to the queue '"+self.name+"': "+str(commands)
    
     #------------------       
