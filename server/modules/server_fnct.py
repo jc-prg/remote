@@ -876,15 +876,35 @@ def devicesGetStatus(data,readAPI=False):
     
         if "status" in devices[device] and device in data and "method" in data[device]:
           
-          # get status values from config files
-          for value in devices[device]["status"]:
-              data[device]["status"][value] = devices[device]["status"][value]
-               
-          # request update of status from API -> will be written via "interface.py"
-          if data[device]["method"] == "query" and readAPI == True:
-              interface = data[device]["interface"]
-              queueQuery.add2queue ([2])                                                 # wait a few seconds before queries
-              queueQuery.add2queue ([[interface,device,data[device]["query_list"],""]])  # add querylist per device
+          interface = data[device]["interface"]
+          data[device]["status"]["api-status"] = deviceAPIs.status(interface)
+          
+          # get status values from config files, if connected
+          if deviceAPIs.status(interface) == "Connected":
+                    
+            if data[device]["status"]["power"] == "ON" or data[device]["status"]["power"] == "on":
+              for value in devices[device]["status"]:
+                data[device]["status"][value] = devices[device]["status"][value]
+              
+              if data[device]["method"] == "query" and readAPI == True:
+                queueQuery.add2queue ([2])                                                 # wait a few seconds before queries
+                queueQuery.add2queue ([[interface,device,data[device]["query_list"],""]])  # add querylist per device
+                
+            else:
+              for value in devices[device]["status"]:
+                if value != "power":
+                  data[device]["status"][value] = "power off"
+
+              if data[device]["method"] == "query" and readAPI == True:
+                queueQuery.add2queue ([2])                                                 # wait a few seconds before queries
+                queueQuery.add2queue ([[interface,device,["power"],""]])                   # add power command per device
+              
+          # set values, if not connected
+          else:
+          
+            for value in devices[device]["status"]:
+              data[device]["status"][value] = "not connected"
+            data[device]["status"]["power"] = deviceAPIs.status(interface)
 
     # set reload status
     if readAPI == True: queueQuery.add2queue(["END_OF_RELOAD"])
