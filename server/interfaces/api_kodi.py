@@ -1,5 +1,6 @@
 #-----------------------------------
 # KODI API using kodijson
+# https://kodi.wiki/view/JSON-RPC_API/v10#Application.Property.Name
 #-----------------------------------
 # (c) Christoph Kloth
 #-----------------------------------
@@ -194,9 +195,12 @@ class kodiAPIaddOn():
 
    def __init__(self,api):
    
-      self.addon  = "jc://addon/kodi/"
-      self.api    = api
-      self.volume = 0
+      self.addon          = "jc://addon/kodi/"
+      self.api            = api
+      self.volume         = 0
+      self.cache_metadata = {}             # cache metadata to reduce api requests
+      self.cache_time     = time.time()    # init cache time
+      self.cache_wait     = 2              # time in seconds how much time should be between two api metadata requests
       
    #-------------------------------------------------
        
@@ -205,6 +209,8 @@ class kodiAPIaddOn():
       
       if self.status == "Connected":
          self.volume = self.api.Application.GetProperties({'properties': ['volume']})["result"]["volume"]
+         #self.volume = self.PlayingMetadata("volume")["result"]
+         
          logging.debug("Increase Volume:"+str(self.volume))
       
          if (self.volume + step) > 100: self.volume  = 100
@@ -222,6 +228,8 @@ class kodiAPIaddOn():
       
       if self.status == "Connected":
          self.volume = self.api.Application.GetProperties({'properties': ['volume']})["result"]["volume"]
+         #self.volume = self.PlayingMetadata("volume")["result"]
+
          logging.debug("Decrease Volume:"+str(self.volume))
 
          if (self.volume - step) < 0:   self.volume  = 0
@@ -239,6 +247,8 @@ class kodiAPIaddOn():
       
       if self.status == "Connected":
          self.mute = self.api.Application.GetProperties({'properties': ['muted']})["result"]["muted"]
+         #self.mute = self.PlayingMetadata("muted")["result"]
+
          logging.debug("Toggle Mute:"+str(self.mute))
       
          if self.mute: self.mute = False
@@ -272,6 +282,8 @@ class kodiAPIaddOn():
       if self.status == "Connected":
          version      = {}
          version      = self.api.Application.GetProperties({'properties': ['version']})['result']['version']
+         #version      = self.PlayingMetadata("version")["result"]
+
          self.version = "KODI "+str(version['major'])+"."+str(version['minor'])+" "+str(version['tag'])      
          return { "result" : self.version }        
       
@@ -342,55 +354,92 @@ class kodiAPIaddOn():
       
       return result
    
+   #-------------------------------------------------
+         
    def PlayingMetadata(self,tag=""):
       '''Return title of playing item'''
-       
+            
       if self.status == "Connected":
-         active     = self.api.Player.GetActivePlayers()['result']
- 
-         if active == []:
-            return { "result" : "no media loaded" }
+         metadata = {}
 
-         if 'playerid' in active[0]:     
+         if self.cache_metadata == {} or (self.cache_time + self.cache_wait) < time.time():
          
-            playerid   = active[0]['playerid']
-            playertype = active[0]['type']   
-            player     = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : ['live','speed','percentage','position','playlistid'] })['result']
-            playlistid = player['playlistid']
-            playlist   = self.api.Playlist.GetProperties({'playlistid' : playlistid, 'properties' : ['size','type'] })['result']
-            metadata   = self.api.Player.GetItem({'playerid' : playerid, 'properties':['title','duration','album','artist','thumbnail','file','fanart']})['result']['item']
+            active      = self.api.Player.GetActivePlayers()
+            if "error" in active:             return active
+            elif not "result" in active:      return { "error" : "API not available OR unknown error" }
+            elif active["result"] == []:      active = active
+            else:                             active = active["result"]         
+  
+            application = self.api.Application.GetProperties({'properties': ['version','muted','volume','language','name']})
+            if "error" in application:        return application
+            elif not "result" in application: return { "error" : "API not available OR unknown error" }
+            else:                             application = application["result"]
+            
+            version     = application['version']
+            version     = "KODI "+str(version['major'])+"."+str(version['minor'])+" "+str(version['tag'])      
 
-            if   tag == "playing":                                      result = [ playertype, playerid ]
-            elif tag == "player":                                       result = player
-            elif tag == "playlist":                                     result = playlist
-            elif tag == "playlist-position":                            result = [ player['position'] + 1, playlist['size'] ]
-            elif tag == "item-position" and 'duration' in metadata:     result = [ round(metadata['duration'] * player['percentage'] / 100,2), metadata['duration'] ]
-            elif tag == "item-position":                                result = "N/A"
-            elif tag == "item-metadata":                                result = metadata
-            elif tag == "info":          
-               if len(metadata['title']) > 0:                                     result  = metadata['title']
-               elif len(metadata['label']) > 0:                                   result  = metadata['label']
-               else:                                                              result  = "no title"
+            metadata["status"]             = time.time()
+            metadata["application"]        = application
+            metadata["addons"]             = self.AddOns("properties")["result"]
+            metadata["addon-list"]         = self.AddOns("list")["result"]
+            metadata["power"]              = self.PowerStatus()
+            metadata["version"]            = version
+                
+            if_playing = ["player","playlist","playlist-position","playing","item","info","item-position","name"]
+            for param in if_playing: metadata[param] = "no media loaded"
+            
+            if "result" in str(active) and active["result"] == []:
+            
+              logging.info("KODI API: no media loaded")
+                                            
+            elif 'playerid' in str(active):     
+         
+              playerid    = active[0]['playerid']
+              playertype  = active[0]['type']   
+              player      = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : ['live','speed','percentage','position','playlistid'] })['result']
+              playlistid  = player['playlistid']
+              playlist    = self.api.Playlist.GetProperties({'playlistid' : playlistid, 'properties' : ['size','type'] })['result']
+              item        = self.api.Player.GetItem({'playerid' : playerid, 'properties':['title','duration','album','artist','thumbnail','file','fanart']})['result']['item']
+
+              metadata["player"]             = player
+              metadata["player-type"]        = playertype
+              metadata["playlist"]           = playlist
+              metadata["playlist-position"]  = [ player['position'] + 1, playlist['size'] ]
+              metadata["playing"]            = [ playertype, playerid ]
+              metadata["item"]               = item
+            
+              if 'duration' in item:         metadata["item-position"]  = [ round(item['duration'] * player['percentage'] / 100,2), item['duration'] ]
+              else:                          metadata["item-position"]  = "N/A"           
+            
+              if len(item['title']) > 0:     metadata["info"]           = item['title']
+              elif len(item['label']) > 0:   metadata["info"]           = item['label']
+              else:                          metadata["info"]           = "no title"
+            
+              if "album" in item and "artist" in item:
+                if len(item['album']) > 0 and len(item['artist']) > 0:  metadata["info"] += " ("+item['album']+" / "+item['artist'][0]+")"
+                elif len(item['album']) > 0:                            metadata["info"] += " ("+item['album']+")"
+                elif len(item['artist']) > 0:                           metadata["info"] += " ("+item['artist'][0]+")"        
               
-               if "album" in metadata and "artist" in metadata:
-                  if len(metadata['album']) > 0 and len(metadata['artist']) > 0:  result += " ("+metadata['album']+" / "+metadata['artist'][0]+")"
-                  elif len(metadata['album']) > 0:                                result += " ("+metadata['album']+")"
-                  elif len(metadata['artist']) > 0:                               result += " ("+metadata['artist'][0]+")"  
-                  
-               result = self.ReplaceHTML(result)
-          
-            elif tag != "" and tag in metadata: result = metadata[tag]
-            else:                               result = "tag '"+tag+"' not defined"          
-
-            return { "result" : result }
-          
+              metadata["info"]               = self.ReplaceHTML(metadata["info"])
+              
+            else:
+              return { "error" : "unknown error ("+str(active)+")" }
+              
+            self.cache_metadata = metadata
+              
          else:
-            return { "result" : "unknown error ("+str(active)+")" }
-
+            metadata            = self.cache_metadata
+            
+         #----------------------------------------------------         
+            
+         if   tag in metadata:                                               return { "result" : metadata[tag] }
+         elif "item" in metadata        and tag in metadata["item"]:         return { "result" : metadata["item"][tag] }
+         elif "application" in metadata and tag in metadata["application"]:  return { "result" : metadata["application"][tag] }
+         else:                                                               return { "error"  : "unknown tag (" + tag + ")" }
+         
       else:
          return self.not_connected
 
-      
    #-------------------------------------------------
    
    def AddOns(self,cmd=""):
@@ -400,15 +449,27 @@ class kodiAPIaddOn():
          data   = self.api.Addons.GetAddons()['result']['addons']
          addons = []
        
-         for item in data:
-            if item['type'] == 'xbmc.python.pluginsource':
-               details = self.api.Addons.GetAddonDetails({ 'addonid' : item['addonid'], 'properties' : ['name','description','enabled','installed'] })
+         if cmd == "list" or cmd == "":
+           for item in data:
+             if item['type'] == 'xbmc.python.pluginsource':
+               details = self.api.Addons.GetAddonDetails({ 'addonid' : item['addonid'], 'properties' : ['name'] })
                details = details['result']['addon']
-               
-               result = self.ReplaceHTML(details['name'])
+               result  = self.ReplaceHTML(details['name'])
                addons.append(result)
-       
-         return { "result" : addons }
+           return { "result" : addons }
+           
+         elif cmd == "properties":
+           for item in data:
+             if item['type'] == 'xbmc.python.pluginsource':
+               details            = self.api.Addons.GetAddonDetails({ 'addonid' : item['addonid'], 'properties' : ['name','description','enabled','installed'] })
+               details            = details['result']['addon']
+               details['addonid'] = item['addonid']
+               details['name']    = self.ReplaceHTML(details['name'])
+               addons.append(details)
+           return { "result" : addons }
+           
+         else:
+           return { "error"  : "unknown tag (" + tag + ")" }
    
       else:
          return self.not_connected
