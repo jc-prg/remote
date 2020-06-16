@@ -374,7 +374,7 @@ class kodiAPIaddOn():
             if "error" in application:        return application
             elif not "result" in application: return { "error" : "API not available OR unknown error" }
             else:                             application = application["result"]
-            
+
             version     = application['version']
             version     = "KODI "+str(version['major'])+"."+str(version['minor'])+" "+str(version['tag'])      
 

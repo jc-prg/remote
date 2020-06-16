@@ -109,7 +109,6 @@ class queueApiCalls (threading.Thread):
                 if not "ERROR" in str(result):  devices[device]["status"][value] = str(result)
                 else:                           devices[device]["status"][value] = "Error"
 
-                 
                 self.last_query = device + "_" + value
                 pass
                 
