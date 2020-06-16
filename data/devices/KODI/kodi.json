@@ -51,16 +51,16 @@
         "display": {},
         "method": "query",
         "queries": {
-            "mute":    "Application.GetProperties({'properties': ['muted']})||['muted']",
-            "name":    "Application.GetProperties({'properties': ['name']})||['name']",
-            "vol":     "Application.GetProperties({'properties': ['volume']})||['volume']",
+            "mute":    "jc.PlayingMetadata('muted')",
+            "name":    "jc.PlayingMetadata('name')",
+            "vol":     "jc.PlayingMetadata('volume')",
             "power":   "jc.PowerStatus()",
-            "version": "jc.KodiVersion()",
+            "version": "jc.PlayingMetadata('version')",
             "playing": "jc.PlayingMetadata('playing')",
             "playlist":"jc.PlayingMetadata('playlist-position')",
             "item":    "jc.PlayingMetadata('item-position')",
             "info":    "jc.PlayingMetadata('info')",
-            "addons":  "jc.AddOns('list')"
+            "addons":  "jc.PlayingMetadata('addon-list')"
         },
         "url": "http://192.168.1.36:8080/",
         "values": {
