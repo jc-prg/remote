@@ -50,9 +50,11 @@ class connect(threading.Thread):
         
         logging.info( "Starting " + self.name )
         
+#### -> Place information in JSON config file, which APIs should be loaded ...
+        
         self.api["KODI"]        = interfaces.api_kodi.kodiAPI("KODI")
         self.api["TEST"]        = interfaces.api_test.testAPI("TEST")
-        self.api["EISCP-ONKYO"] = interfaces.api_eiscp.eiscpAPI("EISCP-ONKYO")
+        self.api["EISCP-ONKYO"] = interfaces.api_eiscp.eiscpAPI("EISCP-ONKYO","ONKYO-TXNR686")
         self.api["BROADLINK"]   = interfaces.api_broadlink.broadlinkAPI("BROADLINK")
         self.api["SONY"]        = interfaces.api_sony.sonyAPI("SONY","SONY-BDP-S4500")
 
