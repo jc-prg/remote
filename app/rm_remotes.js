@@ -851,7 +851,7 @@ function rmRemote(name) {
 			style += " display_off";
 			}
 		else {
-			text += "<center><b>device not connected</b></center>:<br/>";
+			text += "<center><b>device not connected</b>:</center><br/>";
 			text += "<center><i>"+status_data["power"]+"</i></center>";
 			style += " display_error";
 			}
