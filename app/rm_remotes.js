@@ -830,20 +830,35 @@ function rmRemote(name) {
 	//--------------------------------
         // show display with informations
         this.display              = function (id, device, style="" ) {
-
+        
 		var display_data = {}		
+		var status_data  = this.data["DATA"]["devices"][device]["status"];
 		if (this.data["DATA"]["devices"][device]["display"])	{ display_data = this.data["DATA"]["devices"][device]["display"]; }
 		else							{ display_data["Error"] = "No display defined"; } 
 
-        	var text  = "";
-        	text += "<button class=\"display "+style+"\" onclick=\"" + this.app_name + ".display_alert('"+id+"','"+device+"','"+style+"');\">";
-        	for (var key in display_data) {
-        		var label = "<data class='display-label'>"+key+":</data>";
-			var input = "<data class='display-input' id='display_"+device+"_"+display_data[key]+"'>no data</data>";
-	        	text += "<div class='display-element "+style+"'>"+label+input+"</div>";
-	        	}
-        	text += "</button>";
-        	return text;
+        	var text    = "";
+        	var display = "";
+        	
+        	if (status_data["power"] == "ON" || status_data["power"] == "on") {
+	        	for (var key in display_data) {
+        			var label = "<data class='display-label'>"+key+":</data>";
+				var input = "<data class='display-input' id='display_"+device+"_"+display_data[key]+"'>no data</data>";
+		        	text += "<div class='display-element "+style+"'>"+label+input+"</div>";
+		        	}
+		        }
+		else if (status_data["power"].indexOf("OFF") >= 0 || status_data["power"].indexOf("off") >= 0) {
+			text  += "<center>power off</center>";
+			style += " display_off";
+			}
+		else {
+			text += "<center>device not connected</center><br/>&nbsp;<br/>";
+			text += "<center><i>"+status_data["power"]+"</i></center>";
+			style += " display_error";
+			}
+        	display += "<button class=\"display "+style+"\" onclick=\"" + this.app_name + ".display_alert('"+id+"','"+device+"','"+style+"');\">";
+        	display += text;
+        	display += "</button>";
+        	return display;
         	}
         	
         // display all information

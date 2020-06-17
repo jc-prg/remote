@@ -263,8 +263,17 @@ button {
    width        : 45px;
    float        : left;
 }
+
 .display-input {
    float        : left;
+}
+
+.display.display_off {
+   background	: #000033;
+}
+
+.display.display_error {
+   background	: #330000;
 }
 
 /* colored circles as status LED */
