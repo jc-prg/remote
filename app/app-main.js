@@ -203,8 +203,8 @@ function remoteForceReload_checkIfReady(data) {
 	else if (reload_active) {
 		reload_waiting += 1;
 		if (reload_waiting < 8)		{ addTextById('reload_msg','.'); }
-		else if (reload_waiting < 15)		{ setTextById('reload_msg',lang["RELOAD_TAKES_LONGER"]); }
-		else if (reload_waiting < 25)		{ setTextById('reload_msg',lang["RELOAD_TAKES_MUCH_LONGER"]); }
+		else if (reload_waiting < 15)		{ setTextById('reload_msg',lang("RELOAD_TAKES_LONGER")); }
+		else if (reload_waiting < 25)		{ setTextById('reload_msg',lang("RELOAD_TAKES_MUCH_LONGER")); }
 		else { 
 			setTextById('reload_msg','Connection timed out.');
 		   	rm3app.setAutoupdate("",reloadInterval);		 // set reload interval back to default
