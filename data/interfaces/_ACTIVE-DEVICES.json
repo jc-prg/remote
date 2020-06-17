@@ -9,6 +9,7 @@
         "main-audio": "no",
         "position": 6,
         "status": {
+            "api-status": "power off",
             "power": "OFF"
         },
         "visible": "no"
@@ -23,20 +24,21 @@
         "main-audio": "no",
         "position": 3,
         "status": {
-            "media-duration": "Error",
-            "media_duration": "Error",
-            "media_medium": "Error",
-            "media_tracks": "Error",
-            "playing": "OFF",
-            "playing2": "Error",
-            "playing_soap": "Error",
-            "position_abs_cnt": "Error",
-            "position_abs_time": "Error",
-            "position_duration": "Error",
-            "position_metadata": "Error",
-            "position_rel_cnt": "Error",
-            "position_rel_time": "Error",
-            "position_track": "Error",
+            "api-status": "power off",
+            "media-duration": "power off",
+            "media_duration": "power off",
+            "media_medium": "power off",
+            "media_tracks": "power off",
+            "playing": "power off",
+            "playing2": "power off",
+            "playing_soap": "power off",
+            "position_abs_cnt": "power off",
+            "position_abs_time": "power off",
+            "position_duration": "power off",
+            "position_metadata": "power off",
+            "position_rel_cnt": "power off",
+            "position_rel_time": "power off",
+            "position_track": "power off",
             "power": "OFF"
         },
         "visible": "yes"
@@ -51,7 +53,8 @@
         "main-audio": "no",
         "position": 2,
         "status": {
-            "power": "ON"
+            "api-status": "power off",
+            "power": "OFF"
         },
         "visible": "yes"
     },
@@ -80,7 +83,8 @@
         "main-audio": "no",
         "position": 4,
         "status": {
-            "power": "ON"
+            "api-status": "power off",
+            "power": "OFF"
         },
         "visible": "yes"
     },
@@ -94,13 +98,21 @@
         "main-audio": "no",
         "position": 7,
         "status": {
-            "mute": "Error",
-            "name": "Error",
-            "power": "Error",
-            "version": "Error",
-            "vol": "Error"
+            "activePlayer": "not connected",
+            "addons": "['ARTE.TV', 'ARDundZDF', 'KiKA plus', '3sat Mediathek', 'MediathekView', 'YouTube', 'SPIEGEL.TV <font color=\"FF00EE00\">(neu)</font>', 'Joyn']",
+            "api-status": "Connected",
+            "info": "no media loaded",
+            "item": "no media loaded",
+            "mute": "True",
+            "name": "no media loaded",
+            "player": "not connected",
+            "playing": "no media loaded",
+            "playlist": "no media loaded",
+            "power": "ON",
+            "version": "KODI 18.7 stable",
+            "vol": "100"
         },
-        "visible": "no"
+        "visible": "yes"
     },
     "rec": {
         "config_device": "receiver_onkyo-txnr686",
@@ -112,9 +124,10 @@
         "main-audio": "no",
         "position": 9,
         "status": {
-            "mute": "OFF",
+            "api-status": "power off",
+            "mute": "power off",
             "power": "OFF",
-            "vol": 0
+            "vol": "power off"
         },
         "visible": "no"
     },
@@ -129,20 +142,21 @@
         "position": 1,
         "status": {
             "a-v-sync": "0",
+            "api-status": "Connected",
             "audio-info": "ANALOG,,,,All Ch Stereo,5.1 ch,",
             "audio-source": "hdmi",
             "dimmer": "dark",
             "display": "('selector-volume-1line', 'default-2line')",
             "listening": "all-ch-stereo",
             "mute": "off",
-            "power": "('standby', 'off')",
+            "power": "on",
             "sleep-set": "N/A",
             "source": "cbl",
-            "temperature": "C 32",
+            "temperature": "C 31",
             "timer": "N/A",
             "tuning": "5 Hz",
-            "video-info": "No Video,Unknown,,24bit,,Unknown,,24bit,,",
-            "vol": "44"
+            "video-info": "VIDEO 1,Unknown,,24bit,,Unknown,,24bit,,",
+            "vol": "40"
         },
         "visible": "yes"
     },
@@ -156,6 +170,7 @@
         "main-audio": "no",
         "position": 10,
         "status": {
+            "api-status": "power off",
             "power": "OFF"
         },
         "visible": "no"
@@ -170,10 +185,11 @@
         "main-audio": "no",
         "position": 5,
         "status": {
-            "mute": "OFF",
-            "power": "ON",
-            "radiotv": "TV",
-            "vol": 17
+            "api-status": "power off",
+            "mute": "power off",
+            "power": "OFF",
+            "radiotv": "power off",
+            "vol": "power off"
         },
         "visible": "yes"
     }
