@@ -3,7 +3,7 @@
         "description": "Kodi (API)",
         "display": {
             "Mute": "mute",
-            "Name": "name",
+            "Name": "version",
             "Volume": "vol",
             "Playing": "playing"
         },
