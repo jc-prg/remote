@@ -26,6 +26,8 @@ class sampleAPI():
        self.api_description = "Sample API Description"
        self.method          = "query" # or "record"
        self.working         = False
+       self.count_error     = 0
+       self.count_success   = 0
        
        logging.info("... "+self.api_name+" - " + self.api_description)
        
@@ -38,7 +40,9 @@ class sampleAPI():
        
        # commands to connect and to check, if connection works - if not, return error message
 
-       self.status = "Connected"
+       self.status               = "Connected"
+       self.count_error          = 0
+       self.count_success        = 0
        
 # ---- change for your api ----
 #       try:

@@ -41,6 +41,8 @@ class broadlinkAPI():
        self.api_config      = rm3json.read(rm3config.interfaces+self.api_name)
        self.working         = False
        self.method          = "record"
+       self.count_error     = 0
+       self.count_success   = 0
        
        self.api_config["Port"]       = int(self.api_config["Port"])
        self.api_config["MACAddress"] = netaddr.EUI(self.api_config["MACAddress"])
@@ -56,6 +58,9 @@ class broadlinkAPI():
    def connect(self):
        '''Connect / check connection'''
        
+       self.count_error          = 0
+       self.count_success        = 0
+
        try:
          self.api  = broadlink.rm((self.api_config["IPAddress"], self.api_config["Port"]), self.api_config["MACAddress"])     
          if self.api.auth(): self.status = "Connected"

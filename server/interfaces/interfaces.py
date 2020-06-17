@@ -28,14 +28,14 @@ class connect(threading.Thread):
         '''
 	    
         threading.Thread.__init__(self)
-        self.api         = {}
-        self.available   = {}
-        self.stopProcess = False
-        self.wait        = 60       # time for reconnects
-        self.configFiles = configFiles
-        self.name        = "jc://remote/interfaces/"
-
-        self.methods   = {
+        self.api          = {}
+        self.available    = {}
+        self.stopProcess  = False
+        self.wait         = 60       # time for reconnects
+        self.configFiles  = configFiles
+        self.name         = "jc://remote/interfaces/"
+        self.check_error  = time.time()
+        self.methods      = {
             "send"        : "Send command via API (send)",
             "record"      : "Record per device (record)",
             "query"       : "Request per API (query)"
@@ -118,7 +118,46 @@ class connect(threading.Thread):
         if interface == "":          return status_all_interfaces
         elif interface in self.api:  return self.api[interface].status
         else:                        return "ERROR: API not found ("+interface+")."
+
     
+    #-------------------------------------------------
+    
+    def check_errors(self,interface):
+        '''
+        check the amount of errors, if more than 80% errors and at least 5 requests try to reconnect
+        '''
+        
+#        if not self.api[interface].count_error:   self.api[interface].count_error   = 0
+#        if not self.api[interface].count_success: self.api[interface].count_success = 0
+
+        requests   = self.api[interface].count_error + self.api[interface].count_success
+        if requests > 0: error_rate = self.api[interface].count_error / requests
+        else:            error_rate = 0
+        
+        logging.debug("ERROR RATE ... "+str(error_rate) + "/"+str(self.api[interface].count_error)+"/"+str(requests))
+        
+        if error_rate >= 0.8 and requests > 5: 
+           self.reconnect(interface)
+           
+    #-------------------------------------------------
+
+    def check_errors_count(self,interface,is_error):
+        '''
+        count errors and reset every x seconds
+        '''
+        
+        if (self.check_error + 10) < time.time():
+        
+           self.api[interface].count_error   = 0
+           self.api[interface].count_success = 0
+           self.check_error = time.time()
+        
+        if is_error:   self.api[interface].count_error   += 1
+        else:          self.api[interface].count_success += 1
+        
+        logging.debug("ERROR RATE ... error:" + str(is_error))
+
+
     #-------------------------------------------------
 
     def send(self, call_api, device, button, value=""):
@@ -127,6 +166,8 @@ class connect(threading.Thread):
         '''
         
         return_msg = ""
+        self.check_errors(call_api)
+        logging.debug("SEND "+call_api+" / "+device+" - "+button)
 
         if self.api[call_api].status == "Connected":
             method = self.method(call_api)
@@ -145,7 +186,13 @@ class connect(threading.Thread):
            
         else:                          return_msg = "ERROR: API not connected ("+call_api+")"
         
-        if "ERROR" in str(return_msg): logging.warn(return_msg)
+
+        if "ERROR" in str(return_msg) or "error" in str(return_msg):
+           logging.warn(return_msg)
+           self.check_errors_count(call_api,True)
+        else:
+           self.check_errors_count(call_api,False)
+
         return return_msg
 
 
@@ -157,6 +204,7 @@ class connect(threading.Thread):
         '''
     
         return_msg = ""
+        self.check_errors(call_api)
         logging.debug("RECORD "+call_api+" / "+device+" - "+button)
 
         if self.api[call_api].status == "Connected":       
@@ -164,7 +212,12 @@ class connect(threading.Thread):
             else:                    return_msg = "ERROR: API not available ("+call_api+")"
         else:                        return_msg = "ERROR: API not connected ("+call_api+")"
 
-        if "ERROR" in str(return_msg): logging.warn(return_msg)
+        if "ERROR" in str(return_msg) or "error" in str(return_msg):
+           logging.warn(return_msg)
+           self.check_errors_count(call_api,True)
+        else:
+           self.check_errors_count(call_api,False)
+           
         return return_msg
 
 #-------------------------------------------------
@@ -175,6 +228,7 @@ class connect(threading.Thread):
         '''
 
         return_msg = ""
+        self.check_errors(call_api)
         logging.debug("QUERY "+call_api+" / "+device+" - "+button)
 
         if self.api[call_api].status == "Connected":       
@@ -185,7 +239,12 @@ class connect(threading.Thread):
             else:                      return_msg = "ERROR: API not available ("+str(call_api)+")"
         else:                          return_msg = "ERROR: API not connected ("+str(call_api)+")"
 
-        if "ERROR" in str(return_msg): logging.warn(return_msg)
+        if "ERROR" in str(return_msg) or "error" in str(return_msg):
+           logging.warn(return_msg)
+           self.check_errors_count(call_api,True)
+        else:
+           self.check_errors_count(call_api,False)
+           
         return return_msg
 
 #-------------------------------------------------

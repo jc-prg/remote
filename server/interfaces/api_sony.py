@@ -22,12 +22,14 @@ class sonyAPI():
    def __init__(self,api_name,device):
        '''Initialize API / check connect to device'''
        
-       self.api_name          = api_name       
-       self.api_description   = "API for SONY Devices (SonyAPILib)"
-       self.api_config        = rm3json.read(rm3config.interfaces+self.api_name)
-       self.api_device        = device
-       self.method            = "query" # or "record"
-       self.working           = False
+       self.api_name        = api_name       
+       self.api_description = "API for SONY Devices (SonyAPILib)"
+       self.api_config      = rm3json.read(rm3config.interfaces+self.api_name)
+       self.api_device      = device
+       self.method          = "query" # or "record"
+       self.working         = False
+       self.count_error     = 0
+       self.count_success   = 0
        
        logging.info("... "+self.api_name+" - " + self.api_description)
        
@@ -40,7 +42,9 @@ class sonyAPI():
        
        # commands to connect and to check, if connection works - if not, return error message
 
-       self.status = "Connected"
+       self.status               = "Connected"
+       self.count_error          = 0
+       self.count_success        = 0
        
        api_ip     = self.api_config["Devices"][self.api_device]["IPAddress"]
        api_name   = self.api_device

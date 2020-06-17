@@ -35,6 +35,8 @@ class kodiAPI():
        self.status          = "Started"
        self.method          = "query"
        self.not_connected   = "Device not connected (KODI)."
+       self.count_error     = 0
+       self.count_success   = 0
 
        logging.info("... "+self.api_name+" - " + self.api_description)
        logging.debug(self.api_url)
@@ -52,6 +54,8 @@ class kodiAPI():
           self.api.jc = kodiAPIaddOn(self.api)
           logging.debug(str(self.api.JSONRPC.Ping()))
           
+          self.count_error          = 0
+          self.count_success        = 0
           self.status               = "Connected"
           self.api.jc.status        = "Connected"
           self.api.jc.not_connected = self.not_connected

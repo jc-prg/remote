@@ -34,6 +34,8 @@ class eiscpAPI():
        self.api_timeout     = 5
        self.method          = "query"
        self.working         = False
+       self.count_error     = 0
+       self.count_success   = 0
        
        logging.info("... "+self.api_name+" - " + self.api_description)
        
@@ -52,6 +54,9 @@ class eiscpAPI():
        
        # Create a receiver object, connecting to the host
        
+       self.count_error          = 0
+       self.count_success        = 0
+
        try:
           print("(Re)Connect eISCP ONKYO "+self.api_ip)
           self.api    = eiscp.eISCP(self.api_ip)

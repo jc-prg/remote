@@ -25,6 +25,8 @@ class testAPI():
        self.api_name        = api_name       
        self.api_description = "Test API Description for automatic testing"
        self.working         = False
+       self.count_error     = 0
+       self.count_success   = 0
        
        logging.info("... "+self.api_name+" - " + self.api_description)
               
@@ -36,7 +38,9 @@ class testAPI():
    def connect(self):
        '''Connect / check connection'''
 
-       self.status = "Connected"
+       self.status               = "Connected"
+       self.count_error          = 0
+       self.count_success        = 0
 
 
    #-------------------------------------------------
