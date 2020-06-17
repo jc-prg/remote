@@ -66,6 +66,8 @@ var language = {
 		"PLEASE_WAIT"			: "Please wait ... .",
 		
 		"REMOTE_ADD"			: "Add Remote Control",
+		"RELOAD_TAKES_LONGER"		: "Reload takes longer than expected ...",
+		"RELOAD_TAKES_MUCH_LONGER"	: "Reload takes longer than much expected ...",
 		
 		"SCENE_ASK_DELETE"		: "Do you really want to delete scene '{0}'?",
 		"SCENE_EXISTS"			: "Scene '{0}' already exists!",
