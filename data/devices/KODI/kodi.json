@@ -52,7 +52,6 @@
         "method": "query",
         "queries": {
             "mute":    "jc.PlayingMetadata('muted')",
-            "name":    "jc.PlayingMetadata('name')",
             "vol":     "jc.PlayingMetadata('volume')",
             "power":   "jc.PowerStatus()",
             "version": "jc.PlayingMetadata('version')",
@@ -60,7 +59,10 @@
             "playlist":"jc.PlayingMetadata('playlist-position')",
             "item":    "jc.PlayingMetadata('item-position')",
             "info":    "jc.PlayingMetadata('info')",
-            "addons":  "jc.PlayingMetadata('addon-list')"
+            "addons":  "jc.PlayingMetadata('addon-list')",
+            "plot":    "jc.PlayingMetadata('plot')",
+            "genre":   "jc.PlayingMetadata('genre')",
+            "type":    "jc.PlayingMetadata('type')"
         },
         "url": "http://192.168.1.36:8080/",
         "values": {

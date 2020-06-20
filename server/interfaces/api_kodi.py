@@ -398,12 +398,30 @@ class kodiAPIaddOn():
                                             
             elif 'playerid' in str(active):     
          
+              all_properties = [ "title", "artist", "albumartist", "genre", "year", "rating", "album", "track", "duration", "comment", 
+                                 "lyrics", "musicbrainztrackid", "musicbrainzartistid", "musicbrainzalbumid", "musicbrainzalbumartistid", 
+                                 "playcount", "fanart", "director", "trailer", "tagline", "plot", "plotoutline", "originaltitle", 
+                                 "lastplayed", "writer", "studio", "mpaa", "cast", "country", "imdbnumber", "premiered", "productioncode", 
+                                 "runtime", "set", "showlink", "streamdetails", "top250", "votes", "firstaired", "season", "episode", 
+                                 "showtitle", "thumbnail", "file", "resume", "artistid", "albumid", "tvshowid", "setid", "watchedepisodes", 
+                                 "disc", "tag", "art", "genreid", "displayartist", "albumartistid", "description", "theme", "mood", "style", 
+                                 "albumlabel", "sorttitle", "episodeguide", "uniqueid", "dateadded", "channel", "channeltype", "hidden", 
+                                 "locked", "channelnumber", "starttime", "endtime", "specialsortseason", "specialsortepisode", 
+                                 "compilation", "releasetype", "albumreleasetype", "contributors", "displaycomposer", "displayconductor", 
+                                 "displayorchestra", "displaylyricist", "userrating", "sortartist", "musicbrainzreleasegroupid", 
+                                 "mediapath", "dynpath"
+                                 ]
+              selected_properties = ['title','album','artist','plot','mpaa','genre','episode','season','showtitle','studio','duration','runtime']
+              
+
               playerid    = active[0]['playerid']
               playertype  = active[0]['type']   
               player      = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : ['live','speed','percentage','position','playlistid'] })['result']
               playlistid  = player['playlistid']
               playlist    = self.api.Playlist.GetProperties({'playlistid' : playlistid, 'properties' : ['size','type'] })['result']
-              item        = self.api.Player.GetItem({'playerid' : playerid, 'properties':['title','duration','album','artist','thumbnail','file','fanart']})['result']['item']
+              item        = self.api.Player.GetItem({'playerid' : playerid, 'properties': selected_properties })['result']['item']
+              item2       = self.api.Player.GetItem({'playerid' : playerid, 'properties': all_properties })['result']['item']
+              
 
               metadata["player"]             = player
               metadata["player-type"]        = playertype
@@ -411,15 +429,19 @@ class kodiAPIaddOn():
               metadata["playlist-position"]  = [ player['position'] + 1, playlist['size'] ]
               metadata["playing"]            = [ playertype, playerid ]
               metadata["item"]               = item
+              metadata["info"]               = ""
             
               if 'duration' in item:         metadata["item-position"]  = [ round(item['duration'] * player['percentage'] / 100,2), item['duration'] ]
               else:                          metadata["item-position"]  = "N/A"           
-            
-              if len(item['title']) > 0:     metadata["info"]           = item['title']
-              elif len(item['label']) > 0:   metadata["info"]           = item['label']
-              else:                          metadata["info"]           = "no title"
-            
-              if "album" in item and "artist" in item:
+
+              if len(item['showtitle']) > 0: metadata["info"]           = item['showtitle'] + ": "
+              
+              if len(item['title']) > 0:     metadata["info"]           += item['title']
+              elif len(item['label']) > 0:   metadata["info"]           += item['label']
+              else:                          metadata["info"]           += "no title"
+              
+              if item['type'] == 'episode':  metadata["info"]           += " (" + str(item['season']) + "-" + str(item['episode']) + ")"
+              elif "album" in item and "artist" in item:
                 if len(item['album']) > 0 and len(item['artist']) > 0:  metadata["info"] += " ("+item['album']+" / "+item['artist'][0]+")"
                 elif len(item['album']) > 0:                            metadata["info"] += " ("+item['album']+")"
                 elif len(item['artist']) > 0:                           metadata["info"] += " ("+item['artist'][0]+")"        
