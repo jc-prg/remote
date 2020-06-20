@@ -882,7 +882,7 @@ def devicesGetStatus(data,readAPI=False):
           # get status values from config files, if connected
           if deviceAPIs.status(interface) == "Connected":
                     
-            if data[device]["status"]["power"] == "ON" or data[device]["status"]["power"] == "on":
+#            if data[device]["status"]["power"] == "ON" or data[device]["status"]["power"] == "on":
               for value in devices[device]["status"]:
                 data[device]["status"][value] = devices[device]["status"][value]
               
@@ -890,14 +890,14 @@ def devicesGetStatus(data,readAPI=False):
                 queueQuery.add2queue ([2])                                                 # wait a few seconds before queries
                 queueQuery.add2queue ([[interface,device,data[device]["query_list"],""]])  # add querylist per device
                 
-            else:
-              for value in devices[device]["status"]:
-                if value != "power":
-                  data[device]["status"][value] = "power off"
-
-              if data[device]["method"] == "query" and readAPI == True:
-                queueQuery.add2queue ([2])                                                 # wait a few seconds before queries
-                queueQuery.add2queue ([[interface,device,["power"],""]])                   # add power command per device
+#            else:
+#              for value in devices[device]["status"]:
+#                if value != "power":
+#                  data[device]["status"][value] = "power off"
+#
+#              if data[device]["method"] == "query" and readAPI == True:
+#                queueQuery.add2queue ([2])                                                 # wait a few seconds before queries
+#                queueQuery.add2queue ([[interface,device,["power"],""]])                   # add power command per device
               
           # set values, if not connected
           else:
