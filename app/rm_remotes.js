@@ -866,17 +866,26 @@ function rmRemote(name) {
         
 		var display_data = [];
 		if (this.data["DATA"]["devices"][device]["query_list"])	{ display_data = this.data["DATA"]["devices"][device]["query_list"]; }
-		else							{ display_data = ["ERROR","No display defined"]; } 
+		else								{ display_data = ["ERROR","No display defined"]; } 
 
-        	var text = "Device Information: "+device +"<hr/>";
+		var power = this.data["DATA"]["devices"][device]["status"];
+        	var text  = "Device Information: "+device +"<hr/>";
         	text  += "<div style='width:100%;height:200px;overflow-y:scroll;'>";
+		text  += "<center id='display_full_"+device+"_power'>"+power+"</center><hr/>";        		
         	text  += this.tab_row("start","100%");
+        	
+        	console.log(device);
+        	console.log(this.data["DATA"]["devices"][device]["status"]);
+        	console.log(this.data["DATA"]["devices"][device]["query_list"]);
+        	console.log(display_data);
 
         	for (var i=0; i<display_data.length; i++) {
-        		var label = "<data class='display-label'>"+display_data[i]+":</data>";
-			var input = "<data class='display-input' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>";
-	        	//text += "<div class='display-element alert'>"+label+input+"</div><br/>";
-	        	text += this.tab_row("<div style='width:100px;'>"+label+"</div>",input);
+        		if (display_data[i] != "power") {
+	        		var label = "<data class='display-label'>"+display_data[i]+":</data>";
+				var input = "<data class='display-input' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>";
+		        	//text += "<div class='display-element alert'>"+label+input+"</div><br/>";
+		        	text += this.tab_row("<div style='width:100px;'>"+label+"</div>",input);
+		        	}
 	        	}
         	text  += this.tab_row("end");
         	text  += "</div>";

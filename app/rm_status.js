@@ -330,30 +330,47 @@ function statusCheck(data={}) {
 
 	// check status for displays
 	for (var key in devices) {
+	
+		// fill keys with displays
 		if (devices[key]["status"] && devices[key]["display"]) {
 		        display = devices[key]["display"];
 			for (var dkey in display) {
-				var vkey    = display[dkey];
+				var vkey     = display[dkey];
 				var element  = document.getElementById("display_" + key + "_" + vkey);
 				var element2 = document.getElementById("display_full_" + key + "_" + vkey);
-				var status  = devices[key]["status"][vkey];
+				var status   = devices[key]["status"][vkey];
 				
 				if (devices[key]["values"] && devices[key]["values"][vkey] && vkey == "vol") {
 					if (devices[key]["values"][vkey]["max"]) { 
 							status = statusShowVolume_old( devices[key]["status"][vkey], devices[key]["values"][vkey]["max"], vol_color2, novol_color ) + " &nbsp; ["+devices[key]["status"][vkey]+"]"; 
 							}
 					}
-				
+									
+				if (vkey == "power") {
+			        	if      (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)	{ status = "<b style='color:lightgreen;'>Connected<b/>"; }
+					else if (status.indexOf("OFF") >= 0 || status.indexOf("off") >= 0)	{ status = "<b style='color:gold;'>Connected: Power Off<b/>"; }
+        				else 									{ status = "<b style='color:red;'>Connection Error:</b> "+status+"<hr/>"; }			
+					}
+
 				if (element)  { element.innerHTML  = status; }
 				if (element2) { element2.innerHTML = status.replace(/,/g,"; "); }
 				}
 			}
+			
+		// fill all keys in alert display
 		if (devices[key]["status"] && devices[key]["query_list"]) {
 		        display = devices[key]["query_list"];
 			for (var i=0; i<display.length; i++) {
-				var vkey    = display[i];
+				var vkey     = display[i];
 				var element2 = document.getElementById("display_full_" + key + "_" + vkey);
-				var status  = devices[key]["status"][vkey];		
+				var status   = devices[key]["status"][vkey];		
+
+				if (vkey == "power") {
+			        	if      (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)	{ status = "<b style='color:lightgreen;'>Connected<b/>"; }
+					else if (status.indexOf("OFF") >= 0 || status.indexOf("off") >= 0)	{ status = "<b style='color:gold;'>Connected: Power Off<b/>"; }
+        				else 									{ status = "<b style='color:red;'>Connection Error:</b> "+status+"<hr/>"; }			
+					}
+
 				if (element2) { element2.innerHTML = status.replace(/,/g,", "); }
 				}
 			}
