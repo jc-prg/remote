@@ -10,22 +10,22 @@
         	"mute-off"	: "audio-muting=off",
         	"mute-on"	: "audio-muting=on"
        	},
-       	"commands" :{
+       "commands" :{
        		"vol"	: { "command" : "master-volume=", "type" : "integer" },
        		"power" : { "command" : "system-power=",  "type" : "enum" },
        		"mute"  : { "command" : "audio-muting=",  "type" : "enum" }
        	},
-       	"queries" : {
+       "queries" : {
        		"power"   : "system-power=query",
-        	"vol"     : "master-volume=query",
-        	"mute"    : "audio-muting=query"
+        		"vol"     : "master-volume=query",
+        		"mute"    : "audio-muting=query"
        	},
-       	"values" : {
+       "values" : {
        		"power"   : [ "on", "off" ],
        		"vol"     : { "min" : 0, "max" : 70 },
        		"mute"    : [ "on", "off", "toggle" ]
        	},
-       	"display" : {
+       "display" : {
        	}
    }
 }
