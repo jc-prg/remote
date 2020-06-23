@@ -86,7 +86,7 @@ var theme = "default";
 
 function check_theme() {
 	old_theme	= theme;
-	element		= document.getElementById("theme_check");
+	element	= document.getElementById("theme_check");
 	style		= window.getComputedStyle(element)["background-color"];
 	
 	if (style == "rgb(255, 255, 255)")	{ theme = "default"; }

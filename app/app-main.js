@@ -135,7 +135,6 @@ function remoteInitData(data) {
 		rm3settings.init( data );
 		rm3menu.init(     data );
 		rm3start.init(    data );
-//		rm3slider.init(   data );
 		rm3settings.create();
 		}
 	else {
