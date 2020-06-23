@@ -27,6 +27,7 @@ from modules.server_fnct import *
 #---------------------------
 
 Status                 = "Starting"
+LastAPICall            = time.time()
 
 #---------------------------
 
@@ -42,7 +43,7 @@ def remoteAPI_start():
     create data structure for API response and read relevant data from config files
     '''
 
-    global Status
+    global Status, LastAPICall
 
     data                                   = configFiles.api_init
     data["DATA"]                           = RmReadData()
@@ -67,6 +68,8 @@ def remoteAPI_start():
          data["DATA"]["devices"][device]["connected"] =  data["STATUS"]["interfaces"][data["DATA"]["devices"][device]["interface"]]
       else:
          data["DATA"]["devices"][device]["connected"] = "No connection yet."
+         
+    LastAPICall                            = time.time()
     
     return data
     
