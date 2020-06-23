@@ -4,6 +4,7 @@
             "addons" : "GUI.ActivateWindow({'window':'addonbrowser'})",
             "back": "Input.Back()",
             "display" : "Input.ShowOSD()",
+            "context" : "Input.ContextMenu()",
             "down": "Input.Down()",
             "enter": "Input.Select()",
             "fav": "GUI.ActivateWindow({'window':'favourites'})",
@@ -17,14 +18,14 @@
             "mute": "jc.ToggleMute()",
             "mute-off": "Application.SetMute({'mute':False})",
             "mute-on": "Application.SetMute({'mute':True})",
-            "play": "jc.Play()",
+            "play": "jc.PlayingCommands('Play')",
             "page-down": "GUI.PageDown()",
             "page-up": "GUI.PageUp()",
-            "pause": "jc.PlayPause()",
+            "pause": "jc.PlayingCommands('PlayPause')",
             "pictures": "GUI.ActivateWindow({'window':'pictures'})",
             "right": "Input.Right()",
             "settings": "GUI.ActivateWindow({'window':'settings'})",
-            "stop": "jc.Stop()",
+            "stop": "jc.PlayingCommands('Stop')",
             "menu": "GUI.ActivateWindow({'window':'submenu'})",
             "system": "GUI.ActivateWindow({'window':'systeminfo'})",
             "up": "Input.Up()",
@@ -62,9 +63,10 @@
             "addons":  "jc.PlayingMetadata('addon-list')",
             "plot":    "jc.PlayingMetadata('plot')",
             "genre":   "jc.PlayingMetadata('genre')",
-            "type":    "jc.PlayingMetadata('type')"
+            "type":    "jc.PlayingMetadata('type')",
+            "zz":      "jc.PlayingMetadata('item')"
         },
-        "url": "http://192.168.1.36:8080/",
+        "url": "http://192.168.1.31:8080/",
         "values": {
             "mute": [
                 "False",

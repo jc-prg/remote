@@ -7,6 +7,11 @@
             "Volume": "vol",
             "Playing": "playing"
         },
+        "media-display" : {
+            "Volume" : "vol",
+            "Mute"   : "mute",
+            "Info"   : "info"
+        },
         "display-size": "middle",
         "remote": [
             ".",
@@ -23,7 +28,7 @@
             "LINE",
             ".",
             "up",
-            ".",
+            "context",
             "vol+",
             "left",
             "enter",

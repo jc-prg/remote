@@ -295,66 +295,53 @@ class kodiAPIaddOn():
          return self.not_connected
          
    #-------------------------------------------------
+   # IDEA ... def NavigationCommands
+   #-------------------------------------------------
+   # analouge to the official KODI app ...
+   # up / down - show information - if media is running
+   # left / right - jump step back / jump step forward - if media is running
+   # ...
+            
+   #-------------------------------------------------
    
-   def Play(self):
-      '''Play active player'''
+   def PlayingCommands(self,command):
+      '''Send play, pause, stop to active device'''
 
       if self.status == "Connected":
-         active     = self.api.Player.GetActivePlayers()['result']
-         player     = active[0]['playerid']
-             
-         if active == []:  return { "result" : "no media loaded" }
-         else:             self.api.Player.Play(player)
-         return { "result" : "OK" }
-
+         active     = self.api.Player.GetActivePlayers()['result']        
+         try:
+           msg        = ""
+           player     = { 'playerid' : active[0]['playerid'] }
+           
+           if command == "Play"        : msg = self.api.Player.PlayPause(player)
+           elif command == "PlayPause" : msg = self.api.Player.PlayPause(player)
+           elif command == "Stop"      : msg = self.api.Player.Stop(player)
+           
+           if msg != "" and not "error" in str(msg):  return { "result" : "OK" }
+           elif "error" in str(msg):                  return msg
+           else:                                      return { "error"  : "command not defined" }
+           
+         except Exception as e:
+           logging.warn("error" + str(e))
+           return { "result" : "no media loaded" }
+         
       else:
          return self.not_connected
          
    #-------------------------------------------------
-   
-   def Pause(self):
-      '''Pause active player'''
 
-      if self.status == "Connected":
-         active     = self.api.Player.GetActivePlayers()['result']
-         player     = active[0]['playerid']
-             
-         if active == []:  return { "result" : "no media loaded" }
-         else:             self.api.Player.PlayPause(player)
-         return { "result" : "OK" }         
-         
-      else:
-         return self.not_connected
-         
-   #-------------------------------------------------
-      
-   def Stop(self):
-      '''Stop active player'''
-
-      if self.status == "Connected":
-         active     = self.api.Player.GetActivePlayers()['result']
-         player     = active[0]['playerid']
-             
-         if active == []:  return { "result" : "no media loaded" }
-         else:             self.api.Player.Stop(player)
-         return { "result" : "OK" }         
-
-      else:
-         return self.not_connected
-
-   #-------------------------------------------------
-   
    def ReplaceHTML(self,text):
       '''replace known html tags'''
       
-      result = text
+      result = str(text)
+      result = result.replace("[CR]","<br/>")
       result = result.replace("[B]","<b>")
       result = result.replace("[/B]","</b>")
       result = result.replace("[I]","<i>")
       result = result.replace("[/I]","</i>")
-      result = result.replace("[COLOR ","<font color=\"")
       result = result.replace("[/COLOR]","</font>")
-      result = result.replace("]","\">")
+      result = result.replace("[COLOR ","<font color=\"")
+      if "<font" in result: result = result.replace("]","\">")
       
       return result
    
@@ -398,6 +385,9 @@ class kodiAPIaddOn():
                                             
             elif 'playerid' in str(active):     
          
+              playerid    = active[0]['playerid']
+              playertype  = active[0]['type']   
+
               all_properties = [ "title", "artist", "albumartist", "genre", "year", "rating", "album", "track", "duration", "comment", 
                                  "lyrics", "musicbrainztrackid", "musicbrainzartistid", "musicbrainzalbumid", "musicbrainzalbumartistid", 
                                  "playcount", "fanart", "director", "trailer", "tagline", "plot", "plotoutline", "originaltitle", 
@@ -411,11 +401,9 @@ class kodiAPIaddOn():
                                  "displayorchestra", "displaylyricist", "userrating", "sortartist", "musicbrainzreleasegroupid", 
                                  "mediapath", "dynpath"
                                  ]
-              selected_properties = ['title','album','artist','plot','mpaa','genre','episode','season','showtitle','studio','duration','runtime']
               
+              selected_properties = ['title','album','artist','plot','mpaa','genre','episode','season','showtitle','studio','duration','runtime']             
 
-              playerid    = active[0]['playerid']
-              playertype  = active[0]['type']   
               player      = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : ['live','speed','percentage','position','playlistid'] })['result']
               playlistid  = player['playlistid']
               playlist    = self.api.Playlist.GetProperties({'playlistid' : playlistid, 'properties' : ['size','type'] })['result']
@@ -431,16 +419,19 @@ class kodiAPIaddOn():
               metadata["item"]               = item
               metadata["info"]               = ""
             
-              if 'duration' in item:         metadata["item-position"]  = [ round(item['duration'] * player['percentage'] / 100,2), item['duration'] ]
-              else:                          metadata["item-position"]  = "N/A"           
+              if 'duration' in item:           metadata["item-position"]  = [ round(item['duration'] * player['percentage'] / 100,2), item['duration'] ]
+              else:                            metadata["item-position"]  = "N/A"           
 
-              if len(item['showtitle']) > 0: metadata["info"]           = item['showtitle'] + ": "
+              if "showtitle" in item:
+                if len(item['showtitle']) > 0: metadata["info"]           = item['showtitle'] + ": "
               
-              if len(item['title']) > 0:     metadata["info"]           += item['title']
-              elif len(item['label']) > 0:   metadata["info"]           += item['label']
-              else:                          metadata["info"]           += "no title"
+              if len(item['title']) > 0:       metadata["info"]           += item['title']
+              elif len(item['label']) > 0:     metadata["info"]           += item['label']
+              else:                            metadata["info"]           += "no title"
               
-              if item['type'] == 'episode':  metadata["info"]           += " (" + str(item['season']) + "-" + str(item['episode']) + ")"
+              if item['type'] == 'episode' and item['season'] > 0  and item['episode'] > 0:  
+                                               metadata["info"]           += " (" + str(item['season']) + "-" + str(item['episode']) + ")"
+                                             
               elif "album" in item and "artist" in item:
                 if len(item['album']) > 0 and len(item['artist']) > 0:  metadata["info"] += " ("+item['album']+" / "+item['artist'][0]+")"
                 elif len(item['album']) > 0:                            metadata["info"] += " ("+item['album']+")"
@@ -457,7 +448,12 @@ class kodiAPIaddOn():
             metadata            = self.cache_metadata
             
          #----------------------------------------------------         
-            
+
+         if tag != "item":            
+           if "plot" in metadata["item"]:       metadata["item"]["plot"]       = self.ReplaceHTML(metadata["item"]["plot"])
+           if "showtitle" in metadata["item"]:  metadata["item"]["showtitle"]  = self.ReplaceHTML(metadata["item"]["showtitle"])
+           if "title" in metadata["item"]:      metadata["item"]["title"]      = self.ReplaceHTML(metadata["item"]["title"])
+
          if   tag in metadata:                                               return { "result" : metadata[tag] }
          elif "item" in metadata        and tag in metadata["item"]:         return { "result" : metadata["item"][tag] }
          elif "application" in metadata and tag in metadata["application"]:  return { "result" : metadata["application"][tag] }
