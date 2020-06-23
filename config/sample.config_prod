@@ -22,8 +22,8 @@ export REMOTE_DIR_DATA="$REMOTE_DIR/data"
 export REMOTE_DIR_CLIENT="$REMOTE_DIR/app"
 export REMOTE_DIR_SERVER="$REMOTE_DIR/server"
 export REMOTE_DIR_JCMODULES="/projects/prod/modules"
-export REMOTE_DIR_ICONS="$REMOTE_DIR_JCMODULES/jc-icon/remote"
-export REMOTE_DIR_ICON_INDEX="$REMOTE_DIR_JCMODULES/jc-icon/remote/index.json"
+export REMOTE_DIR_ICONS="$REMOTE_DIR_DATA/buttons/default"
+export REMOTE_DIR_ICON_INDEX="$REMOTE_DIR_ICONS/index.json"
 
 
 # Docker-Compose
