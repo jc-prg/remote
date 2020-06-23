@@ -328,12 +328,39 @@ function statusCheck(data={}) {
 	vol_str = statusShowVolume_old( main_audio_vol, main_audio_max, vol_color );
 	document.getElementById("audio3").innerHTML = vol_str;
 
+			
 	// check status for displays
 	for (var key in devices) {
 	
+		// media info ...
+		var media_info         = document.getElementById("media_info");
+		var media_info_content = document.getElementById("media_info_content");
+		
+		if (media_info && devices[key]["status"]["info"] && devices[key]["status"]["info"] != "") {
+		
+			if (media_info_content)	{ var current_info = media_info_content.innerHTML; }
+			else				{ var current_info = ""; }
+			
+			if (devices[key]["status"]["info"] != "no media loaded") {		
+				var title = "&nbsp;<br/><center>";
+				title    += "<marquee width='90%' scrollamount='3' scrolldelay='3' id='media_info_content'>"+devices[key]["status"]["info"]+"</marquee>";
+				title    += "</center>&nbsp;<hr/>";
+				// <marquee scrollamount="3" scrolldelay="3">Dieser Text wird ziemlich schnell bewegt...</marquee>			
+				}
+			else {  title = ""; }
+			
+			if (current_info != devices[key]["status"]["info"]) { 
+				media_info.innerHTML = title; 
+				//alert(devices[key]["status"]["info"] + "\n" + current_info); 
+				}
+ 			}
+
 		// fill keys with displays
 		if (devices[key]["status"] && devices[key]["display"]) {
-		        display = devices[key]["display"];
+		
+		        var display     = devices[key]["display"];
+		        var connected   = devices[key]["connected"].toLowerCase();
+		        
 			for (var dkey in display) {
 				var vkey     = display[dkey];
 				var element  = document.getElementById("display_" + key + "_" + vkey);
@@ -347,9 +374,10 @@ function statusCheck(data={}) {
 					}
 									
 				if (vkey == "power") {
-			        	if      (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)	{ status = "<b style='color:lightgreen;'>Connected<b/>"; }
+					if (connected != "connected")						{ status = "<b style='color:red;'>Connection Error:</b><br/>"+devices[key]["connected"]; }			
+			        	else if (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)	{ status = "<b style='color:lightgreen;'>Connected<b/>"; }
 					else if (status.indexOf("OFF") >= 0 || status.indexOf("off") >= 0)	{ status = "<b style='color:gold;'>Connected: Power Off<b/>"; }
-        				else 									{ status = "<b style='color:red;'>Connection Error:</b> "+status+"<hr/>"; }			
+        				else 									{ status = "<b style='color:red;'>Unknown Error:</b> "+devices[key]["connected"]; }			
 					}
 
 				if (element)  { element.innerHTML  = status; }
@@ -359,16 +387,19 @@ function statusCheck(data={}) {
 			
 		// fill all keys in alert display
 		if (devices[key]["status"] && devices[key]["query_list"]) {
-		        display = devices[key]["query_list"];
+		        var display     = devices[key]["query_list"];
+		        var connected   = devices[key]["connected"].toLowerCase();
+
 			for (var i=0; i<display.length; i++) {
 				var vkey     = display[i];
 				var element2 = document.getElementById("display_full_" + key + "_" + vkey);
 				var status   = devices[key]["status"][vkey];		
 
 				if (vkey == "power") {
-			        	if      (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)	{ status = "<b style='color:lightgreen;'>Connected<b/>"; }
+					if (connected != "connected")						{ status = "<b style='color:red;'>Connection Error:</b><br/>"+devices[key]["connected"]; }			
+			        	else if (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)	{ status = "<b style='color:lightgreen;'>Connected<b/>"; }
 					else if (status.indexOf("OFF") >= 0 || status.indexOf("off") >= 0)	{ status = "<b style='color:gold;'>Connected: Power Off<b/>"; }
-        				else 									{ status = "<b style='color:red;'>Connection Error:</b> "+status+"<hr/>"; }			
+        				else 									{ status = "<b style='color:red;'>Unknown Error:</b> "+devices[key]["connected"]; }			
 					}
 
 				if (element2) { element2.innerHTML = status.replace(/,/g,", "); }

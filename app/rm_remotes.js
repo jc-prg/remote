@@ -64,6 +64,7 @@ function rmRemote(name) {
 	this.active_buttons = [];
 	this.edit_mode      = false;
 	this.initial_load   = true;
+	this.loaded_remote  = [];
 
 	// load data with devices (deviceConfig["devices"])
 	//--------------------
@@ -96,7 +97,7 @@ function rmRemote(name) {
 
 	// create complete remote setup (for scenes and devices)
 	//--------------------
-	this.create               = function (type="",rm_id="") {
+	this.create               = function (type="", rm_id="") {
 	
 		if ("DATA" in this.data == false) {
 			console.warn("Data not loaded yet.");
@@ -111,14 +112,14 @@ function rmRemote(name) {
 
 	        if (type == "")   { type = this.active_type; }
 	        if (rm_id == "")  { rm_id = this.active_name; }
-
+	        
 		// set active remote (type, id)
 		this.active_name    = rm_id;
 		this.active_type    = type;
 		this.active_buttons = [];
 
 		rm3start.active     = "start";
-
+		
 		if (type == "device") {
 
 			// set vars
@@ -150,6 +151,7 @@ function rmRemote(name) {
 			this.show();
 			}
 			
+		this.loaded_remote  = [type,rm_id];
 		rm3menu.menu_height();	
 		}
 
@@ -235,7 +237,12 @@ function rmRemote(name) {
 		var descr = this.data["DATA"]["devices"][device]["description"];
 		var url   = this.data["DATA"]["devices"][device]["url"];
 		if (url) { descr = "<a href=\""+url+"\" target='_blank'>"+descr+"</a>"; }
-		var str   = "<center>" + label + ": " + descr + "</center>";
+		
+		var str = "";
+		//str    += "<marquee scrollamount='5' scrolldelay='5'>Dieser Text wird ziemlich schnell bewegt...</marquee>";
+		str    += "<media-info id='media_info'></media-info>";
+		str    += "<center>" + label + ": " + descr + "</center>";
+		
 		setTextById(id,str);
 		}
 
@@ -833,13 +840,20 @@ function rmRemote(name) {
         
 		var display_data = {}		
 		var status_data  = this.data["DATA"]["devices"][device]["status"];
+		var connected    = this.data["DATA"]["devices"][device]["connected"].toLowerCase();
+		
 		if (this.data["DATA"]["devices"][device]["display"])	{ display_data = this.data["DATA"]["devices"][device]["display"]; }
 		else							{ display_data["Error"] = "No display defined"; } 
 
         	var text    = "";
         	var display = "";
         	
-        	if (status_data["power"] == "ON" || status_data["power"] == "on") {
+		if (connected != "connected") {
+			text += "<center><b>device not connected</b>:</center><br/>";
+			text += "<center><i>"+status_data["api-status"]+"</i></center>";
+			style += " display_error";
+			}
+        	else if (status_data["power"] == "ON" || status_data["power"] == "on") {
 	        	for (var key in display_data) {
         			var label = "<data class='display-label'>"+key+":</data>";
 				var input = "<data class='display-input' id='display_"+device+"_"+display_data[key]+"'>no data</data>";
@@ -849,11 +863,6 @@ function rmRemote(name) {
 		else if (status_data["power"].indexOf("OFF") >= 0 || status_data["power"].indexOf("off") >= 0) {
 			text  += "<center>power off</center>";
 			style += " display_off";
-			}
-		else {
-			text += "<center><b>device not connected</b>:</center><br/>";
-			text += "<center><i>"+status_data["power"]+"</i></center>";
-			style += " display_error";
 			}
         	display += "<button class=\"display "+style+"\" onclick=\"" + this.app_name + ".display_alert('"+id+"','"+device+"','"+style+"');\">";
         	display += text;
@@ -891,6 +900,17 @@ function rmRemote(name) {
         	text  += "</div>";
 		rm3msg.confirm(text,"",300);
 		statusCheck(this.data);
+        	}
+        	
+        // idea ... display for media information: mute (icon), volume (bar), info (title/artist/album/episode/...)
+        // see: https://www.wbrnet.info/vbhtm/9261_Laufschriften_I.html
+
+        this.display_mediainfo   = function (id, device, style="") {
+                	
+        	var display      = "";
+		var status_data  = this.data["DATA"]["devices"][device]["status"];
+        	
+        	return display;
         	}
         	
         // show json for buttons in text field
