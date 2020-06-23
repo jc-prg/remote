@@ -9,7 +9,7 @@
         "main-audio": "no",
         "position": 6,
         "status": {
-            "api-status": "power off",
+            "api-status": "Connected",
             "power": "OFF"
         },
         "visible": "no"
@@ -24,21 +24,21 @@
         "main-audio": "no",
         "position": 3,
         "status": {
-            "api-status": "power off",
-            "media-duration": "power off",
-            "media_duration": "power off",
-            "media_medium": "power off",
-            "media_tracks": "power off",
-            "playing": "power off",
-            "playing2": "power off",
-            "playing_soap": "power off",
-            "position_abs_cnt": "power off",
-            "position_abs_time": "power off",
-            "position_duration": "power off",
-            "position_metadata": "power off",
-            "position_rel_cnt": "power off",
-            "position_rel_time": "power off",
-            "position_track": "power off",
+            "api-status": "Connected",
+            "media-duration": "not connected",
+            "media_duration": "Error",
+            "media_medium": "Error",
+            "media_tracks": "Error",
+            "playing": "OFF",
+            "playing2": "not connected",
+            "playing_soap": "Error",
+            "position_abs_cnt": "Error",
+            "position_abs_time": "Error",
+            "position_duration": "Error",
+            "position_metadata": "Error",
+            "position_rel_cnt": "Error",
+            "position_rel_time": "Error",
+            "position_track": "Error",
             "power": "OFF"
         },
         "visible": "yes"
@@ -53,8 +53,8 @@
         "main-audio": "no",
         "position": 2,
         "status": {
-            "api-status": "power off",
-            "power": "OFF"
+            "api-status": "Connected",
+            "power": "ON"
         },
         "visible": "yes"
     },
@@ -83,8 +83,8 @@
         "main-audio": "no",
         "position": 4,
         "status": {
-            "api-status": "power off",
-            "power": "OFF"
+            "api-status": "Connected",
+            "power": "ON"
         },
         "visible": "yes"
     },
@@ -99,18 +99,21 @@
         "position": 7,
         "status": {
             "activePlayer": "not connected",
-            "addons": "['ARTE.TV', 'ARDundZDF', 'KiKA plus', '3sat Mediathek', 'MediathekView', 'YouTube', 'SPIEGEL.TV <font color=\"FF00EE00\">(neu)</font>', 'Joyn']",
+            "addons": "['ARDundZDF', 'ARTE.TV', 'Joyn', 'KiKA plus']",
             "api-status": "Connected",
-            "info": "no media loaded",
-            "item": "no media loaded",
+            "genre": "['Spoken & Audio']",
+            "info": "004 Inzwischen Rast Calligula Minus Ins (Asterix Der Gallier / Wolf Frass, Peter Heinrich, Doudlas Welbat U.A.)",
+            "item": "[470.77, 623]",
             "mute": "True",
-            "name": "no media loaded",
             "player": "not connected",
-            "playing": "no media loaded",
-            "playlist": "no media loaded",
+            "playing": "['audio', 0]",
+            "playlist": "[8, 86]",
+            "plot": "Error",
             "power": "ON",
+            "type": "song",
             "version": "KODI 18.7 stable",
-            "vol": "100"
+            "vol": "100",
+            "zz": "{'album': 'Asterix Der Gallier', 'artist': ['Wolf Frass, Peter Heinrich, Doudlas Welbat U.A.'], 'duration': 623, 'genre': ['Spoken & Audio'], 'id': 408, 'label': '004 Inzwischen Rast Calligula Minus Ins', 'title': '004 Inzwischen Rast Calligula Minus Ins', 'type': 'song'}"
         },
         "visible": "yes"
     },
@@ -124,10 +127,10 @@
         "main-audio": "no",
         "position": 9,
         "status": {
-            "api-status": "power off",
-            "mute": "power off",
+            "api-status": "Connected",
+            "mute": "not connected",
             "power": "OFF",
-            "vol": "power off"
+            "vol": "not connected"
         },
         "visible": "no"
     },
@@ -143,7 +146,7 @@
         "status": {
             "a-v-sync": "0",
             "api-status": "Connected",
-            "audio-info": "ANALOG,,,,All Ch Stereo,5.1 ch,",
+            "audio-info": "HDMI 2,PCM,48 kHz,2.0 ch,All Ch Stereo,5.1 ch,",
             "audio-source": "hdmi",
             "dimmer": "dark",
             "display": "('selector-volume-1line', 'default-2line')",
@@ -152,10 +155,10 @@
             "power": "on",
             "sleep-set": "N/A",
             "source": "cbl",
-            "temperature": "C 31",
+            "temperature": "C 32",
             "timer": "N/A",
             "tuning": "5 Hz",
-            "video-info": "VIDEO 1,Unknown,,24bit,,Unknown,,24bit,,",
+            "video-info": "HDMI 2,1920 x 1080i  50 Hz,YCbCr444,24bit,MAIN,1920 x 1080i  50 Hz,YCbCr444,24bit,,",
             "vol": "40"
         },
         "visible": "yes"
@@ -170,7 +173,7 @@
         "main-audio": "no",
         "position": 10,
         "status": {
-            "api-status": "power off",
+            "api-status": "Connected",
             "power": "OFF"
         },
         "visible": "no"
@@ -185,11 +188,11 @@
         "main-audio": "no",
         "position": 5,
         "status": {
-            "api-status": "power off",
-            "mute": "power off",
+            "api-status": "Connected",
+            "mute": "OFF",
             "power": "OFF",
-            "radiotv": "power off",
-            "vol": "power off"
+            "radiotv": "tv",
+            "vol": 16
         },
         "visible": "yes"
     }

@@ -1,5 +1,5 @@
 {
-	"IPAddress"  : "192.168.1.36",
+	"IPAddress"  : "192.168.1.31",
         "Port"       : "8080",
 	"Timeout"    : 5,
 	"Methods"    : ["send","query"],
