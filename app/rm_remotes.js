@@ -110,7 +110,7 @@ function rmRemote(name) {
 			return;
 			}
 
-	        if (type == "")   { type = this.active_type; }
+	        if (type == "")   { type  = this.active_type; }
 	        if (rm_id == "")  { rm_id = this.active_name; }
 	        
 		// set active remote (type, id)
