@@ -99,21 +99,21 @@
         "position": 7,
         "status": {
             "activePlayer": "not connected",
-            "addons": "['ARDundZDF', 'ARTE.TV', 'Joyn', 'KiKA plus']",
+            "addons": "['ARDundZDF', 'ARTE.TV', 'Joyn', 'KiKA plus', '3sat Mediathek', 'ARD Mediathek', 'KiKa Mediathek', 'MediathekView', 'Mediathek Direkt', 'ZDF Mediathek']",
             "api-status": "Connected",
-            "genre": "['Spoken & Audio']",
-            "info": "004 Inzwischen Rast Calligula Minus Ins (Asterix Der Gallier / Wolf Frass, Peter Heinrich, Doudlas Welbat U.A.)",
-            "item": "[470.77, 623]",
-            "mute": "True",
+            "genre": "[]",
+            "info": "Art of Crime: Art of Crime: Der Maler des Teufels (1)  - Deutsche Erstausstrahlung [ZDF] (HD)",
+            "item": "N/A",
+            "mute": "False",
             "player": "not connected",
-            "playing": "['audio', 0]",
-            "playlist": "[8, 86]",
-            "plot": "Error",
+            "playing": "['video', 1]",
+            "playlist": "[1, 1]",
+            "plot": "Ausgestrahlt: <font color=\"chartreuse\">2020-08-22 03:00:00</font><br/><br/>Cédric Montet, Mitglied des Priesterseminars, wurde erstochen. Zudem wurde ihm eine Mappe mit Hinweisen zu einem verschollenen Gemälde von Bosch gestohlen.",
             "power": "ON",
-            "type": "song",
+            "type": "unknown",
             "version": "KODI 18.7 stable",
             "vol": "100",
-            "zz": "{'album': 'Asterix Der Gallier', 'artist': ['Wolf Frass, Peter Heinrich, Doudlas Welbat U.A.'], 'duration': 623, 'genre': ['Spoken & Audio'], 'id': 408, 'label': '004 Inzwischen Rast Calligula Minus Ins', 'title': '004 Inzwischen Rast Calligula Minus Ins', 'type': 'song'}"
+            "zz": "{'album': '', 'artist': [], 'episode': -1, 'genre': [], 'label': 'Art of Crime: Der Maler des Teufels (1)  - Deutsche Erstausstrahlung [ZDF] (HD)', 'mpaa': '', 'plot': 'Ausgestrahlt: [COLOR chartreuse]2020-08-22 03:00:00[/COLOR][CR][CR]Cédric Montet, Mitglied des Priesterseminars, wurde erstochen. Zudem wurde ihm eine Mappe mit Hinweisen zu einem verschollenen Gemälde von Bosch gestohlen.', 'runtime': 3324, 'season': -1, 'showtitle': 'Art of Crime', 'studio': [], 'title': 'Art of Crime: Der Maler des Teufels (1)  - Deutsche Erstausstrahlung [ZDF] (HD)', 'type': 'unknown'}"
         },
         "visible": "yes"
     },
@@ -146,7 +146,7 @@
         "status": {
             "a-v-sync": "0",
             "api-status": "Connected",
-            "audio-info": "HDMI 2,PCM,48 kHz,2.0 ch,All Ch Stereo,5.1 ch,",
+            "audio-info": "HDMI 3,PCM,48 kHz,2.0 ch,All Ch Stereo,5.1 ch,",
             "audio-source": "hdmi",
             "dimmer": "dark",
             "display": "('selector-volume-1line', 'default-2line')",
@@ -154,12 +154,12 @@
             "mute": "off",
             "power": "on",
             "sleep-set": "N/A",
-            "source": "cbl",
+            "source": "game/tv",
             "temperature": "C 32",
             "timer": "N/A",
-            "tuning": "5 Hz",
-            "video-info": "HDMI 2,1920 x 1080i  50 Hz,YCbCr444,24bit,MAIN,1920 x 1080i  50 Hz,YCbCr444,24bit,,",
-            "vol": "40"
+            "tuning": "34640 Hz",
+            "video-info": "HDMI 3,1920 x 1080p  60 Hz,RGB,24bit,MAIN,1920 x 1080p  60 Hz,RGB,24bit,,",
+            "vol": "45"
         },
         "visible": "yes"
     },
@@ -179,9 +179,9 @@
         "visible": "no"
     },
     "tv": {
-        "config_device": "tv-receiver_topfield",
-        "config_remote": "tv-receiver_topfield_ir",
-        "description": "TOPFIELD CBP-2001CI+",
+        "config_device": "tv-receiver_arion-arc-1010hr",
+        "config_remote": "tv-receiver_arion-arc-1010hr_ir",
+        "description": "ARION ARC-1010HR",
         "image": "tv",
         "interface": "BROADLINK",
         "label": "TV/Radio",
@@ -190,10 +190,28 @@
         "status": {
             "api-status": "Connected",
             "mute": "OFF",
-            "power": "OFF",
+            "power": "ON",
             "radiotv": "tv",
             "vol": 16
         },
         "visible": "yes"
+    },
+    "tv2": {
+        "config_device": "tv-receiver_topfield",
+        "config_remote": "tv-receiver_topfield_ir",
+        "description": "TOPFIELD CBP-2001CI+",
+        "image": "tv_old",
+        "interface": "BROADLINK",
+        "label": "TV/Radio (old)",
+        "main-audio": "no",
+        "position": 11,
+        "status": {
+            "api-status": "Connected",
+            "mute": "OFF",
+            "power": "OFF",
+            "radiotv": "tv",
+            "vol": 16
+        },
+        "visible": "no"
     }
 }
