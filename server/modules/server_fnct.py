@@ -501,9 +501,13 @@ def addCommand2Button(device,button,command):
         if button in data["data"]["buttons"].keys():
             return "WARN: Button '" + device + "_" + button + "' already exists."
         else:
+            command = str(command)
+            command = command.replace("b'","")
+            command = command.replace("'","")
             data["data"]["buttons"][button] = command
+#            data["data"]["buttons"][button] = command
             configFiles.write(modules.commands+interface+"/"+device_code,data)
-            return "OK: Button '" + device + "_" + button + "' recorded and saved: " + command
+            return "OK: Button '" + device + "_" + button + "' recorded and saved: " + str(command)
     else:
         return "ERROR: Device '" + device + "' does not exists."
         

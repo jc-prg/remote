@@ -350,6 +350,27 @@ function apiCommandDelete(device_id, button_id) {
 	rm3msg.confirm(lang("BUTTON_ASK_DELETE",[button1[1],device]),"apiCommandDelete_exe('" + button + "'); ");
 	}
 
+// add button to device
+//--------------------------------
+
+function apiCommandRecord(device_id, button_id) {
+
+	if (document.getElementById(device_id)) 	{ var device	= document.getElementById(device_id).value.toLowerCase(); }
+	else					 	{ var device	= device_id;}
+	if (document.getElementById(button_id)) 	{ var button	= document.getElementById(button_id).value; 
+							  if (button != "LINE")	{ button = button.toLowerCase(); }
+							  if (button == ".")		{ button = "DOT"; }
+							}
+	else						{ var button    = button_id; }	
+	
+        cmd = "rm3app.requestAPI('POST',['command','"+device+"','"+button+"'], '', rm3msg.alertReturn );";
+
+	if (device == "") { rm3msg.alert(lang("DEVICE_SELECT")); return; }
+	if (button == "") { rm3msg.alert(lang("BUTTON_INSERT_NAME")); return; }
+	
+	rm3msg.confirm(lang("BUTTON_RECORD",[button,device]),cmd); return; 
+	}
+
 
 //================================
 // BUTTONS
@@ -362,13 +383,13 @@ function apiButtonAdd(device_id, button_id) {
 
         var i=0;
 
-	if (document.getElementById(device_id)) 	{ var device 	= document.getElementById(device_id).value.toLowerCase(); }
-	else					        { var device    = device_id; i++; }
-	if (document.getElementById(button_id)) 	{ var button 	= document.getElementById(button_id).value; 
-							  if (button != "LINE") { button = button.toLowerCase(); }
-							  if (button == ".")	{ button = "DOT"; }
-							  }
-	else					        { var button    = button_id; i++; }	
+	if (document.getElementById(device_id)) 	{ var device	= document.getElementById(device_id).value.toLowerCase(); }
+	else					 	{ var device	= device_id; i++; }
+	if (document.getElementById(button_id)) 	{ var button	= document.getElementById(button_id).value; 
+							  if (button != "LINE")	{ button = button.toLowerCase(); }
+							  if (button == ".")		{ button = "DOT"; }
+							}
+	else						{ var button    = button_id; i++; }	
 	
         cmd = "rm3app.requestAPI('PUT',['button','"+device+"','"+button+"'], '', rm3msg.alertReturn );";
 
@@ -378,6 +399,7 @@ function apiButtonAdd(device_id, button_id) {
 	
 	rm3app.requestAPI("PUT",["button",device,button], "", apiAlertReturn);
 	}
+
 
 // delete buttons
 //--------------------------------

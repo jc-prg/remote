@@ -101,7 +101,10 @@ class broadlinkAPI():
 
        if self.status == "Connected":
          logging.info("Button-Code: " + command[:shorten_info_to]+"...")
-         DecodedCommand = codecs.decode(command,'hex')  # python3
+         try:
+           DecodedCommand = codecs.decode(command,'hex')  # python3
+         except Exception as e:
+           return "ERROR "+self.api_name+" - decode: " + str(e) + " / " + str(command) 
          try: 
            self.api.send_data(DecodedCommand)
          except Exception as e:

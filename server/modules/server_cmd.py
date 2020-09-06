@@ -545,7 +545,12 @@ def RemoteRecordCommand(device,button):
         data["DATA"]                 = {}
         
         EncodedCommand               = deviceAPIs.record(interface,device,button)
-        data["REQUEST"]["Return"]    = addCommand2Button(device,button,EncodedCommand)       
+
+        if not "ERROR" in str(EncodedCommand):
+           data["REQUEST"]["Return"]    = addCommand2Button(device,button,EncodedCommand)       
+        else:
+           data["REQUEST"]["Return"]    = str(EncodedCommand)
+        
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
         data["REQUEST"]["Command"]   = "RecordCommand"

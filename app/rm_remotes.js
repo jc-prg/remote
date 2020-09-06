@@ -383,7 +383,7 @@ function rmRemote(name) {
 		if (this.data["DATA"]["devices"][device]["method"] == "record") {
 			remote  += this.tab_row(		
 				this.command_select_record("rec_button",device),
-				this.button_edit("apiButtonAdd('"+device+"','rec_button');","record command","disabled")
+				this.button_edit("apiCommandRecord('"+device+"','rec_button');","record command")
 				);
 			remote  += this.tab_row( "<small>Undefined buttons are colored blue. Click to record an IR command for those buttons.</small>", "&nbsp;");
 			}
@@ -750,9 +750,10 @@ function rmRemote(name) {
                 }
         
         this.command_select_record = function (id,device="") {
-               	var list = {};
+        
+        	var list = {};
 		var device_buttons    = [];		
-                if (device != "" && device in this.data["DATA"]["devices"]) {
+		if (device != "" && device in this.data["DATA"]["devices"]) {
                 
                 	var button_list = [];
                 	for (var i=0;i<this.data["DATA"]["devices"][device]["remote"].length;i++) {
@@ -762,7 +763,7 @@ function rmRemote(name) {
 			
 			for (var i=0;i<button_list.length;i++) {
 				if (button_list[i].includes("LINE") == false && button_list[i] != "." && button_list[i].includes("DISPLAY") == false) {
-	                                list[i] = button_list[i];
+	                                list[button_list[i]] = button_list[i];
 	                                }
 				}
 			}
@@ -1002,7 +1003,8 @@ function rmRemote(name) {
 		var label2		= this.button_image( label, style );
 		if (label == ".")	{ disabled = "disabled"; label2[0] = "&nbsp;"; }
 	        
-	        var button = this.button( id, label2[0], label2[1], 'apiButtonAdd("'+device_button[0]+'","'+device_button[1]+'");', disabled );
+	        //var button = this.button( id, label2[0], label2[1], 'apiButtonAdd("'+device_button[0]+'","'+device_button[1]+'");', disabled );
+	        var button = this.button( id, label2[0], label2[1], 'apiCommandRecord("'+device_button[0]+'","'+device_button[1]+'");', disabled );
 	        //var button = this.button( id, label2[0], label2[1], ['apiButtonAdd("'+device_button[0]+'","'+device_button[1]+'");', this.app_name + '.button_tooltip.toggleAll("' + cmd + '");'], disabled );
 	        //button     = this.button_tooltip.create( button, "not implemented yet: " +cmd, cmd );
 		return button;		

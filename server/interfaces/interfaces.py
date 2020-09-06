@@ -206,9 +206,10 @@ class connect(threading.Thread):
         return_msg = ""
         self.check_errors(call_api)
         logging.debug("RECORD "+call_api+" / "+device+" - "+button)
+        logging.info("RECORD "+call_api+" / "+device+" - "+button)
 
         if self.api[call_api].status == "Connected":       
-            if call_api in self.api: return_msg = self.api[call_api].send(device,button)
+            if call_api in self.api: return_msg = self.api[call_api].record(device,button)
             else:                    return_msg = "ERROR: API not available ("+call_api+")"
         else:                        return_msg = "ERROR: API not connected ("+call_api+")"
 
