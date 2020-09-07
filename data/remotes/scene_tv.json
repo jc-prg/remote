@@ -3,8 +3,8 @@
         "channel": {
             "3sat HD": [
                 "makro_rectv",
-                "tv_3",
-                "tv_1"
+                "tv_1",
+                "tv_3"
             ],
             "ARD HD": [
                 "makro_rectv",
@@ -12,119 +12,103 @@
             ],
             "ARD-alpha HD": [
                 "makro_rectv",
-                "tv_1",
-                "tv_9"
+                "tv_2",
+                "tv_8"
             ],
-            "BR": [
+            "BR HD": [
                 "makro_rectv",
                 "tv_2",
-                "tv_4"
+                "tv_3"
             ],
-            "Disney Channel": [
+            "Disney Channel HD": [
                 "makro_rectv",
-                "tv_4",
-                "tv_1"
+                "tv_3",
+                "tv_8"
             ],
             "KiKA HD": [
                 "makro_rectv",
-                "tv_3",
-                "tv_2"
+                "tv_1",
+                "tv_5"
             ],
-            "MDR": [
+            "MDR HD": [
                 "makro_rectv",
-                "tv_3",
-                "tv_6"
+                "tv_2",
+                "tv_4"
             ],
             "NDR HD": [
                 "makro_rectv",
                 "tv_2",
-                "tv_7"
+                "tv_2"
             ],
             "ONE HD": [
                 "makro_rectv",
                 "tv_1",
-                "tv_8"
+                "tv_1"
             ],
-            "ProSieben": [
+            "ProSieben HD": [
                 "makro_rectv",
                 "tv_7"
             ],
-            "ProSieben MAXX": [
+            "ProSieben MAXX HD": [
                 "makro_rectv",
                 "tv_6"
             ],
-            "RTL": [
+            "RTL HD": [
                 "makro_rectv",
-                "tv_5"
+                "tv_4"
             ],
-            "RTL2": [
+            "RTL ZWEI HD": [
                 "makro_rectv",
                 "tv_1",
                 "tv_0"
             ],
-            "RTLnitro": [
+            "NITRO HD": [
                 "makro_rectv",
                 "tv_1",
-                "tv_4"
+                "tv_6"
             ],
             "RTLplus": [
                 "makro_rectv",
                 "tv_1",
-                "tv_5"
-            ],
-            "Radio Bremen HD": [
-                "makro_rectv",
-                "tv_2",
-                "tv_1"
+                "tv_9"
             ],
             "SR HD": [
                 "makro_rectv",
                 "tv_2",
-                "tv_0"
+                "tv_6"
             ],
             "SWR BW HD": [
                 "makro_rectv",
                 "tv_2",
-                "tv_2"
+                "tv_0"
             ],
-            "Sat.1": [
+            "Sat.1 HD": [
                 "makro_rectv",
-                "tv_4"
+                "tv_5"
             ],
             "Sat.1 GOLD": [
                 "makro_rectv",
                 "tv_1",
-                "tv_1"
-            ],
-            "Super RTL": [
-                "makro_rectv",
-                "tv_3",
                 "tv_7"
             ],
-            "TLC": [
+            "TLC HD": [
                 "makro_rectv",
-                "tv_4",
-                "tv_0"
+                "tv_1",
+                "tv_8"
             ],
             "Tagesschau24 HD": [
                 "makro_rectv",
-                "tv_1",
-                "tv_7"
+                "tv_3",
+                "tv_2"
             ],
-            "VOX": [
+            "VOX HD": [
                 "makro_rectv",
                 "tv_9"
             ],
-            "WDR HD": [
+            "WELT HD": [
                 "makro_rectv",
-                "tv_1",
                 "tv_3",
-                "tv_5"
-            ],
-            "WELT": [
-                "makro_rectv",
-                "tv_1",
-                "tv_6"
+                "tv_3"
             ],
             "ZDF HD": [
                 "makro_rectv",
@@ -133,45 +117,45 @@
             "ZDFinfo HD": [
                 "makro_rectv",
                 "tv_3",
-                "tv_3"
+                "tv_6"
             ],
             "ZDFneo HD": [
                 "makro_rectv",
-                "tv_3",
-                "tv_4"
+                "tv_1",
+                "tv_2"
             ],
             "arte HD": [
                 "makro_rectv",
                 "tv_3"
             ],
-            "hr": [
+            "hr HD": [
                 "makro_rectv",
-                "tv_3",
-                "tv_8"
+                "tv_2",
+                "tv_5"
             ],
-            "kabel eins": [
+            "kabel eins HD": [
                 "makro_rectv",
                 "tv_8"
             ],
             "kabel eins Doku": [
                 "makro_rectv",
-                "tv_1",
-                "tv_2"
-            ],
-            "n-tv": [
-                "makro_rectv",
-                "tv_3",
-                "tv_9"
-            ],
-            "phoenix HD": [
-                "makro_rectv",
                 "tv_3",
                 "tv_0"
             ],
-            "sixx": [
+            "n-tv HD": [
+                "makro_rectv",
+                "tv_3",
+                "tv_4"
+            ],
+            "phoenix HD": [
                 "makro_rectv",
                 "tv_1",
-                "tv_3"
+                "tv_4"
+            ],
+            "sixx HD": [
+                "makro_rectv",
+                "tv_3",
+                "tv_7"
             ]
         },
         "devices": [

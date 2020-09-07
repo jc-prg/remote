@@ -101,19 +101,19 @@
             "activePlayer": "not connected",
             "addons": "['ARDundZDF', 'ARTE.TV', 'Joyn', 'KiKA plus', '3sat Mediathek', 'ARD Mediathek', 'KiKa Mediathek', 'MediathekView', 'Mediathek Direkt', 'ZDF Mediathek']",
             "api-status": "Connected",
-            "genre": "[]",
-            "info": "Art of Crime: Art of Crime: Der Maler des Teufels (1)  - Deutsche Erstausstrahlung [ZDF] (HD)",
-            "item": "N/A",
+            "genre": "Error",
+            "info": "no media loaded",
+            "item": "no media loaded",
             "mute": "False",
             "player": "not connected",
-            "playing": "['video', 1]",
-            "playlist": "[1, 1]",
-            "plot": "Ausgestrahlt: <font color=\"chartreuse\">2020-08-22 03:00:00</font><br/><br/>Cédric Montet, Mitglied des Priesterseminars, wurde erstochen. Zudem wurde ihm eine Mappe mit Hinweisen zu einem verschollenen Gemälde von Bosch gestohlen.",
+            "playing": "no media loaded",
+            "playlist": "no media loaded",
+            "plot": "Error",
             "power": "ON",
-            "type": "unknown",
+            "type": "Error",
             "version": "KODI 18.7 stable",
             "vol": "100",
-            "zz": "{'album': '', 'artist': [], 'episode': -1, 'genre': [], 'label': 'Art of Crime: Der Maler des Teufels (1)  - Deutsche Erstausstrahlung [ZDF] (HD)', 'mpaa': '', 'plot': 'Ausgestrahlt: [COLOR chartreuse]2020-08-22 03:00:00[/COLOR][CR][CR]Cédric Montet, Mitglied des Priesterseminars, wurde erstochen. Zudem wurde ihm eine Mappe mit Hinweisen zu einem verschollenen Gemälde von Bosch gestohlen.', 'runtime': 3324, 'season': -1, 'showtitle': 'Art of Crime', 'studio': [], 'title': 'Art of Crime: Der Maler des Teufels (1)  - Deutsche Erstausstrahlung [ZDF] (HD)', 'type': 'unknown'}"
+            "zz": "no media loaded"
         },
         "visible": "yes"
     },
@@ -146,7 +146,7 @@
         "status": {
             "a-v-sync": "0",
             "api-status": "Connected",
-            "audio-info": "HDMI 3,PCM,48 kHz,2.0 ch,All Ch Stereo,5.1 ch,",
+            "audio-info": "HDMI 2,PCM,48 kHz,2.0 ch,All Ch Stereo,5.1 ch,",
             "audio-source": "hdmi",
             "dimmer": "dark",
             "display": "('selector-volume-1line', 'default-2line')",
@@ -154,12 +154,12 @@
             "mute": "off",
             "power": "on",
             "sleep-set": "N/A",
-            "source": "game/tv",
+            "source": "cbl",
             "temperature": "C 32",
             "timer": "N/A",
             "tuning": "34640 Hz",
-            "video-info": "HDMI 3,1920 x 1080p  60 Hz,RGB,24bit,MAIN,1920 x 1080p  60 Hz,RGB,24bit,,",
-            "vol": "45"
+            "video-info": "HDMI 2,1920 x 1080i  50 Hz,YCbCr444,24bit,MAIN,1920 x 1080i  50 Hz,YCbCr444,24bit,,",
+            "vol": "31"
         },
         "visible": "yes"
     },
@@ -191,8 +191,8 @@
             "api-status": "Connected",
             "mute": "OFF",
             "power": "ON",
-            "radiotv": "tv",
-            "vol": 16
+            "radiotv": "TV",
+            "vol": 20
         },
         "visible": "yes"
     },
@@ -208,7 +208,7 @@
         "status": {
             "api-status": "Connected",
             "mute": "OFF",
-            "power": "OFF",
+            "power": "ON",
             "radiotv": "tv",
             "vol": 16
         },
