@@ -22,6 +22,7 @@
             "page-down": "GUI.PageDown()",
             "page-up": "GUI.PageUp()",
             "pause": "jc.PlayingCommands('PlayPause')",
+            "playpause": "jc.PlayingCommands('PlayPause')",
             "pictures": "GUI.ActivateWindow({'window':'pictures'})",
             "right": "Input.Right()",
             "settings": "GUI.ActivateWindow({'window':'settings'})",

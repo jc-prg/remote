@@ -1,0 +1,13 @@
+{
+    "data": {
+        "description" : "API to connect to several devices from KODI",
+        "buttons" : {
+       	},
+       	"queries" : {
+       	},
+       	"values" : {
+       	},
+       	"display" : {
+       	}
+   }
+}

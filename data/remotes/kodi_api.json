@@ -23,8 +23,15 @@
             "music",
             "videos",
             "pictures",
+            "addons",
             "weather",
             "fav",
+            "LINE",
+            "DISPLAY",
+            "topmenu",
+            "settings",
+            "info",
+            "menu",
             "LINE",
             ".",
             "up",
@@ -39,15 +46,10 @@
             "back",
             "vol-",
             "LINE",
-            "play",
-            "pause",
+            "fbw",
+            "playpause",
             "stop",
-            "LINE",
-            "DISPLAY",
-            "topmenu",
-            "settings",
-            "info",
-            "menu"
+            "ffw"
         ]
     }
 }
