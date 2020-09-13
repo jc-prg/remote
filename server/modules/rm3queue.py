@@ -33,6 +33,8 @@ class queueApiCalls (threading.Thread):
        self.config         = ""
        self.query_send     = query_send
        self.reload         = False
+       self.exec_times     = {}
+       self.avarage_exec   = {}
 
     #------------------       
        
@@ -83,14 +85,16 @@ class queueApiCalls (threading.Thread):
        # if is an array / not a number
        elif "," in str(command):
        
-          interface,device,button,state = command
+          interface,device,button,state,request_time = command
           
-          logging.debug("Queue: Execute "+self.name+" - "+str(interface)+":"+str(device)+":"+str(button)+":"+str(state))
+          logging.debug("Queue: Execute "+self.name+" - "+str(interface)+":"+str(device)+":"+str(button)+":"+str(state)+":"+str(request_time))
           logging.debug(str(command))
           
           if self.query_send == "send":   
              try:
                 result = self.device_apis.send(interface,device,button,state)
+                self.execution_time(device,request_time,time.time())
+                
                 # -> if query and state ist set, create command
                 # -> if record and state is set, record new value
                 
@@ -101,6 +105,8 @@ class queueApiCalls (threading.Thread):
              for value in button:
                 try:    
                    result = self.device_apis.query(interface,device,value)
+                   #self.execution_time(device,request_time,time.time())
+                   
                    logging.debug(str(device)+": "+str(result))
                    
                 except Exception as e:
@@ -131,7 +137,14 @@ class queueApiCalls (threading.Thread):
        if "START_OF_RELOAD" in str(commands): self.reload = True
        
        # or add command to queue
-       else: self.queue.extend(commands)
+       else:
+       
+         for command in commands:
+           if "," in str(command):
+             command.append(time.time())   # add element to array
+           self.queue.append(command)      # add command array to queue
+           
+         #self.queue.extend(commands)    # extend list with additional list
        
        return "OK: Added command(s) to the queue '"+self.name+"': "+str(commands)
    
@@ -142,6 +155,36 @@ class queueApiCalls (threading.Thread):
        
        self.stopProcess = True              
 
+    #------------------       
+    
+    def execution_time(self,device,start_time,end_time):
+        '''
+        calculate the avarage execution time per device (duration between request time and time when executed)
+        '''
+    
+        duration = end_time - start_time
 
+        logging.warning("Avarage Execution Time: "+device+" ("+str(duration)+")" )
+
+        if device in self.exec_times:       
+           self.exec_times[device].append(duration)
+           #if len(self.exec_times[device]) > 10: old = self.exec_times[device].pop(0)
+
+        else:
+           self.exec_times[device] = []
+           self.exec_times[device].append(duration)
+           
+        logging.warning("Avarage Execution Time: TEST ..................................." )
+
+        i     = 0
+        total = 0
+        for d in self.exec_times[device]: 
+          total += d
+          i     += 1
+
+        self.avarage_exec[device] = total / i
+        
+        logging.warning("Avarage Execution Time: " + device + " / " + str(self.avarage_exec[device]) )
+        
 #-------------------------------------------------
 # EOF

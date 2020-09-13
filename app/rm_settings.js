@@ -77,8 +77,9 @@ function rmSettings (name) {	// IN PROGRESS
 	
 		if (this.edit_mode && this.mode != "edit") 		{ this.create_edit();    this.mode = "edit"; }
 		else if (!this.edit_mode && this.mode != "setting")	{ this.create_setting(); this.mode = "setting"; }
-		else if (this.mode == "setting")			{ this.interface_list_update(); }
+		else if (this.mode == "setting")			{ this.interface_list_update(); this.exec_time_list_update(); }
 		}
+
 
 	this.create_setting     = function () {
 		// Set Vars
@@ -109,6 +110,7 @@ function rmSettings (name) {	// IN PROGRESS
 		setting += this.tab_row(	"Position:",		"<div id='scrollPosition'>0 px</div>" );
 		setting += this.tab_row( 	"Theme:", 		theme );
 		setting += this.tab_row(	"Interfaces:",		this.interface_list() );
+		setting += this.tab_row(	"Exec time:",          this.exec_time_list() );
 		setting += this.tab_row( 	"Status:",
 						this.device_list("select_dev_status", this.app_name+".device_list_status('select_dev_status','dev_status');") +
 						"<span id='dev_status'></span>"
@@ -298,6 +300,19 @@ function rmSettings (name) {	// IN PROGRESS
 		
 	this.interface_list_update = function () {
 		document.getElementById('setting_interface_list').innerHTML = this.interface_list();
+		}
+
+	this.exec_time_list     = function () {
+		var text = "<div id='setting_exec_time_list'>";
+		for (var key in this.data["STATUS"]["request_time"]) {
+			text += key + ": " + (Math.round(this.data["STATUS"]["request_time"][key]*1000)/1000) + "s<br/>";
+			}
+		text += "</div>";
+		return text;
+		}
+		
+	this.exec_time_list_update = function () {
+		document.getElementById('setting_exec_time_list').innerHTML = this.exec_time_list();
 		}
 
 	this.button_list        = function (id,filter="") {

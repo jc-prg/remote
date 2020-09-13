@@ -62,6 +62,7 @@ def remoteAPI_start():
     data["STATUS"]                         = {}
     data["STATUS"]["interfaces"]           = deviceAPIs.status()
     data["STATUS"]["system"]               = {} #  to be filled in remoteAPI_end()
+    data["STATUS"]["request_time"]         = queueSend.avarage_exec
       
     for device in data["DATA"]["devices"]:
       if data["DATA"]["devices"][device]["interface"] in data["STATUS"]["interfaces"]:
