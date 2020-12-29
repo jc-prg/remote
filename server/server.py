@@ -30,12 +30,12 @@ else:
                        filemode='a',
                        format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                        datefmt='%d.%m.%y %H:%M:%S',
-                       level=logging.WARN)
+                       level=logging.WARNING)
 
    log = logging.getLogger("werkzeug")
-   log.setLevel(logging.WARN)
+   log.setLevel(logging.WARNING)
 
-   logging.warn("REMOTE Start (Log-Level WARN) ...")
+   logging.warning("REMOTE Start (Log-Level WARN) ...")
 
 
 # load API modules

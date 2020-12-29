@@ -29,6 +29,7 @@ class queueApiCalls (threading.Thread):
        self.stopProcess    = False
        self.wait           = 0.1
        self.device_apis    = device_apis
+       self.device_reload  = []
        self.last_button    = "<none>"
        self.config         = ""
        self.query_send     = query_send
@@ -58,7 +59,7 @@ class queueApiCalls (threading.Thread):
              # send life sign from time to time
              if count * self.wait > 360:
                 tt = time.time()
-                logging.warn("Queue running "+str(tt))
+                logging.warning("Queue running "+str(tt))
                 count = 0
 
            count += 1             
@@ -95,7 +96,7 @@ class queueApiCalls (threading.Thread):
                 result = self.device_apis.send(interface,device,button,state)
                 self.execution_time(device,request_time,time.time())
                 
-                # -> if query and state ist set, create command
+                # -> if query and state is set, create command
                 # -> if record and state is set, record new value
                 
              except Exception as e:
@@ -127,9 +128,21 @@ class queueApiCalls (threading.Thread):
         
     
     #------------------       
+    
+    def add_reload_commands(self,commands):
+       '''
+       add list of commands required for reloading device data
+       '''
+       
+       if commands == "RESET": self.device_reload = []
+       else:                   self.device_reload.append(commands)
+    
+    #------------------       
 
     def add2queue(self,commands):
-       '''add single command or list of commands to queue'''
+       '''
+       add single command or list of commands to queue
+       '''
        
        logging.debug("Add to queue "+self.name+": "+str(commands))
        

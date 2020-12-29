@@ -27,7 +27,6 @@ from modules.server_fnct import *
 #---------------------------
 
 Status                 = "Starting"
-LastAPICall            = time.time()
 
 #---------------------------
 
@@ -70,8 +69,6 @@ def remoteAPI_start():
       else:
          data["DATA"]["devices"][device]["connected"] = "No connection yet."
          
-    LastAPICall                            = time.time()
-    
     return data
     
 
@@ -150,7 +147,7 @@ def RemoteReload():
         reload interfaces and reload config data in cache
         '''
 
-        logging.warn("Request cache reload and device reconnect.")
+        logging.warning("Request cache reload and device reconnect.")
         
 
         data                          = remoteAPI_start()

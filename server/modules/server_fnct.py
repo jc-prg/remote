@@ -43,14 +43,14 @@ def RmReadData(selected=[]):
     data    = {}
     makros  = ["dev-on","dev-off","scene-on","scene-off","makro"]
     btnfile = ["buttons","queries","values","commands","url"]
-
+    
     # if update required
     if configFiles.cache_update or "_api" not in configFiles.cache: 
     
         data["devices"] = configFiles.read_status()
         data["scenes"]  = configFiles.read(modules.active_scenes)
         data["makros"]  = {}
-    
+        
         # read data for active devices
         for device in data["devices"]:
             if data["devices"][device]["interface"] != "":
@@ -61,8 +61,7 @@ def RmReadData(selected=[]):
                 interface  = data["devices"][device]["interface"]
                 data_temp  = data["devices"][device]
 
-#                remote           = configFiles.read(modules.remotes  + interface + "/" + key) # remote layout & display
-                remote           = configFiles.read(modules.remotes  + key_remote)      # remote layout & display
+                remote           = configFiles.read(modules.remotes  + key_remote)            # remote layout & display
                 buttons          = configFiles.read(modules.commands + interface + "/" + key) # button definitions, presets, queries ...
                 
                 logging.info(interface + "/" + key)
@@ -81,7 +80,7 @@ def RmReadData(selected=[]):
                         for y in buttons_default["data"][x]:
                           buttons["data"][x][y] = buttons_default["data"][x][y]
                         
-                #print(buttons)                
+                # read config data
                 if "data" in buttons:
                   if "method"   in buttons["data"]:   data_temp["method"]    = buttons["data"]["method"]              
                   if "values"   in buttons["data"]:   data_temp["values"]    = buttons["data"]["values"]              
@@ -112,10 +111,8 @@ def RmReadData(selected=[]):
  
         # read data for active scenes
         for scene in data["scenes"]:
-#            if data["scenes"][scene]["visible"] == "yes":
-              if selected == [] or scene in selected:
 
-                #thescene      = configFiles.read(modules.scenes + scene)
+              if selected == [] or scene in selected:
                 thescene      = configFiles.read(modules.scenes + data["scenes"][scene]["config_scene"])
                 keys          = ["remote","channel","devices","label"]
  
@@ -130,11 +127,11 @@ def RmReadData(selected=[]):
             data["makros"][makro]     = temp[makro]
                 
         # read data for templates
-        data["templates"]               = {}
-        data["template_list"]           = {}
+        data["templates"]             = {}
+        data["template_list"]         = {}
         
         if selected == []:
-          templates                     = modules.available(modules.templates)
+          templates                   = modules.available(modules.templates)
           for template in templates:    
             template_keys = template.split("/")
             template_key  = template_keys[len(template_keys)-1]
@@ -151,16 +148,22 @@ def RmReadData(selected=[]):
         
             data["templates"][template]["file"] = template
 
-        # update cache data
-        if selected == []:
           configFiles.cache["_api"] = data
-          #configFiles.cache_update  = False
 
-        data["devices"] = devicesGetStatus(data["devices"],readAPI=True)
+        # mark update as done
+        logging.info("Update config data in cache ("+str(configFiles.cache_update)+")")
+        configFiles.cache_update  = False
 
     # if no update required read from cache
     else: 
         data            = configFiles.cache["_api"]
+
+    # Update API data based on cache value
+    if configFiles.cache_update_api:
+        logging.info("Update config data from api.")
+        data["devices"] = devicesGetStatus(data["devices"],readAPI=True)
+        
+    else:
         data["devices"] = devicesGetStatus(data["devices"],readAPI=False)
 
     # Update status data        
@@ -897,6 +900,9 @@ def devicesGetStatus(data,readAPI=False):
               
     # set reload status
     if readAPI == True: queueQuery.add2queue(["END_OF_RELOAD"])
+
+    # mark API update as done
+    configFiles.cache_update_api = False
    
     return data
 

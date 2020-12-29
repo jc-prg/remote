@@ -12,7 +12,7 @@ import modules.rm3json       as rm3json
 import modules.rm3stage      as rm3stage
 
 #-------------------------------------------------
-# read / write configuratioh
+# read / write configuration
 #-------------------------------------------------
 
 class configCache (threading.Thread):
@@ -31,9 +31,11 @@ class configCache (threading.Thread):
        self.wait             = 1
        self.cache            = {}
        self.cache_time       = time.time()        # initial time for timebased update
-       self.cache_interval   = (5*60)             # update interval in seconds (reread files)
+       self.cache_lastaction = time.time()        # initial time for timestamp of last action
+       self.cache_interval   = 20                 # update interval in seconds (reread files)
+       self.cache_sleep      = (5*60)             # sleeping mode after x seconds
        self.cache_update     = False              # foster manual update of files
-       self.cache_update_run = False
+       self.cache_update_api = False              # foster manual update of API information
        self.configMethods    = {}
        self.api_init         = { "API" : {
                                      "name"     : rm3config.APIname,
@@ -51,13 +53,22 @@ class configCache (threading.Thread):
 
        logging.info( "Starting " + self.name )
        while not self.stopProcess:
+       
+           # No update when in sleeping mode (no API request since a "cache_sleep")
+           if time.time() - self.cache_lastaction >= self.cache_sleep:
+               self.cache_update     = False
+               self.cache_update_api = False
+           # Update, when "cache_interval" is passed
+           elif time.time() - self.cache_time >= self.cache_interval:
+               self.cache_update     = True
+               self.cache_update_api = True
+           # "cache_update" can be set from outside also
+           else:
+               pass
 
-           if time.time() - self.cache_time >= self.cache_interval:
-               self.cache_update = True
-
+           # Reread values from config files
            if self.cache_update == True:
-               time.sleep(1)
-               logging.info("Re-read config files ('" + self.name + "'): ...")
+               logging.info("Cache: reread config files ('" + self.name + "'): ...")
                
                i = 0
                for key in self.cache:
@@ -66,13 +77,12 @@ class configCache (threading.Thread):
                     i += 1
 
                logging.info("... ("+str(i)+")")
-               self.cache_time   = time.time()
+               self.cache_time        = time.time()
                self.cache_update      = False
-               self.cache_update_run  = False
 
+           # wait a few seconds
            else:
                time.sleep(self.wait)
-               #logging.warn("."+str(self.cache_update))
 
        logging.info( "Exiting " + self.name )
 
@@ -83,13 +93,12 @@ class configCache (threading.Thread):
         set var to enforce update
         '''
 
-        self.cache_update      = True
-        self.cache_update_run  = True
+        self.cache_update     = True
+        self.cache_update_api = True
         logging.info("Enforce cache update (" + self.name + ") "+str(self.cache_update))
 
 
     #------------------       
-
     def read(self,config_file,from_file=False):
         '''
         read config from cache if not empty and not to old
