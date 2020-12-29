@@ -88,8 +88,8 @@ class kodiAPI():
        logging.info("Button-Code: "+command[:shorten_info_to]+"... ("+self.api_name+")")
 
        if self.status == "Connected":
-         command = "self.api."+command
          try:
+           command = "self.api."+command
            result = eval(command)
            logging.debug(str(result))
            
@@ -127,8 +127,8 @@ class kodiAPI():
        else:               command_param = [command]
 
        if self.status == "Connected":
-         command = "self.api."+command_param[0]
          try:
+           command = "self.api."+command_param[0]
            result = eval(command)
            logging.debug(str(result))
            
@@ -348,20 +348,46 @@ class kodiAPIaddOn():
    #-------------------------------------------------
          
    def PlayingMetadata(self,tag=""):
-      '''Return title of playing item'''
-            
+      '''
+      Return title of playing item
+      '''
+      
+      all_media_properties =     [ "title", "artist", "albumartist", "genre", "year", "rating", "album", "track", "duration", "comment", 
+                                 "lyrics", "musicbrainztrackid", "musicbrainzartistid", "musicbrainzalbumid", "musicbrainzalbumartistid", 
+                                 "playcount", "fanart", "director", "trailer", "tagline", "plot", "plotoutline", "originaltitle", 
+                                 "lastplayed", "writer", "studio", "mpaa", "cast", "country", "imdbnumber", "premiered", "productioncode", 
+                                 "runtime", "set", "showlink", "streamdetails", "top250", "votes", "firstaired", "season", "episode", 
+                                 "showtitle", "thumbnail", "file", "resume", "artistid", "albumid", "tvshowid", "setid", "watchedepisodes", 
+                                 "disc", "tag", "art", "genreid", "displayartist", "albumartistid", "description", "theme", "mood", "style", 
+                                 "albumlabel", "sorttitle", "episodeguide", "uniqueid", "dateadded", "channel", "channeltype", "hidden", 
+                                 "locked", "channelnumber", "starttime", "endtime", "specialsortseason", "specialsortepisode", 
+                                 "compilation", "releasetype", "albumreleasetype", "contributors", "displaycomposer", "displayconductor", 
+                                 "displayorchestra", "displaylyricist", "userrating", "sortartist", "musicbrainzreleasegroupid", 
+                                 "mediapath", "dynpath"
+                                 ]              
+      selected_media_properties  = ['title','album','artist','plot','mpaa','genre','episode','season','showtitle','studio','duration','runtime']             
+      selected_system_properties = ['version','muted','volume','language','name']
+      selected_player_properties = ['live','speed','percentage','position','playlistid']
+      selected_plist_properties  = ['size','type']
+      selected_other_properties  = ['playing','addons','addon-list','power']
+      if_playing                 = ["player","playlist","playlist-position","playing","item","info","item-position","name"]
+
+
       if self.status == "Connected":
          metadata = {}
 
-         if self.cache_metadata == {} or (self.cache_time + self.cache_wait) < time.time():
+         # read all metadata from API (if no tag is given or tag requires to read all metadata)
+         if (self.cache_metadata == {} or (self.cache_time + self.cache_wait) < time.time()) and tag not in all_media_properties and tag not in selected_system_properties and tag not in selected_player_properties and tag not in selected_plist_properties and tag not in selected_other_properties:
          
             active      = self.api.Player.GetActivePlayers()
+            
             if "error" in active:             return active
             elif not "result" in active:      return { "error" : "API not available OR unknown error" }
             elif active["result"] == []:      active = active
             else:                             active = active["result"]         
   
-            application = self.api.Application.GetProperties({'properties': ['version','muted','volume','language','name']})
+            application = self.api.Application.GetProperties({'properties': selected_system_properties })
+            
             if "error" in application:        return application
             elif not "result" in application: return { "error" : "API not available OR unknown error" }
             else:                             application = application["result"]
@@ -376,41 +402,27 @@ class kodiAPIaddOn():
             metadata["power"]              = self.PowerStatus()
             metadata["version"]            = version
                 
-            if_playing = ["player","playlist","playlist-position","playing","item","info","item-position","name"]
-            for param in if_playing: metadata[param] = "no media loaded"
+            for param in if_playing: 
+              metadata[param]              = "no media"
             
+
             if "result" in str(active) and active["result"] == []:
             
               logging.info("KODI API: no media loaded")
+              return { "result" : "no media" }
+
                                             
             elif 'playerid' in str(active):     
          
               playerid    = active[0]['playerid']
               playertype  = active[0]['type']   
 
-              all_properties = [ "title", "artist", "albumartist", "genre", "year", "rating", "album", "track", "duration", "comment", 
-                                 "lyrics", "musicbrainztrackid", "musicbrainzartistid", "musicbrainzalbumid", "musicbrainzalbumartistid", 
-                                 "playcount", "fanart", "director", "trailer", "tagline", "plot", "plotoutline", "originaltitle", 
-                                 "lastplayed", "writer", "studio", "mpaa", "cast", "country", "imdbnumber", "premiered", "productioncode", 
-                                 "runtime", "set", "showlink", "streamdetails", "top250", "votes", "firstaired", "season", "episode", 
-                                 "showtitle", "thumbnail", "file", "resume", "artistid", "albumid", "tvshowid", "setid", "watchedepisodes", 
-                                 "disc", "tag", "art", "genreid", "displayartist", "albumartistid", "description", "theme", "mood", "style", 
-                                 "albumlabel", "sorttitle", "episodeguide", "uniqueid", "dateadded", "channel", "channeltype", "hidden", 
-                                 "locked", "channelnumber", "starttime", "endtime", "specialsortseason", "specialsortepisode", 
-                                 "compilation", "releasetype", "albumreleasetype", "contributors", "displaycomposer", "displayconductor", 
-                                 "displayorchestra", "displaylyricist", "userrating", "sortartist", "musicbrainzreleasegroupid", 
-                                 "mediapath", "dynpath"
-                                 ]
-              
-              selected_properties = ['title','album','artist','plot','mpaa','genre','episode','season','showtitle','studio','duration','runtime']             
-
-              player      = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : ['live','speed','percentage','position','playlistid'] })['result']
+              player      = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : selected_player_properties })['result']
               playlistid  = player['playlistid']
-              playlist    = self.api.Playlist.GetProperties({'playlistid' : playlistid, 'properties' : ['size','type'] })['result']
-              item        = self.api.Player.GetItem({'playerid' : playerid, 'properties': selected_properties })['result']['item']
-              item2       = self.api.Player.GetItem({'playerid' : playerid, 'properties': all_properties })['result']['item']
+              playlist    = self.api.Playlist.GetProperties({'playlistid' : playlistid, 'properties' : selected_plist_properties })['result']
+              item        = self.api.Player.GetItem({'playerid' : playerid, 'properties': selected_media_properties })['result']['item']
+              item2       = self.api.Player.GetItem({'playerid' : playerid, 'properties': all_media_properties })['result']['item']
               
-
               metadata["player"]             = player
               metadata["player-type"]        = playertype
               metadata["playlist"]           = playlist
@@ -439,17 +451,77 @@ class kodiAPIaddOn():
               
               metadata["info"]               = self.ReplaceHTML(metadata["info"])
               
+
             else:
               return { "error" : "unknown error ("+str(active)+")" }
+
               
             self.cache_metadata = metadata
               
+         # read single matadata field from API (if possible)
+         elif self.cache_metadata == {} or (self.cache_time + self.cache_wait) < time.time():
+
+            active      = self.api.Player.GetActivePlayers()
+            if "error" in active:             return active
+            elif not "result" in active:      return { "error" : "API not available OR unknown error" }
+            elif active["result"] == []:      active = active
+            else:                             active = active["result"]
+
+            if tag in selected_system_properties:
+  
+              application = self.api.Application.GetProperties({'properties': selected_system_properties })
+              if "error" in application:        return application
+              elif not "result" in application: return { "error" : "API not available OR unknown error" }
+              else:                             application = application["result"]
+              
+              version = application["version"]
+              if tag == "version":  metadata[tag] = "KODI "+str(version['major'])+"."+str(version['minor'])+" "+str(version['tag'])      
+              else:                 metadata[tag] = application[tag]
+
+#              metadata[tag] = application
+
+
+            elif tag in selected_other_properties:
+            
+              if   tag == "addons":      metadata[tag] = self.AddOns("properties")["result"]
+              elif tag == "addon-list":  metadata[tag] = self.AddOns("list")["result"]
+              elif tag == "playing":     metadata[tag] = [ active[0]['type'], active[0]['playerid'] ]
+              elif tag == "power":       metadata[tag] = self.PowerStatus()
+              
+
+            elif tag in selected_player_properties or tag in selected_plist_properties or selected_media_properties:
+                        
+              if "result" in str(active) and active["result"] == []:          
+                logging.info("KODI API: no media loaded ("+str(tag)+")")
+                return { "result" : "no media" }
+                                            
+              elif 'playerid' in str(active):     
+                playerid           = active[0]['playerid']
+                playertype         = active[0]['type']   
+                player             = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : selected_player_properties })['result']
+                playlistid         = player['playlistid']
+                
+                if tag in selected_player_properties: 
+                   if tag in player: 
+                      metadata[tag]    = player[tag]
+                if tag in selected_plist_properties:                
+                   playlist            = self.api.Playlist.GetProperties({'playlistid' : playlistid, 'properties' : selected_plist_properties })['result']
+                   if tag in playlist:
+                      metadata[tag]    = playlist[tag]
+                if tag in selected_media_properties:                
+                   item                = self.api.Player.GetItem({'playerid' : playerid, 'properties': [ tag ] })['result']['item']
+                   metadata[tag]       = self.ReplaceHTML(item)
+
+            else:
+            
+              return { "error" : "unknown error ("+str(active)+")" }
+
          else:
             metadata            = self.cache_metadata
             
          #----------------------------------------------------         
-
-         if tag != "item":            
+                  
+         if tag != "item" and "item" in metadata:
            if "plot" in metadata["item"]:       metadata["item"]["plot"]       = self.ReplaceHTML(metadata["item"]["plot"])
            if "showtitle" in metadata["item"]:  metadata["item"]["showtitle"]  = self.ReplaceHTML(metadata["item"]["showtitle"])
            if "title" in metadata["item"]:      metadata["item"]["title"]      = self.ReplaceHTML(metadata["item"]["title"])
