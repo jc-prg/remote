@@ -1,5 +1,5 @@
 {
-"actionlist_url": "http://<DEVICE-IP-ADDRESS>:50002/actionList", 
+"actionlist_url": "http://192.168.1.12:50002/actionList", 
 "actions": {
 	"getContentInformation": {"id": null, "mac": null, "mode": null, "name": "getContentInformation", "py/object": "sonyapilib.device.XmlApiObject", "type": null, "url": "http://192.168.1.12:50002/getContentInformation", "value": null}, 
 	"getContentUrl": {"id": null, "mac": null, "mode": null, "name": "getContentUrl", "py/object": "sonyapilib.device.XmlApiObject", "type": null, "url": "http://192.168.1.12:50002/getContentUrl", "value": null}, 
@@ -14,15 +14,15 @@
 }, 
 "api_version": 3, 
 "app_port": 50202, 
-"app_url": "http://<DEVICE-IP-ADDRESS>:50202", 
+"app_url": "http://192.168.1.12:50202", 
 "apps": {
 	"Music Explorer": {"id": "com.sony.musicexplorer", "mac": null, "mode": null, "name": "Music Explorer", "py/object": "sonyapilib.device.XmlApiObject", "type": null, "url": null, "value": null}, 
 	"Music Player": {"id": "com.sony.musicplayer", "mac": null, "mode": null, "name": "Music Player", "py/object": "sonyapilib.device.XmlApiObject", "type": null, "url": null, "value": null}, 
 	"Video Explorer": {"id": "com.sony.videoexplorer", "mac": null, "mode": null, "name": "Video Explorer", "py/object": "sonyapilib.device.XmlApiObject", "type": null, "url": null, "value": null}, 
 	"Video Player": {"id": "com.sony.videoplayer", "mac": null, "mode": null, "name": "Video Player", "py/object": "sonyapilib.device.XmlApiObject", "type": null, "url": null, "value": null}
 }, 
-"av_transport_url": "http://<DEVICE-IP-ADDRESS>:52323/upnp/control/AVTransport", 
-"base_url": "http://<DEVICE-IP-ADDRESS>/sony/", 
+"av_transport_url": "http://192.168.1.12:52323/upnp/control/AVTransport", 
+"base_url": "http://192.168.1.12/sony/", 
 "client_id": "Test123", 
 "commands": {
 	"Advance": {"id": null, "mac": null, "mode": null, "name": "Advance", "py/object": "sonyapilib.device.XmlApiObject", "type": "ircc", "url": null, "value": "AAAAAwAAHFoAAAB1Aw=="}, 
@@ -74,12 +74,13 @@
 	"ZoomIn": {"id": null, "mac": null, "mode": null, "name": "ZoomIn", "py/object": "sonyapilib.device.XmlApiObject", "type": "url", "url": null, "value": "http://192.168.1.12:50002/setBrowse?action=zoomIn"}, 
 	"ZoomOut": {"id": null, "mac": null, "mode": null, "name": "ZoomOut", "py/object": "sonyapilib.device.XmlApiObject", "type": "url", "url": null, "value": "http://192.168.1.12:50002/setBrowse?action=zoomOut"}
 }, 
-"control_url": "http://<DEVICE-IP-ADDRESS>:50001/upnp/control/IRCC", "cookies": null, "dmr_port": 52323, "dmr_url": "http://192.168.1.12:52323/dmr.xml", "headers": {"Authorization": "Basic OjA0MzY=", "X-CERS-DEVICE-ID": "Test123"}, 
-"host": "<DEVICE-IP-ADDRESS>", 
+"control_url": "http://192.168.1.12:50001/upnp/control/IRCC", "cookies": null, "dmr_port": 52323, "dmr_url": "http://192.168.1.12:52323/dmr.xml", "headers": {"Authorization": "Basic OjA0MzY=", "X-CERS-DEVICE-ID": "Test123"}, 
+"host": "192.168.1.12", 
 "ircc_port": 50001, 
-"ircc_url": "http://<DEVICE-IP-ADDRESS>:50001/Ircc.xml", 
-"irccscpd_url": "http://<DEVICE-IP-ADDRESS>:50001/IRCCSCPD.xml", 
-"mac": "<DEVICE-MAC-ADDRESS>", 
+"ircc_url": "http://192.168.1.12:50001/Ircc.xml", 
+"_ircc_categories": {},
+"irccscpd_url": "http://192.168.1.12:50001/IRCCSCPD.xml", 
+"mac": "10-4f-a8-f3-91-f2", 
 "nickname": "Test123", 
 "pin": "8235", 
 "psk": null, 

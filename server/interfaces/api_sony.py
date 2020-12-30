@@ -6,6 +6,7 @@
 
 import logging, time, os
 import modules.rm3json                 as rm3json
+import modules.rm3stage                as rm3stage
 import modules.rm3config               as rm3config
 import modules.rm3ping                 as rm3ping
 
@@ -57,7 +58,8 @@ class sonyAPI():
        api_ip     = self.api_config["Devices"][self.api_device]["IPAddress"]
        api_mac    = self.api_config["Devices"][self.api_device]["MacAddress"]
        api_name   = self.api_device
-       api_config = os.path.join(os.path.dirname(os.path.abspath(__file__)),"sonyapi",self.api_device + ".json")
+#       api_config = os.path.join(os.path.dirname(os.path.abspath(__file__)),"sonyapi",self.api_device + ".json")
+       api_config = rm3stage.data_dir + "/" + rm3config.devices + self.api_name + "/" + self.api_device + ".json"
        
        connect = rm3ping.ping(api_ip)
        if connect == False:
@@ -65,8 +67,9 @@ class sonyAPI():
          logging.error(self.status)       
          return self.status
 
+       # load config file (generated during the registration process)
        try:
-           self.api = sony.sonyDevice(api_ip,api_name,api_config,api_mac)
+           self.api = sony.sonyDevice(api_ip,api_name,api_config)
            
        except Exception as e:
            self.status = "ERROR "+self.api_name+" - connect: " + str(e)
@@ -155,7 +158,10 @@ class sonyAPI():
    #-------------------------------------------------
    
    def register(self,command,pin=""):
-       '''Register command if device requires registration to initialize authentification'''
+       '''
+       Register command if device requires registration to initialize authentification
+       -> creates config file, to be stored
+       '''
 
        self.wait_if_working()
        self.working = True

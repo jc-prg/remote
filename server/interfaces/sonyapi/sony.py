@@ -35,12 +35,11 @@ class sonyDevice():
     Create Sony device
     '''
 
-    def __init__(self,ip,name,config,mac):
+    def __init__(self,ip,name,config):
         '''
         initialize device
         '''
         self.device_ip     = ip
-        self.device_mac    = mac
         self.device_name   = name
         self.device_config = config
         self.device        = self.load_device()
@@ -107,7 +106,7 @@ class sonyDevice():
         import os
         sony_device = None
         
-        logging.info("SONY load: "+self.device_ip+", " +self.device_name+", "+self.device_config+", "+self.device_mac)
+        logging.info("SONY load: "+self.device_ip+", " +self.device_name+", "+self.device_config)
         
 ##### Replace IP Address in config file
 ##### Document, where the config file is coming from
@@ -116,8 +115,6 @@ class sonyDevice():
           if os.path.exists(self.device_config):
             with open(self.device_config, 'r') as content_file:
                 json_data   = content_file.read()
-            json_data   = json_data.replace("<DEVICE-IP-ADDRESS>",self.device_ip)
-            json_data   = json_data.replace("<DEVICE-MAC-ADDRESS>",self.device_mac)
             sony_device = SonyDevice.load_from_json(json_data)
           else:
             logging.error("SONY load device: file not found ("+self.device_config+")")
