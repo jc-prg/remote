@@ -68,6 +68,7 @@
             "position_rel_cnt": "SOAP=GetPositionInfo::RelCount",
             "position_rel_time": "SOAP=GetPositionInfo::RelTime",
             "position_track": "SOAP=GetPositionInfo::Track",
+            "test": "CMD=test",
             "power": "power"
         },
         "values": {}
