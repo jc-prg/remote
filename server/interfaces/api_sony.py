@@ -58,7 +58,6 @@ class sonyAPI():
        api_ip     = self.api_config["Devices"][self.api_device]["IPAddress"]
        api_mac    = self.api_config["Devices"][self.api_device]["MacAddress"]
        api_name   = self.api_device
-#       api_config = os.path.join(os.path.dirname(os.path.abspath(__file__)),"sonyapi",self.api_device + ".json")
        api_config = rm3stage.data_dir + "/" + rm3config.devices + self.api_name + "/" + self.api_device + ".json"
        
        connect = rm3ping.ping(api_ip)

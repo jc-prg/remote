@@ -102,15 +102,14 @@ class sonyDevice():
     def load_device(self):
         '''
         Restore the device from disk.
+        Config file will be created during the registration process.
         '''
+        
         import os
         sony_device = None
         
         logging.info("SONY load: "+self.device_ip+", " +self.device_name+", "+self.device_config)
-        
-##### Replace IP Address in config file
-##### Document, where the config file is coming from
-        
+                
         try:
           if os.path.exists(self.device_config):
             with open(self.device_config, 'r') as content_file:
