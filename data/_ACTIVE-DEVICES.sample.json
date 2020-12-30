@@ -1,0 +1,278 @@
+{
+    "bd": {
+        "config": {
+            "device": "bluray_sony-bdp-s4500",
+            "remote": "bluray_sony-bdp-s4500_ir"
+        },
+        "description": "SONY BDP-S4500",
+        "image": "bd",
+        "interface": {
+            "api": "BROADLINK",
+            "dev": "",
+            "ip": "192.168.1.30"
+        },
+        "label": "Bluray Player (IR)",
+        "main-audio": "no",
+        "position": 6,
+        "status": {
+            "api-status": "Connected",
+            "power": "OFF"
+        },
+        "visible": "no"
+    },
+    "bd-api": {
+        "config": {
+            "device": "bluray_sony-bdp-s4500",
+            "remote": "bluray_sony-bdp-s4500_api"
+        },
+        "description": "SONY BDP-S4500",
+        "image": "bd",
+        "interface": {
+            "api": "SONY",
+            "dev": "SONY-BDP-S4500",
+            "ip": "192.168.1.12",
+            "mac": "10-4f-a8-f3-91-f2"
+        },
+        "label": "Bluray Player",
+        "main-audio": "no",
+        "position": 3,
+        "status": {
+            "api-status": "Connected",
+            "media-duration": "not connected",
+            "media_duration": "00:00:00",
+            "media_medium": "NONE",
+            "media_tracks": "0",
+            "playing": "NO_MEDIA_PRESENT",
+            "playing2": "not connected",
+            "playing_soap": "NO_MEDIA_PRESENT",
+            "position_abs_cnt": "0",
+            "position_abs_time": "00:00:00",
+            "position_duration": "00:00:00",
+            "position_metadata": "None",
+            "position_rel_cnt": "0",
+            "position_rel_time": "00:00:00",
+            "position_track": "0",
+            "power": "ON"
+        },
+        "visible": "yes"
+    },
+    "beam": {
+        "config": {
+            "device": "beamer_optoma-hd27",
+            "remote": "beamer_optoma-hd27_ir"
+        },
+        "description": "Optoma HD27",
+        "image": "beam",
+        "interface": {
+            "api": "BROADLINK",
+            "ip": "192.168.1.30"
+        },
+        "label": "Beamer",
+        "main-audio": "no",
+        "position": 2,
+        "status": {
+            "api-status": "Connected",
+            "power": "ON"
+        },
+        "visible": "yes"
+    },
+    "default": {
+        "config": {
+            "device": "",
+            "remote": ""
+        },
+        "description": "",
+        "image": "",
+        "interface": {
+            "api": "",
+            "dev": "",
+            "ip": ""
+        },
+        "label": "Sample Device",
+        "main-audio": "no",
+        "position": 8,
+        "status": {
+            "mute": "OFF",
+            "power": "OFF",
+            "vol": 0
+        },
+        "visible": "no"
+    },
+    "lw": {
+        "config": {
+            "device": "screen_elite-screens-100",
+            "remote": "screen_elite-screens-100_ir"
+        },
+        "description": "Elite Screens 100\"",
+        "image": "lw",
+        "interface": {
+            "api": "BROADLINK",
+            "ip": "192.168.1.30"
+        },
+        "label": "Leinwand",
+        "main-audio": "no",
+        "position": 4,
+        "status": {
+            "api-status": "Connected",
+            "power": "ON"
+        },
+        "visible": "yes"
+    },
+    "media-center": {
+        "config": {
+            "device": "kodi",
+            "remote": "kodi_api"
+        },
+        "description": "Kodi (API)",
+        "image": "",
+        "interface": {
+            "api": "KODI",
+            "ip": "192.168.1.31"
+        },
+        "label": "Media-Center",
+        "main-audio": "no",
+        "position": 7,
+        "status": {
+            "activePlayer": "not connected",
+            "addons": "['ARDundZDF', 'ARTE.TV', 'Joyn', 'KiKA plus', '3sat Mediathek', 'ARD Mediathek', 'KiKa Mediathek', 'MediathekView', 'Mediathek Direkt', 'ZDF Mediathek']",
+            "api-status": "Connected",
+            "genre": "no media",
+            "info": "no media",
+            "item": "no media",
+            "mute": "False",
+            "player": "not connected",
+            "playing": "Error",
+            "playlist": "no media",
+            "plot": "no media",
+            "power": "ON",
+            "type": "no media",
+            "version": "KODI 18.9 stable",
+            "vol": "100",
+            "zz": "no media"
+        },
+        "visible": "yes"
+    },
+    "rec": {
+        "config": {
+            "device": "receiver_onkyo-txnr686",
+            "remote": "receiver_onkyo-txnr686_ir"
+        },
+        "description": "ONKYO TX-NR686B (IR)",
+        "image": "rec",
+        "interface": {
+            "api": "BROADLINK",
+            "ip": "192.168.1.30"
+        },
+        "label": "AV Receiver (IR)",
+        "main-audio": "no",
+        "position": 9,
+        "status": {
+            "api-status": "Connected",
+            "mute": "not connected",
+            "power": "OFF",
+            "vol": "not connected"
+        },
+        "visible": "no"
+    },
+    "rec2": {
+        "config": {
+            "device": "receiver_onkyo-txnr686",
+            "remote": "receiver_onkyo-txnr686_api"
+        },
+        "description": "ONKYO TX-NR686B (API)",
+        "image": "rec",
+        "interface": {
+            "api": "EISCP-ONKYO",
+            "dev": "ONKYO-TXNR686",
+            "ip": "192.168.1.32"
+        },
+        "label": "AV Receiver",
+        "main-audio": "yes",
+        "position": 1,
+        "status": {
+            "a-v-sync": "0",
+            "api-status": "Connected",
+            "audio-info": "NETWORK,,,,All Ch Stereo,5.1 ch,",
+            "audio-source": "('coax', 'opt')",
+            "dimmer": "dark",
+            "display": "('selector-volume-1line', 'default-2line')",
+            "listening": "all-ch-stereo",
+            "mute": "off",
+            "power": "on",
+            "sleep-set": "N/A",
+            "source": "net",
+            "temperature": "C 31",
+            "timer": "N/A",
+            "tuning": "34640 Hz",
+            "video-info": "No Video,Unknown,,24bit,,Unknown,,24bit,,",
+            "vol": "38"
+        },
+        "visible": "yes"
+    },
+    "test": {
+        "config": {
+            "device": "test device",
+            "remote": "test_device"
+        },
+        "description": "test device",
+        "image": "test",
+        "interface": {
+            "api": "TEST"
+        },
+        "label": "test device",
+        "main-audio": "no",
+        "position": 10,
+        "status": {
+            "api-status": "Connected",
+            "power": "OFF"
+        },
+        "visible": "no"
+    },
+    "tv": {
+        "config": {
+            "device": "tv-receiver_arion-arc-1010hr",
+            "remote": "tv-receiver_arion-arc-1010hr_ir"
+        },
+        "description": "ARION ARC-1010HR",
+        "image": "tv",
+        "interface": {
+            "api": "BROADLINK",
+            "dev": "",
+            "ip": ""
+        },
+        "label": "TV/Radio",
+        "main-audio": "no",
+        "position": 5,
+        "status": {
+            "api-status": "Connected",
+            "mute": "OFF",
+            "power": "ON",
+            "radiotv": "TV",
+            "vol": 20
+        },
+        "visible": "yes"
+    },
+    "tv2": {
+        "config": {
+            "device": "tv-receiver_topfield",
+            "remote": "tv-receiver_topfield_ir"
+        },
+        "description": "TOPFIELD CBP-2001CI+",
+        "image": "tv_old",
+        "interface": {
+            "api": "BROADLINK",
+            "ip": "192.168.1.30"
+        },
+        "label": "TV/Radio (old)",
+        "main-audio": "no",
+        "position": 11,
+        "status": {
+            "api-status": "Connected",
+            "mute": "OFF",
+            "power": "ON",
+            "radiotv": "tv",
+            "vol": 16
+        },
+        "visible": "no"
+    }
+}
