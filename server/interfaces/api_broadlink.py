@@ -8,6 +8,7 @@ import logging, time
 import codecs, json, netaddr
 import modules.rm3json                 as rm3json
 import modules.rm3config               as rm3config
+import modules.rm3ping                 as rm3ping
 
 import interfaces.broadlink.broadlink  as broadlink
 
@@ -33,22 +34,25 @@ class broadlinkAPI():
    Integration of BROADLINK API to be use by jc://remote/
    '''
 
-   def __init__(self,api_name):
+   def __init__(self,api_name,device="",ip_address=""):
        '''Initialize API / check connect to device'''
        
        self.api_name        = api_name       
        self.api_description = "Infrared Broadlink RM3"
-       self.api_config      = rm3json.read(rm3config.interfaces+self.api_name)
+       self.api_config      = rm3json.read("interfaces/broadlink/"+self.api_name,data_dir=False)
        self.working         = False
        self.method          = "record"
        self.count_error     = 0
        self.count_success   = 0
        
+       if ip_address != "":
+          self.api_config["IPAddress"] = ip_address
+       
        self.api_config["Port"]       = int(self.api_config["Port"])
        self.api_config["MACAddress"] = netaddr.EUI(self.api_config["MACAddress"])
        self.api_config["Timeout"]    = int(self.api_config["Timeout"])
 
-       logging.info("... "+self.api_name+" - " + self.api_description)
+       logging.info("... "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
        logging.debug(str(self.api_config["IPAddress"])+":"+str(self.api_config["Port"]))
        
        self.connect()
@@ -60,7 +64,13 @@ class broadlinkAPI():
        
        self.count_error          = 0
        self.count_success        = 0
-
+       
+       connect = rm3ping.ping(self.api_config["IPAddress"])
+       if connect == False:
+         self.status = "IR Device not available (ping to "+self.api_config["IPAddress"]+" failed)"
+         logging.error(self.status)       
+         return self.status
+         
        try:
          self.api  = broadlink.rm((self.api_config["IPAddress"], self.api_config["Port"]), self.api_config["MACAddress"])     
          if self.api.auth(): self.status = "Connected"

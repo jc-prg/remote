@@ -7,6 +7,7 @@
 import logging, time
 import modules.rm3json                 as rm3json
 import modules.rm3config               as rm3config
+import modules.rm3ping                 as rm3ping
 
 import interfaces.eiscp as eiscp
 
@@ -23,13 +24,15 @@ class eiscpAPI():
    Integration of sample API to be use by jc://remote/
    '''
 
-   def __init__(self,api_name,device):
-       '''Initialize API / check connect to device'''
+   def __init__(self,api_name,device="",ip_address=""):
+       '''
+       Initialize API / check connect to device
+       '''
        
        self.api_name        = api_name       
        self.api_description = "API for ONKYO Devices"
        self.api_device      = device
-       self.api_config      = rm3json.read(rm3config.interfaces+self.api_name)
+       self.api_config      = rm3json.read("interfaces/eiscp/"+self.api_name,data_dir=False)
        self.api_ip          = self.api_config["IPAddress"]
        self.api_timeout     = 5
        self.method          = "query"
@@ -37,7 +40,7 @@ class eiscpAPI():
        self.count_error     = 0
        self.count_success   = 0
        
-       logging.info("... "+self.api_name+" - " + self.api_description)
+       logging.info("... "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
        
        self.connect()
             
@@ -56,6 +59,12 @@ class eiscpAPI():
        
        self.count_error          = 0
        self.count_success        = 0
+
+       connect = rm3ping.ping(self.api_config["IPAddress"])
+       if connect == False:
+         self.status = "ONKYO Device not available (ping to "+self.api_config["IPAddress"]+" failed)"
+         logging.error(self.status)       
+         return self.status
 
        try:
           print("(Re)Connect eISCP ONKYO "+self.api_ip)

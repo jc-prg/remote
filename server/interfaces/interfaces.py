@@ -47,16 +47,36 @@ class connect(threading.Thread):
         '''
         Initialize APIs and loop to check connection status
         '''
-        
-        logging.info( "Starting " + self.name )
-        
-#### -> Place information in JSON config file, which APIs should be loaded ...
-        
-        self.api["KODI"]        = interfaces.api_kodi.kodiAPI("KODI")
-        self.api["TEST"]        = interfaces.api_test.testAPI("TEST")
-        self.api["EISCP-ONKYO"] = interfaces.api_eiscp.eiscpAPI("EISCP-ONKYO","ONKYO-TXNR686")
-        self.api["BROADLINK"]   = interfaces.api_broadlink.broadlinkAPI("BROADLINK")
-        self.api["SONY"]        = interfaces.api_sony.sonyAPI("SONY","SONY-BDP-S4500")
+               
+        logging.info("Starting " + self.name)
+        load_modules_from_config = True
+
+        if load_modules_from_config:
+          loaded_apis    = {}
+          active_devices = self.configFiles.read_status()
+
+          for device in active_devices:       
+            logging.debug("Load API for device "+device+" ...")
+            api = active_devices[device]["interface"]["api"]
+            if "ip" in active_devices[device]["interface"]:   ip = active_devices[device]["interface"]["ip"]
+            else:                                             ip = ""
+            if "dev" in active_devices[device]["interface"]:  dev = active_devices[device]["interface"]["dev"]
+            else:                                             dev = ""
+            if "mac" in active_devices[device]["interface"]:  mac = active_devices[device]["interface"]["mac"]
+            else:                                             mac = ""
+            
+            if api == "KODI"        and api not in self.api:  self.api[api] = interfaces.api_kodi.kodiAPI(api,dev,ip)
+            if api == "EISCP-ONKYO" and api not in self.api:  self.api[api] = interfaces.api_eiscp.eiscpAPI(api,dev,ip)
+            if api == "BROADLINK"   and api not in self.api:  self.api[api] = interfaces.api_broadlink.broadlinkAPI(api,dev,ip)
+            if api == "SONY"        and api not in self.api:  self.api[api] = interfaces.api_sony.sonyAPI(api,dev,ip,mac)
+            if api == "TEST"        and api not in self.api:  self.api[api] = interfaces.api_test.testAPI(api,dev,ip)
+                                               
+        else:
+          self.api["KODI"]        = interfaces.api_kodi.kodiAPI("KODI")
+          self.api["TEST"]        = interfaces.api_test.testAPI("TEST")
+          self.api["EISCP-ONKYO"] = interfaces.api_eiscp.eiscpAPI("EISCP-ONKYO","ONKYO-TXNR686")
+          self.api["BROADLINK"]   = interfaces.api_broadlink.broadlinkAPI("BROADLINK")
+          self.api["SONY"]        = interfaces.api_sony.sonyAPI("SONY","SONY-BDP-S4500")
 
         for key in self.api:
            self.available[key] = self.api[key].api_description
@@ -285,7 +305,7 @@ class connect(threading.Thread):
         active        = self.configFiles.read_status()
         
         if device in active:
-          device_code  = active[device]["config_device"]
+          device_code  = active[device]["config"]["device"]
           buttons      = self.configFiles.read(rm3config.commands + api + "/" + device_code)
     
           # add button definitions from default.json if exist
@@ -311,7 +331,7 @@ class connect(threading.Thread):
         active        = self.configFiles.read_status()
         
         if device in active:
-          device_code  = active[device]["config_device"]
+          device_code  = active[device]["config"]["device"]
           buttons      = self.configFiles.read(rm3config.commands + api + "/" + device_code)
     
           # add button definitions from default.json if exist

@@ -37,8 +37,8 @@ templates  = "templates/"  # templates for remote layouts
 buttons    = "buttons/"             # button configuration files
 active     = "_active"              # overview file name
 
-active_scenes  = "interfaces/_ACTIVE-SCENES"
-active_devices = "interfaces/_ACTIVE-DEVICES"
+active_devices = "_ACTIVE-DEVICES"
+active_scenes  = "_ACTIVE-SCENES"
 
 # ---------------------------------
 

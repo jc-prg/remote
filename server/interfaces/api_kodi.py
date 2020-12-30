@@ -8,6 +8,7 @@
 import logging, time
 import modules.rm3json                 as rm3json
 import modules.rm3config               as rm3config
+import modules.rm3ping                 as rm3ping
 
 from   interfaces.kodi             import Kodi
 
@@ -24,12 +25,16 @@ class kodiAPI():
    Integration of KODI API to be use by jc://remote/
    '''
 
-   def __init__(self,api_name):
+   def __init__(self,api_name,device="",ip_address=""):
        '''Initialize API / check connect to device'''
        
        self.api_name        = api_name       
        self.api_description = "API for KODI Servers (basic functionality, under development)"
-       self.api_config      = rm3json.read(rm3config.interfaces+self.api_name)
+       self.api_config      = rm3json.read("interfaces/kodi/"+self.api_name,data_dir=False)
+
+       if ip_address != "":
+          self.api_config["IPAddress"] = ip_address       
+
        self.api_url         = "http://"+str(self.api_config["IPAddress"])+":"+str(self.api_config["Port"])+"/jsonrpc"
        self.working         = False
        self.status          = "Started"
@@ -38,7 +43,7 @@ class kodiAPI():
        self.count_error     = 0
        self.count_success   = 0
 
-       logging.info("... "+self.api_name+" - " + self.api_description)
+       logging.info("... "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
        logging.debug(self.api_url)
        
        self.connect()
@@ -48,6 +53,12 @@ class kodiAPI():
    def connect(self):
        '''Connect / check connection'''
        
+       connect = rm3ping.ping(self.api_config["IPAddress"])
+       if connect == False:
+         self.status = "IR Device not available (ping to "+self.api_config["IPAddress"]+" failed)"
+         logging.error(self.status)       
+         return self.status
+
        try:
           self.api    = Kodi(self.api_url)
           #self.api   = Kodi(self.api_url, "login", "password")

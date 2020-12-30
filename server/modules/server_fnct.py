@@ -53,12 +53,12 @@ def RmReadData(selected=[]):
         
         # read data for active devices
         for device in data["devices"]:
-            if data["devices"][device]["interface"] != "":
+            if data["devices"][device]["interface"]["api"] != "":
               if selected == [] or device in selected:
 	
-                key        = data["devices"][device]["config_device"]
-                key_remote = data["devices"][device]["config_remote"]
-                interface  = data["devices"][device]["interface"]
+                key        = data["devices"][device]["config"]["device"]
+                key_remote = data["devices"][device]["config"]["remote"]
+                interface  = data["devices"][device]["interface"]["api"]
                 data_temp  = data["devices"][device]
 
                 remote           = configFiles.read(modules.remotes  + key_remote)            # remote layout & display
@@ -302,15 +302,15 @@ def addDevice(device,device_data):
     '''
     
     interface     = device_data["api"]
-    config_remote = device_data["config_remote"]
-    config_device = device_data["config_device"]
+    config_remote = device_data["config"]["remote"]
+    config_device = device_data["config"]["device"]
     
     ## Check if exists    
     active_json         = configFiles.read_status()
     
     if device in active_json:                                                            return("WARN: Device " + device + " already exists (active).")
-    if modules.ifexist(modules.commands +interface+"/"+device_data["config_device"]):    return("WARN: Device " + device + " already exists (devices).")
-    if modules.ifexist(modules.remotes  +device_data["config_remote"]):    return("WARN: Device " + device + " already exists (remotes).") 
+    if modules.ifexist(modules.commands +interface+"/"+device_data["config"]["device"]): return("WARN: Device " + device + " already exists (devices).")
+    if modules.ifexist(modules.remotes  +device_data["config"]["remote"]):               return("WARN: Device " + device + " already exists (remotes).") 
     
     logging.info("addDevice: add " + device)
     
@@ -324,8 +324,10 @@ def addDevice(device,device_data):
     ## add to _active.json 
     active_json[device]  = {
         "image"            : device,
-        "config_device"    : device_data["config_device"],
-        "config_remote"    : device_data["config_remote"],
+        "config"           : {
+	        "device"	: device_data["config"]["device"],
+        	"remote"	: device_data["config"]["remote"],
+        	},
         "interface"        : device_data["api"],
         "description"      : device_data["label"] + ": " + device_data["device"],
         "label"            : device_data["label"],
@@ -354,7 +356,7 @@ def addDevice(device,device_data):
             }
         }
     try:
-      configFiles.write(modules.commands + interface+"/"+device_data["config_device"],buttons)
+      configFiles.write(modules.commands + interface+"/"+device_data["config"]["device"],buttons)
     except Exception as e:
       return "ERROR: " + str(e)
 
@@ -369,7 +371,7 @@ def addDevice(device,device_data):
         }    
     try:
 #      configFiles.write(modules.remotes +interface+"/"+description,remote)
-      configFiles.write(modules.remotes +device_data["config_remote"],remote)
+      configFiles.write(modules.remotes +device_data["config"]["remote"],remote)
     except Exception as e:
       return "ERROR: " + str(e)
             
@@ -385,16 +387,16 @@ def deleteDevice(device):
     
     devices              = {}
     active_json          = configFiles.read_status()   
-    interface            = active_json[device]["interface"]
-    device_code          = active_json[device]["config_device"]  
-    device_remote        = active_json[device]["config_remote"]  
+    interface            = active_json[device]["interface"]["api"]
+    device_code          = active_json[device]["config"]["device"]  
+    device_remote        = active_json[device]["config"]["remote"]  
     
     if "ERROR" in active_json:                                                return("ERROR: Could not read ACTIVE_JSON (active).")
     if not device in active_json:                                             return("ERROR: Device " + device + " doesn't exists (active).")
     if not modules.ifexist(modules.commands +interface+"/"+device_code):      return("ERROR: Device " + device + " doesn't exists (commands).")
     if not modules.ifexist(modules.remotes  +device_remote):                  return("ERROR: Device " + device + " doesn't exists (remotes).") 
 
-    interface = active_json[device]["interface"]  ############# funtioniert nicht so richtig ...
+    interface = active_json[device]["interface"]["api"]  ############# funtioniert nicht so richtig ...
     for entry in active_json:
       if entry != device: 
         devices[entry] = active_json[entry]
@@ -430,9 +432,9 @@ def editDevice(device,info):
     active_json          = configFiles.read_status()
     if "ERROR" in active_json: return("ERROR: Device " + device + " doesn't exists (active).")
     
-    interface            = active_json[device]["interface"]
-    device_code          = active_json[device]["config_device"]  
-    device_remote        = active_json[device]["config_remote"]  
+    interface            = active_json[device]["interface"]["api"]
+    device_code          = active_json[device]["config"]["device"]  
+    device_remote        = active_json[device]["config"]["remote"]  
     
     # read command definition
     commands             = configFiles.read(modules.commands +interface+"/"+device_code)
@@ -495,9 +497,9 @@ def addCommand2Button(device,button,command):
     '''
 
     config        = configFiles.read_status()
-    interface     = config[device]["interface"]  
-    device_code   = config[device]["config_device"]  
-    device_remote = config[device]["config_remote"]  
+    interface     = config[device]["interface"]["api"]
+    device_code   = config[device]["config"]["device"]  
+    device_remote = config[device]["config"]["remote"]  
     data          = configFiles.read(modules.commands+interface+"/"+device_code)
     
     if "data" in data:
@@ -522,9 +524,9 @@ def addButton(device,button):
     '''
     
     config        = configFiles.read_status()
-    interface     = config[device]["interface"]  
-    device_code   = config[device]["config_device"]  
-    device_remote = config[device]["config_remote"]  
+    interface     = config[device]["interface"]["api"]
+    device_code   = config[device]["config"]["device"]  
+    device_remote = config[device]["config"]["remote"]  
     data          = configFiles.read(modules.remotes+device_remote)
 #    data        = configFiles.read(modules.remotes+interface+"/"+device_code)
     
@@ -548,8 +550,8 @@ def deleteCmd(device, button):
     '''
 
     config      = configFiles.read_status()
-    interface   = config[device]["interface"]  
-    device_code = config[device]["config_device"]  
+    interface   = config[device]["interface"]["api"]  
+    device_code = config[device]["config"]["device"]  
     data        = configFiles.read(modules.commands+interface+"/"+device_code)
     
     if data["data"]:
@@ -573,9 +575,9 @@ def deleteButton(device, button_number):
 
     buttonNumber  = int(button_number)
     config        = configFiles.read_status()
-    interface     = config[device]["interface"]  
-    device_code   = config[device]["config_device"]  
-    device_remote = config[device]["config_remote"]  
+    interface     = config[device]["interface"]["api"]
+    device_code   = config[device]["config"]["device"]  
+    device_remote = config[device]["config"]["remote"]  
     data          = configFiles.read(modules.remotes+device_remote)
 #    data         = configFiles.read(modules.remotes+interface+"/"+device_code)
     
@@ -602,9 +604,9 @@ def addTemplate(device,template):
 
     templates     = configFiles.read(modules.templates + template)
     config        = configFiles.read_status()
-    interface     = config[device]["interface"]
-    device_code   = config[device]["config_device"]
-    device_remote = config[device]["config_remote"]  
+    interface     = config[device]["interface"]["api"]
+    device_code   = config[device]["config"]["device"]
+    device_remote = config[device]["config"]["remote"]  
     data          = configFiles.read(modules.remotes+device_remote)
 #    data       = configFiles.read(modules.remotes + interface + "/" + device_code)
 
@@ -806,10 +808,10 @@ def resetStatus():
     # reset if device is not able to return status and interface is defined
     for key in status:
     
-      if status[key]["interface"] != "":     
+      if status[key]["interface"]["api"] != "":     
         device_code = configFiles.translate_device(key)
-        device      = configFiles.read(modules.commands + status[key]["interface"] + "/" + device_code)
-        logging.info("Reset Device: " + device_code + "/" + status[key]["interface"])
+        device      = configFiles.read(modules.commands + status[key]["interface"]["api"] + "/" + device_code)
+        logging.info("Reset Device: " + device_code + "/" + status[key]["interface"]["api"])
       
         if device["data"]["method"] != "query":
           status[key]["status"]["power"] = "OFF"
@@ -828,11 +830,11 @@ def resetAudio():
     # reset if device is not able to return status and interface is defined
     for key in status:
     
-      if status[key]["interface"] != "":
+      if status[key]["interface"]["api"] != "":
       
         device_code = configFiles.translate_device(key)
-        device      = configFiles.read(modules.commands + status[key]["interface"] + "/" + device_code)
-        logging.info("Reset Device: " + device_code + "/" + status[key]["interface"])
+        device      = configFiles.read(modules.commands + status[key]["interface"]["api"] + "/" + device_code)
+        logging.info("Reset Device: " + device_code + "/" + status[key]["interface"]["api"])
       
         if device["data"]["method"] != "query":      
           if "vol"  in status[key]["status"]: status[key]["status"]["vol"]  = 0 
@@ -883,7 +885,7 @@ def devicesGetStatus(data,readAPI=False):
     
         if "status" in devices[device] and device in data and "method" in data[device]:
           
-          interface = data[device]["interface"]
+          interface = data[device]["interface"]["api"]
           data[device]["status"]["api-status"] = deviceAPIs.status(interface)
           
           # get status values from config files, if connected
@@ -920,7 +922,7 @@ def getButtonValue(device,button):
     if button in power_buttons: button = "power"
     
     method        = configFiles.cache["_api"]["devices"][device]["method"]
-    interface     = configFiles.cache["_api"]["devices"][device]["interface"]
+    interface     = configFiles.cache["_api"]["devices"][device]["interface"]["api"]
     
     logging.debug("getButtonValue: ...m:"+method+" ...d:"+device+" ...b:"+button+" ...s:"+str(state))
 

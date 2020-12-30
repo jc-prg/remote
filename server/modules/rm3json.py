@@ -18,12 +18,16 @@ def init():
 
 #--------------------------------------------
 
-def read(file):
+def read(file,data_dir=True):
     '''read data from json file'''
 
     d = {}
     file1 = file+".json"
-    file2 = path.join(jsonAppDir,jsonPath,file1)
+    if data_dir == True: file2 = path.join(jsonAppDir,jsonPath,file1)
+    else:                file2 = path.join(jsonAppDir,"..",file1)
+    
+    logging.debug(file2)
+    
     try:
       with open(file2) as json_data:
         d = json.load(json_data)

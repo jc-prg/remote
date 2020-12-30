@@ -35,11 +35,12 @@ class sonyDevice():
     Create Sony device
     '''
 
-    def __init__(self,ip,name,config):
+    def __init__(self,ip,name,config,mac):
         '''
         initialize device
         '''
         self.device_ip     = ip
+        self.device_mac    = mac
         self.device_name   = name
         self.device_config = config
         self.device        = self.load_device()
@@ -106,13 +107,18 @@ class sonyDevice():
         import os
         sony_device = None
         
-        logging.info("SONY load: "+self.device_ip+", " +self.device_name+", "+self.device_config)
+        logging.info("SONY load: "+self.device_ip+", " +self.device_name+", "+self.device_config+", "+self.device_mac)
+        
+##### Replace IP Address in config file
+##### Document, where the config file is coming from
         
         try:
           if os.path.exists(self.device_config):
             with open(self.device_config, 'r') as content_file:
-                json_data = content_file.read()
-                sony_device = SonyDevice.load_from_json(json_data)
+                json_data   = content_file.read()
+            json_data   = json_data.replace("<DEVICE-IP-ADDRESS>",self.device_ip)
+            json_data   = json_data.replace("<DEVICE-MAC-ADDRESS>",self.device_mac)
+            sony_device = SonyDevice.load_from_json(json_data)
           else:
             logging.error("SONY load device: file not found ("+self.device_config+")")
           return sony_device
@@ -164,7 +170,7 @@ class sonyDevice():
         '''
         send command
         '''
-        if   cmd == "PowerOn"  and self.get_status("power") == False: 
+        if cmd == "PowerOn" and self.get_status("power") == False: 
           try:
             logging.info("SONY wake on lan: START ("+self.device.mac+"/"+self.device_ip+")")
             self.device.wakeonlan(self.device_ip)
@@ -172,9 +178,11 @@ class sonyDevice():
 
           except Exception as e:
             logging.error("SONY wake on lan: "+str(e))
-            
+
+
         elif cmd == "PowerOff" and self.get_status("power") == True:
           self.power(False)
+
         
         elif self.get_status("power"):
            if self.available_commands == []:  self.available_commands = self.get_values("commands")
@@ -259,12 +267,18 @@ class sonyDevice():
         '''
         get status ...
         '''
-    
-        if cmd == "power":             return self.device.get_power_status()
-        elif cmd == "playing":         return self.device.get_playing_status()  # OK, PLAYING, ... NO_MEDIA_PRESENT, ...
-        elif cmd == "SOAP":            return self.get_status_SOAP(param)
-        elif cmd == "IRRC":            return self.get_status_IRRC(param)
-        else:                          return "ERROR: Command not defined ("+cmd+")"
+        
+        logging.debug("SONY get_status: "+str(cmd)+"/"+str(param)+" - " + str(self.device.get_power_status()))    
+        if cmd == "power":               return self.device.get_power_status()
+        
+        if self.device.get_power_status():
+          if cmd == "playing":           return self.device.get_playing_status()  # OK, PLAYING, ... NO_MEDIA_PRESENT, ...
+          elif cmd == "SOAP":            return self.get_status_SOAP(param)
+          elif cmd == "IRRC":            return self.get_status_IRRC(param)
+          else:                          return "ERROR: Command not defined ("+cmd+")"
+
+        else:
+           return "ERROR: Device is off (SONY)."
         
     #-----------------------------
 

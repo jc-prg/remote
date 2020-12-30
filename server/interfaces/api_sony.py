@@ -4,9 +4,10 @@
 # (c) Christoph Kloth
 #-----------------------------------
 
-import logging, time
+import logging, time, os
 import modules.rm3json                 as rm3json
 import modules.rm3config               as rm3config
+import modules.rm3ping                 as rm3ping
 
 import interfaces.sonyapi.sony         as sony
 
@@ -19,19 +20,26 @@ class sonyAPI():
    Integration of sample API to be use by jc://remote/
    '''
 
-   def __init__(self,api_name,device):
+   def __init__(self,api_name,device="",ip_address="",mac_address=""):
        '''Initialize API / check connect to device'''
        
        self.api_name        = api_name       
        self.api_description = "API for SONY Devices (SonyAPILib)"
-       self.api_config      = rm3json.read(rm3config.interfaces+self.api_name)
+       self.api_config      = rm3json.read("interfaces/sonyapi/"+self.api_name,data_dir=False)
        self.api_device      = device
        self.method          = "query" # or "record"
        self.working         = False
        self.count_error     = 0
        self.count_success   = 0
        
-       logging.info("... "+self.api_name+" - " + self.api_description)
+       if "MacAddress" not in self.api_config["Devices"][self.api_device]: 
+          self.api_config["Devices"][self.api_device]["MacAddress"] = ""
+       if ip_address != "":
+          self.api_config["Devices"][self.api_device]["IPAddress"]  = ip_address
+       if mac_address != "":
+          self.api_config["Devices"][self.api_device]["MacAddress"] = mac_address
+       
+       logging.info("... "+self.api_name+" - " + self.api_description + " (" + self.api_config["Devices"][self.api_device]["IPAddress"] +")")
        
        self.connect()
             
@@ -47,11 +55,18 @@ class sonyAPI():
        self.count_success        = 0
        
        api_ip     = self.api_config["Devices"][self.api_device]["IPAddress"]
+       api_mac    = self.api_config["Devices"][self.api_device]["MacAddress"]
        api_name   = self.api_device
-       api_config = rm3config.config_dir + rm3config.interfaces + self.api_device + ".json"
+       api_config = os.path.join(os.path.dirname(os.path.abspath(__file__)),"sonyapi",self.api_device + ".json")
        
+       connect = rm3ping.ping(api_ip)
+       if connect == False:
+         self.status = "SONY Device not available (ping to "+api_ip+" failed)"
+         logging.error(self.status)       
+         return self.status
+
        try:
-           self.api = sony.sonyDevice(api_ip,api_name,api_config)
+           self.api = sony.sonyDevice(api_ip,api_name,api_config,api_mac)
            
        except Exception as e:
            self.status = "ERROR "+self.api_name+" - connect: " + str(e)
