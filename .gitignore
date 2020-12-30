@@ -28,3 +28,7 @@ app/img/remote.jpg
 *.png~
 
 start
+
+data/_ACTIVE-DEVICES.json
+
+data/_ACTIVE-SCENES.json
