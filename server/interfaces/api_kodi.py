@@ -380,7 +380,7 @@ class kodiAPIaddOn():
       selected_system_properties = ['version','muted','volume','language','name']
       selected_player_properties = ['live','speed','percentage','position','playlistid']
       selected_plist_properties  = ['size','type']
-      selected_other_properties  = ['playing','addons','addon-list','power']
+      selected_other_properties  = ['addons','addon-list','power']
       if_playing                 = ["player","playlist","playlist-position","playing","item","info","item-position","name"]
 
 
@@ -496,7 +496,6 @@ class kodiAPIaddOn():
             
               if   tag == "addons":      metadata[tag] = self.AddOns("properties")["result"]
               elif tag == "addon-list":  metadata[tag] = self.AddOns("list")["result"]
-              elif tag == "playing":     metadata[tag] = [ active[0]['type'], active[0]['playerid'] ]
               elif tag == "power":       metadata[tag] = self.PowerStatus()
               
 

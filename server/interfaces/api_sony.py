@@ -129,11 +129,11 @@ class sonyAPI():
            param   = params[1]
            
          try:
-           result  = self.api.get_status(command,param)
+             result  = self.api.get_status(command,param)
          except Exception as e:
-           self.working = True
-           return "ERROR "+self.api_name+" - query: " + str(e)
-           
+             self.working = True
+             return "ERROR "+self.api_name+" - query: " + str(e)
+                        
        else:
          self.working = True
          return "ERROR "+self.api_name+": Not connected"

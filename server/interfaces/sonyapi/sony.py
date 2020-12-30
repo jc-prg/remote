@@ -245,7 +245,32 @@ class sonyDevice():
            return "ERROR: Device is off (SONY)."
 
     #-----------------------------
+
+    def get_status_CMD(self,param):
+    
+        return "NOT IMPLEMENTED (TESTING)"
+    
+        result = "test"
+        try:
+          result = self.device._send_http(self.device._get_action("getContentInformation").url, method=HttpMethod.GET)
+          logging.warning(result.text)
+
+          result = self.device._send_http(self.device._get_action("getSystemInformation").url, method=HttpMethod.GET)
+          logging.warning(result.text)
+          
+          result = self.device._send_http(self.device._get_action("getContentURL").url, method=HttpMethod.GET)
+          logging.warning(result.text)
+
+          result = self.device._send_http(self.device._get_action("getStatus").url, method=HttpMethod.GET)
+          logging.warning(result.text)
+
+        except Exception as e:
+          return "ERROR: " + str(e)
+  
+        return str(result.text)
         
+    #-----------------------------
+
     def get_status_IRRC(self,param):
         '''
         get status using an IRRC call
@@ -271,6 +296,7 @@ class sonyDevice():
           if cmd == "playing":           return self.device.get_playing_status()  # OK, PLAYING, ... NO_MEDIA_PRESENT, ...
           elif cmd == "SOAP":            return self.get_status_SOAP(param)
           elif cmd == "IRRC":            return self.get_status_IRRC(param)
+          elif cmd == "CMD":             return self.get_status_CMD(param)
           else:                          return "ERROR: Command not defined ("+cmd+")"
 
         else:
