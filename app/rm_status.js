@@ -130,8 +130,8 @@ function statusCheck_inactive(data) {
 			for (var i=0;i<required.length;i++) { if (device_status[required[i]] == "ON") { dev_on += 1; } }
 
 			if (dev_on == required.length) 	{ scene_status[key] = "ON"; }
-			else if (dev_on > 0)		{ scene_status[key] = "OTHER"; }
-			else				{ scene_status[key] = "OFF"; }
+			else if (dev_on > 0)			{ scene_status[key] = "OTHER"; }
+			else					{ scene_status[key] = "OFF"; }
 			//console.debug(key + " - on:" + dev_on + " / off:" + required.length + " / " + scene_status[key]);
 			}
 		else {
@@ -233,7 +233,7 @@ function statusCheck(data={}) {
 		else				{ scene_status[key] = "OFF"; }
 		//console.debug(key + " - on:" + dev_on + " / off:" + required.length + " / " + scene_status[key]);
 		}
-		
+				
 	// check device status and change color of power buttons / main menu buttons device
 	for (var device in devices) {
 	
@@ -255,6 +255,10 @@ function statusCheck(data={}) {
 			statusButtonSetColor( key + "_on-off", "ERROR" ); // on-off device button		
 			statusButtonSetColor( key + "_on",     "ERROR" );
 			statusButtonSetColor( key + "_off",    "ERROR" );
+
+			elementVisible("display_"+key+"_ERROR");
+			elementHidden( "display_"+key+"_ON");
+			elementHidden( "display_"+key+"_OFF");
 			}
 
 		else if (typeof check_button == "string") {
@@ -265,12 +269,20 @@ function statusCheck(data={}) {
 				statusButtonSetColor( key + "_on-off", "ON" ); // on-off device button		
 				statusButtonSetColor( key + "_on",  "ON" );
 				statusButtonSetColor( key + "_off", "" );
+
+				elementHidden( "display_"+key+"_ERROR");
+				elementVisible("display_"+key+"_ON");
+				elementHidden( "display_"+key+"_OFF");
 				}
 			else if (check_button.includes("OFF")) {
 				statusButtonSetColor( "device_" + key, "OFF" ); // main menu button
 				statusButtonSetColor( key + "_on-off", "OFF" ); // on-o:16
 				statusButtonSetColor( key + "_off", "OFF" );
-				statusButtonSetColor( key + "_on",  "" );
+				statusButtonSetColor( key + "_on",  "" );				
+
+				elementHidden( "display_"+key+"_ERROR");
+				elementHidden( "display_"+key+"_ON");
+				elementVisible("display_"+key+"_OFF");
 				}	
 			}
 			
@@ -280,12 +292,20 @@ function statusCheck(data={}) {
 				statusButtonSetColor( key + "_on-off", "OFF" ); // on-off device button		
 				statusButtonSetColor( key + "_off", "OFF" );
 				statusButtonSetColor( key + "_on",  "" );
+
+				elementHidden( "display_"+key+"_ERROR");
+				elementHidden( "display_"+key+"_ON");
+				elementVisible("display_"+key+"_OFF");
 				}	
 			else if (check_button.indexOf("on") >= 0) {
 				statusButtonSetColor( "device_" + key, "ON" ); // main menu button
 				statusButtonSetColor( key + "_on-off", "ON" ); // on-off device button		
 				statusButtonSetColor( key + "_on",  "ON" );
 				statusButtonSetColor( key + "_off", "" );
+
+				elementHidden( "display_"+key+"_ERROR");
+				elementVisible("display_"+key+"_ON");
+				elementHidden( "display_"+key+"_OFF");
 				}
 			}	
 		}

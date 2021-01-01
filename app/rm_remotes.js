@@ -305,7 +305,7 @@ function rmRemote(name) {
 	this.device_notused_showhide = function () {
 		element = document.getElementById("buttons_not_used");
 		button  = document.getElementById("show_hide_not_used");
-		if (element.style.display == "block") 	{ element.style.display = "none";  button.innerHTML = "+"; }
+		if (element.style.display == "block")	{ element.style.display = "none";  button.innerHTML = "+"; }
 		else					{ element.style.display = "block"; button.innerHTML = "−"; }
 		}
 
@@ -836,7 +836,7 @@ function rmRemote(name) {
 
 	// create display
 	//--------------------------------
-        // show display with informations
+        // show display with information
         this.display              = function (id, device, style="" ) {
         
 		var display_data = {}		
@@ -847,28 +847,50 @@ function rmRemote(name) {
 		else							{ display_data["Error"] = "No display defined"; } 
 
         	var text    = "";
-        	var display = "";
+	        	var status  = "";
         	
-		if (connected != "connected") {
-			text += "<center><b>device not connected</b>:</center><br/>";
-			text += "<center><i>"+status_data["api-status"]+"</i></center>";
-			style += " display_error";
-			}
-        	else if (status_data["power"] == "ON" || status_data["power"] == "on") {
-	        	for (var key in display_data) {
-        			var label = "<data class='display-label'>"+key+":</data>";
-				var input = "<data class='display-input' id='display_"+device+"_"+display_data[key]+"'>no data</data>";
-		        	text += "<div class='display-element "+style+"'>"+label+input+"</div>";
-		        	}
-		        }
-		else if (status_data["power"].indexOf("OFF") >= 0 || status_data["power"].indexOf("off") >= 0) {
-			text  += "<center>power off</center>";
-			style += " display_off";
-			}
-        	display += "<button class=\"display "+style+"\" onclick=\"" + this.app_name + ".display_alert('"+id+"','"+device+"','"+style+"');\">";
-        	display += text;
-        	display += "</button>";
-        	return display;
+        	var display_start = "<button id=\"display_"+device+"_##STATUS##\" class=\"display ##STYLE##\" style=\"display:##DISPLAY##\" onclick=\"" + this.app_name + ".display_alert('"+id+"','"+device+"','##STYLE##');\">";
+        	var display_end   = "</button>";
+        	
+        	//.replace( /],/g, "],\n" );
+        	
+		if (connected != "connected")										{ status = "ERROR"; }
+		else if (status_data["power"] == "ON" || status_data["power"] == "on")				{ status = "ON"; }
+		else if (status_data["power"].indexOf("OFF") >= 0 || status_data["power"].indexOf("off") >= 0)	{ status = "OFF" }
+		
+
+		text += display_start;
+		text  = text.replace( /##STATUS##/g, "ERROR" );
+		text  = text.replace( /##STYLE##/g, style + " display_error" );
+		if (status == "ERROR")	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
+		else			{ text  = text.replace( /##DISPLAY##/g, "none" ); }
+		text += "<center><b>device not connected</b>:</center><br/>";
+		text += "<center><i>"+status_data["api-status"]+"</i></center>";
+		text += display_end;
+		
+
+		text += display_start;
+		text  = text.replace( /##STATUS##/g, "ON" );
+		text  = text.replace( /##STYLE##/g, style + " display_on" );
+		if (status == "ON")	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
+		else			{ text  = text.replace( /##DISPLAY##/g, "none" ); }
+        	for (var key in display_data) {
+      			var label = "<data class='display-label'>"+key+":</data>";
+			var input = "<data class='display-input' id='display_"+device+"_"+display_data[key]+"'>no data</data>";
+	        	text += "<div class='display-element "+style+"'>"+label+input+"</div>";
+	        	}
+		text += display_end;
+
+
+		text += display_start;
+		text  = text.replace( /##STATUS##/g, "OFF" );
+		text  = text.replace( /##STYLE##/g, style + " display_off" );
+		if (status == "OFF")	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
+		else			{ text  = text.replace( /##DISPLAY##/g, "none" ); }
+		text += "<center>power off</center>";
+		text += display_end;
+
+        	return text;
         	}
         	
         // display all information
