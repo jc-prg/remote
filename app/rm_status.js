@@ -361,10 +361,10 @@ function statusCheck(data={}) {
 		
 			//alert(key +"-" + rm3remotes.active_name);
 
-			if (media_info_content)	{ var current_info = media_info_content.innerHTML; }
-			else				{ var current_info = ""; }
+			if (media_info_content && media_info_content != "no media")	{ var current_info = media_info_content.innerHTML; }
+			else								{ var current_info = ""; }
 			
-			if (devices[key]["status"]["info"] != "no media loaded" && rm3remotes.active_name == key) {		
+			if (devices[key]["status"]["info"] != "no media" && rm3remotes.active_name == key) {		
 				var title = "&nbsp;<br/><center>";
 				title    += "<marquee width='90%' scrollamount='3' scrolldelay='3' id='media_info_content'>"+devices[key]["status"]["info"]+"</marquee>";
 				title    += "</center>&nbsp;<hr/>";
