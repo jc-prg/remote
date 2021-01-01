@@ -375,6 +375,8 @@ button {
 
 @media (min-width: 720px) {
 
+  #audio2         	{ right  : 145px; }
+
   .remote         	{ width  : 335px; }
   .channel-entry 	{ width  : 160px; }
 
