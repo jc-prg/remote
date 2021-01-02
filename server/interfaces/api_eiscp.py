@@ -250,16 +250,23 @@ class onkyoAPIaddOn():
    
    def metadata(self,tags=""):
       '''
-      Return metadata
+      Return metadata ... combined values
       '''
+      
+      # ERROR ... zwischen Titelwechseln (?) aktuell nur "R" als Wert zurück gegeben ... ?!
+      # "no media" noch nicht implementiert
       
       md     = ""
       
       if tags == "net-info":
         try:
-          md  = self.api.command("dock.net-usb-artist-name-info=query")[1] + ": "
-          md += self.api.command("dock.net-usb-title-name=query")[1] + " (Album: "
-          md += self.api.command("dock.net-usb-album-name-info=query")[1] + ")"
+          artist = self.api.command("dock.net-usb-artist-name-info=query")[1]
+          title  = self.api.command("dock.net-usb-title-name=query")[1]
+          album  = self.api.command("dock.net-usb-album-name-info=query")[1]
+         
+          if len(title)<2: md = "no media"
+          else:           md = artist + ": " + title + " (Album: " + album + ")"
+            
           self.api.disconnect()
           logging.info(md)
           
