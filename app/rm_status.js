@@ -357,22 +357,22 @@ function statusCheck(data={}) {
 		var media_info_content = document.getElementById("media_info_content");
 		
 		
-		if (media_info && devices[key]["status"]["info"] && devices[key]["status"]["info"] != "") {
+		if (media_info && devices[key]["status"]["current-playing"] && devices[key]["status"]["current-playing"] != "") {
 		
 			//alert(key +"-" + rm3remotes.active_name);
 
 			if (media_info_content && media_info_content != "no media")	{ var current_info = media_info_content.innerHTML; }
 			else								{ var current_info = ""; }
 			
-			if (devices[key]["status"]["info"] != "no media" && rm3remotes.active_name == key) {		
+			if (devices[key]["status"]["current-playing"] != "no media" && rm3remotes.active_name == key) {		
 				var title = "&nbsp;<br/><center>";
-				title    += "<marquee width='90%' scrollamount='3' scrolldelay='3' id='media_info_content'>"+devices[key]["status"]["info"]+"</marquee>";
+				title    += "<marquee width='90%' scrollamount='3' scrolldelay='3' id='media_info_content'>"+devices[key]["status"]["current-playing"]+"</marquee>";
 				title    += "</center>&nbsp;<hr/>";
 				// <marquee scrollamount="3" scrolldelay="3">Dieser Text wird ziemlich schnell bewegt...</marquee>			
 				}
 			else {  title = ""; }
 			
-			if (current_info != devices[key]["status"]["info"]) { 
+			if (current_info != devices[key]["status"]["current-playing"]) { 
 				media_info.innerHTML = title; 
 				//alert(devices[key]["status"]["info"] + "\n" + current_info); 
 				}

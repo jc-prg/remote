@@ -227,7 +227,7 @@ function rmRemote(name) {
 			
 		remote += "</div>";			
 		//remote += this.device_remote_json(id,device,remote_definition,remote_display);
-
+		
 		setTextById(id,remote);
 		}
 
