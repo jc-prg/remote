@@ -67,6 +67,23 @@
    position: relative;
 }
 
+.remote_edit {
+   position: absolute;
+   background-color: #eeeeee;
+   display: none;
+   width: 99%;
+   height: 40px;
+   bottom: 0px;
+   left: 0px;
+   z-index: 90;
+   }
+   
+#remote_edit {
+   margin: 4px;
+   width: 90%;
+   height: 20px;
+   }
+
 #remote1    { z-index: 81; }
 #reload_msg { color : gray; font-family: sans-serif; font-size: 10px;}
 
@@ -81,7 +98,6 @@
 	overflow         : hidden;
 	float		 : left;
 	position	 : relative;
-	float            : inherit;
 	}
 	
 .remote-line-text {
@@ -135,6 +151,8 @@ button {
    color           : white;
    width           :  63px;
    height          :  40px;
+   max-width       :  63px;
+   max-height      :  40px;
    padding         :   2px;
    margin          :   4px;
    border-style    : solid 0px #111111;
@@ -142,7 +160,7 @@ button {
    background-color: #111111;
    font-size       : 13px;
    overflow        : hidden;
-   float           : inherit;
+   float           : left;
 }
 
 .button:hover {
@@ -183,11 +201,15 @@ button {
 .button.big {
     width  		: 88px;
     height 		: 66px;
+    max-width          : 88px;
+    max-height         : 66px;
 }
 
 .button.big_edit {
     width  		: 88px;
     height 		: 66px;
+    max-width          : 88px;
+    max-height         : 66px;
     border           	: blue;
     border-style     	: solid;
     border-width     	: 2px;
@@ -196,12 +218,16 @@ button {
 .button.small {
     width  		: 51px;
     height 		: 50px;
+    max-width          : 51px;
+    max-height         : 50px;
     margin 		:  3px;
 }
 
 .button.small_edit { 
     width  		: 60px; 
     height 		: 50px;
+    max-width          : 60px;
+    max-height         : 50px;
     margin 		:  3px;
     border           	: blue;
     border-style     	: solid;
@@ -349,10 +375,10 @@ button {
 
   .channel-entry  { width  : 160px; }
   
-  .button 	  { width  :  76px; }
-  .button.big     { width  : 105px; }
-  .button.small   { width  :  62px; }
-  .button.small_edit { width  :  62px; }
+  .button         	{ width  :  76px; max-width  :  76px; }
+  .button.big     	{ width  : 105px; max-width  : 105px; }
+  .button.small   	{ width  :  62px; max-width  :  62px; }
+  .button.small_edit	{ width  :  62px; max-width  :  62px;}
     
   .display        { font-size : 10px; }
   .display.small  { width  : 160px; }
@@ -380,10 +406,10 @@ button {
   .remote         	{ width  : 335px; }
   .channel-entry 	{ width  : 160px; }
 
-  .button         	{ width  :  74px; }
-  .button.big     	{ width  : 102px; }
-  .button.small   	{ width  :  60px; }
-  .button.small_edit	{ width  :  60px; }
+  .button         	{ width  :  74px; max-width  :  74px; }
+  .button.big     	{ width  : 102px; max-width  : 102px; }
+  .button.small   	{ width  :  60px; max-width  :  60px; }
+  .button.small_edit	{ width  :  60px; max-width  :  60px; }
 
   .display.small  	{ width  : 156px; }
   .display.middle 	{ width  : 156px; }
