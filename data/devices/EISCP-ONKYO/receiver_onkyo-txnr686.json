@@ -48,7 +48,11 @@
             "timer": 		"sleep-set=qstn",
             "tuning": 		"tuning=query||+' Hz'",
             "video-info": 	"video-information=query",
-            "vol": 		"master-volume=query"
+            "vol": 		"master-volume=query",
+            "current-playing": "jc.metadata('net-info')",
+            "usb-net-title":	"dock.net-usb-title-name=query",
+            "usb-net-artist":	"dock.net-usb-artist-name-info=query",
+            "usb-net-album":	"dock.net-usb-album-name-info=query"
             },
         "queries_error": {
             "dolby-volume": "dolby-volume=query",

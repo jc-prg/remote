@@ -72,8 +72,7 @@ class kodiAPI():
           self.api.jc.not_connected = self.not_connected
 
        except Exception as e:
-          self.status          = "Error connecting to KODI server: " + str(e)
-          self.api.jc.status   = "Error connecting to KODI server: " + str(e)
+          self.status               = "Error connecting to KODI server: " + str(e)
           logging.warn(self.status)
        
        

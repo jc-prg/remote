@@ -60,11 +60,11 @@
             "playing": "jc.PlayingMetadata('playing')",
             "playlist":"jc.PlayingMetadata('playlist-position')",
             "item":    "jc.PlayingMetadata('item-position')",
-            "info":    "jc.PlayingMetadata('info')",
             "addons":  "jc.PlayingMetadata('addon-list')",
             "plot":    "jc.PlayingMetadata('plot')",
             "genre":   "jc.PlayingMetadata('genre')",
             "type":    "jc.PlayingMetadata('type')",
+            "current-playing":    "jc.PlayingMetadata('info')",
             "zz":      "jc.PlayingMetadata('item')"
         },
         "url": "http://192.168.1.31:8080/",

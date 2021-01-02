@@ -71,16 +71,19 @@ class eiscpAPI():
           self.api    = eiscp.eISCP(self.api_ip)
           #self.api    = eiscp.Receiver(self.api_ip)
           #self.api.on_message = callback_method
-          self.status = "Connected"
+          self.status               = "Connected"
        except Exception as e:
           self.status = "Error connecting to ONKYO device: " + str(e)
           logging.warning(self.status)
 
        try:
           self.api.command("system-power query") # send a command to check if connected
-          self.status = "Connected"
+          self.status               = "Connected"
+          self.api.jc               = onkyoAPIaddOn(self.api)
+          self.api.jc.status        = "Connected"
        except Exception as e:
-          self.status = "Error connecting to ONKYO device: " + str(e)
+          self.status    = "Error connecting to ONKYO device: " + str(e)
+          self.api.jc.status = self.status
           logging.warning(self.status)
    
    
@@ -133,21 +136,40 @@ class eiscpAPI():
        
        if "||" in command: command_param = command.split("||")
        else:               command_param = [command]      
+       
+       logging.debug(command)
 
        if self.status == "Connected":
-         button_code = command_param[0].replace("="," ")        
-         logging.debug("Button-Code: "+button_code[:shorten_info_to]+"... ("+self.api_name+")")
-         try:
-           result  = self.api.command(button_code)
-           self.api.disconnect()
-         except Exception as e:
-           self.api.disconnect()
-           self.working = False
-           return "ERROR "+self.api_name+" - query ("+button_code+"): " + str(e)
+       
+         if "jc." in command:
+         
+           try:
+             command = "self.api."+command
+             result = eval(command)
+             logging.debug(str(result))
            
-         if "ERROR" in result: 
-           self.working = False
-           return result
+             if "error" in result:
+               self.working = False
+               return "ERROR "+self.api_name+" - " + result["error"]
+             
+           except Exception as e:
+             self.working = False
+             return "ERROR "+self.api_name+" - query: " + str(e)
+         
+         else:
+           button_code = command_param[0] #format: zone.parameter=command
+           logging.debug("Button-Code: "+button_code[:shorten_info_to]+"... ("+self.api_name+")")
+           try:
+             result  = self.api.command(button_code)
+             self.api.disconnect()
+           except Exception as e:
+             self.api.disconnect()
+             self.working = False
+             return "ERROR "+self.api_name+" - query ("+button_code+"): " + str(e)
+           
+           if "ERROR" in result: 
+             self.working = False
+             return result
            
          result = result[1]
          logging.debug(str(result))
@@ -189,7 +211,7 @@ class eiscpAPI():
 
        
    #-------------------------------------------------
-   
+      
    def test(self):
        '''Test device by sending a couple of commands'''
 
@@ -205,6 +227,55 @@ class eiscpAPI():
 
        self.working = False
        return "OK"
+
+#-------------------------------------------------
+# additional functions -> define self.api.jc.*
+#-------------------------------------------------
+
+class onkyoAPIaddOn():
+   '''
+   additional functions that combine values
+   '''
+
+   def __init__(self,api):
+   
+      self.addon          = "jc://addon/onkyo/"
+      self.api            = api
+      self.volume         = 0
+      self.cache_metadata = {}             # cache metadata to reduce api requests
+      self.cache_time     = time.time()    # init cache time
+      self.cache_wait     = 2              # time in seconds how much time should be between two api metadata requests
+      
+   #-------------------------------------------------
+   
+   def metadata(self,tags=""):
+      '''
+      Return metadata
+      '''
+      
+      md     = ""
+      
+      if tags == "net-info":
+        try:
+          md  = self.api.command("dock.net-usb-artist-name-info=query")[1] + ": "
+          md += self.api.command("dock.net-usb-title-name=query")[1] + " (Album: "
+          md += self.api.command("dock.net-usb-album-name-info=query")[1] + ")"
+          self.api.disconnect()
+          logging.info(md)
+          
+        except Exception as e:
+          self.api.disconnect()
+          
+          error = "ERROR "+self.addon+" - metadata ("+tags+"): " + str(e) 
+          logging.warning(error)
+          return error
+        
+      else:
+        md  = "not implemented"
+        return [ "error", md ]
+        
+      return [ tags, md ]
+
 
 #-------------------------------------------------
 # EOF
