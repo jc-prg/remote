@@ -294,10 +294,9 @@ function apiRemoteChangeVisibility(type, device_id, value_id) {
 // Commands an APP senden
 //----------------------------------
 
-function apiCommandSend(cmdButton, sync="", callback="") {
+function apiCommandSend(cmdButton, sync="", callback="", device="") {
 
   
-	var dc; 	// device & command
 	var ee, vv;
 	var onoff = false;
 
@@ -325,6 +324,9 @@ function apiCommandSend(cmdButton, sync="", callback="") {
 		statusShowApiStatus("green", showButtonTime);
 		if (showButton) {setTextById("audio4", cmdButton);}
 		}
+		
+	// device content info (scenes)
+	//device_media_info[device] = "";
 	}
 
 // delete commands
@@ -430,13 +432,16 @@ function apiButtonDelete(device_id, button_id) {
 // separate makro into single commands and send commands
 //----------------------------------
 
-function apiMakroSend( makro ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
+function apiMakroSend( makro, device="", content="" ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
 
 	rm3msg.wait_small(lang("PLEASE_WAIT") + "<br/>");
 	console.log( "Send makro: " + makro );
 	
 	dc = [ "makro", makro ];
 	rm3app.requestAPI( "GET", dc, "", apiMakroSend_hide );
+	
+	// device content info (scenes) => move to API, add to var "dc" in step before
+	device_media_info[device] = content;
 	
 	// if request takes more time, hide message after 5 seconds
 	setTimeout(function(){ rm3msg.hide(); }, 5000);

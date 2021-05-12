@@ -209,11 +209,11 @@ function rmRemote(name) {
 						
 			if (button == "LINE")	 			{ next_button = this.line(""); }
 			else if (button.indexOf("LINE||") == 0) 	{ next_button = this.line(button.split("||")[1]); }
-			else if (button == ".") 			{ next_button = this.button_device( device+i, ".", "empty", "", "disabled" ) }
+			else if (button == ".") 			{ next_button = this.button_device( device+i, ".", device, "empty", "", "disabled" ) }
 			else if (button == "DISPLAY")			{ next_button = this.display(id,device,remote_displaysize); }
-			else if (remote_buttons.includes(button)) 	{ next_button = this.button_device( cmd, button, "", cmd, "" ); this.active_buttons.push(cmd); }
-			else if (this.edit_mode)         		{ next_button = this.button_device_add( cmd, button, "notfound", cmd, "" ); }
-			else                            		{ next_button = this.button_device( cmd, button, "notfound", cmd, "disabled" ); }
+			else if (remote_buttons.includes(button)) 	{ next_button = this.button_device( cmd, button, device, "", cmd, "" ); this.active_buttons.push(cmd); }
+			else if (this.edit_mode)         		{ next_button = this.button_device_add( cmd, button, device, "notfound", cmd, "" ); }
+			else                            		{ next_button = this.button_device( cmd, button, device, "notfound", cmd, "disabled" ); }
 
 			if (this.edit_mode) {
 				if (button.indexOf("LINE") == 0)		{ this.button_tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,20); }
@@ -281,7 +281,7 @@ function rmRemote(name) {
 		for (var i=0; i<notused.length; i++) {
 			var button  = notused[i];
 			var cmd     = device + "_" + button;
-			next_button = this.button_device( "not_used"+i, button, "", cmd, "" );
+			next_button = this.button_device( "not_used"+i, button, device, "", cmd, "" );
 			
 			if (this.edit_mode) {
 				var link_add    = this.app_name+".remote_add_button('device', 'remote_edit2', '"+device+"', 'not_used_"+i+"', 'remote_json_buttons');";
@@ -500,14 +500,14 @@ function rmRemote(name) {
 																		
 			if (button[0] == "LINE") 			{ next_button = this.line(""); }
 			else if (button[0].indexOf("LINE||") == 0)	{ next_button = this.line(button[0].split("||")[1]); }
-			else if (button[0] == ".") 			{ next_button = this.button_device( scene+i, ".", "", "", "disabled" ); }
-			else if (button[0] == "makro")			{ next_button = this.button_makro(  cmd, button[1], "", makros[button[1]], "" ); 
+			else if (button[0] == ".") 			{ next_button = this.button_device( scene+i, ".", remote_label, "", "", "disabled" ); }
+			else if (button[0] == "makro")			{ next_button = this.button_makro(  cmd, button[1], remote_label, "", makros[button[1]], "" ); 
 									  this.active_buttons.push(cmd); }
-			else if (button[0] == "scene-on")		{ next_button = this.button_makro(  "scene_on_"+button[1], "on", "", makros_sceneOn[button[1]], "" );
+			else if (button[0] == "scene-on")		{ next_button = this.button_makro(  "scene_on_"+button[1], "on", remote_label,"", makros_sceneOn[button[1]], "" );
 									  this.active_buttons.push("scene_on_"+button[1]); }
-			else if (button[0] == "scene-off")		{ next_button = this.button_makro(  "scene_off_"+button[1], "off", "", makros_sceneOff[button[1]], "" );
+			else if (button[0] == "scene-off")		{ next_button = this.button_makro(  "scene_off_"+button[1], "off", remote_label, "", makros_sceneOff[button[1]], "" );
 									  this.active_buttons.push("scene_off_"+button[1]); }
-			else 						{ next_button = this.button_device( cmd, button[1], "", cmd, "" );
+			else 						{ next_button = this.button_device( cmd, button[1], remote_label, "", cmd, "" );
 									  this.active_buttons.push(cmd); }
 									  
 			if (this.edit_mode) {
@@ -529,17 +529,18 @@ function rmRemote(name) {
 	// create list of channels (for scenes)
 	this.scene_channels       = function (id, scene) {
 		// set vars
-		var remote   = "";
-		var makros   = this.data["DATA"]["scenes"][scene]["channel"];
-		var channels = Object.keys(this.data["DATA"]["scenes"][scene]["channel"]);
-		channels     = channels.sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase());});
+		var remote     = "";
+		var makros     = this.data["DATA"]["scenes"][scene]["channel"];
+		var channels   = Object.keys(this.data["DATA"]["scenes"][scene]["channel"]);
+		var scene_name = this.data["DATA"]["scenes"][scene]["label"];
+		channels       = channels.sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase());});
 
 		this.button_tooltip.settings(this.tooltip_mode,this.tooltip_width,"80px",35);
 
     		// create list of channel buttons
     		for (var i=0; i<channels.length; i++) {
         		var cmd   	= "channel_"+i; //channels[i];
-			var next_button	= this.button_channel(cmd, channels[i], makros[channels[i]],"","");
+			var next_button	= this.button_channel(cmd, channels[i], scene_name, makros[channels[i]],"","");
 			var contextmenu = "["+i+"] " + cmd +  "<br/><br/><i>" + lang("CHANNEL_USE_JSON") +"</i>";
 			
 			if (this.edit_mode) {
@@ -1005,7 +1006,7 @@ function rmRemote(name) {
         	}
 
 	// create button for single command
-	this.button_device        = function (id, label, style, cmd, disabled ) {
+	this.button_device        = function (id, label, device, style, cmd, disabled ) {
 
 		var label2 	= this.button_image( label, style );
 		if (label == ".") {
@@ -1013,13 +1014,13 @@ function rmRemote(name) {
 			label2[0] = "&nbsp;";
 			}
 		if (cmd != "") {
-			cmd = 'apiCommandSend("'+cmd+'");';
+			cmd = 'apiCommandSend("'+cmd+'","","","'+device+'");';
 			}
 		return this.button( id, label2[0], label2[1], cmd, disabled );
 		}
 				
 	// create button for single command -> if no command assigned yet to record command for button
-	this.button_device_add    = function (id, label, style, cmd, disabled ) {
+	this.button_device_add    = function (id, label, device, style, cmd, disabled ) {
 
 	        var device_button	= cmd.split("_");
 		var label2		= this.button_image( label, style );
@@ -1033,13 +1034,13 @@ function rmRemote(name) {
 		}		
 
 	// create button for multiple commands (makro)
-	this.button_makro         = function (id, label, style, makro, disabled ) {	// ALT: ( id, makro, label, style, disabled ) {
+	this.button_makro         = function (id, label, scene, style, makro, disabled ) {	// ALT: ( id, makro, label, style, disabled ) {
 	        if (makro) {
         	        var d = this.button_image( label, style );
                 	var makro_string = "";
 
                 	for (var i=0; i<makro.length; i++) { makro_string = makro_string + makro[i] + "::"; }
-                	var b = this.button( id, d[0], d[1], 'apiMakroSend("'+makro_string+'");', disabled );
+                	var b = this.button( id, d[0], d[1], 'apiMakroSend("'+makro_string+'","'+scene+'");', disabled );
 			this.log(b);
 			return b;
                 	}
@@ -1048,13 +1049,13 @@ function rmRemote(name) {
 		}
 		
 	// create button for channel (makro)
-	this.button_channel       = function (id, label, makro, style, disabled="") {
+	this.button_channel       = function (id, label, scene, makro, style, disabled="") {
     		var makro_string = "";
 		for (var i=0; i<makro.length; i++) { makro_string = makro_string + makro[i] + "::"; }
 
 		//console.log(label+" - "+makro_string);
 
-		return "<button id='" + id + "' class='channel-entry " + style + "' " + disabled + " onclick=\"javascript:apiMakroSend('" + makro_string + "');\">" + label + "</button>";
+		return "<button id='" + id + "' class='channel-entry " + style + "' " + disabled + " onclick=\"javascript:apiMakroSend('" + makro_string + "','"+scene+"','"+label+"');\">" + label + "</button>";
 		}
 
 	// check if image exists for button
