@@ -1,0 +1,126 @@
+<?xml version=„1.0“ encoding=„utf-8“?>
+<!doctype html>
+<html><!-- manifest="cache.manifest"> -->
+<head>
+<title id="title">jc://app/</title>
+
+<META charset="utf-8"> 
+<META http-equiv="content-type" content="text/html; charset=utf-8">
+<META name="apple-mobile-web-app-capable" content="yes" />
+<META name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.3, maximum-scale=1.0" /> 
+
+<LINK rel=apple-touch-icon href="remote-v3/img/remote3.jpg" />
+<LINK rel=apple-touch-icon-precomposed href="remote-v3/img/remote3.jpg" />
+
+<!-- jcResources START -->
+
+<script src="modules/jc-app/jc-app-1.4.1.js"></script>
+<script src="modules/jc-functions/jc-functions-0.1.2.js"></script>
+<script src="modules/jc-cookie/jc-cookie.js"></script>
+<script src="modules/jc-msg/jc-msg-1.1.5.js"></script>		<link href="modules/jc-msg/jc-msg-1.1.5.css" rel="stylesheet">
+<script src="modules/jc-player/jc-player-0.1.6.js"></script>		<link href="modules/jc-player/jc-player-0.1.6.css" rel="stylesheet">
+<script src="modules/jc-player/jc-volume-slider-0.1.1.js"></script>	<link href="modules/jc-player/jc-volume-slider-0.1.1.css" rel="stylesheet" >
+<script src="modules/jc-upload/upload.js"></script> 			<link href="modules/jc-upload/upload.css" rel="stylesheet">
+
+<!-- jcAppFramework START -->
+
+<script src="app-fw/app-functions.js"></script>
+<script src="app-fw/app-html-elements.js"></script>
+<script src="app-fw/app-language.js"></script>
+
+<!-- add your own config files -->
+
+<script src="remote-v3/config_stage.js"></script>
+<script src="remote-v3/config_language.js"></script>
+<script src="remote-v3/config_main.js"></script>
+
+<script src="app-fw/app-conf.js"></script>
+<script src="app-fw/app-menu.js"></script>
+<script src="app-fw/app-functions.js"></script>
+<script src="app-fw/app-html-elements.js"></script>
+<script src="app-fw/app-language.js"></script>
+
+<link rel="stylesheet" href="app-fw/style-main.css">
+<link rel="stylesheet" href="app-fw/style-menu.css">
+<link rel="stylesheet" href="app-fw/style-frame.css">
+<link rel="stylesheet" href="app-fw/style-status.css">
+
+<link rel="stylesheet" href="app-fw/style-main-iphone.css">
+<link rel="stylesheet" href="app-fw/style-main-laptop.css">
+<link rel="stylesheet" href="app-fw/style-frame-iphone.css">
+<link rel="stylesheet" href="app-fw/style-frame-laptop.css">
+
+<link rel="stylesheet" href="app-fw/style-main-dark.css">
+<link rel="stylesheet" href="app-fw/style-menu-dark.css">
+
+<!-- APP specific scripts and style sheets // START -->
+
+<script src="remote-v3/rm_functions.js"></script>
+<script src="remote-v3/rm_functions-api.js"></script>
+<script src="remote-v3/rm_remotes.js"></script>
+<script src="remote-v3/rm_status.js"></script>
+<script src="remote-v3/rm_settings.js"></script>		
+
+<link rel="stylesheet" href="remote-v3/rm_settings.css">
+
+<!-- APP specific scripts and style sheets // END -->
+
+</head>
+<body>
+
+<!-- APP specific html elements // START -->
+
+
+
+<!-- APP specific  html elements // END -->
+
+<nav id="nav">
+<nav-logo id="rest_status"></nav-logo>
+<nav-title id="navTitle">...</nav-title>
+<ul>
+  <li id="navi"><div onClick="javascript:appClickMenu();"  id="navi-click"><img src="img/button.png" /></div>
+    <ul id='menuItems' style="visibility:hidden;"><!-- drop down menu - filled by script --></ul>
+  </li>
+</ul>
+</nav>
+
+<div id="statusLED"><div id="red"></div></div>
+<div id="headerRight" class="headerRight"></div>
+<div id="app_background" class="app_background" style="width:100%;">
+
+<div style="height:45px;"></div>
+<div id='remote_block' style="width:100%">
+  <div class='frame_block'>
+    <div class='remote_nav' id='remote_nav'><nav-b>
+     <ul>
+      <li>
+        <ul id='menuItems2'><!-- fixed menu for wide screens - filled by script --></ul>
+      </li>
+     </ul>
+    </div>
+    <div id='frames'></div>
+    <div id='setting_frames'></div>
+  </div>
+</div>
+
+<div id="appMsg"></div>
+<div id="ontop"        style="display:none"></div>
+<div id="theme_check"  style="display:none"></div>
+<div id="videoplayer"></div>
+
+<script src="app-fw/app-main.js"></script>
+
+<!-- APP specific scripts and HTML elements // START -->
+
+
+
+<!-- APP specific scripts and HTML elements // END -->
+
+&nbsp;<br/>
+&nbsp;<br/>
+&nbsp;<br/>
+&nbsp;<br/>
+&nbsp;<br/>
+
+</body>
+</html>
