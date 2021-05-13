@@ -58,12 +58,12 @@ function remoteInit (first_load=true) {
 	setTextById("frame1","");
 	setTextById("frame2","");
 	setTextById("frame3","");
-	setTextById("remote_edit1","");
-	setTextById("remote_edit2","");
+	setTextById("frame4","");
+	setTextById("frame5","");
 		
 	if (first_load) {
 		showRemoteInBackground(1);			// show start screen
-		setTextById("frame2","<center>Loading data ...</center>");
+		setTextById("frame4","<center>Loading data ...</center>");
 		remoteFirstLoad_load();			// init load of data
 		}
 	}
@@ -100,7 +100,6 @@ function remoteInitData(data) {
 		}
 	else {
 		console.error("remoteInitData: no data loaded!");
-		statusShowApiStatus("red", showButtonTime);
 		}
 	}
 	
@@ -114,7 +113,6 @@ function remoteReload(data) {
 
 	if (!data["DATA"]) {
 		console.error("remoteReload: data not loaded.");
-		statusShowApiStatus("red", showButtonTime);
 		return;
 		}
 
@@ -191,7 +189,6 @@ function remoteDropDown(data) {
 
 	if (!data["DATA"]) {
 		console.error("remoteDropDown: data not loaded.");
-		statusShowApiStatus("red", showButtonTime);
 		return;
 		}
 
@@ -237,7 +234,6 @@ function remoteStartMenu(data) {
 
 	if (!data["DATA"]) {
 		console.error("remoteStartMenu: data not loaded.");
-		statusShowApiStatus("red", showButtonTime);
 		return;
 		}
 

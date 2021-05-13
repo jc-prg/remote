@@ -316,13 +316,11 @@ function apiCommandSend(cmdButton, sync="", callback="", device="") {
   		console.warn("use of apiCommandSend with sync -> try to reduce or eliminate");
   		
 		appFW.requestAPI("GET",dc,"",callback,"wait");		// send command and reload data when done
-		statusShowApiStatus("green", showButtonTime);
 		if (showButton) {setTextById("audio4", cmdButton);}
 		}
 
 	else {
 		appFW.requestAPI("GET",dc,"",callback);		// send command and reload data when done
-		statusShowApiStatus("green", showButtonTime);
 		if (showButton) {setTextById("audio4", cmdButton);}
 		}
 		

@@ -22,27 +22,6 @@ function statusCheck(data={})
 var last_media_info_content = "";
 var device_media_info       = {};
 
-
-//-----------------------------------------
-
-function statusShowApiStatusLED(color) {
-	var color_html = "";
-
-	if (color == "red")   { color_html = status_red; }
-	if (color == "yellow"){ color_html = status_yellow; }
-	if (color == "green") { color_html = status_green; }
-	if (color == "gray")  { color_html = status_gray; }
-
-	setTextById("rest_status", color_html);
-	}
-
-//-----------------------------------------
-
-function statusShowApiStatus( color, wait ) {
-	statusShowApiStatusLED( color );
-	setTimeout(function(){ statusShowApiStatusLED("gray"); }, wait*1000);
-	}
-	
 //-----------------------------------------
 
 function statusShowVolume_old( volume, maximum, vol_color, novol_color="" ) {

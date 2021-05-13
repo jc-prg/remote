@@ -44,7 +44,7 @@ function rmSettings (name) {	// IN PROGRESS
 	this.active       = false;
 	this.app_name     = name;
 	this.e_settings   = ["setting1","setting2","setting3","setting4"]; 
-	this.e_remotes    = ["frame1","frame2","frame3","remote_edit1","remote_edit2"];
+	this.e_remotes    = ["frame3","frame4","frame5","frame1","frame2"];
 	this.input_width  = "110px";
 	this.initial_load = true;
 	this.edit_mode    = false;
@@ -141,10 +141,6 @@ function rmSettings (name) {	// IN PROGRESS
 		setting += this.tab_row( 	"Buttons:",
 						this.button(this.app_name+".button_show();",  b_show ) +
 						this.button(this.app_name+".button_deact();", b_deact )
-					);
-		setting += this.tab_row( 	"Test:",
-						this.button("statusShowApiStatus('red',1);","LED red") +
-						this.button("statusShowApiStatus('yellow',1);","LED yellow")
 					);
 
 		this.write(1,"Change Settings",setting);
