@@ -1,0 +1,32 @@
+/* format for iphone XS */
+
+@media (min-width: 370px) {
+
+  .remote         { width  : 340px; }
+  .setting_bg     { width  : 340px; }
+
+  .channel-entry  { width  : 160px; }
+  
+  .button         	{ width  :  76px; max-width  :  76px; }
+  .button.big     	{ width  : 105px; max-width  : 105px; }
+  .button.small   	{ width  :  62px; max-width  :  62px; }
+  .button.small_edit	{ width  :  62px; max-width  :  62px;}
+    
+  .display        { font-size : 10px; }
+  .display.small  { width  : 160px; }
+  .display.middle { width  : 160px; }
+  .display.big    { width  : 328px; }
+  
+  .display.h1w2   { width  : 160px; }
+  .display.h2w2   { width  : 160px; }
+  .display.h2w4   { width  : 328px; }
+
+  .display-element        { width : 70px; }
+  .display-element.small  { width : 70px; }
+  .display-element.middle { width : 146px; }
+  .display-element.big    { width : 146px; }
+
+
+}
+
+
