@@ -136,8 +136,8 @@ function rmStart(name) {
                 for (var key in button_img2) { button_img[key] = this.image(button_img2[key]); }
 
                 // check label
-                if (button_color && label in button_color)      { style = style + " bg" + label + " "; }
-                if (label in button_img && showImg ) 		{ label = button_img[label]; }
+                if (button_color && label in button_color)	{ style = style + " bg" + label + " "; }
+                if (label in button_img && showImg ) 	{ label = button_img[label]; }
                 return [label, style];
                 }
                 

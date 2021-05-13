@@ -40,12 +40,6 @@ var rm3settings = new rmSettings( "rm3settings" );
 
 remoteInit(first_load=true);
 
-//--------------------------------
-// enforce reload on mobiles when scrolling down -100px
-//--------------------------------
-
-window.addEventListener('scroll', function() { remoteForceReload(); });
-
 //----------------------------------
 // initiale settings and load menus
 //----------------------------------
@@ -133,23 +127,6 @@ function remoteReload(data) {
 	}
 	
 //--------------------------------
-
-function remoteForceReload(without_position=false) {
-	position = window.pageYOffset;
-	
-	if (document.getElementById('scrollPosition')) { setTextById('scrollPosition',position+" px"); }
-	if ((without_position || position <= -80) && reload_active == false) { 
-		reload_active  = true;
-		reload_waiting = 0;
-		elementVisible('reload_info');
-		setTextById('reload_msg','.');
-		appFW.requestAPI( "GET", ["reload"], "", remoteReload );
-		appFW.setAutoupdate("",1);
-		}   	
-	}
-
-//--------------------------------
-
 
 function remoteForceReload_checkIfReady(data) {
 	// check reload status
@@ -239,8 +216,8 @@ function remoteStartMenu(data) {
 
 	// load buttons on start page
 	rm3start.init(        data);	// load data to class
-	rm3start.add_scenes(  data["DATA"]["scenes"],  "remote1" );
-	rm3start.add_devices( data["DATA"]["devices"], "remote2" );
+	rm3start.add_scenes(  data["DATA"]["scenes"],  "frame3" );
+	rm3start.add_devices( data["DATA"]["devices"], "frame4" );
 	
 	// check status and change button color
 	statusCheck(data);
