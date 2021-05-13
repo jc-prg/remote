@@ -1,3 +1,6 @@
 [submodule "app/modules"]
 	path = app/modules
 	url = https://github.com/jc-prg/modules.git
+[submodule "app/framework"]
+	path = app/framework
+	url = https://github.com/jc-prg/app-framework.git
