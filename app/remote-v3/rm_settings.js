@@ -273,9 +273,9 @@ function rmSettings (name) {	// IN PROGRESS
 		for (var i=0; i<this.e_remotes.length; i++)  { changeVisibility(this.e_remotes[i],show_remotes);  }
 		for (var i=0; i<this.e_settings.length; i++) { changeVisibility(this.e_settings[i],show_settings); }
 		
-		if (this.edit_mode == true && show_remotes)   	{ elementVisible("remote_edit1"); elementVisible("remote_edit2"); }
-		else if (this.edit_mode == false && show_remotes)	{ elementHidden("remote_edit1");  elementHidden("remote_edit2"); }
-		else if (show_settings)				{ elementHidden("remote_edit1");  elementHidden("remote_edit2"); }
+		if (this.edit_mode == true && show_remotes)   	{ elementVisible("frame1"); elementVisible("frame2"); }
+		else if (this.edit_mode == false && show_remotes)	{ elementHidden("frame1");  elementHidden("frame2"); }
+		else if (show_settings)				{ elementHidden("frame1");  elementHidden("frame2"); }
 		}
 
 	//------------------------------
