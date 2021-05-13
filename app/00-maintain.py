@@ -85,6 +85,7 @@ def create_index_file(filename):
 
     global jc_overall_index_content,js_overall_index, appVersion, jc_all_functions, jc_overall_index_list
 
+    print(filename)
     content = read_file(filename)
     index   = read_file(js_overall_index)
 
@@ -118,11 +119,12 @@ def create_index_file(filename):
              parts1  = line.split(")")
              new_lines_index.append( parts1[0]+")" )
              if "=" not in parts1[0]:
-               parts2 = parts1[0].split("ction ")
-               parts3 = parts2[1].split("(")
-               parts4 = parts3[0].split(" ")
-               print(parts4[0])
-               jc_all_functions[parts4[0]] = 0
+               parts2 = parts1[0].split("function ")
+               if len(parts2)>1:
+                 parts3 = parts2[1].split("(")
+                 parts4 = parts3[0].split(" ")
+                 print(parts4[0])
+                 jc_all_functions[parts4[0]] = 0
 
        # write HEADER
        for line in new_lines_header:
