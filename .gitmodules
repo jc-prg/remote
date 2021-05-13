@@ -1,0 +1,3 @@
+[submodule "app/modules"]
+	path = app/modules
+	url = https://github.com/jc-prg/modules.git
