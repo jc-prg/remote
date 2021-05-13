@@ -21,17 +21,11 @@ jc_all_functions         = {}
 appVersion               = "\"not found\""
 
 cache_manifest     = "cache.manifest"
-cache_manifest_dir = [
-	"./"
-	]
-
-text_to_replace = [
+cache_manifest_dir = [ "./", "./remote-v2/", "./remote-v3/" ]
+replace_dir        = [ "./", "./remote-v2/", "./remote-v3/" ]
+replace_text       = [
 #	[ "appPrintMenu", "appPrint_menu" ], # sample
-	[ "rm3msg.apiAlertReturn", "rm3msg.alertReturn" ],
-	[ "deleteButton", "apiButtonDelete" ],
-	[ "addCommand", "apiCommandAdd" ],
-	[ "deleteCommand", "apiCommandDelete" ],
-	[ "sendCmd", "apiCommandSend" ],
+	[ ".", "." ],
 	
 	]
 
@@ -48,7 +42,9 @@ def get_cache_files():
 #----------------------------------------------
 
 def get_js_files():
-    files = glob.glob("./*.js")
+    files = []
+    for directory in replace_dir:
+        files.extend(glob.glob(directory+"*.js"))
     return files
 
 #----------------------------------------------
@@ -74,9 +70,9 @@ def write_file(filename,content):
 #----------------------------------------------
 
 def replace_in_file(content):
-    global text_to_replace   
-    if len(text_to_replace) > 0:
-      for entry in text_to_replace:    
+    global replace_text   
+    if len(replace_text) > 0:
+      for entry in replace_text:    
         content = content.replace(entry[0],entry[1])
     return content
 
