@@ -106,7 +106,7 @@ function rmRemote(name) {
 			}
 		if (rm_id != "" && this.data["DATA"]["devices"][rm_id] == undefined && this.data["DATA"]["scenes"][rm_id] == undefined) {
 			console.warn("Remote ID "+rm_id+" not found.");
-			rm3cookie.set("remote",""); //device::"+device+"::"+remote_label);
+			appCookie.set("remote",""); //device::"+device+"::"+remote_label);
 			return;
 			}
 
@@ -126,11 +126,11 @@ function rmRemote(name) {
 			this.log("Write Device Remote Control: " + rm_id);
 
 			// create remote for device
-			this.device_remote("remote1",rm_id);
-			this.device_description("remote2",rm_id);
+			this.device_remote("frame1",rm_id);
+			this.device_description("frame2",rm_id);
       			this.device_edit("remote_edit1",rm_id);
       			this.device_edit_json("remote_edit2",rm_id);
-			this.device_notused("remote3",rm_id);
+			this.device_notused("frame3",rm_id);
 
 			// show
 			this.show(rm_id);
@@ -141,9 +141,9 @@ function rmRemote(name) {
 			this.log("Write Scene Remote Control: " + rm_id);
 
 			// create remote for scene
-			this.scene_remote("remote1",rm_id);
-			this.scene_description("remote2",rm_id);
-			this.scene_channels("remote3",rm_id);
+			this.scene_remote("frame1",rm_id);
+			this.scene_description("frame2",rm_id);
+			this.scene_channels("frame3",rm_id);
 			this.scene_edit("remote_edit1",rm_id);
 			this.scene_edit_json("remote_edit2",rm_id);
 
@@ -177,7 +177,7 @@ function rmRemote(name) {
 		
 		if (this.data["DATA"]["devices"][device]["display-size"]) { remote_displaysize = this.data["DATA"]["devices"][device]["display-size"]; }
 		
-		rm3cookie.set("remote","device::"+device+"::"+remote_label);
+		appCookie.set("remote","device::"+device+"::"+remote_label);
 		if (preview) { remote += "<b>Preview:</b><br/><hr/>"; }
 
 		for (var i=0; i<remote_definition.length; i++) {
@@ -188,8 +188,8 @@ function rmRemote(name) {
 
 			if (this.edit_mode) {			
 				var contextmenu	     = "["+i+"] " + cmd.split("||")[0] + "<br/><br/>";		
-				var link_preview     = this.app_name+".device_remote('remote1','"+device+"','remote_json_buttons','remote_json_display');";
-				link_preview        += this.app_name+".device_notused('remote3','"+device+"');";
+				var link_preview     = this.app_name+".device_remote('frame1','"+device+"','remote_json_buttons','remote_json_display');";
+				link_preview        += this.app_name+".device_notused('frame3','"+device+"');";
 				var link_delete      = this.app_name+".remote_delete_button('device','remote_edit2','"+device+"','"+i+"','remote_json_buttons');";
 				var link_move_left   = this.app_name+".remote_move_button('device','remote_edit2','"+device+"',"+i+",'remote_json_buttons','left');";
 				var link_move_right  = this.app_name+".remote_move_button('device','remote_edit2','"+device+"',"+i+",'remote_json_buttons','right');";
@@ -251,7 +251,7 @@ function rmRemote(name) {
 	this.device_notused       = function (id, device) {
 
 		var remote            = "";
-		var link_preview      = this.app_name+".device_remote('remote1','"+device+"','remote_json_buttons','remote_json_display');";
+		var link_preview      = this.app_name+".device_remote('frame1','"+device+"','remote_json_buttons','remote_json_display');";
 		link_preview         += this.app_name+".device_notused('"+id+"','"+device+"');";
 		var remote_buttons    = this.data["DATA"]["devices"][device]["remote"];
 		var device_buttons    = this.data["DATA"]["devices"][device]["button_list"];
@@ -316,8 +316,8 @@ function rmRemote(name) {
 	        else                    { elementHidden(id,"device_edit"); return; }
 
 		var link_template = this.app_name+".remote_import_templates('device','remote_edit2','"+device+"','add_template','remote_json_buttons');";
-		var link_preview  = this.app_name+".device_remote('remote1','"+device+"','remote_json_buttons','remote_json_display');"
-		link_preview     += this.app_name+".device_notused('remote3','"+device+"');";
+		var link_preview  = this.app_name+".device_remote('frame1','"+device+"','remote_json_buttons','remote_json_display');"
+		link_preview     += this.app_name+".device_notused('frame3','"+device+"');";
 		var remote        = "";
 		
 		var remote_buttons    = this.data["DATA"]["devices"][device]["remote"];
@@ -424,9 +424,9 @@ function rmRemote(name) {
 		remote += this.display_json( "remote_json_display", remote_display );
 		remote += "<hr/><center>" + 
 				this.button_edit(this.app_name+".device_edit_json('"+id+"','"+device+"');"+
-					this.app_name+".device_remote('remote1','"+device+"','remote_json_buttons','remote_json_channel');","reset") + "&nbsp;" + 
+					this.app_name+".device_remote('frame1','"+device+"','remote_json_buttons','remote_json_channel');","reset") + "&nbsp;" + 
 				this.button_edit("apiDeviceJsonEdit('"+device+"','remote_json_buttons','remote_json_display');","save") +  "&nbsp;" + 
-				this.button_edit(this.app_name+".device_remote('remote1','"+device+"','remote_json_buttons','remote_json_display');","preview") +
+				this.button_edit(this.app_name+".device_remote('frame1','"+device+"','remote_json_buttons','remote_json_display');","preview") +
 				"</center>";
 		remote += "</div><hr/>";
 		remote += lang("MANUAL_REMOTE");
@@ -466,7 +466,7 @@ function rmRemote(name) {
 		var makros_sceneOn	= this.data["DATA"]["makros"]["scene-on"];
 		var makros_sceneOff	= this.data["DATA"]["makros"]["scene-off"];
 		
-		rm3cookie.set("remote","scene::"+scene+"::"+remote_label);
+		appCookie.set("remote","scene::"+scene+"::"+remote_label);
 
 		remote += "<div id='scene_button' style='display:block;'>";
 		if (preview) { remote += "<b>Preview:</b><br/><hr/>"; }
@@ -479,7 +479,7 @@ function rmRemote(name) {
 
 			if (this.edit_mode) {			
 				var contextmenu	     = "["+i+"] " + cmd.split("||")[0] + "<br/><br/>";		
-				var link_preview    = this.app_name+".scene_remote('remote1','"+scene+"','scene_json_buttons','scene_json_channels');";
+				var link_preview    = this.app_name+".scene_remote('frame1','"+scene+"','scene_json_buttons','scene_json_channels');";
 				var link_delete     = this.app_name+".remote_delete_button('scene','remote_edit2','"+scene+"','"+i+"','scene_json_buttons');";
 				var link_move_left  = this.app_name+".remote_move_button('scene','remote_edit2','"+scene+"',"+i+",'scene_json_buttons','left');";
 				var link_move_right = this.app_name+".remote_move_button('scene','remote_edit2','"+scene+"',"+i+",'scene_json_buttons','right');";
@@ -575,7 +575,7 @@ function rmRemote(name) {
 		this.input_width  = "180px";
 
 		var link_template = this.app_name+".remote_import_templates('scene','remote_edit2','"+scene+"','add_template','scene_json_buttons');";
-		var link_preview  = this.app_name+".scene_remote('remote1','"+scene+"','scene_json_buttons','scene_json_channel');";
+		var link_preview  = this.app_name+".scene_remote('frame1','"+scene+"','scene_json_buttons','scene_json_channel');";
 		var remote        = "";
 		
 		remote  += "<center><b>Edit &quot;"+this.data["DATA"]["scenes"][scene]["label"]+"&quot;</b> ["+scene+"]</center>";
@@ -639,9 +639,9 @@ function rmRemote(name) {
 		remote += "Devices:&nbsp;&nbsp;" + this.input("scene_json_devices", JSON.stringify(this.data["DATA"]["scenes"][scene]["devices"]))+"<br/><br/>";
 		remote += "<hr/><center>" + 
 				this.button_edit(this.app_name+".scene_edit_json('"+id+"','"+scene+"');"+
-					this.app_name+".scene_remote('remote1','"+scene+"','scene_json_buttons','scene_json_channel');","reset") + "&nbsp;" + 
+					this.app_name+".scene_remote('frame1','"+scene+"','scene_json_buttons','scene_json_channel');","reset") + "&nbsp;" + 
 				this.button_edit("apiSceneJsonEdit('"+scene+"','scene_json_buttons','scene_json_channel','scene_json_devices');","save","") + "&nbsp;" +
-				this.button_edit(this.app_name+".scene_remote('remote1','"+scene+"','scene_json_buttons','scene_json_channel');","preview") +
+				this.button_edit(this.app_name+".scene_remote('frame1','"+scene+"','scene_json_buttons','scene_json_channel');","preview") +
 				"</center>";
 		remote += "<hr/>";
 		remote += lang("MANUAL_SCENE");
@@ -661,7 +661,7 @@ function rmRemote(name) {
 	this.remote_add_button	  = function (type,id,scene,button,remote,position="") {
 	
 		if (document.getElementById(button)) { button = getValueById(button); }
-		if (button == "") { rm3msg.alert(lang("BUTTON_INSERT_NAME")); return; }
+		if (button == "") { appMsg.alert(lang("BUTTON_INSERT_NAME")); return; }
 		
 		var value     = this.get_json_value(remote);
 		var value_new = [];
@@ -680,7 +680,7 @@ function rmRemote(name) {
 	this.remote_delete_button = function (type,id,scene,button,remote) {
 
 		if (document.getElementById(button)) { button = getValueById(button); }
-		if (button == "") { rm3msg.alert(lang("BUTTON_SELECT")); return; }
+		if (button == "") { appMsg.alert(lang("BUTTON_SELECT")); return; }
 		
 		value     = this.get_json_value(remote);
 		value_new = [];
@@ -708,7 +708,7 @@ function rmRemote(name) {
 	// import remote definition from template to JSON
 	this.remote_import_templates = function (type,id,scene,template,remote) {
 		value      = getValueById(template);
-		if (value == "") { rm3msg.alert(lang("DEVICE_SELECT_TEMPLATE")); return; }
+		if (value == "") { appMsg.alert(lang("DEVICE_SELECT_TEMPLATE")); return; }
 		value_new  = this.data["DATA"]["templates"][value]["remote"];
 		
 		if (type == "scene") {
@@ -922,7 +922,7 @@ function rmRemote(name) {
 	        	}
         	text  += this.tab_row("end");
         	text  += "</div>";
-		rm3msg.confirm(text,"",300);
+		appMsg.confirm(text,"",300);
 		statusCheck(this.data);
         	}
         	
@@ -1144,7 +1144,7 @@ function writeMakroButton () {
         buttons = buttons + sendButtonMakro( id, makro[key], key, "yellow", "" );
         }
 
-    document.getElementById("remote1").innerHTML = buttons;
+    document.getElementById("frame1").innerHTML = buttons;
     }
 
 //--------------------------------

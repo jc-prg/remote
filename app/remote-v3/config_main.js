@@ -2,11 +2,12 @@
 // config menu and main functions
 //--------------------------------
 
-var app_frame_count   = 4;
+var app_frame_count   = 3;
+var app_frame_width   = "";
 var app_setting_count = 4;
 var app_last_load     = 0;
 var app_title         = "jc://remote/";
-var app_version       = "v2.4.6";
+var app_version       = "v2.5.0";
 var app_api_dir       = "api/";
 var app_api_status    = "list";
 
@@ -15,27 +16,7 @@ var app_api_status    = "list";
 //--------------------------------
 
 function app_menu_entries() {
-	var app_menu = [
-		[lang("INDEX"),        "link", "/index_v3.html"],
-		["App v2",             "link", "/index.html"],
-		/*
-		add your menu entries here
-		*/
-		["LINE"],
-		[lang("SETTINGS"),      "script", "appMsg.alert('"+lang('NOT_IMPLEMENTED')+"');" ],
-		];
-/*
-	// add additional menu elements if a condition is fulfilled
-	if (app_admin_allowed) {
-		app_menu = app_menu.concat([
-		["LINE"],
-		[lang("CAMERAS"),       "script", "birdhousePrint_load('CAMERAS','"+app_active_cam+"');"],
-		[lang("TODAY_COMPLETE"),"script", "birdhousePrint_load('TODAY_COMPLETE','"+app_active_cam+"');"],
-		["LINE"],
-		[lang("SETTINGS"),      "script", "appMsg.alert('"+lang('NOT_IMPLEMENTED')+"');" ],
-		]);
-		}
-*/
+	var app_menu = [];
 	return app_menu;
 	}
 
@@ -63,3 +44,61 @@ function app_check_status() {
 
 function app_click_menu() {
 	}
+	
+
+//----------------------------------
+// Theme detection and color settings
+//----------------------------------
+// color definitions: https://www.w3schools.com/cssref/css_colors.asp
+
+var colors			= [ "red", "green", "darkgreen", "blue", "darkblue" ];
+var colors_dev			= [];
+var color_button_inactive 	= "#666666";
+var colors_power		= { 
+				"ON"		: "darkgreen",
+				"OFF"		: "darkred",
+				"OTHER"	: "purple",
+				"ERROR"	: "orangered",
+				}
+
+// Standard-Definition für RemoteControl
+//----------------------------------
+
+var button_color = {};
+var button_img = {};
+var makro_def = {};
+var device_status = {};
+var remote_def = {};
+var remote_mix_def = {};
+var remote_std = [
+              ".", ".", ".", "on-off",
+              "LINE",
+              "1", "2", "3", "vol+",
+              "4", "5", "6", "mute",
+              "7", "8", "9", "vol-",
+              ".", "0", ".", ".",
+              ];
+
+//--------------------------------------
+// check theme (if dark scheme)
+//--------------------------------------
+
+var theme = "default";
+
+function check_theme() {
+	old_theme	= theme;
+	element	= document.getElementById("theme_check");
+	style		= window.getComputedStyle(element)["background-color"];
+	
+	if (style == "rgb(255, 255, 255)")	{ theme = "default"; }
+	else					{ theme = "dark"; }
+	if (old_theme != theme)			{ console.log("Change theme to: "+theme); }
+	
+	if (theme == "dark") {
+		color_button_inactive 	= "#111111";
+		//colors_power["ERROR"]	= "lightpink";		
+		}
+	}
+
+//--------------------------------------
+//EOF

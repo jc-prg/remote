@@ -2,7 +2,7 @@
 <!doctype html>
 <html><!-- manifest="cache.manifest"> -->
 <head>
-<title id="title">jc://app/</title>
+<title id="title">jc://remote/</title>
 
 <META charset="utf-8"> 
 <META http-equiv="content-type" content="text/html; charset=utf-8">
@@ -24,9 +24,9 @@
 
 <!-- jcAppFramework START -->
 
-<script src="app-fw/app-functions.js"></script>
-<script src="app-fw/app-html-elements.js"></script>
-<script src="app-fw/app-language.js"></script>
+<script src="framework/app-fw/app-functions.js"></script>
+<script src="framework/app-fw/app-html-elements.js"></script>
+<script src="framework/app-fw/app-language.js"></script>
 
 <!-- add your own config files -->
 
@@ -34,24 +34,24 @@
 <script src="remote-v3/config_language.js"></script>
 <script src="remote-v3/config_main.js"></script>
 
-<script src="app-fw/app-conf.js"></script>
-<script src="app-fw/app-menu.js"></script>
-<script src="app-fw/app-functions.js"></script>
-<script src="app-fw/app-html-elements.js"></script>
-<script src="app-fw/app-language.js"></script>
+<script src="framework/app-fw/app-conf.js"></script>
+<script src="framework/app-fw/app-menu.js"></script>
+<script src="framework/app-fw/app-functions.js"></script>
+<script src="framework/app-fw/app-html-elements.js"></script>
+<script src="framework/app-fw/app-language.js"></script>
 
-<link rel="stylesheet" href="app-fw/style-main.css">
-<link rel="stylesheet" href="app-fw/style-menu.css">
-<link rel="stylesheet" href="app-fw/style-frame.css">
-<link rel="stylesheet" href="app-fw/style-status.css">
+<link rel="stylesheet" href="framework/app-fw/style-main.css">
+<link rel="stylesheet" href="framework/app-fw/style-menu.css">
+<link rel="stylesheet" href="framework/app-fw/style-frame.css">
+<link rel="stylesheet" href="framework/app-fw/style-status.css">
 
-<link rel="stylesheet" href="app-fw/style-main-iphone.css">
-<link rel="stylesheet" href="app-fw/style-main-laptop.css">
-<link rel="stylesheet" href="app-fw/style-frame-iphone.css">
-<link rel="stylesheet" href="app-fw/style-frame-laptop.css">
+<link rel="stylesheet" href="framework/app-fw/style-main-iphone.css">
+<link rel="stylesheet" href="framework/app-fw/style-main-laptop.css">
+<link rel="stylesheet" href="framework/app-fw/style-frame-iphone.css">
+<link rel="stylesheet" href="framework/app-fw/style-frame-laptop.css">
 
-<link rel="stylesheet" href="app-fw/style-main-dark.css">
-<link rel="stylesheet" href="app-fw/style-menu-dark.css">
+<link rel="stylesheet" href="framework/app-fw/style-main-dark.css">
+<link rel="stylesheet" href="framework/app-fw/style-menu-dark.css">
 
 <!-- APP specific scripts and style sheets // START -->
 
@@ -60,6 +60,8 @@
 <script src="remote-v3/rm_remotes.js"></script>
 <script src="remote-v3/rm_status.js"></script>
 <script src="remote-v3/rm_settings.js"></script>		
+<script src="remote-v3/rm_start.js"></script>		
+<script src="remote-v3/rm_menu.js"></script>		
 
 <link rel="stylesheet" href="remote-v3/rm_settings.css">
 
@@ -71,11 +73,20 @@
 <!-- APP specific html elements // START -->
 
 
-
 <!-- APP specific  html elements // END -->
 
 <nav id="nav">
 <nav-logo id="rest_status"></nav-logo>
+
+<!-- APP specific header elements // START -->
+
+	<nav-info id="audio1" onClick="rm3slider.show_hide();" style="cursor:pointer;"></nav-info><!--icon-->
+	<nav-info id="audio2" onClick="rm3slider.show_hide();" style="cursor:pointer;"></nav-info><!--icon-->
+	<nav-info id="audio3" onClick="rm3slider.show_hide();" style="cursor:pointer;">IIIIIIIIIIIIIIIIIIII</nav-info>
+	<nav-info id="audio4"></nav-info><!--icon-->
+
+<!-- APP specific header elements // END -->
+
 <nav-title id="navTitle">...</nav-title>
 <ul>
   <li id="navi"><div onClick="javascript:appClickMenu();"  id="navi-click"><img src="img/button.png" /></div>
@@ -106,13 +117,13 @@
 <div id="appMsg"></div>
 <div id="ontop"        style="display:none"></div>
 <div id="theme_check"  style="display:none"></div>
-<div id="videoplayer"></div>
 
-<script src="app-fw/app-main.js"></script>
+<script src="framework/app-fw/app-main.js"></script>
 
 <!-- APP specific scripts and HTML elements // START -->
 
-
+<div id="audio_slider" class="audio_slider"></div>
+<script src="remote-v3/rm_main.js"></script>
 
 <!-- APP specific scripts and HTML elements // END -->
 

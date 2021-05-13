@@ -42,7 +42,7 @@ function rmSettings (name) {	// IN PROGRESS
 	this.active       = false;
 	this.app_name     = name;
 	this.e_settings   = ["setting1","setting2","setting3","setting4"]; 
-	this.e_remotes    = ["remote1","remote2","remote3","remote_edit1","remote_edit2"];
+	this.e_remotes    = ["frame1","frame2","frame3","remote_edit1","remote_edit2"];
 	this.input_width  = "110px";
 	this.initial_load = true;
 	this.edit_mode    = false;
@@ -59,7 +59,7 @@ function rmSettings (name) {	// IN PROGRESS
 
                 if (this.initial_load) { 
 			// check if test
-			if (rm3_test) 	{this.test_info = "Test Stage";}
+			if (test) 	{this.test_info = "Test Stage";}
 			else 		{this.test_info = "Prod Stage";}
 			
                 	this.inital_load = false;
@@ -94,14 +94,14 @@ function rmSettings (name) {	// IN PROGRESS
 		var audio1     = "Power: "  + this.data["DATA"]["devices"][main_audio]["status"]["power"] + " / "
 		               + "Volume: " + this.data["DATA"]["devices"][main_audio]["status"]["vol"] + " (" + audio_max + ")";
 		var audio2     = this.data["DATA"]["devices"][main_audio]["label"];
-		var cookie     = rm3cookie.get("remote");
+		var cookie     = appCookie.get("remote");
 
 		setting  = this.tab_row( 	"Status:", 		this.app_stat );
 		setting += this.tab_row( 	"Versions:",
-						"App: " 		+ rm3version + " / " + this.test_info + " (" + rm3_rollout + ")<br/>" +
+						"App: " 		+ appVersion + " / " + this.test_info + " (" + rollout + ")<br/>" +
 						"API: " 		+ this.data["API"]["version"] + " / " + this.data["API"]["rollout"] + "<br/>" +
-						"Modules: jcMsg " 	+ rm3msg.appVersion +  
-						" / jcApp "		+ rm3app.appVersion +
+						"Modules: jcMsg " 	+ appMsg.appVersion +  
+						" / jcApp "		+ appFW.appVersion +
 						" / jcSlider "		+ rm3slider.appVersion );
 		setting += this.tab_row( 	"Cookie:", 		cookie );
 		setting += this.tab_row( 	"Button:", 		this.app_last );
@@ -130,11 +130,11 @@ function rmSettings (name) {	// IN PROGRESS
 						this.button("window.open('" + RESTurl + "api/reload/','_blank');", "reload") +
 						this.button("window.open('" + RESTurl + "api/list/','_blank');", "REST API") +
 						this.button("window.open('" + RESTurl + "api/ui/','_blank');",   "Swagger/UI") +
-						this.button("rm3app.requestAPI('GET',['version','" + rm3version +"'], '', rm3msg.alertReturn,'wait');", "Check Updates")
+						this.button("appFW.requestAPI('GET',['version','" + appVersion +"'], '', appMsg.alertReturn,'wait');", "Check Updates")
 					);
 		setting += this.tab_row( 	"Reset:",
-						this.button("rm3msg.confirm('" + q1 + "', 'rm3app.requestAPI(#GET#,[#reset#],##,apiAlertReturn );' );" , "Dev ON/OFF") +
-						this.button("rm3msg.confirm('" + q2 + "', 'rm3app.requestAPI(#GET#,[#reset-audio#],##,apiAlertReturn );' );" , "Audio Level")
+						this.button("appMsg.confirm('" + q1 + "', 'appFW.requestAPI(#GET#,[#reset#],##,apiAlertReturn );' );" , "Dev ON/OFF") +
+						this.button("appMsg.confirm('" + q2 + "', 'appFW.requestAPI(#GET#,[#reset-audio#],##,apiAlertReturn );' );" , "Audio Level")
 					);
 		setting += this.tab_row( 	"Buttons:",
 						this.button(this.app_name+".button_show();",  b_show ) +
@@ -275,9 +275,9 @@ function rmSettings (name) {	// IN PROGRESS
 		for (var i=0; i<this.e_remotes.length; i++)  { changeVisibility(this.e_remotes[i],show_remotes);  }
 		for (var i=0; i<this.e_settings.length; i++) { changeVisibility(this.e_settings[i],show_settings); }
 		
-		if (this.edit_mode == true && show_remotes)   		{ elementVisible("remote_edit1"); elementVisible("remote_edit2"); }
+		if (this.edit_mode == true && show_remotes)   	{ elementVisible("remote_edit1"); elementVisible("remote_edit2"); }
 		else if (this.edit_mode == false && show_remotes)	{ elementHidden("remote_edit1");  elementHidden("remote_edit2"); }
-		else if (show_settings)					{ elementHidden("remote_edit1");  elementHidden("remote_edit2"); }
+		else if (show_settings)				{ elementHidden("remote_edit1");  elementHidden("remote_edit2"); }
 		}
 
 	//------------------------------
@@ -338,8 +338,8 @@ function rmSettings (name) {	// IN PROGRESS
 	        var filter      = filter_list.options[filter_list.selectedIndex].value;
 		for (var key in this.data["DATA"]["devices"][filter]["status"]) {
 			if (key == "power") {
-				command_on    = "rm3app.requestAPI('GET',['set','"+filter+"','"+key+"','ON'], '', '', '' );rm3settings.onoff();remoteInit();";
-				command_off   = "rm3app.requestAPI('GET',['set','"+filter+"','"+key+"','OFF'], '', '', '' );rm3settings.onoff();remoteInit();";
+				command_on    = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','ON'], '', '', '' );rm3settings.onoff();remoteInit();";
+				command_off   = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','OFF'], '', '', '' );rm3settings.onoff();remoteInit();";
 				status_value  = this.data["DATA"]["devices"][filter]["status"][key];
 				if (status_value == "ON")	{ command_link = "<div onclick=\""+command_off+"\" style=\"cursor:pointer\">"+key+": <u>ON</u></div>"; }
 				else if (status_value == "OFF")	{ command_link = "<div onclick=\""+command_on +"\" style=\"cursor:pointer\">"+key+": <u>OFF</u></div>"; }
@@ -380,8 +380,8 @@ function rmSettings (name) {	// IN PROGRESS
 
 	// switch server connection between test and prod stage
 	this.button_stage       = function () {
-		if (connect2stage == "Test")	{ connect2stage = "Prod"; rm3app.appUrl = RESTurl_prod; }
-		else				{ connect2stage = "Test"; rm3app.appUrl = RESTurl_test; }
+		if (connect2stage == "Test")	{ connect2stage = "Prod"; appFW.appUrl = RESTurl_prod; }
+		else				{ connect2stage = "Test"; appFW.appUrl = RESTurl_test; }
 
 		remoteInit(false);	// reload data
 		this.create();
