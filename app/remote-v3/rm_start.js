@@ -5,15 +5,15 @@
 //--------------------------------
 /* INDEX:
 function rmStart(name)
-        this.init                 = function(data)
+	this.init                 = function(data)
 	this.add_devices          = function(data,menuItems)
 	this.add_scenes           = function(data,menuItems)
 	this.entry_device         = function(data, id, label, style)
 	this.entry_scene          = function(data, id, label, style)
-        this.button               = function(id, label, style, script_apiCommandSend, disabled )
-        this.button_image         = function(label,style)
+	this.button               = function(id, label, style, script_apiCommandSend, disabled )
+	this.button_image         = function(label,style)
 	this.remoteToggleEditMode = function()
-        this.log                  = function(msg)
+	this.log                  = function(msg)
 	this.image                = function(file)
 */
 //--------------------------------
@@ -21,12 +21,12 @@ function rmStart(name)
 function rmStart(name) {
 
 	this.data        = {}
-        this.app_name    = name;
-        this.edit_mode   = false;
-        this.inital_load = true;
+	this.app_name    = name;
+	this.edit_mode   = false;
+	this.inital_load = true;
 
         // load data with devices (deviceConfig["devices"])
-        this.init                 = function(data) {
+	this.init                 = function(data) {
         
         	if (data["DATA"]) 	{ this.data = data; }
         	else			{ return; }
@@ -122,12 +122,12 @@ function rmStart(name) {
 		}
 
         // standard standard button
-        this.button               = function(id, label, style, script_apiCommandSend, disabled ){
+	this.button               = function(id, label, style, script_apiCommandSend, disabled ){
                 return "<button id='" + id + "' class='button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + ">" + label + "</button>";
                 }
 
         // check if image exists for button
-        this.button_image         = function(label,style) {
+	this.button_image         = function(label,style) {
 
                 // set vars
                 var button_color = this.data["CONFIG"]["button_colors"];  // definition of button color
@@ -148,7 +148,7 @@ function rmStart(name) {
 		}	
 
         // handle messages for console
-        this.log                  = function(msg) {
+	this.log                  = function(msg) {
                 console.log(this.app_name + ": " + msg);
                 }
 
