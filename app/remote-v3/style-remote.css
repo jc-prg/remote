@@ -1,7 +1,7 @@
 /* AUDIO INFO */
 
 #audio1 {
-  right: 135px;
+  right: 145px;
   background-image: url('/icon/mute.png');
   background-size: 14px;
   height:14px;
@@ -10,7 +10,7 @@
 }
 
 #audio2 {
-  right: 135px;
+  right: 145px;
   background-image: url('/icon/vol+.png');
   background-size: 14px;
   height:14px;
