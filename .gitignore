@@ -40,3 +40,5 @@ app/img/
 config/app-framework/
 
 config/modules/
+
+app/cache.manifest
