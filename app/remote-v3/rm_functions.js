@@ -48,7 +48,7 @@ function clickMenu () {
 //--------------------------------------
 
 function setNavTitle (title) {
-        setTextById("navTitle", "<div onClick=\"javascript:rm3settings.hide();rm3cookie.erase('remote');remoteInit();\">"+title.replace(/#/g,"\"")+"</div>");
+        setTextById("navTitle", "<div onClick=\"javascript:rm3settings.hide();appCookie.erase('remote');remoteInit();\">"+title.replace(/#/g,"\"")+"</div>");
         }
 
 // ------------------------------------------
