@@ -2,12 +2,13 @@
 // config menu and main functions
 //--------------------------------
 
-var app_frame_count   = 3;
-var app_frame_width   = "";
+var app_frame_count   = 5;
+var app_frame_style   = "remote";
 var app_setting_count = 4;
+var app_setting_style = "setting_bg";
 var app_last_load     = 0;
 var app_title         = "jc://remote/";
-var app_version       = "v2.5.0";
+var app_version       = "v2.5.2";
 var app_api_dir       = "api/";
 var app_api_status    = "list";
 
