@@ -8,7 +8,7 @@ var app_setting_count = 4;
 var app_setting_style = "setting_bg";
 var app_last_load     = 0;
 var app_title         = "jc://remote/";
-var app_version       = "v2.5.3";
+var app_version       = "v2.5.4";
 var app_api_dir       = "api/";
 var app_api_status    = "list";
 
@@ -54,6 +54,20 @@ function app_force_reload(data) {
 	remoteReload(data);
 	}
 
+//--------------------------------
+// add code when theme changed
+//--------------------------------
+
+function app_theme_changed(theme) {
+	if (theme == "dark") {
+		color_button_inactive 	= "#111111";
+		//colors_power["ERROR"]	= "lightpink";		
+		}
+	else {
+		color_button_inactive 	= "#666666";
+		}
+	}
+	
 //----------------------------------
 // Theme detection and color settings
 //----------------------------------
@@ -88,25 +102,24 @@ var remote_std = [
               ];
 
 //--------------------------------------
-// check theme (if dark scheme)
+// status vars
 //--------------------------------------
 
-var theme = "default";
+var show_error     = ""; // onClick=\"javascript:showErrorLog();\""; // not implemented any more
+var status_green   = "<div id='green' "+show_error+"></div>";
+var status_yellow  = "<div id='yellow' "+show_error+"></div>";
+var status_gray    = "<div id='gray' "+show_error+"></div>";
+var status_red     = "<div id='red' "+show_error+"></div>";
 
-function check_theme() {
-	old_theme	= theme;
-	element	= document.getElementById("theme_check");
-	style		= window.getComputedStyle(element)["background-color"];
-	
-	if (style == "rgb(255, 255, 255)")	{ theme = "default"; }
-	else					{ theme = "dark"; }
-	if (old_theme != theme)			{ console.log("Change theme to: "+theme); }
-	
-	if (theme == "dark") {
-		color_button_inactive 	= "#111111";
-		//colors_power["ERROR"]	= "lightpink";		
-		}
-	}
+var status_mute    = "rec_mute"; // -> show in <nav-info id="audio2"> 	// changed based on server settings
+var status_vol     = "rec_vol";  // -> show in <nav-info id="audio1"> 	// changed based on server settings
+var status_vol_max = 74;         // -> calculate in percent		// changed based on server settings
+
+var connect2stage    = "Prod";	// default stage to connect to (changed if rm3_test == true)
+var showButtonTime   = 0.2;     // time to show LED when button pressed
+var showButton       = false;   // default: show pressed button in headline
+var deactivateButton = false;   // default: deactivate buttons if device is not ON
+
 
 //--------------------------------------
 //EOF
