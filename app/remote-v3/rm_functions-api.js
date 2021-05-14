@@ -44,7 +44,7 @@ function apiMakroSend_hide( data )
 
 function apiCheckUpdates() {
 
-	rm3msg.wait("Loading App ...", "remoteInit();" );
+	appMsg.wait("Loading App ...", "remoteInit();" );
 	appFW.requestAPI("GET", ["version",rm3version], "", apiCheckUpdates_msg, "wait" ); 	// doesn't work asynchronuous yet ... -> "wait" as param
 	}
 
@@ -54,7 +54,7 @@ function apiCheckUpdates_msg( data ) {
 	msg = data["REQUEST"]["Return"];
 	msg = "<br/></b><i>"+msg+"</i>";
 
-	rm3msg.wait("Loading App ..."+msg, "remoteInit();" );
+	appMsg.wait("Loading App ..."+msg, "remoteInit();" );
 
 	if (data["REQUEST"]["ReturnCode"] != "802") {
 		rm3update = true;
@@ -64,7 +64,7 @@ function apiCheckUpdates_msg( data ) {
 //--------------------------------
 
 function apiAlertReturn(data) {
-        rm3msg.alertReturn(data);
+        appMsg.alertReturn(data);
         
         if (data["REQUEST"]["Command"] == "AddTemplate")  	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, 2000); }
         if (data["REQUEST"]["Command"] == "EditDevice")   	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, 2000); }
@@ -98,13 +98,13 @@ function apiTemplateAdd(device_id, template_id) {
         device   = check_if_element_or_value(device_id,false);
         template = check_if_element_or_value(template_id,false);
         
-	if (!dataAll["DATA"]["devices"][device]) 	{ rm3msg.alert(lang("DEVICE_DONT_EXISTS")); return; }
-	else if (device == "")	 			{ rm3msg.alert(lang("DEVICE_INSERT_NAME")); return; }
-	else if (template == "") 			{ rm3msg.alert(lang("DEVICE_SELECT_TEMPLATE")); 	return;	}
+	if (!dataAll["DATA"]["devices"][device]) 	{ appMsg.alert(lang("DEVICE_DONT_EXISTS")); return; }
+	else if (device == "")	 			{ appMsg.alert(lang("DEVICE_INSERT_NAME")); return; }
+	else if (template == "") 			{ appMsg.alert(lang("DEVICE_SELECT_TEMPLATE")); 	return;	}
 
 	//appFW.requestAPI("PUT",["template",device,template], "", apiAlertReturn);
 	question = "Do you really want overwrite buttons of '" + device + "' with template '" + template + "'?";
-	rm3msg.confirm(question,"apiTemplateAdd_exe('" + device + "','" + template + "'); ");
+	appMsg.confirm(question,"apiTemplateAdd_exe('" + device + "','" + template + "'); ");
 	}
 	
 	
@@ -124,9 +124,9 @@ function apiSceneAdd(data) {
 	
 	console.error(send_data);
         
-	if (dataAll["DATA"]["devices"][send_data["id"]]){ rm3msg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
-	else if (send_data["id"] == "")			{ rm3msg.alert(lang("SCENE_INSERT_ID")); return; }
-	else if (send_data["label"] == "")		{ rm3msg.alert(lang("SCENE_INSERT_LABEL")); return; }
+	if (dataAll["DATA"]["devices"][send_data["id"]]){ appMsg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
+	else if (send_data["id"] == "")			{ appMsg.alert(lang("SCENE_INSERT_ID")); return; }
+	else if (send_data["label"] == "")		{ appMsg.alert(lang("SCENE_INSERT_LABEL")); return; }
 
 	appFW.requestAPI("PUT",["scene",send_data["id"]], send_data, apiAlertReturn);
 	}
@@ -158,9 +158,9 @@ function apiSceneJsonEdit(device,json_buttons,json_channel,json_devices) {
         channel   = check_if_element_or_value(json_channel,false);
         devices   = check_if_element_or_value(json_devices,true);
 
-	try { json_buttons = JSON.parse(buttons); } catch(e) { rm3msg.alert("<b>JSON Buttons - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
-	try { json_channel = JSON.parse(channel); } catch(e) { rm3msg.alert("<b>JSON Channel - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
-	try { json_devices = JSON.parse(devices); } catch(e) { rm3msg.alert("<b>JSON Devices - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+	try { json_buttons = JSON.parse(buttons); } catch(e) { appMsg.alert("<b>JSON Buttons - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+	try { json_channel = JSON.parse(channel); } catch(e) { appMsg.alert("<b>JSON Channel - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+	try { json_devices = JSON.parse(devices); } catch(e) { appMsg.alert("<b>JSON Devices - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 	
 	var info = {};
 	info["remote"]  = json_buttons;
@@ -177,9 +177,9 @@ function apiSceneDelete_exe(device) { appFW.requestAPI("DELETE",["scene",device]
 function apiSceneDelete(scene_id) {
 
 	var scene = check_if_element_or_value(scene_id,true);
-	if (scene == "") { rm3msg.alert(lang("SCENE_SELECT")); return; }
+	if (scene == "") { appMsg.alert(lang("SCENE_SELECT")); return; }
 
-	rm3msg.confirm(lang("SCENE_ASK_DELETE",[scene]),"apiSceneDelete_exe('" + scene + "');");
+	appMsg.confirm(lang("SCENE_ASK_DELETE",[scene]),"apiSceneDelete_exe('" + scene + "');");
 	}
 
 
@@ -213,8 +213,8 @@ function apiDeviceJsonEdit(device,json_buttons,json_display) {
         buttons   = check_if_element_or_value(json_buttons,false);
         display   = check_if_element_or_value(json_display,false);
 
-	try { json_buttons = JSON.parse(buttons); } catch(e) { rm3msg.alert("<b>JSON Buttons - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
-	try { json_display = JSON.parse(display); } catch(e) { rm3msg.alert("<b>JSON Display - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+	try { json_buttons = JSON.parse(buttons); } catch(e) { appMsg.alert("<b>JSON Buttons - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+	try { json_display = JSON.parse(display); } catch(e) { appMsg.alert("<b>JSON Display - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 	
 	var info = {};
 	info["remote"]  = json_buttons;
@@ -250,12 +250,12 @@ function apiDeviceAdd(data,onchange) {
 	
 	console.error(send_data);
         
-//	if (dataAll["DATA"]["devices"][send_data["id"]]){ rm3msg.alert("Device '" + device + "' already exists!"); return; }
-	if (dataAll["DATA"]["devices"][send_data["id"]]){ rm3msg.alert(lang("DEVICE_EXISTS",[send_data["id"]])); return; }
-	else if (send_data["id"] == "")			{ rm3msg.alert(lang("DEVICE_INSERT_ID")); return; }
-	else if (send_data["label"] == "")		{ rm3msg.alert(lang("DEVICE_INSERT_LABEL")); return; }
-	else if (send_data["api"] == "") 		{ rm3msg.alert(lang("DEVICE_SELECT_API")); return; }
-	else if (send_data["device"] == "") 		{ rm3msg.alert(lang("DEVICE_INSERT_NAME")); return;	}
+//	if (dataAll["DATA"]["devices"][send_data["id"]]){ appMsg.alert("Device '" + device + "' already exists!"); return; }
+	if (dataAll["DATA"]["devices"][send_data["id"]]){ appMsg.alert(lang("DEVICE_EXISTS",[send_data["id"]])); return; }
+	else if (send_data["id"] == "")			{ appMsg.alert(lang("DEVICE_INSERT_ID")); return; }
+	else if (send_data["label"] == "")		{ appMsg.alert(lang("DEVICE_INSERT_LABEL")); return; }
+	else if (send_data["api"] == "") 		{ appMsg.alert(lang("DEVICE_SELECT_API")); return; }
+	else if (send_data["device"] == "") 		{ appMsg.alert(lang("DEVICE_INSERT_NAME")); return;	}
 
 	appFW.requestAPI("PUT",["device",send_data["id"]], send_data, apiAlertReturn);
 	}
@@ -267,9 +267,9 @@ function apiDeviceDelete_exe(device) { appFW.requestAPI("DELETE",["device",devic
 function apiDeviceDelete(device_id) {
 
 	var device = check_if_element_or_value(device_id,true);
-	if (device == "")               { rm3msg.alert(lang("DEVICE_SELECT")); return; }
+	if (device == "")               { appMsg.alert(lang("DEVICE_SELECT")); return; }
 
-	rm3msg.confirm(lang("DEVICE_ASK_DELETE",[device]),"apiDeviceDelete_exe('" + device + "');");
+	appMsg.confirm(lang("DEVICE_ASK_DELETE",[device]),"apiDeviceDelete_exe('" + device + "');");
 	}
 
 //================================
@@ -341,14 +341,14 @@ function apiCommandDelete(device_id, button_id) {
 		}
 	else 					{ var device  = device_id; }
 
-	if (device == "") { rm3msg.alert(lang("DEVICE_SELECT")); return; }
+	if (device == "") { appMsg.alert(lang("DEVICE_SELECT")); return; }
 
 	var button1 = document.getElementById(button_id);
 	var button  = button1.options[button1.selectedIndex].value;
-	if (button == "") { rm3msg.alert(lang("BUTTON_SELECT")); return; }
+	if (button == "") { appMsg.alert(lang("BUTTON_SELECT")); return; }
 
 	button1  = button.split("_");
-	rm3msg.confirm(lang("BUTTON_ASK_DELETE",[button1[1],device]),"apiCommandDelete_exe('" + button + "'); ");
+	appMsg.confirm(lang("BUTTON_ASK_DELETE",[button1[1],device]),"apiCommandDelete_exe('" + button + "'); ");
 	}
 
 // add button to device
@@ -364,12 +364,12 @@ function apiCommandRecord(device_id, button_id) {
 							}
 	else						{ var button    = button_id; }	
 	
-        cmd = "appFW.requestAPI('POST',['command','"+device+"','"+button+"'], '', rm3msg.alertReturn );";
+        cmd = "appFW.requestAPI('POST',['command','"+device+"','"+button+"'], '', appMsg.alertReturn );";
 
-	if (device == "") { rm3msg.alert(lang("DEVICE_SELECT")); return; }
-	if (button == "") { rm3msg.alert(lang("BUTTON_INSERT_NAME")); return; }
+	if (device == "") { appMsg.alert(lang("DEVICE_SELECT")); return; }
+	if (button == "") { appMsg.alert(lang("BUTTON_INSERT_NAME")); return; }
 	
-	rm3msg.confirm(lang("BUTTON_RECORD",[button,device]),cmd); return; 
+	appMsg.confirm(lang("BUTTON_RECORD",[button,device]),cmd); return; 
 	}
 
 
@@ -392,11 +392,11 @@ function apiButtonAdd(device_id, button_id) {
 							}
 	else						{ var button    = button_id; i++; }	
 	
-        cmd = "appFW.requestAPI('PUT',['button','"+device+"','"+button+"'], '', rm3msg.alertReturn );";
+        cmd = "appFW.requestAPI('PUT',['button','"+device+"','"+button+"'], '', appMsg.alertReturn );";
 
-	if (device == "") { rm3msg.alert(lang("DEVICE_SELECT")); return; }
-	if (button == "") { rm3msg.alert(lang("BUTTON_INSERT_NAME")); return; }
-	if (i == 2)       { rm3msg.confirm(lang("BUTTON_RECORD",[button,device]),cmd); return; } 
+	if (device == "") { appMsg.alert(lang("DEVICE_SELECT")); return; }
+	if (button == "") { appMsg.alert(lang("BUTTON_INSERT_NAME")); return; }
+	if (i == 2)       { appMsg.confirm(lang("BUTTON_RECORD",[button,device]),cmd); return; } 
 	
 	appFW.requestAPI("PUT",["button",device,button], "", apiAlertReturn);
 	}
@@ -415,13 +415,13 @@ function apiButtonDelete(device_id, button_id) {
 		}
 	else 					{ var device  = device_id; }
 
-	if (device == "") { rm3msg.alert(lang("DEVICE_SELECT")); return; }
+	if (device == "") { appMsg.alert(lang("DEVICE_SELECT")); return; }
 
 	var button1 = document.getElementById(button_id);
 	var button  = button1.options[button1.selectedIndex].value;
-	if (button == "") { rm3msg.alert(lang("BUTTON_SELECT")); return; }
+	if (button == "") { appMsg.alert(lang("BUTTON_SELECT")); return; }
 
-	rm3msg.confirm(lang("BUTTON_ASK_DELETE_NUMBER",[button,device]),"apiButtonDelete_exe('"+device+"'," + button + "); ");
+	appMsg.confirm(lang("BUTTON_ASK_DELETE_NUMBER",[button,device]),"apiButtonDelete_exe('"+device+"'," + button + "); ");
 	}
 
 //================================
@@ -433,7 +433,7 @@ function apiButtonDelete(device_id, button_id) {
 
 function apiMakroSend( makro, device="", content="" ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
 
-	rm3msg.wait_small(lang("PLEASE_WAIT") + "<br/>");
+	appMsg.wait_small(lang("PLEASE_WAIT") + "<br/>");
 	console.log( "Send makro: " + makro );
 	
 	dc = [ "makro", makro ];
@@ -443,12 +443,12 @@ function apiMakroSend( makro, device="", content="" ) {  // SEND -> FEHLER? obwo
 	device_media_info[device] = content;
 	
 	// if request takes more time, hide message after 5 seconds
-	setTimeout(function(){ rm3msg.hide(); }, 5000);
+	setTimeout(function(){ appMsg.hide(); }, 5000);
 	}
 	
 	
 function apiMakroSend_hide( data ) {
-	rm3msg.hide();
+	appMsg.hide();
 	}
 
 // --------------------
