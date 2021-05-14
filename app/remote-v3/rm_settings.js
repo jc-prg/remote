@@ -129,7 +129,8 @@ function rmSettings (name) {	// IN PROGRESS
 
 		setting  = this.tab_row( 	"Server:",
 						//this.button("remoteInit(false);" + this.app_name + ".show();", "reload") +
-						this.button("window.open('" + RESTurl + "api/reload/','_blank');", "reload") +
+						this.button("window.open('" + RESTurl + "api/reload/','_blank');", "reload (API)") +
+						this.button("appForceReload(true);", "reload (Scroll)") +
 						this.button("window.open('" + RESTurl + "api/list/','_blank');", "REST API") +
 						this.button("window.open('" + RESTurl + "api/ui/','_blank');",   "Swagger/UI") +
 						this.button("appFW.requestAPI('GET',['version','" + appVersion +"'], '', appMsg.alertReturn,'wait');", "Check Updates")

@@ -113,7 +113,7 @@ function remoteReload(data) {
 	// check if still used in a fct. -> to be removed
 	dataAll = data;
 
-	remoteForceReload_checkIfReady(data);	// check if reloaded
+//	remoteForceReload_checkIfReady(data);	// check if reloaded
 	remoteInitData(data);			// init and reload data
 	remoteDropDown(data);			// update drop down menu
 	remoteSetSliderDevice(data);		// set device for volume slider
@@ -128,6 +128,7 @@ function remoteReload(data) {
 	
 //--------------------------------
 
+/*
 function remoteForceReload_checkIfReady(data) {
 	// check reload status
 	if (data["CONFIG"]["reload_status"] == false && reload_active) {
@@ -146,6 +147,7 @@ function remoteForceReload_checkIfReady(data) {
 			}
 		}
 	}
+*/
 
 //--------------------------------
 
