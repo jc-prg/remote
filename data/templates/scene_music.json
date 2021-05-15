@@ -1,0 +1,35 @@
+{
+    "scene_music": {
+        "description": "Scene for Music",
+        "label": "Music",
+        "remote": [
+            ".",
+            ".",
+            "on",
+            "off",
+            "LINE||input device",
+            "radio",
+            "bluetooth",
+            "cd",
+            "aux",
+            "LINE||radio playback",
+            "prg+",
+            "back",
+            "prg-",
+            "stereo",
+            "LINE||bluray playback",
+            "fbw",
+            "play",
+            "ffw",
+            "vol+",
+            "last",
+            "pause",
+            "next",
+            "mute",
+            ".",
+            "stop",
+            ".",
+            "vol-"
+        ]
+    }
+}
