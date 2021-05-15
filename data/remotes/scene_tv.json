@@ -29,20 +29,6 @@
                 "tv_2",
                 "tv_3"
             ],
-            "hr HD": [
-                "makro_rectv",
-                "tv_3",
-                "tv_0"
-            ],
-            "kabel eins HD": [
-                "makro_rectv",
-                "tv_8"
-            ],
-            "kabel eins Doku": [
-                "makro_rectv",
-                "tv_3",
-                "tv_2"
-            ],
             "KiKA HD": [
                 "makro_rectv",
                 "tv_1",
@@ -52,11 +38,6 @@
                 "makro_rectv",
                 "tv_2",
                 "tv_5"
-            ],
-            "n-tv HD": [
-                "makro_rectv",
-                "tv_3",
-                "tv_3"
             ],
             "NDR HD": [
                 "makro_rectv",
@@ -72,11 +53,6 @@
                 "makro_rectv",
                 "tv_1",
                 "tv_1"
-            ],
-            "phoenix HD": [
-                "makro_rectv",
-                "tv_1",
-                "tv_4"
             ],
             "ProSieben HD": [
                 "makro_rectv",
@@ -100,63 +76,58 @@
                 "tv_1",
                 "tv_9"
             ],
-            "Sat.1 HD": [
-                "makro_rectv",
-                "tv_5"
-            ],
-            "Sat.1 GOLD": [
-                "makro_rectv",
-                "tv_1",
-                "tv_7"
-            ],
-            "ServusTV HD": [
-                "makro_rectv",
-                "tv_2",
-                "tv_4"
-            ],
-            "sixx HD": [
-                "makro_rectv",
-                "tv_2",
-                "tv_2"
-            ],
             "SR HD": [
                 "makro_rectv",
                 "tv_2",
                 "tv_6"
-            ],
-            "Super RTL HD": [
-                "makro_rectv",
-                "tv_2",
-                "tv_1"
             ],
             "SWR BW HD": [
                 "makro_rectv",
                 "tv_2",
                 "tv_0"
             ],
-            "Tagesschau24 HD": [
+            "Sat.1 GOLD": [
                 "makro_rectv",
-                "tv_3",
+                "tv_1",
+                "tv_7"
+            ],
+            "Sat.1 HD": [
+                "makro_rectv",
                 "tv_5"
+            ],
+            "ServusTV HD": [
+                "makro_rectv",
+                "tv_2",
+                "tv_4"
+            ],
+            "Super RTL HD": [
+                "makro_rectv",
+                "tv_2",
+                "tv_1"
             ],
             "TLC HD": [
                 "makro_rectv",
                 "tv_1",
                 "tv_8"
             ],
+            "Tagesschau24 HD": [
+                "makro_rectv",
+                "tv_3",
+                "tv_5"
+            ],
             "VOX HD": [
                 "makro_rectv",
                 "tv_9"
-            ],
-            "WELT HD": [
-                "makro_rectv",
-                "tv_3",
-                "tv_4"
             ],
             "WDR HD": [
                 "makro_rectv",
                 "tv_2",
                 "tv_7"
+            ],
+            "WELT HD": [
+                "makro_rectv",
+                "tv_3",
+                "tv_4"
             ],
             "ZDF HD": [
                 "makro_rectv",
@@ -170,6 +141,39 @@
             "ZDFneo HD": [
                 "makro_rectv",
                 "tv_1",
+                "tv_2"
+            ],
+            "arte HD": [
+                "makro_rectv",
+                "tv_3"
+            ],
+            "hr HD": [
+                "makro_rectv",
+                "tv_3",
+                "tv_0"
+            ],
+            "kabel eins Doku": [
+                "makro_rectv",
+                "tv_3",
+                "tv_2"
+            ],
+            "kabel eins HD": [
+                "makro_rectv",
+                "tv_8"
+            ],
+            "n-tv HD": [
+                "makro_rectv",
+                "tv_3",
+                "tv_3"
+            ],
+            "phoenix HD": [
+                "makro_rectv",
+                "tv_1",
+                "tv_4"
+            ],
+            "sixx HD": [
+                "makro_rectv",
+                "tv_2",
                 "tv_2"
             ]
         },
