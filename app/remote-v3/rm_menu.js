@@ -23,10 +23,12 @@ function rmMenu(name, menu)
 */
 //--------------------------------
 
+var rmMenu_visibleWidth = 875;
+
 function rmMenu(name, menu) {
 
 	this.menuItems   = menu;
-        this.app_name    = name;
+	this.app_name    = name;
 	this.data        = {};
 	this.edit_mode   = false;
 	this.inital_load = true;
@@ -56,7 +58,7 @@ function rmMenu(name, menu) {
     			document.getElementById("menuItems2").style.maxHeight = height + "px"; 
     			rm3menu.menu_height();	
     			
-    			if (width > 875) {
+    			if (width > rmMenu_visibleWidth) {
 	    			document.getElementById("menuItems").style.visibility = "hidden"; 
 	    			}
 			}
@@ -67,6 +69,18 @@ function rmMenu(name, menu) {
 		this.menu_height();	
                 }
                 
+        this.click_menu          = function() {
+    			height       = (window.innerHeight - 70);
+    			width        = window.innerWidth;
+    			menuDropDown = document.getElementById("menuItems");
+
+			if (width < rmMenu_visibleWidth) {
+				if (menuDropDown.style.visibility == "hidden")   { menuDropDown.style.visibility = "visible"; }
+				else                                             { menuDropDown.style.visibility = "hidden"; }
+     				}
+			else                                                     { menuDropDown.style.visibility = "hidden"; }
+   		}
+ 
         this.menu_height	  = function() {
 		document.getElementById("remote_nav").style.maxHeight = "100px";
 	        var height = pageHeight();
@@ -145,15 +159,15 @@ function rmMenu(name, menu) {
 		}
 
 	this.entry_script         = function(script,label) {
-  		return "<li><a onClick=\"javascript:" + script + ";clickMenu();setNavTitle('" + label + "');\">"+label+"</a></li>";
+  		return "<li><a onClick=\"javascript:" + script + ";"+this.app_name+".click_menu();setNavTitle('" + label + "');\">"+label+"</a></li>";
 		}
 
 	this.entry_device         = function(device,label) {
-		return "<li><a onclick=\"rm3remotes.create('device','" + device + "');rm3settings.hide();clickMenu();setNavTitle('" + label + "');\" >" + label.replace(/#/g,"'") + "</a></li>";
+		return "<li><a onclick=\"rm3remotes.create('device','" + device + "');rm3settings.hide();"+this.app_name+".click_menu();setNavTitle('" + label + "');\" >" + label.replace(/#/g,"'") + "</a></li>";
 		}
 
 	this.entry_scene          = function(scene,label) {
-		return "<li><a onclick=\"rm3remotes.create('scene','" + scene + "');rm3settings.hide();clickMenu();setNavTitle('" + label + "');\" >" + label.replace(/#/g,"'") + "</a></li>";
+		return "<li><a onclick=\"rm3remotes.create('scene','" + scene + "');rm3settings.hide();"+this.app_name+".click_menu();setNavTitle('" + label + "');\" >" + label.replace(/#/g,"'") + "</a></li>";
 		}
 
         // handle messages for console
