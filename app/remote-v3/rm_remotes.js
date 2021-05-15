@@ -439,7 +439,7 @@ function rmRemote(name) {
 		remote += this.display_json( "remote_json_display", remote_display );
 		remote += "<hr/><center>" + 
 				this.button_edit(this.app_name+".device_edit_json('"+id+"','"+device+"');"+
-					this.app_name+".device_remote('frame3','"+device+"','remote_json_buttons','remote_json_channel');","reset") + "&nbsp;" + 
+					this.app_name+".device_remote('frame3','"+device+"','remote_json_buttons','remote_json_channel');"+this.app_name+".device_notused('frame5','"+device+"','remote_json_buttons');","reset") + "&nbsp;" + 
 				this.button_edit("apiDeviceJsonEdit('"+device+"','remote_json_buttons','remote_json_display');","save") +  "&nbsp;" + 
 				this.button_edit(this.app_name+".device_remote('frame3','"+device+"','remote_json_buttons','remote_json_display');"+this.app_name+".device_notused('frame5','"+device+"','remote_json_buttons');","preview") +
 				"</center>";
@@ -659,7 +659,7 @@ function rmRemote(name) {
 		remote += "Devices:&nbsp;&nbsp;" + this.input("scene_json_devices", JSON.stringify(this.data["DATA"]["scenes"][scene]["devices"]))+"<br/><br/>";
 		remote += "<hr/><center>" + 
 				this.button_edit(this.app_name+".scene_edit_json('"+id+"','"+scene+"');"+
-					this.app_name+".scene_remote('frame3','"+scene+"','scene_json_buttons','scene_json_channel');","reset") + "&nbsp;" + 
+					this.app_name+".scene_remote('frame3','"+scene+"','scene_json_buttons','scene_json_channel');"+this.app_name+".scene_channels('frame5','"+scene+"','scene_json_channel');","reset") + "&nbsp;" + 
 				this.button_edit("apiSceneJsonEdit('"+scene+"','scene_json_buttons','scene_json_channel','scene_json_devices');","save","") + "&nbsp;" +
 				this.button_edit(this.app_name+".scene_remote('frame3','"+scene+"','scene_json_buttons');"+this.app_name+".scene_channels('frame5','"+scene+"','scene_json_channel');","preview") +
 				"</center>";
