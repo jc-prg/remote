@@ -241,6 +241,7 @@ function statusCheck(data={}) {
 			elementVisible("display_"+key+"_ERROR");
 			elementHidden( "display_"+key+"_ON");
 			elementHidden( "display_"+key+"_OFF");
+			elementHidden( "display_"+key+"_EDIT_MODE");
 			}
 
 		else if (typeof check_button == "string") {
@@ -290,6 +291,14 @@ function statusCheck(data={}) {
 				elementHidden( "display_"+key+"_OFF");
 				}
 			}	
+			
+		if (rm3remotes.edit_mode) {
+			elementVisible("display_"+key+"_EDIT_MODE");
+			elementHidden( "display_"+key+"_ON");
+			elementHidden( "display_"+key+"_OFF");
+			elementHidden( "display_"+key+"_ERROR");
+			}
+		
 		}
 	      }
 	   }
