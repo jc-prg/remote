@@ -20,28 +20,8 @@ function statusCheck(data={})
 //--------------------------------
 
 var last_media_info_content = "";
+var device_media_info       = {};
 
-
-//-----------------------------------------
-
-function statusShowApiStatusLED(color) {
-	var color_html = "";
-
-	if (color == "red")   { color_html = status_red; }
-	if (color == "yellow"){ color_html = status_yellow; }
-	if (color == "green") { color_html = status_green; }
-	if (color == "gray")  { color_html = status_gray; }
-
-	setTextById("rest_status", color_html);
-	}
-
-//-----------------------------------------
-
-function statusShowApiStatus( color, wait ) {
-	statusShowApiStatusLED( color );
-	setTimeout(function(){ statusShowApiStatusLED("gray"); }, wait*1000);
-	}
-	
 //-----------------------------------------
 
 function statusShowVolume_old( volume, maximum, vol_color, novol_color="" ) {
@@ -261,6 +241,7 @@ function statusCheck(data={}) {
 			elementVisible("display_"+key+"_ERROR");
 			elementHidden( "display_"+key+"_ON");
 			elementHidden( "display_"+key+"_OFF");
+			elementHidden( "display_"+key+"_EDIT_MODE");
 			}
 
 		else if (typeof check_button == "string") {
@@ -310,6 +291,14 @@ function statusCheck(data={}) {
 				elementHidden( "display_"+key+"_OFF");
 				}
 			}	
+			
+		if (rm3remotes.edit_mode) {
+			elementVisible("display_"+key+"_EDIT_MODE");
+			elementHidden( "display_"+key+"_ON");
+			elementHidden( "display_"+key+"_OFF");
+			elementHidden( "display_"+key+"_ERROR");
+			}
+		
 		}
 	      }
 	   }
@@ -357,30 +346,33 @@ function statusCheck(data={}) {
 		// media info ...
 		var media_info         = document.getElementById("media_info");
 		var media_info_content = document.getElementById("media_info_content");
+		var device_status      = devices[key]["status"]["power"].toUpperCase();
 		
-		
-		if (media_info && devices[key]["status"]["current-playing"] && devices[key]["status"]["current-playing"] != "") {
-		
-			//alert(key +"-" + rm3remotes.active_name);
+		if (devices[key]["status"]["api-status"] == "Connected" && device_status.includes("ON")) {
+			if (media_info && devices[key]["status"]["current-playing"] && devices[key]["status"]["current-playing"] != "") {
 
-			if (media_info_content && media_info_content.innerHTML != "no media")	{ var current_info = media_info_content.innerHTML; }
-			else									{ var current_info = ""; }
+				if (media_info_content)	{ var current_media_info_content = media_info_content.innerHTML; }
+				else				{ var current_media_info_content = ""; }
+				
 
-			if (devices[key]["status"]["current-playing"] != "no media" && rm3remotes.active_name == key) {
-                                current_info = devices[key]["status"]["current-playing"];
-				var title = "&nbsp;<br/><center>";
-				title    += "<marquee style='width:95%' scrollamount='3' scrolldelay='10' id='media_info_content'>"+current_info+"</marquee>";
-				title    += "</center>&nbsp;<hr/>";
-				// <marquee scrollamount="3" scrolldelay="3">Dieser Text wird ziemlich schnell bewegt...</marquee>			
-				}
-			else {  title = ""; }
-			
-			if (current_info != last_media_info_content) { 
-				media_info.innerHTML    = title;
-                                last_media_info_content = current_info;
-				//alert(devices[key]["status"]["info"] + "\n" + current_info); 
-				}
- 			}
+				if (devices[key]["status"]["current-playing"] != "no media" && rm3remotes.active_name == key) {				
+					current_media_info_content = devices[key]["status"]["current-playing"];
+					current_playing            = "&nbsp;<br/><center>";
+					current_playing           += "<marquee style='width:98%' scrollamount='3' scrolldelay='10' id='media_info_content'>"+current_media_info_content+"</marquee>";
+					current_playing           += "</center>&nbsp;<hr/>";
+					device_media_info[key]     = current_media_info_content;
+					}
+				else {	current_playing            = "";
+					device_media_info[key]     = "";
+					}
+
+				if (current_media_info_content != last_media_info_content) { 
+					media_info.innerHTML    = current_playing;
+					last_media_info_content = current_media_info_content;
+					}
+	 			}
+	 		}
+
 
 		// fill keys with displays
 		if (devices[key]["status"] && devices[key]["display"]) {

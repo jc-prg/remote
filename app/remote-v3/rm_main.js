@@ -1,12 +1,8 @@
 //--------------------------------
 // jc://remote/
 //--------------------------------
-// (c) Christoph Kloth
-//
-// WebApp Remote Control for RM3
-// from Broadlink (requires server app)
-//--------------------------------
 /* INDEX:
+window.addEventListener('scroll', function()
 function remoteInit (first_load=true)
 function remoteFirstLoad_load()
 function remoteFirstLoad(data)
@@ -15,6 +11,8 @@ function remoteInitData_load()
 function remoteInitData(data)
 function remoteReload_load()
 function remoteReload(data)
+function remoteForceReload(without_position=false)
+function remoteForceReload_checkIfReady(data)
 function remoteSetSliderDevice(data)
 function remoteDropDown_load()
 function remoteDropDown(data)
@@ -25,58 +23,21 @@ function remoteLastFromCookie()
 */
 //--------------------------------
 
-if (rm3_test) 	{
-	//RESTurl 	= RESTurl_test;
-	rm3title 	+= "test";
-	connect2stage	= "Test";
-	document.getElementById("navTitle").style.color="red";
-	}
-else {
-	//RESTurl 	= RESTurl_prod;
-	connect2stage	= "Prod";
-	}
+var rm3background  = "remote-v3/img/remote2.png";
+var reload_active  = false;
+var showImg        = true;
 
-//--------------------------------
-// app to load info and send cmd to IR device
-//--------------------------------
-
-var rm3app     = new jcApp( "rm3app", RESTurl, "list", "api/");	 // create app
-rm3app.init( "data_log", "error_log", reloadInterval, remoteReload ); // set initial values
-rm3app.setAutoupdate();						 // set auto update interval to active
-
-
-//--------------------------------
-// enforce reload on mobiles when scrolling down -100px
-//--------------------------------
-
-window.addEventListener('scroll', function() { remoteForceReload(); });
-
-//--------------------------------
-// additional apps to write menus, remotes, messages
-//--------------------------------
+var rm3slider  = new jcSlider( name="rm3sider", container="audio_slider");	// create slider
+rm3slider.init(min=0,max=100,label="loading");				// set device information
+rm3slider.setPosition(top="45px",bottom=false,left=false,right="10px");	// set position (if not default)
+rm3slider.setOnChange(apiSetVolume);						// -> setVolume (api call to set volume -> this.callOnChange( this.value ))
+rm3slider.setShowVolume(statusShowVolume);					// -> showVolume e.g. in header
 
 var rm3menu     = new rmMenu(     "rm3menu", ["menuItems","menuItems2"] );
 var rm3start    = new rmStart(    "rm3start" );
 var rm3remotes  = new rmRemote(   "rm3remotes" );
 var rm3settings = new rmSettings( "rm3settings" );
-var rm3msg      = new jcMsg(      "rm3msg" );
-var rm3cookie   = new jcCookie(   "rm3cookie");
 
-var rm3slider  = new jcSlider( name="rm3sider", container="audio_slider");	// create slider
-rm3slider.init(min=0,max=100,label="loading");					// set device information
-rm3slider.setPosition(top="45px",bottom=false,left=false,right="10px");		// set position (if not default)
-rm3slider.setOnChange(apiSetVolume);						// -> setVolume (api call to set volume -> this.callOnChange( this.value ))
-rm3slider.setShowVolume(statusShowVolume);					// -> showVolume e.g. in header
-
-//statusShowVolume_old( rm3slider.slider.value, rm3slider.audioMax, vol_color );
-//setVolume( rm3slider.appMainAudio, rm3slider.slider.value );
-
-
-//--------------------------------
-// initialize
-//--------------------------------
-
-apiCheckUpdates();
 remoteInit(first_load=true);
 
 //----------------------------------
@@ -85,31 +46,25 @@ remoteInit(first_load=true);
 
 function remoteInit (first_load=true) {
 
-	setNavTitle(rm3title);
+	setNavTitle(appTitle);
 
-	setTextById("rest_status",status_gray);
 	setTextById("menuItems","");
-	setTextById("remote1","");
-	setTextById("remote2","");
-	setTextById("remote3","");
-	setTextById("remote_edit1","");
-	setTextById("remote_edit2","");
+	setTextById("frame1","");
+	setTextById("frame2","");
+	setTextById("frame3","");
+	setTextById("frame4","");
+	setTextById("frame5","");
 		
-	if (rm3update) {
-		setTimeout(function(){ rm3msg.hide(); }, 2000);
-		rm3update = false;
-		}
-
 	if (first_load) {
-		showRemoteInBackground(1);		// show start screen
-		setTextById("remote2","<center>Loading data ...</center>");
+		showRemoteInBackground(1);			// show start screen
+		setTextById("frame4","<center>Loading data ...</center>");
 		remoteFirstLoad_load();			// init load of data
 		}
 	}
 	
 //----------------------------------
 
-function remoteFirstLoad_load() {rm3app.requestAPI("GET",["list"],"",remoteFirstLoad); }
+function remoteFirstLoad_load() {appFW.requestAPI("GET",["list"],"",remoteFirstLoad); }
 function remoteFirstLoad(data) {
 	remoteReload(data);			// initial load of data incl. remotes, settings
 	remoteStartMenu(data);			// initial load start menu
@@ -126,7 +81,7 @@ function remoteUpdate(data) {
         
 //----------------------------------
 
-function remoteInitData_load() { rm3app.requestAPI("GET",["list"],"",remoteInitData); }
+function remoteInitData_load() { appFW.requestAPI("GET",["list"],"",remoteInitData); }
 function remoteInitData(data) {
 
 	if (data["DATA"]) {
@@ -139,7 +94,6 @@ function remoteInitData(data) {
 		}
 	else {
 		console.error("remoteInitData: no data loaded!");
-		statusShowApiStatus("red", showButtonTime);
 		}
 	}
 	
@@ -148,26 +102,24 @@ function remoteInitData(data) {
 // print after loading data (callback)
 //--------------------------------
 
-function remoteReload_load() { rm3app.requestAPI("GET",["list"],"",remoteReload); }
+function remoteReload_load() { appFW.requestAPI("GET",["list"],"",remoteReload); }
 function remoteReload(data) {
 
 	if (!data["DATA"]) {
 		console.error("remoteReload: data not loaded.");
-		statusShowApiStatus("red", showButtonTime);
 		return;
 		}
 
 	// check if still used in a fct. -> to be removed
 	dataAll = data;
 
-	remoteForceReload_checkIfReady(data);	// check if reloaded
+//	remoteForceReload_checkIfReady(data);	// check if reloaded
 	remoteInitData(data);			// init and reload data
 	remoteDropDown(data);			// update drop down menu
 	remoteSetSliderDevice(data);		// set device for volume slider
         
 	// check device & audio status
 	statusCheck(data);	
-	check_theme();
 
 	// reset button info in header
 	setTimeout(function(){setTextById("audio4", "");}, 1000);
@@ -175,29 +127,13 @@ function remoteReload(data) {
 	
 //--------------------------------
 
-function remoteForceReload(without_position=false) {
-	position = window.pageYOffset;
-	
-	if (document.getElementById('scrollPosition')) { setTextById('scrollPosition',position+" px"); }
-	if ((without_position || position <= -80) && reload_active == false) { 
-		reload_active  = true;
-		reload_waiting = 0;
-		elementVisible('reload_info');
-		setTextById('reload_msg','.');
-		rm3app.requestAPI( "GET", ["reload"], "", remoteReload );
-		rm3app.setAutoupdate("",1);
-		}   	
-	}
-
-//--------------------------------
-
-
+/*
 function remoteForceReload_checkIfReady(data) {
 	// check reload status
 	if (data["CONFIG"]["reload_status"] == false && reload_active) {
 	   	reload_active = false;			 // activate reload again
 		elementHidden('reload_info');			 // hide loading message
-	   	rm3app.setAutoupdate("",reloadInterval);	 // set reload interval back to default
+	   	appFW.setAutoupdate("",reloadInterval);	 // set reload interval back to default
 		}
 	else if (reload_active) {
 		reload_waiting += 1;
@@ -206,10 +142,11 @@ function remoteForceReload_checkIfReady(data) {
 		else if (reload_waiting < 25)		{ setTextById('reload_msg',lang("RELOAD_TAKES_MUCH_LONGER")); }
 		else { 
 			setTextById('reload_msg','Connection timed out.');
-		   	rm3app.setAutoupdate("",reloadInterval);		 // set reload interval back to default
+		   	appFW.setAutoupdate("",reloadInterval);		 // set reload interval back to default
 			}
 		}
 	}
+*/
 
 //--------------------------------
 
@@ -225,12 +162,11 @@ function remoteSetSliderDevice(data) {
 	
 //--------------------------------
 
-function remoteDropDown_load() { rm3app.requestAPI( "GET", ["list"], "", remoteDropDown ); }
+function remoteDropDown_load() { appFW.requestAPI( "GET", ["list"], "", remoteDropDown ); }
 function remoteDropDown(data) {
 
 	if (!data["DATA"]) {
 		console.error("remoteDropDown: data not loaded.");
-		statusShowApiStatus("red", showButtonTime);
 		return;
 		}
 
@@ -271,19 +207,18 @@ function remoteToggleEditMode() {
 
 //--------------------------------
 
-function remoteStartMenu_load() { rm3app.requestAPI( "GET", ["list"], "", remoteStartMenu ); }
+function remoteStartMenu_load() { appFW.requestAPI( "GET", ["list"], "", remoteStartMenu ); }
 function remoteStartMenu(data) {
 
 	if (!data["DATA"]) {
 		console.error("remoteStartMenu: data not loaded.");
-		statusShowApiStatus("red", showButtonTime);
 		return;
 		}
 
 	// load buttons on start page
 	rm3start.init(        data);	// load data to class
-	rm3start.add_scenes(  data["DATA"]["scenes"],  "remote1" );
-	rm3start.add_devices( data["DATA"]["devices"], "remote2" );
+	rm3start.add_scenes(  data["DATA"]["scenes"],  "frame3" );
+	rm3start.add_devices( data["DATA"]["devices"], "frame4" );
 	
 	// check status and change button color
 	statusCheck(data);
@@ -295,7 +230,7 @@ function remoteStartMenu(data) {
 function remoteLastFromCookie() {
 
 	// read cookie if exist
-	var cookie   = rm3cookie.get("remote");
+	var cookie   = appCookie.get("remote");
 
 	// if cookie ...
 	if (cookie) {

@@ -15,7 +15,7 @@ function apiTemplateAdd_exe(device,template)
 function apiTemplateAdd(device_id, template_id)
 function apiSceneAdd(data)
 function apiSceneEdit(device,prefix,fields)
-function apiSceneJsonEdit(device,json_buttons,json_channel)
+function apiSceneJsonEdit(device,json_buttons,json_channel,json_devices)
 function apiSceneDelete_exe(device)
 function apiSceneDelete(scene_id)
 function apiDeviceEdit(device,prefix,fields)
@@ -26,13 +26,14 @@ function apiDeviceAdd(data,onchange)
 function apiDeviceDelete_exe(device)
 function apiDeviceDelete(device_id)
 function apiRemoteChangeVisibility(type, device_id, value_id)
-function apiCommandSend(cmdButton, sync="", callback="")
+function apiCommandSend(cmdButton, sync="", callback="", device="")
 function apiCommandDelete_exe(button)
 function apiCommandDelete(device_id, button_id)
+function apiCommandRecord(device_id, button_id)
 function apiButtonAdd(device_id, button_id)
 function apiButtonDelete_exe(device,button)
 function apiButtonDelete(device_id, button_id)
-function apiMakroSend( makro )
+function apiMakroSend( makro, device="", content="" )
 function apiMakroSend_hide( data )
 */
 //--------------------------------
@@ -294,10 +295,9 @@ function apiRemoteChangeVisibility(type, device_id, value_id) {
 // Commands an APP senden
 //----------------------------------
 
-function apiCommandSend(cmdButton, sync="", callback="") {
+function apiCommandSend(cmdButton, sync="", callback="", device="") {
 
   
-	var dc; 	// device & command
 	var ee, vv;
 	var onoff = false;
 
@@ -325,6 +325,9 @@ function apiCommandSend(cmdButton, sync="", callback="") {
 		statusShowApiStatus("green", showButtonTime);
 		if (showButton) {setTextById("audio4", cmdButton);}
 		}
+		
+	// device content info (scenes)
+	//device_media_info[device] = "";
 	}
 
 // delete commands
@@ -430,13 +433,16 @@ function apiButtonDelete(device_id, button_id) {
 // separate makro into single commands and send commands
 //----------------------------------
 
-function apiMakroSend( makro ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
+function apiMakroSend( makro, device="", content="" ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
 
 	rm3msg.wait_small(lang("PLEASE_WAIT") + "<br/>");
 	console.log( "Send makro: " + makro );
 	
 	dc = [ "makro", makro ];
 	rm3app.requestAPI( "GET", dc, "", apiMakroSend_hide );
+	
+	// device content info (scenes) => move to API, add to var "dc" in step before
+	device_media_info[device] = content;
 	
 	// if request takes more time, hide message after 5 seconds
 	setTimeout(function(){ rm3msg.hide(); }, 5000);

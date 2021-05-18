@@ -18,7 +18,7 @@ var RESTurl        = "http://"+ip[0]+":"+stage_port+"/";
 var rm3version     = "v2.4.6";
 var rm3title       = "jc://remote/";
 var rm3update      = false;
-var rm3background  = "img/remote2.png";
+var rm3background  = "remote/img/remote2.png";
 
 // presets
 

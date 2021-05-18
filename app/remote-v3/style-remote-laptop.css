@@ -1,0 +1,24 @@
+/* format for iPhone XS in landscape and bigger devices */
+
+@media (min-width: 720px) {
+
+  #audio2         	{ right  : 145px; }
+
+  .remote         	{ width  : 335px; }
+  .channel-entry 	{ width  : 160px; }
+
+  .button         	{ width  :  74px; max-width  :  74px; }
+  .button.big     	{ width  : 102px; max-width  : 102px; }
+  .button.small   	{ width  :  60px; max-width  :  60px; }
+  .button.small_edit	{ width  :  60px; max-width  :  60px; }
+
+  .display.small  	{ width  : 156px; }
+  .display.middle 	{ width  : 156px; }
+  .display.big    	{ width  : 320px; }
+  
+  .display-element        { width : 68px; }
+  .display-element.small  { width : 68px; }
+  .display-element.middle { width : 142px; }
+  .display-element.big    { width : 142px; }
+}
+

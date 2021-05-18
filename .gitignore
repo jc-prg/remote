@@ -32,3 +32,13 @@ start
 data/_ACTIVE-DEVICES.json
 
 data/_ACTIVE-SCENES.json
+
+app/app-fw/
+
+app/img/
+
+config/app-framework/
+
+config/modules/
+
+app/cache.manifest

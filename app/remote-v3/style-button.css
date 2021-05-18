@@ -1,0 +1,168 @@
+/* buttons */
+
+button {
+   background      : #000044;
+   color           : white;
+   height          : 30px;
+   overflow        : hidden;
+   border-radius   : 5px;
+   font-size       : 12px;
+}
+
+/* buttons for remote controls */
+
+.button {
+   color           : white;
+   width           :  63px;
+   height          :  40px;
+   max-width       :  63px;
+   max-height      :  40px;
+   padding         :   2px;
+   margin          :   4px;
+   border-style    : solid 0px #111111;
+   border-radius   :   6px;   
+   background-color: #111111;
+   font-size       : 13px;
+   overflow        : hidden;
+   float           : left;
+}
+
+.button:hover {
+   color            : yellow;
+   background-color : #555555;
+   box-shadow       : 0 4px 4px 0 rgba(0,0,0,0.24), 0 4px 4px 0 rgba(0,0,0,0.19);
+}
+
+.button:disabled {
+   background-color: #dddddd;
+   color           : #dddddd;
+   border           : gray;
+   border-style     : none;
+   box-shadow       : 0 0px 0px 0 rgba(0,0,0,0.24), 0 0px 0px 0 rgba(0,0,0,0.19);
+}
+
+.button.complete {
+   background-color: #eeeeee;
+   border          : blue;
+   border-style    : solid;
+   border-width    : 2px;
+}
+
+.button.notfound {
+   background-color: #000055;
+   border          : red;
+   border-style    : solid;
+   border-width    : 2px;
+}
+
+.button.notfound:disabled {
+   background-color: #777777;
+   border          : red;
+   border-style    : solid;
+   border-width    : 2px;
+}
+
+.button.big {
+    width  		: 88px;
+    height 		: 66px;
+    max-width          : 88px;
+    max-height         : 66px;
+}
+
+.button.big_edit {
+    width  		: 88px;
+    height 		: 66px;
+    max-width          : 88px;
+    max-height         : 66px;
+    border           	: blue;
+    border-style     	: solid;
+    border-width     	: 2px;
+}
+
+.button.small {
+    width  		: 51px;
+    height 		: 50px;
+    max-width          : 51px;
+    max-height         : 50px;
+    margin 		:  3px;
+}
+
+.button.small_edit { 
+    width  		: 60px; 
+    height 		: 50px;
+    max-width          : 60px;
+    max-height         : 50px;
+    margin 		:  3px;
+    border           	: blue;
+    border-style     	: solid;
+    border-width     	: 2px;
+}
+
+
+/* colored buttons */
+
+.button.bgred    { background-color: red;     color: red; }
+.button.bgyellow { background-color: yellow;  color: yellow; }
+.button.bgblue   { background-color: blue;    color: blue; }
+.button.bggreen  { background-color: green;   color: green; }
+
+
+/* display information within the remote control */
+
+.display {
+   width           :  133px;
+   height          :  40px;
+   color           : yellow;
+   padding         :   2px;
+   margin          :   4px;
+   font-size       :   9px; 
+   border-radius   :   6px; 
+   background-color: #000044;
+   overflow        : hidden;
+   float           : left;
+   display         : inline-block;
+   vertical-align  : top;
+}
+
+.display.right  { float  : right; }
+
+.display.small  { width  : 133px;   height  :  40px; } 
+.display.middle { width  : 133px;   height  :  88px; } 
+.display.big    { width  : 276px;   height  :  88px; } 
+
+.display.h1w2   { width  : 133px;   height  :  40px; } 
+.display.h2w2   { width  : 133px;   height  :  88px; } 
+.display.h2w4   { width  : 276px;   height  :  88px; } 
+
+.display-element {
+   width	: 56px;
+   margin	: 2px;
+   padding	: 0px;
+   float	: left;
+   color	: white;
+   //border       : blue 1px solid;  
+   text-align   : left;
+}
+
+.display-element.alert   { color : black; }
+.display-element.small   { width : 56px; }
+.display-element.middle  { width : 118px; }
+.display-element.big     { width : 118px; }
+
+.display-label {
+   width        : 45px;
+   float        : left;
+}
+
+.display-input {
+   float        : left;
+}
+
+.display.display_off {
+   background	: #000033;
+}
+
+.display.display_error {
+   background	: #660000;
+}
+
