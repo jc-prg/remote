@@ -68,7 +68,8 @@
    height		: 20px;
    }
 
-#remote3    { z-index: 61; }
+#frame3    { z-index: 61; }
+
 #reload_msg { color : gray; font-family: sans-serif; font-size: 10px;}
 
 .remoteblock {
