@@ -257,8 +257,9 @@ class onkyoAPIaddOn():
       # "no media" noch nicht implementiert
       
       md     = ""
+      input_device = self.api.command("input-selector=query")[1]
       
-      if tags == "net-info":
+      if tags == "net-info" and "net" in input_device:
         try:
           artist = self.api.command("dock.net-usb-artist-name-info=query")[1]
           title  = self.api.command("dock.net-usb-title-name=query")[1]
@@ -276,6 +277,9 @@ class onkyoAPIaddOn():
           error = "ERROR "+self.addon+" - metadata ("+tags+"): " + str(e) 
           logging.warning(error)
           return error
+          
+      elif tags == "net-info":
+        md = "no media"
         
       else:
         md  = "not implemented"
