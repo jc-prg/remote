@@ -2,7 +2,12 @@
     "data": {
         "description": "test device",
         "display": {},
-        "remote": []
+        "remote": [
+            "ad",
+            "beam",
+            "tv",
+            "play"
+        ]
     },
     "info": "jc://remote/ - In this files the remote layout and a display layout is defined."
 }

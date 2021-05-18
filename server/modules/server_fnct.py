@@ -138,12 +138,13 @@ def RmReadData(selected=[]):
             template_data = configFiles.read(modules.templates + template)
             
             logging.debug(modules.templates+template)
-
+            
             if "ERROR" in template_data:  data["templates"][template] = template_data
             else: 
                 if template_key in template_data: data["templates"][template] = template_data[template_key]
                 elif "data" in template_data:     data["templates"][template] = template_data["data"]
                 else:                             data["templates"][template] = { "ERROR" : "JSON file not correct, key missing: "+template_key }
+                
                 data["template_list"][template] = data["templates"][template]["description"]
         
             data["templates"][template]["file"] = template
