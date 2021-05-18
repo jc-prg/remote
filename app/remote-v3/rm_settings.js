@@ -110,7 +110,7 @@ function rmSettings (name) {	// IN PROGRESS
 		setting += this.tab_row( 	"Audio:",		 audio2 + "<br/>" + audio1 );
 		setting += this.tab_row( 	"Window:", 		document.body.clientWidth + "x" + document.body.clientHeight );
 		setting += this.tab_row(	"Position:",		"<div id='scrollPosition'>0 px</div>" );
-		setting += this.tab_row( 	"Theme:", 		theme );
+		setting += this.tab_row( 	"Theme:", 		appTheme );
 		setting += this.tab_row(	"Interfaces:",		this.interface_list() );
 		setting += this.tab_row(	"Exec time:",          this.exec_time_list() );
 		setting += this.tab_row( 	"Status:",
