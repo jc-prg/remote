@@ -124,6 +124,40 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
 
+  /send-text/{device}/{button}/{text}/:
+    get:
+      operationId: modules.server_cmd.RemoteSendText
+      tags:
+        - send
+      summary: send text and execute via queue
+      description: the command is send never the less the device is on or off
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: button
+          in: path
+          type: string
+          required: true
+        - name: text
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully send IR command
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              CONFIG:
+                $ref: "#/definitions/CONFIG"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
   /set/{device}/{command}/{value}/:
     get:
       operationId: modules.server_cmd.RemoteSet

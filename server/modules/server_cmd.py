@@ -222,9 +222,38 @@ def Remote(device,button):
         
         data["REQUEST"]["Device"]  = device
         data["REQUEST"]["Button"]  = button
-        #data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,button)
         data["REQUEST"]["Return"]  = queueSend.add2queue([[interface,device,button,""]])
         data["REQUEST"]["Command"] = "Remote"
+        
+        if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
+
+        data["DeviceStatus"]       = getStatus(device,"power")    # to be removed
+        data["ReturnMsg"]          = data["REQUEST"]["Return"]    # to be removed
+
+        data                       = remoteAPI_end(data,["no-data"])      
+        
+        return data
+
+
+#-------------------------------------------------
+
+
+def RemoteSendText(device,button,text):
+        '''
+        send command and return JSON msg
+        '''
+        
+        data                       = remoteAPI_start()
+        data["REQUEST"]["Device"]  = device
+        data["REQUEST"]["Button"]  = button
+        data["REQUEST"]["Command"] = "RemoteSendText"
+
+        if device in configFiles.cache["_api"]["devices"]:
+           interface                  = configFiles.cache["_api"]["devices"][device]["interface"]["api"]
+           data["REQUEST"]["Return"]  = queueSend.add2queue([[interface,device,button,text]])
+           
+        else:
+           data["REQUEST"]["Return"]  = "ERROR: Device '"+device+"' not defined."
         
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
 
@@ -281,6 +310,8 @@ def RemoteMakro(makro):
         commands_2nd              = []
         commands_3rd              = []
         commands_4th              = []
+        
+#### --> check, if makro is defined ... (or work with try: / except:)
         
         # decode makros: scene-on/off
         for command in commands_1st:

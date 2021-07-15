@@ -191,11 +191,20 @@ class connect(threading.Thread):
 
         if self.api[call_api].status == "Connected":
             method = self.method(call_api)
-            logging.info("SEND "+call_api+" / "+device+" - "+button+" ("+str(value)+")")
             
-            if  method == "record":                  button_code = self.get_command( call_api, "buttons", device, button ) 
-            elif method == "query" and value == "":  button_code = self.get_command( call_api, "buttons", device, button )
-            else:                                    button_code = self.create_command( call_api, device, button, value ) 
+            if button.startswith("send-"):
+               logging.info("SEND-DATA "+call_api+" / "+device+" - "+button+" ("+str(value)+")")
+               if method == "query" and value != "":    button_code = self.get_command( call_api, "send-data", device, button )
+               else:                                    button_code = "ERROR, wrong method (!query) or no data transmitted."
+               if not "ERROR" in button_code:           button_code = button_code.replace("{DATA}",value)
+
+               logging.info("BUTTON-CODE "+button_code)
+               
+            else:            
+               logging.info("SEND "+call_api+" / "+device+" - "+button+" ("+str(value)+")")
+               if  method == "record":                  button_code = self.get_command( call_api, "buttons", device, button ) 
+               elif method == "query" and value == "":  button_code = self.get_command( call_api, "buttons", device, button )
+               else:                                    button_code = self.create_command( call_api, device, button, value ) 
             
             if "ERROR" in button_code: return_msg = "ERROR: could not read/create command from button code (send/"+mode+"/"+button+"); " + button_code
             elif call_api in self.api: return_msg = self.api[call_api].send(device,button_code)
@@ -204,7 +213,8 @@ class connect(threading.Thread):
             if not "ERROR" in return_msg and self.api[call_api].method == "record" and value != "":
                self.save_status(device, button, value)
            
-        else:                          return_msg = "ERROR: API not connected ("+call_api+")"
+        else:
+            return_msg = "ERROR: API not connected ("+call_api+")"
         
 
         if "ERROR" in str(return_msg) or "error" in str(return_msg):
@@ -311,8 +321,11 @@ class connect(threading.Thread):
           # add button definitions from default.json if exist
           if rm3json.ifexist(rm3config.commands + api + "/default"):
              buttons_default = self.configFiles.read(rm3config.commands + api + "/default")
-             for key in buttons_default["data"][button_query]:
-               buttons["data"][button_query][key] = buttons_default["data"][button_query][key]
+             if button_query in buttons_default["data"]:
+               for key in buttons_default["data"][button_query]:
+                 buttons["data"][button_query][key] = buttons_default["data"][button_query][key]
+             else:
+               return "ERROR get_command: button_query does not exist for device ("+device+"/"+button_query+")"
 
           # check for errors or return button code
           if "ERROR" in buttons or "ERROR" in active:         return "ERROR get_command: buttons not defined for device ("+device+")"
