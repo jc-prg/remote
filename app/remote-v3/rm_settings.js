@@ -90,8 +90,12 @@ function rmSettings (name) {	// IN PROGRESS
 		// Show Server Infos
 		var main_audio = this.data["CONFIG"]["main-audio"];  // get main audio device from file
 		var audio_max  = "";
-		if (this.data["DATA"]["devices"][main_audio]["values"]) {
+		if (this.data["DATA"]["devices"][main_audio]["values"] && this.data["DATA"]["devices"][main_audio]["values"]["vol"]) {
 			audio_max  = this.data["DATA"]["devices"][main_audio]["values"]["vol"]["max"];
+			}
+		else {
+			audio_max  = 100;
+			console.error("Max values not defined, set 100!");
 			}
 		var audio1     = "Power: "  + this.data["DATA"]["devices"][main_audio]["status"]["power"] + " / "
 		               + "Volume: " + this.data["DATA"]["devices"][main_audio]["status"]["vol"] + " (" + audio_max + ")";

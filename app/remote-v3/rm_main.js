@@ -152,8 +152,15 @@ function remoteForceReload_checkIfReady(data) {
 
 function remoteSetSliderDevice(data) {
 	main_audio 	= data["CONFIG"]["main-audio"];
-	min        	= data["DATA"]["devices"][main_audio]["values"]["vol"]["min"];
-	max        	= data["DATA"]["devices"][main_audio]["values"]["vol"]["max"];		
+	if (data["DATA"]["devices"][main_audio]["values"]["vol"]) {
+		min     = data["DATA"]["devices"][main_audio]["values"]["vol"]["min"];
+		max     = data["DATA"]["devices"][main_audio]["values"]["vol"]["max"];		
+		}
+	else {
+		min    = 0;
+		max    = 100;
+		console.error("Min and max values not defined, set to 0..100!");
+		}
 	label      	= data["DATA"]["devices"][main_audio]["label"];
 	
 	rm3slider.init(min,max,label+" ("+main_audio+")");

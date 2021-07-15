@@ -188,8 +188,12 @@ function statusCheck(data={}) {
 	var main_audio_max  = "";
 	var main_audio_vol  = devices[main_audio]["status"]["vol"];
 	var main_audio_mute = devices[main_audio]["status"]["mute"].toUpperCase();
-	if (devices[main_audio] && devices[main_audio]["values"]) {
+	if (devices[main_audio] && devices[main_audio]["values"] && devices[main_audio]["values"]["vol"]) {
 		main_audio_max  = devices[main_audio]["values"]["vol"]["max"];
+		}
+	else {
+		main_audio_max    = 100;
+		console.error("Min and max values not defined, set to 0..100!");
 		}
 
 	// set colors
