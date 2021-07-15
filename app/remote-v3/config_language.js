@@ -75,6 +75,7 @@ var language_app = {
 		"SCENE_SELECT"			: "Please select scene.",
 		
 		"SETTINGS"			: "Settings",
+		"TEXT_INPUT"			: "Text input",
 		}
 	}
 
