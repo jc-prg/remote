@@ -1,15 +1,16 @@
 {
 	"Devices" : {
-        	"ONKYO-TXNR686": {
-			"IPAddress"		: "192.168.1.36",
-        		"Port"			: "8080",
-			"Timeout"		: 5,
-			"Methods"		: ["send","query"],
-			"Login"		: "",
-			"Password"		: ""
+		"default" : {
+			"IPAddress"   : "192.168.1.31",
+			"Port"        : "8080",
+			"Timeout"     : 5,
+			"Methods"     : ["send","query"],
+			"Description" : "Media Center",
+			"Commands"    : {},
+			"Queries"     : {}
 			}
 		},
-	"API-Source"		: "https://github.com/jcsaaddupuy/python-kodijson",
-	"API-Info"		: "http://wiki.xbmc.org/index.php?title=JSON-RPC_API/v9",
-	"API-Description"	: "API for KODI Servers (basic functionality, under development)"
+	"API-Source"      : "https://github.com/jcsaaddupuy/python-kodijson",
+	"API-Info"        : "http://wiki.xbmc.org/index.php?title=JSON-RPC_API/v9",
+	"API-Description" : "API for KODI Servers (basic functionality, under development)"
 }
