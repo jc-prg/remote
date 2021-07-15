@@ -103,6 +103,7 @@ class queueApiCalls (threading.Thread):
                 result = "ERROR queue query_list: " + str(e)
 
           elif self.query_send == "query":
+             result = ""
              for value in button:
                 try:    
                    result = self.device_apis.query(interface,device,value)
