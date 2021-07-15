@@ -25,16 +25,13 @@ class kodiAPI():
    Integration of KODI API to be use by jc://remote/
    '''
 
-   def __init__(self,api_name,device="",ip_address=""):
+   def __init__(self,api_name,device="",device_config={}):
        '''Initialize API / check connect to device'''
        
        self.api_name        = api_name       
        self.api_description = "API for KODI Servers (basic functionality, under development)"
-       self.api_config      = rm3json.read("interfaces/kodi/"+self.api_name,data_dir=False)
-
-       if ip_address != "":
-          self.api_config["IPAddress"] = ip_address       
-
+#       self.api_config      = rm3json.read("interfaces/kodi/"+self.api_name,data_dir=False)
+       self.api_config      = device_config
        self.api_url         = "http://"+str(self.api_config["IPAddress"])+":"+str(self.api_config["Port"])+"/jsonrpc"
        self.working         = False
        self.status          = "Started"

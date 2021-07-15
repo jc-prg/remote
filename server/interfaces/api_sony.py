@@ -21,26 +21,20 @@ class sonyAPI():
    Integration of sample API to be use by jc://remote/
    '''
 
-   def __init__(self,api_name,device="",ip_address="",mac_address=""):
+   def __init__(self,api_name,device="",device_config={}):
        '''Initialize API / check connect to device'''
        
        self.api_name        = api_name       
        self.api_description = "API for SONY Devices (SonyAPILib)"
-       self.api_config      = rm3json.read("interfaces/sonyapi/"+self.api_name,data_dir=False)
+#       self.api_config      = rm3json.read("interfaces/sonyapi/"+self.api_name,data_dir=False)
+       self.api_config      = device_config
        self.api_device      = device
        self.method          = "query" # or "record"
        self.working         = False
        self.count_error     = 0
        self.count_success   = 0
        
-       if "MacAddress" not in self.api_config["Devices"][self.api_device]: 
-          self.api_config["Devices"][self.api_device]["MacAddress"] = ""
-       if ip_address != "":
-          self.api_config["Devices"][self.api_device]["IPAddress"]  = ip_address
-       if mac_address != "":
-          self.api_config["Devices"][self.api_device]["MacAddress"] = mac_address
-       
-       logging.info("... "+self.api_name+" - " + self.api_description + " (" + self.api_config["Devices"][self.api_device]["IPAddress"] +")")
+       logging.info("... "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
        
        self.connect()
             
@@ -55,8 +49,8 @@ class sonyAPI():
        self.count_error          = 0
        self.count_success        = 0
        
-       api_ip     = self.api_config["Devices"][self.api_device]["IPAddress"]
-       api_mac    = self.api_config["Devices"][self.api_device]["MacAddress"]
+       api_ip     = self.api_config["IPAddress"]
+       api_mac    = self.api_config["MacAddress"]
        api_name   = self.api_device
        api_config = rm3stage.data_dir + "/" + rm3config.devices + self.api_name + "/" + self.api_device + ".json"
        

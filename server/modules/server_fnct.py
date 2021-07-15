@@ -60,8 +60,17 @@ def RmReadData(selected=[]):
                 interface  = data["devices"][device]["interface"]["api"]
                 data_temp  = data["devices"][device]
 
-                remote           = configFiles.read(modules.remotes  + key_remote)            # remote layout & display
-                buttons          = configFiles.read(modules.commands + interface + "/" + key) # button definitions, presets, queries ...
+                remote           = configFiles.read(modules.remotes  + key_remote)                # remote layout & display
+                buttons          = configFiles.read(modules.commands + interface + "/" + key)     # button definitions, presets, queries ...
+                buttons_default  = configFiles.read(modules.commands + interface + "/00_default") # button definitions, presets, queries ...
+
+                value_list      = [ "buttons", "queries", "commands", "values", "send-data" ]            
+                for value in value_list:
+                   if not value in buttons["data"]: buttons["data"][value] = {}             
+                   if value in buttons_default["data"]:
+                      for key in buttons_default["data"][value]:
+                        buttons["data"][value][key] = buttons_default["data"][value][key]
+
                 
                 logging.info(interface + "/" + key)
                 

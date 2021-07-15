@@ -34,20 +34,17 @@ class broadlinkAPI():
    Integration of BROADLINK API to be use by jc://remote/
    '''
 
-   def __init__(self,api_name,device="",ip_address=""):
+   def __init__(self,api_name,device="",device_config={}):
        '''Initialize API / check connect to device'''
        
        self.api_name        = api_name       
        self.api_description = "Infrared Broadlink RM3"
-       self.api_config      = rm3json.read("interfaces/broadlink/"+self.api_name,data_dir=False)
+       #self.api_config      = rm3json.read("interfaces/broadlink/"+self.api_name,data_dir=False)
+       self.api_config      = device_config
        self.working         = False
        self.method          = "record"
        self.count_error     = 0
        self.count_success   = 0
-       
-       if ip_address != "":
-          self.api_config["IPAddress"] = ip_address
-       
        self.api_config["Port"]       = int(self.api_config["Port"])
        self.api_config["MACAddress"] = netaddr.EUI(self.api_config["MACAddress"])
        self.api_config["Timeout"]    = int(self.api_config["Timeout"])
