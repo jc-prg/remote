@@ -1,8 +1,0 @@
-{
-	"description" :	     "In define makros to switch off scenes: <device>_<button>",
-	"scene-off":{
-                "music":  [              "dev-off_bd-api",   "dev-off_rec2", "dev-off_tv"],
-                "tv":     ["dev-off_lw", "dev-off_beam",     "dev-off_rec2", "dev-off_tv"],
-                "cinema": ["dev-off_lw", "dev-off_beam",     "dev-off_rec2", "dev-off_bd"]
-        }
-}
