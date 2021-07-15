@@ -3,11 +3,16 @@
         "description" : "API to connect to several devices from KODI",
         "buttons" : {
        	},
-       	"queries" : {
+       "queries" : {
        	},
-       	"values" : {
+      	"values" : {
        	},
-       	"display" : {
-       	}
+      	"display" : {
+       	},
+       "send-data" : {
+            "send-text" : "Input.SendText(text='{DATA}',done=False)",
+            "send-text-enter" : "Input.SendText(text='{DATA}',done=True)"
+        }
+
    }
 }

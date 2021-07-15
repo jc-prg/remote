@@ -4,15 +4,15 @@
         "display": {
             "Mute": "mute",
             "Name": "version",
-            "Volume": "vol",
-            "Playing": "playing"
-        },
-        "media-display" : {
-            "Volume" : "vol",
-            "Mute"   : "mute",
-            "Info"   : "info"
+            "Playing": "playing",
+            "Volume": "vol"
         },
         "display-size": "middle",
+        "media-display": {
+            "Info": "info",
+            "Mute": "mute",
+            "Volume": "vol"
+        },
         "remote": [
             ".",
             ".",
@@ -33,7 +33,7 @@
             "info",
             "menu",
             "LINE",
-            ".",
+            "keyboard",
             "up",
             "context",
             "vol+",
