@@ -41,7 +41,6 @@ def RmReadData(selected=[]):
     '''Read all relevant data and create data structure'''
 
     data    = {}
-    makros  = ["dev-on","dev-off","scene-on","scene-off","makro"]
     btnfile = ["buttons","queries","values","commands","url"]
     
     # if update required
@@ -49,7 +48,7 @@ def RmReadData(selected=[]):
     
         data["devices"] = configFiles.read_status()
         data["scenes"]  = configFiles.read(modules.active_scenes)
-        data["makros"]  = {}
+        data["makros"]  = configFiles.read(modules.active_makros)
         
         # read data for active devices
         for device in data["devices"]:
@@ -121,11 +120,6 @@ def RmReadData(selected=[]):
               else:
                 logging.error("Scene not found: "+str(scene)+" / "+str(selected))
           
-        # read data for makros
-        for makro in makros:        
-            temp                      = configFiles.read(modules.makros + makro)
-            data["makros"][makro]     = temp[makro]
-                
         # read data for templates
         data["templates"]             = {}
         data["template_list"]         = {}
