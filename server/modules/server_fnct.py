@@ -36,6 +36,52 @@ def refreshCache():
 # Read data
 #---------------------------
 
+def RmReadData_devices():
+    '''
+    read config data for scenes and combine with remote definition
+    '''
+    data = {}
+    data = configFiles.read(modules.active_makros)
+    
+    return data
+
+
+#---------------------------
+
+def RmReadData_makros():
+    '''
+    read config data for makros
+    '''
+    data = {}
+    data = configFiles.read(modules.active_devices)
+    
+    return data
+
+
+
+#---------------------------
+
+def RmReadData_scenes(selected=[]):
+    '''
+    read config data for scenes and combine with remote definition
+    '''
+    data = {}
+    data = configFiles.read(modules.active_scenes)
+    
+    for scene in data:
+       if selected == [] or scene in selected:
+          remote_file   = data[scene]["config"]["remote"]
+          remote_config = configFiles.read(modules.scenes + remote_file)       
+          data[scene]["remote"] = remote_config[scene]
+       else:
+          logging.error("Scene not found: "+str(scene)+" / "+str(selected))
+          return {}
+               
+    return data
+
+
+#---------------------------
+
 
 def RmReadData(selected=[]):
     '''Read all relevant data and create data structure'''
@@ -47,8 +93,9 @@ def RmReadData(selected=[]):
     if configFiles.cache_update or "_api" not in configFiles.cache: 
     
         data["devices"] = configFiles.read_status()
-        data["scenes"]  = configFiles.read(modules.active_scenes)
         data["makros"]  = configFiles.read(modules.active_makros)
+#        data["scenes"]  = configFiles.read(modules.active_scenes)
+        data["scenes"]  = RmReadData_scenes(selected)
         
         # read data for active devices
         for device in data["devices"]:
@@ -118,16 +165,16 @@ def RmReadData(selected=[]):
                 data["devices"][device] = data_temp
  
         # read data for active scenes
-        for scene in data["scenes"]:
-
-              if selected == [] or scene in selected:
-                thescene      = configFiles.read(modules.scenes + data["scenes"][scene]["config_scene"])
-                keys          = ["remote","channel","devices","label"]
- 
-                for key in keys:
-                    data["scenes"][scene][key] = thescene[scene][key]
-              else:
-                logging.error("Scene not found: "+str(scene)+" / "+str(selected))
+#        for scene in data["scenes"]:
+#
+#              if selected == [] or scene in selected:
+#                thescene      = configFiles.read(modules.scenes + data["scenes"][scene]["config_scene"])
+#                keys          = ["remote","channel","devices","label"]
+# 
+#                for key in keys:
+#                    data["scenes"][scene][key] = thescene[scene][key]
+#              else:
+#                logging.error("Scene not found: "+str(scene)+" / "+str(selected))
           
         # read data for templates
         data["templates"]             = {}
