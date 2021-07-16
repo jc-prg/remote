@@ -807,9 +807,10 @@ function rmRemote(name) {
 		}
         
 	this.keyboard_input_toggle	= function () {
-		input = document.getElementById(this.app_name+"_keyboard");
-		if (input.style.display == "block")	{ input.style.display = "none"; }
-		else					{ input.style.display = "block"; }
+		input      = document.getElementById(this.app_name+"_keyboard");
+		input_text = document.getElementById(this.app_name+"_keyboard_input");
+		if (input.style.display == "block")	{ input.style.display = "none";  input_text.blur(); }
+		else					{ input.style.display = "block"; input_text.focus(); }
 		}
         
 	this.keyboard_update		= function () {
