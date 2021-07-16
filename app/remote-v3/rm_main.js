@@ -127,29 +127,6 @@ function remoteReload(data) {
 	
 //--------------------------------
 
-/*
-function remoteForceReload_checkIfReady(data) {
-	// check reload status
-	if (data["CONFIG"]["reload_status"] == false && reload_active) {
-	   	reload_active = false;			 // activate reload again
-		elementHidden('reload_info');			 // hide loading message
-	   	appFW.setAutoupdate("",reloadInterval);	 // set reload interval back to default
-		}
-	else if (reload_active) {
-		reload_waiting += 1;
-		if (reload_waiting < 8)		{ addTextById('reload_msg','.'); }
-		else if (reload_waiting < 15)		{ setTextById('reload_msg',lang("RELOAD_TAKES_LONGER")); }
-		else if (reload_waiting < 25)		{ setTextById('reload_msg',lang("RELOAD_TAKES_MUCH_LONGER")); }
-		else { 
-			setTextById('reload_msg','Connection timed out.');
-		   	appFW.setAutoupdate("",reloadInterval);		 // set reload interval back to default
-			}
-		}
-	}
-*/
-
-//--------------------------------
-
 function remoteSetSliderDevice(data) {
 	main_audio 	= data["CONFIG"]["main-audio"];
 	if (data["DATA"]["devices"][main_audio]["values"]["vol"]) {

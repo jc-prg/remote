@@ -123,15 +123,18 @@ function rmMenu(name, menu) {
     		if (data) {} else { return; }
     		
     		var menu   = this.readMenu();
+    		
+    		for (var key in data) { data[key]["position"] = data[key]["scene"]["position"]; }    		
 		var order  = sortDict(data,"position");
+		
 		for (var j=0;j<order.length;j++) {
 			scene = order[j];
-			if (data[scene]["label"]) {
-//				menu  += this.entry_scene( scene, data[scene]["label"] );			
-			        if (data[scene]["visible"] != "no")  { menu  += this.entry_scene( scene, data[scene]["label"] ); }
-			        else if (this.edit_mode)             { menu  += this.entry_scene( scene, "<div class=#hidden_entry_edit#>.(" + data[scene]["label"] + ").</div>" ); }
+			if (data[scene]["scene"]["label"]) {
+			        if (data[scene]["scene"]["visible"] != "no")	{ menu  += this.entry_scene( scene, data[scene]["scene"]["label"] ); }
+			        else if (this.edit_mode)			{ menu  += this.entry_scene( scene, "<div class=#hidden_entry_edit#>.(" + data[scene]["scene"]["label"] + ").</div>" ); }
 				}
         		}
+
     		this.writeMenu(menu + "<li><hr/></li>");
 		}
 

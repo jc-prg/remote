@@ -476,13 +476,14 @@ function rmRemote(name) {
 	this.scene_remote         = function (id="", scene="", preview_remote="") {
 	    
     		var preview		= false;
+    		var scene_definition   = this.data["DATA"]["scenes"][scene];
 		var remote            	= "";
 		var remote_definition 	= [];
 		var remote_channel 	= [];
-		var remote_label 	= this.data["DATA"]["scenes"][scene]["label"];
+		var remote_label 	= scene_definition["scene"]["label"];
 
-		if (preview_remote == "") 	{ remote_definition = this.data["DATA"]["scenes"][scene]["remote"]; }
-		else				{ remote_definition = this.get_json_value(preview_remote, this.data["DATA"]["scenes"][scene]["channel"]); preview = true; }
+		if (preview_remote == "") 	{ remote_definition = scene_definition["remote"]["remote"]; }
+		else				{ remote_definition = this.get_json_value(preview_remote, scene_definition["remote"]["channel"]); preview = true; }
 		
 		var makros 		= this.data["DATA"]["makros"]["makro"];
 		var makros_sceneOn	= this.data["DATA"]["makros"]["scene-on"];
@@ -553,10 +554,10 @@ function rmRemote(name) {
 	this.scene_channels       = function (id, scene, preview_channel="") {
 		// set vars
 		var remote     = "";
-		var scene_name = this.data["DATA"]["scenes"][scene]["label"];
+		var scene_name = this.data["DATA"]["scenes"][scene]["scene"]["label"];
 
-		if (preview_channel == "") 	{ makros = this.data["DATA"]["scenes"][scene]["channel"]; }
-		else				{ makros = this.get_json_value(preview_channel, this.data["DATA"]["scenes"][scene]["channel"]); preview = true; }
+		if (preview_channel == "") 	{ makros = this.data["DATA"]["scenes"][scene]["remote"]["channel"]; }
+		else				{ makros = this.get_json_value(preview_channel, this.data["DATA"]["scenes"][scene]["remote"]["channel"]); preview = true; }
 
 		channels = Object.keys(makros);
 		channels = channels.sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase());});
@@ -582,9 +583,10 @@ function rmRemote(name) {
 
 	// write description for device remote
 	this.scene_description   = function (id, scene) {
-		var label = this.data["DATA"]["scenes"][scene]["label"];
-		var descr = this.data["DATA"]["scenes"][scene]["description"];
-		var url   = this.data["DATA"]["scenes"][scene]["url"];
+		var scene_info = this.data["DATA"]["scenes"][scene]["scene"];
+		var label      = scene_info["label"];
+		var descr      = scene_info["description"];
+		var url        = scene_info["url"];
 		if (url) { descr = "<a href=\""+url+"\" target='_blank'>"+descr+"</a>"; }
 		var str   = "<center>" + label + ": " + descr + "</center>";
 		setTextById(id,str);
@@ -594,26 +596,28 @@ function rmRemote(name) {
 	// edit scene
 	this.scene_edit           = function (id, scene) {
 	
-	        if (this.edit_mode)     { elementVisible(id); }
-	        else                    { elementHidden(id,"scene_edit"); return; }
+		if (this.edit_mode)     { elementVisible(id); }
+		else                    { elementHidden(id,"scene_edit"); return; }
 	        
-	        this.button_width = "120px";
+		this.button_width = "120px";
 		this.input_width  = "180px";
+		
+		var scene_info    = this.data["DATA"]["scenes"][scene]["scene"];
 
 		var link_template = this.app_name+".remote_import_templates('scene','frame2','"+scene+"','add_template','scene_json_buttons');";
 		var link_preview  = this.app_name+".scene_remote('frame3','"+scene+"','scene_json_buttons','scene_json_channel');";
 		var remote        = "";
 		
-		remote  += "<center><b>Edit &quot;"+this.data["DATA"]["scenes"][scene]["label"]+"&quot;</b> ["+scene+"]</center>";
+		remote  += "<center><b>Edit &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
 		remote  += "<hr/>";
 
 		remote  += this.tab_row("start");
-		remote  += this.tab_row( "Label:",       	this.input("edit_label",	this.data["DATA"]["scenes"][scene]["label"]) );
-		remote  += this.tab_row( "Description:&nbsp;", 	this.input("edit_description",	this.data["DATA"]["scenes"][scene]["description"]) );
-		remote  += this.tab_row( "&nbsp;",		this.button_edit("apiSceneEdit('"+scene+"','edit','description,label');","save changes","") );
+		remote  += this.tab_row( "Label:",       		this.input("edit_label",	scene_info["label"]) );
+		remote  += this.tab_row( "Description:&nbsp;", 	this.input("edit_description", scene_info["description"]) );
+		remote  += this.tab_row( "&nbsp;",			this.button_edit("apiSceneEdit('"+scene+"','edit','description,label');","save changes","") );
 		remote  += this.tab_row("end") + "<hr/>" + this.tab_row("start");
 		remote  += this.tab_row(
-				"<input id='scene_visibility' value='"+this.data["DATA"]["scenes"][scene]["visible"]+"' style='display:none;'>"+
+				"<input id='scene_visibility' value='"+scene_info["visible"]+"' style='display:none;'>"+
 				this.button_edit("apiRemoteChangeVisibility('scene','"+scene+"','scene_visibility');","show / hide") + "&nbsp;" +
 				this.button_edit("apiSceneDelete('"+scene+"');","delete scene","")
 				);
@@ -631,8 +635,8 @@ function rmRemote(name) {
 				this.button_edit(link_template + link_preview,"clone template","")
 				);
 		remote  += this.tab_row("end") + "<hr/>" + this.tab_row("start");
-		remote  += this.tab_row("Devices:&nbsp;&nbsp;", 	JSON.stringify(this.data["DATA"]["scenes"][scene]["devices"]));
-		remote  += this.tab_row("Remote:&nbsp;&nbsp;", 		this.data["DATA"]["scenes"][scene]["config_scene"]+".json" );
+		remote  += this.tab_row("Devices:&nbsp;&nbsp;", 	JSON.stringify(scene_info["devices"]));
+		remote  += this.tab_row("Remote:&nbsp;&nbsp;", 	this.data["DATA"]["scenes"][scene]["config"]["remote"]+".json" );
 		remote  += this.tab_row("end");
 
 	        if (this.edit_mode)     { elementVisible(id); }
@@ -648,9 +652,11 @@ function rmRemote(name) {
 	        if (this.edit_mode)     { elementVisible(id); }
 	        else                    { elementHidden(id,"scene_edit_json"); return; }
 	        
-	        if (remote == "") 	{ var scene_definition 	= this.data["DATA"]["scenes"][scene]["remote"]; }
-	        else			{ var scene_definition 	= remote; }
-	        if (channel == "")	{ var scene_channel 	= this.data["DATA"]["scenes"][scene]["channel"]; }
+	        var scene_remote = this.data["DATA"]["scenes"][scene]["remote"];
+	        
+	        if (remote == "") 	{ var scene_definition = scene_remote["remote"]; }
+	        else			{ var scene_definition = remote; }
+	        if (channel == "")	{ var scene_channel 	= scene_remote["channel"]; }
 	        else			{ var scene_channel	= channel; }
 
 		this.button_width = "100px";
@@ -662,7 +668,7 @@ function rmRemote(name) {
 		remote += "<br/><b>JSON Channel Definition:</b><br/><hr/>";
 		remote += this.display_json( "scene_json_channel", scene_channel, "channels"  );
 		remote += "<br/><b>JSON Required Devices:</b><br/><hr/>";
-		remote += "Devices:&nbsp;&nbsp;" + this.input("scene_json_devices", JSON.stringify(this.data["DATA"]["scenes"][scene]["devices"]))+"<br/><br/>";
+		remote += "Devices:&nbsp;&nbsp;" + this.input("scene_json_devices", JSON.stringify(scene_remote["devices"]))+"<br/><br/>";
 		remote += "<hr/><center>" + 
 				this.button_edit(this.app_name+".scene_edit_json('"+id+"','"+scene+"');"+
 				this.app_name+".scene_remote('frame3','"+scene+"','scene_json_buttons','scene_json_channel');"+this.app_name+".scene_channels('frame5','"+scene+"','scene_json_channel');","reset") + "&nbsp;" + 
@@ -1023,8 +1029,8 @@ function rmRemote(name) {
         			x++;
         			text += "\""+json[i]+"\"";
         			if (i+1 < json.length)						{ text += ", "; }
-        			if (Number.isInteger((x)/4))   					{ text += "\n"; x = 0; }
-        			if (json.length > i+1 && json[i+1].includes("LINE") && x > 0)	{ text += "\n"; x = 0; }
+        			if (Number.isInteger((x)/4))   				{ text += "\n"; x = 0; }
+        			if (json.length > i+1 && json[i+1].includes("LINE") && x > 0) { text += "\n"; x = 0; }
         			if (json[i].includes("LINE"))					{ text += "\n"; x = 0; }
         			}
 	        	text += "\n]";
