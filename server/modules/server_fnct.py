@@ -47,32 +47,31 @@ def RmReadData_devices(selected=[]):
        if data[device]["interface"]["api"] != "":
           if selected == [] or device in selected:
 	
-                key        = data[device]["config"]["device"]
-                key_remote = data[device]["config"]["remote"]
-                interface  = data[device]["interface"]["api"]
-                data_temp  = data[device]
+             key        = data[device]["config"]["device"]
+             key_remote = data[device]["config"]["remote"]
+             interface  = data[device]["interface"]["api"]
+             data_temp  = data[device]
 
-                remote           = configFiles.read(modules.remotes  + key_remote)                # remote layout & display
-                buttons          = configFiles.read(modules.commands + interface + "/" + key)     # button definitions, presets, queries ...
-                buttons_default  = configFiles.read(modules.commands + interface + "/00_default") # button definitions, presets, queries ...
+             remote           = configFiles.read(modules.remotes  + key_remote)                # remote layout & display
+             buttons          = configFiles.read(modules.commands + interface + "/" + key)     # button definitions, presets, queries ...
+             buttons_default  = configFiles.read(modules.commands + interface + "/00_default") # button definitions, presets, queries ...
 
-                value_list      = [ "buttons", "queries", "commands", "values", "send-data" ]            
-                for value in value_list:
-                   if not value in buttons["data"]: buttons["data"][value] = {}             
-                   if value in buttons_default["data"]:
-                      for key in buttons_default["data"][value]:
-                        buttons["data"][value][key] = buttons_default["data"][value][key]
-
+             value_list      = [ "buttons", "queries", "commands", "values", "send-data" ]            
+             for value in value_list:
+                if not value in buttons["data"]: buttons["data"][value] = {}             
+                if value in buttons_default["data"]:
+                   for key in buttons_default["data"][value]:
+                     buttons["data"][value][key] = buttons_default["data"][value][key]
+              
+             logging.info(interface + "/" + key)
                 
-                logging.info(interface + "/" + key)
+             # if default.json exists, add values to device specific values
+             if modules.ifexist(modules.commands + interface + "/default"):   
                 
-                # if default.json exists, add values to device specific values
-                if modules.ifexist(modules.commands + interface + "/default"):   
-                
-                  buttons_default  = configFiles.read(modules.commands + interface + "/default")
+                buttons_default  = configFiles.read(modules.commands + interface + "/default")
 
-                  # COMMAND/BUTTON : get button definitions, presets, queries ... from default.json
-                  if not "ERROR" in buttons_default:
+                # COMMAND/BUTTON : get button definitions, presets, queries ... from default.json
+                if not "ERROR" in buttons_default:
                     for x in btnfile:
                       if x in buttons_default["data"] and "data" in buttons:
                         if x not in buttons["data"]:
@@ -80,33 +79,33 @@ def RmReadData_devices(selected=[]):
                         for y in buttons_default["data"][x]:
                           buttons["data"][x][y] = buttons_default["data"][x][y]
                         
-                # read config data
-                if "data" in buttons:
-                  if "method"   in buttons["data"]:   data_temp["method"]    = buttons["data"]["method"]              
-                  if "values"   in buttons["data"]:   data_temp["values"]    = buttons["data"]["values"]              
-                  if "commands" in buttons["data"]:   data_temp["commands"]  = buttons["data"]["commands"] 
-                  if "url"      in buttons["data"]:   data_temp["url"]       = buttons["data"]["url"] 
+             # read config data
+             if "data" in buttons:
+                if "method"   in buttons["data"]:   data_temp["method"]    = buttons["data"]["method"]              
+                if "values"   in buttons["data"]:   data_temp["values"]    = buttons["data"]["values"]              
+                if "commands" in buttons["data"]:   data_temp["commands"]  = buttons["data"]["commands"] 
+                if "url"      in buttons["data"]:   data_temp["url"]       = buttons["data"]["url"] 
                 
-                  if "queries"  in buttons["data"]:
+                if "queries"  in buttons["data"]:
                     data_temp["queries"]         = buttons["data"]["queries"]
                     data_temp["query_list"]      = list(buttons["data"]["queries"].keys())                 
                 
-                  data_temp["buttons"]             = buttons["data"]["buttons"]
-                  data_temp["button_list"]         = list(buttons["data"]["buttons"].keys())
+                data_temp["buttons"]             = buttons["data"]["buttons"]
+                data_temp["button_list"]         = list(buttons["data"]["buttons"].keys())
                                 
-                # REMOTE : get remote layout & display # logging.info(device)
-                if "data" in remote:
-                   data_temp["description"]         = remote["data"]["description"]              
-                   data_temp["remote"]              = remote["data"]["remote"]
+             # REMOTE : get remote layout & display # logging.info(device)
+             if "data" in remote:
+                data_temp["description"]         = remote["data"]["description"]              
+                data_temp["remote"]              = remote["data"]["remote"]
                    
-                   if "display" in remote["data"]:       data_temp["display"]       = remote["data"]["display"]              
-                   if "display-size" in remote["data"]:  data_temp["display-size"]  = remote["data"]["display-size"]              
+                if "display" in remote["data"]:       data_temp["display"]       = remote["data"]["display"]              
+                if "display-size" in remote["data"]:  data_temp["display-size"]  = remote["data"]["display-size"]              
                    
-                else:
-                   data_temp["description"]         = "N/A"
-                   data_temp["remote"]              = []
+             else:
+                data_temp["description"]         = "N/A"
+                data_temp["remote"]              = []
 
-                data[device] = data_temp
+             data[device] = data_temp
 
     return data
 
