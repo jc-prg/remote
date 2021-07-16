@@ -1,6 +1,6 @@
 # jc://remote/
 
-Looking a remote control to control several devices I got disappointed ... and decided to develop my own web-app  running on my smartphone.
+Looking a remote control to control several devices I got disappointed ... and decided to develop my own web-app running on my smartphone.
 Therefore I found the **Broadlink RM 3 Mini** and sources on Github to control this IR device via API. About two years later several devices
 as my new ONKYO receiver come with their own API and I started to rework my software and to integrate the first device via API directly.
 The next device was a low level integration of a KODI server ... other might follow.
@@ -24,16 +24,26 @@ Edit remote layouts in a browser
 * KODI server (e.g. also installed on the Raspberry PI)
 * *Other devices easily can be integrated*
 
+## Data structure
+
+* [Description of data and configuration files](data/README.md)
+
 ## Main features
 
-### App v2.5 / Server v1.9 (in progress)
+### App v2.6 / Server v1.9 (in-progress)
+
+* send text input to API for KODI API
+* integrate jc://modules/ as sub-module
+* integrate jc://app-framework / as sub-module
+* Optimize data structure (sample data files, productive files ignored by git)
+
+### App v2.5 / Server v1.9
 
 * add/edit/delete device remote controls via web-client
 * add/edit/delete scene remote controls via web-client
 * edit remote layouts including preview in the browser
 * API for Sony devices (sonyapilib)
 * optimized UI (e.g. menu)
-* ...
 
 ### App v2.4 / Server v1.8
 
@@ -94,7 +104,7 @@ In order to use jc://remote/ as it is, the following software must be installed:
 
 ```bash
 $ git clone https://github.com/jc-prg/remote.git
-$ git clone https://github.com/jc-prg/modules.git
+$ git submodule update --init
 ```
 
 2. Change settings
