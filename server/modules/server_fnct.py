@@ -28,7 +28,6 @@ def refreshCache():
     '''
     Reset vars to enforce a refresh of all cached data
     '''
-
     configFiles.update()
 
 
@@ -36,76 +35,22 @@ def refreshCache():
 # Read data
 #---------------------------
 
-def RmReadData_devices():
+def RmReadData_devices(selected=[]):
     '''
     read config data for scenes and combine with remote definition
     '''
     data = {}
-    data = configFiles.read(modules.active_makros)
-    
-    return data
+    data = configFiles.read_status()
 
-
-#---------------------------
-
-def RmReadData_makros():
-    '''
-    read config data for makros
-    '''
-    data = {}
-    data = configFiles.read(modules.active_devices)
-    
-    return data
-
-
-
-#---------------------------
-
-def RmReadData_scenes(selected=[]):
-    '''
-    read config data for scenes and combine with remote definition
-    '''
-    data = {}
-    data = configFiles.read(modules.active_scenes)
-    
-    for scene in data:
-       if selected == [] or scene in selected:
-          remote_file   = data[scene]["config"]["remote"]
-          remote_config = configFiles.read(modules.scenes + remote_file)       
-          data[scene]["remote"] = remote_config[scene]
-       else:
-          logging.error("Scene not found: "+str(scene)+" / "+str(selected))
-          return {}
-               
-    return data
-
-
-#---------------------------
-
-
-def RmReadData(selected=[]):
-    '''Read all relevant data and create data structure'''
-
-    data    = {}
-    btnfile = ["buttons","queries","values","commands","url"]
-    
-    # if update required
-    if configFiles.cache_update or "_api" not in configFiles.cache: 
-    
-        data["devices"] = configFiles.read_status()
-        data["makros"]  = configFiles.read(modules.active_makros)
-#        data["scenes"]  = configFiles.read(modules.active_scenes)
-        data["scenes"]  = RmReadData_scenes(selected)
-        
-        # read data for active devices
-        for device in data["devices"]:
-            if data["devices"][device]["interface"]["api"] != "":
-              if selected == [] or device in selected:
+    # read data for active devices
+    for device in data:
+       if data[device]["interface"]["api"] != "":
+          if selected == [] or device in selected:
 	
-                key        = data["devices"][device]["config"]["device"]
-                key_remote = data["devices"][device]["config"]["remote"]
-                interface  = data["devices"][device]["interface"]["api"]
-                data_temp  = data["devices"][device]
+                key        = data[device]["config"]["device"]
+                key_remote = data[device]["config"]["remote"]
+                interface  = data[device]["interface"]["api"]
+                data_temp  = data[device]
 
                 remote           = configFiles.read(modules.remotes  + key_remote)                # remote layout & display
                 buttons          = configFiles.read(modules.commands + interface + "/" + key)     # button definitions, presets, queries ...
@@ -161,45 +106,95 @@ def RmReadData(selected=[]):
                    data_temp["description"]         = "N/A"
                    data_temp["remote"]              = []
 
-           
-                data["devices"][device] = data_temp
- 
-        # read data for active scenes
-#        for scene in data["scenes"]:
-#
-#              if selected == [] or scene in selected:
-#                thescene      = configFiles.read(modules.scenes + data["scenes"][scene]["config_scene"])
-#                keys          = ["remote","channel","devices","label"]
-# 
-#                for key in keys:
-#                    data["scenes"][scene][key] = thescene[scene][key]
-#              else:
-#                logging.error("Scene not found: "+str(scene)+" / "+str(selected))
-          
-        # read data for templates
-        data["templates"]             = {}
-        data["template_list"]         = {}
-        
-        if selected == []:
-          templates                   = modules.available(modules.templates)
-          for template in templates:    
-            template_keys = template.split("/")
-            template_key  = template_keys[len(template_keys)-1]
-            template_data = configFiles.read(modules.templates + template)
-            
-            logging.debug(modules.templates+template)
-            
-            if "ERROR" in template_data:  data["templates"][template] = template_data
-            else: 
-                if template_key in template_data: data["templates"][template] = template_data[template_key]
-                elif "data" in template_data:     data["templates"][template] = template_data["data"]
-                else:                             data["templates"][template] = { "ERROR" : "JSON file not correct, key missing: "+template_key }
-                
-                data["template_list"][template] = data["templates"][template]["description"]
-        
-            data["templates"][template]["file"] = template
+                data[device] = data_temp
 
-          configFiles.cache["_api"] = data
+    return data
+
+
+#---------------------------
+
+def RmReadData_makros(selected=[]):
+    '''
+    read config data for makros
+    '''
+    data = {}
+    data = configFiles.read(modules.active_makros)
+    
+    return data
+
+
+#---------------------------
+
+def RmReadData_scenes(selected=[]):
+    '''
+    read config data for scenes and combine with remote definition
+    '''
+    data = {}
+    data = configFiles.read(modules.active_scenes)
+    
+    for scene in data:
+       if selected == [] or scene in selected:
+          remote_file   = data[scene]["config"]["remote"]
+          remote_config = configFiles.read(modules.scenes + remote_file)       
+          data[scene]["remote"] = remote_config[scene]
+       else:
+          logging.error("Scene not found: "+str(scene)+" / "+str(selected))
+          return {}
+               
+    return data
+
+
+#---------------------------
+
+def RmReadData_templates(selected=[]):
+    '''
+    read config data for scenes and combine with remote definition
+    '''
+    data                   = {}
+    data["templates"]      = {}
+    data["template_list"]  = {}
+        
+    if selected == []:
+       templates = modules.available(modules.templates)
+       
+       for template in templates:    
+          template_keys = template.split("/")
+          template_key  = template_keys[len(template_keys)-1]
+          template_data = configFiles.read(modules.templates + template)
+            
+          logging.debug(modules.templates+template)
+            
+          if "ERROR" in template_data:  data["templates"][template] = template_data
+          else: 
+             if template_key in template_data: data["templates"][template] = template_data[template_key]
+             elif "data" in template_data:     data["templates"][template] = template_data["data"]
+             else:                             data["templates"][template] = { "ERROR" : "JSON file not correct, key missing: "+template_key }
+                
+             data["template_list"][template] = data["templates"][template]["description"]
+             
+    return data    
+
+
+#---------------------------
+
+
+def RmReadData(selected=[]):
+    '''Read all relevant data and create data structure'''
+
+    data    = {}
+    btnfile = ["buttons","queries","values","commands","url"]
+    
+    # if update required
+    if configFiles.cache_update or "_api" not in configFiles.cache: 
+    
+        data["devices"]       = RmReadData_devices(selected)
+        data["makros"]        = RmReadData_makros(selected)
+        data["scenes"]        = RmReadData_scenes(selected)
+        data["templates"]     = RmReadData_templates(selected)["templates"]
+        data["template_list"] = RmReadData_templates(selected)["template_list"]
+
+        # save data in cache
+        configFiles.cache["_api"] = data
 
         # mark update as done
         logging.info("Update config data in cache ("+str(configFiles.cache_update)+")")
