@@ -33,6 +33,28 @@ data/_ACTIVE-DEVICES.json
 
 data/_ACTIVE-SCENES.json
 
+data/_ACTIVE-MAKROS.json
+
+data/devices/SONY/00_interface.json
+
+data/devices/SONY/00_default.json
+
+data/devices/KODI/00_interface.json
+
+data/devices/KODI/00_default.json
+
+data/devices/TEST/00_interface.json
+
+data/devices/TEST/00_default.json
+
+data/devices/BROADLINK/00_interface.json
+
+data/devices/BROADLINK/00_default.json
+
+data/devices/EISCP-ONKYO/00_interface.json
+
+data/devices/EISCP-ONKYO/00_default.json
+
 app/app-fw/
 
 app/img/
