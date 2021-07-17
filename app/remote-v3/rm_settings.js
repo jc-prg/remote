@@ -109,6 +109,7 @@ function rmSettings (name) {	// IN PROGRESS
 						"API: " 		+ this.data["API"]["version"] + " / " + this.data["API"]["rollout"] + "<br/>" +
 						"Modules: jcMsg " 	+ appMsg.appVersion +  
 						" / jcApp "		+ appFW.appVersion +
+						" / jcAppFW "		+ appFwVersion +
 						" / jcSlider "		+ rm3slider.appVersion );
 		setting += this.tab_row( 	"Cookie:", 		cookie );
 		setting += this.tab_row( 	"Button:", 		this.app_last );
