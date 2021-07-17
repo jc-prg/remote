@@ -102,7 +102,7 @@ function statusCheck_inactive(data) {
 
 	// get scene status from devices status and definition (see statusCheck) -> move to rm_remote.js
 	for (var key in data["DATA"]["scenes"]) {
-		if (data["DATA"]["scenes"][key]["remote"]["devices"]) {
+		if (data["DATA"]["scenes"][key]["remote"] && data["DATA"]["scenes"][key]["remote"]["devices"]) {
 
 			var required = data["DATA"]["scenes"][key]["remote"]["devices"];
 			var all_dev  = Object.keys(data["DATA"]["devices"]);

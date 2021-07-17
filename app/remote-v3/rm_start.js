@@ -53,15 +53,16 @@ function rmStart(name) {
 
 
 		// create small buttons for devices
+    		for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }    		
 		var order  = sortDict(data,"position");
 		for (var key in order) {
 			device = order[key];
 			if (device != "default") {
-				if (data[device]["visible"] == "yes") {
+				if (data[device]["settings"]["visible"] == "yes") {
 					var id     = "device_"+device;
         				menu  += this.entry_device( data, id, device, "small" );
 					}
-			        else if (this.edit_mode && data[device]["visible"] == "no") { 
+			        else if (this.edit_mode && data[device]["settings"]["visible"] == "no") { 
 					var id     = "device_"+device;
 			        	menu  += this.entry_device( data, id, device, "small_edit" );
 			        	}
@@ -83,14 +84,15 @@ function rmStart(name) {
 		rm3remotes.active_type = "start";
 
 		// create big buttons for scenes
+    		for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }    		
 		var order  = sortDict(data,"position");
 	        for (var key in order) {
 			scene  = order[key];
-			if (data[scene]["visible"] == "yes") {
+			if (data[scene]["settings"]["visible"] == "yes") {
 	        	        var id = "scene_"+scene;
-        	        	menu  += this.entry_scene( data, id, data[scene]["label"], "big" );
+        	        	menu  += this.entry_scene( data, id, data[scene]["settings"]["label"], "big" );
         	        	}
-        	        else if (this.edit_mode && data[scene]["visible"] == "no") {
+        	        else if (this.edit_mode && data[scene]["settings"]["visible"] == "no") {
 	        	        var id = "scene_"+scene;
         	        	menu  += this.entry_scene( data, id, data[scene]["label"], "big" );
         	        	}
@@ -105,9 +107,9 @@ function rmStart(name) {
 		var disabled, label2;
 		var button = id.split("_");
 		
-		if (data[button[1]]["visibility"] == "none") { return; }
-		if (data[button[1]]["image"]) { label  = data[button[1]]["image"]; } 
-		if (data[button[1]]["label"]) { label2 = data[button[1]]["label"]; }
+		if (data[button[1]]["settings"]["visibility"] == "none") { return; }
+		if (data[button[1]]["settings"]["image"]) { label  = data[button[1]]["settings"]["image"]; } 
+		if (data[button[1]]["settings"]["label"]) { label2 = data[button[1]]["settings"]["label"]; }
 
 		var d = this.button_image( label, style );
  		return this.button( id, d[0], style, 'rm3remotes.create("device","' + button[1] + '");setNavTitle("' + label2 + '");', "" );
