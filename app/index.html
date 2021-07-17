@@ -1,123 +1,147 @@
 <?xml version=„1.0“ encoding=„utf-8“?>
 <!doctype html>
-<html>
-<!-- <html manifest="config/cache.manifest"> // leads to update problems on iOS -->
+<html><!-- manifest="cache.manifest"> -->
 <head>
-<title>jc://remote-v2/</title>
+<title id="title">jc://remote/</title>
 
-<meta charset="utf-8"> 
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<META charset="utf-8"> 
+<META http-equiv="content-type" content="text/html; charset=utf-8">
 <META name="apple-mobile-web-app-capable" content="yes" />
 <META name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.3, maximum-scale=1.0" /> 
 
-<LINK rel=apple-touch-icon href="remote-v2/img/remote3.jpg" />
-<LINK rel=apple-touch-icon-precomposed href="remote-v2/img/remote3.jpg" />
+<LINK rel=apple-touch-icon href="favicon.png" />
+<LINK rel=apple-touch-icon-precomposed href="favicon.png" />
 
-<!-- jc modules -->
+<!-- jcResources START -->
 
-<script src="modules/jc-app/jc-app-1.4.0.js"></script>
+<script src="modules/jc-app/jc-app-1.4.1.js"></script>
+<script src="modules/jc-functions/jc-functions-0.1.2.js"></script>	<link href="modules/jc-functions/jc-functions-0.1.2.css" rel="stylesheet">
 <script src="modules/jc-cookie/jc-cookie.js"></script>
-<script src="modules/jc-msg/jc-msg-1.1.5.js"></script>		<link rel="stylesheet" href="modules/jc-msg/jc-msg-1.1.5.css">
-<script src="modules/jc-functions/jc-functions-0.1.2.js"></script>	<link rel="stylesheet" href="modules/jc-functions/jc-functions-0.1.2.css">
-<script src="modules/jc-player/jc-volume-slider-0.1.1.js"></script>	<link rel="stylesheet" href="modules/jc-player/jc-volume-slider-0.1.1.css">
+<script src="modules/jc-msg/jc-msg-1.1.6.js"></script>		<link href="modules/jc-msg/jc-msg-1.1.6.css" rel="stylesheet">
+<script src="modules/jc-player/jc-player-0.1.6.js"></script>		<link href="modules/jc-player/jc-player-0.1.6.css" rel="stylesheet">
+<script src="modules/jc-player/jc-volume-slider-0.1.1.js"></script>	<link href="modules/jc-player/jc-volume-slider-0.1.1.css" rel="stylesheet" >
+<script src="modules/jc-upload/upload.js"></script> 			<link href="modules/jc-upload/upload.css" rel="stylesheet">
 
-<!-- remote modules -->
+<!-- jcAppFramework START -->
 
-<script src="remote-v2/rm_config_stage.js"></script>
-<script src="remote-v2/rm_functions.js"></script>
-<script src="remote-v2/rm_functions-api.js"></script>
-<script src="remote-v2/rm_remotes.js"></script>
-<script src="remote-v2/rm_status.js"></script>
-<script src="remote-v2/rm_settings.js"></script>		
+<script src="framework/app-fw/app-functions.js"></script>
+<script src="framework/app-fw/app-html-elements.js"></script>
+<script src="framework/app-fw/app-language.js"></script>
 
-<link rel="stylesheet" href="remote-v2/rm_settings.css">
+<!-- APP specific config scripts // START -->
 
-<!-- app modules -->
+<script src="remote-v3/config_stage.js"></script>
+<script src="remote-v3/config_language.js"></script>
+<script src="remote-v3/config_main.js"></script>
 
-<script src="remote-v2/app-menu.js"></script>	
-<script src="remote-v2/app-config.js"></script>
-<script src="remote-v2/app-language.js"></script>
-	
-<link rel="stylesheet" href="remote-v2/app-menu.css">		
-<link rel="stylesheet" href="remote-v2/app-menu.dark.css">
-<link rel="stylesheet" href="remote-v2/app-main.css">
-<link rel="stylesheet" href="remote-v2/app-main.dark.css">
+<!-- APP specific config scripts // END -->
 
-<!-- end of module section -->
+<script src="framework/app-fw/app-conf.js"></script>
+<script src="framework/app-fw/app-menu.js"></script>
+<script src="framework/app-fw/app-functions.js"></script>
+<script src="framework/app-fw/app-html-elements.js"></script>
+<script src="framework/app-fw/app-language.js"></script>
+
+<link rel="stylesheet" href="framework/app-fw/style-main.css">
+<link rel="stylesheet" href="framework/app-fw/style-menu.css">
+<link rel="stylesheet" href="framework/app-fw/style-frame.css">
+<link rel="stylesheet" href="framework/app-fw/style-status.css">
+
+<link rel="stylesheet" href="framework/app-fw/style-main-iphone.css">
+<link rel="stylesheet" href="framework/app-fw/style-main-laptop.css">
+<link rel="stylesheet" href="framework/app-fw/style-frame-iphone.css">
+<link rel="stylesheet" href="framework/app-fw/style-frame-laptop.css">
+
+<link rel="stylesheet" href="framework/app-fw/style-main-dark.css">
+<link rel="stylesheet" href="framework/app-fw/style-frame-dark.css">
+<link rel="stylesheet" href="framework/app-fw/style-menu-dark.css">
+
+<!-- APP specific scripts and style sheets // START -->
+
+<script src="remote-v3/rm_functions.js"></script>
+<script src="remote-v3/rm_functions-api.js"></script>
+<script src="remote-v3/rm_remotes.js"></script>
+<script src="remote-v3/rm_status.js"></script>
+<script src="remote-v3/rm_settings.js"></script>		
+<script src="remote-v3/rm_menu.js"></script>		
+<script src="remote-v3/rm_start.js"></script>		
+
+<link rel="stylesheet" href="remote-v3/style-remote.css">
+<link rel="stylesheet" href="remote-v3/style-settings.css">
+<link rel="stylesheet" href="remote-v3/style-button.css">
+<link rel="stylesheet" href="remote-v3/style-remote-dark.css">
+<link rel="stylesheet" href="remote-v3/style-remote-iphone.css">
+<link rel="stylesheet" href="remote-v3/style-remote-laptop.css">
+
+<!-- APP specific scripts and style sheets // END -->
 
 </head>
-<body id="app_background">
-<div id="rm3msg"></div>
-<div id="rm3remote"></div>
+<body>
+
+<!-- APP specific html elements // START -->
+
+
+<!-- APP specific  html elements // END -->
 
 <nav id="nav">
 <nav-logo id="rest_status"></nav-logo>
 
-<nav-info id="audio1" onClick="rm3slider.show_hide();" style="cursor:pointer;"></nav-info><!--icon-->
-<nav-info id="audio2" onClick="rm3slider.show_hide();" style="cursor:pointer;"></nav-info><!--icon-->
-<nav-info id="audio3" onClick="rm3slider.show_hide();" style="cursor:pointer;">IIIIIIIIIIIIIIIIIIII</nav-info>
-<nav-info id="audio4"></nav-info><!--icon-->
+<!-- APP specific header elements // START -->
+
+	<nav-info id="audio1" onClick="rm3slider.show_hide();" style="cursor:pointer;"></nav-info><!--icon-->
+	<nav-info id="audio2" onClick="rm3slider.show_hide();" style="cursor:pointer;"></nav-info><!--icon-->
+	<nav-info id="audio3" onClick="rm3slider.show_hide();" style="cursor:pointer;">IIIIIIIIIIIIIIIIIIII</nav-info>
+	<nav-info id="audio4"></nav-info><!--icon-->
+
+<!-- APP specific header elements // END -->
 
 <nav-title id="navTitle">...</nav-title>
 <ul>
-  <li id="navi"><div onClick="javascript:clickMenu();" id="navi-click"><img src="img/button.png" /></div>
-    <ul id='menuItems' style="visibility:hidden;">
-      <!-- filled by script -->
-    </ul>
+  <li id="navi"><div onClick="javascript:appClickMenu();"  id="navi-click"><img src="img/button.png" /></div>
+    <ul id='menuItems' style="visibility:hidden;"><!-- drop down menu - filled by script --></ul>
   </li>
 </ul>
 </nav>
 
-<div class="app_background" style="width:100%;">
+<div id="statusLED"><div id="red"></div></div>
+<div id="statusLEDload"><img src="framework/img/loading3.gif"></div>
+<div id="headerRight" class="headerRight"></div>
+<div id="app_background" class="app_background" style="width:100%;">
 
 <div id='devices'></div>
 &nbsp;<br/>
 &nbsp;<br/>
-<div id='reload_info'  style="width:100%;display:none;"><center><img src="modules/jc-msg/waiting.gif" style="width:50px;height:50px;"><div id='reload_msg'>&nbsp;</div></center></div>
-<div id='remote_block' style="width:100%">
-  <div class='remoteblock'>
+<div id='reload_info'  style="width:100%;display:none;"></div>
+<div class='frame_block'>
     <div class='remote_nav' id='remote_nav'><nav-b>
      <ul>
       <li>
-        <ul id='menuItems2'>
-          <!-- filled by script -->
-        </ul>
+        <ul id='menuItems2'><!-- fixed menu for wide screens - filled by script --></ul>
       </li>
-     </ul>    
-    </nav-b></div>
-    <div class='setting_bg' id='remote_edit1' style='display:none'></div>
-    <div class='setting_bg' id='remote_edit2' style='display:none'>d</div>
-    <div class='remote' id='remote1'></div>
-    <div class='remote' id='remote2'></div>
-    <div class='remote' id='remote3'></div>
-    <div class='remote_edit' id='remote4'><center><input id="remote_edit" type="text"><center/></div>
-    <div class='setting_bg' id='setting1' style='display:none'></div>
-    <div class='setting_bg' id='setting2' style='display:none'></div>
-    <div class='setting_bg' id='setting3' style='display:none'></div>
-    <div class='setting_bg' id='setting4' style='display:none'>
-      <div id='error_log'></div>
-      <div id='data_log' style='display:none'></div>
+     </ul>
     </div>
-  </div>
+    <div id='frames'></div>
+    <div id='setting_frames'></div>
 </div>
-<br/>
 
+<div id="appMsg"></div>
+<div id="ontop"        style="display:none"></div>
+<div id="theme_check"  style="display:none"></div>
 
-<div id='buttons_all'></div>
+<script src="framework/app-fw/app-main.js"></script>
 
-  <div id='cover2'>
-&nbsp;<br/>
-&nbsp;<br/>
-&nbsp;<br/>
-&nbsp;<br/>
-&nbsp;<br/>
-    <div id='error_msg'></div>
-  </div>
-  
+<!-- APP specific scripts and HTML elements // START -->
+
 <div id="audio_slider" class="audio_slider"></div>
-<script src="remote-v2/app-main.js"></script>
+<script src="remote-v3/rm_main.js"></script>
 
-</div>
-<div id="theme_check"><!-- used to check theme via JavaScript --></div>
+<!-- APP specific scripts and HTML elements // END -->
+
+&nbsp;<br/>
+&nbsp;<br/>
+&nbsp;<br/>
+&nbsp;<br/>
+&nbsp;<br/>
+
 </body>
 </html>
