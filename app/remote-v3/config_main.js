@@ -54,6 +54,13 @@ function app_click_menu() {
 function app_force_reload(data) {
 	remoteReload(data);
 	}
+	
+//--------------------------------
+// add code when app starts
+//--------------------------------
+
+function app_initialize(data) {
+	}
 
 //--------------------------------
 // add code when theme changed
