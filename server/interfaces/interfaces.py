@@ -57,14 +57,8 @@ class connect(threading.Thread):
 
           for device in active_devices:       
             logging.debug("Load API for device "+device+" ...")
-            api = active_devices[device]["interface"]["api"]
-            
-            if "ip" in active_devices[device]["interface"]:   ip = active_devices[device]["interface"]["ip"]
-            else:                                             ip = ""
-            if "dev" in active_devices[device]["interface"]:  dev = active_devices[device]["interface"]["dev"]
-            else:                                             dev = ""
-            if "mac" in active_devices[device]["interface"]:  mac = active_devices[device]["interface"]["mac"]
-            else:                                             mac = ""
+            api = active_devices[device]["config"]["interface_api"]
+            dev = active_devices[device]["config"]["interface_dev"]
 
             if rm3json.ifexist(rm3config.commands + api + "/00_interface"):
                dev_config = {}
