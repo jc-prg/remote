@@ -174,17 +174,17 @@ function rmRemote(name) {
 		var remote             = "<div id='remote_button' display='block'>";
 
 		var remote_displaysize = "middle";
-		var remote_label       = this.data["DATA"]["devices"][device]["label"];
-		var remote_buttons     = this.data["DATA"]["devices"][device]["button_list"];
+		var remote_label       = this.data["DATA"]["devices"][device]["settings"]["label"];
+		var remote_buttons     = this.data["DATA"]["devices"][device]["interface"]["button_list"];
 		var remote_definition  = [];
 		var remote_display     = {};
 		
-		if (preview_remote == "") 	{ remote_definition = this.data["DATA"]["devices"][device]["remote"]; }
-		else				{ remote_definition = this.get_json_value(preview_remote,this.data["DATA"]["devices"][device]["remote"]); preview = true; }
-		if (preview_display == "") 	{ remote_display    = this.data["DATA"]["devices"][device]["display"]; }
-		else				{ remote_display    = this.get_json_value(preview_display,this.data["DATA"]["devices"][device]["display"]); preview = true; }
+		if (preview_remote == "") 	{ remote_definition = this.data["DATA"]["devices"][device]["remote"]["remote"]; }
+		else				{ remote_definition = this.get_json_value(preview_remote,this.data["DATA"]["devices"][device]["remote"]["remote"]); preview = true; }
+		if (preview_display == "") 	{ remote_display    = this.data["DATA"]["devices"][device]["remote"]["display"]; }
+		else				{ remote_display    = this.get_json_value(preview_display,this.data["DATA"]["devices"][device]["remote"]["display"]); preview = true; }
 		
-		if (this.data["DATA"]["devices"][device]["display-size"]) { remote_displaysize = this.data["DATA"]["devices"][device]["display-size"]; }
+		if (this.data["DATA"]["devices"][device]["remote"]["display-size"]) { remote_displaysize = this.data["DATA"]["devices"][device]["remote"]["display-size"]; }
 		
 		appCookie.set("remote","device::"+device+"::"+remote_label);
 		if (preview) { remote += "<b>Preview:</b><br/><hr/>"; }
@@ -211,9 +211,9 @@ function rmRemote(name) {
 							this.button_edit( link_button_right + link_preview, "+ &gt;");
 
 				this.button_width    = "30px;";
-				if (i > 0) 			    { contextmenu += this.button_edit( link_move_left  + link_preview, "&lt;",""); }
-								      contextmenu += this.button_edit( link_delete     + link_preview, "x","");
-				if (i+1 < remote_definition.length) { contextmenu += this.button_edit( link_move_right + link_preview, "&gt;",""); }
+				if (i > 0) 			    	{ contextmenu += this.button_edit( link_move_left  + link_preview, "&lt;",""); }
+									  contextmenu += this.button_edit( link_delete     + link_preview, "x","");
+				if (i+1 < remote_definition.length)	{ contextmenu += this.button_edit( link_move_right + link_preview, "&gt;",""); }
 				contextmenu += input_add_button;
 				}
 						
@@ -249,9 +249,9 @@ function rmRemote(name) {
 
 	// write description for device remote
 	this.device_description   = function (id, device) {
-		var label = this.data["DATA"]["devices"][device]["label"];
-		var descr = this.data["DATA"]["devices"][device]["description"];
-		var url   = this.data["DATA"]["devices"][device]["url"];
+		var label = this.data["DATA"]["devices"][device]["settings"]["label"];
+		var descr = this.data["DATA"]["devices"][device]["settings"]["description"];
+		var url   = this.data["DATA"]["devices"][device]["settings"]["url"];
 		if (url) { descr = "<a href=\""+url+"\" target='_blank'>"+descr+"</a>"; }
 		
 		var str = "";
@@ -268,14 +268,14 @@ function rmRemote(name) {
 
 		var remote            = "";
 		var notused           = [];
+		this.button_width     = "120px";
 
 		var link_preview      = this.app_name+".device_remote('frame3','"+device+"','remote_json_buttons','remote_json_display');";
 		link_preview         += this.app_name+".device_notused('"+id+"','"+device+"');";
-		var device_buttons    = this.data["DATA"]["devices"][device]["button_list"];	
-		if (preview_remote == "") 	{ remote_buttons = this.data["DATA"]["devices"][device]["remote"]; }
-		else				{ remote_buttons = this.get_json_value(preview_remote, this.data["DATA"]["devices"][device]["remote"]); preview = true; }
+		var device_buttons    = this.data["DATA"]["devices"][device]["interface"]["button_list"];
+		if (preview_remote == "") 	{ remote_buttons = this.data["DATA"]["devices"][device]["remote"]["remote"]; }
+		else				{ remote_buttons = this.get_json_value(preview_remote, this.data["DATA"]["devices"][device]["remote"]["remote"]); preview = true; }
 		
-		this.button_width     = "120px";
 		
 		// show not used buttons if edit mode
 		if (this.edit_mode)	{ display = "block"; sign    = "−"; }
@@ -354,12 +354,12 @@ function rmRemote(name) {
 		this.input_width      = "180px";
 		this.button_width     = "120px";
 
-		remote  += "<center><b>Edit &quot;"+device_data["label"]+"&quot;</b> ["+device+"]</center>";
+		remote  += "<center><b>Edit &quot;"+device_data["settings"]["label"]+"&quot;</b> ["+device+"]</center>";
 		remote  += "<hr/>";
 
 		remote  += this.tab_row("start");
-		remote  += this.tab_row( "Description:&nbsp;", 	this.input("edit_description", device_data["description"]) );
-		remote  += this.tab_row( "Label:",       		this.input("edit_label",	device_data["label"]) );
+		remote  += this.tab_row( "Description:&nbsp;", 	this.input("edit_description", device_data["settings"]["description"]) );
+		remote  += this.tab_row( "Label:",       		this.input("edit_label",	device_data["settings"]["label"]) );
 		remote  += this.tab_row( "&nbsp;",			this.button_edit("apiDeviceEdit('"+device+"','edit','description,label,interface,method');","save changes") );
 		remote  += this.tab_row("end") + "<hr/>" + this.tab_row("start");	
 		remote  += this.tab_row(
@@ -427,13 +427,13 @@ function rmRemote(name) {
 	        if (this.edit_mode)     { elementVisible(id); }
 	        else                    { elementHidden(id,"remote_edit_json"); return; }
 	        
-	        if (remote == "") 	{ var remote_definition  = this.data["DATA"]["devices"][device]["remote"]; }
+	        if (remote == "") 	{ var remote_definition  = this.data["DATA"]["devices"][device]["remote"]["remote"]; }
 	        else			{ var remote_definition  = remote; }
 	        
-	        if (this.data["DATA"]["devices"][device] && this.data["DATA"]["devices"][device]["display"])
-	        			{ var remote_display     = this.data["DATA"]["devices"][device]["display"] }			
+	        if (this.data["DATA"]["devices"][device] && this.data["DATA"]["devices"][device]["remote"]["display"])
+	        				{ var remote_display     = this.data["DATA"]["devices"][device]["remote"]["display"] }			
 	        else if (display == "")	{ var remote_display	 = {}; }
-	        else			{ var remote_display	 = display; }
+	        else				{ var remote_display	 = display; }
 
 		this.button_width = "100px";
 
@@ -480,7 +480,7 @@ function rmRemote(name) {
 		var remote            	= "";
 		var remote_definition 	= [];
 		var remote_channel 	= [];
-		var remote_label 	= scene_definition["scene"]["label"];
+		var remote_label 	= scene_definition["settings"]["label"];
 
 		if (preview_remote == "") 	{ remote_definition = scene_definition["remote"]["remote"]; }
 		else				{ remote_definition = this.get_json_value(preview_remote, scene_definition["remote"]["channel"]); preview = true; }
@@ -554,10 +554,11 @@ function rmRemote(name) {
 	this.scene_channels       = function (id, scene, preview_channel="") {
 		// set vars
 		var remote     = "";
-		var scene_name = this.data["DATA"]["scenes"][scene]["scene"]["label"];
+		var scene_data = this.data["DATA"]["scenes"][scene];
+		var scene_name = scene_data["settings"]["label"];
 
-		if (preview_channel == "") 	{ makros = this.data["DATA"]["scenes"][scene]["remote"]["channel"]; }
-		else				{ makros = this.get_json_value(preview_channel, this.data["DATA"]["scenes"][scene]["remote"]["channel"]); preview = true; }
+		if (preview_channel == "") 	{ makros = scene_data["remote"]["channel"]; }
+		else				{ makros = this.get_json_value(preview_channel, scene_data["remote"]["channel"]); preview = true; }
 
 		channels = Object.keys(makros);
 		channels = channels.sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase());});
@@ -583,7 +584,7 @@ function rmRemote(name) {
 
 	// write description for device remote
 	this.scene_description   = function (id, scene) {
-		var scene_info = this.data["DATA"]["scenes"][scene]["scene"];
+		var scene_info = this.data["DATA"]["scenes"][scene]["settings"];
 		var label      = scene_info["label"];
 		var descr      = scene_info["description"];
 		var url        = scene_info["url"];
@@ -602,7 +603,7 @@ function rmRemote(name) {
 		this.button_width = "120px";
 		this.input_width  = "180px";
 		
-		var scene_info    = this.data["DATA"]["scenes"][scene]["scene"];
+		var scene_info    = this.data["DATA"]["scenes"][scene]["settings"];
 
 		var link_template = this.app_name+".remote_import_templates('scene','frame2','"+scene+"','add_template','scene_json_buttons');";
 		var link_preview  = this.app_name+".scene_remote('frame3','"+scene+"','scene_json_buttons','scene_json_channel');";
@@ -842,8 +843,8 @@ function rmRemote(name) {
                 
                 	var count1 = 0;
                 	var count2 = 0;
-			var remote_definition = this.data["DATA"]["devices"][device]["remote"];
-			var button_list       = this.data["DATA"]["devices"][device]["button_list"];
+			var remote_definition = this.data["DATA"]["devices"][device]["remote"]["remote"];
+			var button_list       = this.data["DATA"]["devices"][device]["interface"]["button_list"];
 			
 			for (var i=0;i<remote_definition.length;i++) {
 				if (i<10) { a = "0"; } else { a = ""; }
@@ -854,7 +855,7 @@ function rmRemote(name) {
 			
                 if (device != "" && device in this.data["DATA"]["scenes"]) {
                 
-			button_list = this.data["DATA"]["scenes"][device]["remote"];
+			button_list = this.data["DATA"]["scenes"][device]["remote"]["remote"];
 			for (var i=0;i<button_list.length;i++) {
 				if (i<10) { a = "0"; } else { a = ""; }
                                 list[i] = "["+a+i+"]  "+button_list[i];
@@ -909,11 +910,11 @@ function rmRemote(name) {
 	this.display              = function (id, device, style="", display_data={}) {
         
 		var status_data  = this.data["DATA"]["devices"][device]["status"];
-		var connected    = this.data["DATA"]["devices"][device]["connected"].toLowerCase();
+		var connected    = this.data["DATA"]["devices"][device]["status"]["api-status"].toLowerCase();
 		
 		if (display_data != {})					{ }
-		else if (this.data["DATA"]["devices"][device]["display"])	{ display_data = this.data["DATA"]["devices"][device]["display"]; }
-		else								{ display_data["Error"] = "No display defined"; } 
+		else if (this.data["DATA"]["devices"][device]["remote"]["display"])	{ display_data = this.data["DATA"]["devices"][device]["remote"]["display"]; }
+		else									{ display_data["Error"] = "No display defined"; } 
 
         	var text    = "";
 	        	var status  = "";
@@ -978,8 +979,8 @@ function rmRemote(name) {
 	this.display_alert        = function (id, device, style="" ) {
         
 		var display_data = [];
-		if (this.data["DATA"]["devices"][device]["query_list"])	{ display_data = this.data["DATA"]["devices"][device]["query_list"]; }
-		else								{ display_data = ["ERROR","No display defined"]; } 
+		if (this.data["DATA"]["devices"][device]["interface"]["query_list"])	{ display_data = this.data["DATA"]["devices"][device]["interface"]["query_list"]; }
+		else									{ display_data = ["ERROR","No display defined"]; } 
 
 		var power = this.data["DATA"]["devices"][device]["status"];
         	var text  = "Device Information: "+device +"<hr/>";
@@ -989,7 +990,7 @@ function rmRemote(name) {
         	
         	console.log(device);
         	console.log(this.data["DATA"]["devices"][device]["status"]);
-        	console.log(this.data["DATA"]["devices"][device]["query_list"]);
+        	console.log(this.data["DATA"]["devices"][device]["interface"]["query_list"]);
         	console.log(display_data);
 
         	for (var i=0; i<display_data.length; i++) {
@@ -1172,7 +1173,7 @@ function rmRemote(name) {
 
 	// return list of buttons for a device
 	this.button_list          = function (device) {
-		if (this.data["DATA"]["devices"][device]) 	{ return this.data["DATA"]["devices"][device]["button_list"]; }
+		if (this.data["DATA"]["devices"][device]) 	{ return this.data["DATA"]["devices"][device]["interface"]["button_list"]; }
 		else						{ return ["error:"+device]; }
 		}
 

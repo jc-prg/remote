@@ -88,18 +88,19 @@ function rmSettings (name) {	// IN PROGRESS
 		var setting    = "";
 
 		// Show Server Infos
-		var main_audio = this.data["CONFIG"]["main-audio"];  // get main audio device from file
+		var main_audio  = this.data["CONFIG"]["main-audio"];  // get main audio device from file
+		var main_device = this.data["DATA"]["devices"][main_audio];
 		var audio_max  = "";
-		if (this.data["DATA"]["devices"][main_audio]["values"] && this.data["DATA"]["devices"][main_audio]["values"]["vol"]) {
-			audio_max  = this.data["DATA"]["devices"][main_audio]["values"]["vol"]["max"];
+		if (main_device["interface"]["values"] && main_device["interface"]["values"]["vol"]) {
+			audio_max  = main_device["interface"]["values"]["vol"]["max"];
 			}
 		else {
 			audio_max  = 100;
 			console.error("Max values not defined, set 100!");
 			}
-		var audio1     = "Power: "  + this.data["DATA"]["devices"][main_audio]["status"]["power"] + " / "
-		               + "Volume: " + this.data["DATA"]["devices"][main_audio]["status"]["vol"] + " (" + audio_max + ")";
-		var audio2     = this.data["DATA"]["devices"][main_audio]["label"];
+		var audio1     = "Power: "  + main_device["status"]["power"] + " / "
+		               + "Volume: " + main_device["status"]["vol"] + " (" + audio_max + ")";
+		var audio2     = main_device["settings"]["label"];
 		var cookie     = appCookie.get("remote");
 
 		setting  = this.tab_row( 	"Status:", 		this.app_stat );
@@ -163,7 +164,7 @@ function rmSettings (name) {	// IN PROGRESS
 		setting += this.tab_row( 	"ID:",  	this.input("add_device_id") );
 		setting += this.tab_row( 	"Label:", 	this.input("add_device_descr") );
 		setting += this.tab_row( 	"Interface:",   this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"]) );
-		setting += this.tab_row( 	"Device Name:",	this.input("add_device",onchange) );
+		setting += this.tab_row( 	"Device Name:",	this.input("add_device",onchange,onchange) );
 		setting += "<tr><td colspan='2'><hr/></td></tr>";
 		setting += this.tab_row( 	"Device-Config:",	this.input("add_device_device")+".json" );
 		setting += this.tab_row( 	"Remote-Config:",	this.input("add_device_remote")+".json" );
@@ -180,7 +181,9 @@ function rmSettings (name) {	// IN PROGRESS
 		this.write(0,lang("REMOTE_ADD")+" (Device)",setting);					
 			
 		setting = "";	
-		var order  = sortDict(this.data["DATA"]["devices"],"position");
+		var devices = this.data["DATA"]["devices"];
+		for (var key in scenes) { devices[key]["position"] = devices[key]["settings"]["position"]; console.log(key);}
+		var order  = sortDict(devices,"position");
 		for (var i=0;i<order.length;i++) {
 			var key     = order[i];
 			var button  = "";			
@@ -189,25 +192,28 @@ function rmSettings (name) {	// IN PROGRESS
 			if (i > 0)  		{ button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#-1#);","up"); }
 			if (i < order.length-1)	{ button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#1#);","down"); }
 			
-			if (visible == "no")    { setting += this.tab_row("<i>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["label"] + "</i>",button); }
-			else                    { setting += this.tab_row("<b>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["label"] + "</b>",button); }		
+			if (visible == "no")    { setting += this.tab_row("<i>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</i>",button); }
+			else                    { setting += this.tab_row("<b>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</b>",button); }		
 			}
 			
 		setting += "</table>"
 			 + "<hr><center><b>Change Order of Scenes</b></center><hr/>"
 			 + "<table width=\"100%\">";
-			 
-		order  = sortDict(this.data["DATA"]["scenes"],"position");
+
+		var scenes = this.data["DATA"]["scenes"];
+		console.log(scenes);
+		for (var key in scenes) { scenes[key]["position"] = scenes[key]["settings"]["position"]; console.log(key);}		 
+		var order  = sortDict(scenes,"position");
 		for (var i=0;i<order.length;i++) {
 			var key     = order[i];
 			var button  = "";			
-			var visible = this.data["DATA"]["scenes"][key]["visible"];
+			var visible = scenes[key]["settings"]["visible"];
 
-			if (i > 0)  		{ button += this.button_small("apiDeviceMovePosition_exe(#scene#,#"+key+"#,#-1#);"+this.app_name+".mode = '';","up"); }
+			if (i > 0)  			{ button += this.button_small("apiDeviceMovePosition_exe(#scene#,#"+key+"#,#-1#);"+this.app_name+".mode = '';","up"); }
 			if (i < order.length-1)	{ button += this.button_small("apiDeviceMovePosition_exe(#scene#,#"+key+"#,#1#);"+this.app_name+".mode = '';","down"); }
 			
-			if (visible == "no")    { setting += this.tab_row("<i>" + this.data["DATA"]["scenes"][key]["position"] + ". " + this.data["DATA"]["scenes"][key]["label"] + "</i>",button); }
-			else                    { setting += this.tab_row("<b>" + this.data["DATA"]["scenes"][key]["position"] + ". " + this.data["DATA"]["scenes"][key]["label"] + "</b>",button); }
+			if (visible == "no")    { setting += this.tab_row("<i>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</i>",button); }
+			else                    { setting += this.tab_row("<b>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</b>",button); }
 			}
 
 		this.write(1,"Change Order of Devices",setting);
@@ -405,17 +411,11 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 	
 	this.tab_row            = function (td1,td2) 	{ return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
-	this.input              = function (id,onclick="") { 
-
-		text = "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;'>"; 
+	this.input              = function (id,onclick="",oninput="") { 
 		
+		text = "<input id=\"" + id + "\" oninput=\""+oninput+"\" style='width:" + this.input_width + ";margin:1px;'>"; 
 		if (onclick != "") {
 			text += "&nbsp;<button onclick=\""+onclick+"\">&gt;&gt;</button>";
-
-
-			//const inputChange = document.querySelector(id);
-			//const new_input   = document.getElementById("add_device_device");
-			//inputChange.addEventListener(id,input2);
 			}
 			
 		return text;

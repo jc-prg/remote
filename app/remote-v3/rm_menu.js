@@ -97,13 +97,14 @@ function rmMenu(name, menu) {
 
 		// set vars
     		var menu   = this.readMenu();
+    		for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }    		
 		var order  = sortDict(data,"position");
     		var i      = 0;
 		for (var j=0;j<order.length;j++) {
 			device = order[j];
 			if (device != "default") {
-			        if (data[device]["visible"] != "no")  { menu  += this.entry_device( device, data[device]["label"] ); }
-			        else if (this.edit_mode)              { menu  += this.entry_device( device, "<div class=#hidden_entry_edit#>.(" + data[device]["label"] + ").</div>" ); }
+			        if (data[device]["settings"]["visible"] != "no")	{ menu  += this.entry_device( device, data[device]["settings"]["label"] ); }
+			        else if (this.edit_mode)				{ menu  += this.entry_device( device, "<div class=#hidden_entry_edit#>.(" + data[device]["settings"]["label"] + ").</div>" ); }
 				}
         		}
     		this.writeMenu(menu + "<li><hr/></li>");
@@ -124,14 +125,14 @@ function rmMenu(name, menu) {
     		
     		var menu   = this.readMenu();
     		
-    		for (var key in data) { data[key]["position"] = data[key]["scene"]["position"]; }    		
+    		for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }    		
 		var order  = sortDict(data,"position");
 		
 		for (var j=0;j<order.length;j++) {
 			scene = order[j];
-			if (data[scene]["scene"]["label"]) {
-			        if (data[scene]["scene"]["visible"] != "no")	{ menu  += this.entry_scene( scene, data[scene]["scene"]["label"] ); }
-			        else if (this.edit_mode)			{ menu  += this.entry_scene( scene, "<div class=#hidden_entry_edit#>.(" + data[scene]["scene"]["label"] + ").</div>" ); }
+			if (data[scene]["settings"]["label"]) {
+			        if (data[scene]["settings"]["visible"] != "no")	{ menu  += this.entry_scene( scene, data[scene]["settings"]["label"] ); }
+			        else if (this.edit_mode)				{ menu  += this.entry_scene( scene, "<div class=#hidden_entry_edit#>.(" + data[scene]["settings"]["label"] + ").</div>" ); }
 				}
         		}
 
