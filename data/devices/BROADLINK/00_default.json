@@ -3,8 +3,13 @@
 	"description": "API to connect to IR devices (no default commands)",
 	"buttons"    : {},
 	"queries"    : {},
+	"commands"   : {
+	   "power" : { "type" : "enum" }
+	   },
 	"method"     : "record",
-	"values"     : {},
+	"values"     : {
+	   "power" : [ "ON", "OFF" ]
+	   },
 	"send-data"  : {}
    }
 }

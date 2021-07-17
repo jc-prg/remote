@@ -1,8 +1,18 @@
 {
     "info": "jc://remote/ - In this file the remote layout and channel makros for the scene are defined.",
     "tv3": {
-        "channel": {},
-        "devices": [],
+        "channel": {
+            "test channel": [
+                "tv2_1",
+                "tv2_2"
+            ]
+        },
+        "devices": [
+            "rec2",
+            "tv2",
+            "beam",
+            "lw"
+        ],
         "label": "Fernsehen (2)",
         "remote": [
             "makro_tv",

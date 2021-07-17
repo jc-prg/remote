@@ -1,0 +1,53 @@
+{
+    "cinema": {
+        "channel": {},
+        "devices": [
+            "rec2",
+            "beam",
+            "lw"
+        ],
+        "label": "Kino",
+        "remote": [
+            ".",
+            ".",
+            "scene-on_cinema",
+            "scene-off_cinema",
+            "LINE",
+            "makro_bluray",
+            "makro_pc",
+            "makro_kodi",
+            ".",
+            "LINE||bluray playback",
+            "bd-api_fbw",
+            "bd-api_play",
+            "bd-api_ffw",
+            "makro_vol+",
+            "bd-api_last",
+            "bd-api_pause",
+            "bd-api_next",
+            "makro_mute",
+            "bd-api_subtitle",
+            "bd-api_stop",
+            "bd-api_audio",
+            "makro_vol-",
+            "LINE||bluray navigation",
+            "bd-api_open",
+            "bd-api_up",
+            ".",
+            "bd-api_topmenu",
+            "bd-api_left",
+            "bd-api_enter",
+            "bd-api_right",
+            "bd-api_menu",
+            "bd-api_setup",
+            "bd-api_down",
+            "bd-api_display",
+            "bd_back",
+            "LINE",
+            "bd-api_red",
+            "bd-api_green",
+            "bd-api_yellow",
+            "bd-api_blue"
+        ]
+    }
+}

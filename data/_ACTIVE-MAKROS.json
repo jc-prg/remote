@@ -16,6 +16,7 @@
 	        "rec":       ["rec_on-off||OFF"],
 	        "rec2":      ["rec2_off"],
 	        "tv":        ["tv_on-off||OFF"],
+	        "tv3":       ["tv2_on-off||OFF"],
 	        "radio":     ["tv_on-off||OFF"],
 	        "bd":        ["bd_on-off||OFF"],
 	        "bd-api":    ["bd_off"],

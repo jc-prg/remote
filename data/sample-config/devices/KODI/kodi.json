@@ -1,0 +1,13 @@
+{
+    "data": {
+        "buttons"     : {},
+        "commands"    : {},
+        "description" : "Kodi (API)",
+        "display"     : {},
+        "method"      : "query",
+        "send-data"   : {},
+        "queries"     : {},
+        "url"         : "http://192.168.1.31:8080/",
+        "values"      : {}
+    }
+}
