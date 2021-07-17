@@ -110,6 +110,7 @@ function rmSettings (name) {	// IN PROGRESS
 						"Modules: jcMsg " 	+ appMsg.appVersion +  
 						" / jcApp "		+ appFW.appVersion +
 						" / jcAppFW "		+ appFwVersion +
+						" / jcCookies "	+ appCookie.appVersion +  
 						" / jcSlider "		+ rm3slider.appVersion );
 		setting += this.tab_row( 	"Cookie:", 		cookie );
 		setting += this.tab_row( 	"Button:", 		this.app_last );
