@@ -198,18 +198,18 @@ class connect(threading.Thread):
             method = self.method(call_api)
             
             if button.startswith("send-"):
-               logging.info("SEND-DATA "+call_api+" / "+device+" - "+button+" ("+str(value)+")")
+               logging.info("SEND-DATA: "+call_api+" / "+device+" - "+button+" ("+str(value)+"/"+method+")")
                if method == "query" and value != "":    button_code = self.get_command( call_api, "send-data", device, button )
                else:                                    button_code = "ERROR, wrong method (!query) or no data transmitted."
                if not "ERROR" in button_code:           button_code = button_code.replace("{DATA}",value)
-
-               logging.info("BUTTON-CODE "+button_code)
+               logging.info("BUTTON-CODE: "+button_code)
                
             else:            
-               logging.info("SEND "+call_api+" / "+device+" - "+button+" ("+str(value)+")")
+               logging.info("SEND: "+call_api+" / "+device+" - "+button+" ("+str(value)+"/"+method+")")
                if  method == "record":                  button_code = self.get_command( call_api, "buttons", device, button ) 
                elif method == "query" and value == "":  button_code = self.get_command( call_api, "buttons", device, button )
                else:                                    button_code = self.create_command( call_api, device, button, value ) 
+               logging.info("BUTTON-CODE: "+button_code)               
             
             if "ERROR" in button_code: return_msg = "ERROR: could not read/create command from button code (send/"+mode+"/"+button+"); " + button_code
             elif call_api in self.api: return_msg = self.api[call_api].send(device,button_code)
@@ -359,29 +359,18 @@ class connect(threading.Thread):
         if device in active:
           device_code  = active[device]["config"]["device"]
           buttons      = self.configFiles.read(rm3config.commands + api + "/" + device_code)
-    
+
           # add button definitions from default.json if exist
           if rm3json.ifexist(rm3config.commands + api + "/00_default"):
              buttons_default = self.configFiles.read(rm3config.commands + api + "/00_default")
 
-             value_list      = [ "buttons", "queries", "commands", "values", "send-data" ]            
-             for value in value_list:
-                if not value in buttons["data"]: buttons["data"][value] = {}             
-                if value in buttons_default["data"]:
-                   for key in buttons_default["data"][value]:
-                     buttons["data"][value][key] = buttons_default["data"][value][key]
+             key_list      = [ "buttons", "queries", "commands", "values", "send-data" ]            
+             for key in key_list:
+                if not key in buttons["data"]: buttons["data"][key] = {}             
+                if key in buttons_default["data"]:
+                   for key2 in buttons_default["data"][key]:
+                     buttons["data"][key][key2] = buttons_default["data"][key][key2]
              
-#             if not "commands" in buttons["data"]: buttons["data"]["commands"] = {}
-#             if not "values"   in buttons["data"]: buttons["data"]["values"]   = {}
-             
-#             if "commands" in buttons_default["data"]:
-#               for key in buttons_default["data"]["commands"]:
-#                 buttons["data"]["commands"][key] = buttons_default["data"]["commands"][key]
-                
-#             if "values" in buttons_default["data"]:
-#               for key in buttons_default["data"]["values"]:
-#                 buttons["data"]["values"][key]   = buttons_default["data"]["values"][key]
-
           # check for errors or return button code
           if "ERROR" in buttons or "ERROR" in active:         return "ERROR create_command: buttons not defined for device ("+device+")"
           elif button in buttons["data"]["commands"]:
@@ -390,7 +379,7 @@ class connect(threading.Thread):
              cmd_type   = buttons["data"]["commands"][button]["type"]
              cmd_values = buttons["data"]["values"][button]
              cmd        = buttons["data"]["commands"][button]["command"] + value
-                          
+
              if cmd_type == "integer" and int(value) >= cmd_values["min"] and int(value) <= cmd_values["max"]:  cmd_ok = True
              elif cmd_type == "enum"  and value in cmd_values:                                                  cmd_ok = True
 
