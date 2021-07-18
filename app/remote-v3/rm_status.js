@@ -430,7 +430,7 @@ function statusCheck(data={}) {
         				else 									{ status = "<b style='color:red;'>Unknown Error:</b> "+devices[key]["connected"]; }			
 					}
 
-				if (element2) { element2.innerHTML = status.replace(/,/g,", "); }
+				if (element2 && status) { element2.innerHTML = status.replace(/,/g,", "); }
 				}
 			}
 		}	
