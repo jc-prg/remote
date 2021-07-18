@@ -97,7 +97,7 @@ function rmMenu(name, menu) {
 
 		// set vars
     		var menu   = this.readMenu();
-    		for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }    		
+    		for (var key in data) { if (data[key]["settings"]["position"]) { data[key]["position"] = data[key]["settings"]["position"]; }}
 		var order  = sortDict(data,"position");
     		var i      = 0;
 		for (var j=0;j<order.length;j++) {
