@@ -34,7 +34,7 @@
 	        "image" : "",
 	        "label": "Fernsehen",
 	        "position": 1,
-	        "visible": "no"
+	        "visible": "yes"
 	        },
 	"status" : {}
     }

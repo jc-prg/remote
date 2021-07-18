@@ -233,7 +233,7 @@
             "label": "TV/Radio",
             "main-audio": "no",
             "position": 6,
-            "visible": "no"
+            "visible": "yes"
         },
         "status": {
             "api-status": "Connected",
