@@ -80,8 +80,8 @@ class queueApiCalls (threading.Thread):
           devices  = self.config.read_status()
           
        # check, if reload is requested ...
-       if "END_OF_RELOAD" in str(command):
-          self.reload = False
+       if "START_OF_RELOAD" in str(command):  self.reload = True
+       elif "END_OF_RELOAD" in str(command):  self.reload = False
 
        # if is an array / not a number
        elif "," in str(command):

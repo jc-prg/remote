@@ -273,9 +273,11 @@ def RemoteSet(device,command,value):
         if method == "query":
           #data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,command,value)
           data["REQUEST"]["Return"] = queueSend.add2queue([[interface,device,command,value]])
+          devicesGetStatus(data,readAPI=True)
           
         elif method == "record":
           data["REQUEST"]["Return"] = setStatus(device,command,value)
+          devicesGetStatus(data,readAPI=True)
         
         if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
 

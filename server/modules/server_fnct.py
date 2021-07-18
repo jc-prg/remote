@@ -943,7 +943,10 @@ def devicesGetStatus(data,readAPI=False):
     devices = RmReadData_devices()
    
     # set reload status
-    if readAPI == True: queueQuery.add2queue(["START_OF_RELOAD"])
+    if readAPI == True: 
+       queueQuery.add2queue(["START_OF_RELOAD"])
+       queueQuery.add2queue ([1])
+       logging.info("RELOAD data from devices")
     
     # read status of all devices
     for device in devices:
@@ -972,7 +975,7 @@ def devicesGetStatus(data,readAPI=False):
               
               # request update for devices with API query
               if method == "query" and readAPI == True:
-                queueQuery.add2queue ([2])                                                 # wait a few seconds before queries
+                queueQuery.add2queue ([0.25])                                                 # wait a few seconds before queries
                 queueQuery.add2queue ([[interface,device,data[device]["interface"]["query_list"],""]])  # add querylist per device
               
     # set reload status
