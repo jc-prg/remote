@@ -295,7 +295,7 @@ function rmSettings (name) {	// IN PROGRESS
 	this.device_list        = function (id,onchange="") {
 		var list = {};
 		for (var key in this.data["DATA"]["devices"]){
-			list[key] = this.data["DATA"]["devices"][key]["label"];
+			list[key] = this.data["DATA"]["devices"][key]["settings"]["label"];
 			}
 		return this.select(id,"device",list,onchange);
 		}
