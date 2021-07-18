@@ -3,11 +3,11 @@
     	"config" : {
     		"remote": "scene_cinema"
     		},
-    	"scene" : {
+    	"settings" : {
 	        "description": "Bluray, PC, Kodi",
 	        "image" : "",
 	        "label": "Kino",
-	        "position": 3,
+	        "position": 2,
 	        "visible": "yes"
 	        },
 	"status" : {}
@@ -16,11 +16,11 @@
     	"config" : {
     		"remote": "scene_music"
     		},
-    	"scene" : {
+    	"settings" : {
 	        "description": "Bluray/CD, Bluetooth, AUX, Radio-Receiver",
 	        "image" : "",
 	        "label": "Musik",
-	        "position": 4,
+	        "position": 3,
 	        "visible": "yes"
 	        },
 	"status" : {}
@@ -29,11 +29,11 @@
     	"config" : {
     		"remote": "scene_tv"
     		},
-    	"scene" : {
+    	"settings" : {
 	        "description": "TV-Receiver",
 	        "image" : "",
 	        "label": "Fernsehen",
-	        "position": 2,
+	        "position": 1,
 	        "visible": "no"
 	        },
 	"status" : {}
