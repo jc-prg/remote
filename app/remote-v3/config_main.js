@@ -31,13 +31,14 @@ function app_status(data) {
 		//birdhousePrint(data=data, active_page=appActivePage, camera=app_active_cam);
 		reload = false;
 		}
+	statusCheck(data);
 	}
 	
 //--------------------------------
 // add code when checked the status
 //--------------------------------
 
-function app_check_status() {
+function app_check_status(data) {
 	}
 	
 //--------------------------------
