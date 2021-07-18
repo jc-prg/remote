@@ -334,12 +334,6 @@ class connect(threading.Thread):
                    for key in buttons_default["data"][value]:
                      buttons["data"][value][key] = buttons_default["data"][value][key]
              
-#             if button_query in buttons_default["data"]:
-#               for key in buttons_default["data"][button_query]:
-#                 buttons["data"][button_query][key] = buttons_default["data"][button_query][key]
-#             else:
-#               return "ERROR get_command: button_query does not exist for device ("+device+"/"+button_query+")"
-
           # check for errors or return button code
           if "ERROR" in buttons or "ERROR" in active:         return "ERROR get_command: buttons not defined for device ("+device+")"
           elif button in buttons["data"][button_query]:       return buttons["data"][button_query][button]
