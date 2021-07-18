@@ -94,7 +94,7 @@ function rmStart(name) {
         	        	}
         	        else if (this.edit_mode && data[scene]["settings"]["visible"] == "no") {
 	        	        var id = "scene_"+scene;
-        	        	menu  += this.entry_scene( data, id, data[scene]["label"], "big" );
+        	        	menu  += this.entry_scene( data, id, data[scene]["settings"]["label"], "big_edit" );
         	        	}
 	                }
 
@@ -120,7 +120,7 @@ function rmStart(name) {
 		var disabled;
 		var d = this.button_image( label, style );
 		var i = id.split("_");
-		return this.button( id, d[0], "big", 'rm3remotes.create("scene","' + i[1] + '");setNavTitle("' + label + '");', "" );
+		return this.button( id, d[0], style, 'rm3remotes.create("scene","' + i[1] + '");setNavTitle("' + label + '");', "" );
 		}
 
         // standard standard button

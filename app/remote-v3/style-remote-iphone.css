@@ -9,6 +9,7 @@
   
   .button         	{ width  :  76px; max-width  :  76px; }
   .button.big     	{ width  : 105px; max-width  : 105px; }
+  .button.big_edit    	{ width  : 105px; max-width  : 105px; }
   .button.small   	{ width  :  62px; max-width  :  62px; }
   .button.small_edit	{ width  :  62px; max-width  :  62px;}
     
