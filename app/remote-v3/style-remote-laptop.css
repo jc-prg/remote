@@ -17,9 +17,20 @@
   .display.middle 	{ width  : 156px; }
   .display.big    	{ width  : 320px; }
   
+  .display.h1w2        { width  : 156px; }
+  .display.h2w2        { width  : 156px; }
+  .display.h2w4        { width  : 328px; }
+  .display.h3w2        { width  : 156px; } 
+  .display.h4w2        { width  : 156px; } 
+
   .display-element        { width : 68px; }
   .display-element.small  { width : 68px; }
   .display-element.middle { width : 142px; }
   .display-element.big    { width : 142px; }
+  
+  .display-element.h2w4    { width : 142px; }
+  .display-element.h3w2    { width : 142px; }
+  .display-element.h4w2    { width : 142px; }
+
 }
 

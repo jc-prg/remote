@@ -168,23 +168,23 @@ function rmRemote(name) {
 	//--------------------
 
 	// create remote for a specific device
-	this.device_remote        = function (id="", device="", preview_remote="", preview_display="") {
+	this.device_remote        = function (id="", device="", preview_remote="", preview_display="", preview_display_size="") {
 
 		var preview	       = false;	
 		var remote             = "<div id='remote_button' display='block'>";
 
-		var remote_displaysize = "middle";
+		var remote_displaysize = this.data["DATA"]["devices"][device]["remote"]["display-size"];
 		var remote_label       = this.data["DATA"]["devices"][device]["settings"]["label"];
 		var remote_buttons     = this.data["DATA"]["devices"][device]["interface"]["button_list"];
 		var remote_definition  = [];
 		var remote_display     = {};
 		
-		if (preview_remote == "") 	{ remote_definition = this.data["DATA"]["devices"][device]["remote"]["remote"]; }
-		else				{ remote_definition = this.get_json_value(preview_remote,this.data["DATA"]["devices"][device]["remote"]["remote"]); preview = true; }
-		if (preview_display == "") 	{ remote_display    = this.data["DATA"]["devices"][device]["remote"]["display"]; }
-		else				{ remote_display    = this.get_json_value(preview_display,this.data["DATA"]["devices"][device]["remote"]["display"]); preview = true; }
-		
-		if (this.data["DATA"]["devices"][device]["remote"]["display-size"]) { remote_displaysize = this.data["DATA"]["devices"][device]["remote"]["display-size"]; }
+		if (preview_remote == "") 	 { remote_definition = this.data["DATA"]["devices"][device]["remote"]["remote"]; }
+		else				 { remote_definition = this.get_json_value(preview_remote,this.data["DATA"]["devices"][device]["remote"]["remote"]); preview = true; }
+		if (preview_display == "") 	 { remote_display    = this.data["DATA"]["devices"][device]["remote"]["display"]; }
+		else				 { remote_display    = this.get_json_value(preview_display,this.data["DATA"]["devices"][device]["remote"]["display"]); preview = true; }
+		if (this.data["DATA"]["devices"][device]["remote"]["display-size"] == undefined) {  remote_displaysize = "middle"; }
+		if (preview_display_size != "") { remote_displaysize = check_if_element_or_value(preview_display_size); }
 		
 		appCookie.set("remote","device::"+device+"::"+remote_label);
 		if (preview) { remote += "<b>Preview:</b><br/><hr/>"; }
@@ -437,18 +437,30 @@ function rmRemote(name) {
 	        else				{ var remote_display	 = display; }
 
 		this.button_width = "100px";
+		var display_sizes = {
+			"small" : "Small",
+			"middle" : "Middle",
+			"big"  : "Big",
+			"h1w2" : "1x heigh / 2x wide",
+			"h2w2" : "2x heigh / 2x wide", 
+			"h2w4" : "2x heigh / 4x wide",
+			"h3w2" : "3x heigh / 2x wide",
+			"h4w2" : "4x heigh / 2x wide"
+			}
 
 		var remote = "";
 		remote += "<div id='remote_json'>"; //  style='display:none;'
-		remote += "<b>JSON Button Definition:</b><br/><hr/>";
+		remote += "<b>Button Definition:</b><br/><hr/>";
 		remote += this.display_json( "remote_json_buttons", remote_definition, "buttons" );
-		remote += "<br/><b>JSON Display Definition:</b><br/><hr/>";
+		remote += "<br/><b>Display Definition:</b><br/><hr/>";
 		remote += this.display_json( "remote_json_display", remote_display );
+		remote += "<br/><b>Display size:</b><br/><hr/>";
+		remote += this.select("remote_display_size","display size", display_sizes, "", this.data["DATA"]["devices"][device]["remote"]["display-size"]);
 		remote += "<hr/><center>" + 
 				this.button_edit(this.app_name+".device_edit_json('"+id+"','"+device+"');"+
 					this.app_name+".device_remote('frame3','"+device+"','remote_json_buttons','remote_json_channel');"+this.app_name+".device_notused('frame5','"+device+"','remote_json_buttons');","reset") + "&nbsp;" + 
-				this.button_edit("apiDeviceJsonEdit('"+device+"','remote_json_buttons','remote_json_display');","save") +  "&nbsp;" + 
-				this.button_edit(this.app_name+".device_remote('frame3','"+device+"','remote_json_buttons','remote_json_display');"+this.app_name+".device_notused('frame5','"+device+"','remote_json_buttons');","preview") +
+				this.button_edit("apiDeviceJsonEdit('"+device+"','remote_json_buttons','remote_json_display','remote_display_size');","save") +  "&nbsp;" + 
+				this.button_edit(this.app_name+".device_remote('frame3','"+device+"','remote_json_buttons','remote_json_display','remote_display_size');"+this.app_name+".device_notused('frame5','"+device+"','remote_json_buttons');","preview") +
 				"</center>";
 		remote += "</div><hr/>";
 		remote += lang("MANUAL_REMOTE");
