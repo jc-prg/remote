@@ -1,0 +1,58 @@
+{
+    "info": "jc://remote/ - In this file the remote layout and channel makros for the scene are defined.",
+    "scene_media": {
+        "channel": {},
+        "description": "Scene for KODI media center",
+        "devices": [
+            "rec2",
+            "beam",
+            "lw",
+            "media-center"
+        ],
+        "display": {
+            "Input": "rec2_source",
+            "Playing": "media-center_current-playing",
+            "Volume": "rec2_vol"
+        },
+        "display-size": "middle",
+        "label": "Media Center",
+        "remote": [
+            "makro_kodi",
+            ".",
+            "scene-on_media",
+            "scene-off_media",
+            "LINE",
+            "media-center_home",
+            "media-center_music",
+            "media-center_videos",
+            "media-center_pictures",
+            "media-center_addons",
+            "media-center_weather",
+            "media-center_fav",
+            "LINE",
+            "DISPLAY",
+            "media-center_settings",
+            "media-center_topmenu",
+            "media-center_info",
+            "media-center_menu",
+            "LINE",
+            "media-center_keyboard",
+            "media-center_up",
+            "media-center_context",
+            "rec2_vol+",
+            "media-center_left",
+            "media-center_enter",
+            "media-center_right",
+            "rec2_mute",
+            ".",
+            "media-center_down",
+            "media-center_back",
+            "rec2_vol-",
+            "LINE",
+            "media-center_fbw",
+            "media-center_playpause",
+            "media-center_stop",
+            "media-center_ffw"
+        ]
+    }
+}
