@@ -191,8 +191,8 @@ function rmSettings (name) {	// IN PROGRESS
 			var button  = "";			
 			var visible = this.data["DATA"]["devices"][key]["visible"];
 			
-			if (i > 0)  		{ button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#-1#);","up"); }
-			if (i < order.length-1)	{ button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#1#);","down"); }
+			if (i > 0)  		 { button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#-1#);","up"); }
+			if (i < order.length-1) { button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#1#);","down"); }
 			
 			if (visible == "no")    { setting += this.tab_row("<i>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</i>",button); }
 			else                    { setting += this.tab_row("<b>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</b>",button); }		
@@ -219,6 +219,30 @@ function rmSettings (name) {	// IN PROGRESS
 			}
 
 		this.write(1,"Change Order of Devices",setting);
+		
+		setting = "";
+		setting += this.display_json("makro", this.data["DATA"]["makros"]["makro"], "makros");
+		setting += "</table>"
+			 + "<hr><center><b>Scenes ON Makros</b></center><hr/>"
+			 + "<table width=\"100%\">";
+		setting += this.display_json("scene-on", this.data["DATA"]["makros"]["scene-on"], "makros");
+		setting += "</table>"
+			 + "<hr><center><b>Scenes OFF Makros</b></center><hr/>"
+			 + "<table width=\"100%\">";
+		setting += this.display_json("scene-off", this.data["DATA"]["makros"]["scene-off"], "makros");
+		setting += "</table>"
+			 + "<hr><center><b>Devices ON Makros</b></center><hr/>"
+			 + "<table width=\"100%\">";
+		setting += this.display_json("dev-on", this.data["DATA"]["makros"]["dev-on"], "makros");
+		setting += "</table>"
+			 + "<hr><center><b>Devices OFF Makros</b></center><hr/>"
+			 + "<table width=\"100%\">";
+		setting += this.display_json("dev-off", this.data["DATA"]["makros"]["dev-off"], "makros");
+		setting += "<hr/>";
+		setting += this.button("apiMakroChange(['makro','scene-on','scene-off','dev-on','dev-off']);","Save changes","");
+		setting += "</table>";
+		
+		this.write(2,"Change Makros",setting);
 		}
 
 
@@ -292,6 +316,31 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	//------------------------------
+        // show json for buttons in text field
+	this.display_json	  = function ( id, json, format="" ) {
+        
+        	var text = "";
+        	text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:320px;height:160px;\">";
+		if (format == "makros") {
+        		json = JSON.stringify(json);
+        		json = json.replace( /],/g, "],\n\n" );
+        		json = json.replace( /:/g, ":\n   " );
+        		json = json.replace( /,/g, ", " );
+        		json = json.replace( /{/g, "{\n" );
+        		json = json.replace( /}/g, "\n}" );
+        		text += json;
+        		}
+        	else {
+        		json = JSON.stringify(json);
+        		json = json.replace( /,/g, ",\n" );
+        		json = json.replace( /{/g, "{\n" );
+        		json = json.replace( /}/g, "\n}" );
+        		text += json;
+        		}
+		text += "</textarea></center>";
+        	return text;
+        	}
+
 	this.device_list        = function (id,onchange="") {
 		var list = {};
 		for (var key in this.data["DATA"]["devices"]){

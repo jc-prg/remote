@@ -112,6 +112,21 @@ function apiTemplateAdd(device_id, template_id) {
 	
 	
 //================================
+// MAKROS
+//================================
+
+function apiMakroChange(data=[]) {
+
+	send_data = {};
+	for (var i=0;i<data.length;i++) {
+		var key            = data[i];
+		send_data[key]     = JSON.parse(getValueById(key));
+		}
+
+	appFW.requestAPI("PUT",["makro"], send_data, apiAlertReturn);
+	}
+
+//================================
 // SCENES
 //================================
 
@@ -127,9 +142,9 @@ function apiSceneAdd(data) {
 	
 	console.error(send_data);
         
-	if (dataAll["DATA"]["devices"][send_data["id"]]){ appMsg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
+	if (dataAll["DATA"]["devices"][send_data["id"]])	{ appMsg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
 	else if (send_data["id"] == "")			{ appMsg.alert(lang("SCENE_INSERT_ID")); return; }
-	else if (send_data["label"] == "")		{ appMsg.alert(lang("SCENE_INSERT_LABEL")); return; }
+	else if (send_data["label"] == "")			{ appMsg.alert(lang("SCENE_INSERT_LABEL")); return; }
 
 	appFW.requestAPI("PUT",["scene",send_data["id"]], send_data, apiAlertReturn);
 	}
