@@ -161,6 +161,7 @@ def RmWriteData_scenes(data):
        for key in data[scene]:
           if key not in var_relevant:
              var_delete.append(key)
+             
        for key in var_delete:
           del data[scene][key]          
        
@@ -191,8 +192,9 @@ def RmReadData_templates(selected=[]):
              if template_key in template_data: data["templates"][template] = template_data[template_key]
              elif "data" in template_data:     data["templates"][template] = template_data["data"]
              else:                             data["templates"][template] = { "ERROR" : "JSON file not correct, key missing: "+template_key }
-                
-             data["template_list"][template] = data["templates"][template]["description"]
+             
+             if not "ERROR" in data["templates"][template]:
+                data["template_list"][template] = data["templates"][template]["description"]
              
     return data    
 
@@ -286,7 +288,7 @@ def addScene(scene,info):
     ## add to devices = button definitions
     remote = {
         "info" : "jc://remote/ - In this file the remote layout and channel makros for the scene are defined.",
-        scene : {
+        "scene_"+scene : {
             "label"       : info["label"],
             "remote"      : [],
             "channel"     : {},
@@ -307,7 +309,7 @@ def editScene(scene,info):
     edit scene data in json file
     '''
     keys_active   = ["label","description"]
-    keys_remotes  = ["label","remote","channel","devices"]
+    keys_remotes  = ["label","remote","channel","devices","display","display-size"]
     
     # check data format
     if not isinstance(info, dict):                        return "ERROR: wrong data format - not a dict."
