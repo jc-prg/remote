@@ -51,7 +51,7 @@ def RmReadData_devices(selected=[],remotes=True):
              key_remote = data[device]["config"]["remote"]
              interface  = data[device]["config"]["interface_api"]
              data_temp  = data[device]
-             remote     = configFiles.read(modules.remotes  + key_remote)                # remote layout & display
+             remote     = configFiles.read(modules.remotes  + key_remote)                              # remote layout & display
              
              if remotes:
 
@@ -64,7 +64,6 @@ def RmReadData_devices(selected=[],remotes=True):
                    
                 interface_def         = interface_def["data"]
                 interface_def_default = interface_def_default["data"]
-                
              
                 # combine default interface definition and device specific definition
                 for value in interface_def_default: 
@@ -511,12 +510,11 @@ def editDevice(device,info):
     
     keys_active   = ["label","description","main-audio","interface"]
     keys_commands = ["description","method"]
-    keys_remotes  = ["description","remote","display"]
+    keys_remotes  = ["description","remote","display","display-size"]
     
     # read central config file
-    active_json          = configFiles.read_status()
-    if "ERROR" in active_json: return("ERROR: Device " + device + " doesn't exists (active).")
-    
+    active_json          = RmReadData_devices(selected=[],remotes=False)
+
     interface            = active_json[device]["config"]["interface_api"]
     device_code          = active_json[device]["config"]["device"]  
     device_remote        = active_json[device]["config"]["remote"]  
@@ -528,8 +526,6 @@ def editDevice(device,info):
     # read remote layout definitions
     remotes              = configFiles.read(modules.remotes + device_remote)
     if "ERROR" in remotes: return("ERROR: Device " + device + " doesn't exists (remotes).") 
-    
-######## open issue: set method depending on device ... 
     
     i = 0
     for key in keys_active:   
@@ -550,19 +546,19 @@ def editDevice(device,info):
         i+=1
     
     # write central config file
-    try:                    configFiles.write_status(active_json,"editDevice")
-    except Exception as e:  return("ERROR: could not write changes (active) - "+str(e))
+    try:                    RmWriteData_devices(active_json)
+    except Exception as e:  return "ERROR: could not write changes (active) - "+str(e)
 
     # write command definition
     try:                    configFiles.write(modules.commands +interface+"/"+device_code, commands)
-    except Exception as e:  return("ERROR: could not write changes (commands) - "+str(e))
+    except Exception as e:  return "ERROR: could not write changes (commands) - "+str(e)
 
     # write remote layout definition
     try:                    configFiles.write(modules.remotes +device_remote, remotes)
-    except Exception as e:  return("ERROR: could not write changes (remotes) - "+str(e))
+    except Exception as e:  return "ERROR: could not write changes (remotes) - "+str(e)
 
-    if i > 0: return("OK: Edited device parameters of "+device+" ("+str(i)+" changes)")
-    else:     return("ERROR: no data key matched with keys from config-files ("+str(info.keys)+")")
+    if i > 0: return "OK: Edited device parameters of "+device+" ("+str(i)+" changes)"
+    else:     return "ERROR: no data key matched with keys from config-files ("+str(info.keys)+")"
 
       
 #---------------------------
