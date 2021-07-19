@@ -397,9 +397,9 @@ function rmRemote(name) {
 		
 		var device_data       = this.data["DATA"]["devices"][device];
 		var remote_buttons    = device_data["remote"];
-		var remote_visible    = device_data["visible"];
-		var remote_display    = device_data["display"];
-		var device_commands   = device_data["button_list"];
+		var remote_visible    = device_data["settings"]["visible"];
+		var remote_display    = device_data["remote"]["display"];
+		var device_commands   = device_data["interface"]["button_list"];
 		var device_buttons    = [];
 		
 		for (var i=0;i<device_data["remote"].length;i++) {
@@ -435,6 +435,14 @@ function rmRemote(name) {
 		remote  += this.tab_row(
 				this.input("add_button"),
 				this.button_edit(this.app_name+".remote_add_button('device','frame2','"+device+"','add_button','remote_json_buttons');" + link_preview, "add button","")
+				);
+		remote  += this.tab_row(
+				this.input("add_line_text"),
+				this.button_edit(this.app_name+".remote_add_line('device','frame2','"+device+"','add_line_text','remote_json_buttons');" + link_preview,"add line with text","")
+				);
+		remote  += this.tab_row(
+				"",
+				this.button_edit(this.app_name+".remote_add_button('device','frame2','"+device+"','.','remote_json_buttons');" + link_preview,"add empty field","")
 				);
 		remote  += this.tab_row(
 				this.button_select("del_button",device),
@@ -688,11 +696,17 @@ function rmRemote(name) {
 		this.input_width  = "180px";
 		
 		var scene_info    = this.data["DATA"]["scenes"][scene]["settings"];
+		var remote_info   = this.data["DATA"]["devices"];
 
 		var link_template = this.app_name+".remote_import_templates('scene','frame2','"+scene+"','add_template','scene_json_buttons');";
 		var link_preview  = this.app_name+".scene_remote('frame3','"+scene+"','scene_json_buttons','scene_json_channel');";
 		var remote        = "";
 		
+		var device_makro        = {};
+		for (key in this.data["DATA"]["devices"]) { device_makro[key] = "Device: "+remote_info[key]["settings"]["label"]; }
+		for (key in this.data["DATA"]["makros"])  { if (key != "description") { device_makro[key] = "Makro: "+key; } }
+		var device_makro_onchange = this.app_name +".scene_button_select(div_id='add_button_device_input','add_button','add_button_device');";			
+				
 		remote  += "<center><b>Edit &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
 		remote  += "<hr/>";
 
@@ -707,9 +721,19 @@ function rmRemote(name) {
 				this.button_edit("apiSceneDelete('"+scene+"');","delete scene","")
 				);
 		remote  += this.tab_row("end") + "<hr/>" + this.tab_row("start");
+		
 		remote  += this.tab_row(
-				this.input("add_button"),
+				this.select("add_button_device","device / type of makro",device_makro,device_makro_onchange) +
+				"<div id='add_button_device_input'><i><small>-&gt; select device or makro</small></i></div>",
 				this.button_edit(this.app_name+".remote_add_button('scene','frame2','"+scene+"','add_button','scene_json_buttons');" + link_preview,"add button","")
+				);
+		remote  += this.tab_row(
+				this.input("add_line_text"),
+				this.button_edit(this.app_name+".remote_add_line('scene','frame2','"+scene+"','add_line_text','scene_json_buttons');" + link_preview,"add line with text","")
+				);
+		remote  += this.tab_row(
+				"",
+				this.button_edit(this.app_name+".remote_add_button('scene','frame2','"+scene+"','.','scene_json_buttons');" + link_preview,"add empty field","")
 				);
 		remote  += this.tab_row(
 				this.button_select("del_button",scene),
@@ -772,6 +796,12 @@ function rmRemote(name) {
 
 	// edit remote in browser (JSON)
 	//--------------------------------
+	
+	// add line to JSON
+	this.remote_add_line	  = function (type,id,scene,button,remote,position="") {
+		if (document.getElementById(button)) { button = "LINE||"+getValueById(button); }
+		this.remote_add_button(type,id,scene,button,remote,position);
+		}
 
 	// add button to JSON	
 	this.remote_add_button	  = function (type,id,scene,button,remote,position="") {
@@ -924,6 +954,36 @@ function rmRemote(name) {
                 item     += "</select>";
                 return item;
                 }
+                
+	this.scene_button_select	= function (div_id,id,device) {
+	
+		device = check_if_element_or_value(device,false);
+		
+		var remote_info   = this.data["DATA"]["devices"];		
+		var device_makro        = {};
+		var device_makro_button = {};
+		for (key in this.data["DATA"]["devices"]) { 
+			device_makro[key] = "Device: "+remote_info[key]["settings"]["label"];
+			if (remote_info[key]["interface"]) {
+				device_makro_button[key] = {};
+				for (var i=0;i<remote_info[key]["interface"]["button_list"].length;i++) {
+					var key2 = remote_info[key]["interface"]["button_list"][i];
+					device_makro_button[key][key+"_"+key2] = key+"_"+key2;
+			}	}	}
+		for (key in this.data["DATA"]["makros"])  { 
+			if (key != "description") { 
+				device_makro[key] = "Makro: "+key; 
+				device_makro_button[key] = {};
+				for (key2 in this.data["DATA"]["makros"][key]) {
+					device_makro_button[key][key+"_"+key2] = key+"_"+key2;
+			}	}	}
+		var device_makro_selects = "";
+		for (key in device_makro_button) {
+			device_makro_selects += this.select("add_button_device_"+key,"button ("+key+")",device_makro_button[key]);
+			}
+			
+		setTextById(div_id, this.select(id, "button ("+device+")", device_makro_button[device]));
+		}
                 
 	// create basic inputs
 	//--------------------------------
