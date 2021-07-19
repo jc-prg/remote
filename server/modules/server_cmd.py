@@ -100,6 +100,7 @@ def remoteAPI_end(data,setting=[]):
     if "no-data" in setting:   del data["DATA"]
     if "no-config" in setting: del data["CONFIG"]
   
+    if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
     return data
 
 
@@ -221,7 +222,6 @@ def Remote(device,button):
         data["ReturnMsg"]          = data["REQUEST"]["Return"]    # to be removed
 
         data                       = remoteAPI_end(data,["no-data"])      
-        
         return data
 
 
@@ -251,7 +251,6 @@ def RemoteSendText(device,button,text):
         data["ReturnMsg"]          = data["REQUEST"]["Return"]    # to be removed
 
         data                       = remoteAPI_end(data,["no-data"])      
-        
         return data
 
 
@@ -279,8 +278,6 @@ def RemoteSet(device,command,value):
           data["REQUEST"]["Return"] = setStatus(device,command,value)
           devicesGetStatus(data,readAPI=True)
         
-        if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
-
         refreshCache()
         data                      = remoteAPI_end(data,["no-data"])
         return data
@@ -393,8 +390,7 @@ def RemoteMakroChange(makros):
         data["REQUEST"]["Return"]    = editMakros(makros)
         data["REQUEST"]["Command"]   = "ChangeMakros"
         data                         = remoteAPI_end(data)
-        
-        if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
+
         return data
 
 #-------------------------------------------------
@@ -477,7 +473,6 @@ def RemoteOnOff(device,button):
         data["DATA"]                 = {}
         data                         = remoteAPI_end(data)        
 
-        if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
         return data
 
 
@@ -683,7 +678,7 @@ def RemoteEditDevice(device,info):
         data["REQUEST"]["Command"]   = "EditDevice"
 
         refreshCache()
-        data                         = remoteAPI_end(data,["no-data"])
+        data                         = remoteAPI_end(data,["no-data"])        
         return data
         
 #-------------------------------------------------
@@ -720,6 +715,8 @@ def RemoteAddScene(scene,info):
 
         refreshCache()
         data                         = remoteAPI_end(data,["no-data"])        
+
+        
         return data
 
 
