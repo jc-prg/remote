@@ -57,6 +57,61 @@ function writeMakroButton ()
 */
 //--------------------------------
 
+
+function rmRemoteKeyboard(name) {
+
+	this.app_name = name;
+	
+	this.set_device	= function ( device ) {
+		this.active_name = device;
+		}
+                
+	this.input		= function () {
+		var cmd_update  = this.app_name + ".update();";
+		var cmd_send    = this.app_name + ".send();";		
+		var cmd_enter   = "if (event.keyCode==13) {"+cmd_send+"}";
+		var remote      = "<center><div id='"+this.app_name+"_keyboard' class='remote-keyboard'><br/>";
+		remote         += "<input id='"+this.app_name+"_keyboard_input' onkeypress='"+cmd_enter+"' oninput='"+cmd_update+"' type='text' style='width:80%;font-size:18px;'>&nbsp;";
+		remote         += "<button onclick=\""+cmd_send+"\">&nbsp;&gt;&nbsp;</button></div></center>";
+		return remote;
+		}
+        
+	this.toggle_cmd	= function () {
+		return this.app_name+'.input_toggle();';
+		}
+        
+	this.input_toggle	= function () {
+		input      = document.getElementById(this.app_name+"_keyboard");
+		input_text = document.getElementById(this.app_name+"_keyboard_input");
+		if (input.style.display == "block")	{ input.style.display = "none";  input_text.blur(); input_text.value = ""; }
+		else					{ input.style.display = "block"; input_text.focus(); }
+		}
+        
+	this.update		= function () {
+		if (this.kupdate) { return; }
+		this.kupdate = true;
+		input = document.getElementById(this.app_name+"_keyboard_input").value;
+		appFW.requestAPI('GET',[ 'send-text', this.active_name, 'send-text', input ], '','');
+		this.kupdate = false;
+		}
+
+	this.send		= function () {
+		input = document.getElementById(this.app_name+"_keyboard_input").value;
+		appFW.requestAPI('GET',[ 'send-text', this.active_name, 'send-text-enter', input ], '','');
+		}
+
+	}
+
+
+//--------------------------------
+
+function rmRemoteDisplay(name) {
+	}
+
+
+//--------------------------------
+
+
 function rmRemote(name) {
 
 	this.data           = {};
@@ -81,14 +136,15 @@ function rmRemote(name) {
         	else { return; }
                 
                 if (this.initial_load) { 
-	                this.button_tooltip = new jcTooltip(this.app_name + ".button_tooltip");
+			this.keyboard       = new rmRemoteKeyboard(name+".keyboard");
+			this.button_tooltip = new jcTooltip(this.app_name + ".button_tooltip");
 
-	                this.tooltip_mode     = "onmouseover";
-	                this.tooltip_width    = "140px";
-	                this.tooltip_height   = "140px";
-	                this.tooltip_distance = 47;
+			this.tooltip_mode     = "onmouseover";
+			this.tooltip_width    = "140px";
+			this.tooltip_height   = "140px";
+			this.tooltip_distance = 47;
 
-	                this.button_tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance);
+			this.button_tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance);
 	                
                 	this.log("Initialized new class 'rmRemotes'.");
                 	this.inital_load = false;
@@ -119,6 +175,7 @@ function rmRemote(name) {
 		this.active_name    = rm_id;
 		this.active_type    = type;
 		this.active_buttons = [];
+		this.keyboard.set_device(this.active_name);
 		rm3start.active     = "start";
 		
 		// format frame1, frame2 for edit mode
@@ -220,7 +277,7 @@ function rmRemote(name) {
 			if (button == "LINE")	 			{ next_button = this.line(""); }
 			else if (button.indexOf("LINE||") == 0) 	{ next_button = this.line(button.split("||")[1]); }
 			else if (button == ".") 			{ next_button = this.button_device( device+i, ".", device, "empty", "", "disabled" ) }
-			else if (button == "DISPLAY")			{ next_button = this.display(id, device, remote_displaysize, remote_display); }
+			else if (button == "DISPLAY")			{ next_button = this.display(id, device, "devices", remote_displaysize, remote_display); }
 			else if (button == "keyboard")		{ next_button = this.button_device_keyboard( cmd, button, device, "", cmd, "" ); this.active_buttons.push(cmd); }
 			else if (remote_buttons.includes(button)) 	{ next_button = this.button_device( cmd, button, device, "", cmd, "" ); this.active_buttons.push(cmd); }
 			else if (this.edit_mode)         		{ next_button = this.button_device_add( cmd, button, device, "notfound", cmd, "" ); }
@@ -239,7 +296,7 @@ function rmRemote(name) {
 
 		// --------------------------- test send text ----
 		
-		remote += this.keyboard_input();
+		remote += this.keyboard.input();
 		
 		// --------------------------- test send text ----
 		//remote += this.device_remote_json(id,device,remote_definition,remote_display);
@@ -485,8 +542,10 @@ function rmRemote(name) {
 		return object;
 		}
 
+
+
 	// create remote for a specific scene
-	this.scene_remote         = function (id="", scene="", preview_remote="") {
+	this.scene_remote         = function (id="", scene="", preview_remote="", preview_display="", preview_display_size="") {
 	    
     		var preview		= false;
     		var scene_definition   = this.data["DATA"]["scenes"][scene];
@@ -494,9 +553,14 @@ function rmRemote(name) {
 		var remote_definition 	= [];
 		var remote_channel 	= [];
 		var remote_label 	= scene_definition["settings"]["label"];
+		var remote_displaysize = scene_definition["remote"]["display-size"];
 
-		if (preview_remote == "") 	{ remote_definition = scene_definition["remote"]["remote"]; }
+		if (preview_remote == "")	{ remote_definition = scene_definition["remote"]["remote"]; }
 		else				{ remote_definition = this.get_json_value(preview_remote, scene_definition["remote"]["channel"]); preview = true; }
+		if (preview_display == "")	{ remote_display    = scene_definition["remote"]["display"]; }
+		else				{ remote_display    = this.get_json_value(preview_display,scene_definition["remote"]["display"]); preview = true; }
+		if (scene_definition["remote"]["display-size"] == undefined) {  remote_displaysize = "middle"; }
+		if (preview_display_size != "") { remote_displaysize = check_if_element_or_value(preview_display_size); }
 		
 		var makros 		= this.data["DATA"]["makros"]["makro"];
 		var makros_sceneOn	= this.data["DATA"]["makros"]["scene-on"];
@@ -544,6 +608,12 @@ function rmRemote(name) {
 									  this.active_buttons.push("scene_on_"+button[1]); }
 			else if (button[0] == "scene-off")		{ next_button = this.button_makro(  "scene_off_"+button[1], "off", remote_label, "", makros_sceneOff[button[1]], "" );
 									  this.active_buttons.push("scene_off_"+button[1]); }
+			else if (button[1] == "keyboard")		{ this.keyboard.set_device(button[0]);
+									  next_button = this.button_device_keyboard( cmd, button[1], device, "", cmd, "" ); 
+									  this.active_buttons.push(cmd); }
+			else if (button == "DISPLAY")			{
+									  next_button = this.display(id, scene, "scenes", remote_displaysize, remote_display); 
+									  }
 			else 						{ next_button = this.button_device( cmd, button[1], remote_label, "", cmd, "" );
 									  this.active_buttons.push(cmd); }
 									  
@@ -558,7 +628,8 @@ function rmRemote(name) {
 			}
 
 		remote += "</div>";
-
+		remote += this.keyboard.input();
+		
 		setTextById(id,remote);
 		}
 
@@ -814,39 +885,6 @@ function rmRemote(name) {
                 }
 
 	//--------------------------
-                
-	this.keyboard_input		= function () {
-		var cmd_update  = this.app_name + ".keyboard_update();";
-		var cmd_send    = this.app_name + ".keyboard_send();";		
-		var cmd_enter   = "if (event.keyCode==13) {"+cmd_send+"}";
-		var remote      = "<center><div id='"+this.app_name+"_keyboard' class='remote-keyboard'><br/>";
-		remote         += "<input id='"+this.app_name+"_keyboard_input' onkeypress='"+cmd_enter+"' oninput='"+cmd_update+"' type='text' style='width:80%;font-size:18px;'>&nbsp;";
-		remote         += "<button onclick=\""+cmd_send+"\">&nbsp;&gt;&nbsp;</button></div></center>";
-		return remote;
-		}
-        
-	this.keyboard_input_toggle	= function () {
-		input      = document.getElementById(this.app_name+"_keyboard");
-		input_text = document.getElementById(this.app_name+"_keyboard_input");
-		if (input.style.display == "block")	{ input.style.display = "none";  input_text.blur(); }
-		else					{ input.style.display = "block"; input_text.focus(); }
-		}
-        
-	this.keyboard_update		= function () {
-		if (this.kupdate) { return; }
-		this.kupdate = true;
-		input = document.getElementById(this.app_name+"_keyboard_input").value;
-		appFW.requestAPI('GET',[ 'send-text', 'media-center', 'send-text', input ], '','');
-		this.kupdate = false;
-		}
-
-	this.keyboard_send		= function () {
-		input = document.getElementById(this.app_name+"_keyboard_input").value;
-		appFW.requestAPI('GET',[ 'send-text', 'media-center', 'send-text-enter', input ], '','');
-		}
-
-
-	//--------------------------
                         
 	this.button_select		= function (id,device="") {
 		var list 		= {};
@@ -919,22 +957,31 @@ function rmRemote(name) {
 	// create display
 	//--------------------------------
 	// show display with information
-	this.display              = function (id, device, style="", display_data={}) {
-        
-		var status_data  = this.data["DATA"]["devices"][device]["status"];
-		var connected    = this.data["DATA"]["devices"][device]["status"]["api-status"].toLowerCase();
+	this.display              = function (id, device, type="devices", style="", display_data={}) {
+	
+		if (!this.data["DATA"][type]) {
+			console.error(this.app_name+".display() - type not supported ("+type+")");
+			return;
+			}
+			
+		var remote_data  = this.data["DATA"][type][device]["remote"];
+		var status_data  = this.data["DATA"][type][device]["status"];
 		
-		if (display_data != {})					{ }
-		else if (this.data["DATA"]["devices"][device]["remote"]["display"])	{ display_data = this.data["DATA"]["devices"][device]["remote"]["display"]; }
-		else									{ display_data["Error"] = "No display defined"; } 
+		if (status_data["api-status"])	{ var connected = status_data["api-status"].toLowerCase(); }
+		else					{ var connected = "unknown"; }
+		
+		if (display_data != {}) 		{}
+		else if (remote_data["display"])	{ display_data = remote_data["display"]; }
+		else					{ display_data["Error"] = "No display defined"; } 
 
         	var text    = "";
-	        	var status  = "";
+	        var status  = "";
         	
-        	var display_start = "<button id=\"display_"+device+"_##STATUS##\" class=\"display ##STYLE##\" style=\"display:##DISPLAY##\" onclick=\"" + this.app_name + ".display_alert('"+id+"','"+device+"','##STYLE##');\">";
+        	var display_start = "<button id=\"display_"+device+"_##STATUS##\" class=\"display ##STYLE##\" style=\"display:##DISPLAY##\" onclick=\"" + this.app_name + ".display_alert('"+id+"','"+device+"','"+type+"','##STYLE##');\">";
         	var display_end   = "</button>";
         	
 		if (this.edit_mode) 											{ status = "EDIT_MODE"; }		
+		else if (type == "scenes")										{ status = "ON"; }
 		else if (connected != "connected")									{ status = "ERROR"; }
 		else if (status_data["power"] == "ON" || status_data["power"] == "on")				{ status = "ON"; }
 		else if (status_data["power"].indexOf("OFF") >= 0 || status_data["power"].indexOf("off") >= 0)	{ status = "OFF" }
@@ -956,8 +1003,11 @@ function rmRemote(name) {
 		if (status == "ON" && !this.edit_mode)	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
 		else						{ text  = text.replace( /##DISPLAY##/g, "none" ); }
         	for (var key in display_data) {
-      			var label = "<data class='display-label'>"+key+":</data>";
-			var input = "<data class='display-input' id='display_"+device+"_"+display_data[key]+"'>no data</data>";
+        		var input_id = "";
+        		if (display_data[key].indexOf("_") >= 0) 	{ input_id = 'display_' + display_data[key]; }
+        		else						{ input_id = 'display_' + device + '_' + display_data[key]; }
+      			var label    = "<data class='display-label'>"+key+":</data>";
+			var input    = "<data class='display-input' id='"+input_id+"'>no data</data>";
 	        	text += "<div class='display-element "+style+"'>"+label+input+"</div>";
 	        	}
 		text += display_end;
@@ -988,8 +1038,10 @@ function rmRemote(name) {
         	}
         	
         // display all information
-	this.display_alert        = function (id, device, style="" ) {
+	this.display_alert        = function (id, device, type="", style="" ) {
         
+		if (type != "devices") { console.warn(this.app_name+".display_alert() not implemented for this type ("+type+")"); return; }
+			
 		var display_data = [];
 		if (this.data["DATA"]["devices"][device]["interface"]["query_list"])	{ display_data = this.data["DATA"]["devices"][device]["interface"]["query_list"]; }
 		else									{ display_data = ["ERROR","No display defined"]; } 
@@ -1121,7 +1173,7 @@ function rmRemote(name) {
 			label2[0] = "&nbsp;";
 			}
 		if (cmd != "") {
-			cmd = this.app_name+'.keyboard_input_toggle();';
+			cmd = this.keyboard.toggle_cmd();
 			}
 		return this.button( id, label2[0], label2[1], cmd, disabled );
 		}
@@ -1133,10 +1185,7 @@ function rmRemote(name) {
 		var label2		= this.button_image( label, style );
 		if (label == ".")	{ disabled = "disabled"; label2[0] = "&nbsp;"; }
 	        
-	        //var button = this.button( id, label2[0], label2[1], 'apiButtonAdd("'+device_button[0]+'","'+device_button[1]+'");', disabled );
 	        var button = this.button( id, label2[0], label2[1], 'apiCommandRecord("'+device_button[0]+'","'+device_button[1]+'");', disabled );
-	        //var button = this.button( id, label2[0], label2[1], ['apiButtonAdd("'+device_button[0]+'","'+device_button[1]+'");', this.app_name + '.button_tooltip.toggleAll("' + cmd + '");'], disabled );
-	        //button     = this.button_tooltip.create( button, "not implemented yet: " +cmd, cmd );
 		return button;		
 		}		
 
