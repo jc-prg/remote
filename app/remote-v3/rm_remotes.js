@@ -411,7 +411,8 @@ function rmRemote(name) {
 				this.button_edit("apiCommandDelete('"+device+"','del_command');","delete command")
 				);
 		remote  += this.tab_row("end") + "<hr/>" + this.tab_row("start");
-		remote  += this.tab_row( "Interface:&nbsp;",	device_data["interface"]["api"] + " (" + device_data["method"] + ")" );
+		remote  += this.tab_row( "Interface 1:&nbsp;",	device_data["config"]["interface_api"] + " (" + device_data["interface"]["method"] + ")" );
+		remote  += this.tab_row( "Interface 2:&nbsp;",	device_data["config"]["interface_dev"] );
 		remote  += this.tab_row( "Device:",   	device_data["config"]["device"]+".json" );
 		remote  += this.tab_row( "Remote:",   	device_data["config"]["remote"]+".json" );
 		remote  += this.tab_row("end");
@@ -636,7 +637,6 @@ function rmRemote(name) {
 				this.button_edit(link_template + link_preview,"clone template","")
 				);
 		remote  += this.tab_row("end") + "<hr/>" + this.tab_row("start");
-		remote  += this.tab_row("Devices:&nbsp;&nbsp;", 	JSON.stringify(scene_info["devices"]));
 		remote  += this.tab_row("Remote:&nbsp;&nbsp;", 	this.data["DATA"]["scenes"][scene]["config"]["remote"]+".json" );
 		remote  += this.tab_row("end");
 
@@ -1030,15 +1030,15 @@ function rmRemote(name) {
         			x++;
         			text += "\""+json[i]+"\"";
         			if (i+1 < json.length)						{ text += ", "; }
-        			if (Number.isInteger((x)/4))   				{ text += "\n"; x = 0; }
-        			if (json.length > i+1 && json[i+1].includes("LINE") && x > 0) { text += "\n"; x = 0; }
-        			if (json[i].includes("LINE"))					{ text += "\n"; x = 0; }
+        			if (Number.isInteger((x)/4))   				{ text += "\n\n"; x = 0; }
+        			if (json.length > i+1 && json[i+1].includes("LINE") && x > 0) { text += "\n\n"; x = 0; }
+        			if (json[i].includes("LINE"))					{ text += "\n\n"; x = 0; }
         			}
 	        	text += "\n]";
         		}
         	else if (format == "channels") {
         		json = JSON.stringify(json);
-        		json = json.replace( /],/g, "],\n" );
+        		json = json.replace( /],/g, "],\n\n" );
         		json = json.replace( /:/g, ":\n   " );
         		json = json.replace( /{/g, "{\n" );
         		json = json.replace( /}/g, "\n}" );
