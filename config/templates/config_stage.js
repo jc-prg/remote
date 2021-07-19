@@ -5,8 +5,8 @@
 
 var test		= false;
 var log_level           = 'info';
-var server_port         = "5003";
-var rollout             = "test";
+var server_port         = "${REMOTE_SERVER_PORT}";
+var rollout             = "${REMOTE_CURRENT_STAGE}";
 
 LANG                    = 'EN';
 
