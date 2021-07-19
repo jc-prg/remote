@@ -32,6 +32,9 @@ function app_status(data) {
 		reload = false;
 		}
 	statusCheck(data);
+	
+	rm3remotes.init(  data );
+	rm3settings.init( data );
 	}
 	
 //--------------------------------
