@@ -118,9 +118,14 @@ def RmWriteData_makros(data):
     write config data for scenes and remove temp parameter required e.g. for REST API
     '''
     var_relevant = ["description","makro","dev-on","dev-off","scene-on","scene-off"]    
+    var_delete   = []
+    
     for key in data:
        if key not in var_relevant:
-          del data[key]
+          var_delete.append(key)
+    for key in var_delete:
+       del data[key]          
+
     configFiles.write(modules.active_makros, data,"RmWriteData_makros()")
 
 #---------------------------
@@ -151,9 +156,15 @@ def RmWriteData_scenes(data):
     write config data for scenes and remove temp parameter required e.g. for REST API
     '''
     var_relevant = ["config","settings","status"]
-    for key in data:
-       if key not in var_relevant:
-          del data[key]
+    var_delete   = []
+
+    for scene in data:    
+       for key in data[scene]:
+          if key not in var_relevant:
+             var_delete.append(key)
+       for key in var_delete:
+          del data[scene][key]          
+       
     configFiles.write(modules.active_scenes,data,"RmWriteData_scenes()")
 
 #---------------------------
@@ -296,13 +307,28 @@ def editScene(scene,info):
     '''
     edit scene data in json file
     '''
-    
     keys_active   = ["label","description"]
     keys_remotes  = ["label","remote","channel","devices"]
     
+    # check data format
+    if not isinstance(info, dict):                        return "ERROR: wrong data format - not a dict."
+    if "remote" in info:
+       if not isinstance(info["remote"],list):            return "ERROR: wrong data format - 'remote' is not a list."
+       for entry in info["remote"]:
+          if not isinstance(entry,str):                   return "ERROR: wrong data format - 'remote' other than strings ("+str(entry)+")."
+    if "devices" in info:
+       if not isinstance(info["devices"],list):           return "ERROR: wrong data format - 'devices' is not a list."
+       for entry in info["devices"]:
+          if not isinstance(entry,str):                   return "ERROR: wrong data format - 'devices' other than strings ("+str(entry)+")."    
+    if "channel" in info:
+       if not isinstance(info["channel"],dict):           return "ERROR: wrong data format - 'channel' is not a dict."
+       for key in info["channel"]:
+          if not isinstance(info["channel"][key], list):  return "ERROR: wrong data format - 'channel' contains not a list ("+str(key)+")."
+          for entry in info["channel"][key]:
+             if not isinstance(entry,str):                return "ERROR: wrong data format - 'channel' list contains other than strings ("+str(entry)+")."
+       
     # read central config file
-    active_json          = RmReadData_scenes(selected=[],remotes=False) # configFiles.read(modules.active_scenes)
-    if "ERROR" in active_json: return("ERROR: Scene " + scene + " doesn't exists (active).")
+    active_json          = RmReadData_scenes(selected=[],remotes=False)
 
     # read remote layout definitions
     remotes              = configFiles.read(modules.remotes + "scene_" + scene)
@@ -314,32 +340,21 @@ def editScene(scene,info):
         active_json[scene]["settings"][key] = info[key]
         i+=1
         
-    logging.info(str(active_json[scene]))
-      
     for key in keys_remotes:   
       if key in info: 
         remotes[scene][key] = info[key]
         i+=1
     
     # write central config file
-    try:
-      #configFiles.write(modules.active_scenes,active_json)
-      RmWriteData_scenes(active_json)
-      
-    except Exception as e:  
-      logging.error("ERROR: could not write changes (active) - "+str(e))
-      return("ERROR: could not write changes (active) - "+str(e))
+    try:                   RmWriteData_scenes(active_json)
+    except Exception as e: return "ERROR: could not write changes (active) - "+str(e)
 
     # write remote layout definition
-    try:
-      configFiles.write(modules.remotes + "scene_"+ scene, remotes)
-      
-    except Exception as e:
-      logging.error("ERROR: could not write changes (remotes) - "+str(e))
-      return("ERROR: could not write changes (remotes) - "+str(e))
+    try:                   configFiles.write(modules.remotes + "scene_"+ scene, remotes)
+    except Exception as e: return "ERROR: could not write changes (remotes) - "+str(e)
     
-    if i > 0: return("OK: Edited device parameters of "+scene+" ("+str(i)+" changes)")
-    else:     return("ERROR: no data key matched with keys from config-files ("+str(info.keys)+")")
+    if i > 0: return "OK: Edited device parameters of "+scene+" ("+str(i)+" changes)"
+    else:     return "ERROR: no data key matched with keys from config-files ("+str(info.keys)+")"
 
 
 #---------------------------------------
@@ -414,10 +429,8 @@ def addDevice(device,device_data):
         "status" : { "power" : "OFF" },
         }
         
-    try:
-      configFiles.write_status(active_json,"addDevice")
-    except Exception as e:
-      return "ERROR: " + str(e)
+    try:                   configFiles.write_status(active_json,"addDevice")
+    except Exception as e: return "ERROR: " + str(e)
         
     ## add to devices = button definitions
     buttons = {
@@ -432,10 +445,8 @@ def addDevice(device,device_data):
             "values"      : {}
             }
         }
-    try:
-      configFiles.write(modules.commands + interface+"/"+device_data["config_device"],buttons)
-    except Exception as e:
-      return "ERROR: " + str(e)
+    try:                   configFiles.write(modules.commands + interface+"/"+device_data["config_device"],buttons)
+    except Exception as e: return "ERROR: " + str(e)
 
     ## add to remotes = button layout
     remote = {
@@ -446,11 +457,8 @@ def addDevice(device,device_data):
            "display"     : {}
            }
         }    
-    try:
-#      configFiles.write(modules.remotes +interface+"/"+description,remote)
-      configFiles.write(modules.remotes +device_data["config_remote"],remote)
-    except Exception as e:
-      return "ERROR: " + str(e)
+    try:                   configFiles.write(modules.remotes +device_data["config_remote"],remote)
+    except Exception as e: return "ERROR: " + str(e)
             
     return("OK: Device " + device + " added.")
 
@@ -543,22 +551,15 @@ def editDevice(device,info):
     
     # write central config file
     try:                    configFiles.write_status(active_json,"editDevice")
-    except Exception as e:  
-      logging.error("ERROR: could not write changes (active) - "+str(e))
-      return("ERROR: could not write changes (active) - "+str(e))
+    except Exception as e:  return("ERROR: could not write changes (active) - "+str(e))
 
     # write command definition
     try:                    configFiles.write(modules.commands +interface+"/"+device_code, commands)
-    except Exception as e:
-      logging.error("ERROR: could not write changes (commands) - "+str(e))
-      return("ERROR: could not write changes (commands) - "+str(e))
+    except Exception as e:  return("ERROR: could not write changes (commands) - "+str(e))
 
     # write remote layout definition
     try:                    configFiles.write(modules.remotes +device_remote, remotes)
-#    try:                    configFiles.write(modules.remotes +interface+"/"+device_code, remotes)
-    except Exception as e:
-      logging.error("ERROR: could not write changes (remotes) - "+str(e))
-      return("ERROR: could not write changes (remotes) - "+str(e))
+    except Exception as e:  return("ERROR: could not write changes (remotes) - "+str(e))
 
     if i > 0: return("OK: Edited device parameters of "+device+" ("+str(i)+" changes)")
     else:     return("ERROR: no data key matched with keys from config-files ("+str(info.keys)+")")
@@ -587,7 +588,6 @@ def addCommand2Button(device,button,command):
             command = command.replace("b'","")
             command = command.replace("'","")
             data["data"]["buttons"][button] = command
-#            data["data"]["buttons"][button] = command
             configFiles.write(modules.commands+interface+"/"+device_code,data)
             return "OK: Button '" + device + "_" + button + "' recorded and saved: " + str(command)
     else:
@@ -662,7 +662,6 @@ def deleteButton(device, button_number):
         if buttonNumber >= 0 and buttonNumber < len(data["data"]["remote"]):
             data["data"]["remote"].pop(buttonNumber)
             data = configFiles.write(modules.remotes+device_remote,data)
-#            data = configFiles.write(modules.remotes+interface+"/"+device_code,data)
             return "OK: Button '" + device + " [" + str(buttonNumber) + "] deleted."
         else:
             return "ERROR: Button '" + device + " [" + str(buttonNumber) + "] does not exist."
@@ -712,7 +711,6 @@ def addTemplate(device,template):
     device_code   = config[device]["config"]["device"]
     device_remote = config[device]["config"]["remote"]  
     data          = configFiles.read(modules.remotes+device_remote)
-#    data       = configFiles.read(modules.remotes + interface + "/" + device_code)
 
     # check if error
     if "data" not in data.keys():  return "ERROR: Device '" + device + "' does not exists."
@@ -722,7 +720,6 @@ def addTemplate(device,template):
     
         data["data"]["remote"]           = templates[template]["remote"]
         configFiles.write(modules.remotes+device_remote,data)
-#       configFiles.write(modules.remotes + interface + "/" + device_code, data)
         return "OK: Template '" + template + "' added to '" + device + "'."
             
     # overwrite layout from template
@@ -730,7 +727,6 @@ def addTemplate(device,template):
 
         data["data"]["remote"]           = templates[template]["remote"]
         configFiles.write(modules.remotes+device_remote,data)
-#        configFiles.write(modules.remotes + interface + "/" + device_code, data)
         return "OK: Remote definition of '" + device + "' overwritten by template '" + template + "'."
         
     # template doesn't exist
@@ -770,7 +766,6 @@ def changeVisibility(type,device,visibility):
     
       elif visibility == "yes" or visibility == "no":
         data[device]["settings"]["visible"] = visibility
-        #configFiles.write(modules.active_scenes,data)
         RmWriteData_scenes(data)
         return "OK: Change visibility for '" + device + "': " + visibility
         
