@@ -227,10 +227,11 @@ function apiDeviceEdit(device,prefix,fields) {
 // edit button and display data using JSON
 //--------------------------------
 
-function apiDeviceJsonEdit(device,json_buttons,json_display) {
+function apiDeviceJsonEdit(device,json_buttons,json_display,display_size) {
 
-        buttons   = check_if_element_or_value(json_buttons,false);
-        display   = check_if_element_or_value(json_display,false);
+	buttons      = check_if_element_or_value(json_buttons,false);
+	display      = check_if_element_or_value(json_display,false);
+	display_size = check_if_element_or_value(display_size,false);
 
 	try { json_buttons = JSON.parse(buttons); } catch(e) { appMsg.alert("<b>JSON Buttons - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 	try { json_display = JSON.parse(display); } catch(e) { appMsg.alert("<b>JSON Display - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
@@ -238,7 +239,8 @@ function apiDeviceJsonEdit(device,json_buttons,json_display) {
 	var info = {};
 	info["remote"]  = json_buttons;
 	info["display"] = json_display;
-	
+	info["display-size"] = display_size;
+		
 	appFW.requestAPI("POST",["device",device], info, apiAlertReturn);	
 	}
 
