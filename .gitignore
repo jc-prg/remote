@@ -35,9 +35,9 @@ data/_ACTIVE-SCENES.json
 
 data/_ACTIVE-MAKROS.json
 
-data/devices/
+data/devices/*
 
-data/remotes/
+data/remotes/*
 
 app/app-fw/
 
