@@ -120,7 +120,8 @@ function apiMakroChange(data=[]) {
 	send_data = {};
 	for (var i=0;i<data.length;i++) {
 		var key            = data[i];
-		send_data[key]     = JSON.parse(getValueById(key));
+		try		{ send_data[key] = JSON.parse(getValueById(key)); }
+		catch(e)	{ appMsg.alert("<b>JSON Makro " + key + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 		}
 
 	appFW.requestAPI("PUT",["makro"], send_data, apiAlertReturn);
