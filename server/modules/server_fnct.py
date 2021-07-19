@@ -93,6 +93,10 @@ def RmWriteData_devices(data):
     '''
     write config data for devices and remove data not required in the file
     '''
+    var_relevant = ["config","settings","status"]
+    for key in data:
+       if key not in var_relevant:
+          del data[key]
     configFiles.write_status(data,"RmWriteData_devices()")
 
 
@@ -104,9 +108,20 @@ def RmReadData_makros(selected=[]):
     '''
     data = {}
     data = configFiles.read(modules.active_makros)
-    
     return data
 
+
+#---------------------------
+
+def RmWriteData_makros(data):
+    '''
+    write config data for scenes and remove temp parameter required e.g. for REST API
+    '''
+    var_relevant = ["description","makro","dev-on","dev-off","scene-on","scene-off"]    
+    for key in data:
+       if key not in var_relevant:
+          del data[key]
+    configFiles.write(modules.active_makros, data,"RmWriteData_makros()")
 
 #---------------------------
 
@@ -133,14 +148,13 @@ def RmReadData_scenes(selected=[],remotes=True):
 
 def RmWriteData_scenes(data):
     '''
-    write config data for scenes and remove remote definition
+    write config data for scenes and remove temp parameter required e.g. for REST API
     '''
-    var_remove = ["remote","devices","label","description","position"]
-    for scene in data:
-     for var in var_remove:    
-      if var in data[scene]: del data[scene][var]
-      
-    configFiles.write(modules.active_scenes,data)
+    var_relevant = ["config","settings","status"]
+    for key in data:
+       if key not in var_relevant:
+          del data[key]
+    configFiles.write(modules.active_scenes,data,"RmWriteData_scenes()")
 
 #---------------------------
 
@@ -655,6 +669,33 @@ def deleteButton(device, button_number):
     else:
         return "ERROR: Device '" + device + "' does not exist."
 
+
+#---------------------------------------
+# MAKROS
+#---------------------------------------
+
+def editMakros(makros):
+    '''
+    check if format is correct and save makros
+    '''
+    makro_keys  = ["makro","dev-on","dev-off","scene-on","scene-off"]
+    
+    if not isinstance(makros, dict):                  return "ERROR: wrong data format - not a dict."
+    for key in makros:
+       if not isinstance(makros[key], dict):          return "ERROR: wrong data format - not a dict ("+str(key)+")."
+       if key not in makro_keys:                      return "ERROR: wrong data format - unknown key ("+str(key)+")"
+       for key2 in makros[key]:
+          if not isinstance(makros[key][key2], list): return "ERROR: wrong data format - makro is not a list ("+str(key)+"/"+str(key2)+")"       
+          for list_key in makros[key][key2]:
+             if not (isinstance(list_key,float) or isinstance(list_key,int)) and not isinstance(list_key,str):
+                                                      return "ERROR: wrong data format - list entry is not a number or string ("+str(key)+"/"+str(key2)+"/"+str(list_key)+")"
+
+    makro_file = RmReadData_makros()
+    for key in makros:
+       makro_file[key] = makros[key]
+    RmWriteData_makros(makro_file)
+
+    return "OK, saved makro file."
 
 #---------------------------------------
 # TEMPLATES

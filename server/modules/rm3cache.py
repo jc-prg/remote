@@ -118,7 +118,6 @@ class configCache (threading.Thread):
         '''
         write config to file and update cache
         '''
-        
         rm3json.write(config_file,value,"cache.write "+source)
         self.cache[config_file] = value
 

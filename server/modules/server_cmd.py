@@ -383,6 +383,19 @@ def RemoteMakro(makro):
         data                      = remoteAPI_end(data,["no-config"])        
         return data
 
+#-------------------------------------------------
+
+def RemoteMakroChange(makros):
+        '''
+        Change Makros and save to _ACTIVE-MAKROS.json
+        '''
+        data                         = remoteAPI_start()
+        data["REQUEST"]["Return"]    = editMakros(makros)
+        data["REQUEST"]["Command"]   = "ChangeMakros"
+        data                         = remoteAPI_end(data)
+        
+        if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
+        return data
 
 #-------------------------------------------------
 

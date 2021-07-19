@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: "1.7.1"
+  version: "1.7.2"
   title: "jc://remote/"
   description: API to control remote control devices
   
@@ -217,7 +217,36 @@ paths:
                 $ref: "#/definitions/REQUEST"
               STATUS:
                 $ref: "#/definitions/STATUS"
-                
+
+
+  /makro/:
+    put:
+      operationId: modules.server_cmd.RemoteMakroChange
+      tags:
+        - send
+      summary: edit marko
+      description: change markose
+      parameters:
+        - name: makros
+          in: body
+          description: makros, dev-on/off, scene-on/off definition
+          schema:
+            type: object     
+      responses:
+        200:
+          description: Successfully send makro commands
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              CONFIG:
+                $ref: "#/definitions/CONFIG"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
+
 #------------------------ EDIT FUNCTIONS ------------------------
 
   /button/{device}/{button}/:
