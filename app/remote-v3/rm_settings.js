@@ -152,6 +152,7 @@ function rmSettings (name) {	// IN PROGRESS
 					);
 
 		this.write(1,"Change Settings",setting);
+		this.write(2);
 		}
 
 	//------------------------------
@@ -180,7 +181,7 @@ function rmSettings (name) {	// IN PROGRESS
 		setting += this.tab_row( 	"Description:", this.input("add_scene_descr") );
 		setting += this.tab_row(	this.button("apiSceneAdd(['add_scene_id','add_scene_label','add_scene_descr']);","Add Scene",""), "" );
 
-		this.write(0,lang("REMOTE_ADD")+" (Device)",setting);					
+		this.write(2,lang("REMOTE_ADD")+" (Device)",setting);					
 			
 		setting = "";	
 		var devices = this.data["DATA"]["devices"];
@@ -218,31 +219,31 @@ function rmSettings (name) {	// IN PROGRESS
 			else                    { setting += this.tab_row("<b>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</b>",button); }
 			}
 
-		this.write(1,"Change Order of Devices",setting);
+		this.write(0,"Change Order of Devices",setting);
 		
 		setting = "";
 		setting += this.display_json("makro", this.data["DATA"]["makros"]["makro"], "makros");
 		setting += "</table>"
-			 + "<hr><center><b>Scenes ON Makros</b></center><hr/>"
+			 + "<hr><center><b>Scene ON Makros</b></center><hr/>"
 			 + "<table width=\"100%\">";
 		setting += this.display_json("scene-on", this.data["DATA"]["makros"]["scene-on"], "makros");
 		setting += "</table>"
-			 + "<hr><center><b>Scenes OFF Makros</b></center><hr/>"
+			 + "<hr><center><b>Scene OFF Makros</b></center><hr/>"
 			 + "<table width=\"100%\">";
 		setting += this.display_json("scene-off", this.data["DATA"]["makros"]["scene-off"], "makros");
 		setting += "</table>"
-			 + "<hr><center><b>Devices ON Makros</b></center><hr/>"
+			 + "<hr><center><b>Device ON Makros</b></center><hr/>"
 			 + "<table width=\"100%\">";
 		setting += this.display_json("dev-on", this.data["DATA"]["makros"]["dev-on"], "makros");
 		setting += "</table>"
-			 + "<hr><center><b>Devices OFF Makros</b></center><hr/>"
+			 + "<hr><center><b>Device OFF Makros</b></center><hr/>"
 			 + "<table width=\"100%\">";
 		setting += this.display_json("dev-off", this.data["DATA"]["makros"]["dev-off"], "makros");
 		setting += "<hr/>";
 		setting += this.button("apiMakroChange(['makro','scene-on','scene-off','dev-on','dev-off']);","Save changes","");
 		setting += "</table>";
 		
-		this.write(2,"Change Makros",setting);
+		this.write(1,"Change Makros",setting);
 		}
 
 
@@ -268,14 +269,16 @@ function rmSettings (name) {	// IN PROGRESS
 	//------------------------------
 
 	// write settings category
-	this.write              = function (nr,label,text) {
+	this.write              = function (nr,label="",text="") {
 
 		var element 	= this.e_settings[nr];
-		var content 	= "<center><table width=\"100%\">"
-				+ "<center><b>" + label + "</b></center><hr/>"
-				+ text
-				+ "</table></center>";
-		if (label == "" && text == "") { content = ""; }
+		if (label != "") {
+			var content 	= "<center><table width=\"100%\">"
+					+ "<center><b>" + label + "</b></center><hr/>"
+					+ text
+					+ "</table></center>";
+			}
+		else { var content = ""; }
 
 		setTextById(element,content);
 		}
@@ -310,9 +313,9 @@ function rmSettings (name) {	// IN PROGRESS
 		for (var i=0; i<this.e_remotes.length; i++)  { changeVisibility(this.e_remotes[i],show_remotes);  }
 		for (var i=0; i<this.e_settings.length; i++) { changeVisibility(this.e_settings[i],show_settings); }
 		
-		if (this.edit_mode == true && show_remotes)   	{ elementVisible("frame1"); elementVisible("frame2"); }
-		else if (this.edit_mode == false && show_remotes)	{ elementHidden("frame1");  elementHidden("frame2"); }
-		else if (show_settings)				{ elementHidden("frame1");  elementHidden("frame2"); }
+		if (this.edit_mode == true && show_remotes)   	{ elementVisible("frame1"); elementVisible("frame2"); elementVisible("frame3"); }
+		else if (this.edit_mode == false && show_remotes)	{ elementHidden("frame1");  elementHidden("frame2");  elementHidden("frame3"); }
+		else if (show_settings)				{ elementHidden("frame1");  elementHidden("frame2"); elementHidden("frame3"); }
 		}
 
 	//------------------------------
