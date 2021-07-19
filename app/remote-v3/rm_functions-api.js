@@ -171,20 +171,25 @@ function apiSceneEdit(device,prefix,fields) {
 // edit button and display data using JSON
 //--------------------------------
 
-function apiSceneJsonEdit(device,json_buttons,json_channel,json_devices) {
+function apiSceneJsonEdit(device,json_buttons,json_channel,json_devices,json_display,display_size) {
 
-        buttons   = check_if_element_or_value(json_buttons,false);
-        channel   = check_if_element_or_value(json_channel,false);
-        devices   = check_if_element_or_value(json_devices,true);
+        buttons      = check_if_element_or_value(json_buttons,false);
+        channel      = check_if_element_or_value(json_channel,false);
+        devices      = check_if_element_or_value(json_devices,true);
+        display      = check_if_element_or_value(json_display,false);
+        display_size = check_if_element_or_value(display_size,false);
 
 	try { json_buttons = JSON.parse(buttons); } catch(e) { appMsg.alert("<b>JSON Buttons - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 	try { json_channel = JSON.parse(channel); } catch(e) { appMsg.alert("<b>JSON Channel - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 	try { json_devices = JSON.parse(devices); } catch(e) { appMsg.alert("<b>JSON Devices - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+	try { json_display = JSON.parse(display); } catch(e) { appMsg.alert("<b>JSON Display - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 	
 	var info = {};
-	info["remote"]  = json_buttons;
-	info["channel"] = json_channel;
-	info["devices"] = json_devices;
+	info["remote"]       = json_buttons;
+	info["channel"]      = json_channel;
+	info["devices"]      = json_devices;
+	info["display"]      = json_display;
+	info["display-size"] = display_size;
 		
 	appFW.requestAPI("POST",["scene",device], info, apiAlertReturn);	
 	}
