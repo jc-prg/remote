@@ -93,10 +93,23 @@ def RmWriteData_devices(data):
     write config data for devices and remove data not required in the file
     '''
     var_relevant = ["config","settings","status"]
-    for key in data:
-       if key not in var_relevant:
-          del data[key]
-    configFiles.write_status(data,"RmWriteData_devices()")
+
+    
+    logging.info(str(data))
+    
+    for device in data:
+      var_delete   = []
+      for key in data[device]:
+        if key not in var_relevant:
+          var_delete.append(key)          
+          
+      for key in var_delete:
+        del data[device][key]
+
+    if data == {}:
+       logging.error("ERROR: ...!")
+    else:
+       configFiles.write_status(data,"RmWriteData_devices()")
 
 
 #---------------------------
@@ -122,6 +135,7 @@ def RmWriteData_makros(data):
     for key in data:
        if key not in var_relevant:
           var_delete.append(key)
+
     for key in var_delete:
        del data[key]          
 
@@ -157,13 +171,14 @@ def RmWriteData_scenes(data):
     var_relevant = ["config","settings","status"]
     var_delete   = []
 
-    for scene in data:    
+    for scene in data:
        for key in data[scene]:
           if key not in var_relevant:
              var_delete.append(key)
              
        for key in var_delete:
-          del data[scene][key]          
+          if key in data[scene]:
+             del data[scene][key]          
        
     configFiles.write(modules.active_scenes,data,"RmWriteData_scenes()")
 
@@ -347,8 +362,9 @@ def editScene(scene,info):
         i+=1
     
     # write central config file
-    try:                   RmWriteData_scenes(active_json)
-    except Exception as e: return "ERROR: could not write changes (active) - "+str(e)
+    RmWriteData_scenes(active_json)
+#    try:                   RmWriteData_scenes(active_json)
+#    except Exception as e: return "ERROR: could not write changes (active) - "+str(e)
 
     # write remote layout definition
     try:                   configFiles.write(modules.remotes + "scene_"+ scene, remotes)
@@ -510,12 +526,17 @@ def editDevice(device,info):
     edit device data in json file
     '''
     
-    keys_active   = ["label","description","main-audio","interface"]
+    keys_active   = ["label","image","description","main-audio","interface"]
     keys_commands = ["description","method"]
     keys_remotes  = ["description","remote","display","display-size"]
     
+#    keys_remotes  = ["label","remote","channel","devices","display","display-size"]
+    
+
     # read central config file
     active_json          = RmReadData_devices(selected=[],remotes=False)
+
+    logging.info(active_json)
 
     interface            = active_json[device]["config"]["interface_api"]
     device_code          = active_json[device]["config"]["device"]  
@@ -532,11 +553,9 @@ def editDevice(device,info):
     i = 0
     for key in keys_active:   
       if key in info: 
-        active_json[device][key] = info[key]
+        active_json[device][key]["settings"] = info[key]
         i+=1
         
-    logging.info(str(active_json[device]))
-      
     for key in keys_commands: 
       if key in info: 
         commands["data"][key] = info[key]
@@ -546,7 +565,7 @@ def editDevice(device,info):
       if key in info: 
         remotes["data"][key] = info[key]
         i+=1
-    
+
     # write central config file
     try:                    RmWriteData_devices(active_json)
     except Exception as e:  return "ERROR: could not write changes (active) - "+str(e)
@@ -744,11 +763,11 @@ def changeVisibility(type,device,visibility):
     if type == "remote":
 
       data = configFiles.read_status()
-      if device not in data.keys():
+      if device not in data:
         return "Remote control '" + device + "' does not exists."
         
       elif visibility == "yes" or visibility == "no":
-        data[device]["visible"] = visibility
+        data[device]["settings"]["visible"] = visibility        
         configFiles.write_status(data,"changeVisibility")
         return "OK: Change visibility for '" + device + "': " + visibility
         
