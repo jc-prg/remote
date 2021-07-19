@@ -155,7 +155,7 @@ def RmReadData_scenes(selected=[],remotes=True):
         if selected == [] or scene in selected:
           remote_file   = data[scene]["config"]["remote"]
           remote_config = configFiles.read(modules.scenes + remote_file)       
-          data[scene]["remote"] = remote_config[scene]
+          data[scene]["remote"] = remote_config["data"]
         else:
           logging.error("Scene not found: "+str(scene)+" / "+str(selected))
           return {}
@@ -303,8 +303,9 @@ def addScene(scene,info):
     ## add to devices = button definitions
     remote = {
         "info" : "jc://remote/ - In this file the remote layout and channel makros for the scene are defined.",
-        "scene_"+scene : {
+        "data" : {
             "label"       : info["label"],
+            "description" : info["label"],
             "remote"      : [],
             "channel"     : {},
             "devices"     : [],
