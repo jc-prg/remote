@@ -293,7 +293,8 @@ def addScene(scene,info):
            "position"         : active_json_position,
            "visible"          : "yes"    	
            },
-        "status" : {}
+        "status" : {},
+        "type" : "scene"
         }
 
     try:
@@ -328,7 +329,7 @@ def editScene(scene,info):
     edit scene data in json file
     '''
     keys_active   = ["label","description"]
-    keys_remotes  = ["label","remote","channel","devices","display","display-size"]
+    keys_remotes  = ["label","remote","channel","devices","display","display-size","type"]
     
     # check data format
     if not isinstance(info, dict):                        return "ERROR: wrong data format - not a dict."
@@ -448,6 +449,7 @@ def addDevice(device,device_data):
                "visible"          : "yes"
                },
         "status" : { "power" : "OFF" },
+        "type" : "device"
         }
         
     try:                   configFiles.write_status(active_json,"addDevice")
@@ -532,7 +534,7 @@ def editDevice(device,info):
     
     keys_active   = ["label","image","description","main-audio","interface"]
     keys_commands = ["description","method"]
-    keys_remotes  = ["description","remote","display","display-size"]
+    keys_remotes  = ["description","remote","display","display-size","type"]
     
 #    keys_remotes  = ["label","remote","channel","devices","display","display-size"]
     
