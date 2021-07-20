@@ -505,7 +505,7 @@ function rmRemote(name) {
 		}
 
 	// create edit panel to edit JSON data
-	this.device_edit_json	  = function (id, device, remote="", display={}, displaysize="") {
+	this.device_edit_json	  = function (id, device, remote="", display="", displaysize="") {
 	
 	        if (this.edit_mode)     { elementVisible(id); }
 	        else                    { elementHidden(id,"remote_edit_json"); return; }
@@ -513,7 +513,7 @@ function rmRemote(name) {
 	        if (remote == "") 	{ var remote_definition  = this.data["DATA"]["devices"][device]["remote"]["remote"]; }
 	        else			{ var remote_definition  = remote; }
 	        
-	        if (display != {})		{ var remote_display	 = display; }
+	        if (display != "")		{ var remote_display	 = display; }
 	        else if (this.data["DATA"]["devices"][device] && this.data["DATA"]["devices"][device]["remote"]["display"])
 	        				{ var remote_display    = this.data["DATA"]["devices"][device]["remote"]["display"] }			
 	        else 				{ var remote_display	 = {}; }
@@ -783,7 +783,7 @@ function rmRemote(name) {
 
 
 	// create edit panel to edit JSON data
-	this.scene_edit_json	  = function (id,scene,remote="",channel="",display={}, displaysize="") {
+	this.scene_edit_json	  = function (id,scene,remote="",channel="",display="", displaysize="") {
 	
 	        var scene_remote  = this.data["DATA"]["scenes"][scene]["remote"];
 	        var scene_info    = this.data["DATA"]["scenes"][scene]["settings"];
@@ -794,13 +794,14 @@ function rmRemote(name) {
 	        
 	        if (remote == "") 		{ var scene_definition = scene_remote["remote"]; }
 	        else				{ var scene_definition = remote; }
+	        
 	        if (channel == "")		{ var scene_channel 	= scene_remote["channel"]; }
 	        else				{ var scene_channel	= channel; }
 
-		if (display != {})		{ var remote_display	 = display; }
+		if (display != "")		{ var remote_display	= display; }
 		else if (this.data["DATA"]["scenes"][scene] && this.data["DATA"]["scenes"][scene]["remote"]["display"])
-						{ var remote_display     = this.data["DATA"]["scenes"][scene]["remote"]["display"] }			
-		else				{ var remote_display	 = {}; }
+						{ var remote_display	= this.data["DATA"]["scenes"][scene]["remote"]["display"] }			
+		else				{ var remote_display	= {}; }
 
 		if (displaysize != "")	{ var remote_displaysize = displaysize; }
 		else if (this.data["DATA"]["scenes"][scene] && this.data["DATA"]["scenes"][scene]["remote"]["display-size"])
@@ -879,8 +880,8 @@ function rmRemote(name) {
 			}
 		if (position == "") { value_new.push(button); }
 
-		if (type == "scene")		{ this.scene_edit_json(id,scene,remote=value_new,channel=""); }
-		else if (type == "device")	{ this.device_edit_json(id,scene,remote=value_new,display=""); }
+		if (type == "scene")		{ this.scene_edit_json(id,scene,remote=value_new); }
+		else if (type == "device")	{ this.device_edit_json(id,scene,remote=value_new); }
 		}
 	
 	// delete button from JSON
@@ -895,8 +896,8 @@ function rmRemote(name) {
 			if (i != button) { value_new.push(value[i]); }
 			}
 
-		if (type == "scene")		{ this.scene_edit_json(id,scene,remote=value_new,channel=""); }
-		else if (type == "device")	{ this.device_edit_json(id,scene,remote=value_new,display=""); }
+		if (type == "scene")		{ this.scene_edit_json(id,scene,remote=value_new); }
+		else if (type == "device")	{ this.device_edit_json(id,scene,remote=value_new); }
 		}
 	
 	// move button in JSON (left or right)
@@ -908,8 +909,8 @@ function rmRemote(name) {
 		if (left_right == "left")  { if (button > 0)		{ var target = button - 1; value[button] = value[target]; value[target] = temp; } }
 		if (left_right == "right") { if (button < value.length) { var target = button + 1; value[button] = value[target]; value[target] = temp; } }
 		
-		if (type == "scene")		{ this.scene_edit_json(id,scene,remote=value,channel=""); }
-		else if (type == "device")	{ this.device_edit_json(id,scene,remote=value,display=""); }
+		if (type == "scene")		{ this.scene_edit_json(id,scene,remote=value); }
+		else if (type == "device")	{ this.device_edit_json(id,scene,remote=value); }
 		}
 	
 	// import remote definition from template to JSON
