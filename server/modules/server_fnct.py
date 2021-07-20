@@ -209,7 +209,10 @@ def RmReadData_templates(selected=[]):
              else:                             data["templates"][template] = { "ERROR" : "JSON file not correct, key missing: "+template_key }
              
              if not "ERROR" in data["templates"][template]:
-                data["template_list"][template] = data["templates"][template]["description"]
+               if "description" in data["templates"][template]:
+                  data["template_list"][template] = data["templates"][template]["description"]
+               else:
+                  data["template_list"][template] = template_key
              
     return data    
 
@@ -735,15 +738,18 @@ def addTemplate(device,template):
         
     # add layout from template
     elif template in templates and data["data"] == []:
-    
-        data["data"]["remote"]           = templates[template]["remote"]
+
+        if "data" in templates:    data["data"]["remote"]           = templates["data"]["remote"]
+        else:                      data["data"]["remote"]           = templates[template]["remote"]
         configFiles.write(modules.remotes+device_remote,data)
         return "OK: Template '" + template + "' added to '" + device + "'."
             
     # overwrite layout from template
     elif template in templates and data["data"] != []:
 
-        data["data"]["remote"]           = templates[template]["remote"]
+        if "data" in templates:    data["data"]["remote"]           = templates["data"]["remote"]
+        else:                      data["data"]["remote"]           = templates[template]["remote"]
+
         configFiles.write(modules.remotes+device_remote,data)
         return "OK: Remote definition of '" + device + "' overwritten by template '" + template + "'."
         
