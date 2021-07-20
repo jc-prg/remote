@@ -464,8 +464,9 @@ function rmRemote(name) {
 				this.button_select("del_button",device),
 				this.button_edit(this.app_name+".remote_delete_button('device','frame2','"+device+"','del_button','remote_json_buttons');" + link_preview, "delete button","")
 				);
+		var templates = this.template_list("device");
 		remote  += this.tab_row(
-				this.template_select("add_template","template",this.templates),
+				this.template_select("add_template","template",templates),
 				this.button_edit(link_template + link_preview,"clone template","")
 				//this.button_edit("apiTemplateAdd('"+device+"','add_template');","clone template")
 				);
@@ -1257,6 +1258,16 @@ function rmRemote(name) {
         		}
 		text += "</textarea></center>";
         	return text;
+        	}
+        	
+        this.template_list	= function(type="") {
+        	var templates = {};
+        	for (key in this.data["DATA"]["templates"]) {
+        		if (type == "")							{ templates[key] = this.data["DATA"]["templates"][key]["description"]; }
+        		else if (!this.data["DATA"]["templates"][key]["type"])		{ templates[key] = this.data["DATA"]["templates"][key]["description"]; }
+        		else if (this.data["DATA"]["templates"][key]["type"] == type)	{ templates[key] = this.data["DATA"]["templates"][key]["description"]; }
+        		}
+        	return templates;
         	}
           
           
