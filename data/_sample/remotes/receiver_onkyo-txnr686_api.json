@@ -8,6 +8,7 @@
             "Temp": "temperature",
             "Volume": "vol"
         },
+        "display-size": "h3w2",
         "remote": [
             ".",
             ".",
@@ -28,8 +29,6 @@
             "vol+",
             "prg-",
             "mute",
-            ".",
-            ".",
             ".",
             "vol-",
             "LINE||settings",

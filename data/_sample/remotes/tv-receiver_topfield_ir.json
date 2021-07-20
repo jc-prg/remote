@@ -6,6 +6,7 @@
             "Source": "radiotv",
             "Volume": "vol"
         },
+        "display-size": "middle",
         "remote": [
             "radiotv",
             ".",

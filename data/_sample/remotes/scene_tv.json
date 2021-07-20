@@ -1,5 +1,5 @@
 {
-    "tv": {
+    "data": {
         "channel": {
             "3sat HD": [
                 "makro_rectv",
@@ -14,10 +14,6 @@
                 "makro_rectv",
                 "tv_3",
                 "tv_6"
-            ],
-            "arte HD": [
-                "makro_rectv",
-                "tv_3"
             ],
             "BR HD": [
                 "makro_rectv",
@@ -186,7 +182,7 @@
         "label": "Fernsehen",
         "remote": [
             "makro_tv",
-            ".",
+            "abc-xy",
             "scene-on_tv",
             "scene-off_tv",
             "LINE||channel",

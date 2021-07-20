@@ -2,17 +2,11 @@
     "data": {
         "description": "Kodi (API)",
         "display": {
-            "Mute": "mute",
-            "Name": "version",
-            "Playing": "playing",
+            "Info": "version",
+            "Playing": "current-playing",
             "Volume": "vol"
         },
         "display-size": "middle",
-        "media-display": {
-            "Info": "info",
-            "Mute": "mute",
-            "Volume": "vol"
-        },
         "remote": [
             ".",
             ".",

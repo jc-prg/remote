@@ -57,10 +57,10 @@
         "description": "TOPFIELD CBP-2001CI+",
         "method": "record",
         "queries": {
-        	"mute" : "",
-        	"radiotv" : "",
-        	"power" : "",
-        	"vol" : ""
+            "mute": "",
+            "power": "",
+            "radiotv": "",
+            "vol": ""
         },
         "values": {
             "mute": [
