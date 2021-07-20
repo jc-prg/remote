@@ -182,8 +182,9 @@ function remoteToggleEditMode() {
 	rm3menu.remoteToggleEditMode();
 	rm3start.remoteToggleEditMode();
 	rm3settings.remoteToggleEditMode();
-	rm3settings.create();
+	
 	remoteDropDown_load();
+	remoteStartMenu_load();
 	
 	if (settings) {rm3settings.onoff();}  // when settings -> don't switch back to remotes (workaround)
 	}

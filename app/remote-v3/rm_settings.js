@@ -491,6 +491,8 @@ function rmSettings (name) {	// IN PROGRESS
 	this.remoteToggleEditMode = function () {
 		if (this.edit_mode)  { this.edit_mode = false; }
 		else                 { this.edit_mode = true; }
+		
+		this.create();
 		}	
 	}
 

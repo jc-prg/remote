@@ -28,8 +28,8 @@ function rmStart(name) {
         // load data with devices (deviceConfig["devices"])
 	this.init                 = function(data) {
         
-        	if (data["DATA"]) 	{ this.data = data; }
-        	else			{ return; }
+        	if (data["DATA"]) 		{ this.data = data; }
+        	else 				{ return; }
                 
                 if (this.initial_load) { 
                 	this.log("Initialized new class 'rmStart'.");
@@ -147,6 +147,8 @@ function rmStart(name) {
 	this.remoteToggleEditMode = function() {
 		if (this.edit_mode)  { this.edit_mode = false; }
 		else                 { this.edit_mode = true; }
+		
+		this.init(this.data);
 		}	
 
         // handle messages for console
