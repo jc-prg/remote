@@ -27,7 +27,7 @@ class queueApiCalls (threading.Thread):
        self.queue          = []
        self.name           = name
        self.stopProcess    = False
-       self.wait           = 0.1
+       self.wait           = 0.05
        self.device_apis    = device_apis
        self.device_reload  = []
        self.last_button    = "<none>"
