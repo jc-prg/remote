@@ -1,19 +1,50 @@
 {
-    "receiver_onkyo-txnr686_api": {
-        "description": "AV-Receiver: ONKYO TX-NR686(B) - API", 
+    "data": {
+        "description": "AV-Receiver: ONKYO TX-NR686B (API)",
+        "display": {
+            "Audio": "listening",
+            "Input": "source",
+            "Mute": "mute",
+            "Temp": "temperature",
+            "Volume": "vol"
+        },
+        "display-size": "h3w2",
         "remote": [
-                ".",".","on","off",
-                "LINE",
-                "pc","bd","radio","bluetooth","cable-sat","aux",
-                "LINE",
-                "q",        "up",    "info",   "vol+",
-                "left",     "enter", "right",  "mute",
-                "settings", "down",  "return", "vol-",
-                "LINE",
-                "movie-tv-mode","music-mode","game-mode", ".",
-                "fbw",          "play",      "ffw",       ".",
-                "toggle",       "memory",    "mode",      "."
+            ".",
+            ".",
+            "on",
+            "off",
+            "LINE||input device",
+            "cable-sat",
+            "pc",
+            "bd",
+            "radio",
+            "bluetooth",
+            "aux",
+            "usb",
+            "game",
+            "LINE",
+            "DISPLAY",
+            "prg+",
+            "vol+",
+            "prg-",
+            "mute",
+            ".",
+            "vol-",
+            "LINE||settings",
+            "timer",
+            "up",
+            "home",
+            "q",
+            "left",
+            "enter",
+            "right",
+            "display",
+            "settings",
+            "down",
+            "exit",
+            "dimmer"
         ],
-        "type" : "device"
+        "type":"device"
     }
 }
