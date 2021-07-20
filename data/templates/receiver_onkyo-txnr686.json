@@ -14,11 +14,6 @@
                 "fbw",          "play",      "ffw",       ".",
                 "toggle",       "memory",    "mode",      "."
         ],
-        "presets": {
-        	"vol" : {
-        		"max" : 79,
-        		"min" : 0
-        	}
-        }
+       "type" : "device"
     }
 }

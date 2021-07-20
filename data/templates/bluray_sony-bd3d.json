@@ -15,6 +15,7 @@
             "audio", "subtitle", "setup",  "display", 
             "LINE", 
             "red",   "green",    "yellow", "blue"
-        ]
+        ],
+        "type" : "device"
     }
 }

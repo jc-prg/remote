@@ -13,6 +13,7 @@
             ".",    "up",    ".",     "prg+", 
             "left", "enter", "right", "prg-", 
             ".",    "down",  ".",     "."
-        ]
+        ],
+       "type" : "device"
     }
 }

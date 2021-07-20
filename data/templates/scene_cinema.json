@@ -1,7 +1,7 @@
 {
     "data": {
         "channel": {},
-        "description" : "Scene for Movie",
+        "description" : "Scene for movie",
         "devices": [
             "rec2",
             "beam",
