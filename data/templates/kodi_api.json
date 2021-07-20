@@ -1,11 +1,17 @@
 {
     "data": {
-        "description": "Kodi (API)",
+        "description": "KODI Media Center (Device)",
+        "display": {
+            "Info": "version",
+            "Playing": "current-playing",
+            "Volume": "vol"
+        },
+        "display-size": "middle",
         "remote": [
-            "kodi",
+            ".",
+            ".",
             ".",
             "on",
-            "off",
             "LINE",
             "home",
             "music",
@@ -38,7 +44,6 @@
             "playpause",
             "stop",
             "ffw"
-        ],
-        "presets" : {}
+        ]
     }
 }
