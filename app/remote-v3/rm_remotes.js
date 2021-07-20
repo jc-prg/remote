@@ -64,6 +64,7 @@ function rmRemoteKeyboard(name) {
 	
 	this.set_device	= function ( device ) {
 		this.active_name = device;
+		console.log(this.app_name+": Set device name for remote keyboard: "+this.active_name);
 		}
                 
 	this.input		= function () {
@@ -88,6 +89,8 @@ function rmRemoteKeyboard(name) {
 		}
         
 	this.update		= function () {
+		console.log(this.app_name+": Update text via keyboard: "+this.active_name);
+	
 		if (this.kupdate) { return; }
 		this.kupdate = true;
 		input = document.getElementById(this.app_name+"_keyboard_input").value;
@@ -123,6 +126,9 @@ function rmRemote(name) {
 	this.edit_mode      = false;
 	this.initial_load   = true;
 	this.loaded_remote  = [];
+	
+	this.keyboard       = new rmRemoteKeyboard(name+".keyboard");
+	this.button_tooltip = new jcTooltip(this.app_name + ".button_tooltip");
 
 	// load data with devices (deviceConfig["devices"])
 	//--------------------
@@ -136,9 +142,6 @@ function rmRemote(name) {
         	else { return; }
                 
                 if (this.initial_load) { 
-			this.keyboard       = new rmRemoteKeyboard(name+".keyboard");
-			this.button_tooltip = new jcTooltip(this.app_name + ".button_tooltip");
-
 			this.tooltip_mode     = "onmouseover";
 			this.tooltip_width    = "140px";
 			this.tooltip_height   = "140px";
