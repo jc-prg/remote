@@ -26,6 +26,7 @@ function remoteLastFromCookie()
 var rm3background  = "remote-v3/img/remote2.png";
 var reload_active  = false;
 var showImg        = true;
+var startActive    = true;
 
 var rm3slider  = new jcSlider( name="rm3sider", container="audio_slider");	// create slider
 rm3slider.init(min=0,max=100,label="loading");				// set device information
@@ -166,7 +167,7 @@ function remoteDropDown(data) {
 	rm3menu.init(        data );	// load data to class
 	rm3menu.add_scenes(  data["DATA"]["scenes"] );
 	rm3menu.add_devices( data["DATA"]["devices"] );	
-	rm3menu.add_script( "rm3settings.onoff();rm3settings.mode='';", 	lang("SETTINGS") );
+	rm3menu.add_script( "rm3settings.onoff();rm3settings.mode='';", 	lang("SETTINGS"));
 	rm3menu.add_script( "remoteToggleEditMode();", 			lang("MODE_EDIT") + edit_on );
 	rm3menu.add_script( "rm3settings.button_deact(true);remoteInit();",	deact_link);        
 	//rm3menu.add_script( "remoteForceReload(true);", "Force Reload");
@@ -184,7 +185,7 @@ function remoteToggleEditMode() {
 	rm3settings.remoteToggleEditMode();
 	
 	remoteDropDown_load();
-	remoteStartMenu_load();
+	if (startActive) { remoteStartMenu_load(); }
 	
 	if (settings) {rm3settings.onoff();}  // when settings -> don't switch back to remotes (workaround)
 	}
@@ -199,6 +200,8 @@ function remoteStartMenu(data) {
 		console.error("remoteStartMenu: data not loaded.");
 		return;
 		}
+		
+	startActive = true;
 
 	// load buttons on start page
 	rm3start.init(        data);	// load data to class
