@@ -173,6 +173,7 @@
                 "tv_2"
             ]
         },
+        "description" : "Scene for TV (1)",
         "devices": [
             "lw",
             "beam",
@@ -220,6 +221,7 @@
             "tv_green",
             "tv_yellow",
             "tv_blue"
-        ]
+        ],
+    "type" : "scene"
     }
 }

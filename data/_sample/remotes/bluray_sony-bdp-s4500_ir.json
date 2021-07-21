@@ -43,6 +43,7 @@
             "green",
             "yellow",
             "blue"
-        ]
+        ],
+        "type" : "device"
     }
 }

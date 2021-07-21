@@ -69,7 +69,7 @@
         },
         "status": {
             "api-status": "Connected",
-            "power": "ON"
+            "power": "OFF"
         }
     },
     "default": {
@@ -106,7 +106,7 @@
         },
         "status": {
             "api-status": "Connected",
-            "power": "ON"
+            "power": "OFF"
         }
     },
     "media-center": {
@@ -134,7 +134,7 @@
             "playing": "no media",
             "playlist": "no media",
             "plot": "no media",
-            "power": "ON",
+            "power": "OFF",
             "type": "no media",
             "version": "KODI 18.9 stable",
             "vol": "100",
@@ -158,9 +158,9 @@
         },
         "status": {
             "api-status": "Connected",
-            "mute": "",
-            "power": "",
-            "vol": ""
+            "mute": "OFF",
+            "power": "OFF",
+            "vol": 0
         }
     },
     "rec2": {

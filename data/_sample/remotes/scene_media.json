@@ -2,6 +2,7 @@
     "info": "jc://remote/ - In this file the remote layout and channel makros for the scene are defined.",
     "data": {
         "channel": {},
+        "description" : "Scene for KODI Media Center",
         "devices": [
             "rec2",
             "beam",
@@ -52,6 +53,7 @@
             "media-center_playpause",
             "media-center_stop",
             "media-center_ffw"
-        ]
+        ],
+    "type" : "scene"
     }
 }

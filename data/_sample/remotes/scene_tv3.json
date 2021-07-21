@@ -7,6 +7,7 @@
                 "tv2_2"
             ]
         },
+        "description" : "Scene for TV (2)",
         "devices": [
             "rec2",
             "tv2",
@@ -54,6 +55,7 @@
             "tv2_green",
             "tv2_yellow",
             "tv2_blue"
-        ]
+        ],
+    "type" : "scene"
     }
 }

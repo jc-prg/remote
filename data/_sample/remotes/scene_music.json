@@ -67,6 +67,7 @@
                 "tv_8"
             ]
         },
+        "description" : "Scene for music",
         "devices": [
             "tv",
             "rec2"
@@ -100,6 +101,7 @@
             "bd_stop",
             ".",
             "makro_vol-"
-        ]
+        ],
+    "type" : "scene"
     }
 }

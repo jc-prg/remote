@@ -44,6 +44,7 @@
             "playpause",
             "stop",
             "ffw"
-        ]
+        ],
+        "type" : "device"
     }
 }
