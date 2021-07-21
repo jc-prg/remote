@@ -3,7 +3,6 @@
 //--------------------------------
 /* INDEX:
 function showRemoteInBackground(show=false)
-function clickMenu ()
 function setNavTitle (title)
 function image(file)
 function writeKeyBoard ()

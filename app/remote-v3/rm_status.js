@@ -7,8 +7,6 @@
 // - deactivate buttons if device OFF
 //--------------------------------
 /* INDEX:
-function statusShowApiStatusLED(color)
-function statusShowApiStatus( color, wait )
 function statusShowVolume_old( volume, maximum, vol_color, novol_color="" )
 function statusShowVolume( volume )
 function statusButtonActiveInactive(id,active)

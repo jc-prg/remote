@@ -363,7 +363,8 @@ def editScene(scene,info):
         
     for key in keys_remotes:   
       if key in info: 
-        remotes[scene][key] = info[key]
+        if "data" in remotes:  remotes["data"][key] = info[key]
+        elif scene in remotes: remotes[scene][key] = info[key]
         i+=1
     
     # write central config file

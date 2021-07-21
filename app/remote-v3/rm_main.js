@@ -2,7 +2,6 @@
 // jc://remote/
 //--------------------------------
 /* INDEX:
-window.addEventListener('scroll', function()
 function remoteInit (first_load=true)
 function remoteFirstLoad_load()
 function remoteFirstLoad(data)
@@ -11,8 +10,6 @@ function remoteInitData_load()
 function remoteInitData(data)
 function remoteReload_load()
 function remoteReload(data)
-function remoteForceReload(without_position=false)
-function remoteForceReload_checkIfReady(data)
 function remoteSetSliderDevice(data)
 function remoteDropDown_load()
 function remoteDropDown(data)

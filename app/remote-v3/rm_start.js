@@ -13,7 +13,6 @@ function rmStart(name)
 	this.button               = function(id, label, style, script_apiCommandSend, disabled )
 	this.button_image         = function(label,style)
 	this.remoteToggleEditMode = function()
-	this.log                  = function(msg)
 	this.image                = function(file)
 */
 //--------------------------------
@@ -24,6 +23,7 @@ function rmStart(name) {
 	this.app_name    = name;
 	this.edit_mode   = false;
 	this.inital_load = true;
+	this.logging     = new jcLogging(this.app_name);
 
         // load data with devices (deviceConfig["devices"])
 	this.init                 = function(data) {
@@ -32,11 +32,11 @@ function rmStart(name) {
         	else 				{ return; }
                 
                 if (this.initial_load) { 
-                	this.log("Initialized new class 'rmStart'.");
+                	this.logging.default("Initialized new class 'rmStart'.");
                 	this.inital_load = false;
                 	}
                 else {
-                	this.log("Reload data 'rmStart'.");
+                	this.logging.default("Reload data 'rmStart'.");
                 	}
                 }
 
@@ -150,11 +150,6 @@ function rmStart(name) {
 		
 		this.init(this.data);
 		}	
-
-        // handle messages for console
-	this.log                  = function(msg) {
-                console.log(this.app_name + ": " + msg);
-                }
 
 	// create image tag for icons
 	this.image                = function(file) {
