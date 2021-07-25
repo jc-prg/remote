@@ -560,7 +560,7 @@ def editDevice(device,info):
     i = 0
     for key in keys_active:   
       if key in info: 
-        active_json[device][key]["settings"] = info[key]
+        active_json[device]["settings"][key] = info[key]
         i+=1
         
     for key in keys_commands: 
