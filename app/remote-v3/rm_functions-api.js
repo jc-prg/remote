@@ -13,13 +13,14 @@ function setVolume(main_audio,volume)
 function apiSetVolume(volume)
 function apiTemplateAdd_exe(device,template)
 function apiTemplateAdd(device_id, template_id)
+function apiMakroChange(data=[])
 function apiSceneAdd(data)
 function apiSceneEdit(device,prefix,fields)
-function apiSceneJsonEdit(device,json_buttons,json_channel,json_devices)
+function apiSceneJsonEdit(device,json_buttons,json_channel,json_devices,json_display,display_size)
 function apiSceneDelete_exe(device)
 function apiSceneDelete(scene_id)
 function apiDeviceEdit(device,prefix,fields)
-function apiDeviceJsonEdit(device,json_buttons,json_display)
+function apiDeviceJsonEdit(device,json_buttons,json_display,display_size)
 function apiDeviceMovePosition_exe(type,device,direction)
 function apiDeviceMovePosition(data)
 function apiDeviceAdd(data,onchange)
@@ -87,9 +88,9 @@ function apiAlertReturn(data) {
 // send add commands       
 //--------------------------------
 
-function setMainAudio(device) 			{ appFW.requestAPI( "POST", ["main-audio",device], 		"", apiAlertReturn ); }
+function setMainAudio(device) 		{ appFW.requestAPI( "POST", ["main-audio",device], 			"", apiAlertReturn ); }
 function setVolume(main_audio,volume)		{ appFW.requestAPI( "GET",  ["set",main_audio,"vol",volume], 	"", remoteReload_load ); }
-function apiSetVolume(volume)			{ appFW.requestAPI( "GET",  ["set",rm3slider.device,"vol",volume], "", remoteReload_load ); }
+function apiSetVolume(volume)			{ appFW.requestAPI( "GET",  ["set",rm3slider.device,"vol",volume],	"", remoteReload_load ); }
 
 //================================
 // TEMPLATES
@@ -112,6 +113,22 @@ function apiTemplateAdd(device_id, template_id) {
 	
 	
 //================================
+// MAKROS
+//================================
+
+function apiMakroChange(data=[]) {
+
+	send_data = {};
+	for (var i=0;i<data.length;i++) {
+		var key            = data[i];
+		try		{ send_data[key] = JSON.parse(getValueById(key)); }
+		catch(e)	{ appMsg.alert("<b>JSON Makro " + key + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+		}
+
+	appFW.requestAPI("PUT",["makro"], send_data, apiAlertReturn);
+	}
+
+//================================
 // SCENES
 //================================
 
@@ -127,9 +144,9 @@ function apiSceneAdd(data) {
 	
 	console.error(send_data);
         
-	if (dataAll["DATA"]["devices"][send_data["id"]]){ appMsg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
+	if (dataAll["DATA"]["devices"][send_data["id"]])	{ appMsg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
 	else if (send_data["id"] == "")			{ appMsg.alert(lang("SCENE_INSERT_ID")); return; }
-	else if (send_data["label"] == "")		{ appMsg.alert(lang("SCENE_INSERT_LABEL")); return; }
+	else if (send_data["label"] == "")			{ appMsg.alert(lang("SCENE_INSERT_LABEL")); return; }
 
 	appFW.requestAPI("PUT",["scene",send_data["id"]], send_data, apiAlertReturn);
 	}
@@ -155,20 +172,25 @@ function apiSceneEdit(device,prefix,fields) {
 // edit button and display data using JSON
 //--------------------------------
 
-function apiSceneJsonEdit(device,json_buttons,json_channel,json_devices) {
+function apiSceneJsonEdit(device,json_buttons,json_channel,json_devices,json_display,display_size) {
 
-        buttons   = check_if_element_or_value(json_buttons,false);
-        channel   = check_if_element_or_value(json_channel,false);
-        devices   = check_if_element_or_value(json_devices,true);
+        buttons      = check_if_element_or_value(json_buttons,false);
+        channel      = check_if_element_or_value(json_channel,false);
+        devices      = check_if_element_or_value(json_devices,true);
+        display      = check_if_element_or_value(json_display,false);
+        display_size = check_if_element_or_value(display_size,false);
 
 	try { json_buttons = JSON.parse(buttons); } catch(e) { appMsg.alert("<b>JSON Buttons - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 	try { json_channel = JSON.parse(channel); } catch(e) { appMsg.alert("<b>JSON Channel - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 	try { json_devices = JSON.parse(devices); } catch(e) { appMsg.alert("<b>JSON Devices - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+	try { json_display = JSON.parse(display); } catch(e) { appMsg.alert("<b>JSON Display - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 	
 	var info = {};
-	info["remote"]  = json_buttons;
-	info["channel"] = json_channel;
-	info["devices"] = json_devices;
+	info["remote"]       = json_buttons;
+	info["channel"]      = json_channel;
+	info["devices"]      = json_devices;
+	info["display"]      = json_display;
+	info["display-size"] = display_size;
 		
 	appFW.requestAPI("POST",["scene",device], info, apiAlertReturn);	
 	}
@@ -211,10 +233,11 @@ function apiDeviceEdit(device,prefix,fields) {
 // edit button and display data using JSON
 //--------------------------------
 
-function apiDeviceJsonEdit(device,json_buttons,json_display) {
+function apiDeviceJsonEdit(device,json_buttons,json_display,display_size) {
 
-        buttons   = check_if_element_or_value(json_buttons,false);
-        display   = check_if_element_or_value(json_display,false);
+	buttons      = check_if_element_or_value(json_buttons,false);
+	display      = check_if_element_or_value(json_display,false);
+	display_size = check_if_element_or_value(display_size,false);
 
 	try { json_buttons = JSON.parse(buttons); } catch(e) { appMsg.alert("<b>JSON Buttons - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 	try { json_display = JSON.parse(display); } catch(e) { appMsg.alert("<b>JSON Display - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
@@ -222,7 +245,8 @@ function apiDeviceJsonEdit(device,json_buttons,json_display) {
 	var info = {};
 	info["remote"]  = json_buttons;
 	info["display"] = json_display;
-	
+	info["display-size"] = display_size;
+		
 	appFW.requestAPI("POST",["device",device], info, apiAlertReturn);	
 	}
 

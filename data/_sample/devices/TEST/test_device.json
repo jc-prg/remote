@@ -1,0 +1,11 @@
+{
+    "data": {
+        "buttons": {},
+        "commands": {},
+        "description": "test device",
+        "method": "record",
+        "queries": {},
+        "values": {}
+    },
+    "info": "jc://remote/ - In this files the commands foreach button, queries, the query method is defined."
+}

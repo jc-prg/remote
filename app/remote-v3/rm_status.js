@@ -7,8 +7,6 @@
 // - deactivate buttons if device OFF
 //--------------------------------
 /* INDEX:
-function statusShowApiStatusLED(color)
-function statusShowApiStatus( color, wait )
 function statusShowVolume_old( volume, maximum, vol_color, novol_color="" )
 function statusShowVolume( volume )
 function statusButtonActiveInactive(id,active)
@@ -102,13 +100,16 @@ function statusCheck_inactive(data) {
 
 	// get scene status from devices status and definition (see statusCheck) -> move to rm_remote.js
 	for (var key in data["DATA"]["scenes"]) {
-		if (data["DATA"]["scenes"][key]["devices"]) {
+		if (data["DATA"]["scenes"][key]["remote"] && data["DATA"]["scenes"][key]["remote"]["devices"]) {
 
-			var required = data["DATA"]["scenes"][key]["devices"];
+			var required = data["DATA"]["scenes"][key]["remote"]["devices"];
 			var all_dev  = Object.keys(data["DATA"]["devices"]);
 			var dev_on   = 0;
 		
-			for (var i=0;i<all_dev.length;i++)  { device_status[all_dev[i]] = device[all_dev[i]]["status"]["power"].toUpperCase();  }
+			for (var i=0;i<all_dev.length;i++)  { 
+				if (device[all_dev[i]]["status"]["power"]) 	{ device_status[all_dev[i]] = device[all_dev[i]]["status"]["power"].toUpperCase();  }
+				else						{ device_status[all_dev[i]] = "" }
+				}
 			for (var i=0;i<required.length;i++) { if (device_status[required[i]] == "ON") { dev_on += 1; } }
 
 			if (dev_on == required.length) 	{ scene_status[key] = "ON"; }
@@ -188,8 +189,12 @@ function statusCheck(data={}) {
 	var main_audio_max  = "";
 	var main_audio_vol  = devices[main_audio]["status"]["vol"];
 	var main_audio_mute = devices[main_audio]["status"]["mute"].toUpperCase();
-	if (devices[main_audio] && devices[main_audio]["values"]) {
-		main_audio_max  = devices[main_audio]["values"]["vol"]["max"];
+	if (devices[main_audio] && devices[main_audio]["interface"]["values"] && devices[main_audio]["interface"]["values"]["vol"]) {
+		main_audio_max  = devices[main_audio]["interface"]["values"]["vol"]["max"];
+		}
+	else {
+		main_audio_max    = 100;
+		console.error("Min and max values not defined, set to 0..100!");
 		}
 
 	// set colors
@@ -204,7 +209,7 @@ function statusCheck(data={}) {
 	for (var key in data["DATA"]["scenes"]) {
 
 		var dev_on   = 0;
-		var required = data["DATA"]["scenes"][key]["devices"];
+		var required = data["DATA"]["scenes"][key]["remote"]["devices"];
 		for (var i=0;i<required.length;i++) {
 		        device_status[required[i]] = devices[required[i]]["status"]["power"].toUpperCase();
 		        if (device_status[required[i]] == "ON") { dev_on += 1; }
@@ -220,7 +225,7 @@ function statusCheck(data={}) {
 	for (var device in devices) {
 	
 	  // if device is visible
-	  if (devices[device]["visible"] == "yes") {
+	  if (devices[device]["settings"]["visible"] == "yes") {
 	    for (var key2 in devices[device]["status"]) {
 	    
 	      // if power status
@@ -230,7 +235,7 @@ function statusCheck(data={}) {
 	        
 	        //console.error("TEST "+key1+"_"+key2+" = "+devices[key1]["status"][key2]);
 		check_button = devices[device]["status"][key2];
-		connection   = devices[device]["connected"].toLowerCase();
+		connection   = devices[device]["status"]["api-status"].toLowerCase();
 		
 		if (connection != "connected") {
 			statusButtonSetColor( "device_" + key, "ERROR" ); // main menu button
@@ -346,7 +351,9 @@ function statusCheck(data={}) {
 		// media info ...
 		var media_info         = document.getElementById("media_info");
 		var media_info_content = document.getElementById("media_info_content");
-		var device_status      = devices[key]["status"]["power"].toUpperCase();
+		
+		if (devices[key]["status"]["power"])	{ var device_status = devices[key]["status"]["power"].toUpperCase(); }
+		else					{ var device_status = ""; }
 		
 		if (devices[key]["status"]["api-status"] == "Connected" && device_status.includes("ON")) {
 			if (media_info && devices[key]["status"]["current-playing"] && devices[key]["status"]["current-playing"] != "") {
@@ -375,10 +382,10 @@ function statusCheck(data={}) {
 
 
 		// fill keys with displays
-		if (devices[key]["status"] && devices[key]["display"]) {
+		if (devices[key]["status"] && devices[key]["remote"] && devices[key]["remote"]["display"]) {
 		
-		        var display     = devices[key]["display"];
-		        var connected   = devices[key]["connected"].toLowerCase();
+		        var display     = devices[key]["remote"]["display"];
+		        var connected   = devices[key]["status"]["api-status"].toLowerCase();
 		        
 			for (var dkey in display) {
 				var vkey     = display[dkey];
@@ -386,9 +393,9 @@ function statusCheck(data={}) {
 				var element2 = document.getElementById("display_full_" + key + "_" + vkey);
 				var status   = devices[key]["status"][vkey];
 				
-				if (devices[key]["values"] && devices[key]["values"][vkey] && vkey == "vol") {
-					if (devices[key]["values"][vkey]["max"]) { 
-							status = statusShowVolume_old( devices[key]["status"][vkey], devices[key]["values"][vkey]["max"], vol_color2, novol_color ) + " &nbsp; ["+devices[key]["status"][vkey]+"]"; 
+				if (devices[key]["interface"]["values"] && devices[key]["interface"]["values"][vkey] && vkey == "vol") {
+					if (devices[key]["interface"]["values"][vkey]["max"]) { 
+							status = statusShowVolume_old( devices[key]["status"][vkey], devices[key]["interface"]["values"][vkey]["max"], vol_color2, novol_color ) + " &nbsp; ["+devices[key]["status"][vkey]+"]"; 
 							}
 					}
 									
@@ -405,9 +412,9 @@ function statusCheck(data={}) {
 			}
 			
 		// fill all keys in alert display
-		if (devices[key]["status"] && devices[key]["query_list"]) {
-		        var display     = devices[key]["query_list"];
-		        var connected   = devices[key]["connected"].toLowerCase();
+		if (devices[key]["status"] && devices[key]["interface"] && devices[key]["interface"]["query_list"]) {
+		        var display     = devices[key]["interface"]["query_list"];
+		        var connected   = devices[key]["status"]["api-status"].toLowerCase();
 
 			for (var i=0; i<display.length; i++) {
 				var vkey     = display[i];
@@ -421,7 +428,7 @@ function statusCheck(data={}) {
         				else 									{ status = "<b style='color:red;'>Unknown Error:</b> "+devices[key]["connected"]; }			
 					}
 
-				if (element2) { element2.innerHTML = status.replace(/,/g,", "); }
+				if (element2 && status) { element2.innerHTML = status.replace(/,/g,", "); }
 				}
 			}
 		}	

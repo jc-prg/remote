@@ -17,11 +17,6 @@
             "left",  "enter", "right",  "prg-", 
             "movie", "down",  "stereo", "timer"
         ],
-        "presets": {
-        	"vol" : {
-        		"max" : 79,
-        		"min" : 0
-        	}
-        }      
+       "type" : "device"
     }
 }

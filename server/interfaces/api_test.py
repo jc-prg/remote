@@ -19,12 +19,12 @@ class testAPI():
    Integration of sample API to be use by jc://remote/
    '''
 
-   def __init__(self,api_name,device="",ip_address=""):
+   def __init__(self,api_name,device="",device_config=""):
        '''Initialize API / check connect to device'''
        
-       self.api_name        = api_name       
+       self.api_name        = api_name  
        self.api_description = "Test API Description for automatic testing"
-       self.api_config      = rm3json.read("interfaces/test/"+self.api_name,data_dir=False)
+       self.api_config      = device_config
        self.working         = False
        self.count_error     = 0
        self.count_success   = 0

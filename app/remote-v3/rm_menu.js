@@ -7,6 +7,7 @@
 function rmMenu(name, menu)
         this.init                 = function(data)
     		window.onresize = function(event)
+        this.click_menu          = function()
         this.menu_height	  = function()
 	this.add_devices          = function(data)
 	this.remoteToggleEditMode = function()
@@ -17,7 +18,6 @@ function rmMenu(name, menu)
 	this.entry_script         = function(script,label)
 	this.entry_device         = function(device,label)
 	this.entry_scene          = function(scene,label)
-        this.log                  = function(msg)
         this.writeMenu            = function(menutext)
         this.readMenu             = function()
 */
@@ -32,7 +32,7 @@ function rmMenu(name, menu) {
 	this.data        = {};
 	this.edit_mode   = false;
 	this.inital_load = true;
-
+	this.logging     = new jcLogging(this.app_name);
 
         // load data with devices (deviceConfig["devices"])
         this.init                 = function(data) {
@@ -41,10 +41,10 @@ function rmMenu(name, menu) {
         	else			{ return; }
 
                 if (this.initial_load) { 
-                	this.log("Initialized new class 'rmMenu'.");
+                	this.logging.default("Initialized new class 'rmMenu'.");
                 	this.inital_load = false;
                 	}
-                else {	this.log("Reload data 'rmMenu'.");
+                else {	this.logging.default("Reload data 'rmMenu'.");
                 	}
                 
     		this.writeMenu("");
@@ -97,13 +97,14 @@ function rmMenu(name, menu) {
 
 		// set vars
     		var menu   = this.readMenu();
+    		for (var key in data) { if (data[key]["settings"]["position"]) { data[key]["position"] = data[key]["settings"]["position"]; }}
 		var order  = sortDict(data,"position");
     		var i      = 0;
 		for (var j=0;j<order.length;j++) {
 			device = order[j];
 			if (device != "default") {
-			        if (data[device]["visible"] != "no")  { menu  += this.entry_device( device, data[device]["label"] ); }
-			        else if (this.edit_mode)              { menu  += this.entry_device( device, "<div class=#hidden_entry_edit#>.(" + data[device]["label"] + ").</div>" ); }
+			        if (data[device]["settings"]["visible"] != "no")	{ menu  += this.entry_device( device, data[device]["settings"]["label"] ); }
+			        else if (this.edit_mode)				{ menu  += this.entry_device( device, "<div class=#hidden_entry_edit#>.(" + data[device]["settings"]["label"] + ").</div>" ); }
 				}
         		}
     		this.writeMenu(menu + "<li><hr/></li>");
@@ -123,15 +124,18 @@ function rmMenu(name, menu) {
     		if (data) {} else { return; }
     		
     		var menu   = this.readMenu();
+    		
+    		for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }    		
 		var order  = sortDict(data,"position");
+		
 		for (var j=0;j<order.length;j++) {
 			scene = order[j];
-			if (data[scene]["label"]) {
-//				menu  += this.entry_scene( scene, data[scene]["label"] );			
-			        if (data[scene]["visible"] != "no")  { menu  += this.entry_scene( scene, data[scene]["label"] ); }
-			        else if (this.edit_mode)             { menu  += this.entry_scene( scene, "<div class=#hidden_entry_edit#>.(" + data[scene]["label"] + ").</div>" ); }
+			if (data[scene]["settings"]["label"]) {
+			        if (data[scene]["settings"]["visible"] != "no")	{ menu  += this.entry_scene( scene, data[scene]["settings"]["label"] ); }
+			        else if (this.edit_mode)				{ menu  += this.entry_scene( scene, "<div class=#hidden_entry_edit#>.(" + data[scene]["settings"]["label"] + ").</div>" ); }
 				}
         		}
+
     		this.writeMenu(menu + "<li><hr/></li>");
 		}
 
@@ -170,11 +174,6 @@ function rmMenu(name, menu) {
 		return "<li><a onclick=\"rm3remotes.create('scene','" + scene + "');rm3settings.hide();"+this.app_name+".click_menu();setNavTitle('" + label + "');\" >" + label.replace(/#/g,"'") + "</a></li>";
 		}
 
-        // handle messages for console
-        this.log                  = function(msg) {
-                console.log(this.app_name + ": " + msg);
-                }
-                
         this.writeMenu            = function(menutext) {
         	if (typeof this.menuItems == "string") {
         		setTextById(this.menuItems,menutext);

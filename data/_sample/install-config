@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo "------------------------------"
+echo " jc://remote/sample-data "
+echo "------------------------------"
+echo
+
+cp _ACTIVE* ../
+
+mkdir ../remotes
+cp -r ./remotes/* ../remotes/
+
+mkdir ../devices
+cp -r ./devices/* ../devices/

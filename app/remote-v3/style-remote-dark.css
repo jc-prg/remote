@@ -58,6 +58,11 @@
   .sliderlabel    { color: #dddddd; }
   }
   
+.remote-keyboard {
+	background : darkgray;
+	border-top : 1px solid white;
+	}
+	
 
 /* elements from rm_settings.css */
 

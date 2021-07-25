@@ -1,0 +1,99 @@
+{
+    "data": {
+        "buttons": {
+            "aux": "input-selector=aux1",
+            "bd": "input-selector=bd",
+            "bluetooth": "input-selector=bluetooth",
+            "cable-sat": "input-selector=cbl",
+            "dimmer": "dimmer-level=dim",
+            "display": "display-mode=toggle",
+            "down": "setup=down",
+            "enter": "setup=enter",
+            "exit": "setup=exit",
+            "game": "input-selector=game",
+            "game-mode": "listening-mode=game",
+            "home": "setup=home",
+            "left": "setup=left",
+            "movie-tv-mode": "listening-mode=movie",
+            "mute": "audio-muting=toggle",
+            "mute-off": "audio-muting=off",
+            "mute-on": "audio-muting=on",
+            "off": "system-power=off",
+            "on": "system-power=on",
+            "pc": "input-selector=pc",
+            "phono": "input-selector=phono",
+            "prg+": "tuning=up",
+            "prg-": "tuning=down",
+            "q": "setup=quick",
+            "radio": "input-selector=fm",
+            "right": "setup=right",
+            "settings": "setup=menu",
+            "timer": "sleep-set=up",
+            "tv": "input-selector=tv",
+            "up": "setup=up",
+            "usb": "input-selector=usb",
+            "vol+": "master-volume=level-up",
+            "vol-": "master-volume=level-down"
+        },
+        "buttons_error": {
+            "music-mode": "listening-mode=music"
+        },
+        "commands": {
+            "mute": {
+                "command": "audio-muting=",
+                "type": "enum"
+            },
+            "power": {
+                "command": "system-power=",
+                "type": "enum"
+            },
+            "vol": {
+                "command": "master-volume=",
+                "type": "integer"
+            }
+        },
+        "description": "ONKYO TX-NR686B (API)",
+        "method": "query",
+        "queries": {
+            "a-v-sync": "a-v-sync=query",
+            "audio-info": "audio-information=query",
+            "audio-source": "audio-selector=query",
+            "current-playing": "jc.metadata('net-info')",
+            "dimmer": "dimmer-level=query",
+            "display": "display-mode=query",
+            "listening": "listening-mode=query",
+            "mute": "audio-muting=query",
+            "power": "system-power=query",
+            "sleep-set": "sleep-set=qstn",
+            "source": "input-selector=query||[1]",
+            "temperature": "temperature-data=query||[4:]",
+            "timer": "sleep-set=qstn",
+            "tuning": "tuning=query||+' Hz'",
+            "usb-net-album": "dock.net-usb-album-name-info=query",
+            "usb-net-artist": "dock.net-usb-artist-name-info=query",
+            "usb-net-title": "dock.net-usb-title-name=query",
+            "video-info": "video-information=query",
+            "vol": "master-volume=query"
+        },
+        "queries_error": {
+            "dolby-volume": "dolby-volume=query",
+            "video-output": "video-output-selector=query"
+        },
+        "send-data": {},
+        "values": {
+            "mute": [
+                "on",
+                "off",
+                "toggle"
+            ],
+            "power": [
+                "on",
+                "off"
+            ],
+            "vol": {
+                "max": 70,
+                "min": 0
+            }
+        }
+    }
+}

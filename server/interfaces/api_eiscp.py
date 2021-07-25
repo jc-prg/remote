@@ -24,7 +24,7 @@ class eiscpAPI():
    Integration of sample API to be use by jc://remote/
    '''
 
-   def __init__(self,api_name,device="",ip_address=""):
+   def __init__(self,api_name,device="",device_config=""):
        '''
        Initialize API / check connect to device
        '''
@@ -32,7 +32,8 @@ class eiscpAPI():
        self.api_name        = api_name       
        self.api_description = "API for ONKYO Devices"
        self.api_device      = device
-       self.api_config      = rm3json.read("interfaces/eiscp/"+self.api_name,data_dir=False)
+#       self.api_config      = rm3json.read("interfaces/eiscp/"+self.api_name,data_dir=False)
+       self.api_config      = device_config
        self.api_ip          = self.api_config["IPAddress"]
        self.api_timeout     = 5
        self.method          = "query"

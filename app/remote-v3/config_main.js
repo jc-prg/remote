@@ -8,7 +8,7 @@ var app_setting_count = 4;
 var app_setting_style = "setting_bg";
 var app_last_load     = 0;
 var app_title         = "jc://remote/";
-var app_version       = "v2.6.1";
+var app_version       = "v2.6.4";
 var app_api_dir       = "api/";
 var app_api_status    = "list";
 var app_loading_image = "";
@@ -31,13 +31,17 @@ function app_status(data) {
 		//birdhousePrint(data=data, active_page=appActivePage, camera=app_active_cam);
 		reload = false;
 		}
+	statusCheck(data);
+	
+	rm3remotes.init(  data );
+	rm3settings.init( data );
 	}
 	
 //--------------------------------
 // add code when checked the status
 //--------------------------------
 
-function app_check_status() {
+function app_check_status(data) {
 	}
 	
 //--------------------------------
@@ -53,6 +57,13 @@ function app_click_menu() {
 
 function app_force_reload(data) {
 	remoteReload(data);
+	}
+	
+//--------------------------------
+// add code when app starts
+//--------------------------------
+
+function app_initialize(data) {
 	}
 
 //--------------------------------

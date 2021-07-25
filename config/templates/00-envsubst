@@ -10,7 +10,7 @@ envsubst < "templates/start" > "../start"
 chmod 755 ../start
 
 rm -rf ../app/config_stage.js
-envsubst < "templates/rm_stage.js" > "../app/rm_config_stage.js"
+envsubst < "templates/config_stage.js" > "../app/remote-v3/config_stage.js"
 
 rm -rf ../server/modules/config_stage.py
 envsubst < "templates/rm3stage.py" > "../server/modules/rm3stage.py"

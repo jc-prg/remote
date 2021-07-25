@@ -27,7 +27,7 @@ class queueApiCalls (threading.Thread):
        self.queue          = []
        self.name           = name
        self.stopProcess    = False
-       self.wait           = 0.1
+       self.wait           = 0.05
        self.device_apis    = device_apis
        self.device_reload  = []
        self.last_button    = "<none>"
@@ -80,8 +80,8 @@ class queueApiCalls (threading.Thread):
           devices  = self.config.read_status()
           
        # check, if reload is requested ...
-       if "END_OF_RELOAD" in str(command):
-          self.reload = False
+       if "START_OF_RELOAD" in str(command):  self.reload = True
+       elif "END_OF_RELOAD" in str(command):  self.reload = False
 
        # if is an array / not a number
        elif "," in str(command):
@@ -103,6 +103,7 @@ class queueApiCalls (threading.Thread):
                 result = "ERROR queue query_list: " + str(e)
 
           elif self.query_send == "query":
+             result = ""
              for value in button:
                 try:    
                    result = self.device_apis.query(interface,device,value)

@@ -8,6 +8,8 @@
 
 var language_app = {
 	"DE" : {
+		"RESET_SWITCH_OFF"		: "Reset Devices:<br/>vorher alle Geräte ausschalten.",
+		"RESET_VOLUME_TO_ZERO"		: "Reset Audio Settings:<br/>vorher alle Receiver mit Audio auf Mininum (0) einstellen.",
 		},
 	"EN" : {
 		"AUDIO_IS_MAIN"		: "This device is defined as main AUDIO device.",
@@ -20,6 +22,8 @@ var language_app = {
 		"BUTTON_SELECT"		: "Please select button.",
 		
 		"CHANNEL_USE_JSON"		: "Please use JSON to edit the channel list.",
+		"CHANGE_ORDER_SCENES"		: "Change Order of Scenes",
+		"CHANGE_ORDER_DEVICES"		: "Change Order of Devices",
 
 		"DEVICE_ASK_DELETE"		: "Do you really want to delete device '{0}'?",
 		"DEVICE_DONT_EXISTS"		: "Device '{0}' doesn't exists!",
@@ -45,7 +49,7 @@ var language_app = {
 		"MANUAL_DISPLAY"		: "<b>Edit Display Definition</b><ul>" +
 						  "<li>Fill dict for display definition using the JSON format: <i>&quot;Label&quot; : &quot;field_from_device&quot;</i>.</li>" +
 						  "</ul>",
-		"MANUAL_REMOTE"			: "<b>Edit Device Remote Control:</b><ul>" +
+		"MANUAL_REMOTE"		: "<b>Edit Device Remote Control:</b><ul>" +
 						  "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
 						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
 						  "<li>Add &quot;DISPLAY&quot; to add a display that show status information (details defined below).</li>" +
@@ -57,6 +61,18 @@ var language_app = {
 						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
 						  "<li>Add &quot;.&quot; to add an empty space.</li>" +
 						  "</ul>",
+		"MANUAL_MAKROS"		: "<b>Edit Makros:</b><ul>" +
+						  "<li>Fill dict for makros using the JSON format.</li>" +
+						  "<li>Makro types are: makro, scene-on, scene-off, dev-on, dev-off</li>" +
+						  "<li>Makro format: \"&lt;makro&gt;\" : [\"&lt;device&lt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&lt;\"] </li>" +
+						  "<li>Scene-on/off makros format: \"&lt;makro&gt;\" : [\"&lt;device&lt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
+						  "<li>Dev-on/off makros format: \"&lt;device&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"&lt;device&gt;_&lt;button&gt;||&lt;value&gt;\",] </li>" +
+						  "<li>Makros can be used for scenes, not for devices: 'makro_&lt;makro&gt;', 'scene-on_&lt;scene&gt;', 'scene-off_&lt;scene&gt;', 'dev-on_&lt;device&gt;', 'dev-off_&lt;device&gt;'</li>" +
+						  "</ul>",
+						  
+						  //, \"scene-on_&lt;scene&lt;\"
+						  
+		"MISSING_DATA"			: "Data are missing for '{0}'.<br/>Check files '{1}' and '{2}' in data directory.",
 		
 		"MODE_EDIT"			: "Edit Mode",
 		"MODE_INTELLIGENT"		: "Intelligent Mode",
@@ -67,6 +83,8 @@ var language_app = {
 		"REMOTE_ADD"			: "Add Remote Control",
 		"RELOAD_TAKES_LONGER"		: "Reload takes longer than expected ...",
 		"RELOAD_TAKES_MUCH_LONGER"	: "Reload takes longer than much expected ...",
+		"RESET_SWITCH_OFF"		: "Reset Devices:<br/>switch off all devices before.",
+		"RESET_VOLUME_TO_ZERO"		: "Reset Audio Settings:<br/>set the volume of all audio devices to mininum (0) before.",
 		
 		"SCENE_ASK_DELETE"		: "Do you really want to delete scene '{0}'?",
 		"SCENE_EXISTS"			: "Scene '{0}' already exists!",
@@ -75,6 +93,9 @@ var language_app = {
 		"SCENE_SELECT"			: "Please select scene.",
 		
 		"SETTINGS"			: "Settings",
+		"TEXT_INPUT"			: "Text input",
+		
+		"VERSION_AND_STATUS"		: "Version and Status Information",
 		}
 	}
 

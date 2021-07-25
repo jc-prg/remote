@@ -118,7 +118,6 @@ class configCache (threading.Thread):
         '''
         write config to file and update cache
         '''
-        
         rm3json.write(config_file,value,"cache.write "+source)
         self.cache[config_file] = value
 
@@ -142,7 +141,7 @@ class configCache (threading.Thread):
         '''
 
         status     = self.read(rm3config.active_devices)
-        interface  = status[device]["interface"]["api"]
+        interface  = status[device]["config"]["interface_api"]
         device     = status[device]["config"]["device"]
         definition = self.read(rm3config.devices + interface + "/" + device)
         return definition["data"]["method"]
@@ -153,23 +152,17 @@ class configCache (threading.Thread):
         '''
         read and return array
         '''
-
-        config_file = rm3config.active_devices
-        status      = self.read(config_file)
+        status = self.read(rm3config.active_devices)
     
         # initial load of methods (record vs. query)
         if self.configMethods == {} and selected_device == "":
     
           for device in status:
               key       = status[device]["config"]["device"]
-              interface = status[device]["interface"]["api"]
-#              key       = status[device]["config"][device"]
-#              interface = status[device]["interface"]["api"]
-        
+              interface = status[device]["config"]["interface_api"]
               if interface != "" and key != "":
-                  config = self.read(rm3config.commands + interface + "/" + key)
-                  if not "ERROR" in config:
-                      self.configMethods[device] = config["data"]["method"]
+                 config = self.read(rm3config.commands + interface + "/" + key)
+                 if not "ERROR" in config: self.configMethods[device] = config["data"]["method"]
     
         # if device is given return only device status
         if selected_device != "" and selected_device in status and "status" in status[selected_device]:
@@ -179,16 +172,12 @@ class configCache (threading.Thread):
     
     #---------------------------
     
-    def write_status(self,status,source=""):
+    def write_status(self, status, source=""):
         '''
         write status and make sure only valid keys are saved
         '''
-        
-        config_file = rm3config.active_devices
-        
-        # clear config file ...
         status_temp   = {}
-        relevant_keys = ["status","visible","description","image","interface","label","config","main-audio","position"]   
+        relevant_keys = ["status","config","settings"]   
         
         for dev in status:
           status_temp[dev] = {}
@@ -196,9 +185,8 @@ class configCache (threading.Thread):
             if key in relevant_keys:
                status_temp[dev][key] = status[dev][key]                        
 
-        # write status
-        rm3json.write(config_file,status_temp,"cache.write_status "+source)
-        self.cache[config_file] = status_temp
+        self.write(rm3config.active_devices, status_temp, "cache.write_status "+source)
+        self.cache[rm3config.active_devices] = status_temp
     
 #-------------------------------------------------
 # EOF

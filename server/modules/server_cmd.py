@@ -63,11 +63,12 @@ def remoteAPI_start():
     data["STATUS"]["system"]               = {} #  to be filled in remoteAPI_end()
     data["STATUS"]["request_time"]         = queueSend.avarage_exec
       
+      
     for device in data["DATA"]["devices"]:
-      if data["DATA"]["devices"][device]["interface"]["api"] in data["STATUS"]["interfaces"]:
-         data["DATA"]["devices"][device]["connected"] =  data["STATUS"]["interfaces"][data["DATA"]["devices"][device]["interface"]["api"]]
-      else:
-         data["DATA"]["devices"][device]["connected"] = "No connection yet."
+      data["CONFIG"]["main-audio"] = "NONE"
+      if "main-audio" in data["DATA"]["devices"][device]["settings"] and data["DATA"]["devices"][device]["settings"]["main-audio"] == "yes":
+         data["CONFIG"]["main-audio"] = device
+         break
          
     return data
     
@@ -95,21 +96,11 @@ def remoteAPI_end(data,setting=[]):
     data["CONFIG"]["reload_config"]       = configFiles.cache_update
 
     #--------------------------------
-
-    if "devices" in data["DATA"]:
-      for device in data["DATA"]["devices"]:
-        if "main-audio" in data["DATA"]["devices"][device]   and data["DATA"]["devices"][device]["main-audio"] == "yes": data["CONFIG"]["main-audio"] = device
-        if "templates"  in data["DATA"]["devices"][device]:  del data["DATA"]["devices"][device]["templates"]
-        if "queries"    in data["DATA"]["devices"][device]:  del data["DATA"]["devices"][device]["queries"]
-        if "buttons"    in data["DATA"]["devices"][device]:  del data["DATA"]["devices"][device]["buttons"]
-
-#        if "commands"   in data["DATA"]["devices"][device]:  del data["DATA"]["devices"][device]["commands"]
-
-    #--------------------------------
     
     if "no-data" in setting:   del data["DATA"]
     if "no-config" in setting: del data["CONFIG"]
   
+    if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
     return data
 
 
@@ -218,11 +209,10 @@ def Remote(device,button):
         '''
         
         data                       = remoteAPI_start()
-        interface                  = configFiles.cache["_api"]["devices"][device]["interface"]["api"]
+        interface                  = configFiles.cache["_api"]["devices"][device]["config"]["interface_api"]
         
         data["REQUEST"]["Device"]  = device
         data["REQUEST"]["Button"]  = button
-        #data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,button)
         data["REQUEST"]["Return"]  = queueSend.add2queue([[interface,device,button,""]])
         data["REQUEST"]["Command"] = "Remote"
         
@@ -232,7 +222,35 @@ def Remote(device,button):
         data["ReturnMsg"]          = data["REQUEST"]["Return"]    # to be removed
 
         data                       = remoteAPI_end(data,["no-data"])      
+        return data
+
+
+#-------------------------------------------------
+
+
+def RemoteSendText(device,button,text):
+        '''
+        send command and return JSON msg
+        '''
         
+        data                       = remoteAPI_start()
+        data["REQUEST"]["Device"]  = device
+        data["REQUEST"]["Button"]  = button
+        data["REQUEST"]["Command"] = "RemoteSendText"
+
+        if device in configFiles.cache["_api"]["devices"]:
+           interface                  = configFiles.cache["_api"]["devices"][device]["config"]["interface_api"]
+           data["REQUEST"]["Return"]  = queueSend.add2queue([[interface,device,button,text]])
+           
+        else:
+           data["REQUEST"]["Return"]  = "ERROR: Device '"+device+"' not defined."
+        
+        if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
+
+        data["DeviceStatus"]       = getStatus(device,"power")    # to be removed
+        data["ReturnMsg"]          = data["REQUEST"]["Return"]    # to be removed
+
+        data                       = remoteAPI_end(data,["no-data"])      
         return data
 
 
@@ -244,7 +262,7 @@ def RemoteSet(device,command,value):
         '''
         
         data                      = remoteAPI_start()
-        interface                 = configFiles.cache["_api"]["devices"][device]["interface"]["api"]
+        interface                 = configFiles.cache["_api"]["devices"][device]["config"]["interface_api"]
         method                    = deviceAPIs.method(interface)
         
         data["REQUEST"]["Device"]  = device
@@ -254,12 +272,12 @@ def RemoteSet(device,command,value):
         if method == "query":
           #data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,command,value)
           data["REQUEST"]["Return"] = queueSend.add2queue([[interface,device,command,value]])
+          devicesGetStatus(data,readAPI=True)
           
         elif method == "record":
           data["REQUEST"]["Return"] = setStatus(device,command,value)
+          devicesGetStatus(data,readAPI=True)
         
-        if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
-
         refreshCache()
         data                      = remoteAPI_end(data,["no-data"])
         return data
@@ -281,6 +299,8 @@ def RemoteMakro(makro):
         commands_2nd              = []
         commands_3rd              = []
         commands_4th              = []
+        
+#### --> check, if makro is defined ... (or work with try: / except:)
         
         # decode makros: scene-on/off
         for command in commands_1st:
@@ -321,8 +341,8 @@ def RemoteMakro(makro):
             status                      = ""
             power_buttons               = ["on","on-off","off"]
             device,button_status        = command.split("_",1)                         # split device and button
-            interface                   = data["DATA"]["devices"][device]["interface"]["api"] # get interface / API
-            method                      = data["DATA"]["devices"][device]["method"]
+            interface                   = data["DATA"]["devices"][device]["config"]["interface_api"] # get interface / API
+            method                      = data["DATA"]["devices"][device]["interface"]["method"]
 
             # check if future state defined
             if "||" in button_status:   button,status = button_status.split("||",1)                              # split button and future state           
@@ -360,6 +380,18 @@ def RemoteMakro(makro):
         data                      = remoteAPI_end(data,["no-config"])        
         return data
 
+#-------------------------------------------------
+
+def RemoteMakroChange(makros):
+        '''
+        Change Makros and save to _ACTIVE-MAKROS.json
+        '''
+        data                         = remoteAPI_start()
+        data["REQUEST"]["Return"]    = editMakros(makros)
+        data["REQUEST"]["Command"]   = "ChangeMakros"
+        data                         = remoteAPI_end(data)
+
+        return data
 
 #-------------------------------------------------
 
@@ -373,7 +405,7 @@ def RemoteOnOff(device,button):
         presets         = {}
         
         data            = remoteAPI_start()
-        interface       = data["DATA"]["devices"][device]["interface"]["api"]
+        interface       = data["DATA"]["devices"][device]["config"]["interface_api"]
         method          = deviceAPIs.method(interface)
         dont_send       = False
         
@@ -383,8 +415,8 @@ def RemoteOnOff(device,button):
           logging.info("RemoteOnOff: " +device+"/"+button+" ("+interface+"/"+method+")")
           
           # Get method and presets
-          if "commands" in data["DATA"]["devices"][device]:  types   = data["DATA"]["devices"][device]["commands"]
-          if "values"   in data["DATA"]["devices"][device]:  presets = data["DATA"]["devices"][device]["values"]        
+          if "commands" in data["DATA"]["devices"][device]["interface"]:  types   = data["DATA"]["devices"][device]["interface"]["commands"]
+          if "values"   in data["DATA"]["devices"][device]["interface"]:  presets = data["DATA"]["devices"][device]["interface"]["values"]        
 
           # special with power buttons
           if button == "on-off" or button == "on" or button == "off":  value = "power"
@@ -441,7 +473,6 @@ def RemoteOnOff(device,button):
         data["DATA"]                 = {}
         data                         = remoteAPI_end(data)        
 
-        if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
         return data
 
 
@@ -539,7 +570,7 @@ def RemoteRecordCommand(device,button):
         '''
 
         data                         = remoteAPI_start()
-        interface                    = data["DATA"]["devices"][device]["interface"]["api"]
+        interface                    = data["DATA"]["devices"][device]["config"]["interface_api"]
         data["DATA"]                 = {}
         
         EncodedCommand               = deviceAPIs.record(interface,device,button)
@@ -647,7 +678,7 @@ def RemoteEditDevice(device,info):
         data["REQUEST"]["Command"]   = "EditDevice"
 
         refreshCache()
-        data                         = remoteAPI_end(data,["no-data"])
+        data                         = remoteAPI_end(data,["no-data"])        
         return data
         
 #-------------------------------------------------
@@ -684,6 +715,8 @@ def RemoteAddScene(scene,info):
 
         refreshCache()
         data                         = remoteAPI_end(data,["no-data"])        
+
+        
         return data
 
 

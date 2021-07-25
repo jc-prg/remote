@@ -4,10 +4,10 @@ import time
 # ---------------------------------
 
 APIname    = "jc://remote/"
-APIversion = "v1.9.0"
-APPversion = "v2.6.1"
-APPsupport = [APPversion, "v2.4.5","v2.4.3","v2.4.2","v2.4.1",
-              "v2.5.4", "v2.5.5"
+APIversion = "v1.9.4"
+APPversion = "v2.6.4"
+APPsupport = [APPversion, 
+             "v2.6.3", "v2.6.2"
              ]  # other supported versions
 
 # ---------------------------------
@@ -33,7 +33,6 @@ commands   = "devices/"             # device definition (queries and commands)
 remotes    = "remotes/"             # remote layouts for devices
 
 scenes     = "remotes/"             # remote layouts for scenes
-makros     = "makros/"              # makros (to be used in scenes)
 templates  = "templates/"           # templates for remote layouts
 
 buttons    = "buttons/"             # button configuration files
@@ -41,6 +40,7 @@ active     = "_active"              # overview file name
 
 active_devices = "_ACTIVE-DEVICES"
 active_scenes  = "_ACTIVE-SCENES"
+active_makros  = "_ACTIVE-MAKROS"
 
 # ---------------------------------
 

@@ -57,19 +57,24 @@ class connect(threading.Thread):
 
           for device in active_devices:       
             logging.debug("Load API for device "+device+" ...")
-            api = active_devices[device]["interface"]["api"]
-            if "ip" in active_devices[device]["interface"]:   ip = active_devices[device]["interface"]["ip"]
-            else:                                             ip = ""
-            if "dev" in active_devices[device]["interface"]:  dev = active_devices[device]["interface"]["dev"]
-            else:                                             dev = ""
-            if "mac" in active_devices[device]["interface"]:  mac = active_devices[device]["interface"]["mac"]
-            else:                                             mac = ""
+            api = active_devices[device]["config"]["interface_api"]
+            dev = active_devices[device]["config"]["interface_dev"]
+
+            if rm3json.ifexist(rm3config.commands + api + "/00_interface"):
+               dev_config = {}
+               api_config = self.configFiles.read(rm3config.commands + api + "/00_interface")
+               if "Devices" in api_config and dev in api_config["Devices"]:          dev_config = api_config["Devices"][dev]
+               elif "Devices" in api_config and "default" in api_config["Devices"]:  dev_config = api_config["Devices"]["default"]
+               else:                                                                 logging.warning("Error in config-file - device not defined / no default device: "+rm3config.commands + api + "/00_interface.json")
             
-            if api == "KODI"        and api not in self.api:  self.api[api] = interfaces.api_kodi.kodiAPI(api,dev,ip)
-            if api == "EISCP-ONKYO" and api not in self.api:  self.api[api] = interfaces.api_eiscp.eiscpAPI(api,dev,ip)
-            if api == "BROADLINK"   and api not in self.api:  self.api[api] = interfaces.api_broadlink.broadlinkAPI(api,dev,ip)
-            if api == "SONY"        and api not in self.api:  self.api[api] = interfaces.api_sony.sonyAPI(api,dev,ip,mac)
-            if api == "TEST"        and api not in self.api:  self.api[api] = interfaces.api_test.testAPI(api,dev,ip)
+            if dev_config != {}:
+               if api == "KODI"        and api not in self.api:  self.api[api] = interfaces.api_kodi.kodiAPI(api,dev,dev_config)
+               if api == "EISCP-ONKYO" and api not in self.api:  self.api[api] = interfaces.api_eiscp.eiscpAPI(api,dev,dev_config)
+               if api == "BROADLINK"   and api not in self.api:  self.api[api] = interfaces.api_broadlink.broadlinkAPI(api,dev,dev_config)
+               if api == "SONY"        and api not in self.api:  self.api[api] = interfaces.api_sony.sonyAPI(api,dev,dev_config)
+               if api == "TEST"        and api not in self.api:  self.api[api] = interfaces.api_test.testAPI(api,dev,dev_config)
+            else:
+               logging.error("Could not connect to "+api+" - Error in with config file ("+rm3config.commands + api + "/00_interface.json)")
                                                
         else:
           self.api["KODI"]        = interfaces.api_kodi.kodiAPI("KODI")
@@ -191,11 +196,20 @@ class connect(threading.Thread):
 
         if self.api[call_api].status == "Connected":
             method = self.method(call_api)
-            logging.info("SEND "+call_api+" / "+device+" - "+button+" ("+str(value)+")")
             
-            if  method == "record":                  button_code = self.get_command( call_api, "buttons", device, button ) 
-            elif method == "query" and value == "":  button_code = self.get_command( call_api, "buttons", device, button )
-            else:                                    button_code = self.create_command( call_api, device, button, value ) 
+            if button.startswith("send-"):
+               logging.info("SEND-DATA: "+call_api+" / "+device+" - "+button+" ("+str(value)+"/"+method+")")
+               if method == "query" and value != "":    button_code = self.get_command( call_api, "send-data", device, button )
+               else:                                    button_code = "ERROR, wrong method (!query) or no data transmitted."
+               if not "ERROR" in button_code:           button_code = button_code.replace("{DATA}",value)
+               logging.info("BUTTON-CODE: "+button_code)
+               
+            else:            
+               logging.info("SEND: "+call_api+" / "+device+" - "+button+" ("+str(value)+"/"+method+")")
+               if  method == "record":                  button_code = self.get_command( call_api, "buttons", device, button ) 
+               elif method == "query" and value == "":  button_code = self.get_command( call_api, "buttons", device, button )
+               else:                                    button_code = self.create_command( call_api, device, button, value ) 
+               logging.info("BUTTON-CODE: "+button_code)               
             
             if "ERROR" in button_code: return_msg = "ERROR: could not read/create command from button code (send/"+mode+"/"+button+"); " + button_code
             elif call_api in self.api: return_msg = self.api[call_api].send(device,button_code)
@@ -204,7 +218,8 @@ class connect(threading.Thread):
             if not "ERROR" in return_msg and self.api[call_api].method == "record" and value != "":
                self.save_status(device, button, value)
            
-        else:                          return_msg = "ERROR: API not connected ("+call_api+")"
+        else:
+            return_msg = "ERROR: API not connected ("+call_api+")"
         
 
         if "ERROR" in str(return_msg) or "error" in str(return_msg):
@@ -309,11 +324,16 @@ class connect(threading.Thread):
           buttons      = self.configFiles.read(rm3config.commands + api + "/" + device_code)
     
           # add button definitions from default.json if exist
-          if rm3json.ifexist(rm3config.commands + api + "/default"):
-             buttons_default = self.configFiles.read(rm3config.commands + api + "/default")
-             for key in buttons_default["data"][button_query]:
-               buttons["data"][button_query][key] = buttons_default["data"][button_query][key]
+          if rm3json.ifexist(rm3config.commands + api + "/00_default"):
+             buttons_default = self.configFiles.read(rm3config.commands + api + "/00_default")
 
+             value_list      = [ "buttons", "queries", "commands", "values", "send-data" ]            
+             for value in value_list:
+                if not value in buttons["data"]: buttons["data"][value] = {}             
+                if value in buttons_default["data"]:
+                   for key in buttons_default["data"][value]:
+                     buttons["data"][value][key] = buttons_default["data"][value][key]
+             
           # check for errors or return button code
           if "ERROR" in buttons or "ERROR" in active:         return "ERROR get_command: buttons not defined for device ("+device+")"
           elif button in buttons["data"][button_query]:       return buttons["data"][button_query][button]
@@ -333,21 +353,18 @@ class connect(threading.Thread):
         if device in active:
           device_code  = active[device]["config"]["device"]
           buttons      = self.configFiles.read(rm3config.commands + api + "/" + device_code)
-    
-          # add button definitions from default.json if exist
-          if rm3json.ifexist(rm3config.commands + api + "/default"):
-             buttons_default = self.configFiles.read(rm3config.commands + api + "/default")
-             if not "commands" in buttons["data"]: buttons["data"]["commands"] = {}
-             if not "values"   in buttons["data"]: buttons["data"]["values"]   = {}
-             
-             if "commands" in buttons_default["data"]:
-               for key in buttons_default["data"]["commands"]:
-                 buttons["data"]["commands"][key] = buttons_default["data"]["commands"][key]
-                
-             if "values" in buttons_default["data"]:
-               for key in buttons_default["data"]["values"]:
-                 buttons["data"]["values"][key]   = buttons_default["data"]["values"][key]
 
+          # add button definitions from default.json if exist
+          if rm3json.ifexist(rm3config.commands + api + "/00_default"):
+             buttons_default = self.configFiles.read(rm3config.commands + api + "/00_default")
+
+             key_list      = [ "buttons", "queries", "commands", "values", "send-data" ]            
+             for key in key_list:
+                if not key in buttons["data"]: buttons["data"][key] = {}             
+                if key in buttons_default["data"]:
+                   for key2 in buttons_default["data"][key]:
+                     buttons["data"][key][key2] = buttons_default["data"][key][key2]
+             
           # check for errors or return button code
           if "ERROR" in buttons or "ERROR" in active:         return "ERROR create_command: buttons not defined for device ("+device+")"
           elif button in buttons["data"]["commands"]:
@@ -356,7 +373,7 @@ class connect(threading.Thread):
              cmd_type   = buttons["data"]["commands"][button]["type"]
              cmd_values = buttons["data"]["values"][button]
              cmd        = buttons["data"]["commands"][button]["command"] + value
-                          
+
              if cmd_type == "integer" and int(value) >= cmd_values["min"] and int(value) <= cmd_values["max"]:  cmd_ok = True
              elif cmd_type == "enum"  and value in cmd_values:                                                  cmd_ok = True
 

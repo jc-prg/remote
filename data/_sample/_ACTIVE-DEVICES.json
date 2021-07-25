@@ -1,0 +1,269 @@
+{
+    "bd": {
+        "config": {
+            "device": "bluray_sony-bdp-s4500",
+            "interface_api": "BROADLINK",
+            "interface_dev": "default",
+            "remote": "bluray_sony-bdp-s4500_ir"
+        },
+        "settings": {
+            "description": "SONY BDP-S4500",
+            "image": "bd",
+            "label": "Bluray Player (IR)",
+            "main-audio": "no",
+            "position": 8,
+            "visible": "no"
+        },
+        "status": {
+            "api-status": "Connected",
+            "power": "OFF"
+        }
+    },
+    "bd-api": {
+        "config": {
+            "device": "bluray_sony-bdp-s4500",
+            "interface_api": "SONY",
+            "interface_dev": "SONY-BDP-S4500",
+            "remote": "bluray_sony-bdp-s4500_api"
+        },
+        "settings": {
+            "description": "SONY BDP-S4500",
+            "image": "bd",
+            "label": "Bluray Player (API)",
+            "main-audio": "no",
+            "position": 3,
+            "visible": "yes"
+        },
+        "status": {
+            "api-status": "Connected",
+            "media_duration": "Error",
+            "media_medium": "Error",
+            "media_tracks": "Error",
+            "playing": "Error",
+            "playing_soap": "Error",
+            "position_abs_cnt": "Error",
+            "position_abs_time": "Error",
+            "position_duration": "Error",
+            "position_metadata": "Error",
+            "position_rel_cnt": "Error",
+            "position_rel_time": "Error",
+            "position_track": "Error",
+            "power": "OFF",
+            "test": "Error"
+        }
+    },
+    "beam": {
+        "config": {
+            "device": "beamer_optoma-hd27",
+            "interface_api": "BROADLINK",
+            "interface_dev": "default",
+            "remote": "beamer_optoma-hd27_ir"
+        },
+        "settings": {
+            "description": "Optoma HD27",
+            "image": "beam",
+            "label": "Beamer",
+            "main-audio": "no",
+            "position": 2,
+            "visible": "yes"
+        },
+        "status": {
+            "api-status": "Connected",
+            "power": "OFF"
+        }
+    },
+    "default": {
+        "config": {
+            "device": "",
+            "interface_api": "",
+            "interface_dev": "",
+            "remote": ""
+        },
+        "settings": {
+            "description": "Sample Device",
+            "image": "",
+            "label": "Sample Device",
+            "main-audio": "no",
+            "position": 9,
+            "visible": "no"
+        },
+        "status": {}
+    },
+    "lw": {
+        "config": {
+            "device": "screen_elite-screens-100",
+            "interface_api": "BROADLINK",
+            "interface_dev": "default",
+            "remote": "screen_elite-screens-100_ir"
+        },
+        "settings": {
+            "description": "Elite Screens 100\"",
+            "image": "lw",
+            "label": "Leinwand",
+            "main-audio": "no",
+            "position": 5,
+            "visible": "yes"
+        },
+        "status": {
+            "api-status": "Connected",
+            "power": "OFF"
+        }
+    },
+    "media-center": {
+        "config": {
+            "device": "kodi",
+            "interface_api": "KODI",
+            "interface_dev": "default",
+            "remote": "kodi_api"
+        },
+        "settings": {
+            "description": "Kodi (API)",
+            "image": "",
+            "label": "Media-Center",
+            "main-audio": "no",
+            "position": 7,
+            "visible": "yes"
+        },
+        "status": {
+            "addons": "['ARDundZDF', 'ARTE.TV', 'Joyn', 'KiKA plus', '3sat Mediathek', 'ARD Mediathek', 'KiKa Mediathek', 'MediathekView', 'Mediathek Direkt', 'ZDF Mediathek']",
+            "api-status": "Connected",
+            "current-playing": "no media",
+            "genre": "no media",
+            "item": "no media",
+            "mute": "False",
+            "playing": "no media",
+            "playlist": "no media",
+            "plot": "no media",
+            "power": "OFF",
+            "type": "no media",
+            "version": "KODI 18.9 stable",
+            "vol": "100",
+            "zz": "no media"
+        }
+    },
+    "rec": {
+        "config": {
+            "device": "receiver_onkyo-txnr686",
+            "interface_api": "BROADLINK",
+            "interface_dev": "default",
+            "remote": "receiver_onkyo-txnr686_ir"
+        },
+        "settings": {
+            "description": "ONKYO TX-NR686B (IR)",
+            "image": "rec",
+            "label": "AV Receiver (IR)",
+            "main-audio": "no",
+            "position": 10,
+            "visible": "no"
+        },
+        "status": {
+            "api-status": "Connected",
+            "mute": "OFF",
+            "power": "OFF",
+            "vol": 0
+        }
+    },
+    "rec2": {
+        "config": {
+            "device": "receiver_onkyo-txnr686",
+            "interface_api": "EISCP-ONKYO",
+            "interface_dev": "ONKYP-TXNR686",
+            "remote": "receiver_onkyo-txnr686_api"
+        },
+        "settings": {
+            "description": "ONKYO TX-NR686B",
+            "image": "rec",
+            "label": "AV Receiver",
+            "main-audio": "yes",
+            "position": 1,
+            "visible": "yes"
+        },
+        "status": {
+            "a-v-sync": "0",
+            "api-status": "Connected",
+            "audio-info": "ANALOG,,,,All Ch Stereo,5.1 ch,",
+            "audio-source": "hdmi",
+            "current-playing": "no media",
+            "dimmer": "bright",
+            "display": "('selector-volume-1line', 'default-2line')",
+            "listening": "all-ch-stereo",
+            "mute": "off",
+            "power": "on",
+            "sleep-set": "N/A",
+            "source": "game/tv",
+            "temperature": "C 34",
+            "timer": "N/A",
+            "tuning": "34640 Hz",
+            "usb-net-album": " ",
+            "usb-net-artist": " ",
+            "usb-net-title": " ",
+            "video-info": "HDMI 3,1920 x 1080p  60 Hz,RGB,24bit,MAIN,1920 x 1080p  60 Hz,RGB,24bit,,",
+            "vol": "47"
+        }
+    },
+    "test": {
+        "config": {
+            "device": "test_device",
+            "interface_api": "TEST",
+            "interface_dev": "default",
+            "remote": "test_device"
+        },
+        "settings": {
+            "description": "test device",
+            "image": "test",
+            "label": "test device",
+            "main-audio": "no",
+            "position": 11,
+            "visible": "no"
+        },
+        "status": {
+            "api-status": "Connected"
+        }
+    },
+    "tv": {
+        "config": {
+            "device": "tv-receiver_arion-arc-1010hr",
+            "interface_api": "BROADLINK",
+            "interface_dev": "default",
+            "remote": "tv-receiver_arion-arc-1010hr_ir"
+        },
+        "settings": {
+            "description": "ARION ARC-1010HR",
+            "image": "tv",
+            "label": "TV/Radio",
+            "main-audio": "no",
+            "position": 6,
+            "visible": "no"
+        },
+        "status": {
+            "api-status": "Connected",
+            "mute": "OFF",
+            "power": "OFF",
+            "radiotv": "TV",
+            "vol": 17
+        }
+    },
+    "tv2": {
+        "config": {
+            "device": "tv-receiver_topfield",
+            "interface_api": "BROADLINK",
+            "interface_dev": "default",
+            "remote": "tv-receiver_topfield_ir"
+        },
+        "settings": {
+            "description": "TOPFIELD CBP-2001CI+",
+            "image": "tv_old",
+            "label": "TV/Radio (2)",
+            "main-audio": "no",
+            "position": 4,
+            "visible": "yes"
+        },
+        "status": {
+            "api-status": "Connected",
+            "mute": "OFF",
+            "power": "ON",
+            "radiotv": "TV",
+            "vol": 17
+        }
+    }
+}

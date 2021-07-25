@@ -1,43 +1,72 @@
 # jc://remote/data
 
+Update data description in progress ...
+
+
 ## Data structure
 
-* DEVICES
- * commands (interface)	-> button vs. commands
- * remotes (interface)		-> remote layouts, presets, display definition
- * interfaces			-> see interface section in /server/interfaces/<API>/
+* _active configuration_
+  * \_ACTIVE-DEVICES.json
+  * \_ACTIVE-DEVICES.sample.json
+  * \_ACTIVE-MAKROS.json
+  * \_ACTIVE-MAKROS.sample.json
+  * \_ACTIVE-SCENES.json
+  * \_ACTIVE-SCENES.sample.json
 
-* SCENES
-  * scenes			-> scene layouts
-  * makros			-> makros = chain of commands (by devices and buttons)
+* _button configuration_
+ * ./buttons/default/*.png                  -> default button images (use transparent png-files)
+ * ./buttons/default/index.json             -> define images for buttons
+ * ./buttons/button_colors.json             -> color definition
 
-* TEMPLATES
-  * templates			-> sample remote layouts
-  * buttons			-> button configurations
+* _API and device configuration_
+ * ./devices/<API>/00_interface.json        -> configure interfaces to devices
+ * ./devices/<API>/00_interface.sample.json -> sample interface configuration
+ * ./devices/<API>/00_default.json          -> configure default commands
+ * ./devices/<API>/00_default.sample.json   -> sample default configuration
+ * ./devices/<API>/<device>.json            -> configuraton of device specific commands
+
+* _remote control / API configuration_
+  * ./remotes/<device_api>.json             -> specific remote configuration files
+
+* _remote control templates_
+  * ./templates/<device>.json               -> remote templates
+
 
 ## Description and How-to
+
 ### DEVICES
 
-In this section remote control layout for single devices and the assignment of commands to buttons is done.
-
-#### DEVICES / remotes
+Remote controls for devices can be added, changed and deleted via edit mode in the GUI already and there are a few templates available:
 
 * define standard remotes based on buttons
 * a standard theme has 4 buttons per row
 * use "." to draw an empty field (instead of a button)
 * use "LINE" to draw a line and start in a new row
 
-#### DEVICES / commands
 
-* defines commands per button
+### INTERFACES
+
+The interfaces have to be configured in the respective configuration files directly:
+
+* set IP address and MAC address of the device per API
+* if you want to addess more than one device per API add one section per device
+* the connection between remote and device plus API is defined in the file \_ACTIVE-DEVICES.json
+
+
+### MAKROS
+
+Makros have to defined in the file \_ACTIVE-MAKROS.json:
+
+* define makros (sets of multiple buttons)
+* use makros "dev-on" and "dev-off" to switch on / off devices
+* use "<device>_<button>" to use a button from a specific device
+* use "<device>_<button>||<value>" to send command only if value is different (value has to be tracked)
+* use number to wait some seconds
 
 
 ### SCENES
 
-In this section remote control layout for scenes with multiple devices and the assignment of commands to buttons is done. 
-Scenes can use single commands from devices or makros which combine multiple commands from diffent devices.
-
-#### SCENES / scenes
+Remote controls for scenes can be added, changed and deleted via edit mode in the GUI already and there are a few templates available:
 
 * define remotes for a scene (e.g. cinema) mixed with buttons from multiple remotes
 * a standard theme has 4 buttons per row
@@ -48,30 +77,4 @@ Scenes can use single commands from devices or makros which combine multiple com
 * use "Remote" : [] to define remote control ("<device>_<button>")
 * use "Channel" : {} to define channel list ("<channel_name>" : ["<device_button","<device_button"])
 
-#### SCENES / makros
-
-* define makros (sets of multiple buttons)
-* use makros "dev-on" and "dev-off" to switch on / off devices
-* use "<device>_<button>" to use a button from a specific device
-* use "<device>_<button>||<value>" to send command only if value is different (value has to be tracked)
-* use number to wait some seconds
-
-### TEMPLATES
-
-#### TEMPLATES / buttons
-
-* **button_colors.json**
-  * Define colors for buttons (not implemented)
-
-* **button_images.json**
-  * define images for buttons (name of button/command -> file name)
-  * use transparent png-files
-  * define folder in config-file, see [../config/config_prod.sample](../config/config_prod.sample)
-  * per default, the icons use from **jc-prg/modules**
-
-
-
-#### TEMPLATES / templates
-
-* contains templates (remote definitions for reuse)
 

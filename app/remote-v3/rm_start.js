@@ -13,7 +13,6 @@ function rmStart(name)
 	this.button               = function(id, label, style, script_apiCommandSend, disabled )
 	this.button_image         = function(label,style)
 	this.remoteToggleEditMode = function()
-	this.log                  = function(msg)
 	this.image                = function(file)
 */
 //--------------------------------
@@ -24,19 +23,20 @@ function rmStart(name) {
 	this.app_name    = name;
 	this.edit_mode   = false;
 	this.inital_load = true;
+	this.logging     = new jcLogging(this.app_name);
 
         // load data with devices (deviceConfig["devices"])
 	this.init                 = function(data) {
         
-        	if (data["DATA"]) 	{ this.data = data; }
-        	else			{ return; }
+        	if (data["DATA"]) 		{ this.data = data; }
+        	else 				{ return; }
                 
                 if (this.initial_load) { 
-                	this.log("Initialized new class 'rmStart'.");
+                	this.logging.default("Initialized new class 'rmStart'.");
                 	this.inital_load = false;
                 	}
                 else {
-                	this.log("Reload data 'rmStart'.");
+                	this.logging.default("Reload data 'rmStart'.");
                 	}
                 }
 
@@ -53,15 +53,16 @@ function rmStart(name) {
 
 
 		// create small buttons for devices
+    		for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }    		
 		var order  = sortDict(data,"position");
 		for (var key in order) {
 			device = order[key];
 			if (device != "default") {
-				if (data[device]["visible"] == "yes") {
+				if (data[device]["settings"]["visible"] == "yes") {
 					var id     = "device_"+device;
         				menu  += this.entry_device( data, id, device, "small" );
 					}
-			        else if (this.edit_mode && data[device]["visible"] == "no") { 
+			        else if (this.edit_mode && data[device]["settings"]["visible"] == "no") { 
 					var id     = "device_"+device;
 			        	menu  += this.entry_device( data, id, device, "small_edit" );
 			        	}
@@ -83,16 +84,17 @@ function rmStart(name) {
 		rm3remotes.active_type = "start";
 
 		// create big buttons for scenes
+    		for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }    		
 		var order  = sortDict(data,"position");
 	        for (var key in order) {
 			scene  = order[key];
-			if (data[scene]["visible"] == "yes") {
+			if (data[scene]["settings"]["visible"] == "yes") {
 	        	        var id = "scene_"+scene;
-        	        	menu  += this.entry_scene( data, id, data[scene]["label"], "big" );
+        	        	menu  += this.entry_scene( data, id, data[scene]["settings"]["label"], "big" );
         	        	}
-        	        else if (this.edit_mode && data[scene]["visible"] == "no") {
+        	        else if (this.edit_mode && data[scene]["settings"]["visible"] == "no") {
 	        	        var id = "scene_"+scene;
-        	        	menu  += this.entry_scene( data, id, data[scene]["label"], "big" );
+        	        	menu  += this.entry_scene( data, id, data[scene]["settings"]["label"], "big_edit" );
         	        	}
 	                }
 
@@ -105,9 +107,9 @@ function rmStart(name) {
 		var disabled, label2;
 		var button = id.split("_");
 		
-		if (data[button[1]]["visibility"] == "none") { return; }
-		if (data[button[1]]["image"]) { label  = data[button[1]]["image"]; } 
-		if (data[button[1]]["label"]) { label2 = data[button[1]]["label"]; }
+		if (data[button[1]]["settings"]["visibility"] == "none") { return; }
+		if (data[button[1]]["settings"]["image"]) { label  = data[button[1]]["settings"]["image"]; } 
+		if (data[button[1]]["settings"]["label"]) { label2 = data[button[1]]["settings"]["label"]; }
 
 		var d = this.button_image( label, style );
  		return this.button( id, d[0], style, 'rm3remotes.create("device","' + button[1] + '");setNavTitle("' + label2 + '");', "" );
@@ -118,7 +120,7 @@ function rmStart(name) {
 		var disabled;
 		var d = this.button_image( label, style );
 		var i = id.split("_");
-		return this.button( id, d[0], "big", 'rm3remotes.create("scene","' + i[1] + '");setNavTitle("' + label + '");', "" );
+		return this.button( id, d[0], style, 'rm3remotes.create("scene","' + i[1] + '");setNavTitle("' + label + '");', "" );
 		}
 
         // standard standard button
@@ -145,12 +147,9 @@ function rmStart(name) {
 	this.remoteToggleEditMode = function() {
 		if (this.edit_mode)  { this.edit_mode = false; }
 		else                 { this.edit_mode = true; }
+		
+		this.init(this.data);
 		}	
-
-        // handle messages for console
-	this.log                  = function(msg) {
-                console.log(this.app_name + ": " + msg);
-                }
 
 	// create image tag for icons
 	this.image                = function(file) {

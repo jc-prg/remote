@@ -2,7 +2,6 @@
 // jc://remote/
 //--------------------------------
 /* INDEX:
-window.addEventListener('scroll', function()
 function remoteInit (first_load=true)
 function remoteFirstLoad_load()
 function remoteFirstLoad(data)
@@ -11,8 +10,6 @@ function remoteInitData_load()
 function remoteInitData(data)
 function remoteReload_load()
 function remoteReload(data)
-function remoteForceReload(without_position=false)
-function remoteForceReload_checkIfReady(data)
 function remoteSetSliderDevice(data)
 function remoteDropDown_load()
 function remoteDropDown(data)
@@ -26,6 +23,7 @@ function remoteLastFromCookie()
 var rm3background  = "remote-v3/img/remote2.png";
 var reload_active  = false;
 var showImg        = true;
+var startActive    = true;
 
 var rm3slider  = new jcSlider( name="rm3sider", container="audio_slider");	// create slider
 rm3slider.init(min=0,max=100,label="loading");				// set device information
@@ -127,33 +125,17 @@ function remoteReload(data) {
 	
 //--------------------------------
 
-/*
-function remoteForceReload_checkIfReady(data) {
-	// check reload status
-	if (data["CONFIG"]["reload_status"] == false && reload_active) {
-	   	reload_active = false;			 // activate reload again
-		elementHidden('reload_info');			 // hide loading message
-	   	appFW.setAutoupdate("",reloadInterval);	 // set reload interval back to default
-		}
-	else if (reload_active) {
-		reload_waiting += 1;
-		if (reload_waiting < 8)		{ addTextById('reload_msg','.'); }
-		else if (reload_waiting < 15)		{ setTextById('reload_msg',lang("RELOAD_TAKES_LONGER")); }
-		else if (reload_waiting < 25)		{ setTextById('reload_msg',lang("RELOAD_TAKES_MUCH_LONGER")); }
-		else { 
-			setTextById('reload_msg','Connection timed out.');
-		   	appFW.setAutoupdate("",reloadInterval);		 // set reload interval back to default
-			}
-		}
-	}
-*/
-
-//--------------------------------
-
 function remoteSetSliderDevice(data) {
 	main_audio 	= data["CONFIG"]["main-audio"];
-	min        	= data["DATA"]["devices"][main_audio]["values"]["vol"]["min"];
-	max        	= data["DATA"]["devices"][main_audio]["values"]["vol"]["max"];		
+	if (data["DATA"]["devices"][main_audio]["interface"]["values"]["vol"]) {
+		min     = data["DATA"]["devices"][main_audio]["interface"]["values"]["vol"]["min"];
+		max     = data["DATA"]["devices"][main_audio]["interface"]["values"]["vol"]["max"];		
+		}
+	else {
+		min    = 0;
+		max    = 100;
+		console.error("Min and max values not defined, set to 0..100!");
+		}
 	label      	= data["DATA"]["devices"][main_audio]["label"];
 	
 	rm3slider.init(min,max,label+" ("+main_audio+")");
@@ -182,7 +164,7 @@ function remoteDropDown(data) {
 	rm3menu.init(        data );	// load data to class
 	rm3menu.add_scenes(  data["DATA"]["scenes"] );
 	rm3menu.add_devices( data["DATA"]["devices"] );	
-	rm3menu.add_script( "rm3settings.onoff();rm3settings.mode='';", 	lang("SETTINGS") );
+	rm3menu.add_script( "rm3settings.onoff();rm3settings.mode='';", 	lang("SETTINGS"));
 	rm3menu.add_script( "remoteToggleEditMode();", 			lang("MODE_EDIT") + edit_on );
 	rm3menu.add_script( "rm3settings.button_deact(true);remoteInit();",	deact_link);        
 	//rm3menu.add_script( "remoteForceReload(true);", "Force Reload");
@@ -198,8 +180,9 @@ function remoteToggleEditMode() {
 	rm3menu.remoteToggleEditMode();
 	rm3start.remoteToggleEditMode();
 	rm3settings.remoteToggleEditMode();
-	rm3settings.create();
+	
 	remoteDropDown_load();
+	if (startActive) { remoteStartMenu_load(); }
 	
 	if (settings) {rm3settings.onoff();}  // when settings -> don't switch back to remotes (workaround)
 	}
@@ -214,6 +197,8 @@ function remoteStartMenu(data) {
 		console.error("remoteStartMenu: data not loaded.");
 		return;
 		}
+		
+	startActive = true;
 
 	// load buttons on start page
 	rm3start.init(        data);	// load data to class

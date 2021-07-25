@@ -1,0 +1,16 @@
+{
+    "data": {
+        "description" : "API to test device",
+        "buttons" : {
+       	},
+       "queries" : {
+       	},
+      	"values" : {
+       	},
+      	"display" : {
+       	},
+       "send-data" : {
+        }
+
+   }
+}

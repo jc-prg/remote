@@ -1,0 +1,26 @@
+{
+    "data": {
+        "description": "Elite Screens 100\"",
+        "display": {},
+        "remote": [
+            ".",
+            ".",
+            "on",
+            "off",
+            "LINE",
+            "up",
+            ".",
+            ".",
+            ".",
+            "stop",
+            ".",
+            ".",
+            ".",
+            "down",
+            ".",
+            ".",
+            "."
+        ],
+        "type" : "device"
+    }
+}

@@ -28,7 +28,6 @@ services:
       - ${REMOTE_CLIENT_PORT}:5000
     volumes:
       - ${REMOTE_DIR_CLIENT}:/var/www/html/rm3
-      - ${REMOTE_DIR_JCMODULES}:/var/www/html/rm3/modules
       - ${REMOTE_DIR_ICONS}:/var/www/html/rm3/icon
       - ./config/apache2/www-rm3.conf:/etc/apache2/sites-enabled/www-rm3.conf
     depends_on:

@@ -23,6 +23,7 @@ if [ ! ${D}config ]; then
   echo " 'q' - exit"
   echo " 's' - start"
   echo " 'r' - restart"
+  echo " 'i' - install sample configuration"
   echo " 'u' - update (from github)"
   echo " 'v' - update (from github) and rebuild container"
   count=0
@@ -43,6 +44,10 @@ if [ ! ${D}config ]; then
        config="update"
        printf "\n... update from Github.\n"
        break
+    elif [[ ${D}k = i ]] ; then
+       config="install"
+       printf "\n... install sample configuration.\n"
+       break
     elif [[ ${D}k = v ]] ; then
        config="rebuild"
        printf "\n... update from Github and rebuild docker container.\n"
@@ -61,6 +66,11 @@ if [ ${D}config == "start" ]; then
 elif [ ${D}config == "restart" ]; then
     ${DOCKERCOMPOSE_DIR}/docker-compose -f ${REMOTE_DIR}/docker-compose.yml restart
     
+elif [ ${D}config == "install" ]; then
+    cd data/_sample
+    ./install-config
+    cd ../..
+    
 elif [ ${D}config == "update" ]; then
 
     echo "Change dir"
@@ -74,8 +84,7 @@ elif [ ${D}config == "update" ]; then
     git pull
     
     echo "Update MODULES from repository"
-    cd ${REMOTE_DIR_JCMODULES}
-    git pull
+    git submodule update --init --recursive
     
     echo "Create new configuration"
     cd ${REMOTE_DIR}
@@ -99,8 +108,7 @@ elif [ ${D}config == "rebuild" ]; then
     git pull
     
     echo "Update MODULES from repository"
-    cd ${REMOTE_DIR_JCMODULES}
-    git pull
+    git submodule update --init --recursive
     
     echo "Create new configuration"
     cd ${REMOTE_DIR}

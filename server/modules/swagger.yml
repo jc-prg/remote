@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: "1.7.1"
+  version: "1.7.2"
   title: "jc://remote/"
   description: API to control remote control devices
   
@@ -124,6 +124,40 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
 
+  /send-text/{device}/{button}/{text}/:
+    get:
+      operationId: modules.server_cmd.RemoteSendText
+      tags:
+        - send
+      summary: send text and execute via queue
+      description: the command is send never the less the device is on or off
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: button
+          in: path
+          type: string
+          required: true
+        - name: text
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully send IR command
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              CONFIG:
+                $ref: "#/definitions/CONFIG"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
   /set/{device}/{command}/{value}/:
     get:
       operationId: modules.server_cmd.RemoteSet
@@ -183,7 +217,36 @@ paths:
                 $ref: "#/definitions/REQUEST"
               STATUS:
                 $ref: "#/definitions/STATUS"
-                
+
+
+  /makro/:
+    put:
+      operationId: modules.server_cmd.RemoteMakroChange
+      tags:
+        - send
+      summary: edit marko
+      description: change markose
+      parameters:
+        - name: makros
+          in: body
+          description: makros, dev-on/off, scene-on/off definition
+          schema:
+            type: object     
+      responses:
+        200:
+          description: Successfully send makro commands
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              CONFIG:
+                $ref: "#/definitions/CONFIG"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
+
 #------------------------ EDIT FUNCTIONS ------------------------
 
   /button/{device}/{button}/:

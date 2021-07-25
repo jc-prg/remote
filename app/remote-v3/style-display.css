@@ -1,0 +1,65 @@
+/* display information within the remote control */
+
+.display {
+   width           :  133px;
+   height          :  40px;
+   color           : yellow;
+   padding         :   2px;
+   margin          :   4px;
+   font-size       :   9px; 
+   border-radius   :   6px; 
+   background-color: #000044;
+   overflow        : hidden;
+   float           : left;
+   display         : inline-block;
+   vertical-align  : top;
+}
+
+.display.right  { float  : right; }
+
+.display.small  { width  : 133px;   height  :  40px; } 
+.display.middle { width  : 133px;   height  :  88px; } 
+.display.big    { width  : 276px;   height  :  88px; } 
+
+.display.h1w2   { width  : 133px;   height  :  40px; } 
+.display.h2w2   { width  : 133px;   height  :  88px; } 
+.display.h2w4   { width  : 276px;   height  :  88px; } 
+.display.h3w2   { width  : 133px;   height  :  136px; } 
+.display.h4w2   { width  : 133px;   height  :  184px; } 
+
+.display-element {
+   width	: 56px;
+   margin	: 2px;
+   padding	: 0px;
+   float	: left;
+   color	: white;
+   //border       : blue 1px solid;  
+   text-align   : left;
+}
+
+.display-element.alert   { color : black; }
+.display-element.small   { width : 56px; }
+.display-element.middle  { width : 118px; }
+.display-element.big     { width : 118px; }
+
+.display-element.h2w4    { width : 118px; }
+.display-element.h3w2    { width : 118px; }
+.display-element.h4w2    { width : 118px; }
+
+.display-label {
+   width        : 45px;
+   float        : left;
+}
+
+.display-input {
+   float        : left;
+}
+
+.display.display_off {
+   background	: #000033;
+}
+
+.display.display_error {
+   background	: #660000;
+}
+

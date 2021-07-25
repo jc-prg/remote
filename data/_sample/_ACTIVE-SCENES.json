@@ -1,0 +1,66 @@
+{
+    "cinema": {
+        "config": {
+            "remote": "scene_cinema"
+        },
+        "settings": {
+            "description": "Bluray, PC, Kodi",
+            "image": "",
+            "label": "Kino",
+            "position": 3,
+            "visible": "yes"
+        },
+        "status": {}
+    },
+    "media": {
+        "config": {
+            "remote": "scene_media"
+        },
+        "settings": {
+            "description": "KODI",
+            "label": "Media Center",
+            "position": 5,
+            "visible": "yes"
+        },
+        "status": {}
+    },
+    "music": {
+        "config": {
+            "remote": "scene_music"
+        },
+        "settings": {
+            "description": "Bluray/CD, Bluetooth, AUX, Radio-Receiver",
+            "image": "",
+            "label": "Musik",
+            "position": 4,
+            "visible": "yes"
+        },
+        "status": {}
+    },
+    "tv": {
+        "config": {
+            "remote": "scene_tv"
+        },
+        "settings": {
+            "description": "TV-Receiver",
+            "image": "",
+            "label": "Fernsehen",
+            "position": 1,
+            "visible": "no"
+        },
+        "status": {}
+    },
+    "tv3": {
+        "config": {
+            "remote": "scene_tv3"
+        },
+        "settings": {
+            "description": "TV mit altem Receiver",
+            "image": "",
+            "label": "Fernsehen (2)",
+            "position": 2,
+            "visible": "yes"
+        },
+        "status": {}
+    }
+}

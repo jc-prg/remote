@@ -33,6 +33,12 @@ data/_ACTIVE-DEVICES.json
 
 data/_ACTIVE-SCENES.json
 
+data/_ACTIVE-MAKROS.json
+
+data/devices/
+
+data/remotes/
+
 app/app-fw/
 
 app/img/
@@ -42,3 +48,5 @@ config/app-framework/
 config/modules/
 
 app/cache.manifest
+
+*.swp

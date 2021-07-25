@@ -11,11 +11,12 @@ function rmSettings (name)
 	this.create_setting     = function ()
 	this.create_edit        = function ()
 	this.create_edit_FileNames 	= function ()
-	this.write              = function (nr,label,text)
+	this.write              = function (nr,label="",text="")
 	this.is_filled		= function (nr)
 	this.show               = function ()
 	this.hide               = function ()
 	this.onoff              = function ()
+	this.display_json	  = function ( id, json, format="" )
 	this.device_list        = function (id,onchange="")
 	this.interface_list     = function ()
 	this.interface_list_update = function ()
@@ -30,7 +31,7 @@ function rmSettings (name)
 	this.button             = function (onclick,label,disabled="")
 	this.button_small       = function (onclick,label,disabled="")
 	this.tab_row            = function (td1,td2)
-	this.input              = function (id,onclick="")
+	this.input              = function (id,onclick="",oninput="")
 	this.select             = function (id,title,data,onchange="")
 	this.remoteToggleEditMode = function ()
 */
@@ -49,6 +50,7 @@ function rmSettings (name) {	// IN PROGRESS
 	this.initial_load = true;
 	this.edit_mode    = false;
 	this.mode         = "";
+	this.logging      = new jcLogging(this.app_name);
 
 	// init settings / set vars
 	this.init               = function (data) {
@@ -65,10 +67,10 @@ function rmSettings (name) {	// IN PROGRESS
 			else 		{this.test_info = "Prod Stage";}
 			
                 	this.inital_load = false;
-                	console.log("Initialized new class 'rmSettings'.");
+                	this.logging.default("Initialized new class 'rmSettings'.");
                 	}
                 else {
-                	console.log("Reload data 'rmSettings'.");
+                	this.logging.default("Reload data 'rmSettings'.");
                 	}
 		}
 
@@ -88,14 +90,19 @@ function rmSettings (name) {	// IN PROGRESS
 		var setting    = "";
 
 		// Show Server Infos
-		var main_audio = this.data["CONFIG"]["main-audio"];  // get main audio device from file
+		var main_audio  = this.data["CONFIG"]["main-audio"];  // get main audio device from file
+		var main_device = this.data["DATA"]["devices"][main_audio];
 		var audio_max  = "";
-		if (this.data["DATA"]["devices"][main_audio]["values"]) {
-			audio_max  = this.data["DATA"]["devices"][main_audio]["values"]["vol"]["max"];
+		if (main_device["interface"]["values"] && main_device["interface"]["values"]["vol"]) {
+			audio_max  = main_device["interface"]["values"]["vol"]["max"];
 			}
-		var audio1     = "Power: "  + this.data["DATA"]["devices"][main_audio]["status"]["power"] + " / "
-		               + "Volume: " + this.data["DATA"]["devices"][main_audio]["status"]["vol"] + " (" + audio_max + ")";
-		var audio2     = this.data["DATA"]["devices"][main_audio]["label"];
+		else {
+			audio_max  = 100;
+			this.logging.error("Max values not defined, set 100!");
+			}
+		var audio1     = "Power: "  + main_device["status"]["power"] + " / "
+		               + "Volume: " + main_device["status"]["vol"] + " (" + audio_max + ")";
+		var audio2     = main_device["settings"]["label"];
 		var cookie     = appCookie.get("remote");
 
 		setting  = this.tab_row( 	"Status:", 		this.app_stat );
@@ -104,6 +111,8 @@ function rmSettings (name) {	// IN PROGRESS
 						"API: " 		+ this.data["API"]["version"] + " / " + this.data["API"]["rollout"] + "<br/>" +
 						"Modules: jcMsg " 	+ appMsg.appVersion +  
 						" / jcApp "		+ appFW.appVersion +
+						" / jcAppFW "		+ appFwVersion +
+						" / jcCookies "	+ appCookie.appVersion +  
 						" / jcSlider "		+ rm3slider.appVersion );
 		setting += this.tab_row( 	"Cookie:", 		cookie );
 		setting += this.tab_row( 	"Button:", 		this.app_last );
@@ -118,11 +127,11 @@ function rmSettings (name) {	// IN PROGRESS
 						"<span id='dev_status'></span>"
 						);
 
-		this.write(0,"Version and Status Information",setting);
+		this.write(0,lang("VERSION_AND_STATUS"),setting);
 
 		// Edit Server Settings
-		var q1   = "Reset Devices:<br/>vorher alle Geräte ausschalten.";
-		var q2   = "Reset Audio Settings:<br/>vorher alle Receiver mit Audio auf Mininum (0) einstellen.";
+		var q1   = lang("RESET_SWITCH_OFF");
+		var q2   = lang("RESET_VOLUME_TO_ZERO");
 
 		if (showButton)       { b_show  = "show code"; } else { b_show  = "hide code"; }
 		if (deactivateButton) { b_deact = "allways enabled"; }  else { b_deact = "enabled if ON"; }
@@ -145,6 +154,7 @@ function rmSettings (name) {	// IN PROGRESS
 					);
 
 		this.write(1,"Change Settings",setting);
+		this.write(2);
 		}
 
 	//------------------------------
@@ -156,57 +166,92 @@ function rmSettings (name) {	// IN PROGRESS
 		
 		// Edit Remote Settings
 		setting = "";
-		setting += this.tab_row( 	"ID:",  	this.input("add_device_id") );
-		setting += this.tab_row( 	"Label:", 	this.input("add_device_descr") );
-		setting += this.tab_row( 	"Interface:",   this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"]) );
-		setting += this.tab_row( 	"Device Name:",	this.input("add_device",onchange) );
+		setting += this.tab_row( "ID:",  		this.input("add_device_id") );
+		setting += this.tab_row( "Label:", 		this.input("add_device_descr") );
+		setting += this.tab_row( "Interface:",  	this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"]) );
+		setting += this.tab_row( "Device Name:",	this.input("add_device",onchange,onchange) );
 		setting += "<tr><td colspan='2'><hr/></td></tr>";
-		setting += this.tab_row( 	"Device-Config:",	this.input("add_device_device")+".json" );
-		setting += this.tab_row( 	"Remote-Config:",	this.input("add_device_remote")+".json" );
-		setting += this.tab_row(	this.button("apiDeviceAdd(['add_device_id','add_device_descr','add_device_api','add_device','add_device_device','add_device_remote'],"+onchange2+");","Add Device"), "" );
-//		setting += this.tab_row(	this.button("apiDeviceAdd(['add_device_id','add_device_descr','add_device_api','add_device','add_device_device','add_device_remote']);","Add Device"), "" );
+		setting += this.tab_row( "Device-Config:",	this.input("add_device_device")+".json" );
+		setting += this.tab_row( "Remote-Config:",	this.input("add_device_remote")+".json" );
+		setting += this.tab_row( this.button("apiDeviceAdd(['add_device_id','add_device_descr','add_device_api','add_device','add_device_device','add_device_remote'],"+onchange2+");","Add Device"), "" );
 
 		setting += "<tr><td colspan='2'><center><hr/><b>"+lang("REMOTE_ADD")+" (Scene)</b><hr/></center></td></tr>";
 	
-		setting += this.tab_row( 	"ID:",  	this.input("add_scene_id") );
-		setting += this.tab_row( 	"Label:", 	this.input("add_scene_label") );
-		setting += this.tab_row( 	"Description:", this.input("add_scene_descr") );
-		setting += this.tab_row(	this.button("apiSceneAdd(['add_scene_id','add_scene_label','add_scene_descr']);","Add Scene",""), "" );
+		setting += this.tab_row( "ID:",  	this.input("add_scene_id") );
+		setting += this.tab_row( "Label:", 	this.input("add_scene_label") );
+		setting += this.tab_row( "Description:", this.input("add_scene_descr") );
+		setting += this.tab_row( this.button("apiSceneAdd(['add_scene_id','add_scene_label','add_scene_descr']);","Add Scene",""), "" );
 
-		this.write(0,lang("REMOTE_ADD")+" (Device)",setting);					
+		this.write(2,lang("REMOTE_ADD")+" (Device)",setting);					
+
 			
 		setting = "";	
-		var order  = sortDict(this.data["DATA"]["devices"],"position");
+		var devices = this.data["DATA"]["devices"];
+		this.logging.default(devices);
+		for (var key in devices) { devices[key]["position"] = devices[key]["settings"]["position"]; this.logging.default(key); }
+		var order  = sortDict(devices,"position");
 		for (var i=0;i<order.length;i++) {
 			var key     = order[i];
 			var button  = "";			
 			var visible = this.data["DATA"]["devices"][key]["visible"];
 			
-			if (i > 0)  		{ button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#-1#);","up"); }
-			if (i < order.length-1)	{ button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#1#);","down"); }
+			if (i > 0)  		 { button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#-1#);","up"); }
+			if (i < order.length-1) { button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#1#);","down"); }
 			
-			if (visible == "no")    { setting += this.tab_row("<i>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["label"] + "</i>",button); }
-			else                    { setting += this.tab_row("<b>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["label"] + "</b>",button); }		
+			if (visible == "no")    { setting += this.tab_row("<i>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</i>",button); }
+			else                    { setting += this.tab_row("<b>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</b>",button); }		
 			}
 			
 		setting += "</table>"
-			 + "<hr><center><b>Change Order of Scenes</b></center><hr/>"
+			 + "<hr><center><b>"+lang("CHANGE_ORDER_SCENES")+"</b></center><hr/>"
 			 + "<table width=\"100%\">";
-			 
-		order  = sortDict(this.data["DATA"]["scenes"],"position");
+
+		var scenes = this.data["DATA"]["scenes"];
+		this.logging.default(scenes);
+		for (var key in scenes) { scenes[key]["position"] = scenes[key]["settings"]["position"]; this.logging.default(key);}		 
+		var order  = sortDict(scenes,"position");
 		for (var i=0;i<order.length;i++) {
 			var key     = order[i];
 			var button  = "";			
-			var visible = this.data["DATA"]["scenes"][key]["visible"];
+			var visible = scenes[key]["settings"]["visible"];
 
-			if (i > 0)  		{ button += this.button_small("apiDeviceMovePosition_exe(#scene#,#"+key+"#,#-1#);"+this.app_name+".mode = '';","up"); }
+			if (i > 0)  			{ button += this.button_small("apiDeviceMovePosition_exe(#scene#,#"+key+"#,#-1#);"+this.app_name+".mode = '';","up"); }
 			if (i < order.length-1)	{ button += this.button_small("apiDeviceMovePosition_exe(#scene#,#"+key+"#,#1#);"+this.app_name+".mode = '';","down"); }
 			
-			if (visible == "no")    { setting += this.tab_row("<i>" + this.data["DATA"]["scenes"][key]["position"] + ". " + this.data["DATA"]["scenes"][key]["label"] + "</i>",button); }
-			else                    { setting += this.tab_row("<b>" + this.data["DATA"]["scenes"][key]["position"] + ". " + this.data["DATA"]["scenes"][key]["label"] + "</b>",button); }
+			if (visible == "no")    { setting += this.tab_row("<i>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</i>",button); }
+			else                    { setting += this.tab_row("<b>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</b>",button); }
 			}
 
-		this.write(1,"Change Order of Devices",setting);
+		this.write(0,lang("CHANGE_ORDER_DEVICES"),setting);
+
+		
+		setting = "";
+		setting += this.display_json("makro", this.data["DATA"]["makros"]["makro"], "makros");
+		setting += "</table>"
+			 + "<hr><center><b>Scene ON Makros</b></center><hr/>"
+			 + "<table width=\"100%\">";
+		setting += this.display_json("scene-on", this.data["DATA"]["makros"]["scene-on"], "makros");
+		setting += "</table>"
+			 + "<hr><center><b>Scene OFF Makros</b></center><hr/>"
+			 + "<table width=\"100%\">";
+		setting += this.display_json("scene-off", this.data["DATA"]["makros"]["scene-off"], "makros");
+		setting += "</table>"
+			 + "<hr><center><b>Device ON Makros</b></center><hr/>"
+			 + "<table width=\"100%\">";
+		setting += this.display_json("dev-on", this.data["DATA"]["makros"]["dev-on"], "makros");
+		setting += "</table>"
+			 + "<hr><center><b>Device OFF Makros</b></center><hr/>"
+			 + "<table width=\"100%\">";
+		setting += this.display_json("dev-off", this.data["DATA"]["makros"]["dev-off"], "makros");
+		setting += "<hr/>";
+		setting += this.button("apiMakroChange(['makro','scene-on','scene-off','dev-on','dev-off']);","Save changes","");
+		setting += "</table>";		
+		setting += "</center>";		
+
+		setting += "<br/><hr style='border: 1px solid white;'/><br/>";
+		setting += lang("MANUAL_MAKROS");
+		
+		this.write(1,"Change Makros",setting);
 		}
 
 
@@ -232,14 +277,16 @@ function rmSettings (name) {	// IN PROGRESS
 	//------------------------------
 
 	// write settings category
-	this.write              = function (nr,label,text) {
+	this.write              = function (nr,label="",text="") {
 
 		var element 	= this.e_settings[nr];
-		var content 	= "<center><table width=\"100%\">"
-				+ "<center><b>" + label + "</b></center><hr/>"
-				+ text
-				+ "</table></center>";
-		if (label == "" && text == "") { content = ""; }
+		if (label != "") {
+			var content 	= "<center><table width=\"100%\">"
+					+ "<center><b>" + label + "</b></center><hr/>"
+					+ text
+					+ "</table></center>";
+			}
+		else { var content = ""; }
 
 		setTextById(element,content);
 		}
@@ -274,16 +321,41 @@ function rmSettings (name) {	// IN PROGRESS
 		for (var i=0; i<this.e_remotes.length; i++)  { changeVisibility(this.e_remotes[i],show_remotes);  }
 		for (var i=0; i<this.e_settings.length; i++) { changeVisibility(this.e_settings[i],show_settings); }
 		
-		if (this.edit_mode == true && show_remotes)   	{ elementVisible("frame1"); elementVisible("frame2"); }
-		else if (this.edit_mode == false && show_remotes)	{ elementHidden("frame1");  elementHidden("frame2"); }
-		else if (show_settings)				{ elementHidden("frame1");  elementHidden("frame2"); }
+		if (this.edit_mode == true && show_remotes)   	{ elementVisible("frame1"); elementVisible("frame2"); elementVisible("frame3"); }
+		else if (this.edit_mode == false && show_remotes)	{ elementHidden("frame1");  elementHidden("frame2");  elementHidden("frame3"); }
+		else if (show_settings)				{ elementHidden("frame1");  elementHidden("frame2"); elementHidden("frame3"); }
 		}
 
 	//------------------------------
+        // show json for buttons in text field
+	this.display_json	  = function ( id, json, format="" ) {
+        
+        	var text = "";
+        	text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:320px;height:160px;\">";
+		if (format == "makros") {
+        		json = JSON.stringify(json);
+        		json = json.replace( /],/g, "],\n\n" );
+        		json = json.replace( /:/g, ":\n   " );
+        		json = json.replace( /,/g, ", " );
+        		json = json.replace( /{/g, "{\n" );
+        		json = json.replace( /}/g, "\n}" );
+        		text += json;
+        		}
+        	else {
+        		json = JSON.stringify(json);
+        		json = json.replace( /,/g, ",\n" );
+        		json = json.replace( /{/g, "{\n" );
+        		json = json.replace( /}/g, "\n}" );
+        		text += json;
+        		}
+		text += "</textarea></center>";
+        	return text;
+        	}
+
 	this.device_list        = function (id,onchange="") {
 		var list = {};
 		for (var key in this.data["DATA"]["devices"]){
-			list[key] = this.data["DATA"]["devices"][key]["label"];
+			list[key] = this.data["DATA"]["devices"][key]["settings"]["label"];
 			}
 		return this.select(id,"device",list,onchange);
 		}
@@ -358,8 +430,8 @@ function rmSettings (name) {	// IN PROGRESS
 	// show button code in header if pressed button
 
 	this.button_show        = function () {
-		if (showButton) { showButton = false; }
-		else		{ showButton = true; }
+		if (showButton)	{ showButton = false; }
+		else			{ showButton = true; }
 		this.create();
 		this.show();
 		}
@@ -401,17 +473,11 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 	
 	this.tab_row            = function (td1,td2) 	{ return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
-	this.input              = function (id,onclick="") { 
-
-		text = "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;'>"; 
+	this.input              = function (id,onclick="",oninput="") { 
 		
+		text = "<input id=\"" + id + "\" oninput=\""+oninput+"\" style='width:" + this.input_width + ";margin:1px;'>"; 
 		if (onclick != "") {
 			text += "&nbsp;<button onclick=\""+onclick+"\">&gt;&gt;</button>";
-
-
-			//const inputChange = document.querySelector(id);
-			//const new_input   = document.getElementById("add_device_device");
-			//inputChange.addEventListener(id,input2);
 			}
 			
 		return text;
@@ -433,6 +499,8 @@ function rmSettings (name) {	// IN PROGRESS
 	this.remoteToggleEditMode = function () {
 		if (this.edit_mode)  { this.edit_mode = false; }
 		else                 { this.edit_mode = true; }
+		
+		this.create();
 		}	
 	}
 
