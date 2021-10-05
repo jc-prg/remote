@@ -1190,35 +1190,41 @@ function rmRemote(name) {
         // display all information
 	this.display_alert        = function (id, device, type="", style="" ) {
         
-		if (type != "devices") { this.logging.warn(this.app_name+".display_alert() not implemented for this type ("+type+")"); return; }
+		if (type != "devices") { 
+			this.logging.warn(this.app_name+".display_alert() not implemented for this type ("+type+")");
+			this.logging.warn(this.data["DATA"]["scenes"][device]);
+			return;
+			}
 			
-		var display_data = [];
-		if (this.data["DATA"]["devices"][device]["interface"]["query_list"])	{ display_data = this.data["DATA"]["devices"][device]["interface"]["query_list"]; }
-		else									{ display_data = ["ERROR","No display defined"]; } 
+		else {
+			var display_data = [];
+			if (this.data["DATA"]["devices"][device]["interface"]["query_list"])	{ display_data = this.data["DATA"]["devices"][device]["interface"]["query_list"]; }
+			else									{ display_data = ["ERROR","No display defined"]; } 
 
-		var power = this.data["DATA"]["devices"][device]["status"];
-        	var text  = "Device Information: "+device +"<hr/>";
-        	text  += "<div style='width:100%;height:200px;overflow-y:scroll;'>";
-		text  += "<center id='display_full_"+device+"_power'>"+power+"</center><hr/>";        		
-        	text  += this.tab_row("start","100%");
+			var power = this.data["DATA"]["devices"][device]["status"];
+        		var text  = "Device Information: "+device +"<hr/>";
+        		text  += "<div style='width:100%;height:200px;overflow-y:scroll;'>";
+			text  += "<center id='display_full_"+device+"_power'>"+power+"</center><hr/>";        		
+        		text  += this.tab_row("start","100%");
         	
-        	this.logging.debug(device,"debug");
-        	this.logging.debug(this.data["DATA"]["devices"][device]["status"],"debug");
-        	this.logging.debug(this.data["DATA"]["devices"][device]["interface"]["query_list"],"debug");
-        	this.logging.debug(display_data,"debug");
+        		this.logging.debug(device,"debug");
+        		this.logging.debug(this.data["DATA"]["devices"][device]["status"],"debug");
+        		this.logging.debug(this.data["DATA"]["devices"][device]["interface"]["query_list"],"debug");
+        		this.logging.debug(display_data,"debug");
 
-        	for (var i=0; i<display_data.length; i++) {
-        		if (display_data[i] != "power") {
-	        		var label = "<data class='display-label'>"+display_data[i]+":</data>";
-				var input = "<data class='display-input' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>";
-		        	//text += "<div class='display-element alert'>"+label+input+"</div><br/>";
-		        	text += this.tab_row("<div style='width:100px;'>"+label+"</div>",input);
+        		for (var i=0; i<display_data.length; i++) {
+        			if (display_data[i] != "power") {
+		        		var label = "<data class='display-label'>"+display_data[i]+":</data>";
+					var input = "<data class='display-input' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>";
+			        	//text += "<div class='display-element alert'>"+label+input+"</div><br/>";
+			        	text += this.tab_row("<div style='width:100px;'>"+label+"</div>",input);
+			        	}
 		        	}
-	        	}
-        	text  += this.tab_row("end");
-        	text  += "</div>";
-		appMsg.confirm(text,"",300);
-		statusCheck(this.data);
+        		text  += this.tab_row("end");
+        		text  += "</div>";
+			appMsg.confirm(text,"",300);
+			statusCheck(this.data);
+			}
         	}
         	
         // idea ... display for media information: mute (icon), volume (bar), info (title/artist/album/episode/...)
