@@ -86,7 +86,9 @@ class kodiAPI():
    #-------------------------------------------------
        
    def send(self,device,command):
-       '''Send command to API'''
+       '''
+       Send command to API
+       '''
 
        self.wait_if_working()
        self.working = True
@@ -110,7 +112,7 @@ class kodiAPI():
              
          except Exception as e:
            self.working = False
-           return "ERROR "+self.api_name+" - query: " + str(e)
+           return "ERROR "+self.api_name+" - query**: " + str(e)
        else:
            self.working = False
            return "ERROR "+self.api_name+": Not connected"
@@ -122,7 +124,9 @@ class kodiAPI():
    #-------------------------------------------------
        
    def query(self,device,command):
-       '''Send command to API and wait for answer'''
+       '''
+       Send command to API and wait for answer
+       '''
 
        self.wait_if_working()
        self.working = True
@@ -141,18 +145,21 @@ class kodiAPI():
            
            if "error" in result:      
              self.working = False
-             return "ERROR "+self.api_name+" - " + result["error"]["message"]
+             if "message" in result["error"]: msg = str(result["error"]["message"])
+             else:                            msg = str(result["error"])
+             return "ERROR "+self.api_name+" - " + msg
              
-           if not "result" in result: 
+           elif not "result" in result: 
              self.working = False
              return "ERROR "+self.api_name+" - unexpected result format."
            
-           if len(command_param) > 1: result_param = eval("result['result']"+command_param[1])
-           else:                      result_param = str(result['result'])
+           else:
+             if len(command_param) > 1: result_param = eval("result['result']"+command_param[1])
+             else:                      result_param = str(result['result'])
            
          except Exception as e:
            self.working = False
-           return "ERROR "+self.api_name+" - query: " + str(e) + " | " + command
+           return "ERROR "+self.api_name+" - query*: " + str(e) + " | " + command
        else:
            self.working = False
            return "ERROR "+self.api_name+": Not connected"
@@ -358,7 +365,7 @@ class kodiAPIaddOn():
       '''
       Return title of playing item
       '''
-      
+    
       all_media_properties =     [ "title", "artist", "albumartist", "genre", "year", "rating", "album", "track", "duration", "comment", 
                                  "lyrics", "musicbrainztrackid", "musicbrainzartistid", "musicbrainzalbumid", "musicbrainzalbumartistid", 
                                  "playcount", "fanart", "director", "trailer", "tagline", "plot", "plotoutline", "originaltitle", 
@@ -372,13 +379,12 @@ class kodiAPIaddOn():
                                  "displayorchestra", "displaylyricist", "userrating", "sortartist", "musicbrainzreleasegroupid", 
                                  "mediapath", "dynpath"
                                  ]              
-      selected_media_properties  = ['title','album','artist','plot','mpaa','genre','episode','season','showtitle','studio','duration','runtime']             
-      selected_system_properties = ['version','muted','volume','language','name']
-      selected_player_properties = ['live','speed','percentage','position','playlistid']
-      selected_plist_properties  = ['size','type']
-      selected_other_properties  = ['addons','addon-list','power']
-      if_playing                 = ["player","playlist","playlist-position","playing","item","info","item-position","name"]
-
+      selected_media_properties      = ['title','album','artist','plot','mpaa','genre','episode','season','showtitle','studio','duration','runtime']             
+      selected_system_properties     = ['version','muted','volume','language','name']
+      selected_player_properties     = ['live','speed','percentage','position','playlistid','subtitles','currentsubtitle','audiostreams','currentaudiostream']
+      selected_plist_properties      = ['size','type']
+      selected_other_properties      = ['addons','addon-list','power']
+      if_playing                     = ["player","playlist","playlist-position","playing","item","info","item-position","name"]
 
       if self.status == "Connected":
          metadata = {}
@@ -425,6 +431,7 @@ class kodiAPIaddOn():
               playertype  = active[0]['type']   
 
               player      = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : selected_player_properties })['result']
+
               playlistid  = player['playlistid']
               playlist    = self.api.Playlist.GetProperties({'playlistid' : playlistid, 'properties' : selected_plist_properties })['result']
               item        = self.api.Player.GetItem({'playerid' : playerid, 'properties': selected_media_properties })['result']['item']
@@ -495,7 +502,7 @@ class kodiAPIaddOn():
               elif tag == "power":       metadata[tag] = self.PowerStatus()
               
 
-            elif tag in selected_player_properties or tag in selected_plist_properties or selected_media_properties:
+            elif tag in selected_player_properties or tag in selected_plist_properties or tag in selected_media_properties:
                         
               if "result" in str(active) and active["result"] == []:          
                 logging.info("KODI API: no media loaded ("+str(tag)+")")
@@ -506,15 +513,18 @@ class kodiAPIaddOn():
                 playertype         = active[0]['type']   
                 player             = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : selected_player_properties })['result']
                 playlistid         = player['playlistid']
-                
+
                 if tag in selected_player_properties: 
-                   if tag in player: 
-                      metadata[tag]    = player[tag]
-                if tag in selected_plist_properties:                
+                   if tag in player:
+                      if player[tag] == [] or player[tag] == {}:  metadata[tag] = "none"
+                      else:                                       metadata[tag] = player[tag]
+                                            
+                elif tag in selected_plist_properties:                
                    playlist            = self.api.Playlist.GetProperties({'playlistid' : playlistid, 'properties' : selected_plist_properties })['result']
                    if tag in playlist:
                       metadata[tag]    = playlist[tag]
-                if tag in selected_media_properties:                
+                      
+                elif tag in selected_media_properties:                
                    item                = self.api.Player.GetItem({'playerid' : playerid, 'properties': [ tag ] })['result']['item']
                    metadata[tag]       = self.ReplaceHTML(item)
 
@@ -526,7 +536,8 @@ class kodiAPIaddOn():
             metadata            = self.cache_metadata
             
          #----------------------------------------------------         
-                  
+                
+                
          if tag != "item" and "item" in metadata:
            if "plot" in metadata["item"]:       metadata["item"]["plot"]       = self.ReplaceHTML(metadata["item"]["plot"])
            if "showtitle" in metadata["item"]:  metadata["item"]["showtitle"]  = self.ReplaceHTML(metadata["item"]["showtitle"])
