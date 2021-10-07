@@ -2,11 +2,12 @@
     "data": {
         "description": "Kodi (API)",
         "display": {
+            "Audio": "current-audiostream-name",
             "Info": "version",
-            "Playing": "current-playing",
+            "Subtitle": "subtitle-enabled",
             "Volume": "vol"
         },
-        "display-size": "middle",
+        "display-size": "h3w2",
         "remote": [
             ".",
             ".",
@@ -26,16 +27,18 @@
             "settings",
             "info",
             "menu",
-            "LINE",
             "keyboard",
-            "up",
             "context",
+            "LINE",
+            ".",
+            "up",
+            ".",
             "vol+",
             "left",
             "enter",
             "right",
             "mute",
-            ".",
+            "subtitle-on-off",
             "down",
             "back",
             "vol-",
@@ -45,6 +48,6 @@
             "stop",
             "ffw"
         ],
-        "type" : "device"
+        "type": "device"
     }
 }
