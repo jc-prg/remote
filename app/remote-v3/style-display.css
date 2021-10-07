@@ -53,6 +53,12 @@
 
 .display-input {
    float        : left;
+   width        : 90px;
+}
+
+.display-detail {
+   float        : left;
+   width        : 300px;
 }
 
 .display.display_off {

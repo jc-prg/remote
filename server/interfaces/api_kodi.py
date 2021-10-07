@@ -361,9 +361,149 @@ class kodiAPIaddOn():
    
    #-------------------------------------------------
          
-   def PlayingMetadata(self,tag=""):
+   def PlayerControl(self,command,values):
       '''
-      Return title of playing item
+      Control player // https://kodi.wiki/view/JSON-RPC_API/v12#Player
+      
+      5.10.1  Player.AddSubtitle   - not implemented yet
+      5.10.7  Player.GoTo          - not implemented yet
+      5.10.8  Player.Move          - not implemented yet
+      5.10.9  Player.Open          - not implemented yet
+      5.10.10 Player.PlayPause     - not implemented yet
+      5.10.11 Player.Rotate        - not implemented yet
+      5.10.12 Player.Seek          - not implemented yet
+      5.10.22 Player.Zoom          - not implemented yet
+      '''
+
+      commands_not_implemented = ['AddSubtitle','GoTo','Move','Open','PlayPause','Rotate','Seek','Zoom']
+      commands_implemented     = []
+
+      if self.status == "Connected":
+         if command in commands_not_implemented:      return { "error"  : "command not implemented (" + unknown + ")" }
+         elif command not in commands_implemented:    return { "error"  : "command unkown (" + unknown + ")" }
+
+      else:
+         return self.not_connected
+
+
+   #-------------------------------------------------
+
+   def PlayerActive(self):
+      '''
+      Get infos for active player
+      '''
+      active  = self.api.Player.GetActivePlayers()
+
+      if "error" in active:             return { "error" : str(active) }
+      elif not "result" in active:      return { "error" : "API not available OR unknown error" }
+      elif active["result"] == []:      active = active
+      else:                             active = active["result"]         
+  
+      if "result" in str(active) and active["result"] == []:           
+         logging.info("KODI API: no media loaded")
+         return { "result" : "no media" }                                      
+ 
+      elif 'playerid' in str(active):
+         playerid    = active[0]['playerid']
+         playertype  = active[0]['type']
+         return { 'playerid' : playerid, 'playertype' : playertype }   
+ 
+      else:
+         return { "error" : "unknown error ("+str(active)+")" }
+      
+
+         
+   def PlayerSettings(self,command,value):
+      '''
+      Settings for playing media // https://kodi.wiki/view/JSON-RPC_API/v12#Player
+      
+      5.10.13 Player.SetAudioStream  - implementation started ...
+      5.10.14 Player.SetPartymode    - not implemented yet
+      5.10.15 Player.SetRepeat       - not implemented yet
+      5.10.16 Player.SetShuffle      - not implemented yet
+      5.10.17 Player.SetSpeed        - implementation started ...
+      5.10.18 Player.SetSubtitle
+      5.10.19 Player.SetVideoStream  - not implemented yet
+      5.10.20 Player.SetViewMode     - not implemented yet
+      '''
+
+      commands_not_implemented = ['Partymode','Repeat','Shuffle','Videostream','Viewmode']
+      commands_implemented     = ['AudioStream','Subtitle','Speed']
+      command_values = {
+             "Subtitle"    : ['previous','next','on','off'],
+             "AudioStream" : ['previous','next'],
+             "Speed"       : [-32,-16,-8,-4,-2,-1,0,1,2,4,8,16,32]
+             }
+
+      if self.status == "Connected":
+
+         active = self.PlayerActive()
+         if "error" in active:    return active
+         elif "result" in active: return active
+         else:
+            playerid   = active["playerid"]
+            playertype = active["playertype"]
+
+         if command in commands_not_implemented:      return { "error"  : "command not implemented yet (" + str(command) + ")" }
+         elif command not in commands_implemented:    return { "error"  : "command unkown (" + str(command) + ")" }
+
+         elif command == "AudioStream":
+            current_status = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : ['audiostreams','currentaudiostream']})['result']
+            if value in command_values["AudioStream"]:
+               result = self.api.Player.SetAudioStream({'playerid' : playerid, 'stream' : value})
+            else:
+               return { "error" : "SetAudioStream: value not supported" }
+               
+         elif command == "Speed":
+            current_status = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : ['speed']})['result']['speed']
+            logging.warning("..... SPEED ... " + str(current_status))
+            if value in command_values["Speed"]:
+               result = self.api.Player.SetSpeed({'playerid' : playerid, 'speed' : value})
+            elif value == "forward":
+               if current_status <= 0:    current_status = 0
+               elif current_status == 32: current_status = 0
+               new_status = command_values["Speed"].index(current_status) + 1
+               new_status = command_values["Speed"][new_status]
+               result = self.api.Player.SetSpeed({'playerid' : playerid, 'speed' : new_status})
+            elif value == "backward":
+               if current_status >= 0:    current_status = 0
+               elif current_status == -32: current_status = 0
+               new_status = command_values["Speed"].index(current_status) - 1
+               new_status = command_values["Speed"][new_status]
+               result = self.api.Player.SetSpeed({'playerid' : playerid, 'speed' : new_status})
+            else:
+               return { "error" : "SetAudioStream: value not supported" }
+               
+         elif command == "Subtitle":
+            current_status = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : ['subtitles','subtitleenabled','currentsubtitle']})['result']
+            if value in command_values["Subtitle"]:
+               result = self.api.Player.SetSubtitle({'playerid' : playerid, 'subtitle' : value})
+            elif value == "on-off":
+               if current_status['subtitleenabled']:  result = self.api.Player.SetSubtitle({'playerid' : playerid, 'subtitle' : 'off'})
+               else:                                  result = self.api.Player.SetSubtitle({'playerid' : playerid, 'subtitle' : 'on'})
+            else:
+               return { "error" : "SetSubtitle: value not supported" }
+
+
+         if result["result"] != "OK":  return { "error" : command+": '"+str(value)+"' failed (" + str(result["result"]) + ")" }
+         else:                         return { "result" : result }
+         
+      else:
+         return self.not_connected
+
+
+   #-------------------------------------------------
+
+         
+   def PlayerMetadata(self,tag="",subtag=""):
+      '''
+      Get information from player // https://kodi.wiki/view/JSON-RPC_API/v12#Player
+
+      5.10.2 Player.GetActivePlayers
+      5.10.3 Player.GetItem
+      5.10.4 Player.GetPlayers
+      5.10.5 Player.GetProperties
+      5.10.6 Player.GetViewMode    - not implemented yet
       '''
     
       all_media_properties =     [ "title", "artist", "albumartist", "genre", "year", "rating", "album", "track", "duration", "comment", 
@@ -381,10 +521,11 @@ class kodiAPIaddOn():
                                  ]              
       selected_media_properties      = ['title','album','artist','plot','mpaa','genre','episode','season','showtitle','studio','duration','runtime']             
       selected_system_properties     = ['version','muted','volume','language','name']
-      selected_player_properties     = ['live','speed','percentage','position','playlistid','subtitles','currentsubtitle','audiostreams','currentaudiostream']
+      selected_player_properties     = ['live','speed','percentage','position','playlistid','subtitles','currentsubtitle','audiostreams','currentaudiostream','subtitleenabled']
       selected_plist_properties      = ['size','type']
       selected_other_properties      = ['addons','addon-list','power']
       if_playing                     = ["player","playlist","playlist-position","playing","item","info","item-position","name"]
+
 
       if self.status == "Connected":
          metadata = {}
@@ -392,13 +533,6 @@ class kodiAPIaddOn():
          # read all metadata from API (if no tag is given or tag requires to read all metadata)
          if (self.cache_metadata == {} or (self.cache_time + self.cache_wait) < time.time()) and tag not in all_media_properties and tag not in selected_system_properties and tag not in selected_player_properties and tag not in selected_plist_properties and tag not in selected_other_properties:
          
-            active      = self.api.Player.GetActivePlayers()
-            
-            if "error" in active:             return active
-            elif not "result" in active:      return { "error" : "API not available OR unknown error" }
-            elif active["result"] == []:      active = active
-            else:                             active = active["result"]         
-  
             application = self.api.Application.GetProperties({'properties': selected_system_properties })
             
             if "error" in application:        return application
@@ -418,17 +552,12 @@ class kodiAPIaddOn():
             for param in if_playing: 
               metadata[param]              = "no media"
             
-
-            if "result" in str(active) and active["result"] == []:
-            
-              logging.info("KODI API: no media loaded")
-              return { "result" : "no media" }
-
-                                            
-            elif 'playerid' in str(active):     
-         
-              playerid    = active[0]['playerid']
-              playertype  = active[0]['type']   
+            active = self.PlayerActive()
+            if "error" in active:    return active
+            elif "result" in active: return active
+            else:
+              playerid   = active["playerid"]
+              playertype = active["playertype"]
 
               player      = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : selected_player_properties })['result']
 
@@ -465,24 +594,12 @@ class kodiAPIaddOn():
               
               metadata["info"]               = self.ReplaceHTML(metadata["info"])
               
-
-            else:
-              return { "error" : "unknown error ("+str(active)+")" }
-
-              
             self.cache_metadata = metadata
               
          # read single matadata field from API (if possible)
          elif self.cache_metadata == {} or (self.cache_time + self.cache_wait) < time.time():
 
-            active      = self.api.Player.GetActivePlayers()
-            if "error" in active:             return active
-            elif not "result" in active:      return { "error" : "API not available OR unknown error" }
-            elif active["result"] == []:      active = active
-            else:                             active = active["result"]
-
-            if tag in selected_system_properties:
-  
+            if tag in selected_system_properties:  
               application = self.api.Application.GetProperties({'properties': selected_system_properties })
               if "error" in application:        return application
               elif not "result" in application: return { "error" : "API not available OR unknown error" }
@@ -492,9 +609,6 @@ class kodiAPIaddOn():
               if tag == "version":  metadata[tag] = "KODI "+str(version['major'])+"."+str(version['minor'])+" "+str(version['tag'])      
               else:                 metadata[tag] = application[tag]
 
-#              metadata[tag] = application
-
-
             elif tag in selected_other_properties:
             
               if   tag == "addons":      metadata[tag] = self.AddOns("properties")["result"]
@@ -503,16 +617,14 @@ class kodiAPIaddOn():
               
 
             elif tag in selected_player_properties or tag in selected_plist_properties or tag in selected_media_properties:
-                        
-              if "result" in str(active) and active["result"] == []:          
-                logging.info("KODI API: no media loaded ("+str(tag)+")")
-                return { "result" : "no media" }
-                                            
-              elif 'playerid' in str(active):     
-                playerid           = active[0]['playerid']
-                playertype         = active[0]['type']   
-                player             = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : selected_player_properties })['result']
-                playlistid         = player['playlistid']
+              active = self.PlayerActive()
+              if "error" in active:    return active
+              elif "result" in active: return active
+              else:
+                playerid   = active["playerid"]
+                playertype = active["playertype"]
+                player     = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : selected_player_properties })['result']
+                playlistid = player['playlistid']
 
                 if tag in selected_player_properties: 
                    if tag in player:
@@ -529,7 +641,6 @@ class kodiAPIaddOn():
                    metadata[tag]       = self.ReplaceHTML(item)
 
             else:
-            
               return { "error" : "unknown error ("+str(active)+")" }
 
          else:
@@ -543,7 +654,8 @@ class kodiAPIaddOn():
            if "showtitle" in metadata["item"]:  metadata["item"]["showtitle"]  = self.ReplaceHTML(metadata["item"]["showtitle"])
            if "title" in metadata["item"]:      metadata["item"]["title"]      = self.ReplaceHTML(metadata["item"]["title"])
 
-         if   tag in metadata:                                               return { "result" : metadata[tag] }
+         if subtag != "" and tag in metadata and subtag in metadata[tag] :   return { "result" : metadata[tag][subtag] }
+         elif tag in metadata:                                               return { "result" : metadata[tag] }
          elif "item" in metadata        and tag in metadata["item"]:         return { "result" : metadata["item"][tag] }
          elif "application" in metadata and tag in metadata["application"]:  return { "result" : metadata["application"][tag] }
          else:                                                               return { "error"  : "unknown tag (" + tag + ")" }

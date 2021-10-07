@@ -1215,7 +1215,7 @@ function rmRemote(name) {
         		for (var i=0; i<display_data.length; i++) {
         			if (display_data[i] != "power") {
 		        		var label = "<data class='display-label'>"+display_data[i]+":</data>";
-					var input = "<data class='display-input' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>";
+					var input = "<data class='display-detail' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>";
 			        	//text += "<div class='display-element alert'>"+label+input+"</div><br/>";
 			        	text += this.tab_row("<div style='width:100px;'>"+label+"</div>",input);
 			        	}
