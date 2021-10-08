@@ -89,7 +89,7 @@ class sonyAPI():
        self.wait_if_working()
        self.working = True
        
-       logging.info("SONY send: "+command)
+       logging.debug("SONY send: "+command)
 
        if self.status == "Connected":
          try:

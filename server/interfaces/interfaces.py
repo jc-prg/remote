@@ -35,6 +35,7 @@ class connect(threading.Thread):
         self.configFiles  = configFiles
         self.name         = "jc://remote/interfaces/"
         self.check_error  = time.time()
+        self.last_message = ""
         self.methods      = {
             "send"        : "Send command via API (send)",
             "record"      : "Record per device (record)",
@@ -192,24 +193,24 @@ class connect(threading.Thread):
         
         return_msg = ""
         self.check_errors(call_api)
-        logging.debug("SEND "+call_api+" / "+device+" - "+button)
+        logging.debug(device+" SEND: "+call_api+" - "+button)
 
         if self.api[call_api].status == "Connected":
             method = self.method(call_api)
             
             if button.startswith("send-"):
-               logging.info("SEND-DATA: "+call_api+" / "+device+" - "+button+" ("+str(value)+"/"+method+")")
+               logging.info(device+" SEND-DATA: "+call_api+" / "+button+" ("+str(value)+"/"+method+")")
                if method == "query" and value != "":    button_code = self.get_command( call_api, "send-data", device, button )
                else:                                    button_code = "ERROR, wrong method (!query) or no data transmitted."
                if not "ERROR" in button_code:           button_code = button_code.replace("{DATA}",value)
-               logging.info("BUTTON-CODE: "+button_code)
+               logging.info(device+" BUTTON CODE: "+button_code)
                
             else:            
-               logging.info("SEND: "+call_api+" / "+device+" - "+button+" ("+str(value)+"/"+method+")")
+               logging.info(device+" SEND: "+call_api+" / "+button+" ("+str(value)+"/"+method+")")
                if  method == "record":                  button_code = self.get_command( call_api, "buttons", device, button ) 
                elif method == "query" and value == "":  button_code = self.get_command( call_api, "buttons", device, button )
                else:                                    button_code = self.create_command( call_api, device, button, value ) 
-               logging.info("BUTTON-CODE: "+button_code)               
+               logging.info(device+" BUTTON CODE: "+button_code)               
             
             if "ERROR" in button_code: return_msg = "ERROR: could not read/create command from button code (send/"+mode+"/"+button+"); " + button_code
             elif call_api in self.api: return_msg = self.api[call_api].send(device,button_code)
@@ -223,7 +224,9 @@ class connect(threading.Thread):
         
 
         if "ERROR" in str(return_msg) or "error" in str(return_msg):
-           logging.warn(return_msg)
+           if self.last_message != return_msg:
+             logging.warn(return_msg)
+           self.last_message = return_msg
            self.check_errors_count(call_api,True)
         else:
            self.check_errors_count(call_api,False)
@@ -240,8 +243,7 @@ class connect(threading.Thread):
     
         return_msg = ""
         self.check_errors(call_api)
-        logging.debug("RECORD "+call_api+" / "+device+" - "+button)
-        logging.info("RECORD "+call_api+" / "+device+" - "+button)
+        logging.info(device+" RECORD "+call_api+" / "+button)
 
         if self.api[call_api].status == "Connected":       
             if call_api in self.api: return_msg = self.api[call_api].record(device,button)
@@ -249,7 +251,9 @@ class connect(threading.Thread):
         else:                        return_msg = "ERROR: API not connected ("+call_api+")"
 
         if "ERROR" in str(return_msg) or "error" in str(return_msg):
-           logging.warn(return_msg)
+           if self.last_message != return_msg:
+             logging.warn(return_msg)
+           self.last_message = return_msg
            self.check_errors_count(call_api,True)
         else:
            self.check_errors_count(call_api,False)
@@ -265,7 +269,7 @@ class connect(threading.Thread):
 
         return_msg = ""
         self.check_errors(call_api)
-        logging.debug("QUERY "+call_api+" / "+device+" - "+button)
+        logging.debug(device+" QUERY "+call_api+" / "+button)
 
         if self.api[call_api].status == "Connected":       
             button_code = self.get_command( call_api, "queries", device, button )
@@ -276,7 +280,9 @@ class connect(threading.Thread):
         else:                          return_msg = "ERROR: API not connected ("+str(call_api)+")"
 
         if "ERROR" in str(return_msg) or "error" in str(return_msg):
-           logging.warn(return_msg)
+           if self.last_message != return_msg:
+             logging.warn(return_msg)
+           self.last_message = return_msg
            self.check_errors_count(call_api,True)
         else:
            self.check_errors_count(call_api,False)
