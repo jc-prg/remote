@@ -10,8 +10,8 @@
         ],
         "display": {
             "Audio": "media-center_current-audiostream-name",
-            "Input": "rec2_source",
             "Content": "media-center_current-playing",
+            "Input": "rec2_source",
             "Subtitle": "media-center_subtitle-enabled",
             "Volume": "rec2_vol"
         },

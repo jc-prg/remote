@@ -3,6 +3,7 @@
         "description": "Kodi (API)",
         "display": {
             "Audio": "current-audiostream-name",
+            "Content": "current-playing",
             "Info": "version",
             "Subtitle": "subtitle-enabled",
             "Volume": "vol"
