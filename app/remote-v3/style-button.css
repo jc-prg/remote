@@ -100,7 +100,13 @@ button {
 /* colored buttons */
 
 .button.bgred    { background-color: red;     color: red; }
-.button.bgyellow { background-color: yellow;  color: yellow; }
+.button.bgyellow { background-color: #ffff00;  color: #ffff00; }
 .button.bgblue   { background-color: blue;    color: blue; }
 .button.bggreen  { background-color: green;   color: green; }
+.button.bgwhite  { background-color: white;   color: white; }
+.button.bgorange { background-color: orange;  color: orange; }
+.button.bgpink   { background-color: #FF00FF; color: #FF00FF; }
+.button.bgcyan   { background-color: cyan;    color: cyan; }
+.button.black    { background-color: black;   color: black; }
+
 

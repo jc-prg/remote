@@ -1,0 +1,24 @@
+@media (prefers-color-scheme: dark) {
+
+  button               { opacity: 1; color : #dddddd; background: #333333; }
+  
+  .button              { opacity: 1; color : #dddddd; background: #333333; }
+  .button.empty 	{ background: #000000; }
+  .button:disabled 	{ background: #000000; }
+  
+  .button.bggreen  	{ opacity: 0.8; }
+  .button.bgred    	{ opacity: 0.8; }
+  .button.bgyellow 	{ opacity: 0.8; }
+  .button.bgblue   	{ opacity: 0.8; }
+  .button.bgorange   	{ opacity: 0.8; }
+  .button.bgcyan   	{ opacity: 0.8; }
+  .button.bgwhite   	{ opacity: 0.8; }
+  .button.bgpink   	{ opacity: 0.8; }
+  .button.bgblack   	{ opacity: 0.8; }
+  
+  .button.notfound          { border : solid 1px #990000; }
+  .button.notfound:disabled { border : solid 1px #990000; background-color : #221111; }
+
+}
+
+

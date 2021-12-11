@@ -1,0 +1,153 @@
+/*-----------------------------------------*/
+/* jc://remote/slider/                     */
+/*-----------------------------------------*/
+
+/* display information within the remote control */
+
+.rm-slider-button {
+   width           :  133px;
+   height          :  40px;
+   color           : yellow;
+   padding         :   2px;
+   margin          :   4px;
+   font-size       :   9px; 
+   border-radius   :   6px; 
+   border-color    : #222222;
+   background-color: #000000;
+   overflow        : hidden;
+   float           : left;
+   display         : inline-block;
+   vertical-align  : top;
+
+
+   width   :  276px;
+   height  :  70px;
+}
+
+/* format for iphone XS */
+
+@media (min-width: 370px) {
+  .rm-slider-button   { width  : 328px; }
+}
+
+/* format for laptop */
+
+@media (min-width: 720px) {
+  .rm-slider-button   { width  : 320px; }
+}
+
+/* ---------------------------------------- */
+
+.rm-slidecontainer {
+/* position is set in the javascript file ...
+//-------------------------------------------  
+//  position      : fixed;
+//  right         : 10px;
+//  top           : 40px;
+*/
+/*
+  display       : block;
+  
+  background    : #ddddee;
+  border-radius : 5px; */
+/*  box-shadow    : 3px 3px 3px rgba(0, 0, 0, 0.25); */
+  
+  width         : 100%;
+  height        : 64px;
+  z-index       : 99;
+}
+
+/* The slider itself */
+.rm-slider {
+/*
+  position  : relative;
+  top       : 97px;
+  right     : 60px;
+*/  
+	background         : #222222; /* Grey background */
+	opacity            : 0.8; /* Set transparency (for mouse-over effects on hover) */
+	-webkit-transition : .2s; /* 0.2 seconds transition on hover */
+  	transition	: opacity .2s;
+  	
+	border		: 2px solid #777777;
+	border-radius	: 13px;
+  	width		: 83%;
+  	height		: 25px;
+  	
+  	float		: left;
+  	margin		: 3px;
+	z-index	: 100;
+}
+
+.rm-slidervalue {
+/*
+  position : relative;
+  top      : 185px;
+  right    : -30px;
+*/
+  
+  	z-index	: 99;
+  	color		: lightgray;
+  	background     : #222222; /* Grey background */
+	opacity        : 0.9; /* Set transparency (for mouse-over effects on hover) */
+  	
+	border		: 2px solid #777777;
+	border-radius	: 5px;
+  	width		: 10%;
+  	height		: 25px;
+
+  	float		: left;
+  	margin		: 3px;
+  	
+  	font-face      : Helvetica,Arial;
+  	font-size      : 11px;
+  	line-height    : 25px;
+  	font-weight    : bold;
+  	text-align     : center;
+  	vertical-align : middle;
+	}
+
+.rm-sliderlabel {
+/*
+	position	: relative;
+	top		: -16px;
+	left		: -43px;
+	height		: 150px;
+	width		: 250px;
+*/
+	float		: left;
+	width		: 90%;
+	
+	padding	: 5px;
+	padding-left	: 10px;
+	z-index	: 99;
+	font-family	: Sans-serif, Arial, Helvetica;
+	font-size	: 12px;
+	text-align	: left;	
+	}
+
+/* Mouse-over effects */
+.rm-slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.rm-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance    : none;
+  width         : 25px; /* Set a specific slider handle width */
+  height        : 25px; /* Slider handle height */
+  background    : green; /* Green background */
+  cursor        : pointer; /* Cursor on hover */
+  border-radius : 13px;
+}
+
+.rm-slider::-moz-range-thumb {
+  width         : 25px; /* Set a specific slider handle width */
+  height        : 25px; /* Slider handle height */
+  background    : green; /* Green background */
+  cursor        : pointer; /* Cursor on hover */
+  border-radius : 13px;
+}
+
+/* EOF */

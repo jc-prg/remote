@@ -346,6 +346,43 @@ function statusCheck(data={}) {
 
 			
 	// check status for displays
+	for (var key in data["DATA"]["scenes"]) {
+		if (data["DATA"]["scenes"][key]["remote"] && data["DATA"]["scenes"][key]["remote"]["display-detail"]) {
+			// .......
+			for (var vkey in data["DATA"]["scenes"][key]["remote"]["display-detail"]) {
+				var value    = data["DATA"]["scenes"][key]["remote"]["display-detail"][vkey];
+				var element2 = document.getElementById("display_full_" + key + "_" + vkey);
+				var values1  = value.split("_");
+				var values2  = values1[1].split("||");
+				var replace_tag     = values2[0];
+				var replace_value   = values2[0];
+				var replace_device  = values1[0];
+				var replace_index   = values2[1];
+				
+				//console.warn("display_full_" + key + "_" + vkey);
+				//console.warn("dev:"+replace_device+" / tag:"+replace_tag+" / value:"+replace_value+" / index:"+replace_index);
+				
+				if (data["DATA"]["devices"][replace_device] && data["DATA"]["devices"][replace_device]["status"] && data["DATA"]["devices"][replace_device]["status"][replace_tag]) {
+					replace_value = data["DATA"]["devices"][replace_device]["status"][replace_tag];
+					if (replace_index && replace_index != "") {
+					
+						// workaround, check why not in the correct format (KODI?!)
+						if (replace_value != "no media") {
+							console.warn(replace_value);
+							replace_value = replace_value.replace(/'/g, '"');
+							var replace_content = JSON.parse(replace_value);
+							var replace_cmd     = "replace_content"+replace_index;
+							replace_value = eval(replace_cmd);
+							}
+						}
+					}
+				
+				if (element2) { element2.innerHTML = replace_value; }
+				}
+			}
+		}
+		
+	// check status for displays
 	for (var key in devices) {
 	
 		// media info ...

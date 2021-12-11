@@ -131,6 +131,8 @@ function rmRemote(name) {
 	this.loaded_remote  = [];
 	
 	this.keyboard       = new rmRemoteKeyboard(name+".keyboard");
+	this.color_picker   = new rmColorPicker(name+".color_picker");
+	this.slider         = new rmSlider(name+".slider");
 	this.logging        = new jcLogging(this.app_name);
 	this.button_tooltip = new jcTooltip(this.app_name + ".button_tooltip");
 
@@ -184,6 +186,7 @@ function rmRemote(name) {
 		this.active_type    = type;
 		this.active_buttons = [];
 		this.keyboard.set_device(this.active_name);
+		this.color_picker.set_device(this.active_name);
 
 		rm3start.active     = "start";
 		startActive         = false;
@@ -293,8 +296,10 @@ function rmRemote(name) {
 						
 			if (button == "LINE")	 			{ next_button = this.line(""); }
 			else if (button.indexOf("LINE||") == 0) 	{ next_button = this.line(button.split("||")[1]); }
+			else if (button.indexOf("SLIDER") == 0) 	{ next_button = this.slider_element(id, device, "devices", button.split("||")); }
 			else if (button == ".") 			{ next_button = this.button_device( device+i, ".", device, "empty", "", "disabled" ) }
 			else if (button == "DISPLAY")			{ next_button = this.display(id, device, "devices", remote_displaysize, remote_display); }
+			else if (button.indexOf("COLOR-PICKER") == 0)	{ next_button = this.colorPicker(id, device, "devices", remote_displaysize, remote_display); }
 			else if (button == "keyboard")		{ next_button = this.button_device_keyboard( cmd, button, device, "", cmd, "" ); this.active_buttons.push(cmd); }
 			else if (remote_buttons.includes(button)) 	{ next_button = this.button_device( cmd, button, device, "", cmd, "" ); this.active_buttons.push(cmd); }
 			else if (this.edit_mode)         		{ next_button = this.button_device_add( cmd, button, device, "notfound", cmd, "" ); }
@@ -303,6 +308,7 @@ function rmRemote(name) {
 			if (this.edit_mode) {
 				if (button.indexOf("LINE") == 0)		{ this.button_tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,20); }
 				else if (button.indexOf("DISPLAY") == 0)	{ this.button_tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,90); }
+				else if (button.indexOf("COLOR-PICKER") == 0)	{ this.button_tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,90); }
 				else				    		{ this.button_tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
 				next_button = this.button_tooltip.create( next_button, contextmenu, i );
 				}
@@ -1089,19 +1095,70 @@ function rmRemote(name) {
 		return remote;
 		}
 
+	// create color picker
+	//--------------------------------
+	this.colorPicker              = function (id, device, type="devices", style="", display_data={}) {
+		var remote_data  = this.data["DATA"][type][device]["remote"];
+		var status_data  = this.data["DATA"][type][device]["status"];
+		
+		if (!this.data["DATA"][type]) {
+			this.logging.error(this.app_name+".colorPicer() - type not supported ("+type+")");
+			return;
+			}
+
+        	var display_start = "<button id=\"colorpicker_"+device+"\" class=\"color-picker\">";
+        	var display_end   = "</button>";
+        	
+        	var text = display_start;
+        	text += this.color_picker.colorPickerHTML();
+        	text += display_end;
+        	return text;
+
+		}
+	
+	// create slider
+	//--------------------------------
+	this.slider_element      = function (id, device, type="devices", data) {
+		var remote_data  = this.data["DATA"][type][device]["remote"];
+		var status_data  = this.data["DATA"][type][device]["status"];
+		
+		if (!this.data["DATA"][type]) {
+			this.logging.error(this.app_name+".slider() - type not supported ("+type+")");
+			return;
+			}
+
+        	var display_start = "<button id=\"slider_"+device+"_"+data[1]+"\" class=\"rm-slider-button\">";
+        	var display_end   = "</button>";
+        	
+        	if (data.length > 3) {
+        		var min_max = data[3].split("-");
+        		var min     = min_max[0];
+        		var max     = min_max[1];
+        		}
+        	else {
+        		var min     = 0;
+        		var max     = 100;
+        		}
+        	
+        	var text = display_start;
+        	text += this.slider.sliderHTML(data[1],data[2],min,max);
+        	text += display_end;
+        	return text;
+
+		}
+	
 	// create display
 	//--------------------------------
 	// show display with information
 	this.display              = function (id, device, type="devices", style="", display_data={}) {
-	
+		var remote_data  = this.data["DATA"][type][device]["remote"];
+		var status_data  = this.data["DATA"][type][device]["status"];
+		
 		if (!this.data["DATA"][type]) {
 			this.logging.error(this.app_name+".display() - type not supported ("+type+")");
 			return;
 			}
 			
-		var remote_data  = this.data["DATA"][type][device]["remote"];
-		var status_data  = this.data["DATA"][type][device]["status"];
-		
 		if (status_data["api-status"])	{ var connected = status_data["api-status"].toLowerCase(); }
 		else					{ var connected = "unknown"; }
 		
@@ -1190,41 +1247,51 @@ function rmRemote(name) {
         // display all information
 	this.display_alert        = function (id, device, type="", style="" ) {
         
+		var display_data = [];
+      		var text  = "Device Information: "+device +"<hr/>";
+      		text  += "<div style='width:100%;height:200px;overflow-y:scroll;'>";
+		
 		if (type != "devices") { 
-			this.logging.warn(this.app_name+".display_alert() not implemented for this type ("+type+")");
-			this.logging.warn(this.data["DATA"]["scenes"][device]);
-			return;
+
+			if (!this.data["DATA"][type][device]["remote"]["display-detail"]) {
+			
+				this.logging.warn(this.app_name+".display_alert() not implemented for this type and device ("+type+"/"+device+")");
+				this.logging.warn(this.data["DATA"][type][device]);
+				return;
+				}
+			else {
+				display_data = Object.keys(this.data["DATA"][type][device]["remote"]["display-detail"]);
+				this.logging.warn(display_data);
+				}
 			}
 			
 		else {
-			var display_data = [];
+			var power = this.data["DATA"][type][device]["status"];
 			if (this.data["DATA"]["devices"][device]["interface"]["query_list"])	{ display_data = this.data["DATA"]["devices"][device]["interface"]["query_list"]; }
 			else									{ display_data = ["ERROR","No display defined"]; } 
 
-			var power = this.data["DATA"]["devices"][device]["status"];
-        		var text  = "Device Information: "+device +"<hr/>";
-        		text  += "<div style='width:100%;height:200px;overflow-y:scroll;'>";
-			text  += "<center id='display_full_"+device+"_power'>"+power+"</center><hr/>";        		
-        		text  += this.tab_row("start","100%");
-        	
         		this.logging.debug(device,"debug");
         		this.logging.debug(this.data["DATA"]["devices"][device]["status"],"debug");
         		this.logging.debug(this.data["DATA"]["devices"][device]["interface"]["query_list"],"debug");
         		this.logging.debug(display_data,"debug");
 
-        		for (var i=0; i<display_data.length; i++) {
-        			if (display_data[i] != "power") {
-		        		var label = "<data class='display-label'>"+display_data[i]+":</data>";
-					var input = "<data class='display-detail' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>";
-			        	//text += "<div class='display-element alert'>"+label+input+"</div><br/>";
-			        	text += this.tab_row("<div style='width:100px;'>"+label+"</div>",input);
-			        	}
-		        	}
-        		text  += this.tab_row("end");
-        		text  += "</div>";
-			appMsg.confirm(text,"",300);
-			statusCheck(this.data);
+			text  += "<center id='display_full_"+device+"_power'>"+power+"</center><hr/>";        		
 			}
+
+      		text  += this.tab_row("start","100%");
+        				
+        	for (var i=0; i<display_data.length; i++) {
+      			if (display_data[i] != "power") {
+	        		var label = "<data class='display-label'>"+display_data[i]+":</data>";
+				var input = "<data class='display-detail' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>";
+		        	//text += "<div class='display-element alert'>"+label+input+"</div><br/>";
+		        	text += this.tab_row("<div style='width:100px;'>"+label+"</div>",input);
+		        	}
+	        	}
+        	text  += this.tab_row("end");
+        	text  += "</div>";
+		appMsg.confirm(text,"",300);
+		statusCheck(this.data);
         	}
         	
         // idea ... display for media information: mute (icon), volume (bar), info (title/artist/album/episode/...)
