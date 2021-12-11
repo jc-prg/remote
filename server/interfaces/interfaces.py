@@ -14,6 +14,7 @@ import interfaces.api_kodi
 import interfaces.api_eiscp
 import interfaces.api_broadlink
 import interfaces.api_sony
+import interfaces.api_magichome
 	
 #-------------------------------------------------
 
@@ -73,6 +74,7 @@ class connect(threading.Thread):
                if api == "EISCP-ONKYO" and api not in self.api:  self.api[api] = interfaces.api_eiscp.eiscpAPI(api,dev,dev_config)
                if api == "BROADLINK"   and api not in self.api:  self.api[api] = interfaces.api_broadlink.broadlinkAPI(api,dev,dev_config)
                if api == "SONY"        and api not in self.api:  self.api[api] = interfaces.api_sony.sonyAPI(api,dev,dev_config)
+               if api == "MAGIC-HOME"  and api not in self.api:  self.api[api] = interfaces.api_magichome.magicAPI(api,dev,dev_config)
                if api == "TEST"        and api not in self.api:  self.api[api] = interfaces.api_test.testAPI(api,dev,dev_config)
             else:
                logging.error("Could not connect to "+api+" - Error in with config file ("+rm3config.commands + api + "/00_interface.json)")
@@ -83,7 +85,8 @@ class connect(threading.Thread):
           self.api["EISCP-ONKYO"] = interfaces.api_eiscp.eiscpAPI("EISCP-ONKYO","ONKYO-TXNR686")
           self.api["BROADLINK"]   = interfaces.api_broadlink.broadlinkAPI("BROADLINK")
           self.api["SONY"]        = interfaces.api_sony.sonyAPI("SONY","SONY-BDP-S4500")
-
+          self.api["MAGIC-HOME"]  = interfaces.api_magichome.magicAPI("MAGIC-HOME")
+          
         for key in self.api:
            self.available[key] = self.api[key].api_description
 
