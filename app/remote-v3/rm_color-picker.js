@@ -38,7 +38,7 @@ function rmColorPicker(name) {
 		}
 
 	this.sendColorCode = function(input) {
-		appFW.requestAPI('GET',[ 'send-text', this.active_name, 'send-text', '"'+input+'"'	 ], '','');
+		appFW.requestAPI('GET',[ 'send-data', this.active_name, 'send-color', '"'+input+'"'	 ], '','');
 		}
 
 	this.colorPickerHTML = function() {

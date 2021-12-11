@@ -59,10 +59,18 @@ function rmSlider(name) {
 	this.setOnChange();
 	this.setShowVolume();
 		
-	this.sliderHTML	= function(name,label,min,max) {
-	
-		defaultValue = min; 
+	this.sliderHTML	= function(name,label,device,command,min,max,init="") {
+
+		var setValueCmd;
+		var defaultValue;
+			
+		if (init.indexOf("%") > 0)		{ init = init.replace(/%/g,""); }
+		if (init != "" && init != "Error")	{ defaultValue = init; }
+		else					{ defaultValue = min; }
+		
 		setValueCmd  = " onInput=\"document.getElementById('"+name+"_value').innerHTML=this.value;\" ";
+		setValueCmd += " onMouseUp=\"appFW.requestAPI('GET',[ 'send-data', '"+device+"', '"+command+"', this.value ], '','');\" ";
+		setValueCmd += " onTouchEnd=\"appFW.requestAPI('GET',[ 'send-data', '"+device+"', '"+command+"', this.value ], '','');\" ";
 	
 		this.slider_code   		=  "<div id=\""+name+"_container\" class=\"rm-slidecontainer\" style=\"display:block\">";
 		this.slider_code   		+= "<div  id=\""+name+"_label\" class=\"rm-sliderlabel\">"+label+"</div>";

@@ -104,13 +104,13 @@ function rmRemoteKeyboard(name) {
 		if (this.kupdate) { return; }
 		this.kupdate = true;
 		input = document.getElementById(this.app_name+"_keyboard_input").value;
-		appFW.requestAPI('GET',[ 'send-text', this.active_name, 'send-text', input ], '','');
+		appFW.requestAPI('GET',[ 'send-data', this.active_name, 'send-text', input ], '','');
 		this.kupdate = false;
 		}
 
 	this.send		= function () {
 		input = document.getElementById(this.app_name+"_keyboard_input").value;
-		appFW.requestAPI('GET',[ 'send-text', this.active_name, 'send-text-enter', input ], '','');
+		appFW.requestAPI('GET',[ 'send-data', this.active_name, 'send-text-enter', input ], '','');
 		}
 
 	}
@@ -1097,12 +1097,12 @@ function rmRemote(name) {
 
 	// create color picker
 	//--------------------------------
-	this.colorPicker              = function (id, device, type="devices", style="", display_data={}) {
+	this.colorPicker              = function (id, device, type="devices", data) {
 		var remote_data  = this.data["DATA"][type][device]["remote"];
 		var status_data  = this.data["DATA"][type][device]["status"];
 		
 		if (!this.data["DATA"][type]) {
-			this.logging.error(this.app_name+".colorPicer() - type not supported ("+type+")");
+			this.logging.error(this.app_name+".colorPicker() - type not supported ("+type+")");
 			return;
 			}
 
@@ -1119,6 +1119,8 @@ function rmRemote(name) {
 	// create slider
 	//--------------------------------
 	this.slider_element      = function (id, device, type="devices", data) {
+	
+		var init;
 		var remote_data  = this.data["DATA"][type][device]["remote"];
 		var status_data  = this.data["DATA"][type][device]["status"];
 		
@@ -1126,6 +1128,8 @@ function rmRemote(name) {
 			this.logging.error(this.app_name+".slider() - type not supported ("+type+")");
 			return;
 			}
+
+		if (data[4] && status_data[data[4]]) { init = status_data[data[4]]; }
 
         	var display_start = "<button id=\"slider_"+device+"_"+data[1]+"\" class=\"rm-slider-button\">";
         	var display_end   = "</button>";
@@ -1141,7 +1145,7 @@ function rmRemote(name) {
         		}
         	
         	var text = display_start;
-        	text += this.slider.sliderHTML(data[1],data[2],min,max);
+        	text += this.slider.sliderHTML(name=data[1], label=data[2], device=device, command=data[1], min, max, init);
         	text += display_end;
         	return text;
 
