@@ -241,7 +241,9 @@ class magicAPIaddOn():
       self.last_g         = 0
       self.last_b         = 0
       self.last_speed     = 100
+      self.last_preset    = 37
       self.power_status   = "OFF"
+      self.mode           = "COLOR"
       
    #-------------------------------------------------
 
@@ -287,6 +289,7 @@ class magicAPIaddOn():
        b    = int(data[2])
      
      if self.status == "Connected":
+       self.mode   = "COLOR"
        self.last_r = r
        self.last_g = g
        self.last_b = b
@@ -308,18 +311,31 @@ class magicAPIaddOn():
      '''
      set led program
      '''
-     
-     presets = [37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52]
-         
      if self.status == "Connected":
-       logging.info("............................"+str(presets[preset]))
-       #self.api.send_preset_function(presets[preset], 200)
-       self.api.send_preset_function(preset, 255)
+       self.mode        = "PRESET"
+       self.last_preset = preset
+       self.api.send_preset_function(self.last_preset, self.last_speed)
+       self.power_status = "ON"
        return { "result", "preset" }
        
      else:
        return self.not_connected
 
+   #-------------------------------------------------
+    
+   def set_speed(self, speed=100):
+     '''
+     set speed for preset
+     '''
+     
+     if self.status == "Connected":
+       self.last_speed = int(speed)
+       if self.mode == "PRESET":
+         self.api.send_preset_function(self.last_preset, self.last_speed)
+
+     else:
+       return self.not_connected
+   
    #-------------------------------------------------
     
    def set_brightness(self, percent):
@@ -332,21 +348,22 @@ class magicAPIaddOn():
        r = self.last_r
        g = self.last_g
        b = self.last_b
-       r = round(r*self.brightness)
-       g = round(g*self.brightness)
-       b = round(b*self.brightness)
-       self.api.update_device(r, g, b, 0, 0)
+       if self.mode == "COLOR":
+         r = round(r*self.brightness)
+         g = round(g*self.brightness)
+         b = round(b*self.brightness)
+         self.api.update_device(r, g, b, 0, 0)
 
-       if r+g+b == 0: self.power_status = "OFF"
-       else:          self.power_status = "ON"
-       return { "result", "test" }
+         if r+g+b == 0: self.power_status = "OFF"
+         else:          self.power_status = "ON"
+         return { "result", "test" }
 
      else:
        return self.not_connected
    
    #-------------------------------------------------
    
-   def _decode_status(self,status):
+   def decode_status(self,raw_status):
       '''
       decode device string for status, e.g. 
       
@@ -357,11 +374,34 @@ class magicAPIaddOn():
         b'\x813#a#\x1f\x00\x00\xff\x00\n\x00\xf0s' - ON blue
         b'\x813#a#\x1f3\x00\x00\x00\n\x00\xf0\xa7' - ON red 100%
         b'\x813#a#\x1f\n\x00\x00\x00\n\x00\xf0~'   - ON red 20%
+        b'\x813#, #\x1f\x9c\x9c\x9c\x00\n\x00\xf0\x13'
         
         -> App is able to decode ??
       '''
+      status = {}
       
-      return "not implemented yet"
+      if "$" in raw_status:  status["power"] = "OFF"
+      else:                  status["power"] = "ON"
+      if "a#" in raw_status: status["mode"]  = "COLOR"
+      else:                  status["mode"]  = "PRESET"
+
+      data = raw_status.split("#")
+
+      if status["power"] == "ON":  parts = data[2].split("\\")
+      else:                        parts = data[1].split("\\")
+      
+      if status["mode"] == "COLOR":
+         status["rgb"] = "#"+parts[2][1:3]+parts[3][1:3]+parts[4][1:3]
+         status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16), "x" : int(parts[5][1:3],16) }
+         status["set"] = "." # {"a" : int(parts[7][1:3],16), "b" : int(parts[8][1:3],16), "c" : int(parts[9][1:3],16) }
+      else:
+         status["rgb"] = "#"+parts[2][1:3]+parts[3][1:3]+parts[4][1:3]
+         status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16), "x" : int(parts[5][1:3],16) }
+         status["set"] = "." #{"a" : int(parts[7][1:3],16), "b" : int(parts[8][1:3],16) }
+      
+      
+      return status
+   
    
    #-------------------------------------------------
       
@@ -371,16 +411,24 @@ class magicAPIaddOn():
       ''' 
 
       if self.status == "Connected":      
-        brightness = str(self.brightness*100)+"%"
-        color_rgb  = "("+str(self.last_r)+","+str(self.last_g)+","+str(self.last_b)+")"
-        power      = self.power_status
-        raw_status = str(self.api.get_status())
 
-        if param == "brightness":   return { "result": brightness }
-        elif param == "color_rgb":  return { "result": color_rgb }
-        elif param == "power":      return { "result": power }
-        elif param == "raw_status": return { "result": raw_status }
-        else:                       return { "error" : "unknown tag '"+param+"'" }
+        raw_status = self.api.get_status()
+        raw_status = str(raw_status)
+        
+        brightness = str(round(self.brightness*100))+"%"
+        color_rgb  = "("+str(self.last_r)+","+str(self.last_g)+","+str(self.last_b)+")"
+        status     = self.decode_status(raw_status)
+        status_str = str(status)
+        
+        if param == "brightness":      return { "result": brightness }
+        elif param == "color_rgb":     return { "result": color_rgb }
+        elif param == "color_rgb_raw": return { "result": status["rgb"] }
+        elif param == "power":         return { "result": status["power"] }
+        elif param == "mode":          return { "result": status["mode"] }
+        elif param == "preset":        return { "result": self.last_preset }
+        elif param == "preset_speed":  return { "result": self.last_speed }
+        elif param == "raw_status":    return { "result": raw_status + "<br>" + status_str }
+        else:                          return { "error" : "unknown tag '"+param+"'" }
 
       else:
         return self.not_connected

@@ -124,7 +124,7 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
 
-  /send-text/{device}/{button}/{text}/:
+  /send-data/{device}/{button}/{text}/:
     get:
       operationId: modules.server_cmd.RemoteSendText
       tags:
