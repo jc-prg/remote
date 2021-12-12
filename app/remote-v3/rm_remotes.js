@@ -466,12 +466,16 @@ function rmRemote(name) {
 				this.button_edit(this.app_name+".remote_add_line('device','frame2','"+device+"','add_line_text','remote_json_buttons');" + link_preview,"add line with text","")
 				);
 		remote  += this.tab_row(
-				"",
-				this.button_edit(this.app_name+".remote_add_button('device','frame2','"+device+"','.','remote_json_buttons');" + link_preview,"add empty field","")
+				this.input("add_slider_text","send-command||description||min-max||parameter"),
+				this.button_edit(this.app_name+".remote_add_slider('device','frame2','"+device+"','add_slider_text','remote_json_buttons');" + link_preview,"add slider","")
 				);
 		remote  += this.tab_row(
-				"",
-				this.button_edit(this.app_name+".remote_add_display('device','frame2','"+device+"','DISPLAY','remote_json_buttons');" + link_preview,"add display","")
+				this.input("add_colorpicker_text","send-command"),
+				this.button_edit(this.app_name+".remote_add_colorpicker('device','frame2','"+device+"','add_colorpicker_text','remote_json_buttons');" + link_preview,"add color picker","")
+				);
+		remote  += this.tab_row(
+				this.button_edit(this.app_name+".remote_add_display('device','frame2','"+device+"','DISPLAY','remote_json_buttons');" + link_preview,"add display",""),
+				this.button_edit(this.app_name+".remote_add_button('device','frame2','"+device+"','.','remote_json_buttons');" + link_preview,"add empty field","")
 				);
 		remote  += this.tab_line();
 		remote  += this.tab_row(
@@ -769,13 +773,19 @@ function rmRemote(name) {
 				this.input("add_line_text"),
 				this.button_edit(this.app_name+".remote_add_line('scene','frame2','"+scene+"','add_line_text','scene_json_buttons');" + link_preview,"add line with text","")
 				);
+/*
 		remote  += this.tab_row(
-				"",
-				this.button_edit(this.app_name+".remote_add_button('scene','frame2','"+scene+"','.','scene_json_buttons');" + link_preview,"add empty field","")
+				this.input("add_slider_text"),
+				this.button_edit(this.app_name+".remote_add_slider('scene','frame2','"+scene+"','add_slider_text','scene_json_buttons');" + link_preview,"add slider","")
 				);
 		remote  += this.tab_row(
-				"",
-				this.button_edit(this.app_name+".remote_add_display('scene','frame2','"+scene+"','DISPLAY','scene_json_buttons');" + link_preview,"add display","")
+				this.input("add_colorpicker_text"),
+				this.button_edit(this.app_name+".remote_add_colorpicker('scene','frame2','"+scene+"','add_colorpicker_text','scene_json_buttons');" + link_preview,"add color picker","")
+				);
+*/
+		remote  += this.tab_row(
+				this.button_edit(this.app_name+".remote_add_display('scene','frame2','"+scene+"','DISPLAY','scene_json_buttons');" + link_preview,"add display",""),
+				this.button_edit(this.app_name+".remote_add_button('scene','frame2','"+scene+"','.','scene_json_buttons');" + link_preview,"add empty field","")
 				);
 		remote  += this.tab_line();
 		remote  += this.tab_row(
@@ -876,8 +886,21 @@ function rmRemote(name) {
 			}
 		}
 
+	// add a line with description
 	this.remote_add_line	  = function (type,id,scene,button,remote,position="") {
 		if (document.getElementById(button)) { button = "LINE||"+getValueById(button); }
+		this.remote_add_button(type,id,scene,button,remote,position);
+		}
+
+	// add a line with description
+	this.remote_add_slider	  = function (type,id,scene,button,remote,position="") {
+		if (document.getElementById(button)) { button = "SLIDER||"+getValueById(button); }
+		this.remote_add_button(type,id,scene,button,remote,position);
+		}
+
+	// add a line with description
+	this.remote_add_colorpicker  = function (type,id,scene,button,remote,position="") {
+		if (document.getElementById(button)) { button = "COLOR-PICKER||"+getValueById(button); }
 		this.remote_add_button(type,id,scene,button,remote,position);
 		}
 

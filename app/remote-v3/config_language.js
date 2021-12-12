@@ -53,6 +53,8 @@ var language_app = {
 						  "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
 						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
 						  "<li>Add &quot;DISPLAY&quot; to add a display that show status information (details defined below).</li>" +
+						  "<li>Add &quot;SLIDER||send-command||description||min-max||parameter&quot; to add a slider input element.</li>" +
+						  "<li>Add &quot;COLOR-PICKER||send-command&quot; to add an input element to select a color.</li>" +
 						  "<li>Add &quot;.&quot; to add an empty space.</li>" +
 						  "</ul>",
 		"MANUAL_SCENE"			: "<b>Edit Scene Remote Control:</b><ul>" +
