@@ -68,9 +68,14 @@ def RmReadData_devices(selected=[],remotes=True):
                 # combine default interface definition and device specific definition
                 for value in interface_def_default: 
                    if value != "description":
-                      for key in interface_def_default[value]:                  
-                         if not value in interface_def:      interface_def[value] = {}
-                         if not key in interface_def[value]: interface_def[value][key] = interface_def_default[value][key]
+                   
+                      if not value in interface_def:      
+                         interface_def[value] = interface_def_default[value]                   
+                      
+                      else:
+                        for key in interface_def_default[value]:                  
+                          if not key in interface_def[value]:
+                            interface_def[value][key] = interface_def_default[value][key]
                     
                 data_temp["remote"]    = remote["data"]
                 data_temp["interface"] = {}
