@@ -295,6 +295,12 @@ function statusCheck(data={}) {
 				elementVisible("display_"+key+"_ON");
 				elementHidden( "display_"+key+"_OFF");
 				}
+			}
+		else {
+			elementVisible("display_"+key+"_ERROR");
+			elementHidden( "display_"+key+"_ON");
+			elementHidden( "display_"+key+"_OFF");
+			elementHidden( "display_"+key+"_EDIT_MODE");
 			}	
 			
 		if (rm3remotes.edit_mode) {
