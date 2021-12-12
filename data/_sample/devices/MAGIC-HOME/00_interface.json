@@ -1,0 +1,16 @@
+{
+	"Devices" : {
+		"default" : {
+			"IPAddress"   : "192.168.1.49",
+			"DeviceType"  : 1,
+			"Timeout"     : 5,
+			"Methods"     : ["send","query"],
+			"Description" : "Magic Home LED",
+			"Commands"    : {},
+			"Queries"     : {}
+			}
+		},
+	"API-Source"      : "https://github.com/adamkempenich/magichome-python",
+	"API-Info"        : "https://github.com/adamkempenich/magichome-python",
+	"API-Description" : "API for LED compartible to Magic Home App"
+}

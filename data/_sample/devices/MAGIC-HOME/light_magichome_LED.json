@@ -1,0 +1,34 @@
+{
+    "data": {
+        "buttons": {
+            "1": "jc.set_preset(1)",
+            "10": "jc.set_preset(10)",
+            "100%": "jc.set_brightness(100)",
+            "11": "jc.set_preset(11)",
+            "12": "jc.set_preset(12)",
+            "13": "jc.set_preset(13)",
+            "14": "jc.set_preset(14)",
+            "15": "jc.set_preset(15)",
+            "16": "jc.set_preset(16)",
+            "2": "jc.set_preset(2)",
+            "20%": "jc.set_brightness(20)",
+            "3": "jc.set_preset(3)",
+            "4": "jc.set_preset(4)",
+            "5": "jc.set_preset(5)",
+            "5%": "jc.set_brightness(5)",
+            "50%": "jc.set_brightness(50)",
+            "6": "jc.set_preset(6)",
+            "7": "jc.set_preset(7)",
+            "8": "jc.set_preset(8)",
+            "9": "jc.set_preset(9)"
+        },
+        "commands": {},
+        "description": "Magic Home (API)",
+        "display": {},
+        "method": "query",
+        "queries": {},
+        "send-data": {},
+        "url": "",
+        "values": {}
+    }
+}
