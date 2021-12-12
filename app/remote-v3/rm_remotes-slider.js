@@ -5,7 +5,11 @@
 // requires jc-volume-slider-<version>.css
 //-----------------------------------------
 /* INDEX
-function jcSlider ( name, container )
+function rmSlider(name)
+	this.setOnChange	= function(callOnChange="")
+	this.setShowVolume	= function(showVolume="")
+	this.sliderHTML	= function(name,label,device,command,min,max,init="")
+function jcSlider2 ( name, container )
 	this.setOnChange	= function(callOnChange="")
 	this.setShowVolume	= function(showVolume="")
 	this.init		= function( min, max, label )
