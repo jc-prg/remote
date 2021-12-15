@@ -12,3 +12,5 @@ connexion[swagger-ui]
 netifaces
 kodi-json
 sonyapilib
+pycryptodome
+pkcs7
