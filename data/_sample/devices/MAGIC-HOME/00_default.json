@@ -1,0 +1,43 @@
+{
+    "data": {
+	"description" : "MAGIC HOME API",
+	"method" : "query",
+	"buttons" : {
+		"black": "jc.set_color(0, 0, 0)",
+		"blue": "jc.set_color(0, 0, 255)",
+		"cyan": "jc.set_color(0, 255, 255)",
+		"green": "jc.set_color(0, 255, 0)",
+		"off": "jc.turn_off()",
+		"on": "jc.turn_on()",
+		"orange": "jc.set_color(255, 127, 0)",
+		"pink": "jc.set_color(255, 0, 255)",
+		"red": "jc.set_color(255, 0, 0)",
+		"test": "jc.test()",
+		"white": "jc.set_color(255, 255, 255)",
+		"yellow": "jc.set_color(255, 255, 0)"
+		},
+        "commands": {
+		},
+        "queries"     : {
+		"brightness": "jc.get_info('brightness')",
+		"color": "jc.get_info('color_rgb')",
+		"color_raw": "jc.get_info('color_rgb_raw')",
+		"mode": "jc.get_info('mode')",
+		"power": "jc.get_info('power')",
+		"preset": "jc.get_info('preset')",
+		"speed": "jc.get_info('preset_speed')",
+		"status": "jc.get_info('raw_status')"
+        	},
+	"values" : {
+		},
+	"display" : {
+       	},
+	"send-data" : {
+		"send-brightness": "jc.set_brightness({DATA})",
+		"send-color": "jc.set_color({DATA})",
+		"send-preset": "jc.set_preset({DATA})",
+		"send-speed": "jc.set_speed({DATA})",
+		"send-text": "jc.set_color({DATA})"
+        	}
+   }
+}
