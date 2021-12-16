@@ -16,7 +16,7 @@ import interfaces.sonyapi.sony         as sony
 # API-class
 #-------------------------------------------------
 
-class sonyAPI():
+class APIcontrol():
    '''
    Integration of sample API to be use by jc://remote/
    '''
@@ -26,7 +26,6 @@ class sonyAPI():
        
        self.api_name        = api_name       
        self.api_description = "API for SONY Devices (SonyAPILib)"
-#       self.api_config      = rm3json.read("interfaces/sonyapi/"+self.api_name,data_dir=False)
        self.api_config      = device_config
        self.api_device      = device
        self.method          = "query" # or "record"

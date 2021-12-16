@@ -20,7 +20,7 @@ shorten_info_to = rm3config.shorten_info_to
 
 #-------------------------------------------------
 
-class kodiAPI():
+class APIcontrol():
    '''
    Integration of KODI API to be use by jc://remote/
    '''
@@ -30,7 +30,6 @@ class kodiAPI():
        
        self.api_name        = api_name       
        self.api_description = "API for KODI Servers (basic functionality, under development)"
-#       self.api_config      = rm3json.read("interfaces/kodi/"+self.api_name,data_dir=False)
        self.api_config      = device_config
        self.api_url         = "http://"+str(self.api_config["IPAddress"])+":"+str(self.api_config["Port"])+"/jsonrpc"
        self.working         = False
@@ -60,8 +59,7 @@ class kodiAPI():
 
        try:
           self.api    = Kodi(self.api_url)
-          #self.api   = Kodi(self.api_url, "login", "password")
-          self.api.jc = kodiAPIaddOn(self.api)
+          self.api.jc = APIaddOn(self.api)
           logging.debug(str(self.api.JSONRPC.Ping()))
           
           self.count_error          = 0
@@ -217,7 +215,7 @@ class kodiAPI():
 # additional functions -> define self.api.jc.*
 #-------------------------------------------------
 
-class kodiAPIaddOn():
+class APIaddOn():
    '''
    did not found a way to increase or decrease volume directly
    '''
