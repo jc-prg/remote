@@ -1,0 +1,28 @@
+{
+    "data": {
+	"description" : "PyP100 API",
+	"method" : "query",
+	"buttons" : {
+		"on": "jc.turn_on()",
+		"off": "jc.turn_off()",
+		"test": "jc.test()"
+		},
+        "commands": {
+		},
+        "queries"     : {
+		"status": "jc.get_info()",
+		"location": "jc.get_info('location')",
+		"type": "jc.get_info('type')",
+		"model": "jc.get_info('model')",
+		"device_on": "jc.get_info('device_on')",
+		"power": "jc.get_info('power')",
+ 		"overheated": "jc.get_info('overheated')"
+       	},
+	"values" : {
+		},
+	"display" : {
+       	},
+	"send-data" : {
+        	}
+   }
+}
