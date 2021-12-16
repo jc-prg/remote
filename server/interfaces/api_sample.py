@@ -14,7 +14,7 @@ import modules.rm3config               as rm3config
 # API-class
 #-------------------------------------------------
 
-class sampleAPI():
+class APIcontrol():
    '''
    Integration of sample API to be use by jc://remote/
    '''

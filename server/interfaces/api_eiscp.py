@@ -19,7 +19,7 @@ shorten_info_to = rm3config.shorten_info_to
 
 #-------------------------------------------------
 
-class eiscpAPI():
+class APIcontrol():
    '''
    Integration of sample API to be use by jc://remote/
    '''
@@ -32,7 +32,6 @@ class eiscpAPI():
        self.api_name        = api_name       
        self.api_description = "API for ONKYO Devices"
        self.api_device      = device
-#       self.api_config      = rm3json.read("interfaces/eiscp/"+self.api_name,data_dir=False)
        self.api_config      = device_config
        self.api_ip          = self.api_config["IPAddress"]
        self.api_timeout     = 5
@@ -80,7 +79,7 @@ class eiscpAPI():
        try:
           self.api.command("system-power query") # send a command to check if connected
           self.status               = "Connected"
-          self.api.jc               = onkyoAPIaddOn(self.api)
+          self.api.jc               = APIaddOn(self.api)
           self.api.jc.status        = "Connected"
        except Exception as e:
           self.status    = "Error connecting to ONKYO device: " + str(e)
@@ -233,7 +232,7 @@ class eiscpAPI():
 # additional functions -> define self.api.jc.*
 #-------------------------------------------------
 
-class onkyoAPIaddOn():
+class APIaddOn():
    '''
    additional functions that combine values
    '''

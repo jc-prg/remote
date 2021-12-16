@@ -29,7 +29,7 @@ check_on_startup_commands = [
 
 #-------------------------------------------------
 
-class broadlinkAPI():
+class APIcontrol():
    '''
    Integration of BROADLINK API to be use by jc://remote/
    '''
@@ -39,7 +39,6 @@ class broadlinkAPI():
        
        self.api_name        = api_name       
        self.api_description = "Infrared Broadlink RM3"
-       #self.api_config      = rm3json.read("interfaces/broadlink/"+self.api_name,data_dir=False)
        self.api_config      = device_config
        self.working         = False
        self.method          = "record"

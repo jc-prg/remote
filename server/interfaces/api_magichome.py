@@ -18,7 +18,7 @@ shorten_info_to = rm3config.shorten_info_to
 
 #-------------------------------------------------
 
-class magicAPI():
+class APIcontrol():
    '''
    Integration of sample API to be use by jc://remote/
    '''
@@ -56,10 +56,10 @@ class magicAPI():
        try:
            self.api = device.MagicHomeApi(api_ip, api_device_type)
            self.api.get_status()
-           self.api.jc = magicAPIaddOn(self.api)
+           
+           self.api.jc               = APIaddOn(self.api)
            self.api.jc.status        = "Connected"
            self.api.jc.not_connected = self.not_connected
-#           self.api.jc.test()
            self.working = False
           
        except Exception as e:
@@ -223,7 +223,7 @@ class magicAPI():
 # additional functions -> define self.api.jc.*
 #-------------------------------------------------
 
-class magicAPIaddOn():
+class APIaddOn():
    '''
    did not found a way to increase or decrease volume directly
    '''
@@ -392,11 +392,11 @@ class magicAPIaddOn():
       
       if status["mode"] == "COLOR":
          status["rgb"] = "#"+parts[2][1:3]+parts[3][1:3]+parts[4][1:3]
-         status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16), "x" : int(parts[5][1:3],16) }
+         status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16)} #, "x" : int(parts[5][1:3],16) }
          status["set"] = "." # {"a" : int(parts[7][1:3],16), "b" : int(parts[8][1:3],16), "c" : int(parts[9][1:3],16) }
       else:
          status["rgb"] = "#"+parts[2][1:3]+parts[3][1:3]+parts[4][1:3]
-         status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16), "x" : int(parts[5][1:3],16) }
+         status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16)} #, "x" : int(parts[5][1:3],16) }
          status["set"] = "." #{"a" : int(parts[7][1:3],16), "b" : int(parts[8][1:3],16) }
       
       
