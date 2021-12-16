@@ -12,12 +12,11 @@ import modules.rm3config     as rm3config
 
 
 #-------------------------------------------------
-# QUEUE 1: send commands
-#-------------------------------------------------
 
 class queueApiCalls (threading.Thread):
     '''
     class to create a queue to send commands (or a chain of commands) to the devices
+    -> see server_fnct.py: a queue for send commands and another queue for query commands, as query commands take some time
     '''
     
     def __init__(self, name, query_send, device_apis ):
@@ -27,7 +26,7 @@ class queueApiCalls (threading.Thread):
        self.queue          = []
        self.name           = name
        self.stopProcess    = False
-       self.wait           = 0.05
+       self.wait           = 0.01
        self.device_apis    = device_apis
        self.device_reload  = []
        self.last_button    = "<none>"
@@ -109,8 +108,6 @@ class queueApiCalls (threading.Thread):
                    result = self.device_apis.query(interface,device,value)
                    #self.execution_time(device,request_time,time.time())
                    
-                   logging.debug(str(device)+": "+str(result))
-                   
                 except Exception as e:
                    result = "ERROR queue query_list: " + str(e)             
 
@@ -175,30 +172,30 @@ class queueApiCalls (threading.Thread):
         '''
         calculate the avarage execution time per device (duration between request time and time when executed)
         '''
-    
-        duration = end_time - start_time
 
-        logging.warning("Avarage Execution Time: "+device+" ("+str(duration)+")" )
+        avarage_round = 6
+        avarage_count = 20
+        avarage_start = 0
+        duration      = end_time - start_time
 
         if device in self.exec_times:       
+           avarage_start = self.avarage_exec[device]
            self.exec_times[device].append(duration)
-           #if len(self.exec_times[device]) > 10: old = self.exec_times[device].pop(0)
+           if len(self.exec_times[device]) > avarage_count:
+              self.exec_times[device].pop(1)
 
         else:
            self.exec_times[device] = []
            self.exec_times[device].append(duration)
-           
-        logging.warning("Avarage Execution Time: TEST ..................................." )
 
-        i     = 0
         total = 0
-        for d in self.exec_times[device]: 
-          total += d
-          i     += 1
-
-        self.avarage_exec[device] = total / i
+        for d in self.exec_times[device]: total += d
+        self.avarage_exec[device] = total / len(self.exec_times[device])
+        avarage_diff              = self.avarage_exec[device] - avarage_start
         
-        logging.warning("Avarage Execution Time: " + device + " / " + str(self.avarage_exec[device]) )
+        logging.info(device + " EXEC TIME: avarage: " + str(round(self.avarage_exec[device],avarage_round)) + " / last " + str(round(duration,avarage_round)) + " / change " + str(round(avarage_diff,avarage_round)))
+        logging.info("----------------------------------------------")
+        
         
 #-------------------------------------------------
 # EOF

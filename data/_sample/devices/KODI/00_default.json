@@ -9,9 +9,11 @@
 		"display": "Input.ShowOSD()",
 		"down": "Input.Down()",
 		"enter": "Input.Select()",
+		"fast-backward": "jc.PlayerSettings('Speed','backward')",
+		"fast-forward": "jc.PlayerSettings('Speed','forward')",
 		"fav": "GUI.ActivateWindow({'window':'favourites'})",
-		"fbw" : "jc.PlayerSettings('Speed','backward')",
-		"ffw" : "jc.PlayerSettings('Speed','forward')",
+		"fbw": "jc.PlayerSettings('Speed','backward')",
+		"ffw": "jc.PlayerSettings('Speed','forward')",
 		"files": "GUI.ActivateWindow({'window':'filemanager'})",
 		"hallo-welt": "Input.SendText(text='Hallo Welt ...',done=False)",
 		"hello-world": "GUI.ShowNotification(title='Hello World', message='Hello World!!!')",
@@ -25,14 +27,14 @@
 		"mute-on": "Application.SetMute({'mute':True})",
 		"page-down": "GUI.PageDown()",
 		"page-up": "GUI.PageUp()",
-		"pause": "jc.PlayingCommands('PlayPause')",
+		"pause": "jc.PlayerControl('PlayPause')",
 		"pictures": "GUI.ActivateWindow({'window':'pictures'})",
 		"play": "jc.PlayingCommands('Play')",
-		"playpause": "jc.PlayingCommands('PlayPause')",
+		"playpause": "jc.PlayerControl('PlayPause')",
 		"right": "Input.Right()",
 		"settings": "GUI.ActivateWindow({'window':'settings'})",
+		"stop": "jc.PlayerControl('Stop')",
 		"subtitle-on-off": "jc.PlayerSettings('Subtitle','on-off')",
-		"stop": "jc.PlayingCommands('Stop')",
 		"system": "GUI.ActivateWindow({'window':'systeminfo'})",
 		"topmenu": "Input.ContextMenu()",
 		"up": "Input.Up()",
@@ -51,6 +53,7 @@
 		},
         "queries"     : {
 		"addons": "jc.PlayerMetadata('addon-list')",
+		"audiostreams": "jc.PlayerMetadata('audiostreams')",
 		"current-playing": "jc.PlayerMetadata('info')",
 		"genre": "jc.PlayerMetadata('genre')",
 		"item": "jc.PlayerMetadata('item-position')",
@@ -67,16 +70,13 @@
 		"current-subtitle": "jc.PlayerMetadata('currentsubtitle')",
 		"audiostreams": "jc.PlayerMetadata('audiostreams')",
 		"current-audiostream": "jc.PlayerMetadata('currentaudiostream')",
-		"current-audiostream-name": "jc.PlayerMetadata('currentaudiostream','name')",
-		"zz": "jc.PlayerMetadata('item')"
-        	},
+		"current-audiostream-name": "jc.PlayerMetadata('currentaudiostream','name')"
+		},
 	"values" : {
 		"mute"  : [ "False", "True" ],
 		"power" : [ "ON" ],
 		"vol"   : { "max": 100, "min": 0 }
 		},
-	"display" : {
-       	},
 	"send-data" : {
 		"send-text" : "Input.SendText(text='{DATA}',done=False)",
 		"send-text-enter" : "Input.SendText(text='{DATA}',done=True)"

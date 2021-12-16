@@ -68,9 +68,14 @@ def RmReadData_devices(selected=[],remotes=True):
                 # combine default interface definition and device specific definition
                 for value in interface_def_default: 
                    if value != "description":
-                      for key in interface_def_default[value]:                  
-                         if not value in interface_def:      interface_def[value] = {}
-                         if not key in interface_def[value]: interface_def[value][key] = interface_def_default[value][key]
+                   
+                      if not value in interface_def:      
+                         interface_def[value] = interface_def_default[value]                   
+                      
+                      else:
+                        for key in interface_def_default[value]:                  
+                          if not key in interface_def[value]:
+                            interface_def[value][key] = interface_def_default[value][key]
                     
                 data_temp["remote"]    = remote["data"]
                 data_temp["interface"] = {}
@@ -154,8 +159,12 @@ def RmReadData_scenes(selected=[],remotes=True):
       for scene in data:
         if selected == [] or scene in selected:
           remote_file   = data[scene]["config"]["remote"]
-          remote_config = configFiles.read(modules.scenes + remote_file)       
-          data[scene]["remote"] = remote_config["data"]
+          try:
+            remote_config = configFiles.read(modules.scenes + remote_file)       
+            data[scene]["remote"] = remote_config["data"]
+          except Exception as e:
+            logging.error("Reading scene failed: "+str(scene)+" / "+str(selected)+" ("+str(e)+")") 
+            data[scene]["remote"] = "error"
         else:
           logging.error("Scene not found: "+str(scene)+" / "+str(selected))
           return {}

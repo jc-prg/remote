@@ -48,7 +48,9 @@ class kodiAPI():
    #-------------------------------------------------
    
    def connect(self):
-       '''Connect / check connection'''
+       '''
+       Connect / check connection
+       '''
        
        connect = rm3ping.ping(self.api_config["IPAddress"])
        if connect == False:
@@ -76,7 +78,10 @@ class kodiAPI():
    #-------------------------------------------------
        
    def wait_if_working(self):
-       '''Some devices run into problems, if send several requests at the same time'''
+       '''
+       Some devices run into problems, if send several requests at the same time
+       '''
+       
        while self.working:
          logging.debug(".")
          time.sleep(0.2)
@@ -94,7 +99,7 @@ class kodiAPI():
        self.working = True
        
        result  = {}
-       logging.info("Button-Code: "+command[:shorten_info_to]+"... ("+self.api_name+")")
+       logging.debug("Button-Code: "+command[:shorten_info_to]+"... ("+self.api_name+")")
 
        if self.status == "Connected":
          try:
@@ -171,7 +176,9 @@ class kodiAPI():
    #-------------------------------------------------
        
    def record(self,device,command):
-       '''Record command, especially build for IR devices'''
+       '''
+       Record command, especially build for IR devices
+       '''
        
        return "ERROR "+self.api_name+": Not supported by this API"
 
@@ -179,7 +186,9 @@ class kodiAPI():
    #-------------------------------------------------
    
    def register(self,command,pin=""):
-       '''Register command if device requires registration to initialize authentification'''
+       '''
+       Register command if device requires registration to initialize authentification
+       '''
 
        return "ERROR "+self.api_name+": Register not implemented"
 
@@ -187,7 +196,9 @@ class kodiAPI():
    #-------------------------------------------------
        
    def test(self):
-       '''Test device by sending a couple of commands'''
+       '''
+       Test device by sending a couple of commands
+       '''
 
        self.wait_if_working()
        self.working = True
@@ -223,7 +234,9 @@ class kodiAPIaddOn():
    #-------------------------------------------------
        
    def IncreaseVolume(self,step):
-      '''get current volume and increase by step'''
+      '''
+      get current volume and increase by step
+      '''
       
       if self.status == "Connected":
          self.volume = self.api.Application.GetProperties({'properties': ['volume']})["result"]["volume"]
@@ -242,7 +255,9 @@ class kodiAPIaddOn():
    #-------------------------------------------------
        
    def DecreaseVolume(self,step):
-      '''get current volume and increase by step'''
+      '''
+      get current volume and increase by step
+      '''
       
       if self.status == "Connected":
          self.volume = self.api.Application.GetProperties({'properties': ['volume']})["result"]["volume"]
@@ -261,7 +276,9 @@ class kodiAPIaddOn():
    #-------------------------------------------------
        
    def ToggleMute(self):
-      '''get muted value and set opposite state'''
+      '''
+      get muted value and set opposite state
+      '''
       
       if self.status == "Connected":
          self.mute = self.api.Application.GetProperties({'properties': ['muted']})["result"]["muted"]
@@ -281,7 +298,9 @@ class kodiAPIaddOn():
    #-------------------------------------------------
    
    def PowerStatus(self):
-      '''Return Power Status'''
+      '''
+      Return Power Status
+      '''
 
       if self.status == "Connected":
          self.power = {}
@@ -295,7 +314,9 @@ class kodiAPIaddOn():
    #-------------------------------------------------
    
    def KodiVersion(self):
-      '''Return Kodi Version as string'''
+      '''
+      Return Kodi Version as string
+      '''
        
       if self.status == "Connected":
          version      = {}
@@ -315,37 +336,13 @@ class kodiAPIaddOn():
    # up / down - show information - if media is running
    # left / right - jump step back / jump step forward - if media is running
    # ...
-            
-   #-------------------------------------------------
-   
-   def PlayingCommands(self,command):
-      '''Send play, pause, stop to active device'''
-
-      if self.status == "Connected":
-         active     = self.api.Player.GetActivePlayers()['result']        
-         try:
-           msg        = ""
-           player     = { 'playerid' : active[0]['playerid'] }
-           
-           if command == "Play"        : msg = self.api.Player.PlayPause(player)
-           elif command == "PlayPause" : msg = self.api.Player.PlayPause(player)
-           elif command == "Stop"      : msg = self.api.Player.Stop(player)
-           
-           if msg != "" and not "error" in str(msg):  return { "result" : "OK" }
-           elif "error" in str(msg):                  return msg
-           else:                                      return { "error"  : "command not defined" }
-           
-         except Exception as e:
-           logging.warn("error" + str(e))
-           return { "result" : "no media loaded" }
-         
-      else:
-         return self.not_connected
          
    #-------------------------------------------------
 
    def ReplaceHTML(self,text):
-      '''replace known html tags'''
+      '''
+      replace known html tags
+      '''
       
       result = str(text)
       result = result.replace("[CR]","<br/>")
@@ -359,33 +356,6 @@ class kodiAPIaddOn():
       
       return result
    
-   #-------------------------------------------------
-         
-   def PlayerControl(self,command,values):
-      '''
-      Control player // https://kodi.wiki/view/JSON-RPC_API/v12#Player
-      
-      5.10.1  Player.AddSubtitle   - not implemented yet
-      5.10.7  Player.GoTo          - not implemented yet
-      5.10.8  Player.Move          - not implemented yet
-      5.10.9  Player.Open          - not implemented yet
-      5.10.10 Player.PlayPause     - not implemented yet
-      5.10.11 Player.Rotate        - not implemented yet
-      5.10.12 Player.Seek          - not implemented yet
-      5.10.22 Player.Zoom          - not implemented yet
-      '''
-
-      commands_not_implemented = ['AddSubtitle','GoTo','Move','Open','PlayPause','Rotate','Seek','Zoom']
-      commands_implemented     = []
-
-      if self.status == "Connected":
-         if command in commands_not_implemented:      return { "error"  : "command not implemented (" + unknown + ")" }
-         elif command not in commands_implemented:    return { "error"  : "command unkown (" + unknown + ")" }
-
-      else:
-         return self.not_connected
-
-
    #-------------------------------------------------
 
    def PlayerActive(self):
@@ -410,19 +380,61 @@ class kodiAPIaddOn():
  
       else:
          return { "error" : "unknown error ("+str(active)+")" }
-      
 
+   #-------------------------------------------------
          
+   def PlayerControl(self,command,values):
+      '''
+      Control player // https://kodi.wiki/view/JSON-RPC_API/v12#Player
+      
+      5.10.10 Player.PlayPause (= Play)
+      5.10.21 Player.Stop
+      5.10.1  Player.AddSubtitle   - not implemented yet
+      5.10.7  Player.GoTo          - not implemented yet
+      5.10.8  Player.Move          - not implemented yet
+      5.10.9  Player.Open          - not implemented yet
+      5.10.11 Player.Rotate        - not implemented yet
+      5.10.12 Player.Seek          - not implemented yet
+      5.10.22 Player.Zoom          - not implemented yet
+      '''
+
+      commands_not_implemented = ['AddSubtitle','GoTo','Move','Open','Rotate','Seek','Zoom']
+      commands_implemented     = ['PlayPause','Stop','Play']
+
+      if self.status == "Connected":
+
+         active = self.PlayerActive()
+         if "error" in active:    return active
+         elif "result" in active: return active
+         else:
+            playerid   = active["playerid"]
+            playertype = active["playertype"]
+            player     = { 'playerid' : playerid }
+
+         if command in commands_not_implemented:      return { "error"  : "command not implemented (" + unknown + ")" }
+         elif command not in commands_implemented:    return { "error"  : "command unkown (" + unknown + ")" }
+         elif command == "Play":                      msg = self.api.Player.PlayPause(player)
+         elif command == "PlayPause":                 msg = self.api.Player.PlayPause(player)
+         elif command == "Stop":                      msg = self.api.Player.Stop(player)
+
+         if result["result"] != "OK":  return { "error" : command+": '"+str(value)+"' failed (" + str(result["result"]) + ")" }
+         else:                         return { "result" : result }
+         
+      else:
+         return self.not_connected
+
+   #-------------------------------------------------
+            
    def PlayerSettings(self,command,value):
       '''
       Settings for playing media // https://kodi.wiki/view/JSON-RPC_API/v12#Player
       
-      5.10.13 Player.SetAudioStream  - implementation started ...
+      5.10.13 Player.SetAudioStream
+      5.10.17 Player.SetSpeed
+      5.10.18 Player.SetSubtitle
       5.10.14 Player.SetPartymode    - not implemented yet
       5.10.15 Player.SetRepeat       - not implemented yet
       5.10.16 Player.SetShuffle      - not implemented yet
-      5.10.17 Player.SetSpeed        - implementation started ...
-      5.10.18 Player.SetSubtitle
       5.10.19 Player.SetVideoStream  - not implemented yet
       5.10.20 Player.SetViewMode     - not implemented yet
       '''
@@ -456,7 +468,7 @@ class kodiAPIaddOn():
                
          elif command == "Speed":
             current_status = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : ['speed']})['result']['speed']
-            logging.warning("..... SPEED ... " + str(current_status))
+            logging.debug("..... SPEED ... " + str(current_status))
             if value in command_values["Speed"]:
                result = self.api.Player.SetSpeed({'playerid' : playerid, 'speed' : value})
             elif value == "forward":
@@ -666,7 +678,9 @@ class kodiAPIaddOn():
    #-------------------------------------------------
    
    def AddOns(self,cmd=""):
-      '''get infos for addons'''
+      '''
+      get infos for addons
+      '''
        
       if self.status == "Connected":
          data   = self.api.Addons.GetAddons()['result']['addons']
