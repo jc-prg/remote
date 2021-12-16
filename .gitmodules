@@ -4,6 +4,3 @@
 [submodule "app/modules"]
 	path = app/modules
 	url = https://github.com/jc-prg/modules.git
-[submodule "server/interfaces/magic-home"]
-	path = server/interfaces/magic-home
-	url = https://github.com/adamkempenich/magichome-python.git
