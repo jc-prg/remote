@@ -22,6 +22,8 @@ Edit remote layouts in a browser
 * Several ONKYO devices with API (see section modelsets in the file eiscp-commands.yaml in https://github.com/miracle2k/onkyo-eiscp)
 * Several SONY devices with API (see README in https://https://github.com/alexmohr/sonyapilib)
 * KODI server (e.g. also installed on the Raspberry PI)
+* MagicHome LED strips 
+* Tapo SmartPlugs
 * *Other devices easily can be integrated*
 
 ## Data structure
@@ -30,7 +32,12 @@ Edit remote layouts in a browser
 
 ## Main features
 
-### App v2.6 / Server v1.9 (in-progress)
+### App v2.7 / Server v2.0 (in-progress)
+
+* add remote control for LED strips compartible with MagicHome
+* add remote control for Tapo SmartPlugs
+
+### App v2.6 / Server v1.9
 
 * send text input to API for KODI API
 * integrate jc://modules/ as sub-module
@@ -84,6 +91,8 @@ Many thanks to the authors ...
 * eiscp-onkyo (https://github.com/miracle2k/onkyo-eiscp)
 * KodiJson (https://github.com/jcsaaddupuy/python-kodijson)
 * SonyApiLib (https://https://github.com/alexmohr/sonyapilib)
+* MagicHome API (https://github.com/adamkempenich/magichome-python)
+* PyP100 API (https://github.com/fishbigger/TapoP100)
 * Free icons from (https://icon-icons.com/), (https://www.freeicons.io/), (https://www.flaticon.com/), and (https://icons8.com/)
 * jc://modules/ (https://github.com/jc-prg/modules)
 
@@ -139,11 +148,5 @@ $ ./start update
 
 ## Disclaimer
 
-I've tried to make the code usable for others also but still developing. Next steps could be:
-
-* integrate additional API (e.g. Sony devices ...)
-* editing of device remote controls (move buttons, assign API-commands, ...)
-* editing of scene remote controls
-
-A more detailed description will follow. Feel free already to try and to improve ... and stay tuned.
+Feel free to try and to improve ... and stay tuned.
 
