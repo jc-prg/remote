@@ -1028,12 +1028,13 @@ def devicesGetStatus(data,readAPI=False):
            
         if device in data and "interface" in data[device] and "method" in data[device]["interface"]:
           
-          method    = data[device]["interface"]["method"]
-          interface = data[device]["config"]["interface_api"]         
-          data[device]["status"]["api-status"] = deviceAPIs.status(interface)
+          method        = data[device]["interface"]["method"]
+          interface     = data[device]["config"]["interface_api"]         
+          interface_dev = data[device]["config"]["interface_dev"] 
+          data[device]["status"]["api-status"] = deviceAPIs.status(interface,interface_dev)
           
           # get status values from config files, if connected
-          if deviceAPIs.status(interface) == "Connected":
+          if deviceAPIs.status(interface,interface_dev) == "Connected":
 
               # preset values
               if method != "query" and "commands" in devices[device]["interface"]:
