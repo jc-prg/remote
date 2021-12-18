@@ -226,6 +226,10 @@ function statusCheck(data={}) {
 	
 	  // if device is visible
 	  if (devices[device]["settings"]["visible"] == "yes") {
+
+	    console.debug("Device Status: "+device);
+	    console.debug(devices[device]["status"]);
+
 	    for (var key2 in devices[device]["status"]) {
 	    
 	      // if power status
@@ -236,7 +240,7 @@ function statusCheck(data={}) {
 	        //console.error("TEST "+key1+"_"+key2+" = "+devices[key1]["status"][key2]);
 		check_button = devices[device]["status"][key2];
 		connection   = devices[device]["status"]["api-status"].toLowerCase();
-		
+			
 		if (connection != "connected") {
 			statusButtonSetColor( "device_" + key, "ERROR" ); // main menu button
 			statusButtonSetColor( key + "_on-off", "ERROR" ); // on-off device button		
