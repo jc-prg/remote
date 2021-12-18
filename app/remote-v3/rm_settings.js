@@ -365,7 +365,7 @@ function rmSettings (name) {	// IN PROGRESS
 		for (var key in this.data["STATUS"]["interfaces"]) {
 			text += key + ":<br>";
 			if (this.data["STATUS"]["interfaces"][key] == "Connected")	{ text += "<font color='lightgreen'>"; }
-			else								{ text += "<font color='lightred'>"; }
+			else								{ text += "<font color='#FF6666'>"; }
 			text += this.data["STATUS"]["interfaces"][key] + "</font><br/>";
 			}
 		text += "</div>";
