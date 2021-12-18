@@ -21,6 +21,7 @@ function remoteLastFromCookie()
 //--------------------------------
 
 var rm3background  = "remote-v3/img/remote2.png";
+var rm3scene_dir   = "remote-v3/img_scene/";
 var reload_active  = false;
 var showImg        = true;
 var startActive    = true;
