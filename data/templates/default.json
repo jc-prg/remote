@@ -1,0 +1,19 @@
+{
+    "default": {
+        "description": "Default Remote Control definition", 
+        "label": "Default", 
+        "remote": [
+            ".", ".", ".", "on-off", 
+            "LINE", 
+            "1",    "2",    "3",  "vol+", 
+            "4",    "5",    "6",  "mute", 
+            "7",    "8",    "9",  "vol-",  
+            "b.",   "0",    ".",  ".", 
+            "LINE", 
+            ".",    "up",    ".",     "prg+", 
+            "left", "enter", "right", "prg-", 
+            ".",    "down",  ".",     "."
+        ],
+       "type" : "device"
+    }
+}

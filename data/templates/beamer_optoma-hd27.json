@@ -1,0 +1,16 @@
+{
+    "beamer_optoma-hd27": {
+        "description": "Beamer: Optoma HD27", 
+        "remote": [
+            ".", ".", "on", "off", 
+            "LINE", 
+            "timer", "3d",     "aspect",   "menu", 
+            "eco",   "bright", "contrast", "mode", 
+            "LINE", 
+            ".",    "up",    ".",     ".", 
+            "left", "enter", "right", ".", 
+            ".",    "down",   ".",    "."
+        ],
+        "type" : "device"
+    }
+}

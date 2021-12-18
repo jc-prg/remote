@@ -1,0 +1,50 @@
+{
+    "data": {
+        "description": "KODI Media Center (Device)",
+        "display": {
+            "Info": "version",
+            "Playing": "current-playing",
+            "Volume": "vol"
+        },
+        "display-size": "middle",
+        "remote": [
+            ".",
+            ".",
+            ".",
+            "on",
+            "LINE",
+            "home",
+            "music",
+            "videos",
+            "pictures",
+            "addons",
+            "weather",
+            "fav",
+            "LINE",
+            "DISPLAY",
+            "topmenu",
+            "settings",
+            "info",
+            "menu",
+            "LINE",
+            "keyboard",
+            "up",
+            "context",
+            "vol+",
+            "left",
+            "enter",
+            "right",
+            "mute",
+            ".",
+            "down",
+            "back",
+            "vol-",
+            "LINE",
+            "fbw",
+            "playpause",
+            "stop",
+            "ffw"
+        ],
+       "type" : "device"
+    }
+}

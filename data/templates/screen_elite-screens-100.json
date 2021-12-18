@@ -1,0 +1,13 @@
+{
+    "screen_elite-screens-100": {
+        "description": "Screens: Elite Screens 100\"", 
+        "remote": [
+            ".",    ".", "on", "off", 
+            "LINE", 
+            "up",   ".", ".", ".", 
+            "stop", ".", ".", ".", 
+            "down", ".", ".", "."
+        ],
+       "type" : "device"
+    }
+}

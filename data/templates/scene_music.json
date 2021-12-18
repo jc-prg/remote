@@ -1,0 +1,107 @@
+{
+    "data": {
+        "channel": {
+            "Antenne Bayern": [
+                "makro_recradio",
+                "tv_6",
+                "tv_7",
+                "tv_8"
+            ],
+            "Die Maus": [
+                "makro_recradio",
+                "tv_6",
+                "tv_5",
+                "tv_8"
+            ],
+            "BR-Klassik": [
+                "makro_recradio",
+                "tv_6",
+                "tv_0",
+                "tv_3"
+            ],
+            "Bayern 1": [
+                "makro_recradio",
+                "tv_6",
+                "tv_0",
+                "tv_0"
+            ],
+            "Bayern 2": [
+                "makro_recradio",
+                "tv_6",
+                "tv_0",
+                "tv_1"
+            ],
+            "Bayern 3": [
+                "makro_recradio",
+                "tv_6",
+                "tv_0",
+                "tv_2"
+            ],
+            "MDR JUMP": [
+                "makro_recradio",
+                "tv_6",
+                "tv_1",
+                "tv_8"
+            ],
+            "N-JOY": [
+                "makro_recradio",
+                "tv_2",
+                "tv_7"
+            ],
+            "NDR 2": [
+                "makro_recradio",
+                "tv_6",
+                "tv_2",
+                "tv_2"
+            ],
+            "rbb Fritz": [
+                "makro_recradio",
+                "tv_6",
+                "tv_3",
+                "tv_9"
+            ],
+            "rbb radio1": [
+                "makro_recradio",
+                "tv_6",
+                "tv_3",
+                "tv_8"
+            ]
+        },
+        "description" : "Scene for music",
+        "devices": [
+            "tv",
+            "rec2"
+        ],
+        "label": "Musik",
+        "remote": [
+            ".",
+            ".",
+            "scene-on_music",
+            "scene-off_music",
+            "LINE||input device",
+            "makro_radio",
+            "makro_bluetooth",
+            "makro_cd",
+            "makro_aux",
+            "LINE||radio playback",
+            "tv_prg+",
+            "tv_back",
+            "tv_prg-",
+            "makro_stereo",
+            "LINE||bluray playback",
+            "bd_fbw",
+            "bd_play",
+            "bd_ffw",
+            "makro_vol+",
+            "bd_last",
+            "bd_pause",
+            "bd_next",
+            "makro_mute",
+            ".",
+            "bd_stop",
+            ".",
+            "makro_vol-"
+        ],
+    "type" : "scene"
+    }
+}
