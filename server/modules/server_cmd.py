@@ -263,7 +263,7 @@ def RemoteSet(device,command,value):
         
         data                      = remoteAPI_start()
         interface                 = configFiles.cache["_api"]["devices"][device]["config"]["interface_api"]
-        method                    = deviceAPIs.method(interface)
+        method                    = deviceAPIs.method(device)
         
         data["REQUEST"]["Device"]  = device
         data["REQUEST"]["Button"]  = command
@@ -406,14 +406,15 @@ def RemoteOnOff(device,button):
         
         data            = remoteAPI_start()
         interface       = data["DATA"]["devices"][device]["config"]["interface_api"]
-        method          = deviceAPIs.method(interface)
+        method          = deviceAPIs.method(device)
+        api_dev         = interface+"_"+data["DATA"]["devices"][device]["config"]["interface_dev"]
         dont_send       = False
-        
+
+        logging.info("__BUTTON: " +device+"/"+button+" ("+interface+"/"+method+")")
+
         # if recorded values, check against status quo
         if method == "record":
-        
-          logging.info("RemoteOnOff: " +device+"/"+button+" ("+interface+"/"+method+")")
-          
+                  
           # Get method and presets
           if "commands" in data["DATA"]["devices"][device]["interface"]:  types   = data["DATA"]["devices"][device]["interface"]["commands"]
           if "values"   in data["DATA"]["devices"][device]["interface"]:  presets = data["DATA"]["devices"][device]["interface"]["values"]        
@@ -450,24 +451,19 @@ def RemoteOnOff(device,button):
                  elif direction == "-":                              dont_send = True
                  
             else:
-               logging.info("RemoteOnOff - Device is off: "+device)
+               logging.debug("RemoteOnOff - Device is off: "+device)
                dont_send = True
                
           else:
             logging.warn("RemoteOnOff - Command not defined: "+device+"_"+value)
             logging.debug("types = " + str(types) + " / presets = " + str(presets))
-                           
-        # if values via API, no additional need for checks (as done by API ...)
-        elif method == "query":
-          logging.info("RemoteOnOff: " +device+"/"+button+" ("+interface+"/"+method+")")
-          status = ""
-          
+                                     
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
         data["REQUEST"]["Command"]   = "OnOff"
         
         if dont_send: data["REQUEST"]["Return"] = "Dont send "+device+"/"+button+" as values not valid ("+str(current_status)+")."
-        else:         data["REQUEST"]["Return"] = queueSend.add2queue([[interface,device,button,status]])
+        else:         data["REQUEST"]["Return"] = queueSend.add2queue([[api_dev,device,button,status]])
         
         refreshCache()
         data["DATA"]                 = {}

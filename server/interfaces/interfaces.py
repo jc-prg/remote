@@ -127,13 +127,14 @@ class connect(threading.Thread):
     
     #-------------------------------------------------
     
-    def method(self,interface=""):
+    def method(self,device=""):
         '''
         return method of interface
         '''
         
-        if interface in self.api:   return self.api[interface].method
-        else:                       return "ERROR: interface not defined ("+interface+")"
+        api_dev = self.api_device(device)
+        if api_dev in self.api:   return self.api[api_dev].method
+        else:                     return "ERROR: interface not defined ("+api_dev+"/"+device+")"
     
     #-------------------------------------------------
     
@@ -236,10 +237,10 @@ class connect(threading.Thread):
         api_dev = self.api_device( device )
         self.check_errors(call_api,device)        
 
-        logging.debug("__SEND: "+api_dev+" ("+self.api[api_dev].status+")")
+        logging.info("__SEND: "+api_dev+" / " + button + ":" + value + " ("+self.api[api_dev].status+")")
 
         if self.api[api_dev].status == "Connected":
-            method = self.method(api_dev)
+            method = self.method(device)
             
             if button.startswith("send-"):
                if method == "query" and value != "":    button_code = self.get_command( call_api, "send-data", device, button )
@@ -257,7 +258,6 @@ class connect(threading.Thread):
                if self.log_commands:      logging.info("...... SEND "+api_dev+" / "+button+" ('"+str(value)+"'/"+method+")")
                if self.log_commands:      logging.info("...... "+str(button_code))
 
-            
             if "ERROR" in button_code: return_msg = "ERROR: could not read/create command from button code (send/"+mode+"/"+button+"); " + button_code
             elif api_dev in self.api:  return_msg = self.api[api_dev].send(device,button_code)
             else:                      return_msg = "ERROR: API not available ("+api_dev+")"
@@ -274,6 +274,7 @@ class connect(threading.Thread):
              logging.warn(return_msg)
            self.last_message = return_msg
            self.check_errors_count(call_api,device,True)
+           
         else:
            self.check_errors_count(call_api,device,False)
 
@@ -354,17 +355,18 @@ class connect(threading.Thread):
         '''
         save status of button to active.json
         '''
-    
+
         return_msg = ""
-        active        = self.configFiles.read_status()
+        active     = self.configFiles.read_status()
         
-        if button == "on" or button == "off" or button == "on-off":  value  = "power"
-        elif button[-1:] == "+" or button[-1:] == "-":               value  = button[:-1]
-        else:                                                        value  = button
+        if button == "on" or button == "off" or button == "on-off":  param  = "power"
+        elif button[-1:] == "+" or button[-1:] == "-":               param  = button[:-1]
+        else:                                                        param  = button
 
         if device in active:
           if not "status" in active[device]: active[device]["status"] = {}
-          active[device]["status"][value] = status
+          active[device]["status"][param]  = status
+          active[device]["status"]["TEST"] = str(time.time()) + " / " + param
           return_msg = "OK"
           
         else:
@@ -376,13 +378,14 @@ class connect(threading.Thread):
 
 #-------------------------------------------------
 
-    def get_command(self,api,button_query,device,button):
+    def get_command(self,dev_api,button_query,device,button):
         '''
         translate device and button to command for the specific device
         '''
 
         # read data -> to be moved to cache?!
         active        = self.configFiles.read_status()
+        api           = dev_api.split("_")[0]
         
         if device in active:
           device_code  = active[device]["config"]["device"]
@@ -414,6 +417,7 @@ class connect(threading.Thread):
         
         # read data -> to be moved to cache?!
         active        = self.configFiles.read_status()
+        api           = dev_api.split("_")[0]
         
         if device in active:
           device_code  = active[device]["config"]["device"]
