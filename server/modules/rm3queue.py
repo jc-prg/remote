@@ -99,7 +99,8 @@ class queueApiCalls (threading.Thread):
                 # -> if record and state is set, record new value
                 
              except Exception as e:
-                result = "ERROR queue query_list: " + str(e)
+                result = "ERROR queue query_list (send,"+interface+","+device+"): " + str(e)
+                logging.error(result)
 
           elif self.query_send == "query":
              result = ""
@@ -109,7 +110,8 @@ class queueApiCalls (threading.Thread):
                    #self.execution_time(device,request_time,time.time())
                    
                 except Exception as e:
-                   result = "ERROR queue query_list: " + str(e)             
+                   result = "ERROR queue query_list (query,"+interface+","+device+","+value+"): " + str(e)             
+                   logging.error(result)
 
                 if not "ERROR" in str(result):  devices[device]["status"][value] = str(result)
                 else:                           devices[device]["status"][value] = "Error"
