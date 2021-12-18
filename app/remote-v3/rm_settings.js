@@ -321,8 +321,8 @@ function rmSettings (name) {	// IN PROGRESS
 		for (var i=0; i<this.e_remotes.length; i++)  { changeVisibility(this.e_remotes[i],show_remotes);  }
 		for (var i=0; i<this.e_settings.length; i++) { changeVisibility(this.e_settings[i],show_settings); }
 		
-		if (this.edit_mode == true && show_remotes)   	{ elementVisible("frame1"); elementVisible("frame2"); elementVisible("frame3"); }
-		else if (this.edit_mode == false && show_remotes)	{ elementHidden("frame1");  elementHidden("frame2");  elementHidden("frame3"); }
+		if (this.edit_mode == true && show_remotes)   	{ elementVisible("frame1"); elementVisible("frame2"); } //elementVisible("frame3"); }
+		else if (this.edit_mode == false && show_remotes)	{ elementHidden("frame1");  elementHidden("frame2");  } //elementHidden("frame3"); }
 		else if (show_settings)				{ elementHidden("frame1");  elementHidden("frame2"); elementHidden("frame3"); }
 		}
 
@@ -363,7 +363,10 @@ function rmSettings (name) {	// IN PROGRESS
 	this.interface_list     = function () {
 		var text = "<div id='setting_interface_list'>";
 		for (var key in this.data["STATUS"]["interfaces"]) {
-			text += key + ": " + this.data["STATUS"]["interfaces"][key] + "<br/>";
+			text += key + ":<br>";
+			if (this.data["STATUS"]["interfaces"][key] == "Connected")	{ text += "<font color='lightgreen'>"; }
+			else								{ text += "<font color='lightred'>"; }
+			text += this.data["STATUS"]["interfaces"][key] + "</font><br/>";
 			}
 		text += "</div>";
 		return text;
