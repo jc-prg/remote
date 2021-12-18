@@ -50,8 +50,6 @@ class APIcontrol():
        Connect / check connection
        '''
        
-       # commands to connect and to check, if connection works - if not, return error message
-
        connect = rm3ping.ping(self.api_config["IPAddress"])
        if not connect:
          self.status = self.not_connected + " ... PING"
@@ -67,7 +65,6 @@ class APIcontrol():
        api_name   = self.api_device
        api_config = rm3stage.data_dir + "/" + rm3config.devices + self.api_name + "/" + self.api_device + ".json"
        
-       # load config file (generated during the registration process)
        try:
            self.api = sony.sonyDevice(api_ip,api_name,api_config)
            

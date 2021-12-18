@@ -54,8 +54,6 @@ class APIcontrol():
        Connect / check connection
        '''
        
-       # commands to connect and to check, if connection works - if not, return error message
-
        connect = rm3ping.ping(self.api_config["IPAddress"])
        if not connect:
          self.status = self.not_connected + " ... PING"

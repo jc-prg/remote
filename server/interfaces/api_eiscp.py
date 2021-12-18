@@ -61,9 +61,7 @@ class APIcontrol():
        '''
        Connect / check connection
        '''
-       
-       # Create a receiver object, connecting to the host
-       
+              
        connect = rm3ping.ping(self.api_config["IPAddress"])
        if not connect:
          self.status = self.not_connected + " ... PING"
@@ -75,7 +73,6 @@ class APIcontrol():
        self.count_success        = 0
 
        try:
-          logging.debug("(Re)Connect eISCP ONKYO "+self.api_ip)
           self.api    = eiscp.eISCP(self.api_ip)
           #self.api    = eiscp.Receiver(self.api_ip)
           #self.api.on_message = callback_method
