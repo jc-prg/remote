@@ -242,18 +242,21 @@ class connect(threading.Thread):
             method = self.method(api_dev)
             
             if button.startswith("send-"):
-               logging.info(device+" SEND-DATA: "+api_dev+" / "+button+" ("+str(value)+"/"+method+")")
                if method == "query" and value != "":    button_code = self.get_command( call_api, "send-data", device, button )
                else:                                    button_code = "ERROR, wrong method (!query) or no data transmitted."
                if not "ERROR" in button_code:           button_code = button_code.replace("{DATA}",value)
-               logging.info(device+" BUTTON CODE: "+button_code)
+
+               if self.log_commands:      logging.info("...... SEND-DATA "+api_dev+" / "+button+" ('"+str(value)+"'/"+method+")")
+               if self.log_commands:      logging.info("...... "+str(button_code))
                
             else:            
-               logging.info(device+" SEND: "+call_api+" / "+button+" ("+str(value)+"/"+method+")")
                if  method == "record":                  button_code = self.get_command( call_api, "buttons", device, button ) 
                elif method == "query" and value == "":  button_code = self.get_command( call_api, "buttons", device, button )
                else:                                    button_code = self.create_command( call_api, device, button, value ) 
-               logging.info(device+" BUTTON CODE: "+button_code)               
+
+               if self.log_commands:      logging.info("...... SEND "+api_dev+" / "+button+" ('"+str(value)+"'/"+method+")")
+               if self.log_commands:      logging.info("...... "+str(button_code))
+
             
             if "ERROR" in button_code: return_msg = "ERROR: could not read/create command from button code (send/"+mode+"/"+button+"); " + button_code
             elif api_dev in self.api:  return_msg = self.api[api_dev].send(device,button_code)
@@ -263,7 +266,7 @@ class connect(threading.Thread):
                self.save_status(device, button, value)
            
         else:
-            return_msg = "ERROR: API not connected ("+api_dev+")"
+            return_msg = self.api[api_dev].status
         
 
         if "ERROR" in str(return_msg) or "error" in str(return_msg):
@@ -293,9 +296,11 @@ class connect(threading.Thread):
         if self.api[api_dev].status == "Connected":       
             if api_dev in self.api:    return_msg = self.api[api_dev].record(device,button)
             else:                      return_msg = "ERROR: API not available ("+api_dev+")"
+
             if self.log_commands:      logging.info("...... "+str(return_msg))
 
-        else:                        return_msg = "ERROR: API not connected ("+api_dev+")"
+        else:
+            return_msg = self.api[api_dev].status
 
         if "ERROR" in str(return_msg) or "error" in str(return_msg):
            if self.last_message != return_msg:
@@ -326,9 +331,11 @@ class connect(threading.Thread):
             if "ERROR" in button_code: return_msg = "ERROR: could not read/create command from button code (query/"+device+"/"+button+"); " + button_code
             elif api_dev in self.api:  return_msg = self.api[api_dev].query(device,button_code)
             else:                      return_msg = "ERROR: API not available ("+str(api_dev)+")"
+
             if self.log_commands:      logging.info("...... "+str(return_msg))
 
-        else:                          return_msg = "ERROR: API not connected ("+str(api_dev)+")"
+        else:
+             return_msg = self.api[api_dev].status
 
         if "ERROR" in str(return_msg) or "error" in str(return_msg):
            if self.last_message != return_msg:
