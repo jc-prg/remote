@@ -926,7 +926,7 @@ def getStatus(device,key):
       return 0
     
     if device in status and key in status[device]["status"]:
-      logging.info("Get status: " + key + " = " + str(status[device]["status"][key]))
+      logging.debug("Get status: " + key + " = " + str(status[device]["status"][key]))
       return status[device]["status"][key]
       
     else:

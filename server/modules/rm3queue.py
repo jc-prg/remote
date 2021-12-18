@@ -94,13 +94,15 @@ class queueApiCalls (threading.Thread):
              try:
                 result = self.device_apis.send(interface,device,button,state)
                 self.execution_time(device,request_time,time.time())
-                
+
+               
                 # -> if query and state is set, create command
                 # -> if record and state is set, record new value
                 
              except Exception as e:
                 result = "ERROR queue query_list (send,"+interface+","+device+"): " + str(e)
                 logging.error(result)
+
 
           elif self.query_send == "query":
              result = ""
@@ -195,8 +197,7 @@ class queueApiCalls (threading.Thread):
         self.avarage_exec[device] = total / len(self.exec_times[device])
         avarage_diff              = self.avarage_exec[device] - avarage_start
         
-        logging.info(device + " EXEC TIME: avarage: " + str(round(self.avarage_exec[device],avarage_round)) + " / last " + str(round(duration,avarage_round)) + " / change " + str(round(avarage_diff,avarage_round)))
-        logging.info("----------------------------------------------")
+        logging.info("...... EXEC TIME '"+device+"' avarage: " + str(round(self.avarage_exec[device],avarage_round)) + " / last " + str(round(duration,avarage_round)) + " / change " + str(round(avarage_diff,avarage_round)))
         
         
 #-------------------------------------------------
