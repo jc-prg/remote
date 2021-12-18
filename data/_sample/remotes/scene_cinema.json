@@ -9,6 +9,7 @@
         ],
         "label": "Kino",
         "remote": [
+            "HEADER-IMAGE",
             ".",
             ".",
             "scene-on_cinema",

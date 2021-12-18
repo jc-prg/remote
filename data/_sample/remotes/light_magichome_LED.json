@@ -1,0 +1,36 @@
+{
+    "data": {
+        "description": "Arotelicht LED Strip",
+        "display": {
+            "Bright": "brightness",
+            "Color": "color",
+            "Mode": "mode",
+            "Preset": "preset"
+        },
+        "display-size": "h3w2",
+        "remote": [
+            ".",
+            ".",
+            "on",
+            "off",
+            "LINE",
+            "DISPLAY",
+            "LINE||Color Select",
+            "SLIDER||send-brightness||Brightness||0-100||brightness",
+            "COLOR-PICKER||send-color",
+            "LINE||Light Programs",
+            "SLIDER||send-preset||Presets||37-56||preset",
+            "SLIDER||send-speed||Preset Speed||1-100||speed",
+            "LINE",
+            "white",
+            "yellow",
+            "orange",
+            "red",
+            "green",
+            "blue",
+            "cyan",
+            "pink"
+        ],
+        "type": "device"
+    }
+}

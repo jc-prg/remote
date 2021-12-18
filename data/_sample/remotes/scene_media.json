@@ -16,8 +16,15 @@
             "Volume": "rec2_vol"
         },
         "display-size": "h3w2",
+        "display-detail": {
+            "Audio": "media-center_current-audiostream-name",
+            "Content": "media-center_current-playing",
+            "Subtitle": "media-center_subtitle-enabled",
+            "Plot": "media-center_plot||['plot']"
+        },
         "label": "Media Center",
         "remote": [
+            "HEADER-IMAGE",
             "makro_kodi",
             ".",
             "scene-on_media",

@@ -5,9 +5,24 @@
         },
         "settings": {
             "description": "Bluray, PC, Kodi",
-            "image": "",
+            "image": "cinema.jpg",
             "label": "Kino",
             "position": 3,
+            "size": "big",
+            "visible": "yes"
+        },
+        "status": {}
+    },
+    "light": {
+        "config": {
+            "remote": "scene_light"
+        },
+        "settings": {
+            "description": "Light",
+            "image": "led.jpg",
+            "label": "Licht & Technik",
+            "position": 6,
+            "size": "big",
             "visible": "yes"
         },
         "status": {}
@@ -18,8 +33,10 @@
         },
         "settings": {
             "description": "KODI",
+            "image": "media-center.jpg",
             "label": "Media Center",
             "position": 5,
+            "size": "big",
             "visible": "yes"
         },
         "status": {}
@@ -30,9 +47,10 @@
         },
         "settings": {
             "description": "Bluray/CD, Bluetooth, AUX, Radio-Receiver",
-            "image": "",
+            "image": "music.jpg",
             "label": "Musik",
             "position": 4,
+            "size": "big",
             "visible": "yes"
         },
         "status": {}
@@ -46,6 +64,7 @@
             "image": "",
             "label": "Fernsehen",
             "position": 1,
+            "size": "big",
             "visible": "no"
         },
         "status": {}
@@ -56,9 +75,10 @@
         },
         "settings": {
             "description": "TV mit altem Receiver",
-            "image": "",
-            "label": "Fernsehen (2)",
+            "image": "tv.jpg",
+            "label": "Fernsehen",
             "position": 2,
+            "size": "big",
             "visible": "yes"
         },
         "status": {}

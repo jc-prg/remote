@@ -1,0 +1,39 @@
+{
+    "data": {
+        "channel": {
+        },
+        "description" : "Scene for light",
+        "devices": [
+            "plug01",
+            "plug02",
+            "plug03",
+            "led01"
+        ],
+        "label": "Light",
+        "remote": [
+            "HEADER-IMAGE",
+            "LINE||Medientechnik",
+            ".","plug03_on","plug03_off",".",".",
+            
+            "LINE||Lichterkette Tannenbaum",
+            ".","plug02_on","plug02_off",".",".",
+            
+            "LINE||Lichterkette Office",
+            ".","plug01_on","plug01_off",".",
+            ".",".",".",".",
+            "led01_white",
+            "led01_yellow",
+            "led01_orange",
+            "led01_red",
+            "led01_green",
+            "led01_blue",
+            "led01_cyan",
+            "led01_pink",
+            "led01_5%",
+            "led01_20%",
+            "led01_50%",
+            "led01_100%"
+        ],
+    "type" : "scene"
+    }
+}

@@ -15,8 +15,6 @@
             "visible": "no"
         },
         "status": {
-            "api-status": "Connected",
-            "power": "OFF"
         }
     },
     "bd-api": {
@@ -35,21 +33,6 @@
             "visible": "yes"
         },
         "status": {
-            "api-status": "Connected",
-            "media_duration": "Error",
-            "media_medium": "Error",
-            "media_tracks": "Error",
-            "playing": "Error",
-            "playing_soap": "Error",
-            "position_abs_cnt": "Error",
-            "position_abs_time": "Error",
-            "position_duration": "Error",
-            "position_metadata": "Error",
-            "position_rel_cnt": "Error",
-            "position_rel_time": "Error",
-            "position_track": "Error",
-            "power": "Error",
-            "test": "Error"
         }
     },
     "beam": {
@@ -68,8 +51,6 @@
             "visible": "yes"
         },
         "status": {
-            "api-status": "Connected",
-            "power": "ON"
         }
     },
     "default": {
@@ -89,6 +70,24 @@
         },
         "status": {}
     },
+    "led01": {
+        "config": {
+            "device": "light_magichome_LED",
+            "interface_api": "MAGIC-HOME",
+            "interface_dev": "default",
+            "remote": "light_magichome_LED"
+        },
+        "settings": {
+            "description": "Magic Home Lichtsteuerung",
+            "image": "light",
+            "label": "LED Strip",
+            "main-audio": "no",
+            "position": 11,
+            "visible": "yes"
+        },
+        "status": {
+        }
+    },
     "lw": {
         "config": {
             "device": "screen_elite-screens-100",
@@ -105,35 +104,9 @@
             "visible": "yes"
         },
         "status": {
+            "TEST": "1639851282.444851 / power",
             "api-status": "Connected",
             "power": "ON"
-        }
-    },
-    "magic-home": {
-        "config": {
-            "device": "light_magichome_LED",
-            "interface_api": "MAGIC-HOME",
-            "interface_dev": "default",
-            "remote": "light_magichome_LED"
-        },
-        "settings": {
-            "description": "Magic Home Lichtsteuerung",
-            "image": "",
-            "label": "LED Strip",
-            "main-audio": "no",
-            "position": 11,
-            "visible": "yes"
-        },
-        "status": {
-            "api-status": "ERROR MAGIC-HOME - send: module 'interfaces.magichome' has no attribute 'MagicHomeApi'",
-            "brightness": "Error",
-            "color": "Error",
-            "color_raw": "Error",
-            "mode": "Error",
-            "power": "Error",
-            "preset": "Error",
-            "speed": "Error",
-            "status": "Error"
         }
     },
     "media-center": {
@@ -152,30 +125,6 @@
             "visible": "yes"
         },
         "status": {
-            "addons": "['Amazon VOD', 'Joyn', 'Mediathek Direkt', 'MediathekView']",
-            "api-status": "Connected",
-            "audiostreams": "no media",
-            "current-audiostream": "no media",
-            "current-audiostream-name": "no media",
-            "current-playing": "no media",
-            "current-subtitle": "no media",
-            "currentaudiostream": "Error",
-            "currentaudiostream-name": "Error",
-            "currentsubtitle": "Error",
-            "genre": "no media",
-            "item": "no media",
-            "mute": "False",
-            "playing": "no media",
-            "playlist": "no media",
-            "plot": "no media",
-            "power": "ON",
-            "subtitle-enabled": "no media",
-            "subtitleenabled": "Error",
-            "subtitles": "no media",
-            "type": "no media",
-            "version": "KODI 19.1 stable",
-            "vol": "100",
-            "zz": "no media"
         }
     },
     "plug01": {
@@ -187,21 +136,13 @@
         },
         "settings": {
             "description": "Tapo P100",
-            "image": "",
+            "image": "plug",
             "label": "SmartPlug 01",
             "main-audio": "no",
             "position": 13,
-            "visible": "yes"
+            "visible": "no"
         },
         "status": {
-            "api-status": "Connected",
-            "device_on": "True",
-            "location": "office",
-            "model": "P100",
-            "overheated": "False",
-            "power": "ON",
-            "status": "{'device_id': '8022BDD3D20CD890F24D686164B378991F057A38', 'fw_ver': '1.4.9 Build 20210621 Rel. 30941', 'hw_ver': '1.20.0', 'type': 'SMART.TAPOPLUG', 'model': 'P100', 'mac': 'B0-A7-B9-DD-8F-FC', 'hw_id': '9994A0A7D5B29645B8150C392284029D', 'fw_id': '1D18AD293A25ABDE41405B20C6F98816', 'oem_id': 'D7C5ADFD37188938BA82FD0FE208D1E7', 'specs': 'EU', 'device_on': True, 'on_time': 21, 'overheated': False, 'nickname': 'U21hcnRlIFN0ZWNrZG9zZSAwMQ==', 'location': 'office', 'avatar': 'plug', 'longitude': -1879048193, 'latitude': -1879048193, 'has_set_location_info': False, 'ip': '192.168.1.53', 'ssid': 'SkMtd2lmaQ==', 'signal_level': 2, 'rssi': -55, 'region': 'Europe/Berlin', 'time_diff': 60, 'lang': 'de_DE', 'default_states': {'type': 'last_states', 'state': {}}}",
-            "type": "SMART.TAPOPLUG"
         }
     },
     "plug02": {
@@ -213,21 +154,31 @@
         },
         "settings": {
             "description": "Tapo P100",
-            "image": "",
+            "image": "plug",
             "label": "SmartPlug 02",
             "main-audio": "no",
             "position": 14,
-            "visible": "yes"
+            "visible": "no"
         },
         "status": {
-            "api-status": "Connected",
-            "device_on": "True",
-            "location": "living_room",
-            "model": "P100",
-            "overheated": "False",
-            "power": "ON",
-            "status": "{'device_id': '8022779F2FB6A956AA363A6F7264324A1F054FC6', 'fw_ver': '1.4.9 Build 20210621 Rel. 30941', 'hw_ver': '1.20.0', 'type': 'SMART.TAPOPLUG', 'model': 'P100', 'mac': 'B0-A7-B9-DD-84-64', 'hw_id': '9994A0A7D5B29645B8150C392284029D', 'fw_id': '1D18AD293A25ABDE41405B20C6F98816', 'oem_id': 'D7C5ADFD37188938BA82FD0FE208D1E7', 'specs': 'EU', 'device_on': True, 'on_time': 5467, 'overheated': False, 'nickname': 'U21hcnRlIFN0ZWNrZG9zZSAwMg==', 'location': 'living_room', 'avatar': 'plug', 'longitude': -1879048193, 'latitude': -1879048193, 'has_set_location_info': False, 'ip': '192.168.1.55', 'ssid': 'SkMtd2lmaQ==', 'signal_level': 2, 'rssi': -52, 'region': 'Europe/Berlin', 'time_diff': 60, 'lang': 'de_DE', 'default_states': {'type': 'last_states', 'state': {}}}",
-            "type": "SMART.TAPOPLUG"
+        }
+    },
+    "plug03": {
+        "config": {
+            "device": "plug_tapo-p100",
+            "interface_api": "TAPO-P100",
+            "interface_dev": "plug03",
+            "remote": "plug_tapo-p100_03"
+        },
+        "settings": {
+            "description": "Tapo P100",
+            "image": "plug",
+            "label": "SmartPlug 03",
+            "main-audio": "no",
+            "position": 15,
+            "visible": "no"
+        },
+        "status": {
         }
     },
     "rec": {
@@ -268,26 +219,6 @@
             "visible": "yes"
         },
         "status": {
-            "a-v-sync": "0",
-            "api-status": "Connected",
-            "audio-info": "ANALOG,,,,Dolby Audio - Surr,5.1 ch,",
-            "audio-source": "hdmi",
-            "current-playing": "no media",
-            "dimmer": "bright",
-            "display": "('selector-volume-1line', 'default-2line')",
-            "listening": "('plii', 'pliix-movie', 'dolby-atmos', 'dolby-surround')",
-            "mute": "off",
-            "power": "('standby', 'off')",
-            "sleep-set": "N/A",
-            "source": "cbl",
-            "temperature": "C 22",
-            "timer": "N/A",
-            "tuning": "34640 Hz",
-            "usb-net-album": " ",
-            "usb-net-artist": " ",
-            "usb-net-title": " ",
-            "video-info": "No Video,Unknown,,24bit,,Unknown,,24bit,,",
-            "vol": "46"
         }
     },
     "test": {
@@ -306,7 +237,6 @@
             "visible": "no"
         },
         "status": {
-            "api-status": "Connected"
         }
     },
     "tv": {
@@ -325,11 +255,6 @@
             "visible": "no"
         },
         "status": {
-            "api-status": "Connected",
-            "mute": "OFF",
-            "power": "OFF",
-            "radiotv": "TV",
-            "vol": 17
         }
     },
     "tv2": {
@@ -341,18 +266,13 @@
         },
         "settings": {
             "description": "TOPFIELD CBP-2001CI+",
-            "image": "tv_old",
+            "image": "tv",
             "label": "TV/Radio (2)",
             "main-audio": "no",
             "position": 4,
             "visible": "yes"
         },
         "status": {
-            "api-status": "Connected",
-            "mute": "OFF",
-            "power": "ON",
-            "radiotv": "TV",
-            "vol": 17
         }
     }
 }

@@ -14,8 +14,9 @@
             "beam",
             "lw"
         ],
-        "label": "Fernsehen (2)",
+        "label": "Fernsehen",
         "remote": [
+            "HEADER-IMAGE",
             "makro_tv",
             ".",
             "scene-on_tv3",
