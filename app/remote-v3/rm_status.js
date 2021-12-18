@@ -216,8 +216,8 @@ function statusCheck(data={}) {
 			}
 
 		if (dev_on == required.length) 	{ scene_status[key] = "ON"; }
-		else if (dev_on > 0)		{ scene_status[key] = "OTHER"; }
-		else				{ scene_status[key] = "OFF"; }
+		else if (dev_on > 0)			{ scene_status[key] = "OTHER"; }
+		else					{ scene_status[key] = "OFF"; }
 		//console.debug(key + " - on:" + dev_on + " / off:" + required.length + " / " + scene_status[key]);
 		}
 				
@@ -225,7 +225,7 @@ function statusCheck(data={}) {
 	for (var device in devices) {
 	
 	  // if device is visible
-	  if (devices[device]["settings"]["visible"] == "yes") {
+	  if (devices[device]["settings"]["visible"]) { // == "yes") {
 
 	    console.debug("Device Status: "+device);
 	    console.debug(devices[device]["status"]);
