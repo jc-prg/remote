@@ -9,14 +9,6 @@ import logging, time, threading
 import modules.rm3json                as rm3json
 import modules.rm3config              as rm3config
 
-#import interfaces.api_test
-#import interfaces.api_kodi
-#import interfaces.api_eiscp
-#import interfaces.api_broadlink
-#import interfaces.api_sony
-#import interfaces.api_magichome
-#import interfaces.api_p100
-	
 #-------------------------------------------------
 
 class connect(threading.Thread):
@@ -38,6 +30,7 @@ class connect(threading.Thread):
         self.name         = "jc://remote/interfaces/"
         self.check_error  = time.time()
         self.last_message = ""
+        self.log_commands = True
         self.methods      = {
             "send"        : "Send command via API (send)",
             "record"      : "Record per device (record)",
@@ -77,31 +70,31 @@ class connect(threading.Thread):
                
                if api == "KODI"        and api_dev not in self.api:
                   import interfaces.api_kodi
-                  self.api[api_dev] = interfaces.api_kodi.APIcontrol(api,dev,dev_config)
+                  self.api[api_dev] = interfaces.api_kodi.APIcontrol(api,dev,dev_config,self.log_commands)
                   
                if api == "EISCP-ONKYO" and api_dev not in self.api:
                   import interfaces.api_eiscp
-                  self.api[api_dev] = interfaces.api_eiscp.APIcontrol(api,dev,dev_config)
+                  self.api[api_dev] = interfaces.api_eiscp.APIcontrol(api,dev,dev_config,self.log_commands)
                   
                if api == "BROADLINK"   and api_dev not in self.api:
                   import interfaces.api_broadlink
-                  self.api[api_dev] = interfaces.api_broadlink.APIcontrol(api,dev,dev_config)
+                  self.api[api_dev] = interfaces.api_broadlink.APIcontrol(api,dev,dev_config,self.log_commands)
                   
                if api == "SONY"        and api_dev not in self.api:
                   import interfaces.api_sony
-                  self.api[api_dev] = interfaces.api_sony.APIcontrol(api,dev,dev_config)
+                  self.api[api_dev] = interfaces.api_sony.APIcontrol(api,dev,dev_config,self.log_commands)
                   
                if api == "MAGIC-HOME"  and api_dev not in self.api:  
                   import interfaces.api_magichome
-                  self.api[api_dev] = interfaces.api_magichome.APIcontrol(api,dev,dev_config)
+                  self.api[api_dev] = interfaces.api_magichome.APIcontrol(api,dev,dev_config,self.log_commands)
                   
                if api == "TAPO-P100"   and api_dev not in self.api:
                   import interfaces.api_p100
-                  self.api[api_dev] = interfaces.api_p100.APIcontrol(api,dev,dev_config)
+                  self.api[api_dev] = interfaces.api_p100.APIcontrol(api,dev,dev_config,self.log_commands)
                   
                if api == "TEST"        and api_dev not in self.api:  
                   import interfaces.api_test
-                  self.api[api_dev] = interfaces.api_test.APIcontrol(api,dev,dev_config)
+                  self.api[api_dev] = interfaces.api_test.APIcontrol(api,dev,dev_config,self.log_commands)
 
             else:
                logging.error("Could not connect to "+api+" - Error in config file ("+rm3config.commands + api + "/00_interface.json)")
@@ -122,11 +115,14 @@ class connect(threading.Thread):
         return short api_dev
         '''
         
-        active_devices = self.configFiles.read_status()
-        api = active_devices[device]["config"]["interface_api"]
-        dev = active_devices[device]["config"]["interface_dev"]
-        
-        return api + "_" + dev
+        try:
+          active_devices = self.configFiles.read_status()
+          api = active_devices[device]["config"]["interface_api"]
+          dev = active_devices[device]["config"]["interface_dev"]  
+          return api + "_" + dev
+          
+        except:
+          return "error_"+device
         
     
     #-------------------------------------------------
@@ -233,22 +229,21 @@ class connect(threading.Thread):
 
     def send(self, call_api, device, button, value=""):
         '''
-        check if API exists and send command
+        send command if connected
         '''
         
         return_msg = ""
         api_dev = self.api_device( device )
-       
-        self.check_errors(call_api,device)
-        
-        logging.debug(device+" SEND: "+api_dev+" - "+button)
+        self.check_errors(call_api,device)        
+
+        logging.debug("__SEND: "+api_dev+" ("+self.api[api_dev].status+")")
 
         if self.api[api_dev].status == "Connected":
             method = self.method(api_dev)
             
             if button.startswith("send-"):
                logging.info(device+" SEND-DATA: "+api_dev+" / "+button+" ("+str(value)+"/"+method+")")
-               if method == "query" and value != "":    button_code = self.get_command( api_dev, "send-data", device, button )
+               if method == "query" and value != "":    button_code = self.get_command( call_api, "send-data", device, button )
                else:                                    button_code = "ERROR, wrong method (!query) or no data transmitted."
                if not "ERROR" in button_code:           button_code = button_code.replace("{DATA}",value)
                logging.info(device+" BUTTON CODE: "+button_code)
@@ -286,18 +281,20 @@ class connect(threading.Thread):
 
     def record(self, call_api, device, button ):
         '''
-        record a command (e.g. from IR device)
+        record a command e.g. from IR device if connected
         '''
     
         return_msg = ""
-        api_dev = self.api_device( device )
-       
+        api_dev = self.api_device( device )       
         self.check_errors(call_api,device)
-        logging.info(device+" RECORD "+call_api+" / "+button)
+
+        logging.debug("__RECORD: "+api_dev+" ("+self.api[api_dev].status+")")
 
         if self.api[api_dev].status == "Connected":       
-            if api_dev in self.api:  return_msg = self.api[api_dev].record(device,button)
-            else:                    return_msg = "ERROR: API not available ("+api_dev+")"
+            if api_dev in self.api:    return_msg = self.api[api_dev].record(device,button)
+            else:                      return_msg = "ERROR: API not available ("+api_dev+")"
+            if self.log_commands:      logging.info("...... "+str(return_msg))
+
         else:                        return_msg = "ERROR: API not connected ("+api_dev+")"
 
         if "ERROR" in str(return_msg) or "error" in str(return_msg):
@@ -319,16 +316,18 @@ class connect(threading.Thread):
 
         return_msg = ""
         api_dev = self.api_device( device )
-       
-        self.check_errors(call_api, device)
-        logging.debug(device+" QUERY "+api_dev+" / "+button)
+        #self.check_errors(call_api, device)  #### -> leads to an error for some APIs
+
+        logging.debug("__QUERY: "+api_dev+" ("+self.api[api_dev].status+")")
 
         if api_dev in self.api and self.api[api_dev].status == "Connected":
             button_code = self.get_command( call_api, "queries", device, button )
-            
+                       
             if "ERROR" in button_code: return_msg = "ERROR: could not read/create command from button code (query/"+device+"/"+button+"); " + button_code
             elif api_dev in self.api:  return_msg = self.api[api_dev].query(device,button_code)
             else:                      return_msg = "ERROR: API not available ("+str(api_dev)+")"
+            if self.log_commands:      logging.info("...... "+str(return_msg))
+
         else:                          return_msg = "ERROR: API not connected ("+str(api_dev)+")"
 
         if "ERROR" in str(return_msg) or "error" in str(return_msg):
@@ -339,6 +338,7 @@ class connect(threading.Thread):
         else:
            self.check_errors_count(call_api,device,False)
            
+        logging.debug(device+" QUERY "+str(return_msg))
         return return_msg
 
 #-------------------------------------------------

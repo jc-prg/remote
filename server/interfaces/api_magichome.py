@@ -7,8 +7,9 @@
 import logging, time
 import modules.rm3json                 as rm3json
 import modules.rm3config               as rm3config
+import modules.rm3ping                 as rm3ping
 
-import interfaces.magichome            as device
+import interfaces.magichome.magichome  as device
 
 #-------------------------------------------------
 # API-class
@@ -20,36 +21,50 @@ shorten_info_to = rm3config.shorten_info_to
 
 class APIcontrol():
    '''
-   Integration of sample API to be use by jc://remote/
+   Integration of Magic Home API to be use by jc://remote/
    '''
 
-   def __init__(self,api_name,device="",device_config={}):
-       '''Initialize API / check connect to device'''
+   def __init__(self,api_name,device="",device_config={},log_command=False):
+       '''
+       Initialize API / check connect to device
+       '''
        
        self.api_name        = api_name       
        self.api_description = "Magic Home (implementation in progress)"
-       self.method          = "query" # or "record"
-       self.api_config      = device_config
-       self.api_device      = device
+       self.not_connected   = "ERROR: Device not connected ("+api_name+"/"+device+")."
+       self.status          = "Start"
+       self.method          = "query"
        self.working         = False
        self.count_error     = 0
        self.count_success   = 0
-       self.not_connected   = "Device not connected (MAGIC-HOME)."
+       self.log_command     = log_command
        
-       logging.info("... "+self.api_name+" - " + self.api_description)
+       self.api_config      = device_config
+       self.api_device      = device
+
+       logging.info("_API-INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
        
        self.connect()
             
    #-------------------------------------------------
    
    def connect(self):
-       '''Connect / check connection'''
+       '''
+       Connect / check connection
+       '''
        
        # commands to connect and to check, if connection works - if not, return error message
+
+       connect = rm3ping.ping(self.api_config["IPAddress"])
+       if not connect:
+         self.status = self.not_connected + " ... PING"
+         logging.error(self.status)       
+         return self.status
 
        self.status               = "Connected"
        self.count_error          = 0
        self.count_success        = 0
+
        api_ip                    = self.api_config["IPAddress"]
        api_device_type           = self.api_config["DeviceType"]
        
@@ -58,13 +73,11 @@ class APIcontrol():
            self.api.get_status()
            
            self.api.jc               = APIaddOn(self.api)
-           self.api.jc.status        = "Connected"
+           self.api.jc.status        = self.status
            self.api.jc.not_connected = self.not_connected
-           self.working = False
           
        except Exception as e:
-           self.status = "ERROR "+self.api_name+" - send: " + str(e)
-           self.working = False
+           self.status = self.not_connected + " ... CONNECT " + str(e)
            return self.status
 
        return self.status
@@ -73,7 +86,10 @@ class APIcontrol():
    #-------------------------------------------------
    
    def wait_if_working(self):
-       '''Some devices run into problems, if send several requests at the same time'''
+       '''
+       Some devices run into problems, if send several requests at the same time
+       '''
+       
        while self.working:
          logging.info(".")
          time.sleep(0.2)
@@ -83,15 +99,17 @@ class APIcontrol():
    #-------------------------------------------------
    
    def send(self,device,command):
-       '''Send command to API'''
+       '''
+       Send command to API
+       '''
        
+       result  = {}
        self.wait_if_working()
        self.working = True
 
-       result  = {}
-       logging.info("Button-Code: "+command[:shorten_info_to]+"... ("+self.api_name+")")
-
        if self.status == "Connected":
+         if self.log_command: logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+
          try:
            command = "self.api."+command
            result = eval(command)
@@ -119,19 +137,20 @@ class APIcontrol():
    #-------------------------------------------------
    
    def query(self,device,command):
-       '''Send command to API and wait for answer'''
-
-       result = ""
-       self.wait_if_working()
-       self.working = True
+       '''
+       Send command to API and wait for answer
+       '''
 
        result  = {}
-       logging.info("Button-Code: "+command[:shorten_info_to]+"... ("+self.api_name+")")
+       self.wait_if_working()
+       self.working = True
 
        if "||" in command: command_param = command.split("||")
        else:               command_param = [command]
 
        if self.status == "Connected":
+         if self.log_command: logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+
          try:
            command = "self.api."+command_param[0]
            result = eval(command)

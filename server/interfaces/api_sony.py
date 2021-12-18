@@ -12,6 +12,8 @@ import modules.rm3ping                 as rm3ping
 
 import interfaces.sonyapi.sony         as sony
 
+shorten_info_to = rm3config.shorten_info_to
+
 #-------------------------------------------------
 # API-class
 #-------------------------------------------------
@@ -21,28 +23,40 @@ class APIcontrol():
    Integration of sample API to be use by jc://remote/
    '''
 
-   def __init__(self,api_name,device="",device_config={}):
+   def __init__(self,api_name,device="",device_config={},log_command=False):
        '''Initialize API / check connect to device'''
        
        self.api_name        = api_name       
        self.api_description = "API for SONY Devices (SonyAPILib)"
-       self.api_config      = device_config
-       self.api_device      = device
-       self.method          = "query" # or "record"
+       self.not_connected   = "ERROR: Device not connected ("+api_name+"/"+device+")."
+       self.status          = "Start"
+       self.method          = "query"
        self.working         = False
        self.count_error     = 0
        self.count_success   = 0
+       self.log_command     = log_command
        
-       logging.info("... "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
+       self.api_config      = device_config
+       self.api_device      = device
+
+       logging.info("_API-INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
        
        self.connect()
             
    #-------------------------------------------------
    
    def connect(self):
-       '''Connect / check connection'''
+       '''
+       Connect / check connection
+       '''
        
        # commands to connect and to check, if connection works - if not, return error message
+
+       connect = rm3ping.ping(self.api_config["IPAddress"])
+       if not connect:
+         self.status = self.not_connected + " ... PING"
+         logging.error(self.status)       
+         return self.status
 
        self.status               = "Connected"
        self.count_error          = 0
@@ -53,18 +67,12 @@ class APIcontrol():
        api_name   = self.api_device
        api_config = rm3stage.data_dir + "/" + rm3config.devices + self.api_name + "/" + self.api_device + ".json"
        
-       connect = rm3ping.ping(api_ip)
-       if connect == False:
-         self.status = "SONY Device not available (ping to "+api_ip+" failed)"
-         logging.error(self.status)       
-         return self.status
-
        # load config file (generated during the registration process)
        try:
            self.api = sony.sonyDevice(api_ip,api_name,api_config)
            
        except Exception as e:
-           self.status = "ERROR "+self.api_name+" - connect: " + str(e)
+           self.status = self.not_connected + " ... CONNECT " + str(e)
            return self.status
        
        return self.status
@@ -72,10 +80,12 @@ class APIcontrol():
    #-------------------------------------------------
    
    def wait_if_working(self):
-       '''Some devices run into problems, if send several requests at the same time'''
+       '''
+       Some devices run into problems, if send several requests at the same time
+       '''
        
        while self.working:
-         logging.debug(".")
+         logging.info(".")
          time.sleep(0.2)
        return
        
@@ -83,21 +93,23 @@ class APIcontrol():
    #-------------------------------------------------
    
    def send(self,device,command):
-       '''Send command to API'''
+       '''
+       Send command to API
+       '''
 
        self.wait_if_working()
        self.working = True
        
-       logging.debug("SONY send: "+command)
-
        if self.status == "Connected":
+         if self.log_command: logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+
          try:
            result  = self.api.send(command)
          except Exception as e:
-           self.working = True
+           self.working = False
            return "ERROR "+self.api_name+" - send: " + str(e)                     
        else:
-         self.working = True
+         self.working = False
          return "ERROR "+self.api_name+": Not connected"
 
        self.working = False
@@ -116,6 +128,8 @@ class APIcontrol():
        self.working = True
 
        if self.status == "Connected":
+         if self.log_command: logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+
          if "=" in command:
            params  = command.split("=")
            command = params[0]
@@ -123,17 +137,19 @@ class APIcontrol():
            
          try:
              result  = self.api.get_status(command,param)
+             
          except Exception as e:
-             self.working = True
+             self.working = False
              return "ERROR "+self.api_name+" - query: " + str(e)
                         
        else:
-         self.working = True
+         self.working = False
          return "ERROR "+self.api_name+": Not connected"
         
        if command == "power":
-         if result == True:    result = "ON"
-         elif result == False: result = "OFF"
+         if result == True:              result = "ON"
+         elif result == False:           result = "OFF"
+         elif "Device is off" in result: result = "OFF"
 
        self.working = False
        return result
