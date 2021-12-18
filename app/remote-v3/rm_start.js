@@ -131,7 +131,7 @@ function rmStart(name) {
 	this.button               = function(id, label, style, script_apiCommandSend, disabled, image="" ){
 		bgimage = "";
 		if (image != "") { 
-			bgimage = "style='background-image:url("+rm3scene_dir+image+");background-size:100% 100%;'"
+			bgimage = "style='background-image:url("+rm3scene_dir+image+");'"
 			return "<button id='" + id + "' class='button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + " " + bgimage + "></button>";
 			}
 		else {

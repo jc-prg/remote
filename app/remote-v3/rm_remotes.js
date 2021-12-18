@@ -606,8 +606,8 @@ function rmRemote(name) {
 			else if (button[1] == "keyboard")		{ this.keyboard.set_device(button[0]);
 									  next_button = this.button_device_keyboard( cmd, button[1], device, "", cmd, "" ); 
 									  this.active_buttons.push(cmd); }
-			else if (button == "DISPLAY")			{
-									  next_button = this.display(id, scene, "scenes", remote_displaysize, remote_display); 
+			else if (button == "HEADER-IMAGE")		{ next_button = this.scene_header_image(id,scene); }
+			else if (button == "DISPLAY")			{ next_button = this.display(id, scene, "scenes", remote_displaysize, remote_display); 
 									  }
 			else 						{ next_button = this.button_device( cmd, button[1], remote_label, "", cmd, "" );
 									  this.active_buttons.push(cmd); }
@@ -700,7 +700,8 @@ function rmRemote(name) {
 		remote  += this.tab_line();
 		remote  += this.tab_row( "Label:",       		this.input("edit_label",	scene_info["label"]) );
 		remote  += this.tab_row( "Description:&nbsp;", 	this.input("edit_description", scene_info["description"]) );
-		remote  += this.tab_row( "&nbsp;",			this.button_edit("apiSceneEdit('"+scene+"','edit','description,label');","save changes","") );
+		remote  += this.tab_row( "Scene Image:&nbsp;", 	this.input("edit_image",       scene_info["image"]) );
+		remote  += this.tab_row( "&nbsp;",			this.button_edit("apiSceneEdit('"+scene+"','edit','description,label,image');","save changes","") );
 		remote  += this.tab_line();
 		remote  += this.tab_row("end");
 		remote  += this.tab_row("start","100%");
@@ -730,8 +731,10 @@ function rmRemote(name) {
 				);
 */
 		remote  += this.tab_row(
-				this.button_edit(this.app_name+".remote_add_display('scene','frame2','"+scene+"','DISPLAY','scene_json_buttons');" + link_preview,"add display",""),
-				this.button_edit(this.app_name+".remote_add_button('scene','frame2','"+scene+"','.','scene_json_buttons');" + link_preview,"add empty field","")
+				"",
+				this.button_edit(this.app_name+".remote_add_header('scene','frame2','"+scene+"','HEADER-IMAGE','scene_json_buttons');" + link_preview,"add header-image","") +
+				this.button_edit(this.app_name+".remote_add_button('scene','frame2','"+scene+"','.','scene_json_buttons');" + link_preview,"add empty field","") +
+				this.button_edit(this.app_name+".remote_add_display('scene','frame2','"+scene+"','DISPLAY','scene_json_buttons');" + link_preview,"add display","")
 				);
 		remote  += this.tab_line();
 		remote  += this.tab_row(
@@ -818,10 +821,32 @@ function rmRemote(name) {
 		}
 
 
+	this.scene_header_image   = function (id, scene) {
+		var scene_info = this.data["DATA"]["scenes"][scene]["settings"];
+		var label      = scene_info["label"];
+		var image      = scene_info["image"];
+		
+		if (image && image != "") {
+			return "<button class='button header_image' style='background-image:url("+rm3scene_dir+image+")'><div class='header_image_fade'><div class='header_image_text'>&nbsp;<br/>"+label+"</div></div></button>";
+			}
+		}
+
+
 	// edit remote in browser (JSON)
 	//--------------------------------
 	
-	// add line to JSON
+	// add header to JSON
+	this.remote_add_header	  = function (type,id,scene,button,remote,position="") {
+		var value     = this.get_json_value(remote);
+		if (value.indexOf("HEADER-IMAGE") < 0) {
+			this.remote_add_button(type,id,scene,button,remote,0);
+			}
+		else {
+			appMsg.alert("There is already a HEADER-IMAGE in this remote control.");
+			}
+		}
+
+	// add display to JSON
 	this.remote_add_display	  = function (type,id,scene,button,remote,position="") {
 		var value     = this.get_json_value(remote);
 		if (value.indexOf("DISPLAY") < 0) {
@@ -858,9 +883,10 @@ function rmRemote(name) {
 		
 		var value     = this.get_json_value(remote);
 		var value_new = [];
+		if (position == 0) { value_new.push(button); }
 		
 		for (var i=0;i<value.length;i++) {
-			if (i == position && position != "") { value_new.push(button); }
+			if (i == position && position != "" && position != 0) { value_new.push(button); }
 			value_new.push(value[i]);
 			}
 		if (position == "") { value_new.push(button); }
