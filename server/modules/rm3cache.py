@@ -164,7 +164,7 @@ class configCache (threading.Thread):
                  config = self.read(rm3config.commands + interface + "/" + key)
                  if not "ERROR" in config: self.configMethods[device] = config["data"]["method"]
                  
-        else if "ERROR" in str(status):
+        elif "ERROR" in str(status):
           logging.error("ERROR while reading '"+rm3config.active_devices+"'!")
           logging.error(str(status))
     
