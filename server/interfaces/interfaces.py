@@ -185,7 +185,7 @@ class connect(threading.Thread):
     
     #-------------------------------------------------
     
-    def check_errors(self,interface,device):
+    def check_errors(self,device):
         '''
         check the amount of errors, if more than 80% errors and at least 5 requests try to reconnect
         '''
@@ -203,11 +203,11 @@ class connect(threading.Thread):
         logging.debug("ERROR RATE ... "+str(error_rate) + "/"+str(self.api[api_dev].count_error)+"/"+str(requests))
         
         if error_rate >= 0.8 and requests > 5: 
-           self.reconnect(interface)
+           self.reconnect( api_dev )
            
     #-------------------------------------------------
 
-    def check_errors_count(self,interface,device,is_error):
+    def check_errors_count(self, device, is_error):
         '''
         count errors and reset every x seconds
         '''
@@ -235,7 +235,7 @@ class connect(threading.Thread):
         
         return_msg = ""
         api_dev = self.api_device( device )
-        self.check_errors(call_api,device)        
+        self.check_errors( device )        
 
         logging.info("__SEND: "+api_dev+" / " + button + ":" + value + " ("+self.api[api_dev].status+")")
 
@@ -273,10 +273,10 @@ class connect(threading.Thread):
            if self.last_message != return_msg:
              logging.warn(return_msg)
            self.last_message = return_msg
-           self.check_errors_count(call_api,device,True)
+           self.check_errors_count(device,True)
            
         else:
-           self.check_errors_count(call_api,device,False)
+           self.check_errors_count(device,False)
 
         return return_msg
 
@@ -307,9 +307,9 @@ class connect(threading.Thread):
            if self.last_message != return_msg:
              logging.warn(return_msg)
            self.last_message = return_msg
-           self.check_errors_count(call_api,device,True)
+           self.check_errors_count(device,True)
         else:
-           self.check_errors_count(call_api,device,False)
+           self.check_errors_count(device,False)
            
         return return_msg
 
@@ -342,9 +342,9 @@ class connect(threading.Thread):
            if self.last_message != return_msg:
              logging.warn(return_msg)
            self.last_message = return_msg
-           self.check_errors_count(call_api,device,True)
+           self.check_errors_count(device,True)
         else:
-           self.check_errors_count(call_api,device,False)
+           self.check_errors_count(device,False)
            
         logging.debug(device+" QUERY "+str(return_msg))
         return return_msg
