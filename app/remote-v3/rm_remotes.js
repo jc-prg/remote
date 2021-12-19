@@ -588,8 +588,8 @@ function rmRemote(name) {
 							this.button_edit( link_button_right + link_preview, "+ &gt;");
 
 				this.button_width    = "30px;";
-				if (i > 0) 			    { contextmenu += this.button_edit( link_move_left  + link_preview, "&lt;",""); }
-								      contextmenu += this.button_edit( link_delete     + link_preview, "x","");
+				if (i > 0) 			     { contextmenu += this.button_edit( link_move_left  + link_preview, "&lt;",""); }
+								       contextmenu += this.button_edit( link_delete     + link_preview, "x","");
 				if (i+1 < remote_definition.length) { contextmenu += this.button_edit( link_move_right + link_preview, "&gt;",""); }
 				contextmenu += input_add_button;
 				}
@@ -597,7 +597,7 @@ function rmRemote(name) {
 			if (button[0] == "LINE") 			{ next_button = this.line(""); }
 			else if (button[0].indexOf("LINE||") == 0)	{ next_button = this.line(button[0].split("||")[1]); }
 			else if (button[0] == ".") 			{ next_button = this.button_device( scene+i, ".", remote_label, "", "", "disabled" ); }
-			else if (button[0] == "makro")			{ next_button = this.button_makro(  cmd, button[1], remote_label, "", makros[button[1]], "" ); 
+			else if (button[0] == "makro")		{ next_button = this.button_makro(  cmd, button[1], remote_label, "", makros[button[1]], "" ); 
 									  this.active_buttons.push(cmd); }
 			else if (button[0] == "scene-on")		{ next_button = this.button_makro(  "scene_on_"+button[1], "on", remote_label,"", makros_sceneOn[button[1]], "" );
 									  this.active_buttons.push("scene_on_"+button[1]); }
@@ -609,6 +609,10 @@ function rmRemote(name) {
 			else if (button == "HEADER-IMAGE")		{ next_button = this.scene_header_image(id,scene); }
 			else if (button == "DISPLAY")			{ next_button = this.display(id, scene, "scenes", remote_displaysize, remote_display); 
 									  }
+
+			else if (button.length > 1 && button[1].indexOf("SLIDER") == 0) { 
+									  next_button = this.slider_element(id, button[0], "devices", button[1].split("||")); }
+
 			else 						{ next_button = this.button_device( cmd, button[1], remote_label, "", cmd, "" );
 									  this.active_buttons.push(cmd); }
 									  
@@ -1115,6 +1119,8 @@ function rmRemote(name) {
 	//--------------------------------
 	this.slider_element      = function (id, device, type="devices", data) {
 	
+		console.debug("slider_element: "+id+"/"+device+"/"+type+"/"+data);
+	
 		var init;
 		var remote_data  = this.data["DATA"][type][device]["remote"];
 		var status_data  = this.data["DATA"][type][device]["status"];
@@ -1234,6 +1240,7 @@ function rmRemote(name) {
 			"middle" : "Middle",
 			"big"  : "Big",
 			"h1w2" : "1x heigh / 2x wide",
+			"h1w4" : "1x heigh / 4x wide",
 			"h2w2" : "2x heigh / 2x wide", 
 			"h2w4" : "2x heigh / 4x wide",
 			"h3w2" : "3x heigh / 2x wide",

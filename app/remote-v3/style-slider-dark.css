@@ -1,0 +1,22 @@
+@media (prefers-color-scheme: dark) {
+
+  .rm-slider-button {
+	background-color   : #000000; /* Grey background */
+	border             : 1px solid #222222;
+	color              : gray;	
+	}
+	
+  .rm-slider {
+	background         : #222222; /* Grey background */
+	}
+
+  .rm-slidervalue {
+	background         : #222222; /* Grey background */
+	}
+	
+  .rm-sliderlabel {
+ 	}
+
+}
+
+

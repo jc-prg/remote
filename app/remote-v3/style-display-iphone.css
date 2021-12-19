@@ -8,6 +8,7 @@
   .display.big    { width  : 328px; }
   
   .display.h1w2   { width  : 160px; }
+  .display.h1w4   { width  : 328px; }
   .display.h2w2   { width  : 160px; }
   .display.h2w4   { width  : 328px; }
   .display.h3w2   { width  : 160px; } 
@@ -18,6 +19,7 @@
   .display-element.middle { width : 146px; }
   .display-element.big    { width : 146px; }
   
+  .display-element.h1w4    { width : 146px; }
   .display-element.h2w4    { width : 146px; }
   .display-element.h3w2    { width : 146px; }
   .display-element.h4w2    { width : 146px; }
