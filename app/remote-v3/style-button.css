@@ -97,11 +97,11 @@ button {
 }
 
 .button.header_image {
-    width              : 98%;
+    width              : 97%;
     height             : 190px;
     max-width          : 98%;
     max-height         : 150px;
-    border             : solid 0px white;
+    border             : #dddddd solid 3px;
     background-size    : 100%;
     background-position: center center;
     padding            : 0px;
@@ -122,8 +122,6 @@ button {
     top : 75px;                         
     background: -webkit-linear-gradient(top, 
                 rgba(221,221,221,0) 0%, 
-                rgba(221,221,221,0.7) 20%,
-                rgba(221,221,221,0.8) 30%,
                 rgba(221,221,221,1) 40%,
                 rgba(221,221,221,1) 100%
     );
