@@ -15,8 +15,6 @@
             "visible": "no"
         },
         "status": {
-            "api-status": "Connected",
-            "power": "OFF"
         }
     },
     "bd-api": {
@@ -35,21 +33,6 @@
             "visible": "yes"
         },
         "status": {
-            "api-status": "Connected",
-            "media_duration": "Error",
-            "media_medium": "Error",
-            "media_tracks": "Error",
-            "playing": "Error",
-            "playing_soap": "Error",
-            "position_abs_cnt": "Error",
-            "position_abs_time": "Error",
-            "position_duration": "Error",
-            "position_metadata": "Error",
-            "position_rel_cnt": "Error",
-            "position_rel_time": "Error",
-            "position_track": "Error",
-            "power": "OFF",
-            "test": "Error"
         }
     },
     "beam": {
@@ -68,8 +51,6 @@
             "visible": "yes"
         },
         "status": {
-            "api-status": "Connected",
-            "power": "ON"
         }
     },
     "default": {
@@ -105,15 +86,6 @@
             "visible": "yes"
         },
         "status": {
-            "api-status": "Connected",
-            "brightness": "54%",
-            "color": "(255,255,255)",
-            "color_raw": "#8a8a8a",
-            "mode": "COLOR",
-            "power": "ON",
-            "preset": "37",
-            "speed": "100",
-            "status": "b'\\x813#a#\\x1f\\x8a\\x8a\\x8a\\x00\\n\\x00\\xf0\\x12'<br>{'power': 'ON', 'mode': 'COLOR', 'rgb': '#8a8a8a', 'RGB': {'r': 138, 'g': 138, 'b': 138}, 'set': '.'}"
         }
     },
     "lw": {
@@ -132,9 +104,6 @@
             "visible": "yes"
         },
         "status": {
-            "TEST": "1639851282.444851 / power",
-            "api-status": "Connected",
-            "power": "ON"
         }
     },
     "media-center": {
@@ -153,30 +122,6 @@
             "visible": "yes"
         },
         "status": {
-            "addons": "['Amazon VOD', 'Joyn', 'Mediathek Direkt', 'MediathekView']",
-            "api-status": "Connected",
-            "audiostreams": "no media",
-            "current-audiostream": "no media",
-            "current-audiostream-name": "no media",
-            "current-playing": "no media",
-            "current-subtitle": "no media",
-            "currentaudiostream": "Error",
-            "currentaudiostream-name": "Error",
-            "currentsubtitle": "Error",
-            "genre": "no media",
-            "item": "no media",
-            "mute": "False",
-            "playing": "no media",
-            "playlist": "no media",
-            "plot": "no media",
-            "power": "ON",
-            "subtitle-enabled": "no media",
-            "subtitleenabled": "Error",
-            "subtitles": "no media",
-            "type": "no media",
-            "version": "KODI 19.1 stable",
-            "vol": "100",
-            "zz": "no media"
         }
     },
     "plug01": {
@@ -195,14 +140,6 @@
             "visible": "no"
         },
         "status": {
-            "api-status": "Connected",
-            "device_on": "True",
-            "location": "office",
-            "model": "P100",
-            "overheated": "False",
-            "power": "ON",
-            "status": "{'device_id': '8022BDD3D20CD890F24D686164B378991F057A38', 'fw_ver': '1.4.9 Build 20210621 Rel. 30941', 'hw_ver': '1.20.0', 'type': 'SMART.TAPOPLUG', 'model': 'P100', 'mac': 'B0-A7-B9-DD-8F-FC', 'hw_id': '9994A0A7D5B29645B8150C392284029D', 'fw_id': '1D18AD293A25ABDE41405B20C6F98816', 'oem_id': 'D7C5ADFD37188938BA82FD0FE208D1E7', 'specs': 'EU', 'device_on': True, 'on_time': 893, 'overheated': False, 'nickname': 'U21hcnRlIFN0ZWNrZG9zZSAwMQ==', 'location': 'office', 'avatar': 'plug', 'longitude': -1879048193, 'latitude': -1879048193, 'has_set_location_info': False, 'ip': '192.168.1.53', 'ssid': 'SkMtd2lmaQ==', 'signal_level': 2, 'rssi': -51, 'region': 'Europe/Berlin', 'time_diff': 60, 'lang': 'de_DE', 'default_states': {'type': 'last_states', 'state': {}}}",
-            "type": "SMART.TAPOPLUG"
         }
     },
     "plug02": {
@@ -221,14 +158,6 @@
             "visible": "no"
         },
         "status": {
-            "api-status": "Connected",
-            "device_on": "True",
-            "location": "living_room",
-            "model": "P100",
-            "overheated": "False",
-            "power": "ON",
-            "status": "{'device_id': '8022779F2FB6A956AA363A6F7264324A1F054FC6', 'fw_ver': '1.4.9 Build 20210621 Rel. 30941', 'hw_ver': '1.20.0', 'type': 'SMART.TAPOPLUG', 'model': 'P100', 'mac': 'B0-A7-B9-DD-84-64', 'hw_id': '9994A0A7D5B29645B8150C392284029D', 'fw_id': '1D18AD293A25ABDE41405B20C6F98816', 'oem_id': 'D7C5ADFD37188938BA82FD0FE208D1E7', 'specs': 'EU', 'device_on': True, 'on_time': 0, 'overheated': False, 'nickname': 'U21hcnRlIFN0ZWNrZG9zZSAwMg==', 'location': 'living_room', 'avatar': 'plug', 'longitude': -1879048193, 'latitude': -1879048193, 'has_set_location_info': False, 'ip': '192.168.1.55', 'ssid': 'SkMtd2lmaQ==', 'signal_level': 3, 'rssi': -45, 'region': 'Europe/Berlin', 'time_diff': 60, 'lang': 'de_DE', 'default_states': {'type': 'last_states', 'state': {}}}",
-            "type": "SMART.TAPOPLUG"
         }
     },
     "plug03": {
@@ -247,14 +176,6 @@
             "visible": "no"
         },
         "status": {
-            "api-status": "Connected",
-            "device_on": "True",
-            "location": "living_room",
-            "model": "P100",
-            "overheated": "False",
-            "power": "ON",
-            "status": "{'device_id': '8022C81F0CE00A0B3DA6A4A73C4B24DC1F047DC4', 'fw_ver': '1.4.9 Build 20210621 Rel. 30941', 'hw_ver': '1.20.0', 'type': 'SMART.TAPOPLUG', 'model': 'P100', 'mac': 'B0-A7-B9-DD-76-53', 'hw_id': '9994A0A7D5B29645B8150C392284029D', 'fw_id': '1D18AD293A25ABDE41405B20C6F98816', 'oem_id': 'D7C5ADFD37188938BA82FD0FE208D1E7', 'specs': 'EU', 'device_on': True, 'on_time': 25521, 'overheated': False, 'nickname': 'U3RlY2tkb3NlIDAz', 'location': 'living_room', 'avatar': 'plug', 'longitude': -1879048193, 'latitude': -1879048193, 'has_set_location_info': False, 'ip': '192.168.1.56', 'ssid': 'SkMtd2lmaQ==', 'signal_level': 2, 'rssi': -62, 'region': 'Europe/Berlin', 'time_diff': 60, 'lang': 'de_DE', 'default_states': {'type': 'last_states', 'state': {}}}",
-            "type": "SMART.TAPOPLUG"
         }
     },
     "rec": {
@@ -273,10 +194,6 @@
             "visible": "no"
         },
         "status": {
-            "api-status": "Connected",
-            "mute": "OFF",
-            "power": "OFF",
-            "vol": 0
         }
     },
     "rec2": {
@@ -295,26 +212,6 @@
             "visible": "yes"
         },
         "status": {
-            "a-v-sync": "0",
-            "api-status": "Connected",
-            "audio-info": "NETWORK,,,,All Ch Stereo,5.1 ch,",
-            "audio-source": "('coax', 'opt')",
-            "current-playing": "no media",
-            "dimmer": "bright",
-            "display": "('selector-volume-1line', 'default-2line')",
-            "listening": "all-ch-stereo",
-            "mute": "off",
-            "power": "('standby', 'off')",
-            "sleep-set": "N/A",
-            "source": "net",
-            "temperature": "C 29",
-            "timer": "N/A",
-            "tuning": "34640 Hz",
-            "usb-net-album": " ",
-            "usb-net-artist": " ",
-            "usb-net-title": " ",
-            "video-info": "HDMI 1,1920 x 1080p  59 Hz,YCbCr444,24bit,,Unknown,,24bit,,",
-            "vol": "41"
         }
     },
     "test": {
@@ -333,7 +230,6 @@
             "visible": "no"
         },
         "status": {
-            "api-status": "Connected"
         }
     },
     "tv": {
@@ -352,11 +248,6 @@
             "visible": "no"
         },
         "status": {
-            "api-status": "Connected",
-            "mute": "OFF",
-            "power": "OFF",
-            "radiotv": "TV",
-            "vol": 17
         }
     },
     "tv2": {
@@ -375,12 +266,6 @@
             "visible": "yes"
         },
         "status": {
-            "TEST": "1639928076.7311015 / power",
-            "api-status": "Connected",
-            "mute": "OFF",
-            "power": "OFF",
-            "radiotv": "TV",
-            "vol": 17
         }
     }
 }
