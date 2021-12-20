@@ -11,8 +11,6 @@ RUN curl https://sh.rustup.rs -sSf > install-rust2.sh
 RUN /bin/sh install-rust2.sh -y --default-host arm-unknown-linux-gnueabihf
 #--profile minimal
 #--default-host armv7-unknown-linux-gnueabihf
-#RUN source $HOME/.cargo/env
-
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN ls /root/.cargo/bin
 RUN echo ${PATH}
@@ -25,8 +23,8 @@ RUN python3 -m pip install --upgrade pip
 RUN rustc --version
 RUN python3 -m pip install --no-cache-dir -r requirements.txt
 
-#RUN rustup self uninstall
-#RUN apt-get remove -y libffi-dev libssl-dev
+RUN rustup self uninstall -y
+RUN apt-get remove -y libffi-dev libssl-dev
 
 COPY . .
 
