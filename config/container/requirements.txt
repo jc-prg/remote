@@ -6,11 +6,10 @@ flask-restful
 flask-httpauth
 flask-cors
 pyaes
-Crypto
-pycryptodome
 connexion[swagger-ui]
 netifaces
 kodi-json
 sonyapilib
+Crypto
 pycryptodome
 pkcs7
