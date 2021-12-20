@@ -26,6 +26,8 @@ if [ ! ${D}config ]; then
   echo " 'i' - install sample configuration"
   echo " 'u' - update (from github)"
   echo " 'v' - update (from github) and rebuild container"
+  echo " 'c' - clean docker (stopped container / dangling images)"
+  echo " 'd' - clean docker (system incl. build cache)"
   count=0
   while : ; do
     read -n 1 k <&1
@@ -51,6 +53,14 @@ if [ ! ${D}config ]; then
     elif [[ ${D}k = v ]] ; then
        config="rebuild"
        printf "\n... update from Github and rebuild docker container.\n"
+       break
+    elif [[ ${D}k = c ]] ; then
+       config="prune"
+       printf "\n... cleanup docker containers and images.\n"
+       break
+    elif [[ ${D}k = d ]] ; then
+       config="prune2"
+       printf "\n... cleanup docker system.\n"
        break
     else
        ((count=${D}count+1))
@@ -121,6 +131,15 @@ elif [ ${D}config == "rebuild" ]; then
     
     echo "Restart docker"
     ${DOCKERCOMPOSE_DIR}/docker-compose -f ${REMOTE_DIR}/docker-compose.yml up -d
+
+elif [ ${D}config == "prune" ]; then
+
+   docker image prune
+   docker container prune
+
+elif [ ${D}config == "prune2" ]; then
+
+   docker system prune
 
 else
     echo "not found."
