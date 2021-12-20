@@ -8,7 +8,7 @@ version: '3'
 services:
 
   ${REMOTE_DOCKER_SERVER}:
-    build: ./config/container
+    build: ${REMOTE_DOCKERIMAGE_SERVER}
     container_name: ${REMOTE_DOCKER_SERVER}
     volumes:
       - ${REMOTE_DIR_SERVER}:/usr/src/app/server
