@@ -21,7 +21,7 @@ export REMOTE_DIR="/projects/prod/remote"
 export REMOTE_DIR_DATA="$REMOTE_DIR/data"
 export REMOTE_DIR_CLIENT="$REMOTE_DIR/app"
 export REMOTE_DIR_SERVER="$REMOTE_DIR/server"
-export REMOTE_DIR_JCMODULES="/projects/prod/modules"
+export REMOTE_DIR_JCMODULES="$REMOTE_DIR/app/modules"
 export REMOTE_DIR_ICONS="$REMOTE_DIR_DATA/buttons/default"
 export REMOTE_DIR_ICON_INDEX="$REMOTE_DIR_ICONS/index.json"
 
@@ -31,7 +31,7 @@ export DOCKERCOMPOSE_DIR="/usr/local/bin"
 
 # Images
 export REMOTE_DOCKERIMAGE_CLIENT="php:7.1-apache"
-
+export REMOTE_DOCKERIMAGE_SERVER="./config/container" # "./config/container" for Ubuntu or similar or "./config/container_arm" for Raspberry Pi 
 
 #---------------------------------------------
 export THIS_IS_THE_PROJECT_TEMPLATE="Please edit not here, but the orginial configuration file. This files is created using a template."
