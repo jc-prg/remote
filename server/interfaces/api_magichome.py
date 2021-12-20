@@ -444,7 +444,7 @@ class APIaddOn():
         elif param == "mode":          return { "result": status["mode"] }
         elif param == "preset":        return { "result": self.last_preset }
         elif param == "preset_speed":  return { "result": self.last_speed }
-        elif param == "raw_status":    return { "result": raw_status + "<br>" + status_str }
+        elif param == "raw_status":    return { "result": raw_status }
         else:                          return { "error" : "unknown tag '"+param+"'" }
 
       else:
