@@ -155,7 +155,7 @@ class configCache (threading.Thread):
         status = self.read(rm3config.active_devices)
     
         # initial load of methods (record vs. query)
-        if self.configMethods == {} and selected_device == "" and "ERROR" not in str(status):
+        if self.configMethods == {} and selected_device == "" and "ERROR" not in status:
     
           for device in status:
               key       = status[device]["config"]["device"]
