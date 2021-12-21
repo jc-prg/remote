@@ -355,7 +355,7 @@ def editScene(scene,info):
     '''
     edit scene data in json file
     '''
-    keys_active   = ["label","description"]
+    keys_active   = ["label","description","image"]
     keys_remotes  = ["label","remote","channel","devices","display","display-size","type"]
     
     # check data format
