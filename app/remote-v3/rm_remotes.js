@@ -830,7 +830,10 @@ function rmRemote(name) {
 		var scene_images  = this.data["CONFIG"]["scene_images"];
 		var label         = scene_info["label"];
 		var image         = scene_info["image"];
-		image             = scene_images[image][0];
+		
+		if (scene_images[image]) {
+			image = scene_images[image][0];
+			}
 		
 		if (image && image != "") {
 			return "<button class='button header_image' style='background-image:url("+rm3scene_dir+image+")'><div class='header_image_fade'><div class='header_image_text'>&nbsp;<br/>"+label+"</div></div></button>";
