@@ -93,6 +93,24 @@ def RmReadData_devices(selected=[],remotes=True):
 
 #---------------------------
 
+def RmReadData_deviceStatus():
+    '''
+    read config data for devices and combine with remote definition
+    '''
+    status = {}
+    data   = {}
+    data   = configFiles.read_status()
+
+    # read data for active devices
+    for device in data:
+       status[device]         = data[device]["status"]
+       status[device]["api"]  = data[device]["config"]["interface_api"] + "_" + data[device]["config"]["interface_dev"]
+
+    return status
+
+
+#---------------------------
+
 def RmWriteData_devices(data):
     '''
     write config data for devices and remove data not required in the file

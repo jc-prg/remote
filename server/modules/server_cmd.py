@@ -37,39 +37,43 @@ else:            Stage = "Prod Stage"
 # Start and end of API answer
 #-------------------------------------------------
      
-def remoteAPI_start():
+def remoteAPI_start(setting=[]):
     '''
     create data structure for API response and read relevant data from config files
     '''
 
     global Status, LastAPICall
 
-    data                                   = configFiles.api_init
-    data["DATA"]                           = RmReadData()
+    if not "status-only" in setting:
+       data                                = configFiles.api_init
+       data["DATA"]                        = RmReadData()
 
-    data["CONFIG"]                         = {}  
-    data["CONFIG"]["button_images"]        = configFiles.read(modules.icons_dir + "/index")
-    data["CONFIG"]["button_colors"]        = configFiles.read(modules.buttons  + "button_colors")
+       data["CONFIG"]                      = {}  
+       data["CONFIG"]["button_images"]     = configFiles.read(modules.icons_dir + "/index")
+       data["CONFIG"]["button_colors"]     = configFiles.read(modules.buttons  + "button_colors")
     
-    data["CONFIG"]["interfaces"]           = deviceAPIs.available
-    data["CONFIG"]["methods"]              = deviceAPIs.methods
+       data["CONFIG"]["interfaces"]        = deviceAPIs.available
+       data["CONFIG"]["methods"]           = deviceAPIs.methods
     
+       for device in data["DATA"]["devices"]:
+         data["CONFIG"]["main-audio"] = "NONE"
+         if "main-audio" in data["DATA"]["devices"][device]["settings"] and data["DATA"]["devices"][device]["settings"]["main-audio"] == "yes":
+           data["CONFIG"]["main-audio"] = device
+           break
+    else:
+       data                                = configFiles.api_init
+       if "DATA" in data: del data["DATA"]
+       
     data["REQUEST"]                        = {}
     data["REQUEST"]["start-time"]          = time.time()
     data["REQUEST"]["Button"]              = queueSend.last_button 
 
     data["STATUS"]                         = {}
+    data["STATUS"]["devices"]              = RmReadData_deviceStatus()
     data["STATUS"]["interfaces"]           = deviceAPIs.status()
     data["STATUS"]["system"]               = {} #  to be filled in remoteAPI_end()
     data["STATUS"]["request_time"]         = queueSend.avarage_exec
       
-      
-    for device in data["DATA"]["devices"]:
-      data["CONFIG"]["main-audio"] = "NONE"
-      if "main-audio" in data["DATA"]["devices"][device]["settings"] and data["DATA"]["devices"][device]["settings"]["main-audio"] == "yes":
-         data["CONFIG"]["main-audio"] = device
-         break
-         
     return data
     
 
@@ -92,13 +96,14 @@ def remoteAPI_end(data,setting=[]):
         
     #--------------------------------
 
-    data["CONFIG"]["reload_status"]       = queueQuery.reload
-    data["CONFIG"]["reload_config"]       = configFiles.cache_update
+    if "CONFIG" in data:
+       data["CONFIG"]["reload_status"]       = queueQuery.reload
+       data["CONFIG"]["reload_config"]       = configFiles.cache_update
 
     #--------------------------------
     
-    if "no-data" in setting:   del data["DATA"]
-    if "no-config" in setting: del data["CONFIG"]
+    if "no-data" in setting   and "DATA" in data:   del data["DATA"]
+    if "no-config" in setting and "CONFIG" in data: del data["CONFIG"]
   
     if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
     return data
@@ -196,6 +201,22 @@ def RemoteList():
         data["REQUEST"]["Return"]  = "OK: Returned list and status data."
         data["REQUEST"]["Command"] = "List"
         data                       = remoteAPI_end(data)        
+        return data
+
+
+#-------------------------------------------------
+# List all defined commands / buttons
+#-------------------------------------------------
+
+def RemoteStatus():
+        '''
+        Load and list all data
+        '''
+
+        data                       = remoteAPI_start(["status-only"])
+        data["REQUEST"]["Return"]  = "OK: Returned status data."
+        data["REQUEST"]["Command"] = "Status"
+        data                       = remoteAPI_end(data,["no-config"])        
         return data
 
 
