@@ -702,9 +702,9 @@ function rmRemote(name) {
 
 		remote  += this.tab_row("start","100%");
 		remote  += this.tab_line();
-		remote  += this.tab_row( "Label:",       		this.input("edit_label",	scene_info["label"]) );
-		remote  += this.tab_row( "Description:&nbsp;", 	this.input("edit_description", scene_info["description"]) );
-		remote  += this.tab_row( "Scene Image:&nbsp;", 	this.input("edit_image",       scene_info["image"]) );
+		remote  += this.tab_row( "Label:",       		this.input("edit_label",	 scene_info["label"]) );
+		remote  += this.tab_row( "Description:&nbsp;", 	this.input("edit_description",  scene_info["description"]) );
+		remote  += this.tab_row( "Scene Image:&nbsp;", 	this.image_select("edit_image", scene_info["image"]) );
 		remote  += this.tab_row( "&nbsp;",			this.button_edit("apiSceneEdit('"+scene+"','edit','description,label,image');","save changes","") );
 		remote  += this.tab_line();
 		remote  += this.tab_row("end");
@@ -826,9 +826,11 @@ function rmRemote(name) {
 
 
 	this.scene_header_image   = function (id, scene) {
-		var scene_info = this.data["DATA"]["scenes"][scene]["settings"];
-		var label      = scene_info["label"];
-		var image      = scene_info["image"];
+		var scene_info    = this.data["DATA"]["scenes"][scene]["settings"];
+		var scene_images  = this.data["CONFIG"]["scene_images"];
+		var label         = scene_info["label"];
+		var image         = scene_info["image"];
+		image             = scene_images[image][0];
 		
 		if (image && image != "") {
 			return "<button class='button header_image' style='background-image:url("+rm3scene_dir+image+")'><div class='header_image_fade'><div class='header_image_text'>&nbsp;<br/>"+label+"</div></div></button>";
@@ -995,6 +997,17 @@ function rmRemote(name) {
                 }
 
 	//--------------------------
+	
+	this.image_select		= function (id,selected="") {
+		var list     = {};
+		var images   = this.data["CONFIG"]["scene_images"];
+		
+		for (var key in images) {
+			list[key] = key;
+			}
+
+		return this.select(id,"header-image",list,"",selected);
+		}
                         
 	this.button_select		= function (id,device="") {
 		var list 		= {};
@@ -1189,7 +1202,7 @@ function rmRemote(name) {
 		text  = text.replace( /##STYLE##/g, style + " display_error" );
 		if (status == "ERROR" && !this.edit_mode)	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
 		else						{ text  = text.replace( /##DISPLAY##/g, "none" ); }
-		text += "<center><b>device not connected</b>:</center><br/>";
+		text += "<center><b>device not connected</b>:</center>"; //<br/>";
 		text += "<center><i>"+status_data["api-status"]+"</i></center>";
 		text += display_end;
 		

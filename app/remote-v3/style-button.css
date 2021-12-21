@@ -97,9 +97,10 @@ button {
 }
 
 .button.header_image {
-    width              : 97%;
+    width              : 276px;
+    max-width          : 276px;
+
     height             : 190px;
-    max-width          : 98%;
     max-height         : 150px;
     border             : #dddddd solid 3px;
     background-size    : 100%;
