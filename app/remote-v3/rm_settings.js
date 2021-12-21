@@ -140,7 +140,8 @@ function rmSettings (name) {	// IN PROGRESS
 						//this.button("remoteInit(false);" + this.app_name + ".show();", "reload") +
 						this.button("window.open('" + RESTurl + "api/reload/','_blank');", "reload (API)") +
 						this.button("appForceReload(true);", "reload (Scroll)") +
-						this.button("window.open('" + RESTurl + "api/list/','_blank');", "REST API") +
+						this.button("window.open('" + RESTurl + "api/list/','_blank');", "REST API : list") +
+						this.button("window.open('" + RESTurl + "api/status/','_blank');", "REST API : status") +
 						this.button("window.open('" + RESTurl + "api/ui/','_blank');",   "Swagger/UI") +
 						this.button("appFW.requestAPI('GET',['version','" + appVersion +"'], '', appMsg.alertReturn,'wait');", "Check Updates")
 					);
