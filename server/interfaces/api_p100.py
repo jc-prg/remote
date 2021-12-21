@@ -251,6 +251,9 @@ class APIaddOn():
       self.cache_wait     = 2              # time in seconds how much time should be between two api metadata requests
       self.power_status   = "OFF"
       
+      self.last_request_time   = time.time()
+      self.last_request_data   = {}
+      self.cache_wait          = 1      
    #-------------------------------------------------
 
    def turn_on(self):
@@ -290,7 +293,15 @@ class APIaddOn():
 
       if self.status == "Connected":      
 
-        status = self.api.getDeviceInfo()
+        logging.debug(str(self.last_request_time)+"__"+str(time.time()))
+        
+        if self.last_request_time < time.time() - self.cache_wait:
+           status = self.api.getDeviceInfo()
+           self.last_request_data = status
+           self.last_request_time = time.time()
+           
+        else:
+           status = self.last_request_data
 
         logging.debug(str(status))
         

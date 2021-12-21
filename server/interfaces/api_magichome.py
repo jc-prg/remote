@@ -262,6 +262,10 @@ class APIaddOn():
       self.power_status   = "OFF"
       self.mode           = "COLOR"
       
+      self.last_request_time   = time.time()
+      self.last_request_data   = {}
+      self.cache_wait          = 1
+      
    #-------------------------------------------------
 
    def turn_on(self):
@@ -429,9 +433,17 @@ class APIaddOn():
 
       if self.status == "Connected":      
 
-        raw_status = self.api.get_status()
-        raw_status = str(raw_status)
+        logging.debug(str(self.last_request_time)+"__"+str(time.time()))
         
+        if self.last_request_time < time.time() - self.cache_wait:
+           raw_status = self.api.get_status()
+           self.last_request_data = raw_status
+           self.last_request_time = time.time()
+           
+        else:
+           raw_status = self.last_request_data
+
+        raw_status = str(raw_status)        
         brightness = str(round(self.brightness*100))+"%"
         color_rgb  = "("+str(self.last_r)+","+str(self.last_g)+","+str(self.last_b)+")"
         status     = self.decode_status(raw_status)
