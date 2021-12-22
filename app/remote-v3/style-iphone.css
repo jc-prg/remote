@@ -1,14 +1,14 @@
-/* format for iphone XS */
+/* format for iphone XS, 11pro, 12/13mini - 375x812 & iPhone SE 2nd Gen - 375x667 */
 
 @media (min-width: 370px) {
 
   .button         	{ width  :  76px; max-width  :  76px; }
   .button.big     	{ width  : 105px; max-width  : 105px; }
   .button.big_edit    	{ width  : 105px; max-width  : 105px; }
-  .button.small   	{ width  :  62px; max-width  :  62px; }
-  .button.small_edit	{ width  :  62px; max-width  :  62px; }
-  .button.header_image { width  : 327px; max-width  : 327px; }
-
+  .button.small   	{ width  :  63px; max-width  :  63px; }
+  .button.small_edit	{ width  :  63px; max-width  :  63px; }
+  .button.header_image { width  : 334px; max-width  : 334px; }
+  
   .display		{ font-size : 10px; }
   .display.small	{ width  : 160px; }
   .display.middle	{ width  : 160px; }
@@ -32,7 +32,7 @@
 
   .remote		{ width  : 340px; }
   .setting_bg		{ width  : 340px; }
-  .channel-entry	{ width  : 160px; }
+  .channel-entry	{ width  : 166px; }
   .rm-slider-button	{ width  : 328px; }
   .color-picker	{ width  : 328px; }
   
