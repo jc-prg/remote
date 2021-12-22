@@ -13,3 +13,4 @@ sonyapilib
 Crypto
 pycryptodome
 pkcs7
+pythonping

@@ -8,6 +8,7 @@ import logging, time, threading
 
 import modules.rm3json                as rm3json
 import modules.rm3config              as rm3config
+import modules.rm3ping                as rm3ping
 
 #-------------------------------------------------
 
@@ -25,7 +26,7 @@ class connect(threading.Thread):
         self.api          = {}
         self.available    = {}
         self.stopProcess  = False
-        self.wait         = 60       # time for reconnects
+        self.wait         = 20       # seconds to check connection
         self.configFiles  = configFiles
         self.name         = "jc://remote/interfaces/"
         self.check_error  = time.time()
@@ -104,7 +105,7 @@ class connect(threading.Thread):
 
         while not self.stopProcess:
            time.sleep(self.wait)
-           self.reconnect()
+           self.check_connection()
              
         logging.info( "Exiting " + self.name )
 
@@ -138,9 +139,31 @@ class connect(threading.Thread):
     
     #-------------------------------------------------
     
+    def check_connection(self):
+        '''
+        check IP connection and try reconnect if IP connection exists and status is not "Connected" 
+        '''
+        
+        logging.info("..................... CHECK CONNECTION .....................")
+        
+        for key in self.api:
+          if "IPAddress" in self.api[key].api_config:
+            connect = rm3ping.ping(self.api[key].api_config["IPAddress"])
+            logging.info(key+":"+self.api[key].api_config["IPAddress"]+":"+str(connect))
+            if not connect:
+              connect = rm3ping.ping(self.api[key].api_config["IPAddress"])
+              if not connect:
+                self.api[key].status = self.api[key].not_connected + " ... PING"
+                logging.error(self.api[key].status)
+                
+            if connect and self.api[key].status != "Connected":
+              self.reconnect(key)
+
+    #-------------------------------------------------
+    
     def reconnect(self,interface=""):
         '''
-        reconnect all devices
+        reconnect single device or all devices if status is not "Connected"
         '''
         
         if interface == "":
@@ -202,7 +225,8 @@ class connect(threading.Thread):
         
         logging.debug("ERROR RATE ... "+str(error_rate) + "/"+str(self.api[api_dev].count_error)+"/"+str(requests))
         
-        if error_rate >= 0.8 and requests > 5: 
+        if error_rate >= 0.8 and requests > 5:
+           self.api[api_dev].status = self.api[api_dev].not_connected + " ... HIGH ERROR RATE"
            self.reconnect( api_dev )
            
     #-------------------------------------------------
