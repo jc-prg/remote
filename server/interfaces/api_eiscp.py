@@ -89,7 +89,8 @@ class APIcontrol():
           
        except Exception as e:
           self.status               = self.not_connected + " ... CONNECT " + str(e)
-          self.api.jc.status        = self.status
+          if self.api.jc and self.api.jc.status: 
+             self.api.jc.status        = self.status
           logging.warning(self.status)
    
    
