@@ -153,6 +153,16 @@ function rmSettings (name) {	// IN PROGRESS
 						this.button(this.app_name+".button_show();",  b_show ) +
 						this.button(this.app_name+".button_deact();", b_deact )
 					);
+		setting += "</table><br/><hr style='border:white 1px solid;margin:5px;'/><br/><table width='100%'>";
+
+
+		var buttons = "";
+		for (var key in colors_power) {
+			buttons += "<button class='button' style='background-color:"+colors_power[key]+";width:100px;'>"+key+"</button>";
+			}
+
+		setting += this.tab_row( 	"Color Codes:",	buttons );
+
 
 		this.write(1,"Change Settings",setting);
 		this.write(2);

@@ -20,6 +20,7 @@ function statusCheck(data={})
 var last_media_info_content = "";
 var device_media_info       = {};
 
+
 //-----------------------------------------
 
 function statusShowVolume_old( volume, maximum, vol_color, novol_color="" ) {
@@ -276,6 +277,16 @@ function statusCheck(data={}) {
 				elementHidden( "display_"+key+"_ON");
 				elementVisible("display_"+key+"_OFF");
 				}	
+			else if (check_button.includes("ERROR")) {
+				statusButtonSetColor( "device_" + key, "ERROR" ); // main menu button
+				statusButtonSetColor( key + "_on-off", "ERROR" ); // on-o:16
+				statusButtonSetColor( key + "_off", "ERROR" );
+				statusButtonSetColor( key + "_on",  "ERROR" );				
+
+				elementVisible( "display_"+key+"_ERROR");
+				elementHidden( "display_"+key+"_ON");
+				elementHidden("display_"+key+"_OFF");
+				}	
 			}
 			
 		else if (typeof check_button == "object") {
@@ -299,6 +310,16 @@ function statusCheck(data={}) {
 				elementVisible("display_"+key+"_ON");
 				elementHidden( "display_"+key+"_OFF");
 				}
+			else if (check_button.includes("Error") || check_button.includes("ERROR") || check_button.includes("error")) {
+				statusButtonSetColor( "device_" + key, "ERROR" ); // main menu button
+				statusButtonSetColor( key + "_on-off", "ERROR" ); // on-o:16
+				statusButtonSetColor( key + "_off", "ERROR" );
+				statusButtonSetColor( key + "_on",  "ERROR" );				
+
+				elementVisible( "display_"+key+"_ERROR");
+				elementHidden( "display_"+key+"_ON");
+				elementHidden("display_"+key+"_OFF");
+				}	
 			}
 		else {
 			elementVisible("display_"+key+"_ERROR");

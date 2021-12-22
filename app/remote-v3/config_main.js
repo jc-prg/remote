@@ -91,8 +91,8 @@ var color_button_inactive 	= "#666666";
 var colors_power		= { 
 				"ON"		: "darkgreen",
 				"OFF"		: "darkred",
-				"OTHER"	: "purple",
-				"ERROR"	: "orangered",
+				"OTHER"	: "darkcyan",
+				"ERROR"	: "blueviolet",
 				}
 
 // Standard-Definition für RemoteControl
