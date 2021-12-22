@@ -16,17 +16,6 @@
    opacity    : 0.9;
 }
 
-/* iPhone XS */
-
-@media (min-width:370px){
-  .setting_bg { width : 340px; }
-}
-
-/* Bigger devices (e.g. Laptop) */
-
-@media (min-width:720px){
-  .setting_bg { width : 335px; }
-}
 
 /* --------------------------------- */
 /* tbc. if still required            */

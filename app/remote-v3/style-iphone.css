@@ -1,0 +1,41 @@
+/* format for iphone XS */
+
+@media (min-width: 370px) {
+
+  .button         	{ width  :  76px; max-width  :  76px; }
+  .button.big     	{ width  : 105px; max-width  : 105px; }
+  .button.big_edit    	{ width  : 105px; max-width  : 105px; }
+  .button.small   	{ width  :  62px; max-width  :  62px; }
+  .button.small_edit	{ width  :  62px; max-width  :  62px; }
+  .button.header_image { width  : 327px; max-width  : 327px; }
+
+  .display		{ font-size : 10px; }
+  .display.small	{ width  : 160px; }
+  .display.middle	{ width  : 160px; }
+  .display.big		{ width  : 320px; }
+  .display.h1w2	{ width  : 160px; }
+  .display.h1w4	{ width  : 320px; }
+  .display.h2w2	{ width  : 160px; }
+  .display.h2w4	{ width  : 320px; }
+  .display.h3w2	{ width  : 160px; } 
+  .display.h4w2	{ width  : 160px; } 
+
+  .display-element		{ width :  70px; }
+  .display-element.small	{ width :  70px; }
+  .display-element.middle	{ width : 146px; }
+  .display-element.big		{ width : 146px; }
+  
+  .display-element.h1w4	{ width : 146px; }
+  .display-element.h2w4	{ width : 146px; }
+  .display-element.h3w2	{ width : 146px; }
+  .display-element.h4w2	{ width : 146px; }
+
+  .remote		{ width  : 340px; }
+  .setting_bg		{ width  : 340px; }
+  .channel-entry	{ width  : 160px; }
+  .rm-slider-button	{ width  : 328px; }
+  .color-picker	{ width  : 328px; }
+  
+}
+
+

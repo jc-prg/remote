@@ -24,17 +24,6 @@
 
 }
 
-/* format for iphone XS */
-
-@media (min-width: 370px) {
-  .rm-slider-button   { width  : 328px; }
-}
-
-/* format for laptop */
-
-@media (min-width: 720px) {
-  .rm-slider-button   { width  : 320px; }
-}
 
 /* ---------------------------------------- */
 
