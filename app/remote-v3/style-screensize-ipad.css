@@ -4,8 +4,8 @@
 .screen_ipad_landscape { display : none; }
 
 @media only screen 
-    and (device-width : 834px) and (device-height : 1112px) and (orientation : portrait)
-    {
+  and (device-width : 834px) and (device-height : 1112px) and (orientation : portrait)
+  {
 
   .screen_ipad { display : block; }
   .screen_default { display : none; }
@@ -31,6 +31,8 @@
   .rm-slider-button	{ width  : 276px; }
   .color-picker	{ width  : 276px; }
 
+  #audio2 		{ right: 125px; }
+
   /* overwrite app-framework definition to show the menu */
   .remote_nav { display: block; width : 165px; }
   .remote_nav ul { width : 160px; }
@@ -38,8 +40,11 @@
 }
 
 @media only screen 
-    and (device-width : 834px) and (device-height : 1112px) and (orientation : landscape)
-    {
+  and (device-width : 834px) and (device-height : 1112px) and (orientation : landscape)
+  {
+  
   .screen_ipad_landscape { display : block; }
   .screen_default { display : none; }
+
+  #audio2 		{ right: 125px; }
 }
