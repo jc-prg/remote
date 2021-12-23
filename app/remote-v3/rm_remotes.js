@@ -1342,6 +1342,9 @@ function rmRemote(name) {
         			if (Number.isInteger((x)/4))   				{ text += "\n\n"; x = 0; }
         			if (json.length > i+1 && json[i+1].includes("LINE") && x > 0) { text += "\n\n"; x = 0; }
         			if (json[i].includes("LINE"))					{ text += "\n\n"; x = 0; }
+        			if (json[i].includes("HEADER-IMAGE"))				{ text += "\n\n"; x = 0; }
+        			if (json[i].includes("SLIDER"))				{ text += "\n\n"; x = 0; }
+        			if (json[i].includes("COLOR-PICKER"))				{ text += "\n\n"; x = 0; }
         			}
 	        	text += "\n]";
         		}
