@@ -174,8 +174,11 @@ function statusCheck_inactive(data) {
 function statusCheck_load() {	rm3app.requestAPI("GET",["list"], "", statusCheck, "" ); }
 function statusCheck(data={}) {
 
-	if (deactivateButton)			{ return; }     // if manual mode <- deactivateButton == true
-	if (!data["DATA"]) {
+	// if manual mode -> ignore status check
+	if (deactivateButton) { return; }     
+
+	// if not data includes -> error	
+	if (!data["DATA"] || !data["STATUS"]) {
 		console.error("statusCheck: data not loaded.");
 		statusShowApiStatus("red", showButtonTime);
 		return;
@@ -207,17 +210,19 @@ function statusCheck(data={}) {
 	statusCheck_inactive(data);
 
 	// get scene status from devices status and definition (see statusCheck) -> move to rm_remote.js
-	for (var key in data["DATA"]["scenes"]) {
+	for (var key in data["STATUS"]["scenes"]) {
 
 		var dev_on    = 0;
 		var dev_error = 0;
-		var required = data["DATA"]["scenes"][key]["remote"]["devices"];
+		var required = data["STATUS"]["scenes"][key];
 		for (var i=0;i<required.length;i++) {
-		        device_status[required[i]]  = devices[required[i]]["status"]["power"].toUpperCase();
-		        var device_connect          = devices[required[i]]["status"]["api-status"];
 
-		        if (device_status[required[i]] == "ON")	{ dev_on += 1; }
-		        if (device_connect != "Connected")		{ dev_error += 1; }
+	    		var device_api         = data["STATUS"]["devices"][required[i]]["api"]
+	    		var device_api_status  = data["STATUS"]["interfaces"][device_api]
+			device_status[required[i]]  = devices[required[i]]["status"]["power"].toUpperCase();
+
+			if (device_status[required[i]] == "ON")	{ dev_on += 1; }
+			if (device_api_status != "Connected")		{ dev_error += 1; }
 			}
 
 		if (dev_error > 0)		 	{ scene_status[key] = "ERROR"; }
@@ -229,8 +234,8 @@ function statusCheck(data={}) {
 	// check device status and change color of power buttons / main menu buttons device
 	for (var device in devices) {
 	
-	  // if device is visible
-	  if (devices[device]["settings"]["visible"]) { // == "yes") {
+	    var device_api         = data["STATUS"]["devices"][device]["api"]
+	    var device_api_status  = data["STATUS"]["interfaces"][device_api]
 
 	    console.debug("Device Status: "+device);
 	    console.debug(devices[device]["status"]);
@@ -244,7 +249,7 @@ function statusCheck(data={}) {
 	        
 	        //console.error("TEST "+key1+"_"+key2+" = "+devices[key1]["status"][key2]);
 		check_button = devices[device]["status"][key2];
-		connection   = devices[device]["status"]["api-status"].toLowerCase();
+		connection   = device_api_status.toLowerCase();
 			
 		if (connection != "connected") {
 			statusButtonSetColor( "device_" + key, "ERROR" ); // main menu button
@@ -339,7 +344,6 @@ function statusCheck(data={}) {
 			elementHidden( "display_"+key+"_ERROR");
 			}
 		
-		}
 	      }
 	   }
 	}
@@ -434,11 +438,13 @@ function statusCheck(data={}) {
 		// media info ...
 		var media_info         = document.getElementById("media_info");
 		var media_info_content = document.getElementById("media_info_content");
+		var device_api         = data["STATUS"]["devices"][key]["api"]
+		var device_api_status  = data["STATUS"]["interfaces"][device_api]
 		
 		if (devices[key]["status"]["power"])	{ var device_status = devices[key]["status"]["power"].toUpperCase(); }
 		else					{ var device_status = ""; }
 		
-		if (devices[key]["status"]["api-status"] == "Connected" && device_status.includes("ON")) {
+		if (device_api_status == "Connected" && device_status.includes("ON")) {
 			if (media_info && devices[key]["status"]["current-playing"] && devices[key]["status"]["current-playing"] != "") {
 
 				if (media_info_content)	{ var current_media_info_content = media_info_content.innerHTML; }
@@ -467,8 +473,10 @@ function statusCheck(data={}) {
 		// fill keys with displays
 		if (devices[key]["status"] && devices[key]["remote"] && devices[key]["remote"]["display"]) {
 		
-		        var display     = devices[key]["remote"]["display"];
-		        var connected   = devices[key]["status"]["api-status"].toLowerCase();
+			var display     = devices[key]["remote"]["display"];
+	    		var device_api         = data["STATUS"]["devices"][key]["api"]
+	    		var device_api_status  = data["STATUS"]["interfaces"][device_api]
+			var connected   	= device_api_status.toLowerCase();
 		        
 			for (var dkey in display) {
 				var vkey     = display[dkey];
@@ -483,10 +491,10 @@ function statusCheck(data={}) {
 					}
 									
 				if (vkey == "power") {
-					if (connected != "connected")						{ status = "<b style='color:red;'>Connection Error:</b><br/>"+devices[key]["connected"]; }			
+					if (connected != "connected")						{ status = "<b style='color:red;'>Connection Error:</b><br/>"+connected; }			
 			        	else if (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)	{ status = "<b style='color:lightgreen;'>Connected<b/>"; }
 					else if (status.indexOf("OFF") >= 0 || status.indexOf("off") >= 0)	{ status = "<b style='color:gold;'>Connected: Power Off<b/>"; }
-        				else 									{ status = "<b style='color:red;'>Unknown Error:</b> "+devices[key]["connected"]; }			
+        				else 									{ status = "<b style='color:red;'>Unknown Error:</b> "+status; }			
 					}
 
 				if (element)  { element.innerHTML  = status; }
@@ -496,8 +504,11 @@ function statusCheck(data={}) {
 			
 		// fill all keys in alert display
 		if (devices[key]["status"] && devices[key]["interface"] && devices[key]["interface"]["query_list"]) {
-		        var display     = devices[key]["interface"]["query_list"];
-		        var connected   = devices[key]["status"]["api-status"].toLowerCase();
+
+			var display     	= devices[key]["interface"]["query_list"];
+	    		var device_api         = data["STATUS"]["devices"][key]["api"]
+	    		var device_api_status  = data["STATUS"]["interfaces"][device_api]
+			var connected   	= device_api_status.toLowerCase();
 
 			for (var i=0; i<display.length; i++) {
 				var vkey     = display[i];
@@ -505,10 +516,10 @@ function statusCheck(data={}) {
 				var status   = devices[key]["status"][vkey];		
 
 				if (vkey == "power") {
-					if (connected != "connected")						{ status = "<b style='color:red;'>Connection Error:</b><br/>"+devices[key]["connected"]; }			
+					if (connected != "connected")						{ status = "<b style='color:red;'>Connection Error:</b><br/>"+connected; }			
 			        	else if (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)	{ status = "<b style='color:lightgreen;'>Connected<b/>"; }
 					else if (status.indexOf("OFF") >= 0 || status.indexOf("off") >= 0)	{ status = "<b style='color:gold;'>Connected: Power Off<b/>"; }
-        				else 									{ status = "<b style='color:red;'>Unknown Error:</b> "+devices[key]["connected"]; }			
+        				else 									{ status = "<b style='color:red;'>Unknown Error:</b> "+status; }			
 					}
 
 				if (element2 && status) { element2.innerHTML = status.replace(/,/g,", "); }
