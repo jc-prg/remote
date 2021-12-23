@@ -1,6 +1,7 @@
-/* format for iPhone XS in landscape and bigger devices */
+/* format for bigger devices, except iPad */
 
-@media (min-width: 720px) {
+@media (min-width: 730px) 
+{
 
   .button         	{ width  :  74px; max-width  :  74px; }
   .button.big     	{ width  : 102px; max-width  : 102px; }
@@ -39,3 +40,9 @@
 
 }
 
+@media (min-width: 890px) 
+{
+  /* overwrite app-framework definition to show the menu */
+  .remote_nav    { width : 164px; }
+  .remote_nav ul { width : 160px; }
+}

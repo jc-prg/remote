@@ -1,0 +1,33 @@
+/* format for iPad (portrait) */
+
+@media only screen 
+    and (device-width : 810px) and (device-height : 1080px) and (orientation : portrait)
+    {
+
+  .button        			 	{ width  :  76px; max-width  :  76px; }
+  .button.big,   .button.big_edit     	{ width  :  88px; max-width  :  88px; }
+  .button.small, .button.small_edit   	{ width  :  51px; max-width  :  51px; }
+  .button.header_image				{ width  : 276px; max-width  : 276px; }
+  
+  .display.small, .display.middle					{ width  : 133px; }
+  .display.h1w2,  .display.h2w2, .display.h3w2, .display.h4w2	{ width  : 133px; } 
+  .display.big,   .display.h1w4, .display.h2w4			{ width  : 276px; }
+ 
+  .display-element,         .display-element.small			{ width :  56px; }
+  .display-element.middle,  .display-element.big			{ width : 118px; }
+  .display-element.h1w4,    .display-element.h2w4			{ width : 118px; }
+  .display-element.h3w2,    .display-element.h4w2			{ width : 118px; }
+
+  .remote		{ width  : 290px; }
+  .setting_bg		{ width  : 290px; }
+  .channel-entry	{ width  : 140px; }
+  
+  .rm-slider-button	{ width  : 276px; }
+  .color-picker	{ width  : 276px; }
+
+  /* overwrite app-framework definition to show the menu */
+  .remote_nav { display: block; width : 165px; }
+  .remote_nav ul { width : 160px; }
+  #navi-click { display: none; }
+}
+

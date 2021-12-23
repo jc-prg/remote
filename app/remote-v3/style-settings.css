@@ -16,30 +16,6 @@
    opacity    : 0.9;
 }
 
-
-/* --------------------------------- */
-/* tbc. if still required            */
-
-#cover, #cover2, #cover3 { 
-	display:none; 
-        margin: 0 auto;
-	position:fixed; 
-	top:0; 
-	left:0; 
-	background:rgba(0,0,0,0.6); 
-	z-index:90; 
-	width:100%; 
-	height:100%; 
-	} 
-
-#cover3 {
-	display:block;
-	color:white;
-	font-size:16px;
-	font-family:Helvetica;
-	text-align:center;
-	}
-
 /* --------------------------------- */
 
 #settings { 

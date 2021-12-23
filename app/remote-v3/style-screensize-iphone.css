@@ -1,0 +1,60 @@
+/* format for iphone XS, 11pro, 12/13mini - 375x812 & iPhone SE 2nd Gen - 375x667 */
+
+@media only screen 
+  and ((device-width : 375px) and (orientation : portrait))
+  {
+
+  .button        			 	{ width  :  76px; max-width  :  76px; }
+  .button.big,   .button.big_edit     	{ width  : 105px; max-width  : 105px; }
+  .button.small, .button.small_edit   	{ width  :  62px; max-width  :  62px; }
+  .button.header_image				{ width  : 334px; max-width  : 334px; }
+  
+  .display								{ font-size : 10px; }
+  .display.small, .display.middle					{ width  : 160px; }
+  .display.big,   .display.h1w4, .display.h2w4			{ width  : 320px; }
+  .display.h1w2,  .display.h2w2, .display.h3w2, .display.h4w2	{ width  : 160px; } 
+ 
+  .display-element,         .display-element.small			{ width :  70px; }
+  .display-element.middle,  .display-element.big			{ width : 146px; }
+  
+  .display-element.h1w4,    .display-element.h2w4			{ width : 146px; }
+  .display-element.h3w2,    .display-element.h4w2			{ width : 146px; }
+
+  .remote		{ width  : 340px; }
+  .setting_bg		{ width  : 340px; }
+  .channel-entry	{ width  : 166px; }
+  .rm-slider-button	{ width  : 328px; }
+  .color-picker	{ width  : 328px; }
+  
+}
+
+@media (width : 812px)
+  {
+  .button        			 	{ width  :  62px; max-width  :  62px; }
+  .button.big,   .button.big_edit     	{ width  :  88px; max-width  :  88px; }
+  .button.small, .button.small_edit   	{ width  :  51px; max-width  :  51px; }
+  .button.header_image				{ width  : 276px; max-width  : 276px; }
+  
+  .display.small, .display.middle					{ width  : 133px; }
+  .display.h1w2,  .display.h2w2, .display.h3w2, .display.h4w2	{ width  : 133px; } 
+  .display.big,   .display.h1w4, .display.h2w4			{ width  : 276px; }
+ 
+  .display-element,         .display-element.small			{ width :  56px; }
+  .display-element.middle,  .display-element.big			{ width : 118px; }
+  .display-element.h1w4,    .display-element.h2w4			{ width : 118px; }
+  .display-element.h3w2,    .display-element.h4w2			{ width : 118px; }
+
+  .remote		{ width  : 290px; }
+  .setting_bg		{ width  : 290px; }
+  .channel-entry	{ width  : 140px; }
+  
+  .rm-slider-button	{ width  : 276px; }
+  .color-picker	{ width  : 276px; }
+
+  /* overwrite app-framework definition to show the menu */
+  .remote_nav { display: block; width : 165px; }
+  .remote_nav ul { width : 160px; }
+  #navi-click { display: none; }
+  
+}
+
