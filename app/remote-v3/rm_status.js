@@ -14,6 +14,11 @@ function statusButtonSetColor(id, status)
 function statusCheck_inactive(data)
 function statusCheck_load()
 function statusCheck(data={})
+function statusCheck_apiConnection(data)
+function statusCheck_sceneButton(data)
+function statusCheck_audioMute(data)
+function statusCheck_buttonsOnOff(data={})
+function statusCheck_display(data={})
 */
 //--------------------------------
 
@@ -184,30 +189,33 @@ function statusCheck(data={}) {
 		return;
 		}
 			
-        var devices        = data["DATA"]["devices"];
-	var scene_status   = {};
-	var device_status  = {};
-	
-	// get data from main audio device
-	var main_audio      = data["CONFIG"]["main-audio"];  // get main audio device from file
-	var main_audio_max  = "";
-	var main_audio_vol  = devices[main_audio]["status"]["vol"];
-	var main_audio_mute = devices[main_audio]["status"]["mute"].toUpperCase();
-	if (devices[main_audio] && devices[main_audio]["interface"]["values"] && devices[main_audio]["interface"]["values"]["vol"]) {
-		main_audio_max  = devices[main_audio]["interface"]["values"]["vol"]["max"];
-		}
-	else {
-		main_audio_max    = 100;
-		console.error("Min and max values not defined, set to 0..100!");
-		}
-
-	// set colors
-	var vol_color	   = "white";
-	var vol_color2	   = "yellow";
-	var novol_color    = "darkgray";
-	
-	// if data -> callback of apiCommandSend (ON/OFF) -> statusCheck_inactive()
 	statusCheck_inactive(data);
+	statusCheck_buttonsOnOff(data);
+	statusCheck_sceneButton(data);
+	statusCheck_audioMute(data);
+	statusCheck_apiConnection(data);
+	statusCheck_display(data);
+	}
+
+
+//-----------------------------------------
+
+function statusCheck_apiConnection(data) {
+	// check api status
+	for (var key in data["STATUS"]["interfaces"]) {
+		var status = data["STATUS"]["interfaces"][key];
+		if (status == "Connected") 	{ setTextById("api_status_" + key, "<font color='" + color_api_connect + "'>" + status + "</font>"); }
+		else				{ setTextById("api_status_" + key, "<font color='" + color_api_error + "'>" + status + "</font>"); }
+		}			
+	}
+
+
+//-----------------------------------------
+
+function statusCheck_sceneButton(data) {
+
+	var scene_status = {};
+	var devices = data["DATA"]["devices"]
 
 	// get scene status from devices status and definition (see statusCheck) -> move to rm_remote.js
 	for (var key in data["STATUS"]["scenes"]) {
@@ -230,17 +238,89 @@ function statusCheck(data={}) {
 		else if (dev_on > 0)			{ scene_status[key] = "OTHER"; }
 		else					{ scene_status[key] = "OFF"; }
 		}
-				
+
+	// check scene status and change color of power buttons
+	for (var key in scene_status) {
+	
+		if (scene_status[key] == "ON") {
+			statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
+			statusButtonSetColor( "scene_off_"+key, "" );
+			}
+		else if (scene_status[key] == "OTHER") {
+			statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
+			statusButtonSetColor( "scene_off_"+key, "" );
+			}
+		else if (scene_status[key] == "ERROR") {
+			statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
+			statusButtonSetColor( "scene_off_"+key, scene_status[key] );
+			}
+		else if (scene_status[key] == "OFF") {
+			statusButtonSetColor( "scene_off_"+key,  scene_status[key] );
+			statusButtonSetColor( "scene_on_"+key, "" );
+			}
+		}
+	}
+
+	
+//-----------------------------------------
+
+function statusCheck_audioMute(data) {
+
+	// set colors
+	var vol_color		= "white";
+	var vol_color2		= "yellow";
+	var novol_color	= "darkgray";
+
+	var main_audio		= ""; 
+	var devices		= data["STATUS"]["devices"];
+	
+	for (var key in devices) {
+		if (devices[key]["main-audio"] == "yes") { main_audio = key; }
+		}
+
+	// check audio status and show mut status in navigation bar
+	var power = devices[main_audio]["power"].toUpperCase();
+	if (devices[main_audio]["mute"].toUpperCase() == "ON" || power.includes("OFF") || devices[main_audio]["vol"] == 0) {
+		document.getElementById("audio1").style.display = "block";
+		document.getElementById("audio2").style.display = "none";
+		vol_color = "gray";
+		}
+	else {
+		document.getElementById("audio1").style.display = "none";
+		document.getElementById("audio2").style.display = "block";
+		}
+
+	// get data from main audio device
+	var main_audio_max	= 100;
+	var main_audio_vol	= devices[main_audio]["vol"];
+	var main_audio_mute	= devices[main_audio]["mute"].toUpperCase();
+
+	var devices		= data["DATA"]["devices"];
+	if (devices[main_audio] && devices[main_audio]["interface"]["values"] && devices[main_audio]["interface"]["values"]["vol"]) {
+		main_audio_max  = devices[main_audio]["interface"]["values"]["vol"]["max"];
+		}
+
+	// check volume and show in navigation bar
+	rm3slider.set_value( main_audio_vol );
+	vol_str = statusShowVolume_old( main_audio_vol, main_audio_max, vol_color );
+	document.getElementById("audio3").innerHTML = vol_str;
+	}
+
+	
+//-----------------------------------------
+
+function statusCheck_buttonsOnOff(data={}) {
+
 	// check device status and change color of power buttons / main menu buttons device
+	var devices    = data["STATUS"]["devices"];
 	for (var device in devices) {
 	
 	    var device_api         = data["STATUS"]["devices"][device]["api"]
 	    var device_api_status  = data["STATUS"]["interfaces"][device_api]
 
 	    console.debug("Device Status: "+device);
-	    console.debug(devices[device]["status"]);
 
-	    for (var key2 in devices[device]["status"]) {
+	    for (var key2 in devices[device]) {
 	    
 	      // if power status
 	      if (key2.includes("power")) {
@@ -248,7 +328,7 @@ function statusCheck(data={}) {
 	        if (key2 != "power") { key += "_"+key2; }
 	        
 	        //console.error("TEST "+key1+"_"+key2+" = "+devices[key1]["status"][key2]);
-		check_button = devices[device]["status"][key2];
+		check_button = devices[device][key2];
 		connection   = device_api_status.toLowerCase();
 			
 		if (connection != "connected") {
@@ -344,100 +424,29 @@ function statusCheck(data={}) {
 			elementHidden( "display_"+key+"_ERROR");
 			}
 		
-	      }
-	   }
+	        }
+	     }
+  	  }
 	}
 
-	// check scene status and change color of power buttons
-	for (var key in scene_status) {
-		if (scene_status[key] == "ON") {
-			statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
-			statusButtonSetColor( "scene_off_"+key, "" );
-			}
-		else if (scene_status[key] == "OTHER") {
-			statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
-			statusButtonSetColor( "scene_off_"+key, "" );
-			}
-		else if (scene_status[key] == "ERROR") {
-			statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
-			statusButtonSetColor( "scene_off_"+key, scene_status[key] );
-			}
-		else if (scene_status[key] == "OFF") {
-			statusButtonSetColor( "scene_off_"+key,  scene_status[key] );
-			statusButtonSetColor( "scene_on_"+key, "" );
+	
+//-----------------------------------------
 
-			// -> loop to deactivate all makro buttons?!
-			}
-		}
+function statusCheck_display(data={}) {
 
-	// check audio status and show in navigation bar
-	var power = devices[main_audio]["status"]["power"].toUpperCase();
-	if (devices[main_audio]["status"]["mute"].toUpperCase() == "ON" || power.includes("OFF") || devices[main_audio]["status"]["vol"] == 0) {
-		document.getElementById("audio1").style.display = "block";
-		document.getElementById("audio2").style.display = "none";
-		vol_color = "gray";
-		}
-	else {
-		document.getElementById("audio1").style.display = "none";
-		document.getElementById("audio2").style.display = "block";
-		}
-		
-	// check volume and show in navigation bar
-	rm3slider.set_value( main_audio_vol );
-	vol_str = statusShowVolume_old( main_audio_vol, main_audio_max, vol_color );
-	document.getElementById("audio3").innerHTML = vol_str;
-
-
-	// check api status
-	for (var key in data["STATUS"]["interfaces"]) {
-		var status = data["STATUS"]["interfaces"][key];
-		if (status == "Connected") 	{ setTextById("api_status_" + key, "<font color='" + color_api_connect + "'>" + status + "</font>"); }
-		else				{ setTextById("api_status_" + key, "<font color='" + color_api_error + "'>" + status + "</font>"); }
-		}
-			
 	// check status for displays
-	for (var key in data["DATA"]["scenes"]) {
-		if (data["DATA"]["scenes"][key]["remote"] && data["DATA"]["scenes"][key]["remote"]["display-detail"]) {
-			// .......
-			for (var vkey in data["DATA"]["scenes"][key]["remote"]["display-detail"]) {
-				var value    = data["DATA"]["scenes"][key]["remote"]["display-detail"][vkey];
-				var element2 = document.getElementById("display_full_" + key + "_" + vkey);
-				var values1  = value.split("_");
-				var values2  = values1[1].split("||");
-				var replace_tag     = values2[0];
-				var replace_value   = values2[0];
-				var replace_device  = values1[0];
-				var replace_index   = values2[1];
-				
-				//console.warn("display_full_" + key + "_" + vkey);
-				//console.warn("dev:"+replace_device+" / tag:"+replace_tag+" / value:"+replace_value+" / index:"+replace_index);
-				
-				if (data["DATA"]["devices"][replace_device] && data["DATA"]["devices"][replace_device]["status"] && data["DATA"]["devices"][replace_device]["status"][replace_tag]) {
-					replace_value = data["DATA"]["devices"][replace_device]["status"][replace_tag];
-					if (replace_index && replace_index != "") {
-					
-						// workaround, check why not in the correct format (KODI?!)
-						if (replace_value != "no media") {
-							console.warn(replace_value);
-							replace_value = replace_value.replace(/'/g, '"');
-							var replace_content = JSON.parse(replace_value);
-							var replace_cmd     = "replace_content"+replace_index;
-							replace_value = eval(replace_cmd);
-							}
-						}
-					}
-				
-				if (element2) { element2.innerHTML = replace_value; }
-				}
-			}
-		}
-		
-	// check status for displays
+	var devices		= data["DATA"]["devices"];
+	var vol_color		= "white";
+	var vol_color2		= "yellow";
+	var novol_color	= "darkgray";
+
+	// set colors
 	for (var key in devices) {
 	
 		// media info ...
 		var media_info         = document.getElementById("media_info");
 		var media_info_content = document.getElementById("media_info_content");
+		
 		var device_api         = data["STATUS"]["devices"][key]["api"]
 		var device_api_status  = data["STATUS"]["interfaces"][device_api]
 		
@@ -525,8 +534,42 @@ function statusCheck(data={}) {
 				if (element2 && status) { element2.innerHTML = status.replace(/,/g,", "); }
 				}
 			}
-		}	
+		}
+
+	// check status for displays
+	for (var key in data["STATUS"]["scenes"]) {
+		if (data["DATA"]["scenes"][key]["remote"] && data["DATA"]["scenes"][key]["remote"]["display-detail"]) {
+			// .......
+			for (var vkey in data["DATA"]["scenes"][key]["remote"]["display-detail"]) {
+				var value    = data["DATA"]["scenes"][key]["remote"]["display-detail"][vkey];
+				var element2 = document.getElementById("display_full_" + key + "_" + vkey);
+				var values1  = value.split("_");
+				var values2  = values1[1].split("||");
+				var replace_tag     = values2[0];
+				var replace_value   = values2[0];
+				var replace_device  = values1[0];
+				var replace_index   = values2[1];
+				
+				if (data["DATA"]["devices"][replace_device] && data["DATA"]["devices"][replace_device]["status"] && data["DATA"]["devices"][replace_device]["status"][replace_tag]) {
+					replace_value = data["DATA"]["devices"][replace_device]["status"][replace_tag];
+					if (replace_index && replace_index != "") {
+					
+						// workaround, check why not in the correct format (KODI?!)
+						if (replace_value != "no media") {
+							console.warn(replace_value);
+							replace_value = replace_value.replace(/'/g, '"');
+							var replace_content = JSON.parse(replace_value);
+							var replace_cmd     = "replace_content"+replace_index;
+							replace_value = eval(replace_cmd);
+							}
+						}
+					}
+				
+				if (element2) { element2.innerHTML = replace_value; }
+				}
+			}
+		}
 	}
-	
+		
 //--------------------------------
 // EOF
