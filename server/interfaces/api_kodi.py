@@ -399,7 +399,7 @@ class APIaddOn():
 
    #-------------------------------------------------
          
-   def PlayerControl(self,command,values):
+   def PlayerControl(self,command):
       '''
       Control player // https://kodi.wiki/view/JSON-RPC_API/v12#Player
       
