@@ -71,6 +71,7 @@ def remoteAPI_start(setting=[]):
 
     data["STATUS"]                         = {}
     data["STATUS"]["devices"]              = RmReadData_deviceStatus()
+    data["STATUS"]["scenes"]               = RmReadData_sceneStatus()
     data["STATUS"]["interfaces"]           = deviceAPIs.status()
     data["STATUS"]["system"]               = {} #  to be filled in remoteAPI_end()
     data["STATUS"]["request_time"]         = queueSend.avarage_exec

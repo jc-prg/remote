@@ -95,7 +95,7 @@ def RmReadData_devices(selected=[],remotes=True):
 
 def RmReadData_deviceStatus():
     '''
-    read config data for devices and combine with remote definition
+    read status data for devices 
     '''
     status = {}
     data   = {}
@@ -107,6 +107,52 @@ def RmReadData_deviceStatus():
        status[device]["api"]  = data[device]["config"]["interface_api"] + "_" + data[device]["config"]["interface_dev"]
 
     return status
+
+
+#---------------------------
+
+
+def RmReadData_sceneStatus():
+    '''
+    read status data for devices 
+    '''
+    status = {}
+    data   = {}
+    data = configFiles.read(modules.active_scenes)
+
+    # read data for active devices
+    for scene in data:
+       status[scene]         = data[scene]["remote"]["devices"]
+
+    return status
+
+
+
+#########
+#---------------------------
+
+def RmReadData_scenes(selected=[],remotes=True):
+    '''
+    read config data for scenes and combine with remote definition
+    '''
+    data = {}
+    data = configFiles.read(modules.active_scenes)
+    
+    if remotes:
+      for scene in data:
+        if selected == [] or scene in selected:
+          remote_file   = data[scene]["config"]["remote"]
+          try:
+            remote_config = configFiles.read(modules.scenes + remote_file)       
+            data[scene]["remote"] = remote_config["data"]
+          except Exception as e:
+            logging.error("Reading scene failed: "+str(scene)+" / "+str(selected)+" ("+str(e)+")") 
+            data[scene]["remote"] = "error"
+        else:
+          logging.error("Scene not found: "+str(scene)+" / "+str(selected))
+          return {}
+               
+    return data
 
 
 #---------------------------
