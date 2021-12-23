@@ -1175,16 +1175,23 @@ function rmRemote(name) {
 	//--------------------------------
 	// show display with information
 	this.display              = function (id, device, type="devices", style="", display_data={}) {
-		var remote_data  = this.data["DATA"][type][device]["remote"];
-		var status_data  = this.data["DATA"][type][device]["status"];
+		var remote_data	= this.data["DATA"][type][device]["remote"];
+		var status_data	= this.data["DATA"][type][device]["status"];
+		
+		if (type == "devices") {
+			var status_data_new	= this.data["STATUS"]["devices"][device];
+			var device_api		= status_data_new["api"];
+			var connected		= this.data["STATUS"]["interfaces"][device_api];
+			}
+		else{
+			if (status_data["api-status"])	{ var connected = status_data["api-status"].toLowerCase(); }
+			else					{ var connected = "unknown"; }
+			}
 		
 		if (!this.data["DATA"][type]) {
 			this.logging.error(this.app_name+".display() - type not supported ("+type+")");
 			return;
 			}
-			
-		if (status_data["api-status"])	{ var connected = status_data["api-status"].toLowerCase(); }
-		else					{ var connected = "unknown"; }
 		
 		if (display_data != {}) 		{}
 		else if (remote_data["display"])	{ display_data = remote_data["display"]; }
@@ -1201,6 +1208,7 @@ function rmRemote(name) {
 		else if (connected != "connected")									{ status = "ERROR"; }
 		else if (status_data["power"] == "ON" || status_data["power"] == "on")				{ status = "ON"; }
 		else if (status_data["power"].indexOf("OFF") >= 0 || status_data["power"].indexOf("off") >= 0)	{ status = "OFF" }
+		else													{ status = "ERROR"; }
 
 		// display if ERROR
 		text += display_start;
@@ -1208,8 +1216,8 @@ function rmRemote(name) {
 		text  = text.replace( /##STYLE##/g, style + " display_error" );
 		if (status == "ERROR" && !this.edit_mode)	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
 		else						{ text  = text.replace( /##DISPLAY##/g, "none" ); }
-		text += "<center><b>device not connected</b>:</center>"; //<br/>";
-		text += "<center><i>"+status_data["api-status"]+"</i></center>";
+		text += "<center><b>Connection Error</b>:</center>"; //<br/>";
+		text += "<center><i>"+connected+" :: Power-Status: "+status_data["power"].toUpperCase()+"</i></center>";
 		text += display_end;
 		
 		// display if ON
