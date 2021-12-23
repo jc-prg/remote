@@ -14,11 +14,6 @@ function statusButtonSetColor(id, status)
 function statusCheck_inactive(data)
 function statusCheck_load()
 function statusCheck(data={})
-function statusCheck_apiConnection(data)
-function statusCheck_sceneButton(data)
-function statusCheck_audioMute(data)
-function statusCheck_buttonsOnOff(data={})
-function statusCheck_display(data={})
 */
 //--------------------------------
 
