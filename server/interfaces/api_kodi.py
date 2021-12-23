@@ -65,8 +65,14 @@ class APIcontrol():
        self.count_success        = 0
 
        try:
-          self.api    = Kodi(self.api_url)
-          self.api.jc = APIaddOn(self.api)
+          self.api       = Kodi(self.api_url)
+
+       except Exception as e:
+          self.status = self.not_connected + " ... CONNECT " + str(e)
+          logging.warn(self.status)
+
+       try:
+          self.api.jc    = APIaddOn(self.api)
           logging.debug(str(self.api.JSONRPC.Ping()))
           
           self.api.jc.status        = self.status
@@ -88,6 +94,15 @@ class APIcontrol():
          logging.debug(".")
          time.sleep(0.2)
        return
+       
+       
+   #-------------------------------------------------
+
+   def power_status(self):
+       '''
+       request power status
+       '''
+       return self.jc.PlayerMetadata("power")
        
        
    #-------------------------------------------------

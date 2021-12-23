@@ -26,12 +26,12 @@ class connect(threading.Thread):
         self.api          = {}
         self.available    = {}
         self.stopProcess  = False
-        self.wait         = 20       # seconds to check connection
+        self.wait         = 15       # seconds to check connection
         self.configFiles  = configFiles
         self.name         = "jc://remote/interfaces/"
         self.check_error  = time.time()
         self.last_message = ""
-        self.log_commands = True
+        self.log_commands = False
         self.methods      = {
             "send"        : "Send command via API (send)",
             "record"      : "Record per device (record)",
@@ -146,6 +146,7 @@ class connect(threading.Thread):
         
         logging.info("..................... CHECK CONNECTION .....................")
         
+        # check API status
         for key in self.api:
           if "IPAddress" in self.api[key].api_config:
             connect = rm3ping.ping(self.api[key].api_config["IPAddress"])
@@ -158,6 +159,17 @@ class connect(threading.Thread):
                 
             if connect and self.api[key].status != "Connected":
               self.reconnect(key)
+        
+        # check device status
+#        devices  = self.configFiles.read_status()
+#        for device in devices:
+#          api_dev      = devices[device]["config"]["interface_api"]+"_"+devices[device]["config"]["interface_dev"]
+#          power_status = devices[device]["status"]["power"]
+#            
+#          if power_status != "ON" and power_status != "OFF" and power_status != "N/A":
+#            self.reconnect(api_dev)
+#            self.api[api_dev].power_status()
+
 
     #-------------------------------------------------
     

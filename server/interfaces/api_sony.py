@@ -85,7 +85,16 @@ class APIcontrol():
          logging.info(".")
          time.sleep(0.2)
        return
+
        
+   #-------------------------------------------------
+
+   def power_status(self):
+       '''
+       request power status
+       '''
+       return self.query("power")
+      
        
    #-------------------------------------------------
    

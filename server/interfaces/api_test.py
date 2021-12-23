@@ -68,6 +68,15 @@ class APIcontrol():
        
        
    #-------------------------------------------------
+
+   def power_status(self):
+       '''
+       request power status
+       '''
+       return "N/A"
+       
+       
+   #-------------------------------------------------
    
    def send(self,device,command):
        '''Send command to API'''

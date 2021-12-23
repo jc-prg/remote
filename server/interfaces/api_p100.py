@@ -72,13 +72,18 @@ class APIcontrol():
            self.api = device.P100(api_ip, api_user, api_pwd)
            self.api.handshake()
            self.api.login()
+       except Exception as e:
+           self.status               = self.not_connected + " ... CONNECT " + str(e)
+           return self.status
            
+       try:
            self.api.jc               = APIaddOn(self.api)
            self.api.jc.status        = self.status
            self.api.jc.not_connected = self.not_connected
           
        except Exception as e:
            self.status               = self.not_connected + " ... CONNECT " + str(e)
+           self.api.jc.status        = self.status
            return self.status
 
        return self.status
@@ -96,6 +101,15 @@ class APIcontrol():
          time.sleep(0.2)
        return
        
+       
+   #-------------------------------------------------
+
+   def power_status(self):
+       '''
+       request power status
+       '''
+       return self.get_info("power")
+
        
    #-------------------------------------------------
    

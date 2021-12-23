@@ -68,14 +68,20 @@ class APIcontrol():
        
        try:
            self.api = device.MagicHomeApi(api_ip, api_device_type)
-           self.api.get_status()
-           
+
+       except Exception as e:
+           self.status = self.not_connected + " ... CONNECT " + str(e)
+           return self.status
+
+       try:
+           self.api.get_status()           
            self.api.jc               = APIaddOn(self.api)
            self.api.jc.status        = self.status
            self.api.jc.not_connected = self.not_connected
           
        except Exception as e:
            self.status = self.not_connected + " ... CONNECT " + str(e)
+           self.api.jc.status = self.status
            return self.status
 
        return self.status
@@ -94,6 +100,15 @@ class APIcontrol():
        return
        
        
+   #-------------------------------------------------
+
+   def power_status(self):
+       '''
+       request power status
+       '''
+       return self.jc.get_info("power")
+
+
    #-------------------------------------------------
    
    def send(self,device,command):
@@ -453,14 +468,24 @@ class APIaddOn():
       if status["power"] == "ON":  parts = data[2].split("\\")
       else:                        parts = data[1].split("\\")
       
-      if status["mode"] == "COLOR":
-         status["rgb"] = "#"+parts[2][1:3]+parts[3][1:3]+parts[4][1:3]
-         status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16)} #, "x" : int(parts[5][1:3],16) }
-         status["set"] = "." # {"a" : int(parts[7][1:3],16), "b" : int(parts[8][1:3],16), "c" : int(parts[9][1:3],16) }
-      else:
-         status["rgb"] = "#"+parts[2][1:3]+parts[3][1:3]+parts[4][1:3]
-         status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16)} #, "x" : int(parts[5][1:3],16) }
-         status["set"] = "." #{"a" : int(parts[7][1:3],16), "b" : int(parts[8][1:3],16) }
+      try:
+        if status["mode"] == "COLOR":
+           status["rgb"] = "#"+parts[2][1:3]+parts[3][1:3]+parts[4][1:3]
+           status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16)} #, "x" : int(parts[5][1:3],16) }
+           status["set"] = "." # {"a" : int(parts[7][1:3],16), "b" : int(parts[8][1:3],16), "c" : int(parts[9][1:3],16) }
+        else:
+           status["rgb"] = "#"+parts[2][1:3]+parts[3][1:3]+parts[4][1:3]
+           status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16)} #, "x" : int(parts[5][1:3],16) }
+           status["set"] = "." #{"a" : int(parts[7][1:3],16), "b" : int(parts[8][1:3],16) }
+           
+      except Exception as e:
+        logging.error("Error decoding output: "+str(e))
+        logging.debug("... "+str(raw_status))
+        logging.error("... "+str(parts))
+
+        status["rgb"] = "#000000"
+        status["RGB"] = {"r" : 0, "g" : 0, "b" : 0 }
+        status["set"] = "."
       
       return status
    
@@ -484,6 +509,7 @@ class APIaddOn():
             
            except Exception as e:
               logging.error("Error during requesting data: "+str(e))
+              return { "error" : "error during requesting data: "+str(e) }	
 #              self.power_status = "ERROR"
 #              return { "error", e }
               

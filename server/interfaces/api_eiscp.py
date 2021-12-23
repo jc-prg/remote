@@ -79,18 +79,17 @@ class APIcontrol():
                
        except Exception as e:
           self.status = "Error connecting to ONKYO device: " + str(e)
+          self.api.command("system-power query") # send a command to check if connected
           logging.warning(self.status)
 
        try:
-          self.api.command("system-power query") # send a command to check if connected
           self.api.jc               = APIaddOn(self.api)
           self.api.jc.status        = self.status
           self.api.jc.not_connected = self.not_connected
           
        except Exception as e:
           self.status               = self.not_connected + " ... CONNECT " + str(e)
-          if self.api.jc and self.api.jc.status: 
-             self.api.jc.status        = self.status
+          self.api.jc.status        = self.status
           logging.warning(self.status)
    
    
@@ -106,6 +105,16 @@ class APIcontrol():
          time.sleep(0.2)
        return
        
+   #-------------------------------------------------
+
+   def power_status(self):
+       '''
+       request power status
+       '''
+       status = self.query("system-power=query")
+       if "on" in str(status):   return "ON"
+       if "off" in str(status):  return "OFF"
+
        
    #-------------------------------------------------
    
