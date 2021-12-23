@@ -117,14 +117,27 @@ function rmSettings (name) {	// IN PROGRESS
 		setting += this.tab_row( 	"Cookie:", 		cookie );
 		setting += this.tab_row( 	"Button:", 		this.app_last );
 		setting += this.tab_row( 	"Audio:",		 audio2 + "<br/>" + audio1 );
+		
+		var d_width  = screen.width;
+		var d_height = screen.height;
+		setting += this.tab_row( 	"Device:", 		d_width + "x" + d_height );
 		setting += this.tab_row( 	"Window:", 		document.body.clientWidth + "x" + document.body.clientHeight );
+		setting += this.tab_row( 	"Screen:", 		
+						"<div class='screen_default'>default screen</div>" + 
+						"<div class='screen_big'>big screen</div>" + 
+						"<div class='screen_iphone'>iPhone screen (portrait)</div>" + 
+						"<div class='screen_iphone_landscape'>iPhone screen (landscape)</div>" + 
+						"<div class='screen_ipad'>iPad screen (portrait)</div>" + 
+						"<div class='screen_ipad_landscape'>iPad screen (landscape)</div>" + 
+						"");	
+
 		setting += this.tab_row(	"Position:",		"<div id='scrollPosition'>0 px</div>" );
 		setting += this.tab_row( 	"Theme:", 		appTheme );
 		setting += this.tab_row(	"Interfaces:",		this.interface_list() );
 		setting += this.tab_row(	"Exec time:",          this.exec_time_list() );
 		setting += this.tab_row( 	"Status:",
 						this.device_list("select_dev_status", this.app_name+".device_list_status('select_dev_status','dev_status');") +
-						"<span id='dev_status'></span>"
+						"<span id='dev_status'>default</span>"
 						);
 
 		this.write(0,lang("VERSION_AND_STATUS"),setting);
@@ -374,10 +387,10 @@ function rmSettings (name) {	// IN PROGRESS
 	this.interface_list     = function () {
 		var text = "<div id='setting_interface_list'>";
 		for (var key in this.data["STATUS"]["interfaces"]) {
-			text += key + ":<br>";
-			if (this.data["STATUS"]["interfaces"][key] == "Connected")	{ text += "<font color='lightgreen'>"; }
-			else								{ text += "<font color='#FF6666'>"; }
-			text += this.data["STATUS"]["interfaces"][key] + "</font><br/>";
+			text += key + ":<br><div id='api_status_"+key+"'>";
+			if (this.data["STATUS"]["interfaces"][key] == "Connected")	{ text += "<font color='"+color_api_connect+"'>"; }
+			else								{ text += "<font color='"+color_api_error+"'>"; }
+			text += this.data["STATUS"]["interfaces"][key] + "</font></div>";
 			}
 		text += "</div>";
 		return text;

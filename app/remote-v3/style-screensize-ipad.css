@@ -1,8 +1,14 @@
-/* format for iPad (portrait) */
+/* format for iPad Air (3rd) */
+
+.screen_ipad { display : none; }
+.screen_ipad_landscape { display : none; }
 
 @media only screen 
-    and (device-width : 810px) and (device-height : 1080px) and (orientation : portrait)
+    and (device-width : 834px) and (device-height : 1112px) and (orientation : portrait)
     {
+
+  .screen_ipad { display : block; }
+  .screen_default { display : none; }
 
   .button        			 	{ width  :  76px; max-width  :  76px; }
   .button.big,   .button.big_edit     	{ width  :  88px; max-width  :  88px; }
@@ -31,3 +37,9 @@
   #navi-click { display: none; }
 }
 
+@media only screen 
+    and (device-width : 834px) and (device-height : 1112px) and (orientation : landscape)
+    {
+  .screen_ipad_landscape { display : block; }
+  .screen_default { display : none; }
+}

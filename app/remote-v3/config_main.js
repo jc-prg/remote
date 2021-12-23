@@ -87,6 +87,8 @@ function app_theme_changed(theme) {
 
 var colors			= [ "red", "green", "darkgreen", "blue", "darkblue" ];
 var colors_dev			= [];
+var color_api_connect		= "lightgreen";
+var color_api_error		= "#FF6666";
 var color_button_inactive 	= "#666666";
 var colors_power		= { 
 				"ON"		: "darkgreen",

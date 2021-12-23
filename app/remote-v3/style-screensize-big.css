@@ -1,35 +1,29 @@
 /* format for bigger devices, except iPad */
 
+.screen_default { display : block; }
+.screen_big { display : none; }
+
 @media (min-width: 730px) 
 {
 
-  .button         	{ width  :  74px; max-width  :  74px; }
-  .button.big     	{ width  : 102px; max-width  : 102px; }
-  .button.big_edit    	{ width  : 102px; max-width  : 102px; }
-  .button.small   	{ width  :  60px; max-width  :  60px; }
-  .button.small_edit	{ width  :  60px; max-width  :  60px; }
-  .button.header_image { width  : 327px; max-width  : 327px; }
-
-  .display		{ font-size : 10px; }
-  .display.small  	{ width  : 156px; }
-  .display.middle 	{ width  : 156px; }
-  .display.big    	{ width  : 320px; }  
-  .display.h1w2        { width  : 156px; }
-  .display.h1w4        { width  : 320px; }
-  .display.h2w2        { width  : 156px; }
-  .display.h2w4        { width  : 320px; }
-  .display.h3w2        { width  : 156px; } 
-  .display.h4w2        { width  : 156px; } 
-
-  .display-element		{ width :  68px; }
-  .display-element.small	{ width :  68px; }
-  .display-element.middle	{ width : 142px; }
-  .display-element.big		{ width : 142px; }
+  .screen_big { display : block; }
+  .screen_default { display : none; }
   
-  .display-element.h1w4	{ width : 142px; }
-  .display-element.h2w4	{ width : 142px; }
-  .display-element.h3w2	{ width : 142px; }
-  .display-element.h4w2	{ width : 142px; }
+  .button        			 	{ width  :  74px; max-width  :  74px; }
+  .button.big,   .button.big_edit     	{ width  : 102px; max-width  : 102px; }
+  .button.small, .button.small_edit   	{ width  :  60px; max-width  :  60px; }
+  .button.header_image				{ width  : 328px; max-width  : 328px; }
+  
+  .display								{ font-size : 10px; }
+  .display.small, .display.middle					{ width  : 156px; }
+  .display.big,   .display.h1w4, .display.h2w4			{ width  : 320px; }
+  .display.h1w2,  .display.h2w2, .display.h3w2, .display.h4w2	{ width  : 156px; } 
+ 
+  .display-element,         .display-element.small			{ width :  68px; }
+  .display-element.middle,  .display-element.big			{ width : 142px; }
+  
+  .display-element.h1w4,    .display-element.h2w4			{ width : 142px; }
+  .display-element.h3w2,    .display-element.h4w2			{ width : 142px; }
 
   #audio2         	{ right  : 145px; }
   .remote         	{ width  : 335px; }

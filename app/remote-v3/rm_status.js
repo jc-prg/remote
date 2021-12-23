@@ -375,6 +375,13 @@ function statusCheck(data={}) {
 	vol_str = statusShowVolume_old( main_audio_vol, main_audio_max, vol_color );
 	document.getElementById("audio3").innerHTML = vol_str;
 
+
+	// check api status
+	for (var key in data["STATUS"]["interfaces"]) {
+		var status = data["STATUS"]["interfaces"][key];
+		if (status == "Connected") 	{ setTextById("api_status_" + key, "<font color='" + color_api_connect + "'>" + status + "</font>"); }
+		else				{ setTextById("api_status_" + key, "<font color='" + color_api_error + "'>" + status + "</font>"); }
+		}
 			
 	// check status for displays
 	for (var key in data["DATA"]["scenes"]) {

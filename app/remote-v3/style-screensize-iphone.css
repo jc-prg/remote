@@ -1,9 +1,15 @@
 /* format for iphone XS, 11pro, 12/13mini - 375x812 & iPhone SE 2nd Gen - 375x667 */
 
+.screen_iphone { display : none; }
+.screen_iphone_landscape { display : none; }
+
 @media only screen 
-  and ((device-width : 375px) and (orientation : portrait))
+  and (device-width : 375px) and (orientation : portrait)
   {
 
+  .screen_iphone { display : block; }
+  .screen_default { display : none; }
+  
   .button        			 	{ width  :  76px; max-width  :  76px; }
   .button.big,   .button.big_edit     	{ width  : 105px; max-width  : 105px; }
   .button.small, .button.small_edit   	{ width  :  62px; max-width  :  62px; }
@@ -28,33 +34,36 @@
   
 }
 
-@media (width : 812px)
+
+@media only screen 
+  and (device-width : 375px) and (device-height : 812px) and (orientation : landscape)
   {
-  .button        			 	{ width  :  62px; max-width  :  62px; }
-  .button.big,   .button.big_edit     	{ width  :  88px; max-width  :  88px; }
-  .button.small, .button.small_edit   	{ width  :  51px; max-width  :  51px; }
-  .button.header_image				{ width  : 276px; max-width  : 276px; }
+
+  .screen_iphone_landscape { display : block; }
+  .screen_default { display : none; }
   
-  .display.small, .display.middle					{ width  : 133px; }
-  .display.h1w2,  .display.h2w2, .display.h3w2, .display.h4w2	{ width  : 133px; } 
-  .display.big,   .display.h1w4, .display.h2w4			{ width  : 276px; }
+  .button        			 	{ width  :  74px; max-width  :  74px; }
+  .button.big,   .button.big_edit     	{ width  : 102px; max-width  : 102px; }
+  .button.small, .button.small_edit   	{ width  :  60px; max-width  :  60px; }
+  .button.header_image				{ width  : 328px; max-width  : 328px; }
+  
+  .display								{ font-size : 10px; }
+  .display.small, .display.middle					{ width  : 156px; }
+  .display.big,   .display.h1w4, .display.h2w4			{ width  : 320px; }
+  .display.h1w2,  .display.h2w2, .display.h3w2, .display.h4w2	{ width  : 156px; } 
  
-  .display-element,         .display-element.small			{ width :  56px; }
-  .display-element.middle,  .display-element.big			{ width : 118px; }
-  .display-element.h1w4,    .display-element.h2w4			{ width : 118px; }
-  .display-element.h3w2,    .display-element.h4w2			{ width : 118px; }
-
-  .remote		{ width  : 290px; }
-  .setting_bg		{ width  : 290px; }
-  .channel-entry	{ width  : 140px; }
+  .display-element,         .display-element.small			{ width :  68px; }
+  .display-element.middle,  .display-element.big			{ width : 142px; }
   
-  .rm-slider-button	{ width  : 276px; }
-  .color-picker	{ width  : 276px; }
+  .display-element.h1w4,    .display-element.h2w4			{ width : 142px; }
+  .display-element.h3w2,    .display-element.h4w2			{ width : 142px; }
 
-  /* overwrite app-framework definition to show the menu */
-  .remote_nav { display: block; width : 165px; }
-  .remote_nav ul { width : 160px; }
-  #navi-click { display: none; }
+  #audio2         	{ right  : 145px; }
+  .remote         	{ width  : 335px; }
+  .channel-entry 	{ width  : 163px; }
+  .rm-slider-button	{ width  : 320px; }
+  .setting_bg 		{ width  : 335px; }
+  .color-picker	{ width  : 320px; }
   
 }
 
