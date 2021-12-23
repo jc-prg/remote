@@ -209,17 +209,21 @@ function statusCheck(data={}) {
 	// get scene status from devices status and definition (see statusCheck) -> move to rm_remote.js
 	for (var key in data["DATA"]["scenes"]) {
 
-		var dev_on   = 0;
+		var dev_on    = 0;
+		var dev_error = 0;
 		var required = data["DATA"]["scenes"][key]["remote"]["devices"];
 		for (var i=0;i<required.length;i++) {
-		        device_status[required[i]] = devices[required[i]]["status"]["power"].toUpperCase();
-		        if (device_status[required[i]] == "ON") { dev_on += 1; }
+		        device_status[required[i]]  = devices[required[i]]["status"]["power"].toUpperCase();
+		        var device_connect          = devices[required[i]]["status"]["api-status"];
+
+		        if (device_status[required[i]] == "ON")	{ dev_on += 1; }
+		        if (device_connect != "Connected")		{ dev_error += 1; }
 			}
 
-		if (dev_on == required.length) 	{ scene_status[key] = "ON"; }
+		if (dev_error > 0)		 	{ scene_status[key] = "ERROR"; }
+		else if (dev_on == required.length) 	{ scene_status[key] = "ON"; }
 		else if (dev_on > 0)			{ scene_status[key] = "OTHER"; }
 		else					{ scene_status[key] = "OFF"; }
-		//console.debug(key + " - on:" + dev_on + " / off:" + required.length + " / " + scene_status[key]);
 		}
 				
 	// check device status and change color of power buttons / main menu buttons device
@@ -305,8 +309,8 @@ function statusCheck(data={}) {
 				statusButtonSetColor( key + "_on-off", "ON" ); // on-off device button		
 				statusButtonSetColor( key + "_on",  "ON" );
 				statusButtonSetColor( key + "_off", "" );
-
 				elementHidden( "display_"+key+"_ERROR");
+
 				elementVisible("display_"+key+"_ON");
 				elementHidden( "display_"+key+"_OFF");
 				}
@@ -346,11 +350,15 @@ function statusCheck(data={}) {
 			statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
 			statusButtonSetColor( "scene_off_"+key, "" );
 			}
-		if (scene_status[key] == "OTHER") {
+		else if (scene_status[key] == "OTHER") {
 			statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
 			statusButtonSetColor( "scene_off_"+key, "" );
 			}
-		if (scene_status[key] == "OFF") {
+		else if (scene_status[key] == "ERROR") {
+			statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
+			statusButtonSetColor( "scene_off_"+key, scene_status[key] );
+			}
+		else if (scene_status[key] == "OFF") {
 			statusButtonSetColor( "scene_off_"+key,  scene_status[key] );
 			statusButtonSetColor( "scene_on_"+key, "" );
 
