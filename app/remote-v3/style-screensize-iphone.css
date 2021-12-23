@@ -13,7 +13,7 @@
   .button        			 	{ width  :  76px; max-width  :  76px; }
   .button.big,   .button.big_edit     	{ width  : 105px; max-width  : 105px; }
   .button.small, .button.small_edit   	{ width  :  62px; max-width  :  62px; }
-  .button.header_image				{ width  : 334px; max-width  : 334px; }
+  .button.header_image				{ width  : 332px; max-width  : 332px; }
   
   .display								{ font-size : 10px; }
   .display.small, .display.middle					{ width  : 160px; }
