@@ -4,6 +4,9 @@ import re
 import urllib
 import logging
 import platform    # For getting the operating system name
+import pythonping
+
+#response_list = ping('8.8.8.8', size=40, count=10)
 
 #--------------------------------------------
 
@@ -13,10 +16,13 @@ def ping(host):
     Remember that a host may not respond to a ping (ICMP) request even if the host name is valid.
     """
 
-    # Option for the number of packets as a function of
-    param = '-n' if platform.system().lower()=='windows' else '-c'
+    response_list = pythonping.ping(host, size=40, count=1)
+    logging.info("PING "+host+": "+str(response_list).split("\n")[0])
+    
+    if "Reply from "+host in str(response_list): return True 
+    
+    response_list = pythonping.ping(host, size=40, count=1)
+    logging.info("PING "+host+": "+str(response_list).split("\n")[0])
 
-    # Building the command. Ex: "ping -c 1 google.com"
-    command = ['ping', param, '1', host]
-
-    return subprocess.call(command) == 0
+    if "Reply from "+host in str(response_list): return True 
+    else:                                        return False

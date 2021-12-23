@@ -45,8 +45,8 @@ paths:
       operationId: modules.server_cmd.RemoteList
       tags:
         - list
-      summary: list status data
-      description: list status data
+      summary: list status and remote definition data
+      description: list status and remote definition data
       responses:
         200:
           description: Successfully status data
@@ -62,6 +62,25 @@ paths:
                 $ref: "#/definitions/STATUS"
               DATA:
                 $ref: "#/definitions/DATA"
+
+  /status/:
+    get:
+      operationId: modules.server_cmd.RemoteStatus
+      tags:
+        - status
+      summary: list status data
+      description: list status data
+      responses:
+        200:
+          description: Successfully status data
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
 
 
   /send_check/{device}/{button}/:

@@ -93,6 +93,46 @@ def RmReadData_devices(selected=[],remotes=True):
 
 #---------------------------
 
+def RmReadData_deviceStatus():
+    '''
+    read status data for devices 
+    '''
+    status = {}
+    data   = {}
+    data   = configFiles.read_status()
+
+    # read data for active devices
+    for device in data:
+       status[device]                = data[device]["status"]
+       status[device]["api"]         = data[device]["config"]["interface_api"] + "_" + data[device]["config"]["interface_dev"]
+       
+       if data[device]["settings"]["main-audio"]:
+          status[device]["main-audio"]  = data[device]["settings"]["main-audio"]
+       else:
+          status[device]["main-audio"]  = "no"
+
+    return status
+
+
+#---------------------------
+
+
+def RmReadData_sceneStatus():
+    '''
+    read status data for devices 
+    '''
+    status = {}
+    data   = {}
+    data   = RmReadData_scenes() #configFiles.read(modules.active_scenes)
+
+    # read data for active devices
+    for scene in data:
+       status[scene]         = data[scene]["remote"]["devices"]
+
+    return status
+
+#---------------------------
+
 def RmWriteData_devices(data):
     '''
     write config data for devices and remove data not required in the file
@@ -337,7 +377,7 @@ def editScene(scene,info):
     '''
     edit scene data in json file
     '''
-    keys_active   = ["label","description"]
+    keys_active   = ["label","description","image"]
     keys_remotes  = ["label","remote","channel","devices","display","display-size","type"]
     
     # check data format
@@ -926,7 +966,7 @@ def getStatus(device,key):
       return 0
     
     if device in status and key in status[device]["status"]:
-      logging.info("Get status: " + key + " = " + str(status[device]["status"][key]))
+      logging.debug("Get status: " + key + " = " + str(status[device]["status"][key]))
       return status[device]["status"][key]
       
     else:
@@ -1028,13 +1068,11 @@ def devicesGetStatus(data,readAPI=False):
            
         if device in data and "interface" in data[device] and "method" in data[device]["interface"]:
           
-          method        = data[device]["interface"]["method"]
           interface     = data[device]["config"]["interface_api"]         
-          interface_dev = data[device]["config"]["interface_dev"] 
-          data[device]["status"]["api-status"] = deviceAPIs.status(interface,interface_dev)
+          method        = data[device]["interface"]["method"]
           
           # get status values from config files, if connected
-          if deviceAPIs.status(interface,interface_dev) == "Connected":
+          if data[device]["status"]["api-status"] == "Connected":
 
               # preset values
               if method != "query" and "commands" in devices[device]["interface"]:

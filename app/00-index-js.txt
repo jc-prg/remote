@@ -52,7 +52,7 @@ function setNavTitle (title)
 function image(file)
 function writeKeyBoard ()
 ----------------------------
-./remote-v3/rm_main.js (246)
+./remote-v3/rm_main.js (248)
 ----------------------------
 function remoteInit (first_load=true)
 function remoteFirstLoad_load()
@@ -92,7 +92,7 @@ function rmMenu(name, menu)
 ./remote-v3/rm_remotes-color-picker.js (-1)
 ----------------------------
 ----------------------------
-./remote-v3/rm_remotes-keyboard.js (120)
+./remote-v3/rm_remotes-keyboard.js (69)
 ----------------------------
 function rmRemoteKeyboard(name)
 	this.set_device	= function ( device )
@@ -102,7 +102,7 @@ function rmRemoteKeyboard(name)
 	this.update		= function ()
 	this.send		= function ()
 ----------------------------
-./remote-v3/rm_remotes-slider.js (250)
+./remote-v3/rm_remotes-slider.js (254)
 ----------------------------
 function rmSlider(name)
 	this.setOnChange	= function(callOnChange="")
@@ -123,7 +123,7 @@ function jcSlider2 ( name, container )
 	this.info		= function()
 		alert("Please define a function to be called on change.")
 ----------------------------
-./remote-v3/rm_remotes.js (1501)
+./remote-v3/rm_remotes.js (1550)
 ----------------------------
 function rmRemote(name)
 	this.init                 = function (data)
@@ -141,6 +141,8 @@ function rmRemote(name)
 	this.scene_description   = function (id, scene)
 	this.scene_edit           = function (id, scene)
 	this.scene_edit_json	  = function (id,scene,remote="",channel="",display="", displaysize="")
+	this.scene_header_image   = function (id, scene)
+	this.remote_add_header	  = function (type,id,scene,button,remote,position="")
 	this.remote_add_display	  = function (type,id,scene,button,remote,position="")
 	this.remote_add_line	  = function (type,id,scene,button,remote,position="")
 	this.remote_add_slider	  = function (type,id,scene,button,remote,position="")
@@ -152,6 +154,7 @@ function rmRemote(name)
 	this.remoteToggleEditMode = function ()
 	this.command_select       = function (id,device="")
 	this.command_select_record = function (id,device="")
+	this.image_select		= function (id,selected="")
 	this.button_select		= function (id,device="")
 	this.template_select      = function (id,title,data,onchange="")
 	this.scene_button_select	= function (div_id,id,device)
@@ -181,7 +184,7 @@ function rmRemote(name)
 	this.tab_line	  	  = function (text="")
 function writeMakroButton ()
 ----------------------------
-./remote-v3/rm_settings.js (509)
+./remote-v3/rm_settings.js (536)
 ----------------------------
 function rmSettings (name)
 	this.init               = function (data)
@@ -213,20 +216,20 @@ function rmSettings (name)
 	this.select             = function (id,title,data,onchange="")
 	this.remoteToggleEditMode = function ()
 ----------------------------
-./remote-v3/rm_start.js (165)
+./remote-v3/rm_start.js (182)
 ----------------------------
 function rmStart(name)
 	this.init                 = function(data)
 	this.add_devices          = function(data,menuItems)
 	this.add_scenes           = function(data,menuItems)
 	this.entry_device         = function(data, id, label, style)
-	this.entry_scene          = function(data, id, label, style)
-	this.button               = function(id, label, style, script_apiCommandSend, disabled )
+	this.entry_scene          = function(data, id, label, image, style)
+	this.button               = function(id, label, style, script_apiCommandSend, disabled, image="" )
 	this.button_image         = function(label,style)
 	this.remoteToggleEditMode = function()
 	this.image                = function(file)
 ----------------------------
-./remote-v3/rm_status.js (476)
+./remote-v3/rm_status.js (571)
 ----------------------------
 function statusShowVolume_old( volume, maximum, vol_color, novol_color="" )
 function statusShowVolume( volume )
@@ -235,6 +238,11 @@ function statusButtonSetColor(id, status)
 function statusCheck_inactive(data)
 function statusCheck_load()
 function statusCheck(data={})
+function statusCheck_apiConnection(data)
+function statusCheck_sceneButton(data)
+function statusCheck_audioMute(data)
+function statusCheck_buttonsOnOff(data={})
+function statusCheck_display(data={})
 ----------------------------
  USAGE ...
 ----------------------------
@@ -264,7 +272,7 @@ function statusCheck(data={})
   1 - apiSetVolume
   2 - apiTemplateAdd
   2 - apiTemplateAdd_exe
- 20 - image
+ 35 - image
   1 - jcSlider2
   4 - remoteDropDown
   2 - remoteDropDown_load
@@ -290,10 +298,13 @@ function statusCheck(data={})
   9 - setNavTitle
   3 - setVolume
   5 - statusButtonActiveInactive
- 27 - statusButtonSetColor
-  3 - statusCheck_inactive
+ 37 - statusButtonSetColor
+  2 - statusCheck_apiConnection
+  2 - statusCheck_audioMute
+  2 - statusCheck_inactive
   1 - statusCheck_load
+  2 - statusCheck_sceneButton
   1 - statusShowVolume
- 72 - to
+ 71 - to
   1 - writeKeyBoard
   1 - writeMakroButton

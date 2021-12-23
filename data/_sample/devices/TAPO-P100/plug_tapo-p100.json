@@ -1,0 +1,25 @@
+{
+    "data": {
+        "buttons": {
+            "off": "jc.turn_off()",
+            "on": "jc.turn_on()",
+            "test": "jc.test()"
+        },
+        "commands": {},
+        "description": "Tapo P100 (API)",
+        "display": {},
+        "method": "query",
+        "queries": {
+            "device_on": "jc.get_info('device_on')",
+            "location": "jc.get_info('location')",
+            "model": "jc.get_info('model')",
+            "overheated": "jc.get_info('overheated')",
+            "power": "jc.get_info('power')",
+            "status": "jc.get_info()",
+            "type": "jc.get_info('type')"
+        },
+        "send-data": {},
+        "url": "",
+        "values": {}
+    }
+}

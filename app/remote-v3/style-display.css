@@ -21,6 +21,7 @@
 .display.middle { width  : 133px;   height  :  88px; } 
 .display.big    { width  : 276px;   height  :  88px; } 
 
+.display.h1w4   { width  : 276px;   height  :  40px; } 
 .display.h1w2   { width  : 133px;   height  :  40px; } 
 .display.h2w2   { width  : 133px;   height  :  88px; } 
 .display.h2w4   { width  : 276px;   height  :  88px; } 
@@ -33,7 +34,6 @@
    padding	: 0px;
    float	: left;
    color	: white;
-   //border       : blue 1px solid;  
    text-align   : left;
 }
 
@@ -42,6 +42,7 @@
 .display-element.middle  { width : 118px; }
 .display-element.big     { width : 118px; }
 
+.display-element.h1w4    { width : 118px; }
 .display-element.h2w4    { width : 118px; }
 .display-element.h3w2    { width : 118px; }
 .display-element.h4w2    { width : 118px; }

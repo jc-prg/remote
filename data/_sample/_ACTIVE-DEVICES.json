@@ -15,8 +15,6 @@
             "visible": "no"
         },
         "status": {
-            "api-status": "Connected",
-            "power": "OFF"
         }
     },
     "bd-api": {
@@ -35,21 +33,6 @@
             "visible": "yes"
         },
         "status": {
-            "api-status": "Connected",
-            "media_duration": "Error",
-            "media_medium": "Error",
-            "media_tracks": "Error",
-            "playing": "Error",
-            "playing_soap": "Error",
-            "position_abs_cnt": "Error",
-            "position_abs_time": "Error",
-            "position_duration": "Error",
-            "position_metadata": "Error",
-            "position_rel_cnt": "Error",
-            "position_rel_time": "Error",
-            "position_track": "Error",
-            "power": "OFF",
-            "test": "Error"
         }
     },
     "beam": {
@@ -68,8 +51,6 @@
             "visible": "yes"
         },
         "status": {
-            "api-status": "Connected",
-            "power": "OFF"
         }
     },
     "default": {
@@ -89,6 +70,24 @@
         },
         "status": {}
     },
+    "led01": {
+        "config": {
+            "device": "light_magichome_LED",
+            "interface_api": "MAGIC-HOME",
+            "interface_dev": "default",
+            "remote": "light_magichome_LED"
+        },
+        "settings": {
+            "description": "Magic Home Lichtsteuerung",
+            "image": "light",
+            "label": "LED Strip",
+            "main-audio": "no",
+            "position": 11,
+            "visible": "yes"
+        },
+        "status": {
+        }
+    },
     "lw": {
         "config": {
             "device": "screen_elite-screens-100",
@@ -105,8 +104,6 @@
             "visible": "yes"
         },
         "status": {
-            "api-status": "Connected",
-            "power": "OFF"
         }
     },
     "media-center": {
@@ -125,20 +122,60 @@
             "visible": "yes"
         },
         "status": {
-            "addons": "['ARDundZDF', 'ARTE.TV', 'Joyn', 'KiKA plus', '3sat Mediathek', 'ARD Mediathek', 'KiKa Mediathek', 'MediathekView', 'Mediathek Direkt', 'ZDF Mediathek']",
-            "api-status": "Connected",
-            "current-playing": "no media",
-            "genre": "no media",
-            "item": "no media",
-            "mute": "False",
-            "playing": "no media",
-            "playlist": "no media",
-            "plot": "no media",
-            "power": "OFF",
-            "type": "no media",
-            "version": "KODI 18.9 stable",
-            "vol": "100",
-            "zz": "no media"
+        }
+    },
+    "plug01": {
+        "config": {
+            "device": "plug_tapo-p100",
+            "interface_api": "TAPO-P100",
+            "interface_dev": "plug01",
+            "remote": "plug_tapo-p100_01"
+        },
+        "settings": {
+            "description": "Tapo P100",
+            "image": "plug",
+            "label": "SmartPlug 01",
+            "main-audio": "no",
+            "position": 13,
+            "visible": "no"
+        },
+        "status": {
+        }
+    },
+    "plug02": {
+        "config": {
+            "device": "plug_tapo-p100",
+            "interface_api": "TAPO-P100",
+            "interface_dev": "plug02",
+            "remote": "plug_tapo-p100_02"
+        },
+        "settings": {
+            "description": "Tapo P100",
+            "image": "plug",
+            "label": "SmartPlug 02",
+            "main-audio": "no",
+            "position": 14,
+            "visible": "no"
+        },
+        "status": {
+        }
+    },
+    "plug03": {
+        "config": {
+            "device": "plug_tapo-p100",
+            "interface_api": "TAPO-P100",
+            "interface_dev": "plug03",
+            "remote": "plug_tapo-p100_03"
+        },
+        "settings": {
+            "description": "Tapo P100",
+            "image": "plug",
+            "label": "SmartPlug 03",
+            "main-audio": "no",
+            "position": 15,
+            "visible": "no"
+        },
+        "status": {
         }
     },
     "rec": {
@@ -157,10 +194,6 @@
             "visible": "no"
         },
         "status": {
-            "api-status": "Connected",
-            "mute": "OFF",
-            "power": "OFF",
-            "vol": 0
         }
     },
     "rec2": {
@@ -179,26 +212,6 @@
             "visible": "yes"
         },
         "status": {
-            "a-v-sync": "0",
-            "api-status": "Connected",
-            "audio-info": "ANALOG,,,,All Ch Stereo,5.1 ch,",
-            "audio-source": "hdmi",
-            "current-playing": "no media",
-            "dimmer": "bright",
-            "display": "('selector-volume-1line', 'default-2line')",
-            "listening": "all-ch-stereo",
-            "mute": "off",
-            "power": "on",
-            "sleep-set": "N/A",
-            "source": "game/tv",
-            "temperature": "C 34",
-            "timer": "N/A",
-            "tuning": "34640 Hz",
-            "usb-net-album": " ",
-            "usb-net-artist": " ",
-            "usb-net-title": " ",
-            "video-info": "HDMI 3,1920 x 1080p  60 Hz,RGB,24bit,MAIN,1920 x 1080p  60 Hz,RGB,24bit,,",
-            "vol": "47"
         }
     },
     "test": {
@@ -213,11 +226,10 @@
             "image": "test",
             "label": "test device",
             "main-audio": "no",
-            "position": 11,
+            "position": 12,
             "visible": "no"
         },
         "status": {
-            "api-status": "Connected"
         }
     },
     "tv": {
@@ -236,11 +248,6 @@
             "visible": "no"
         },
         "status": {
-            "api-status": "Connected",
-            "mute": "OFF",
-            "power": "OFF",
-            "radiotv": "TV",
-            "vol": 17
         }
     },
     "tv2": {
@@ -252,18 +259,13 @@
         },
         "settings": {
             "description": "TOPFIELD CBP-2001CI+",
-            "image": "tv_old",
+            "image": "tv",
             "label": "TV/Radio (2)",
             "main-audio": "no",
             "position": 4,
             "visible": "yes"
         },
         "status": {
-            "api-status": "Connected",
-            "mute": "OFF",
-            "power": "ON",
-            "radiotv": "TV",
-            "vol": 17
         }
     }
 }

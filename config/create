@@ -45,8 +45,8 @@ if ! [ -f $config ]; then
   exit 0
 fi
 
-source $config
-source templates/00-envsubst
+source ./$config
+source ./templates/00-envsubst
 
 echo
 echo "Done."

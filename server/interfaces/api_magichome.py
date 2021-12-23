@@ -7,8 +7,9 @@
 import logging, time
 import modules.rm3json                 as rm3json
 import modules.rm3config               as rm3config
+import modules.rm3ping                 as rm3ping
 
-import interfaces.magichome            as device
+import interfaces.magichome.magichome  as device
 
 #-------------------------------------------------
 # API-class
@@ -20,51 +21,67 @@ shorten_info_to = rm3config.shorten_info_to
 
 class APIcontrol():
    '''
-   Integration of sample API to be use by jc://remote/
+   Integration of Magic Home API to be use by jc://remote/
    '''
 
-   def __init__(self,api_name,device="",device_config={}):
-       '''Initialize API / check connect to device'''
+   def __init__(self,api_name,device="",device_config={},log_command=False):
+       '''
+       Initialize API / check connect to device
+       '''
        
        self.api_name        = api_name       
        self.api_description = "Magic Home (implementation in progress)"
-       self.method          = "query" # or "record"
-       self.api_config      = device_config
-       self.api_device      = device
+       self.not_connected   = "ERROR: Device not connected ("+api_name+"/"+device+")."
+       self.status          = "Start"
+       self.method          = "query"
        self.working         = False
        self.count_error     = 0
        self.count_success   = 0
-       self.not_connected   = "Device not connected (MAGIC-HOME)."
+       self.log_command     = log_command
        
-       logging.info("... "+self.api_name+" - " + self.api_description)
+       self.api_config      = device_config
+       self.api_device      = device
+
+       logging.info("_API-INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
        
        self.connect()
             
    #-------------------------------------------------
    
    def connect(self):
-       '''Connect / check connection'''
+       '''
+       Connect / check connection
+       '''
        
-       # commands to connect and to check, if connection works - if not, return error message
+       connect = rm3ping.ping(self.api_config["IPAddress"])
+       if not connect:
+         self.status = self.not_connected + " ... PING"
+         logging.error(self.status)       
+         return self.status
 
        self.status               = "Connected"
        self.count_error          = 0
        self.count_success        = 0
+
        api_ip                    = self.api_config["IPAddress"]
        api_device_type           = self.api_config["DeviceType"]
        
        try:
            self.api = device.MagicHomeApi(api_ip, api_device_type)
-           self.api.get_status()
-           
+
+       except Exception as e:
+           self.status = self.not_connected + " ... CONNECT " + str(e)
+           return self.status
+
+       try:
+           self.api.get_status()           
            self.api.jc               = APIaddOn(self.api)
-           self.api.jc.status        = "Connected"
+           self.api.jc.status        = self.status
            self.api.jc.not_connected = self.not_connected
-           self.working = False
           
        except Exception as e:
-           self.status = "ERROR "+self.api_name+" - send: " + str(e)
-           self.working = False
+           self.status = self.not_connected + " ... CONNECT " + str(e)
+           self.api.jc.status = self.status
            return self.status
 
        return self.status
@@ -73,7 +90,10 @@ class APIcontrol():
    #-------------------------------------------------
    
    def wait_if_working(self):
-       '''Some devices run into problems, if send several requests at the same time'''
+       '''
+       Some devices run into problems, if send several requests at the same time
+       '''
+       
        while self.working:
          logging.info(".")
          time.sleep(0.2)
@@ -81,17 +101,28 @@ class APIcontrol():
        
        
    #-------------------------------------------------
+
+   def power_status(self):
+       '''
+       request power status
+       '''
+       return self.jc.get_info("power")
+
+
+   #-------------------------------------------------
    
    def send(self,device,command):
-       '''Send command to API'''
+       '''
+       Send command to API
+       '''
        
+       result  = {}
        self.wait_if_working()
        self.working = True
 
-       result  = {}
-       logging.info("Button-Code: "+command[:shorten_info_to]+"... ("+self.api_name+")")
-
        if self.status == "Connected":
+         if self.log_command: logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+
          try:
            command = "self.api."+command
            result = eval(command)
@@ -119,19 +150,20 @@ class APIcontrol():
    #-------------------------------------------------
    
    def query(self,device,command):
-       '''Send command to API and wait for answer'''
-
-       result = ""
-       self.wait_if_working()
-       self.working = True
+       '''
+       Send command to API and wait for answer
+       '''
 
        result  = {}
-       logging.info("Button-Code: "+command[:shorten_info_to]+"... ("+self.api_name+")")
+       self.wait_if_working()
+       self.working = True
 
        if "||" in command: command_param = command.split("||")
        else:               command_param = [command]
 
        if self.status == "Connected":
+         if self.log_command: logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+
          try:
            command = "self.api."+command_param[0]
            result = eval(command)
@@ -167,22 +199,7 @@ class APIcontrol():
    def record(self,device,command):
        '''Record command, especially build for IR devices'''
 
-       self.wait_if_working()
-       self.working = True
-
-# ---- change for your api ----
-#       if self.status == "Connected":
-#         try:
-#           result  = self.api.command(xxx)
-#         except Exception as e:
-#           self.working = True
-#           return "ERROR "+self.api_name+" - record: " + str(e)                     
-#       else:
-#         self.working = True
-#         return "ERROR "+self.api_name+": Not connected"
-
-       self.working = False
-       return "OK"
+       return "ERROR: record not available"
 
        
    #-------------------------------------------------
@@ -245,17 +262,30 @@ class APIaddOn():
       self.power_status   = "OFF"
       self.mode           = "COLOR"
       
+      self.last_request_time   = time.time()
+      self.last_request_data   = {}
+      self.cache_wait          = 1
+      
    #-------------------------------------------------
 
    def turn_on(self):
      '''
      turn on and set metadata
+     if self.status == "Connected":
      '''
      if self.status == "Connected":
        self.power_status = "ON"
-       self.api.turn_on()
-       return { "result", "test" }
-       
+
+       try:
+          self.api.turn_on()       
+          self.power_status = "ON"
+          return { "result", "turn_on" }
+         
+       except Exception as e:
+          logging.error("Error during turn on: "+str(e))
+          self.power_status = "ERROR"
+          return { "error", e }
+              
      else:
        self.power_status = "NOT CONNECTED"
        return self.not_connected
@@ -268,8 +298,16 @@ class APIaddOn():
      '''
      if self.status == "Connected":
        self.power_status = "OFF"
-       self.api.turn_off()
-       return { "result", "test" }
+
+       try:
+          self.api.turn_off() 
+          self.power_status = "OFF"
+          return { "result", "turn_off" }
+         
+       except Exception as e:
+          logging.error("Error during turn off: "+str(e))
+          self.power_status = "ERROR"
+          return { "error", e }
        
      else:
        self.power_status = "NOT CONNECTED"
@@ -296,11 +334,19 @@ class APIaddOn():
        r = int(r*self.brightness)
        g = int(g*self.brightness)
        b = int(b*self.brightness)
-       self.api.update_device(r, g, b, 0, 0)
 
-       if r+g+b == 0: self.power_status = "OFF"
-       else:          self.power_status = "ON"
-       return { "result", "set_color" }
+       try:
+          self.api.update_device(r, g, b, 0, 0)       
+          if r+g+b == 0: self.power_status = "OFF"
+          else:          self.power_status = "ON"
+          return { "result", "set_color" }
+         
+       except Exception as e:
+          logging.error("Error during setting color: "+str(e))
+          self.power_status = "ERROR"
+          return { "error", e }
+
+
        
      else:
        return self.not_connected
@@ -314,9 +360,16 @@ class APIaddOn():
      if self.status == "Connected":
        self.mode        = "PRESET"
        self.last_preset = preset
-       self.api.send_preset_function(self.last_preset, self.last_speed)
-       self.power_status = "ON"
-       return { "result", "preset" }
+       
+       try:
+          self.api.send_preset_function(self.last_preset, self.last_speed)
+          self.power_status = "ON"
+          return { "result", "preset" }
+         
+       except Exception as e:
+          logging.error("Error during setting preset: "+str(e))
+          self.power_status = "ERROR"
+          return { "error", e }
        
      else:
        return self.not_connected
@@ -331,7 +384,14 @@ class APIaddOn():
      if self.status == "Connected":
        self.last_speed = int(speed)
        if self.mode == "PRESET":
-         self.api.send_preset_function(self.last_preset, self.last_speed)
+         try:
+            self.api.send_preset_function(self.last_preset, self.last_speed)
+            self.power_status = "ON"
+            return { "result", "speed" }
+            
+         except Exception as e:
+            logging.error("Error during setting preset: "+str(e))
+            return { "error", e }
 
      else:
        return self.not_connected
@@ -352,12 +412,19 @@ class APIaddOn():
          r = round(r*self.brightness)
          g = round(g*self.brightness)
          b = round(b*self.brightness)
-         self.api.update_device(r, g, b, 0, 0)
 
-         if r+g+b == 0: self.power_status = "OFF"
-         else:          self.power_status = "ON"
-         return { "result", "test" }
-
+         try:
+            self.api.update_device(r, g, b, 0, 0)
+            self.power_status = "ON"
+            if r+g+b == 0: self.power_status = "OFF"
+            else:          self.power_status = "ON"
+            return { "result", "brightness" }
+            
+         except Exception as e:
+            logging.error("Error during setting brightness: "+str(e))
+            self.power_status = "ERROR"
+            return { "error", e }
+              
      else:
        return self.not_connected
    
@@ -366,7 +433,9 @@ class APIaddOn():
    def decode_status(self,raw_status):
       '''
       decode device string for status, e.g. 
-      
+
+	get_info
+	      
         b'\x813$a#\x1f\x00\x00\r\x00\n\x00\x0f\xa1'- OFF
         b'\x813$a#\x1f\x00\x003\x00\n\x00\x0f\xc7' - OFF blue
         b'\x813#a#\x1f\x0033\x00\n\x00\xf0\xda'    - ON
@@ -375,6 +444,15 @@ class APIaddOn():
         b'\x813#a#\x1f3\x00\x00\x00\n\x00\xf0\xa7' - ON red 100%
         b'\x813#a#\x1f\n\x00\x00\x00\n\x00\xf0~'   - ON red 20%
         b'\x813#, #\x1f\x9c\x9c\x9c\x00\n\x00\xf0\x13'
+
+	return if send_data
+
+	b'\n\x00\xf0q\x813#a#\x1f\xff\xff\xff\x00'	OFF
+	b'\n\x00\xf0r\x813#a#\x1f\xff\x00\xff\x00'	ON
+	b'\x0fq#\xa3' 					ON
+	b'\x0fq$\xa4'					OFF
+	b'\x813#a#\x1f\xff\xff\x00\x00\n\x00\xf0r'	SEND COLOR
+	b'\x813#6#\x1f\x00\x00\x00\x00\n\x00\x0fh'	SEND PRESET
         
         -> App is able to decode ??
       '''
@@ -390,15 +468,24 @@ class APIaddOn():
       if status["power"] == "ON":  parts = data[2].split("\\")
       else:                        parts = data[1].split("\\")
       
-      if status["mode"] == "COLOR":
-         status["rgb"] = "#"+parts[2][1:3]+parts[3][1:3]+parts[4][1:3]
-         status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16)} #, "x" : int(parts[5][1:3],16) }
-         status["set"] = "." # {"a" : int(parts[7][1:3],16), "b" : int(parts[8][1:3],16), "c" : int(parts[9][1:3],16) }
-      else:
-         status["rgb"] = "#"+parts[2][1:3]+parts[3][1:3]+parts[4][1:3]
-         status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16)} #, "x" : int(parts[5][1:3],16) }
-         status["set"] = "." #{"a" : int(parts[7][1:3],16), "b" : int(parts[8][1:3],16) }
-      
+      try:
+        if status["mode"] == "COLOR":
+           status["rgb"] = "#"+parts[2][1:3]+parts[3][1:3]+parts[4][1:3]
+           status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16)} #, "x" : int(parts[5][1:3],16) }
+           status["set"] = "." # {"a" : int(parts[7][1:3],16), "b" : int(parts[8][1:3],16), "c" : int(parts[9][1:3],16) }
+        else:
+           status["rgb"] = "#"+parts[2][1:3]+parts[3][1:3]+parts[4][1:3]
+           status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16)} #, "x" : int(parts[5][1:3],16) }
+           status["set"] = "." #{"a" : int(parts[7][1:3],16), "b" : int(parts[8][1:3],16) }
+           
+      except Exception as e:
+        logging.error("Error decoding output: "+str(e))
+        logging.debug("... "+str(raw_status))
+        logging.error("... "+str(parts))
+
+        status["rgb"] = "#000000"
+        status["RGB"] = {"r" : 0, "g" : 0, "b" : 0 }
+        status["set"] = "."
       
       return status
    
@@ -412,9 +499,27 @@ class APIaddOn():
 
       if self.status == "Connected":      
 
-        raw_status = self.api.get_status()
-        raw_status = str(raw_status)
+        logging.debug(str(self.last_request_time)+"__"+str(time.time()))
         
+        if self.last_request_time < time.time() - self.cache_wait:
+        
+           try:
+              raw_status = self.api.get_status()
+              self.power_status = "ON"
+            
+           except Exception as e:
+              logging.error("Error during requesting data: "+str(e))
+              return { "error" : "error during requesting data: "+str(e) }	
+#              self.power_status = "ERROR"
+#              return { "error", e }
+              
+           self.last_request_data = raw_status
+           self.last_request_time = time.time()
+           
+        else:
+           raw_status = self.last_request_data
+
+        raw_status = str(raw_status)        
         brightness = str(round(self.brightness*100))+"%"
         color_rgb  = "("+str(self.last_r)+","+str(self.last_g)+","+str(self.last_b)+")"
         status     = self.decode_status(raw_status)
@@ -427,8 +532,10 @@ class APIaddOn():
         elif param == "mode":          return { "result": status["mode"] }
         elif param == "preset":        return { "result": self.last_preset }
         elif param == "preset_speed":  return { "result": self.last_speed }
-        elif param == "raw_status":    return { "result": raw_status + "<br>" + status_str }
+        elif param == "raw_status":    return { "result": raw_status }
         else:                          return { "error" : "unknown tag '"+param+"'" }
+        
+        return { "result" : "get_info" }
 
       else:
         return self.not_connected
@@ -462,7 +569,16 @@ class APIaddOn():
          r1=round(r*var_h)
          g1=round(g*var_h)
          b1=round(b*var_h)
-         self.api.update_device(r1, g1, b1, 0, 0)
+         try:
+            self.api.update_device(r1, g1, b1, 0, 0)
+            self.power_status = "ON"
+            return { "result", "preset" }
+            
+         except Exception as e:
+            logging.error("Error during testing: "+str(e))
+            self.power_status = "ERROR"
+            return { "error", e }
+
          time.sleep(0.3)
       
        #self.device.send_preset_function(37, 100)

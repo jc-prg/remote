@@ -8,7 +8,7 @@ var app_setting_count = 4;
 var app_setting_style = "setting_bg";
 var app_last_load     = 0;
 var app_title         = "jc://remote/";
-var app_version       = "v2.7.0";
+var app_version       = "v2.7.2";
 var app_api_dir       = "api/";
 var app_api_status    = "list";
 var app_loading_image = "";
@@ -87,12 +87,14 @@ function app_theme_changed(theme) {
 
 var colors			= [ "red", "green", "darkgreen", "blue", "darkblue" ];
 var colors_dev			= [];
+var color_api_connect		= "lightgreen";
+var color_api_error		= "#FF6666";
 var color_button_inactive 	= "#666666";
 var colors_power		= { 
 				"ON"		: "darkgreen",
 				"OFF"		: "darkred",
-				"OTHER"	: "purple",
-				"ERROR"	: "orangered",
+				"OTHER"	: "darkcyan",
+				"ERROR"	: "blueviolet",
 				}
 
 // Standard-Definition für RemoteControl

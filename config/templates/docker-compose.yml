@@ -8,7 +8,7 @@ version: '3'
 services:
 
   ${REMOTE_DOCKER_SERVER}:
-    build: ./config/container
+    build: ${REMOTE_DOCKERIMAGE_SERVER}
     container_name: ${REMOTE_DOCKER_SERVER}
     volumes:
       - ${REMOTE_DIR_SERVER}:/usr/src/app/server
@@ -29,6 +29,7 @@ services:
     volumes:
       - ${REMOTE_DIR_CLIENT}:/var/www/html/rm3
       - ${REMOTE_DIR_ICONS}:/var/www/html/rm3/icon
+      - ${REMOTE_DIR_SCENES}:/var/www/html/rm3/scenes
       - ./config/apache2/www-rm3.conf:/etc/apache2/sites-enabled/www-rm3.conf
     depends_on:
       - ${REMOTE_DOCKER_SERVER}

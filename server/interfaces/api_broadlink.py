@@ -34,45 +34,54 @@ class APIcontrol():
    Integration of BROADLINK API to be use by jc://remote/
    '''
 
-   def __init__(self,api_name,device="",device_config={}):
-       '''Initialize API / check connect to device'''
+   def __init__(self,api_name,device="",device_config={},log_command=False):
+       '''
+       Initialize API / check connect to device
+       '''
        
        self.api_name        = api_name       
        self.api_description = "Infrared Broadlink RM3"
-       self.api_config      = device_config
-       self.working         = False
+       self.not_connected   = "ERROR: Device not connected ("+api_name+"/"+device+")."
+       self.status          = "Start"
        self.method          = "record"
+       self.working         = False
        self.count_error     = 0
        self.count_success   = 0
+       self.status          = "Start"
+       self.log_command     = log_command
+       
+       self.api_config               = device_config
        self.api_config["Port"]       = int(self.api_config["Port"])
        self.api_config["MACAddress"] = netaddr.EUI(self.api_config["MACAddress"])
        self.api_config["Timeout"]    = int(self.api_config["Timeout"])
 
-       logging.info("... "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
-       logging.debug(str(self.api_config["IPAddress"])+":"+str(self.api_config["Port"]))
+       logging.info("_API-INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"]+":"+str(self.api_config["Port"])+")")
        
        self.connect()
             
    #-------------------------------------------------
    
    def connect(self):
-       '''Connect / check connection'''
+       '''
+       Connect / check connection
+       '''
        
+       connect = rm3ping.ping(self.api_config["IPAddress"])
+       if not connect:
+         self.status = self.not_connected + " ... PING"
+         logging.error(self.status)       
+         return self.status
+
        self.count_error          = 0
        self.count_success        = 0
        
-       connect = rm3ping.ping(self.api_config["IPAddress"])
-       if connect == False:
-         self.status = "IR Device not available (ping to "+self.api_config["IPAddress"]+" failed)"
-         logging.error(self.status)       
-         return self.status
-         
        try:
          self.api  = broadlink.rm((self.api_config["IPAddress"], self.api_config["Port"]), self.api_config["MACAddress"])     
          if self.api.auth(): self.status = "Connected"
-         else:               self.status = "IR Device not available (not found or no access)"
+         else:               self.status = self.not_connected + " ... CONNECT not found or no access"
+
        except e as Exception:
-         self.status = "ERROR IR Device: "+str(e)
+         self.status = self.not_connected + " ... CONNECT " + str(e)
          logging.error(self.status)
        
        if check_on_startup:
@@ -90,11 +99,23 @@ class APIcontrol():
    #-------------------------------------------------
    
    def wait_if_working(self):
-       '''Some devices run into problems, if send several requests at the same time'''
+       '''
+       Some devices run into problems, if send several requests at the same time
+       '''
+       
        while self.working:
          logging.debug(".")
          time.sleep(0.2)
        return
+       
+
+   #-------------------------------------------------
+
+   def power_status(self):
+       '''
+       request power status
+       '''
+       return "N/A"
        
        
    #-------------------------------------------------
@@ -106,7 +127,8 @@ class APIcontrol():
        self.working = True
 
        if self.status == "Connected":
-         logging.debug("Button-Code: " + command[:shorten_info_to]+"...")
+         if self.log_command: logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+         
          try:
            DecodedCommand = codecs.decode(command,'hex')  # python3
          except Exception as e:
@@ -141,6 +163,7 @@ class APIcontrol():
        self.working = True
 
        if self.status == "Connected":
+         if self.log_command: logging.info("_RECORD: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
 
          code = device + "_" + command
          self.api.enter_learning()

@@ -155,7 +155,7 @@ class configCache (threading.Thread):
         status = self.read(rm3config.active_devices)
     
         # initial load of methods (record vs. query)
-        if self.configMethods == {} and selected_device == "":
+        if self.configMethods == {} and selected_device == "" and "ERROR" not in status:
     
           for device in status:
               key       = status[device]["config"]["device"]
@@ -163,6 +163,10 @@ class configCache (threading.Thread):
               if interface != "" and key != "":
                  config = self.read(rm3config.commands + interface + "/" + key)
                  if not "ERROR" in config: self.configMethods[device] = config["data"]["method"]
+                 
+        elif "ERROR" in status:
+          logging.error("ERROR while reading '"+rm3config.active_devices+"'!")
+          logging.error(str(status))
     
         # if device is given return only device status
         if selected_device != "" and selected_device in status and "status" in status[selected_device]:

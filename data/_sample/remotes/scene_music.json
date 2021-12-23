@@ -74,6 +74,7 @@
         ],
         "label": "Musik",
         "remote": [
+            "HEADER-IMAGE",
             ".",
             ".",
             "scene-on_music",

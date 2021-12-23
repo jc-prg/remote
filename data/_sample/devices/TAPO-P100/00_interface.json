@@ -1,0 +1,47 @@
+{
+	"Devices" : {
+		"default" : {
+			"IPAddress"   : "192.168.1.55",
+			"TapoUser"    : "your@email.com",
+			"TapoPwd"     : "your-password-at-tapo",
+			"Timeout"     : 5,
+			"Methods"     : ["send","query"],
+			"Description" : "SmartPlug 02",
+			"Commands"    : {},
+			"Queries"     : {}
+			},
+		"plug01" : {
+			"IPAddress"   : "192.168.1.53",
+			"TapoUser"    : "your@email.com",
+			"TapoPwd"     : "your-password-at-tapo",
+			"Timeout"     : 5,
+			"Methods"     : ["send","query"],
+			"Description" : "SmartPlug 01",
+			"Commands"    : {},
+			"Queries"     : {}
+			},
+		"plug02" : {
+			"IPAddress"   : "192.168.1.55",
+			"TapoUser"    : "your@email.com",
+			"TapoPwd"     : "your-password-at-tapo",
+			"Timeout"     : 5,
+			"Methods"     : ["send","query"],
+			"Description" : "SmartPlug 02",
+			"Commands"    : {},
+			"Queries"     : {}
+			},
+		"plug03" : {
+			"IPAddress"   : "192.168.1.56",
+			"TapoUser"    : "your@email.com",
+			"TapoPwd"     : "your-password-at-tapo",
+			"Timeout"     : 5,
+			"Methods"     : ["send","query"],
+			"Description" : "SmartPlug 03",
+			"Commands"    : {},
+			"Queries"     : {}
+			}
+		},
+	"API-Source"      : "https://github.com/fishbigger/TapoP100",
+	"API-Info"        : "https://github.com/fishbigger/TapoP100",
+	"API-Description" : "PyP100 API for SmartPlugs Tapo P100"
+}

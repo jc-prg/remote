@@ -50,3 +50,5 @@ config/modules/
 app/cache.manifest
 
 *.swp
+
+server/modules/rm3stage.py

@@ -19,6 +19,25 @@
   .button.notfound          { border : solid 1px #990000; }
   .button.notfound:disabled { border : solid 1px #990000; background-color : #221111; }
 
+  .button.header_image {
+    border             : #000000 solid 3px;
+  }
+  .header_image_fade {
+    font-size : 30px;
+    font-weight : bold;
+    position : relative;
+    color : white;
+    top : 75px;                         
+    background: -webkit-linear-gradient(top, 
+                rgba(0,0,0,0) 0%, 
+                rgba(0,0,0,1) 40%,
+                rgba(0,0,0,1) 100%
+    );
+  }
+
+  .button.header_image:hover {
+     color: white;
+  }
 }
 
 

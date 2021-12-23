@@ -1,0 +1,72 @@
+/* format for iphone XS, 11pro, 12/13mini - 375x812 & iPhone SE 2nd Gen - 375x667 */
+
+.screen_iphone { display : none; }
+.screen_iphone_landscape { display : none; }
+
+@media only screen 
+  and (device-width : 375px) and (orientation : portrait)
+  {
+
+  .screen_iphone { display : block; }
+  .screen_default { display : none; }
+  
+  .button        			 	{ width  :  76px; max-width  :  76px; }
+  .button.big,   .button.big_edit     	{ width  : 105px; max-width  : 105px; }
+  .button.small, .button.small_edit   	{ width  :  62px; max-width  :  62px; }
+  .button.header_image				{ width  : 332px; max-width  : 332px; }
+  
+  .display								{ font-size : 10px; }
+  .display.small, .display.middle					{ width  : 160px; }
+  .display.big,   .display.h1w4, .display.h2w4			{ width  : 320px; }
+  .display.h1w2,  .display.h2w2, .display.h3w2, .display.h4w2	{ width  : 160px; } 
+ 
+  .display-element,         .display-element.small			{ width :  70px; }
+  .display-element.middle,  .display-element.big			{ width : 146px; }
+  
+  .display-element.h1w4,    .display-element.h2w4			{ width : 146px; }
+  .display-element.h3w2,    .display-element.h4w2			{ width : 146px; }
+
+  #audio2 		{ right: 125px; }
+
+  .remote		{ width  : 340px; }
+  .setting_bg		{ width  : 340px; }
+  .channel-entry	{ width  : 166px; }
+  .rm-slider-button	{ width  : 328px; }
+  .color-picker	{ width  : 328px; }
+  
+}
+
+
+@media only screen 
+  and (device-width : 375px) and (device-height : 812px) and (orientation : landscape)
+  {
+
+  .screen_iphone_landscape { display : block; }
+  .screen_default { display : none; }
+  
+  .button        			 	{ width  :  74px; max-width  :  74px; }
+  .button.big,   .button.big_edit     	{ width  : 102px; max-width  : 102px; }
+  .button.small, .button.small_edit   	{ width  :  60px; max-width  :  60px; }
+  .button.header_image				{ width  : 328px; max-width  : 328px; }
+  
+  .display								{ font-size : 10px; }
+  .display.small, .display.middle					{ width  : 156px; }
+  .display.big,   .display.h1w4, .display.h2w4			{ width  : 320px; }
+  .display.h1w2,  .display.h2w2, .display.h3w2, .display.h4w2	{ width  : 156px; } 
+ 
+  .display-element,         .display-element.small			{ width :  68px; }
+  .display-element.middle,  .display-element.big			{ width : 142px; }
+  
+  .display-element.h1w4,    .display-element.h2w4			{ width : 142px; }
+  .display-element.h3w2,    .display-element.h4w2			{ width : 142px; }
+
+  #audio2 		{ right: 125px; }
+
+  .remote         	{ width  : 335px; }
+  .channel-entry 	{ width  : 163px; }
+  .rm-slider-button	{ width  : 320px; }
+  .setting_bg 		{ width  : 335px; }
+  .color-picker	{ width  : 320px; }
+  
+}
+

@@ -25,22 +25,25 @@ class APIcontrol():
    Integration of KODI API to be use by jc://remote/
    '''
 
-   def __init__(self,api_name,device="",device_config={}):
-       '''Initialize API / check connect to device'''
+   def __init__(self,api_name,device="",device_config={},log_command=False):
+       '''
+       Initialize API / check connect to device
+       '''
        
        self.api_name        = api_name       
        self.api_description = "API for KODI Servers (basic functionality, under development)"
-       self.api_config      = device_config
-       self.api_url         = "http://"+str(self.api_config["IPAddress"])+":"+str(self.api_config["Port"])+"/jsonrpc"
-       self.working         = False
-       self.status          = "Started"
+       self.not_connected   = "ERROR: Device not connected ("+api_name+"/"+device+")."
+       self.status          = "Start"
        self.method          = "query"
-       self.not_connected   = "Device not connected (KODI)."
+       self.working         = False
        self.count_error     = 0
        self.count_success   = 0
+       self.log_command     = log_command
 
-       logging.info("... "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
-       logging.debug(self.api_url)
+       self.api_config      = device_config
+       self.api_url         = "http://"+str(self.api_config["IPAddress"])+":"+str(self.api_config["Port"])+"/jsonrpc"
+
+       logging.info("_API-INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
        
        self.connect()
             
@@ -52,24 +55,31 @@ class APIcontrol():
        '''
        
        connect = rm3ping.ping(self.api_config["IPAddress"])
-       if connect == False:
-         self.status = "IR Device not available (ping to "+self.api_config["IPAddress"]+" failed)"
+       if not connect:
+         self.status = self.not_connected + " ... PING"
          logging.error(self.status)       
          return self.status
 
+       self.status               = "Connected"
+       self.count_error          = 0
+       self.count_success        = 0
+
        try:
-          self.api    = Kodi(self.api_url)
-          self.api.jc = APIaddOn(self.api)
+          self.api       = Kodi(self.api_url)
+
+       except Exception as e:
+          self.status = self.not_connected + " ... CONNECT " + str(e)
+          logging.warn(self.status)
+
+       try:
+          self.api.jc    = APIaddOn(self.api)
           logging.debug(str(self.api.JSONRPC.Ping()))
           
-          self.count_error          = 0
-          self.count_success        = 0
-          self.status               = "Connected"
-          self.api.jc.status        = "Connected"
+          self.api.jc.status        = self.status
           self.api.jc.not_connected = self.not_connected
 
        except Exception as e:
-          self.status               = "Error connecting to KODI server: " + str(e)
+          self.status = self.not_connected + " ... CONNECT " + str(e)
           logging.warn(self.status)
        
        
@@ -87,19 +97,28 @@ class APIcontrol():
        
        
    #-------------------------------------------------
+
+   def power_status(self):
+       '''
+       request power status
+       '''
+       return self.jc.PlayerMetadata("power")
+       
+       
+   #-------------------------------------------------
        
    def send(self,device,command):
        '''
        Send command to API
        '''
 
+       result  = {}
        self.wait_if_working()
        self.working = True
        
-       result  = {}
-       logging.debug("Button-Code: "+command[:shorten_info_to]+"... ("+self.api_name+")")
-
        if self.status == "Connected":
+         if self.log_command: logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+
          try:
            command = "self.api."+command
            result = eval(command)
@@ -131,16 +150,16 @@ class APIcontrol():
        Send command to API and wait for answer
        '''
 
+       result  = {}
        self.wait_if_working()
        self.working = True
-       
-       result  = {}
-       logging.debug("Button-Code: "+command[:shorten_info_to]+"... ("+self.api_name+")")
 
        if "||" in command: command_param = command.split("||")
        else:               command_param = [command]
 
        if self.status == "Connected":
+         if self.log_command: logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+
          try:
            command = "self.api."+command_param[0]
            result = eval(command)
@@ -368,7 +387,6 @@ class APIaddOn():
       else:                             active = active["result"]         
   
       if "result" in str(active) and active["result"] == []:           
-         logging.info("KODI API: no media loaded")
          return { "result" : "no media" }                                      
  
       elif 'playerid' in str(active):

@@ -94,6 +94,7 @@ Many thanks to the authors ...
 * MagicHome API (https://github.com/adamkempenich/magichome-python)
 * PyP100 API (https://github.com/fishbigger/TapoP100)
 * Free icons from (https://icon-icons.com/), (https://www.freeicons.io/), (https://www.flaticon.com/), and (https://icons8.com/)
+* Free images from (https://unsplash.com/)
 * jc://modules/ (https://github.com/jc-prg/modules)
 
 

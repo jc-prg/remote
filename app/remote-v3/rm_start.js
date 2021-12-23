@@ -9,8 +9,8 @@ function rmStart(name)
 	this.add_devices          = function(data,menuItems)
 	this.add_scenes           = function(data,menuItems)
 	this.entry_device         = function(data, id, label, style)
-	this.entry_scene          = function(data, id, label, style)
-	this.button               = function(id, label, style, script_apiCommandSend, disabled )
+	this.entry_scene          = function(data, id, label, image, style)
+	this.button               = function(id, label, style, script_apiCommandSend, disabled, image="" )
 	this.button_image         = function(label,style)
 	this.remoteToggleEditMode = function()
 	this.image                = function(file)
@@ -85,16 +85,20 @@ function rmStart(name) {
 
 		// create big buttons for scenes
     		for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }    		
-		var order  = sortDict(data,"position");
+		var order  = sortDict(data,"position");		
 	        for (var key in order) {
 			scene  = order[key];
+			if (data[scene]["settings"]["image"]) { var image  = data[scene]["settings"]["image"]; } else { var image = ""; }
+			if (data[scene]["settings"]["label"]) { var label  = data[scene]["settings"]["label"]; } else { var label = key; }
+			if (data[scene]["settings"]["size"])  { var size   = data[scene]["settings"]["size"]; }  else { var size  = "big"; }
+			
 			if (data[scene]["settings"]["visible"] == "yes") {
 	        	        var id = "scene_"+scene;
-        	        	menu  += this.entry_scene( data, id, data[scene]["settings"]["label"], "big" );
+        	        	menu  += this.entry_scene( data, id, label, image, size );
         	        	}
         	        else if (this.edit_mode && data[scene]["settings"]["visible"] == "no") {
 	        	        var id = "scene_"+scene;
-        	        	menu  += this.entry_scene( data, id, data[scene]["settings"]["label"], "big_edit" );
+        	        	menu  += this.entry_scene( data, id, label, image, size+"_edit" );
         	        	}
 	                }
 
@@ -116,16 +120,29 @@ function rmStart(name) {
 		}
 
 	// write big button for scene
-	this.entry_scene          = function(data, id, label, style) {
+	this.entry_scene          = function(data, id, label, image, style) {
 		var disabled;
 		var d = this.button_image( label, style );
 		var i = id.split("_");
-		return this.button( id, d[0], style, 'rm3remotes.create("scene","' + i[1] + '");setNavTitle("' + label + '");', "" );
+		return this.button( id, d[0], style, 'rm3remotes.create("scene","' + i[1] + '");setNavTitle("' + label + '");', "", image );
 		}
 
         // standard standard button
-	this.button               = function(id, label, style, script_apiCommandSend, disabled ){
-                return "<button id='" + id + "' class='button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + ">" + label + "</button>";
+	this.button               = function(id, label, style, script_apiCommandSend, disabled, image="" ){
+		bgimage = "";
+		if (image != "") { 
+		
+			var scene_images  = this.data["CONFIG"]["scene_images"];
+			if (scene_images[image]) {
+				image = scene_images[image][0];
+				}
+				
+			bgimage = "style='background-image:url("+rm3scene_dir+image+");'"
+			return "<button id='" + id + "' class='button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + " " + bgimage + "></button>";
+			}
+		else {
+			return "<button id='" + id + "' class='button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + " >" + label + "</button>";
+			}
                 }
 
         // check if image exists for button

@@ -1,0 +1,18 @@
+{
+    "data": {
+        "description": "Tapo P100",
+        "display": {
+            "Location": "location",
+            "Power": "power"
+        },
+        "display-size": "h1w2",
+        "remote": [
+            "LINE||SmartPlug 03",
+            "DISPLAY",
+            "on",
+            "off",
+            "LINE"
+        ],
+        "type": "device"
+    }
+}

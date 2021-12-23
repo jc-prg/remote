@@ -24,23 +24,28 @@ class APIcontrol():
    Integration of sample API to be use by jc://remote/
    '''
 
-   def __init__(self,api_name,device="",device_config=""):
+   def __init__(self,api_name,device="",device_config={},log_command=False):
        '''
        Initialize API / check connect to device
        '''
        
        self.api_name        = api_name       
        self.api_description = "API for ONKYO Devices"
-       self.api_device      = device
-       self.api_config      = device_config
-       self.api_ip          = self.api_config["IPAddress"]
-       self.api_timeout     = 5
+       self.not_connected   = "ERROR: Device not connected ("+api_name+"/"+device+")."
+       self.status          = "Start"
        self.method          = "query"
        self.working         = False
        self.count_error     = 0
        self.count_success   = 0
+       self.status          = "Start"
+       self.log_command     = log_command
        
-       logging.info("... "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
+       self.api_device      = device
+       self.api_timeout     = 5
+       self.api_config      = device_config
+       self.api_ip          = self.api_config["IPAddress"]
+
+       logging.info("_API-INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
        
        self.connect()
             
@@ -53,61 +58,77 @@ class APIcontrol():
    #-------------------------------------------------
 
    def connect(self):
-       '''Connect / check connection'''
-       
-       # Create a receiver object, connecting to the host
-       
-       self.count_error          = 0
-       self.count_success        = 0
-
+       '''
+       Connect / check connection
+       '''
+              
        connect = rm3ping.ping(self.api_config["IPAddress"])
-       if connect == False:
-         self.status = "ONKYO Device not available (ping to "+self.api_config["IPAddress"]+" failed)"
+       if not connect:
+         self.status = self.not_connected + " ... PING"
          logging.error(self.status)       
          return self.status
 
+       self.status               = "Connected"
+       self.count_error          = 0
+       self.count_success        = 0
+
        try:
-          print("(Re)Connect eISCP ONKYO "+self.api_ip)
           self.api    = eiscp.eISCP(self.api_ip)
           #self.api    = eiscp.Receiver(self.api_ip)
           #self.api.on_message = callback_method
-          self.status               = "Connected"
+               
        except Exception as e:
           self.status = "Error connecting to ONKYO device: " + str(e)
+          self.api.command("system-power query") # send a command to check if connected
           logging.warning(self.status)
 
        try:
-          self.api.command("system-power query") # send a command to check if connected
-          self.status               = "Connected"
           self.api.jc               = APIaddOn(self.api)
-          self.api.jc.status        = "Connected"
+          self.api.jc.status        = self.status
+          self.api.jc.not_connected = self.not_connected
+          
        except Exception as e:
-          self.status    = "Error connecting to ONKYO device: " + str(e)
-          self.api.jc.status = self.status
+          self.status               = self.not_connected + " ... CONNECT " + str(e)
+          self.api.jc.status        = self.status
           logging.warning(self.status)
    
    
    #-------------------------------------------------
    
    def wait_if_working(self):
-       '''Some devices run into problems, if send several requests at the same time'''
+       '''
+       Some devices run into problems, if send several requests at the same time
+       '''
        
        while self.working:
          logging.debug(".")
          time.sleep(0.2)
        return
        
+   #-------------------------------------------------
+
+   def power_status(self):
+       '''
+       request power status
+       '''
+       status = self.query("system-power=query")
+       if "on" in str(status):   return "ON"
+       if "off" in str(status):  return "OFF"
+
        
    #-------------------------------------------------
    
    def send(self,device,command):
-       '''Send command to API'''
+       '''
+       Send command to API
+       '''
 
        self.wait_if_working()
        self.working = True
 
        if self.status == "Connected":
-         logging.debug("Button-Code: "+command[:shorten_info_to]+"...")
+         if self.log_command: logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+
          button_code = command.replace("="," ")
          try:
            self.api.command(button_code)
@@ -128,7 +149,9 @@ class APIcontrol():
    #-------------------------------------------------
    
    def query(self,device,command):
-       '''Send command to API and wait for answer'''
+       '''
+       Send command to API and wait for answer
+       '''
 
        self.wait_if_working()
        self.working = True
@@ -140,6 +163,7 @@ class APIcontrol():
        logging.debug(command)
 
        if self.status == "Connected":
+         if self.log_command: logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
        
          if "jc." in command:
          

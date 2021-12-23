@@ -37,39 +37,45 @@ else:            Stage = "Prod Stage"
 # Start and end of API answer
 #-------------------------------------------------
      
-def remoteAPI_start():
+def remoteAPI_start(setting=[]):
     '''
     create data structure for API response and read relevant data from config files
     '''
 
     global Status, LastAPICall
 
-    data                                   = configFiles.api_init
-    data["DATA"]                           = RmReadData()
+    if not "status-only" in setting:
+       data                                = configFiles.api_init
+       data["DATA"]                        = RmReadData()
 
-    data["CONFIG"]                         = {}  
-    data["CONFIG"]["button_images"]        = configFiles.read(modules.icons_dir + "/index")
-    data["CONFIG"]["button_colors"]        = configFiles.read(modules.buttons  + "button_colors")
+       data["CONFIG"]                      = {}  
+       data["CONFIG"]["button_images"]     = configFiles.read(modules.icons_dir + "/index")
+       data["CONFIG"]["button_colors"]     = configFiles.read(modules.buttons  + "button_colors")
+       data["CONFIG"]["scene_images"]      = configFiles.read(modules.scene_img_dir + "/index")
     
-    data["CONFIG"]["interfaces"]           = deviceAPIs.available
-    data["CONFIG"]["methods"]              = deviceAPIs.methods
+       data["CONFIG"]["interfaces"]        = deviceAPIs.available
+       data["CONFIG"]["methods"]           = deviceAPIs.methods
     
+       for device in data["DATA"]["devices"]:
+         data["CONFIG"]["main-audio"] = "NONE"
+         if "main-audio" in data["DATA"]["devices"][device]["settings"] and data["DATA"]["devices"][device]["settings"]["main-audio"] == "yes":
+           data["CONFIG"]["main-audio"] = device
+           break
+    else:
+       data                                = configFiles.api_init
+       if "DATA" in data: del data["DATA"]
+       
     data["REQUEST"]                        = {}
     data["REQUEST"]["start-time"]          = time.time()
     data["REQUEST"]["Button"]              = queueSend.last_button 
 
     data["STATUS"]                         = {}
+    data["STATUS"]["devices"]              = RmReadData_deviceStatus()
+    data["STATUS"]["scenes"]               = RmReadData_sceneStatus()
     data["STATUS"]["interfaces"]           = deviceAPIs.status()
     data["STATUS"]["system"]               = {} #  to be filled in remoteAPI_end()
     data["STATUS"]["request_time"]         = queueSend.avarage_exec
       
-      
-    for device in data["DATA"]["devices"]:
-      data["CONFIG"]["main-audio"] = "NONE"
-      if "main-audio" in data["DATA"]["devices"][device]["settings"] and data["DATA"]["devices"][device]["settings"]["main-audio"] == "yes":
-         data["CONFIG"]["main-audio"] = device
-         break
-         
     return data
     
 
@@ -92,13 +98,14 @@ def remoteAPI_end(data,setting=[]):
         
     #--------------------------------
 
-    data["CONFIG"]["reload_status"]       = queueQuery.reload
-    data["CONFIG"]["reload_config"]       = configFiles.cache_update
+    if "CONFIG" in data:
+       data["CONFIG"]["reload_status"]       = queueQuery.reload
+       data["CONFIG"]["reload_config"]       = configFiles.cache_update
 
     #--------------------------------
     
-    if "no-data" in setting:   del data["DATA"]
-    if "no-config" in setting: del data["CONFIG"]
+    if "no-data" in setting   and "DATA" in data:   del data["DATA"]
+    if "no-config" in setting and "CONFIG" in data: del data["CONFIG"]
   
     if "ERROR" in data["REQUEST"]["Return"]: logging.error(data["REQUEST"]["Return"])
     return data
@@ -200,6 +207,22 @@ def RemoteList():
 
 
 #-------------------------------------------------
+# List all defined commands / buttons
+#-------------------------------------------------
+
+def RemoteStatus():
+        '''
+        Load and list all data
+        '''
+
+        data                       = remoteAPI_start(["status-only"])
+        data["REQUEST"]["Return"]  = "OK: Returned status data."
+        data["REQUEST"]["Command"] = "Status"
+        data                       = remoteAPI_end(data,["no-config"])        
+        return data
+
+
+#-------------------------------------------------
 # main functions for API
 #-------------------------------------------------
 
@@ -263,7 +286,7 @@ def RemoteSet(device,command,value):
         
         data                      = remoteAPI_start()
         interface                 = configFiles.cache["_api"]["devices"][device]["config"]["interface_api"]
-        method                    = deviceAPIs.method(interface)
+        method                    = deviceAPIs.method(device)
         
         data["REQUEST"]["Device"]  = device
         data["REQUEST"]["Button"]  = command
@@ -406,14 +429,15 @@ def RemoteOnOff(device,button):
         
         data            = remoteAPI_start()
         interface       = data["DATA"]["devices"][device]["config"]["interface_api"]
-        method          = deviceAPIs.method(interface)
+        method          = deviceAPIs.method(device)
+        api_dev         = interface+"_"+data["DATA"]["devices"][device]["config"]["interface_dev"]
         dont_send       = False
-        
+
+        logging.info("__BUTTON: " +device+"/"+button+" ("+interface+"/"+method+")")
+
         # if recorded values, check against status quo
         if method == "record":
-        
-          logging.info("RemoteOnOff: " +device+"/"+button+" ("+interface+"/"+method+")")
-          
+                  
           # Get method and presets
           if "commands" in data["DATA"]["devices"][device]["interface"]:  types   = data["DATA"]["devices"][device]["interface"]["commands"]
           if "values"   in data["DATA"]["devices"][device]["interface"]:  presets = data["DATA"]["devices"][device]["interface"]["values"]        
@@ -450,24 +474,19 @@ def RemoteOnOff(device,button):
                  elif direction == "-":                              dont_send = True
                  
             else:
-               logging.info("RemoteOnOff - Device is off: "+device)
+               logging.debug("RemoteOnOff - Device is off: "+device)
                dont_send = True
                
           else:
             logging.warn("RemoteOnOff - Command not defined: "+device+"_"+value)
             logging.debug("types = " + str(types) + " / presets = " + str(presets))
-                           
-        # if values via API, no additional need for checks (as done by API ...)
-        elif method == "query":
-          logging.info("RemoteOnOff: " +device+"/"+button+" ("+interface+"/"+method+")")
-          status = ""
-          
+                                     
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
         data["REQUEST"]["Command"]   = "OnOff"
         
         if dont_send: data["REQUEST"]["Return"] = "Dont send "+device+"/"+button+" as values not valid ("+str(current_status)+")."
-        else:         data["REQUEST"]["Return"] = queueSend.add2queue([[interface,device,button,status]])
+        else:         data["REQUEST"]["Return"] = queueSend.add2queue([[api_dev,device,button,status]])
         
         refreshCache()
         data["DATA"]                 = {}
