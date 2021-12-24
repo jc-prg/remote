@@ -31,7 +31,7 @@ class connect(threading.Thread):
         self.name         = "jc://remote/interfaces/"
         self.check_error  = time.time()
         self.last_message = ""
-        self.log_commands = False
+        self.log_commands = True
         self.methods      = {
             "send"        : "Send command via API (send)",
             "record"      : "Record per device (record)",

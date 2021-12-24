@@ -110,6 +110,12 @@ class queueApiCalls (threading.Thread):
                    result = self.device_apis.query(interface,device,value)
                    #self.execution_time(device,request_time,time.time())
                    
+                   self.last_query      = device + "_" + value
+                   self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)') 
+                   devices[device]["status"]["api-last-query"] = self.last_query_time
+                   devices[device]["status"]["api-status"]     = self.device_apis.api[self.device_apis.api_device(device)].status
+                   #devices[device]["status"]["power"]          = self.device_apis.api[self.device_apis.api_device(device)].power_status()
+
                 except Exception as e:
                    result = "ERROR queue query_list (query,"+interface+","+device+","+value+"): " + str(e)             
                    logging.error(result)
@@ -117,9 +123,6 @@ class queueApiCalls (threading.Thread):
                 if not "ERROR" in str(result):  devices[device]["status"][value] = str(result)
                 else:                           devices[device]["status"][value] = "Error"
 
-                self.last_query      = device + "_" + value
-                self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)') 
-                devices[device]["status"]["api-last-query"] = self.last_query_time                
                 
              if self.config != "":
                 self.config.write_status(devices,"execute ("+str(command)+")")
