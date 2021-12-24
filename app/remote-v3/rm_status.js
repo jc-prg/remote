@@ -478,8 +478,8 @@ function statusCheck_display(data={}) {
 		if (devices[key]["status"] && devices[key]["remote"] && devices[key]["remote"]["display"]) {
 		
 			var display     	= devices[key]["remote"]["display"];
-	    		var device_api         = data["STATUS"]["devices"][key]["api"]
-	    		var device_api_status  = data["STATUS"]["interfaces"][device_api]
+	    		var device_api         = data["STATUS"]["devices"][key]["api"];
+	    		var device_api_status  = data["STATUS"]["interfaces"][device_api];
 			var connected   	= device_api_status.toLowerCase();
 		        
 			for (var dkey in display) {
@@ -510,8 +510,8 @@ function statusCheck_display(data={}) {
 		if (devices[key]["status"] && devices[key]["interface"] && devices[key]["interface"]["query_list"]) {
 
 			var display     	= devices[key]["interface"]["query_list"];
-	    		var device_api         = data["STATUS"]["devices"][key]["api"]
-	    		var device_api_status  = data["STATUS"]["interfaces"][device_api]
+	    		var device_api         = data["STATUS"]["devices"][key]["api"];
+	    		var device_api_status  = data["STATUS"]["interfaces"][device_api];
 			var connected   	= device_api_status.toLowerCase();
 			
 			display.push("api");
@@ -528,6 +528,9 @@ function statusCheck_display(data={}) {
 			        	else if (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)	{ status = "<b style='color:lightgreen;'>Connected<b/>"; }
 					else if (status.indexOf("OFF") >= 0 || status.indexOf("off") >= 0)	{ status = "<b style='color:gold;'>Connected: Power Off<b/>"; }
         				else 									{ status = "<b style='color:red;'>Unknown Error:</b> "+status; }			
+					}
+				else if (vkey == "api-status") {
+					status = device_api_status;
 					}
 
 				if (element2 && status) { element2.innerHTML = status.replace(/,/g,", "); }
