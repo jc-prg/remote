@@ -1183,9 +1183,9 @@ function rmRemote(name) {
 			var device_api		= status_data_new["api"];
 			var connected		= this.data["STATUS"]["interfaces"][device_api];
 			}
-		else{
-			if (status_data["api-status"])	{ var connected = status_data["api-status"].toLowerCase(); }
-			else					{ var connected = "unknown"; }
+		else {
+			// check included devices ?
+			var connected = "unknown";
 			}
 		
 		if (!this.data["DATA"][type]) {
@@ -1314,14 +1314,20 @@ function rmRemote(name) {
       		text  += this.tab_row("start","100%");
         				
         	for (var i=0; i<display_data.length; i++) {
-      			if (display_data[i] != "power") {
+      			if (display_data[i] != "power" && display_data[i] != "api" && display_data[i] != "api-status" && display_data[i] != "api-last-query") {
 	        		var label = "<data class='display-label'>"+display_data[i]+":</data>";
 				var input = "<data class='display-detail' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>";
 		        	//text += "<div class='display-element alert'>"+label+input+"</div><br/>";
 		        	text += this.tab_row("<div style='width:100px;'>"+label+"</div>",input);
 		        	}
 	        	}
+        	text  += this.tab_row("<hr/>",false);
+
+      		text  += this.tab_row("<data class='display-label'>API:</data>", "<data class='display-detail' id='display_full_"+device+"_api'>no data</data>" );
+      		text  += this.tab_row("<data class='display-label'>API Status:</data>", "<data class='display-detail' id='display_full_"+device+"_api-status'>no data</data>" );
+      		text  += this.tab_row("<data class='display-label'>API Last Query:</data>", "<data class='display-detail' id='display_full_"+device+"_api-last-query'>no data</data>" );
         	text  += this.tab_row("end");
+
         	text  += "</div>";
 		appMsg.confirm(text,"",300);
 		statusCheck(this.data);
