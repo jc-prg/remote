@@ -4,8 +4,7 @@
 # (c) Christoph Kloth
 #-----------------------------------
 
-import logging, time
-import threading
+import logging, time, datetime, threading
 
 import modules
 import modules.rm3config     as rm3config
@@ -118,10 +117,11 @@ class queueApiCalls (threading.Thread):
                 if not "ERROR" in str(result):  devices[device]["status"][value] = str(result)
                 else:                           devices[device]["status"][value] = "Error"
 
-                self.last_query = device + "_" + value
-                pass
+                self.last_query      = device + "_" + value
+                self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)') 
+                devices[device]["status"]["api-last-query"] = self.last_query_time                
                 
-             if self.config != "" and not "ERROR" in str(result):
+             if self.config != "":
                 self.config.write_status(devices,"execute ("+str(command)+")")
        
        # if is a number
