@@ -477,7 +477,7 @@ function statusCheck_display(data={}) {
 		// fill keys with displays
 		if (devices[key]["status"] && devices[key]["remote"] && devices[key]["remote"]["display"]) {
 		
-			var display     = devices[key]["remote"]["display"];
+			var display     	= devices[key]["remote"]["display"];
 	    		var device_api         = data["STATUS"]["devices"][key]["api"]
 	    		var device_api_status  = data["STATUS"]["interfaces"][device_api]
 			var connected   	= device_api_status.toLowerCase();
@@ -513,7 +513,11 @@ function statusCheck_display(data={}) {
 	    		var device_api         = data["STATUS"]["devices"][key]["api"]
 	    		var device_api_status  = data["STATUS"]["interfaces"][device_api]
 			var connected   	= device_api_status.toLowerCase();
-
+			
+			display.push("api");
+			display.push("api-status");
+			display.push("api-last-query");
+			
 			for (var i=0; i<display.length; i++) {
 				var vkey     = display[i];
 				var element2 = document.getElementById("display_full_" + key + "_" + vkey);
@@ -552,7 +556,7 @@ function statusCheck_display(data={}) {
 						// workaround, check why not in the correct format (KODI?!)
 						if (replace_value != "no media") {
 							console.warn(replace_value);
-							replace_value = replace_value.replace(/'/g, '"');
+							replace_value       = replace_value.replace(/'/g, '"');
 							var replace_content = JSON.parse(replace_value);
 							var replace_cmd     = "replace_content"+replace_index;
 							replace_value = eval(replace_cmd);
