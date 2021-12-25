@@ -565,9 +565,8 @@ function statusCheck_display(data={}) {
 						if (replace_value != "no media" && replace_value != "Error") {
 							console.warn(replace_value);
 							replace_value       = replace_value.replace(/'/g, '"');
-							var replace_content = JSON.parse(replace_value);
-							var replace_cmd     = "replace_content"+replace_index;
-							replace_value = eval(replace_cmd);
+							eval ("var replace_content = JSON.parse(replace_value);");	 // refactor with let (otherwise security issue)
+							eval ("var replace_value = replace_content"+replace_index);	 // refactor with let (otherwise security issue)
 							}
 						}
 					}
