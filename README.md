@@ -14,7 +14,7 @@ Light theme on iPhone XS
 Dark theme on iPhone XS
 
 ![scenes with header](docs/remote_new.png)
-Remote with header and color picker (updated dark theme)
+Remotes with header and color picker (updated dark theme)
 
 ![edit mode](docs/remote_edit.png)
 Edit remote layouts in a browser
@@ -24,9 +24,9 @@ Edit remote layouts in a browser
 * Broadlink RM 3 Mini - Infrared receiver/sender
 * Several ONKYO devices with API (see section modelsets in the file eiscp-commands.yaml in https://github.com/miracle2k/onkyo-eiscp)
 * Several SONY devices with API (see README in https://https://github.com/alexmohr/sonyapilib)
-* KODI server (e.g. also installed on the Raspberry PI)
-* MagicHome LED strips 
-* Tapo SmartPlugs
+* KODI server
+* Magic Home compartibel LED strips 
+* Tapo SmartPlugs P100
 * *Other devices easily can be integrated*
 
 ## Data structure
@@ -39,6 +39,8 @@ Edit remote layouts in a browser
 
 * add remote control for LED strips compartible with MagicHome
 * add remote control for Tapo SmartPlugs
+* add slider and color-picker
+* stablize API connections
 
 ### App v2.6 / Server v1.9
 
