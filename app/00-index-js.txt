@@ -92,6 +92,36 @@ function rmMenu(name, menu)
 ./remote-v3/rm_remotes-color-picker.js (-1)
 ----------------------------
 ----------------------------
+./remote-v3/rm_remotes-elements.js (493)
+----------------------------
+function rmRemoteBasic(name)
+	this.input                = function (id,value="")
+	this.select               = function (id,title,data,onchange="",selected_value="")
+	this.line		  = function (text="")
+function rmRemoteTable(name)
+	this.start	= function (width="100%")
+	this.row	= function (td1,td2="")
+	this.line	  	  = function (text="")
+	this.end	= function ()
+function rmRemoteButtons(name)
+	this.default               = function (id, label, style, script_apiCommandSend, disabled )
+	this.edit          = function (onclick,label,disabled="")
+	this.device        = function (id, label, device, style, cmd, disabled )
+	this.device_keyboard   = function (id, label, device, style, cmd, disabled )
+	this.device_add    = function (id, label, device, style, cmd, disabled )
+	this.makro         = function (id, label, scene, style, makro, disabled )
+	this.channel       = function (id, label, scene, makro, style, disabled="")
+	this.image         = function (label,style)
+function rmRemoteDisplays(name)
+	this.default              = function (id, device, type="devices", style="", display_data={})
+	this.sizes       = function ()
+	this.alert        = function (id, device, type="", style="" )
+	this.mediainfo   = function (id, device, style="")
+	this.json	  = function ( id, json, format="" )
+	this.tab_row             = function (td1,td2="")
+	this.tab_line	  	  = function (text="")
+function writeMakroButton ()
+----------------------------
 ./remote-v3/rm_remotes-keyboard.js (69)
 ----------------------------
 function rmRemoteKeyboard(name)
@@ -123,7 +153,7 @@ function jcSlider2 ( name, container )
 	this.info		= function()
 		alert("Please define a function to be called on change.")
 ----------------------------
-./remote-v3/rm_remotes.js (1550)
+./remote-v3/rm_remotes.js (1159)
 ----------------------------
 function rmRemote(name)
 	this.init                 = function (data)
@@ -155,34 +185,15 @@ function rmRemote(name)
 	this.command_select       = function (id,device="")
 	this.command_select_record = function (id,device="")
 	this.image_select		= function (id,selected="")
-	this.button_select		= function (id,device="")
+	this.button_list          = function (device)
+        this.template_list	= function(type="")
 	this.template_select      = function (id,title,data,onchange="")
+	this.button_select		= function (id,device="")
 	this.scene_button_select	= function (div_id,id,device)
-	this.input                = function (id,value="")
-	this.select               = function (id,title,data,onchange="",selected_value="")
-	this.line		  = function (text="")
 	this.colorPicker              = function (id, device, type="devices", data)
 	this.slider_element      = function (id, device, type="devices", data)
-	this.display              = function (id, device, type="devices", style="", display_data={})
-	this.display_sizes       = function ()
-	this.display_alert        = function (id, device, type="", style="" )
-	this.display_mediainfo   = function (id, device, style="")
-	this.display_json	  = function ( id, json, format="" )
-        this.template_list	= function(type="")
-	this.button               = function (id, label, style, script_apiCommandSend, disabled )
-	this.button_edit          = function (onclick,label,disabled="")
-	this.button_device        = function (id, label, device, style, cmd, disabled )
-	this.button_device_keyboard   = function (id, label, device, style, cmd, disabled )
-	this.button_device_add    = function (id, label, device, style, cmd, disabled )
-	this.button_makro         = function (id, label, scene, style, makro, disabled )
-	this.button_channel       = function (id, label, scene, makro, style, disabled="")
-	this.button_image         = function (label,style)
-	this.button_list          = function (device)
 	this.empty               = function (id,comment="")
 	this.show                = function (device="")
-	this.tab_row             = function (td1,td2="")
-	this.tab_line	  	  = function (text="")
-function writeMakroButton ()
 ----------------------------
 ./remote-v3/rm_settings.js (536)
 ----------------------------
@@ -229,7 +240,7 @@ function rmStart(name)
 	this.remoteToggleEditMode = function()
 	this.image                = function(file)
 ----------------------------
-./remote-v3/rm_status.js (571)
+./remote-v3/rm_status.js (583)
 ----------------------------
 function statusShowVolume_old( volume, maximum, vol_color, novol_color="" )
 function statusShowVolume( volume )
@@ -247,8 +258,8 @@ function statusCheck_display(data={})
  USAGE ...
 ----------------------------
   4 - apiAlertReturn
-  2 - apiButtonAdd
-  2 - apiButtonDelete
+  1 - apiButtonAdd
+  1 - apiButtonDelete
   2 - apiButtonDelete_exe
   1 - apiCheckUpdates
   1 - apiCheckUpdates_msg
@@ -270,7 +281,7 @@ function statusCheck_display(data={})
   2 - apiSceneEdit
   2 - apiSceneJsonEdit
   1 - apiSetVolume
-  2 - apiTemplateAdd
+  1 - apiTemplateAdd
   2 - apiTemplateAdd_exe
  35 - image
   1 - jcSlider2
@@ -290,7 +301,11 @@ function statusCheck_display(data={})
   1 - remoteUpdate
   2 - rmMenu
   2 - rmRemote
+  2 - rmRemoteBasic
+  2 - rmRemoteButtons
+  2 - rmRemoteDisplays
   2 - rmRemoteKeyboard
+  2 - rmRemoteTable
   2 - rmSettings
   2 - rmSlider
   2 - rmStart
@@ -305,6 +320,6 @@ function statusCheck_display(data={})
   1 - statusCheck_load
   2 - statusCheck_sceneButton
   1 - statusShowVolume
- 71 - to
+ 72 - to
   1 - writeKeyBoard
   1 - writeMakroButton
