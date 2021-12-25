@@ -36,6 +36,8 @@ Update data description in progress ...
 
 ## Description and How-to
 
+Find a how-to in the edit mode also. Summary:
+
 ### DEVICES
 
 Remote controls for devices can be added, changed and deleted via edit mode in the GUI already and there are a few templates available:
