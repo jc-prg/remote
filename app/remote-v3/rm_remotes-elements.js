@@ -6,31 +6,31 @@
 //-----------------------------
 /* INDEX:
 function rmRemoteBasic(name)
-	this.input                = function (id,value="")
-	this.select               = function (id,title,data,onchange="",selected_value="")
-	this.line		  = function (text="")
+	this.input	= function (id,value="")
+	this.select	= function (id,title,data,onchange="",selected_value="")
+	this.line	= function (text="")
 function rmRemoteTable(name)
 	this.start	= function (width="100%")
 	this.row	= function (td1,td2="")
-	this.line	  	  = function (text="")
+	this.line	= function (text="")
 	this.end	= function ()
 function rmRemoteButtons(name)
-	this.default               = function (id, label, style, script_apiCommandSend, disabled )
-	this.edit          = function (onclick,label,disabled="")
-	this.device        = function (id, label, device, style, cmd, disabled )
-	this.device_keyboard   = function (id, label, device, style, cmd, disabled )
-	this.device_add    = function (id, label, device, style, cmd, disabled )
-	this.makro         = function (id, label, scene, style, makro, disabled )
-	this.channel       = function (id, label, scene, makro, style, disabled="")
-	this.image         = function (label,style)
+	this.default		= function (id, label, style, script_apiCommandSend, disabled )
+	this.edit		= function (onclick,label,disabled="")
+	this.device		= function (id, label, device, style, cmd, disabled )
+	this.device_keyboard	= function (id, label, device, style, cmd, disabled )
+	this.device_add	= function (id, label, device, style, cmd, disabled )
+	this.makro		= function (id, label, scene, style, makro, disabled )
+	this.channel		= function (id, label, scene, makro, style, disabled="")
+	this.image		= function (label,style)
 function rmRemoteDisplays(name)
-	this.default              = function (id, device, type="devices", style="", display_data={})
-	this.sizes       = function ()
-	this.alert        = function (id, device, type="", style="" )
-	this.mediainfo   = function (id, device, style="")
-	this.json	  = function ( id, json, format="" )
-	this.tab_row             = function (td1,td2="")
-	this.tab_line	  	  = function (text="")
+	this.default		= function (id, device, type="devices", style="", display_data={})
+	this.sizes		= function ()
+	this.alert		= function (id, device, type="", style="" )
+	this.mediainfo		= function (id, device, style="")
+	this.json		= function ( id, json, format="" )
+	this.tab_row		= function (td1,td2="")
+	this.tab_line		= function (text="")
 function writeMakroButton ()
 */
 //--------------------------------
@@ -47,10 +47,10 @@ function rmRemoteBasic(name) {
 
 
 	// input for text
-	this.input                = function (id,value="")   { return "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"'>"; }
+	this.input	= function (id,value="")   { return "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"'>"; }
 
 	// select for different data 
-	this.select               = function (id,title,data,onchange="",selected_value="") {
+	this.select	= function (id,title,data,onchange="",selected_value="") {
                 var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
                 item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
                 for (var key in data) {
@@ -64,7 +64,7 @@ function rmRemoteBasic(name) {
                 }
 
         // write line with text ... 
-	this.line		  = function (text="") {
+	this.line	= function (text="") {
           	var remote = "";
 		remote += "<div class='remote-line'><hr/>";
 		if (text != "") { remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>"; }
@@ -92,7 +92,7 @@ function rmRemoteTable(name) {
 		else			{ return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
 		}
 
-	this.line	  	  = function (text="") {
+	this.line	= function (text="") {
 		return "<tr><td colspan='2'><hr style='border:1px solid white;'/></td></tr>";
 		}
 
@@ -116,7 +116,7 @@ function rmRemoteButtons(name) {
 
 
 	// standard button with option to left and right click
-	this.default               = function (id, label, style, script_apiCommandSend, disabled ){
+	this.default		= function (id, label, style, script_apiCommandSend, disabled ){
 	
 	        var onContext  = "";
 	        var onClick    = "";
@@ -135,14 +135,14 @@ function rmRemoteButtons(name) {
 		}
 
 	// button edit mode		
-	this.edit          = function (onclick,label,disabled="") {
+	this.edit		= function (onclick,label,disabled="") {
         	var style = "width:" + this.width + ";margin:1px;";
         	if (disabled == "disabled") { style += "background-color:gray;"; }
         	return "<button style=\""+style+"\" onClick=\""+onclick+"\" "+disabled+">"+label+"</button>";
         	}
 
 	// create button for single command
-	this.device        = function (id, label, device, style, cmd, disabled ) {
+	this.device		= function (id, label, device, style, cmd, disabled ) {
 
 		var label2 	= this.image( label, style );
 		if (label == ".") {
@@ -156,7 +156,7 @@ function rmRemoteButtons(name) {
 		}
 				
 	// create button for single command
-	this.device_keyboard   = function (id, label, device, style, cmd, disabled ) {
+	this.device_keyboard	= function (id, label, device, style, cmd, disabled ) {
 
 		var label2 	= this.image( label, style );
 		if (label == ".") {
@@ -170,7 +170,7 @@ function rmRemoteButtons(name) {
 		}
 				
 	// create button for single command -> if no command assigned yet to record command for button
-	this.device_add    = function (id, label, device, style, cmd, disabled ) {
+	this.device_add	= function (id, label, device, style, cmd, disabled ) {
 
 	        var device_button	= cmd.split("_");
 		var label2		= this.image( label, style );
@@ -181,7 +181,7 @@ function rmRemoteButtons(name) {
 		}		
 
 	// create button for multiple commands (makro)
-	this.makro         = function (id, label, scene, style, makro, disabled ) {	// ALT: ( id, makro, label, style, disabled ) {
+	this.makro		= function (id, label, scene, style, makro, disabled ) {	// ALT: ( id, makro, label, style, disabled ) {
 	        if (makro) {
         	        var d = this.image( label, style );
                 	var makro_string = "";
@@ -196,7 +196,7 @@ function rmRemoteButtons(name) {
 		}
 		
 	// create button for channel (makro)
-	this.channel       = function (id, label, scene, makro, style, disabled="") {
+	this.channel		= function (id, label, scene, makro, style, disabled="") {
     		var makro_string = "";
 		for (var i=0; i<makro.length; i++) { makro_string = makro_string + makro[i] + "::"; }
 
@@ -205,7 +205,7 @@ function rmRemoteButtons(name) {
 		}
 
 	// check if image exists for button
-	this.image         = function (label,style) {
+	this.image		= function (label,style) {
 
 		// set vars
         	var button_color = this.data["CONFIG"]["button_colors"];  // definition of button color
@@ -239,7 +239,7 @@ function rmRemoteDisplays(name) {
 	// create display
 	//--------------------------------
 	// show display with information
-	this.default              = function (id, device, type="devices", style="", display_data={}) {
+	this.default		= function (id, device, type="devices", style="", display_data={}) {
 		var remote_data	= this.data["DATA"][type][device]["remote"];
 		var status_data	= this.data["DATA"][type][device]["status"];
 		
@@ -326,7 +326,7 @@ function rmRemoteDisplays(name) {
         	return text;
         	}
         	
-	this.sizes       = function () {
+	this.sizes		= function () {
 		var sizes = {
 			"small" : "Small",
 			"middle" : "Middle",
@@ -343,7 +343,7 @@ function rmRemoteDisplays(name) {
 
         	
         // display all information
-	this.alert        = function (id, device, type="", style="" ) {
+	this.alert		= function (id, device, type="", style="" ) {
         
 		var display_data = [];
       		var text  = "Device Information: "+device +"<hr/>";
@@ -401,7 +401,7 @@ function rmRemoteDisplays(name) {
         // idea ... display for media information: mute (icon), volume (bar), info (title/artist/album/episode/...)
         // see: https://www.wbrnet.info/vbhtm/9261_Laufschriften_I.html
 
-	this.mediainfo   = function (id, device, style="") {
+	this.mediainfo		= function (id, device, style="") {
                 	
         	var display      = "";
 		var status_data  = this.data["DATA"]["devices"][device]["status"];
@@ -410,7 +410,7 @@ function rmRemoteDisplays(name) {
         	}
         	
         // show json for buttons in text field
-	this.json	  = function ( id, json, format="" ) {
+	this.json		= function ( id, json, format="" ) {
         
         	var text = "";
         	text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:320px;height:160px;\">";
