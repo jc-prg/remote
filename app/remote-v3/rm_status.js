@@ -14,6 +14,11 @@ function statusButtonSetColor(id, status)
 function statusCheck_inactive(data)
 function statusCheck_load()
 function statusCheck(data={})
+function statusCheck_apiConnection(data)
+function statusCheck_sceneButton(data)
+function statusCheck_audioMute(data)
+function statusCheck_buttonsOnOff(data={})
+function statusCheck_display(data={})
 */
 //--------------------------------
 
@@ -220,8 +225,8 @@ function statusCheck_sceneButton(data) {
 		var required = data["STATUS"]["scenes"][key];
 		for (var i=0;i<required.length;i++) {
 
-	    		var device_api         = data["STATUS"]["devices"][required[i]]["api"]
-	    		var device_api_status  = data["STATUS"]["interfaces"][device_api]
+	    		var device_api         = data["STATUS"]["devices"][required[i]]["api"];
+	    		var device_api_status  = data["STATUS"]["interfaces"][device_api];
 			device_status[required[i]]  = devices[required[i]]["status"]["power"].toUpperCase();
 
 			if (device_status[required[i]] == "ON")	{ dev_on += 1; }
@@ -310,8 +315,8 @@ function statusCheck_buttonsOnOff(data={}) {
 	var devices    = data["STATUS"]["devices"];
 	for (var device in devices) {
 	
-	    var device_api         = data["STATUS"]["devices"][device]["api"]
-	    var device_api_status  = data["STATUS"]["interfaces"][device_api]
+	    var device_api         = data["STATUS"]["devices"][device]["api"];
+	    var device_api_status  = data["STATUS"]["interfaces"][device_api];
 
 	    console.debug("Device Status: "+device);
 
@@ -442,8 +447,8 @@ function statusCheck_display(data={}) {
 		var media_info         = document.getElementById("media_info");
 		var media_info_content = document.getElementById("media_info_content");
 		
-		var device_api         = data["STATUS"]["devices"][key]["api"]
-		var device_api_status  = data["STATUS"]["interfaces"][device_api]
+		var device_api         = data["STATUS"]["devices"][key]["api"];
+		var device_api_status  = data["STATUS"]["interfaces"][device_api];
 		
 		if (devices[key]["status"]["power"])	{ var device_status = devices[key]["status"]["power"].toUpperCase(); }
 		else					{ var device_status = ""; }
@@ -557,7 +562,7 @@ function statusCheck_display(data={}) {
 					if (replace_index && replace_index != "") {
 					
 						// workaround, check why not in the correct format (KODI?!)
-						if (replace_value != "no media") {
+						if (replace_value != "no media" && replace_value != "Error") {
 							console.warn(replace_value);
 							replace_value       = replace_value.replace(/'/g, '"');
 							var replace_content = JSON.parse(replace_value);
