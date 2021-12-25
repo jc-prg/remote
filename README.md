@@ -14,7 +14,7 @@ Light theme on iPhone XS
 Dark theme on iPhone XS
 
 ![scenes with header](docs/remote_new.png)
-Remote with header and color picker
+Remote with header and color picker (updated dark theme)
 
 ![edit mode](docs/remote_edit.png)
 Edit remote layouts in a browser
