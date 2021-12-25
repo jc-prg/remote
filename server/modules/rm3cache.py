@@ -32,7 +32,7 @@ class configCache (threading.Thread):
        self.cache            = {}
        self.cache_time       = time.time()        # initial time for timebased update
        self.cache_lastaction = time.time()        # initial time for timestamp of last action
-       self.cache_interval   = 20                 # update interval in seconds (reread files)
+       self.cache_interval   = 60                 # update interval in seconds (reread files)
        self.cache_sleep      = (5*60)             # sleeping mode after x seconds
        self.cache_update     = False              # foster manual update of files
        self.cache_update_api = False              # foster manual update of API information
@@ -58,10 +58,12 @@ class configCache (threading.Thread):
            if time.time() - self.cache_lastaction >= self.cache_sleep:
                self.cache_update     = False
                self.cache_update_api = False
+               
            # Update, when "cache_interval" is passed
            elif time.time() - self.cache_time >= self.cache_interval:
                self.cache_update     = True
                self.cache_update_api = True
+               
            # "cache_update" can be set from outside also
            else:
                pass

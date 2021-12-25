@@ -71,10 +71,10 @@ class APIcontrol():
 
        except Exception as e:
            self.status = self.not_connected + " ... CONNECT " + str(e)
+           #self.api.get_status()           
            return self.status
 
        try:
-           self.api.get_status()           
            self.api.jc               = APIaddOn(self.api)
            self.api.jc.status        = self.status
            self.api.jc.not_connected = self.not_connected

@@ -66,8 +66,8 @@ var language_app = {
 		"MANUAL_MAKROS"		: "<b>Edit Makros:</b><ul>" +
 						  "<li>Fill dict for makros using the JSON format.</li>" +
 						  "<li>Makro types are: makro, scene-on, scene-off, dev-on, dev-off</li>" +
-						  "<li>Makro format: \"&lt;makro&gt;\" : [\"&lt;device&lt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&lt;\"] </li>" +
-						  "<li>Scene-on/off makros format: \"&lt;makro&gt;\" : [\"&lt;device&lt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
+						  "<li>Makro format: \"&lt;makro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
+						  "<li>Scene-on/off makros format: \"&lt;makro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
 						  "<li>Dev-on/off makros format: \"&lt;device&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"&lt;device&gt;_&lt;button&gt;||&lt;value&gt;\",] </li>" +
 						  "<li>Makros can be used for scenes, not for devices: 'makro_&lt;makro&gt;', 'scene-on_&lt;scene&gt;', 'scene-off_&lt;scene&gt;', 'dev-on_&lt;device&gt;', 'dev-off_&lt;device&gt;'</li>" +
 						  "</ul>",

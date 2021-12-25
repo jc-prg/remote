@@ -3,7 +3,17 @@
 Looking a remote control to control several devices I got disappointed ... and decided to develop my own web-app running on my smartphone.
 Therefore I found the **Broadlink RM 3 Mini** and sources on Github to control this IR device via API. About two years later several devices
 as my new ONKYO receiver come with their own API and I started to rework my software and to integrate the first device via API directly.
-The next device was a low level integration of a KODI server ... other might follow.
+In the meanwhile a few additional APIs are integrated ...
+
+## Supported Hardware
+
+* Broadlink RM 3 Mini - Infrared receiver/sender
+* Several ONKYO devices with API (see section modelsets in the file eiscp-commands.yaml in https://github.com/miracle2k/onkyo-eiscp)
+* Several SONY devices with API (see README in https://https://github.com/alexmohr/sonyapilib)
+* KODI server
+* Magic Home compartibel LED strips 
+* Tapo SmartPlugs P100
+* *Other devices easily can be integrated*
 
 ## Screenshots 
 
@@ -13,18 +23,11 @@ Light theme on iPhone XS
 ![dark theme](docs/remote_dark.png)
 Dark theme on iPhone XS
 
+![scenes with header](docs/remote_new.png)
+Remotes with header and color picker (updated dark theme)
+
 ![edit mode](docs/remote_edit.png)
 Edit remote layouts in a browser
-
-## Supported Hardware
-
-* Broadlink RM 3 Mini - Infrared receiver/sender
-* Several ONKYO devices with API (see section modelsets in the file eiscp-commands.yaml in https://github.com/miracle2k/onkyo-eiscp)
-* Several SONY devices with API (see README in https://https://github.com/alexmohr/sonyapilib)
-* KODI server (e.g. also installed on the Raspberry PI)
-* MagicHome LED strips 
-* Tapo SmartPlugs
-* *Other devices easily can be integrated*
 
 ## Data structure
 
@@ -36,6 +39,8 @@ Edit remote layouts in a browser
 
 * add remote control for LED strips compartible with MagicHome
 * add remote control for Tapo SmartPlugs
+* add slider and color-picker
+* stablize API connections
 
 ### App v2.6 / Server v1.9
 

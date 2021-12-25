@@ -290,7 +290,7 @@ def RmReadData(selected=[]):
         # mark update as done
         logging.info("Update config data in cache ("+str(configFiles.cache_update)+")")
         configFiles.cache_update  = False
-
+	
     # if no update required read from cache
     else: 
         data            = configFiles.cache["_api"]
@@ -1057,7 +1057,7 @@ def devicesGetStatus(data,readAPI=False):
     # set reload status
     if readAPI == True: 
        queueQuery.add2queue(["START_OF_RELOAD"])
-       queueQuery.add2queue ([1])
+       queueQuery.add2queue ([0.5])
        logging.info("RELOAD data from devices")
     
     # read status of all devices
@@ -1069,10 +1069,11 @@ def devicesGetStatus(data,readAPI=False):
         if device in data and "interface" in data[device] and "method" in data[device]["interface"]:
           
           interface     = data[device]["config"]["interface_api"]         
+          api_dev       = data[device]["config"]["interface_api"] + "_" + data[device]["config"]["interface_dev"]
           method        = data[device]["interface"]["method"]
           
           # get status values from config files, if connected
-          if data[device]["status"]["api-status"] == "Connected":
+          if api_dev in deviceAPIs.api and deviceAPIs.api[api_dev].status == "Connected":
 
               # preset values
               if method != "query" and "commands" in devices[device]["interface"]:
@@ -1086,11 +1087,12 @@ def devicesGetStatus(data,readAPI=False):
               
               # request update for devices with API query
               if method == "query" and readAPI == True:
-                queueQuery.add2queue ([0.25])                                                 # wait a few seconds before queries
+                queueQuery.add2queue ([0.1])                                                            # wait a few seconds before queries
                 queueQuery.add2queue ([[interface,device,data[device]["interface"]["query_list"],""]])  # add querylist per device
               
     # set reload status
-    if readAPI == True: queueQuery.add2queue(["END_OF_RELOAD"])
+    if readAPI == True: 
+       queueQuery.add2queue(["END_OF_RELOAD"])
 
     # mark API update as done
     configFiles.cache_update_api = False

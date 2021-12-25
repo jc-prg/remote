@@ -4,7 +4,7 @@
 # (c) Christoph Kloth
 #-----------------------------------
 
-import logging, time, threading
+import logging, time, threading, datetime
 
 import modules.rm3json                as rm3json
 import modules.rm3config              as rm3config
@@ -31,7 +31,7 @@ class connect(threading.Thread):
         self.name         = "jc://remote/interfaces/"
         self.check_error  = time.time()
         self.last_message = ""
-        self.log_commands = False
+        self.log_commands = True
         self.methods      = {
             "send"        : "Send command via API (send)",
             "record"      : "Record per device (record)",
@@ -157,20 +157,9 @@ class connect(threading.Thread):
                 self.api[key].status = self.api[key].not_connected + " ... PING"
                 logging.error(self.api[key].status)
                 
-            if connect and self.api[key].status != "Connected":
+            if connect:
               self.reconnect(key)
         
-        # check device status
-#        devices  = self.configFiles.read_status()
-#        for device in devices:
-#          api_dev      = devices[device]["config"]["interface_api"]+"_"+devices[device]["config"]["interface_dev"]
-#          power_status = devices[device]["status"]["power"]
-#            
-#          if power_status != "ON" and power_status != "OFF" and power_status != "N/A":
-#            self.reconnect(api_dev)
-#            self.api[api_dev].power_status()
-
-
     #-------------------------------------------------
     
     def reconnect(self,interface=""):
@@ -363,6 +352,7 @@ class connect(threading.Thread):
         logging.debug("__QUERY: "+api_dev+" ("+self.api[api_dev].status+")")
 
         if api_dev in self.api and self.api[api_dev].status == "Connected":
+
             button_code = self.get_command( call_api, "queries", device, button )
                        
             if "ERROR" in button_code: return_msg = "ERROR: could not read/create command from button code (query/"+device+"/"+button+"); " + button_code
@@ -403,6 +393,7 @@ class connect(threading.Thread):
           if not "status" in active[device]: active[device]["status"] = {}
           active[device]["status"][param]  = status
           active[device]["status"]["TEST"] = str(time.time()) + " / " + param
+          active[device]["status"]["api-last-send"] = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')
           return_msg = "OK"
           
         else:

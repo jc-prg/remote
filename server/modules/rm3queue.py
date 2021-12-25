@@ -4,8 +4,7 @@
 # (c) Christoph Kloth
 #-----------------------------------
 
-import logging, time
-import threading
+import logging, time, datetime, threading
 
 import modules
 import modules.rm3config     as rm3config
@@ -95,10 +94,6 @@ class queueApiCalls (threading.Thread):
                 result = self.device_apis.send(interface,device,button,state)
                 self.execution_time(device,request_time,time.time())
 
-               
-                # -> if query and state is set, create command
-                # -> if record and state is set, record new value
-                
              except Exception as e:
                 result = "ERROR queue query_list (send,"+interface+","+device+"): " + str(e)
                 logging.error(result)
@@ -111,6 +106,12 @@ class queueApiCalls (threading.Thread):
                    result = self.device_apis.query(interface,device,value)
                    #self.execution_time(device,request_time,time.time())
                    
+                   self.last_query      = device + "_" + value
+                   self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)') 
+                   devices[device]["status"]["api-last-query"] = self.last_query_time
+                   devices[device]["status"]["api-status"]     = self.device_apis.api[self.device_apis.api_device(device)].status
+                   #devices[device]["status"]["power"]          = self.device_apis.api[self.device_apis.api_device(device)].power_status()
+
                 except Exception as e:
                    result = "ERROR queue query_list (query,"+interface+","+device+","+value+"): " + str(e)             
                    logging.error(result)
@@ -118,10 +119,8 @@ class queueApiCalls (threading.Thread):
                 if not "ERROR" in str(result):  devices[device]["status"][value] = str(result)
                 else:                           devices[device]["status"][value] = "Error"
 
-                self.last_query = device + "_" + value
-                pass
                 
-             if self.config != "" and not "ERROR" in str(result):
+             if self.config != "":
                 self.config.write_status(devices,"execute ("+str(command)+")")
        
        # if is a number

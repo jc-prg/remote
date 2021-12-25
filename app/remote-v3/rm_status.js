@@ -14,6 +14,11 @@ function statusButtonSetColor(id, status)
 function statusCheck_inactive(data)
 function statusCheck_load()
 function statusCheck(data={})
+function statusCheck_apiConnection(data)
+function statusCheck_sceneButton(data)
+function statusCheck_audioMute(data)
+function statusCheck_buttonsOnOff(data={})
+function statusCheck_display(data={})
 */
 //--------------------------------
 
@@ -220,8 +225,8 @@ function statusCheck_sceneButton(data) {
 		var required = data["STATUS"]["scenes"][key];
 		for (var i=0;i<required.length;i++) {
 
-	    		var device_api         = data["STATUS"]["devices"][required[i]]["api"]
-	    		var device_api_status  = data["STATUS"]["interfaces"][device_api]
+	    		var device_api         = data["STATUS"]["devices"][required[i]]["api"];
+	    		var device_api_status  = data["STATUS"]["interfaces"][device_api];
 			device_status[required[i]]  = devices[required[i]]["status"]["power"].toUpperCase();
 
 			if (device_status[required[i]] == "ON")	{ dev_on += 1; }
@@ -310,8 +315,8 @@ function statusCheck_buttonsOnOff(data={}) {
 	var devices    = data["STATUS"]["devices"];
 	for (var device in devices) {
 	
-	    var device_api         = data["STATUS"]["devices"][device]["api"]
-	    var device_api_status  = data["STATUS"]["interfaces"][device_api]
+	    var device_api         = data["STATUS"]["devices"][device]["api"];
+	    var device_api_status  = data["STATUS"]["interfaces"][device_api];
 
 	    console.debug("Device Status: "+device);
 
@@ -442,8 +447,8 @@ function statusCheck_display(data={}) {
 		var media_info         = document.getElementById("media_info");
 		var media_info_content = document.getElementById("media_info_content");
 		
-		var device_api         = data["STATUS"]["devices"][key]["api"]
-		var device_api_status  = data["STATUS"]["interfaces"][device_api]
+		var device_api         = data["STATUS"]["devices"][key]["api"];
+		var device_api_status  = data["STATUS"]["interfaces"][device_api];
 		
 		if (devices[key]["status"]["power"])	{ var device_status = devices[key]["status"]["power"].toUpperCase(); }
 		else					{ var device_status = ""; }
@@ -477,9 +482,9 @@ function statusCheck_display(data={}) {
 		// fill keys with displays
 		if (devices[key]["status"] && devices[key]["remote"] && devices[key]["remote"]["display"]) {
 		
-			var display     = devices[key]["remote"]["display"];
-	    		var device_api         = data["STATUS"]["devices"][key]["api"]
-	    		var device_api_status  = data["STATUS"]["interfaces"][device_api]
+			var display     	= devices[key]["remote"]["display"];
+	    		var device_api         = data["STATUS"]["devices"][key]["api"];
+	    		var device_api_status  = data["STATUS"]["interfaces"][device_api];
 			var connected   	= device_api_status.toLowerCase();
 		        
 			for (var dkey in display) {
@@ -510,10 +515,14 @@ function statusCheck_display(data={}) {
 		if (devices[key]["status"] && devices[key]["interface"] && devices[key]["interface"]["query_list"]) {
 
 			var display     	= devices[key]["interface"]["query_list"];
-	    		var device_api         = data["STATUS"]["devices"][key]["api"]
-	    		var device_api_status  = data["STATUS"]["interfaces"][device_api]
+	    		var device_api         = data["STATUS"]["devices"][key]["api"];
+	    		var device_api_status  = data["STATUS"]["interfaces"][device_api];
 			var connected   	= device_api_status.toLowerCase();
-
+			
+			display.push("api");
+			display.push("api-status");
+			display.push("api-last-query");
+			
 			for (var i=0; i<display.length; i++) {
 				var vkey     = display[i];
 				var element2 = document.getElementById("display_full_" + key + "_" + vkey);
@@ -524,6 +533,9 @@ function statusCheck_display(data={}) {
 			        	else if (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)	{ status = "<b style='color:lightgreen;'>Connected<b/>"; }
 					else if (status.indexOf("OFF") >= 0 || status.indexOf("off") >= 0)	{ status = "<b style='color:gold;'>Connected: Power Off<b/>"; }
         				else 									{ status = "<b style='color:red;'>Unknown Error:</b> "+status; }			
+					}
+				else if (vkey == "api-status") {
+					status = device_api_status;
 					}
 
 				if (element2 && status) { element2.innerHTML = status.replace(/,/g,", "); }
@@ -550,12 +562,11 @@ function statusCheck_display(data={}) {
 					if (replace_index && replace_index != "") {
 					
 						// workaround, check why not in the correct format (KODI?!)
-						if (replace_value != "no media") {
+						if (replace_value != "no media" && replace_value != "Error") {
 							console.warn(replace_value);
-							replace_value = replace_value.replace(/'/g, '"');
-							var replace_content = JSON.parse(replace_value);
-							var replace_cmd     = "replace_content"+replace_index;
-							replace_value = eval(replace_cmd);
+							replace_value       = replace_value.replace(/'/g, '"');
+							eval ("var replace_content = JSON.parse(replace_value);");	 // refactor with let (otherwise security issue)
+							eval ("var replace_value = replace_content"+replace_index);	 // refactor with let (otherwise security issue)
 							}
 						}
 					}

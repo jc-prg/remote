@@ -114,6 +114,7 @@ function rmSettings (name) {	// IN PROGRESS
 						" / jcAppFW "		+ appFwVersion +
 						" / jcCookies "	+ appCookie.appVersion +  
 						" / jcSlider "		+ rm3slider.appVersion );
+		setting += this.tab_row( 	"Sources:", 		"<a href='https://github.com/jc-prg/remote/' style='color:white' target='_blank'>https://github.com/jc-prg/remote/</a>");
 		setting += this.tab_row( 	"Cookie:", 		cookie );
 		setting += this.tab_row( 	"Button:", 		this.app_last );
 		setting += this.tab_row( 	"Audio:",		 audio2 + "<br/>" + audio1 );

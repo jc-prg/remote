@@ -43,6 +43,9 @@ def remoteAPI_start(setting=[]):
     '''
 
     global Status, LastAPICall
+    
+    # set time for last action -> re-read API information only if clients connected
+    configFiles.cache_lastaction           = time.time() 
 
     if not "status-only" in setting:
        data                                = configFiles.api_init
