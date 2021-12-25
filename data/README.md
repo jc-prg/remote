@@ -1,7 +1,5 @@
 # jc://remote/data
 
-Update data description in progress ...
-
 
 ## Data structure
 
