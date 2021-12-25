@@ -94,10 +94,6 @@ class queueApiCalls (threading.Thread):
                 result = self.device_apis.send(interface,device,button,state)
                 self.execution_time(device,request_time,time.time())
 
-               
-                # -> if query and state is set, create command
-                # -> if record and state is set, record new value
-                
              except Exception as e:
                 result = "ERROR queue query_list (send,"+interface+","+device+"): " + str(e)
                 logging.error(result)

@@ -290,7 +290,7 @@ def RmReadData(selected=[]):
         # mark update as done
         logging.info("Update config data in cache ("+str(configFiles.cache_update)+")")
         configFiles.cache_update  = False
-
+	
     # if no update required read from cache
     else: 
         data            = configFiles.cache["_api"]
@@ -1057,7 +1057,7 @@ def devicesGetStatus(data,readAPI=False):
     # set reload status
     if readAPI == True: 
        queueQuery.add2queue(["START_OF_RELOAD"])
-       queueQuery.add2queue ([1])
+       queueQuery.add2queue ([0.5])
        logging.info("RELOAD data from devices")
     
     # read status of all devices
@@ -1087,11 +1087,12 @@ def devicesGetStatus(data,readAPI=False):
               
               # request update for devices with API query
               if method == "query" and readAPI == True:
-                queueQuery.add2queue ([0.25])                                                 # wait a few seconds before queries
+                queueQuery.add2queue ([0.1])                                                            # wait a few seconds before queries
                 queueQuery.add2queue ([[interface,device,data[device]["interface"]["query_list"],""]])  # add querylist per device
               
     # set reload status
-    if readAPI == True: queueQuery.add2queue(["END_OF_RELOAD"])
+    if readAPI == True: 
+       queueQuery.add2queue(["END_OF_RELOAD"])
 
     # mark API update as done
     configFiles.cache_update_api = False
