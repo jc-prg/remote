@@ -6,32 +6,32 @@ Update data description in progress ...
 ## Data structure
 
 * _sample configuration_
-  ./sample
-  ./sample/install-config
-  ./sample/*
+  - ./sample
+  - ./sample/install-config
+  - ./sample/*
 
 * _active configuration_
-  * \_ACTIVE-DEVICES.json
-  * \_ACTIVE-MAKROS.json
-  * \_ACTIVE-SCENES.json
+  - \_ACTIVE-DEVICES.json
+  - \_ACTIVE-MAKROS.json
+  - \_ACTIVE-SCENES.json
 
 * _button configuration_
- * ./buttons/default/*.png                  -> default button images (use transparent png-files)
- * ./buttons/default/index.json             -> define images for buttons
- * ./buttons/button_colors.json             -> color definition
- * ./buttons/scenes/*.png                   -> header images for scenes
- * ./buttons/scenes/index.json              -> image index
+  - ./buttons/default/*.png                  -> default button images (use transparent png-files)
+  - ./buttons/default/index.json             -> define images for buttons
+  - ./buttons/button_colors.json             -> color definition
+  - ./buttons/scenes/*.png                   -> header images for scenes
+  - ./buttons/scenes/index.json              -> image index
 
 * _API and device configuration_
- * ./devices/<API>/00_interface.json        -> configure interfaces to devices
- * ./devices/<API>/00_default.json          -> configure default commands
- * ./devices/<API>/<device>.json            -> configuraton of device specific commands
+  - ./devices/<API>/00_interface.json        -> configure interfaces to devices
+  - ./devices/<API>/00_default.json          -> configure default commands
+  - ./devices/<API>/<device>.json            -> configuraton of device specific commands
 
 * _remote control / API configuration_
-  * ./remotes/<device_api>.json             -> specific remote configuration files
+  - ./remotes/<device_api>.json             -> specific remote configuration files
 
 * _remote control templates_
-  * ./templates/<device>.json               -> remote templates
+  - ./templates/<device>.json               -> remote templates
 
 
 ## Description and How-to
