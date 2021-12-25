@@ -113,6 +113,7 @@ function rmRemoteButtons(name) {
 
 	this.logging        = new jcLogging(this.app_name);
 	this.tooltip        = new jcTooltip(this.app_name + ".tooltip");
+	this.keyboard       = new rmRemoteKeyboard(name+".keyboard");	// rm_remotes-keyboard.js
 
 
 	// standard button with option to left and right click
@@ -281,6 +282,7 @@ function rmRemoteDisplays(name) {
 		text  = text.replace( /##STYLE##/g, style + " display_error" );
 		if (status == "ERROR" && !this.edit_mode)	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
 		else						{ text  = text.replace( /##DISPLAY##/g, "none" ); }
+		if (status_data["power"] == undefined)	{ status_data["power"] = "N/A"; }
 		text += "<center><b>Connection Error</b>:</center>"; //<br/>";
 		text += "<center><i>"+connected+" :: Power-Status: "+status_data["power"].toUpperCase()+"</i></center>";
 		text += display_end;
