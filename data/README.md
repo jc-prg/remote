@@ -5,24 +5,26 @@ Update data description in progress ...
 
 ## Data structure
 
+* _sample configuration_
+  ./sample
+  ./sample/install-config
+  ./sample/*
+
 * _active configuration_
   * \_ACTIVE-DEVICES.json
-  * \_ACTIVE-DEVICES.sample.json
   * \_ACTIVE-MAKROS.json
-  * \_ACTIVE-MAKROS.sample.json
   * \_ACTIVE-SCENES.json
-  * \_ACTIVE-SCENES.sample.json
 
 * _button configuration_
  * ./buttons/default/*.png                  -> default button images (use transparent png-files)
  * ./buttons/default/index.json             -> define images for buttons
  * ./buttons/button_colors.json             -> color definition
+ * ./buttons/scenes/*.png                   -> header images for scenes
+ * ./buttons/scenes/index.json              -> image index
 
 * _API and device configuration_
  * ./devices/<API>/00_interface.json        -> configure interfaces to devices
- * ./devices/<API>/00_interface.sample.json -> sample interface configuration
  * ./devices/<API>/00_default.json          -> configure default commands
- * ./devices/<API>/00_default.sample.json   -> sample default configuration
  * ./devices/<API>/<device>.json            -> configuraton of device specific commands
 
 * _remote control / API configuration_
