@@ -23,15 +23,15 @@ Update data description in progress ...
   - ./buttons/scenes/index.json              -> image index
 
 * _API and device configuration_
-  - ./devices/<API>/00_interface.json        -> configure interfaces to devices
-  - ./devices/<API>/00_default.json          -> configure default commands
-  - ./devices/<API>/<device>.json            -> configuraton of device specific commands
+  - ./devices/&lt;API&gt;/00_interface.json        -> configure interfaces to devices
+  - ./devices/&lt;API&gt;/00_default.json          -> configure default commands
+  - ./devices/&lt;API&gt;/&lt;device&gt;.json            -> configuraton of device specific commands
 
 * _remote control / API configuration_
-  - ./remotes/<device_api>.json             -> specific remote configuration files
+  - ./remotes/&lt;device_api&gt;.json             -> specific remote configuration files
 
 * _remote control templates_
-  - ./templates/<device>.json               -> remote templates
+  - ./templates/&lt;device&gt;.json               -> remote templates
 
 
 ## Description and How-to
