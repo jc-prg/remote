@@ -180,6 +180,7 @@ function rmSettings (name) {	// IN PROGRESS
 
 		this.write(1,"Change Settings",setting);
 		this.write(2);
+		this.write(3);
 		}
 
 	//------------------------------
@@ -189,27 +190,7 @@ function rmSettings (name) {	// IN PROGRESS
 		var onchange  = this.app_name + ".create_edit_FileNames()";
 		var onchange2 = this.app_name + ".create_edit_FileNames";
 		
-		// Edit Remote Settings
-		setting = "";
-		setting += this.tab_row( "ID:",  		this.input("add_device_id") );
-		setting += this.tab_row( "Label:", 		this.input("add_device_descr") );
-		setting += this.tab_row( "Interface:",  	this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"]) );
-		setting += this.tab_row( "Device Name:",	this.input("add_device",onchange,onchange) );
-		setting += "<tr><td colspan='2'><hr/></td></tr>";
-		setting += this.tab_row( "Device-Config:",	this.input("add_device_device")+".json" );
-		setting += this.tab_row( "Remote-Config:",	this.input("add_device_remote")+".json" );
-		setting += this.tab_row( this.button("apiDeviceAdd(['add_device_id','add_device_descr','add_device_api','add_device','add_device_device','add_device_remote'],"+onchange2+");","Add Device"), "" );
-
-		setting += "<tr><td colspan='2'><center><hr/><b>"+lang("REMOTE_ADD")+" (Scene)</b><hr/></center></td></tr>";
-	
-		setting += this.tab_row( "ID:",  	this.input("add_scene_id") );
-		setting += this.tab_row( "Label:", 	this.input("add_scene_label") );
-		setting += this.tab_row( "Description:", this.input("add_scene_descr") );
-		setting += this.tab_row( this.button("apiSceneAdd(['add_scene_id','add_scene_label','add_scene_descr']);","Add Scene",""), "" );
-
-		this.write(2,lang("REMOTE_ADD")+" (Device)",setting);					
-
-			
+		// Change Order of Scenes or Devices			
 		setting = "";	
 		var devices = this.data["DATA"]["devices"];
 		this.logging.default(devices);
@@ -218,7 +199,7 @@ function rmSettings (name) {	// IN PROGRESS
 		for (var i=0;i<order.length;i++) {
 			var key     = order[i];
 			var button  = "";			
-			var visible = this.data["DATA"]["devices"][key]["visible"];
+			var visible = this.data["DATA"]["devices"][key]["settings"]["visible"];
 			
 			if (i > 0)  		 { button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#-1#);","up"); }
 			if (i < order.length-1) { button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#1#);","down"); }
@@ -249,12 +230,42 @@ function rmSettings (name) {	// IN PROGRESS
 
 		this.write(0,lang("CHANGE_ORDER_DEVICES"),setting);
 
-		
+		// Edit Remote Settings
+		setting = "";
+		setting += this.tab_row( "ID:",  		this.input("add_device_id") );
+		setting += this.tab_row( "Label:", 		this.input("add_device_descr") );
+		setting += this.tab_row( "Interface:",  	this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"]) );
+		setting += this.tab_row( "Device Name:",	this.input("add_device",onchange,onchange) );
+		setting += "<tr><td colspan='2'><hr/></td></tr>";
+		setting += this.tab_row( "Device-Config:",	this.input("add_device_device")+".json" );
+		setting += this.tab_row( "Remote-Config:",	this.input("add_device_remote")+".json" );
+		setting += this.tab_row( this.button("apiDeviceAdd(['add_device_id','add_device_descr','add_device_api','add_device','add_device_device','add_device_remote'],"+onchange2+");","Add Device"), "" );
+
+		setting += "<tr><td colspan='2'><center><hr/><b>"+lang("REMOTE_ADD")+" (Scene)</b><hr/></center></td></tr>";
+	
+		setting += this.tab_row( "ID:",  	this.input("add_scene_id") );
+		setting += this.tab_row( "Label:", 	this.input("add_scene_label") );
+		setting += this.tab_row( "Description:", this.input("add_scene_descr") );
+		setting += this.tab_row( this.button("apiSceneAdd(['add_scene_id','add_scene_label','add_scene_descr']);","Add Scene",""), "" );
+
+		this.write(1,lang("REMOTE_ADD")+" (Device)",setting);					
+
+
+		// Edit Makros 01		
 		setting = "";
 		setting += this.display_json("makro", this.data["DATA"]["makros"]["makro"], "makros");
 		setting += "</table>"
-			 + "<hr><center><b>Scene ON Makros</b></center><hr/>"
-			 + "<table width=\"100%\">";
+		setting += "<hr/>";
+		setting += this.button("apiMakroChange(['makro','scene-on','scene-off','dev-on','dev-off']);","Save changes","");
+		setting += "</center>";		
+
+		setting += "<br/><hr style='border: 1px solid white;'/><br/>";
+		setting += lang("MANUAL_MAKROS");
+
+		this.write(2,"Change Makros",setting);
+		
+		// Edit Makros 01		
+		setting = "";
 		setting += this.display_json("scene-on", this.data["DATA"]["makros"]["scene-on"], "makros");
 		setting += "</table>"
 			 + "<hr><center><b>Scene OFF Makros</b></center><hr/>"
@@ -272,11 +283,8 @@ function rmSettings (name) {	// IN PROGRESS
 		setting += this.button("apiMakroChange(['makro','scene-on','scene-off','dev-on','dev-off']);","Save changes","");
 		setting += "</table>";		
 		setting += "</center>";		
-
-		setting += "<br/><hr style='border: 1px solid white;'/><br/>";
-		setting += lang("MANUAL_MAKROS");
 		
-		this.write(1,"Change Makros",setting);
+		this.write(3,"Scene ON Makros",setting);
 		}
 
 

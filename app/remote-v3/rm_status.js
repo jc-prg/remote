@@ -563,7 +563,7 @@ function statusCheck_display(data={}) {
 					
 						// workaround, check why not in the correct format (KODI?!)
 						if (replace_value != "no media" && replace_value != "Error") {
-							console.warn(replace_value);
+							//console.warn(replace_value);
 							replace_value       = replace_value.replace(/'/g, '"');
 							eval ("var replace_content = JSON.parse(replace_value);");	 // refactor with let (otherwise security issue)
 							eval ("var replace_value = replace_content"+replace_index);	 // refactor with let (otherwise security issue)

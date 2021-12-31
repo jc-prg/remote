@@ -27,6 +27,23 @@
   font-weight: none; 
 }
 
+/* manual text */
+
+ul.help { 
+	margin-bottom: 5px; 
+	margin-top: 3px; 
+	}
+ul.help li { 
+	margin-left : -15px;
+	margin-bottom: 5px; 
+	margin-top: 3px; 
+	}
+ul.help ul li { 
+	margin-left : -25px; 
+	margin-bottom: 5px; 
+	margin-top: 3px; 
+	}
+
 /* height of app start screen */
 
 .app_background {

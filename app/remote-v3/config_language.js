@@ -38,18 +38,18 @@ var language_app = {
 
 		"FORMAT_INCORRECT"		: "format is not correct",
 		
-		"MANUAL_CHANNEL"		: "<b>Edit Channels:</b><ul>" +
+		"MANUAL_CHANNEL"		: "<b>Edit Channels:</b><ul class='help'>" +
 						  "<li>Fill dict for channel definition using the JSON format: " +
 						  "<i>&quot;Channel Name&quot; : [ &quot;button&quot;, &quot;button&quot;, &quot;makro&quot;]</i></li>" +
 						  "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;makro_type&gt;_&lt;button&gt;&quot; to define buttons in channel makro; makro types are: makro, scene-on, scene-off, dev-on, dev-off</li>" +
 						  "</ul>",
-		"MANUAL_DEVICES"		: "<b>Edit Devices for Scene</b><ul>" +
+		"MANUAL_DEVICES"		: "<b>Edit Devices for Scene</b><ul class='help'>" +
 						  "<li>Fill array of included devices using the JSON format: [&quot;device_id&quot;,&quot;device_id&quot;]</i>.</li>" +
 						  "</ul>",
-		"MANUAL_DISPLAY"		: "<b>Edit Display Definition</b><ul>" +
+		"MANUAL_DISPLAY"		: "<b>Edit Display Definition</b><ul class='help'>" +
 						  "<li>Fill dict for display definition using the JSON format: <i>&quot;Label&quot; : &quot;field_from_device&quot;</i>.</li>" +
 						  "</ul>",
-		"MANUAL_REMOTE"		: "<b>Edit Device Remote Control:</b><ul>" +
+		"MANUAL_REMOTE"		: "<b>Edit Device Remote Control:</b><ul class='help'>" +
 						  "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
 						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
 						  "<li>Add &quot;DISPLAY&quot; to add a display that show status information (details defined below).</li>" +
@@ -57,15 +57,22 @@ var language_app = {
 						  "<li>Add &quot;COLOR-PICKER||send-command&quot; to add an input element to select a color.</li>" +
 						  "<li>Add &quot;.&quot; to add an empty space.</li>" +
 						  "</ul>",
-		"MANUAL_SCENE"			: "<b>Edit Scene Remote Control:</b><ul>" +
+		"MANUAL_SCENE"			: "<b>Edit Scene Remote Control:</b><ul class='help'>" +
 						  "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
 						  "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;makro_type&gt;_&lt;button&gt;&quot; to define buttons in the remote layout; makro types are: makro, scene-on, scene-off, dev-on, dev-off</li>" +
 						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
 						  "<li>Add &quot;.&quot; to add an empty space.</li>" +
 						  "</ul>",
-		"MANUAL_MAKROS"		: "<b>Edit Makros:</b><ul>" +
-						  "<li>Fill dict for makros using the JSON format.</li>" +
-						  "<li>Makro types are: makro, scene-on, scene-off, dev-on, dev-off</li>" +
+		"MANUAL_MAKROS"		: "<b>Edit Makros:</b><ul class='help'>" +
+						  "<li>Define makros using the JSON format</li>" +
+						  "<li>Combine buttons from any defined remote control and integers for seconds to wait</li>" +
+						  "<li>Makro types are: <ul>" + 
+						  	"<li><u>dev-on</u>: makros to switch a device on (e.g. switch on and set initial volume)</li>"+
+						  	"<li><u>dev-off</u>: makros to switch a device off</li>" +
+						  	"<li><u>scene-on</u>: switch all device of a scene on, set input channels and similar</li>"+
+						  	"<li><u>scene-off</u>: switch all devices of a scene off</li>"+
+						  	"<li><u>makro</u>: all other makros</li>"+
+						  "</ul></li>"+
 						  "<li>Makro format: \"&lt;makro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
 						  "<li>Scene-on/off makros format: \"&lt;makro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
 						  "<li>Dev-on/off makros format: \"&lt;device&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"&lt;device&gt;_&lt;button&gt;||&lt;value&gt;\",] </li>" +
