@@ -60,11 +60,11 @@ function rmRemote(name) {
 	this.initial_load   = true;
 	this.loaded_remote  = [];
 	
-	this.tab            = new rmRemoteTable(name+".tab");		// rm_remotes-elements.js
-	this.basic          = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
-	this.button         = new rmRemoteButtons(name+".button");		// rm_remotes-elements.js
-	this.display        = new rmRemoteDisplays(name+".display");		// rm_remotes-elements.js
+	this.basic          = new rmRemoteBasic(name);			// rm_remotes-elements.js
+	this.button         = new rmRemoteButtons(name);			// rm_remotes-elements.js
+	this.display        = new rmRemoteDisplays(name);			// rm_remotes-elements.js
 	
+	this.tab            = new rmRemoteTable(name+".tab");		// rm_remotes-elements.js
 	this.keyboard       = new rmRemoteKeyboard(name+".keyboard");	// rm_remotes-keyboard.js
 	this.color_picker   = new rmColorPicker(name+".color_picker");	// rm_remotes-color-picker.js
 	this.slider         = new rmSlider(name+".slider");			// rm_remotes-slider.js
