@@ -48,7 +48,23 @@ ul.help ul li {
 
 .app_background {
    height: 100vh;
+   width: 100%;
+   position: fixed;
+   left: 0px;
+   top: 0px;
+   z-index: 0;
 }
+
+.app_content {
+   height: 100vh;
+   width: 100%;
+   position: absolute;
+   left: 0px;
+   top: 0px;
+   z-index: 1;
+}
+
+
 
 /* default size for boxes and buttons = iPhone 5c */
 /* boxes for remote controlls */
