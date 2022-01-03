@@ -265,8 +265,10 @@ function rmRemoteDisplays(name) {
 
         	var text    = "";
 	        var status  = "";
-        	
-        	var display_start = "<button id=\"display_"+device+"_##STATUS##\" class=\"display ##STYLE##\" style=\"display:##DISPLAY##\" onclick=\"" + this.app_name + ".alert('"+id+"','"+device+"','"+type+"','##STYLE##');\">";
+
+		if (type == "devices")			{ var onclick = "onclick=\"" + this.app_name + ".alert('"+id+"','"+device+"','"+type+"','##STYLE##');\""; }
+		else					{ var onclick = "disabled"; }        	
+        	var display_start = "<button id=\"display_"+device+"_##STATUS##\" class=\"display ##STYLE##\" style=\"display:##DISPLAY##\" "+onclick+">";
         	var display_end   = "</button>";
         	
 		if (this.edit_mode) 											{ status = "EDIT_MODE"; }		
