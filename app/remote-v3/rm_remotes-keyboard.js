@@ -41,7 +41,6 @@ function rmRemoteKeyboard(name) {
 		}
         
 	this.input_toggle	= function () {
-	alert(this.app_name+"_keyboard_input");
 		input      = document.getElementById(this.app_name+"_keyboard");
 		input_text = document.getElementById(this.app_name+"_keyboard_input");
 		if (input.style.display == "block")	{ input.style.display = "none";  input_text.blur(); input_text.value = ""; }
