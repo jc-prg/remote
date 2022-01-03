@@ -30,38 +30,39 @@
 /* manual text */
 
 ul.help { 
-	margin-bottom: 5px; 
-	margin-top: 3px; 
+	margin-bottom	: 5px; 
+	margin-top	: 3px; 
 	}
 ul.help li { 
-	margin-left : -15px;
-	margin-bottom: 5px; 
-	margin-top: 3px; 
+	margin-left	: -15px;
+	margin-bottom	: 5px; 
+	margin-top	: 3px; 
 	}
 ul.help ul li { 
-	margin-left : -25px; 
-	margin-bottom: 5px; 
-	margin-top: 3px; 
+	margin-left	: -25px; 
+	margin-bottom	: 5px; 
+	margin-top	: 3px; 
 	}
 
 /* height of app start screen */
 
 .app_background {
-   height: 100vh;
-   width: 100%;
-   position: fixed;
-   left: 0px;
-   top: 0px;
-   z-index: 0;
+   height	: 100vh;
+   width	: 100%;
+   position	: fixed;
+   left	: 0px;
+   top		: 0px;
+   z-index	: 0;
 }
 
 .app_content {
-   height: 100vh;
-   width: 100%;
-   position: absolute;
-   left: 0px;
-   top: 0px;
-   z-index: 1;
+   height	: 100vh;
+   width	: 100%;
+   position	: absolute;
+   left	: 0px;
+   top		: 0px;
+   z-index	: 1;
+   padding	: 8px;
 }
 
 
