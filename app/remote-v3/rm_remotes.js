@@ -60,9 +60,9 @@ function rmRemote(name) {
 	this.initial_load   = true;
 	this.loaded_remote  = [];
 	
-	this.basic          = new rmRemoteBasic(name);			// rm_remotes-elements.js
+	this.basic          = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
 	this.button         = new rmRemoteButtons(name);			// rm_remotes-elements.js
-	this.display        = new rmRemoteDisplays(name);			// rm_remotes-elements.js
+	this.display        = new rmRemoteDisplays(name+".display");		// rm_remotes-elements.js
 	
 	this.tab            = new rmRemoteTable(name+".tab");		// rm_remotes-elements.js
 	this.keyboard       = new rmRemoteKeyboard(name+".keyboard");	// rm_remotes-keyboard.js
@@ -544,6 +544,8 @@ function rmRemote(name) {
 		var makros 		= this.data["DATA"]["makros"]["makro"];
 		var makros_sceneOn	= this.data["DATA"]["makros"]["scene-on"];
 		var makros_sceneOff	= this.data["DATA"]["makros"]["scene-off"];
+		var makros_deviceOn	= this.data["DATA"]["makros"]["dev-on"];
+		var makros_deviceOff	= this.data["DATA"]["makros"]["dev-off"];
 		
 		appCookie.set("remote","scene::"+scene+"::"+remote_label);
 
@@ -583,10 +585,14 @@ function rmRemote(name) {
 			else if (button[0] == ".") 			{ next_button = this.button.device( scene+i, ".", remote_label, "", "", "disabled" ); }
 			else if (button[0] == "makro")		{ next_button = this.button.makro(  cmd, button[1], remote_label, "", makros[button[1]], "" ); 
 									  this.active_buttons.push(cmd); }
-			else if (button[0] == "scene-on")		{ next_button = this.button.makro(  "scene_on_"+button[1], "on", remote_label,"", makros_sceneOn[button[1]], "" );
-									  this.active_buttons.push("scene_on_"+button[1]); }
-			else if (button[0] == "scene-off")		{ next_button = this.button.makro(  "scene_off_"+button[1], "off", remote_label, "", makros_sceneOff[button[1]], "" );
-									  this.active_buttons.push("scene_off_"+button[1]); }
+			else if (button[0] == "scene-on")		{ next_button = this.button.makro( "scene_on_"+button[1], "on", remote_label,"", makros_sceneOn[button[1]], "" );
+									  this.active_buttons.push(        "scene_on_"+button[1]); }
+			else if (button[0] == "scene-off")		{ next_button = this.button.makro( "scene_off_"+button[1], "off", remote_label, "", makros_sceneOff[button[1]], "" );
+									  this.active_buttons.push(        "scene_off_"+button[1]); }
+			else if (button[0] == "device-on")		{ next_button = this.button.makro( button[1]+"_on", "on", remote_label,"", makros_deviceOn[button[1]], "" );
+									  this.active_buttons.push(        button[1])+"_on"; }
+			else if (button[0] == "device-off")		{ next_button = this.button.makro( button[1]+"_off", "off", remote_label, "", makros_deviceOff[button[1]], "" );
+									  this.active_buttons.push(        button[1]+"_off"); }
 			else if (button[1] == "keyboard")		{ this.keyboard.set_device(button[0]);
 									  next_button = this.button.device_keyboard( cmd, button[1], device, "", cmd, "" ); 
 									  this.active_buttons.push(cmd); }
