@@ -460,22 +460,16 @@ function apiButtonDelete(device_id, button_id) {
 
 function apiMakroSend( makro, device="", content="" ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
 
-	appMsg.wait_small(lang("PLEASE_WAIT") + "<br/>");
 	console.log( "Send makro: " + makro );
-	
 	dc = [ "makro", makro ];
-	appFW.requestAPI( "GET", dc, "", apiMakroSend_hide );
-	
-	// device content info (scenes) => move to API, add to var "dc" in step before
-	device_media_info[device] = content;
-	
-	// if request takes more time, hide message after 5 seconds
-	setTimeout(function(){ appMsg.hide(); }, 5000);
+	appFW.requestAPI( "GET", dc, "", apiMakroSend_return );
+	device_media_info[device] = content;	
 	}
 	
 	
-function apiMakroSend_hide( data ) {
-	appMsg.hide();
+function apiMakroSend_return( data ) {
+	console.log("Send makro return :");
+	console.log(data);
 	}
 
 // --------------------

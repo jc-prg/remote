@@ -38,6 +38,8 @@ var language_app = {
 
 		"FORMAT_INCORRECT"		: "format is not correct",
 		
+		"MAKRO_PLEASE_WAIT"		: "Executing commands, please wait a few seconds!",
+		
 		"MANUAL_CHANNEL"		: "<b>Edit Channels:</b><ul class='help'>" +
 						  "<li>Fill dict for channel definition using the JSON format: " +
 						  "<i>&quot;Channel Name&quot; : [ &quot;button&quot;, &quot;button&quot;, &quot;makro&quot;]</i></li>" +
@@ -77,6 +79,7 @@ var language_app = {
 						  "<li>Scene-on/off makros format: \"&lt;makro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
 						  "<li>Dev-on/off makros format: \"&lt;device&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"&lt;device&gt;_&lt;button&gt;||&lt;value&gt;\",] </li>" +
 						  "<li>Makros can be used for scenes, not for devices: 'makro_&lt;makro&gt;', 'scene-on_&lt;scene&gt;', 'scene-off_&lt;scene&gt;', 'dev-on_&lt;device&gt;', 'dev-off_&lt;device&gt;'</li>" +
+						  "<li>Start with &quot;WAIT-xx&quot; in a makro to show a message that it's necessary to wait for xx seconds</li>" + 
 						  "</ul>",
 						  
 						  //, \"scene-on_&lt;scene&lt;\"

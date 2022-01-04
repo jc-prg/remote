@@ -186,9 +186,17 @@ function rmRemoteButtons(name) {
 	        if (makro) {
         	        var d = this.image( label, style );
                 	var makro_string = "";
+                	var makro_wait = "";
 
-                	for (var i=0; i<makro.length; i++) { makro_string = makro_string + makro[i] + "::"; }
-                	var b = this.default( id, d[0], d[1], 'apiMakroSend("'+makro_string+'","'+scene+'");', disabled );
+                	for (var i=0; i<makro.length; i++) { 
+                	
+                		if (isNaN(makro[i]) && makro[i].indexOf("WAIT") == -1) { makro_string = makro_string + makro[i] + "::"; }
+                		else if (isNaN(makro[i])) {
+                			var wait = makro[i].split("-");
+                			makro_wait = 'appMsg.wait_time("'+lang("MAKRO_PLEASE_WAIT")+'", '+wait[1]+');';
+                			}
+                		}
+                	var b = this.default( id, d[0], d[1], 'apiMakroSend("'+makro_string+'","'+scene+'");'+makro_wait, disabled );
 			this.logging.debug("button_makro - "+b);
 			return b;
                 	}
