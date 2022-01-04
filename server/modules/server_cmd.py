@@ -327,7 +327,10 @@ def RemoteMakro(makro):
         commands_4th              = []
         
 #### --> check, if makro is defined ... (or work with try: / except:)
+#### --> check, why order isn't correct in some cases (dev-on / dev-off)
         
+        logging.warning("Decoded makro-string 1st: "+str(commands_1st))
+
         # decode makros: scene-on/off
         for command in commands_1st:
           command_str = str(command)
@@ -336,8 +339,10 @@ def RemoteMakro(makro):
             if "scene-on_" in command:     commands_2nd.extend(data["DATA"]["makros"]["scene-on"][button])
             elif "scene-off_" in command:  commands_2nd.extend(data["DATA"]["makros"]["scene-off"][button])
             else:                          commands_2nd.extend([command])
-          else:                            commands_3rd.extend([command])
+          else:                            commands_2nd.extend([command])
           
+        logging.warning("Decoded makro-string 2nd: "+str(commands_2nd))
+
         # decode makros: dev-on/off
         for command in commands_2nd:
           command_str = str(command)
@@ -348,6 +353,8 @@ def RemoteMakro(makro):
             else:                        commands_3rd.extend([command])
           else:                          commands_3rd.extend([command])
           
+        logging.warning("Decoded makro-string 3rd: "+str(commands_3rd))
+
         # decode makros: makro
         for command in commands_3rd:
           command_str = str(command)
@@ -357,7 +364,7 @@ def RemoteMakro(makro):
             else:                        commands_4th.extend([command])
           else:                          commands_4th.extend([command])
           
-        logging.debug("Decoded makro-string: "+str(commands_4th))
+        logging.warning("Decoded makro-string 4th: "+str(commands_4th))
                   
         # execute buttons
         for command in commands_4th:
@@ -366,12 +373,19 @@ def RemoteMakro(makro):
           
             status                      = ""
             power_buttons               = ["on","on-off","off"]
-            device,button_status        = command.split("_",1)                         # split device and button
-            interface                   = data["DATA"]["devices"][device]["config"]["interface_api"] # get interface / API
+            device,button_status        = command.split("_",1)                                        # split device and button
+            
+            if device not in data["DATA"]["devices"]:
+               error_msg                   = ";ERROR: Device defined in makro not found ("+device+")"
+               data["REQUEST"]["Return"]  += error_msg
+               logging.error(error_msg)
+               continue
+            
+            interface                   = data["DATA"]["devices"][device]["config"]["interface_api"]  # get interface / API
             method                      = data["DATA"]["devices"][device]["interface"]["method"]
 
             # check if future state defined
-            if "||" in button_status:   button,status = button_status.split("||",1)                              # split button and future state           
+            if "||" in button_status:   button,status = button_status.split("||",1)                   # split button and future state           
             else:                       button        = button_status
 
             if button in power_buttons: status_var    = "power"
