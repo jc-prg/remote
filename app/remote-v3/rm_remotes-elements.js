@@ -116,7 +116,6 @@ function rmRemoteButtons(name) {
 	this.keyboard       = new rmRemoteKeyboard(name+".keyboard");	// rm_remotes-keyboard.js
 
 
-	// standard button with option to left and right click
 	this.default		= function (id, label, style, script_apiCommandSend, disabled ){
 	
 	        var onContext  = "";

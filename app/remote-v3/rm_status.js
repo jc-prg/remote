@@ -329,7 +329,7 @@ function statusCheck_buttonsOnOff(data={}) {
 	        
 	        //console.error("TEST "+key1+"_"+key2+" = "+devices[key1]["status"][key2]);
 		check_button = devices[device][key2];
-		connection   = device_api_status.toLowerCase();
+		connection   = device_api_status.toLowerCase();					 // indicator if server is already ready to interact with client
 			
 		if (connection != "connected") {
 			statusButtonSetColor( "device_" + key, "ERROR" ); // main menu button
