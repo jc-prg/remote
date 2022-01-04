@@ -70,6 +70,7 @@ function rmRemote(name) {
 	this.slider         = new rmSlider(name+".slider");			// rm_remotes-slider.js
 
 	this.logging        = new jcLogging(this.app_name);
+	this.tooltip        = new jcTooltip(this.app_name + ".tooltip");	// rm_remotes-elements.js
 
 	// load data with devices (deviceConfig["devices"])
 	//--------------------
@@ -91,7 +92,7 @@ function rmRemote(name) {
 			this.tooltip_height   = "140px";
 			this.tooltip_distance = 47;
 
-			this.button.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance);
+			this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance);
 	                
                 	this.logging.default("Initialized new class 'rmRemotes'.");
                 	this.inital_load = false;
@@ -247,11 +248,11 @@ function rmRemote(name) {
 			else                            		{ next_button = this.button.device( cmd, button, device, "notfound", cmd, "disabled" ); }
 
 			if (this.edit_mode) {
-				if (button.indexOf("LINE") == 0)		{ this.button.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,20); }
-				else if (button.indexOf("DISPLAY") == 0)	{ this.button.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,90); }
-				else if (button.indexOf("COLOR-PICKER") == 0)	{ this.button.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,90); }
-				else				    		{ this.button.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
-				next_button = this.button.tooltip.create( next_button, contextmenu, i );
+				if (button.indexOf("LINE") == 0)		{ this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,20); }
+				else if (button.indexOf("DISPLAY") == 0)	{ this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,90); }
+				else if (button.indexOf("COLOR-PICKER") == 0)	{ this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,90); }
+				else				    		{ this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
+				next_button = this.tooltip.create( next_button, contextmenu, i );
 				}
 
 			remote += next_button;
@@ -327,8 +328,8 @@ function rmRemote(name) {
 				var input_add   = "<input id='not_used_"+i+"' name='not_used_"+i+"' value='"+button+"' style='display:none;'>";
 				var contextmenu = input_add + "["+i+"] "+ cmd + "<br/><br/>" + this.button.edit( link_add + link_preview, "move to remote","");;
 				
-				this.button.tooltip.settings(this.tooltip_mode,this.tooltip_width,"80px",this.tooltip_distance);
-				next_button = this.button.tooltip.create( next_button, contextmenu, "not_used"+i );
+				this.tooltip.settings(this.tooltip_mode,this.tooltip_width,"80px",this.tooltip_distance);
+				next_button = this.tooltip.create( next_button, contextmenu, "not_used"+i );
 				}
 
 			remote     += next_button;
@@ -375,7 +376,7 @@ function rmRemote(name) {
 		this.basic.input_width      = "180px";
 		this.button.width     = "120px";
 
-		remote  += "<center><b>Edit &quot;"+device_data["settings"]["label"]+"&quot;</b> ["+device+"]</center>";
+		remote  += "<center><b>Edit remote &quot;"+device_data["settings"]["label"]+"&quot;</b> ["+device+"]</center>";
 
 		remote  += this.tab.row("start","100%");
 		remote  += this.tab.line();
@@ -477,7 +478,7 @@ function rmRemote(name) {
 		var device_info   = this.data["DATA"]["devices"][device]["settings"];
 
 		var remote = "";
-		remote  += "<center><b>Edit &quot;"+device_info["label"]+"&quot;</b> ["+device+"]</center>";
+		remote  += "<center><b>Edit remote &quot;"+device_info["label"]+"&quot;</b> ["+device+"]</center>";
 
 		remote  += this.tab.row("start","100%");
 		remote  += this.tab.line();
@@ -607,10 +608,10 @@ function rmRemote(name) {
 									  this.active_buttons.push(cmd); }
 									  
 			if (this.edit_mode) {
-				if (button[0].indexOf("LINE") == 0)		{ this.button.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,20); }
-				else if (button[0].indexOf("DISPLAY") == 0)	{ this.button.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,90); }
-				else				    		{ this.button.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
-				next_button = this.button.tooltip.create( next_button, contextmenu, i );
+				if (button[0].indexOf("LINE") == 0)		{ this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,20); }
+				else if (button[0].indexOf("DISPLAY") == 0)	{ this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,90); }
+				else				    		{ this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
+				next_button = this.tooltip.create( next_button, contextmenu, i );
 				}
 
 			remote += next_button;
@@ -636,7 +637,7 @@ function rmRemote(name) {
 		channels = Object.keys(makros);
 		channels = channels.sort(function (a, b) {return a.toLowerCase().localeCompare(b.toLowerCase());});
 
-		this.button.tooltip.settings(this.tooltip_mode,this.tooltip_width,"80px",35);
+		this.tooltip.settings(this.tooltip_mode,this.tooltip_width,"80px",35);
 
     		// create list of channel buttons
     		for (var i=0; i<channels.length; i++) {
@@ -645,7 +646,7 @@ function rmRemote(name) {
 			var contextmenu = "["+i+"] " + cmd +  "<br/><br/><i>" + lang("CHANNEL_USE_JSON") +"</i>";
 			
 			if (this.edit_mode) {
-				next_button = this.button.tooltip.create( next_button, contextmenu, "channel_"+i );
+				next_button = this.tooltip.create( next_button, contextmenu, "channel_"+i );
 				}
 			
 			remote         += next_button;
@@ -688,7 +689,7 @@ function rmRemote(name) {
 		for (key in this.data["DATA"]["makros"])  { if (key != "description") { device_makro[key] = "Makro: "+key; } }
 		var device_makro_onchange = this.app_name +".scene_button_select(div_id='add_button_device_input','add_button','add_button_device');";			
 				
-		remote  += "<center><b>Edit &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
+		remote  += "<center><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
 
 		remote  += this.tab.row("start","100%");
 		remote  += this.tab.line();
@@ -769,7 +770,7 @@ function rmRemote(name) {
 		this.button.width = "100px";
 		var remote = "";
 
-		remote  += "<center><b>Edit &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
+		remote  += "<center><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
 
 		remote  += this.tab.row("start","100%");
 		remote  += this.tab.line();

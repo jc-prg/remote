@@ -44,7 +44,7 @@ function rmSettings (name) {	// IN PROGRESS
 	this.data         = {};
 	this.active       = false;
 	this.app_name     = name;
-	this.e_settings   = ["setting1","setting2","setting3","setting4"]; 
+	this.e_settings   = ["setting1","setting2","setting3","setting4","setting5"]; 
 	this.e_remotes    = ["frame3","frame4","frame5","frame1","frame2"];
 	this.input_width  = "110px";
 	this.initial_load = true;
