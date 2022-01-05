@@ -26,6 +26,7 @@ shorten_info_to = 50
 
 # ---------------------------------
 
+rest_api   = "modules/swagger.yml"
 interfaces = "interfaces/"          # interface definition
 
 devices    = "devices/"             # devices, overview in "_active.json"

@@ -7,6 +7,7 @@
 import logging, time
 import modules.rm3json                 as rm3json
 import modules.rm3config               as rm3config
+import modules.rm3stage                as rm3stage
 
 #import sampleAPI as sample
 
@@ -37,7 +38,10 @@ class APIcontrol():
        
        self.api_config      = device_config
 
-       logging.info("_API-INIT: "+self.api_name+" - " + self.api_description)
+       self.logging = logging.getLogger("api.TEST")
+       self.logging.setLevel = rm3stage.log_set2level
+       self.logging.info("_INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
+              
               
        self.connect()
             
@@ -81,7 +85,7 @@ class APIcontrol():
    def send(self,device,command):
        '''Send command to API'''
 
-       if self.log_command: logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+       if self.log_command: self.logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
        return("OK: send test-"+device+"-"+command)
        
        
@@ -90,7 +94,7 @@ class APIcontrol():
    def query(self,device,command):
        '''Send command to API and wait for answer'''
 
-       if self.log_command: logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+       if self.log_command: self.logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
        return "WARN: Not supported by this API"
        
        
@@ -99,7 +103,7 @@ class APIcontrol():
    def record(self,device,command):
        '''Record command, especially build for IR devices'''
 
-       if self.log_command: logging.info("_RECORD: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+       if self.log_command: self.logging.info("_RECORD: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
        return("OK: record test-"+device+"-"+command)
 
        
@@ -108,7 +112,7 @@ class APIcontrol():
    def test(self):
        '''Test device by sending a couple of commands'''
 
-       logging.info("TEST:" + self.api_name + "/" + self.api_description + " (no further action)")
+       self.logging.info("_TEST:" + self.api_name + "/" + self.api_description + " (no further action)")
        return("OK: test commands")
 
 #-------------------------------------------------

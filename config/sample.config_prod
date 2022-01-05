@@ -35,6 +35,14 @@ export DOCKERCOMPOSE_DIR="/usr/local/bin"
 export REMOTE_DOCKERIMAGE_CLIENT="php:7.1-apache"
 export REMOTE_DOCKERIMAGE_SERVER="./config/container" # "./config/container" for Ubuntu or similar or "./config/container_arm" for Raspberry Pi 
 
+# Log Level
+export REMOTE_LOG_LEVEL="WARNING"				# set log level: INFO, DEBUG, WARNING, ERROR
+export REMOTE_LOG_WEBSERVER="NO"                              # shall webserver data be logged in default level: YES (info), NO (warning)   
+export REMOTE_LOG_APIDATA="NO"				# shall data from API request be logged: YES, NO
+export REMOTE_LOG_APIEXTERNAL="NO"				# shall external API data be logged: YES, NO
+export REMOTE_LOG_TO_FILE="YES"				# shall logging done into a logfile: YES, NO
+export REMOTE_LOG_FILENAME="/log/server.log"			# path to logfile (if YES)
+
 #---------------------------------------------
 export THIS_IS_THE_PROJECT_TEMPLATE="Please edit not here, but the orginial configuration file. This files is created using a template."
 export DOLLAR="$"

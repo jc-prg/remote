@@ -9,6 +9,7 @@ import logging, time
 import modules.rm3json                 as rm3json
 import modules.rm3config               as rm3config
 import modules.rm3ping                 as rm3ping
+import modules.rm3stage                as rm3stage
 
 from   interfaces.kodi             import Kodi
 
@@ -43,8 +44,10 @@ class APIcontrol():
        self.api_config      = device_config
        self.api_url         = "http://"+str(self.api_config["IPAddress"])+":"+str(self.api_config["Port"])+"/jsonrpc"
 
-       logging.info("_API-INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
-       
+       self.logging = logging.getLogger("api.KODI")
+       self.logging.setLevel = rm3stage.log_set2level
+       self.logging.info("_INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
+              
        self.connect()
             
    #-------------------------------------------------
@@ -57,7 +60,7 @@ class APIcontrol():
        connect = rm3ping.ping(self.api_config["IPAddress"])
        if not connect:
          self.status = self.not_connected + " ... PING"
-         logging.error(self.status)       
+         self.logging.warning(self.status)       
          return self.status
 
        self.status               = "Connected"
@@ -69,18 +72,18 @@ class APIcontrol():
 
        except Exception as e:
           self.status = self.not_connected + " ... CONNECT " + str(e)
-          logging.warn(self.status)
+          self.logging.warn(self.status)
 
        try:
           self.api.jc    = APIaddOn(self.api)
-          logging.debug(str(self.api.JSONRPC.Ping()))
+          self.logging.debug(str(self.api.JSONRPC.Ping()))
           
           self.api.jc.status        = self.status
           self.api.jc.not_connected = self.not_connected
 
        except Exception as e:
           self.status = self.not_connected + " ... CONNECT " + str(e)
-          logging.warn(self.status)
+          self.logging.warn(self.status)
        
        
    #-------------------------------------------------
@@ -91,7 +94,7 @@ class APIcontrol():
        '''
        
        while self.working:
-         logging.debug(".")
+         self.logging.debug(".")
          time.sleep(0.2)
        return
        
@@ -117,12 +120,12 @@ class APIcontrol():
        self.working = True
        
        if self.status == "Connected":
-         if self.log_command: logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+         if self.log_command: self.logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
 
          try:
            command = "self.api."+command
            result = eval(command)
-           logging.debug(str(result))
+           self.logging.debug(str(result))
            
            if "error" in result:
              self.working = False
@@ -158,12 +161,12 @@ class APIcontrol():
        else:               command_param = [command]
 
        if self.status == "Connected":
-         if self.log_command: logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+         if self.log_command: self.logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
 
          try:
            command = "self.api."+command_param[0]
            result = eval(command)
-           logging.debug(str(result))
+           self.logging.debug(str(result))
            
            if "error" in result:      
              self.working = False
@@ -259,7 +262,7 @@ class APIaddOn():
          self.volume = self.api.Application.GetProperties({'properties': ['volume']})["result"]["volume"]
          #self.volume = self.PlayingMetadata("volume")["result"]
          
-         logging.debug("Increase Volume:"+str(self.volume))
+         self.logging.debug("Increase Volume:"+str(self.volume))
       
          if (self.volume + step) > 100: self.volume  = 100
          else:                          self.volume += step
@@ -280,7 +283,7 @@ class APIaddOn():
          self.volume = self.api.Application.GetProperties({'properties': ['volume']})["result"]["volume"]
          #self.volume = self.PlayingMetadata("volume")["result"]
 
-         logging.debug("Decrease Volume:"+str(self.volume))
+         self.logging.debug("Decrease Volume:"+str(self.volume))
 
          if (self.volume - step) < 0:   self.volume  = 0
          else:                          self.volume -= step
@@ -301,7 +304,7 @@ class APIaddOn():
          self.mute = self.api.Application.GetProperties({'properties': ['muted']})["result"]["muted"]
          #self.mute = self.PlayingMetadata("muted")["result"]
 
-         logging.debug("Toggle Mute:"+str(self.mute))
+         self.logging.debug("Toggle Mute:"+str(self.mute))
       
          if self.mute: self.mute = False
          else:         self.mute = True
@@ -484,7 +487,7 @@ class APIaddOn():
                
          elif command == "Speed":
             current_status = self.api.Player.GetProperties({'playerid' : playerid, 'properties' : ['speed']})['result']['speed']
-            logging.debug("..... SPEED ... " + str(current_status))
+            self.logging.debug("..... SPEED ... " + str(current_status))
             if value in command_values["Speed"]:
                result = self.api.Player.SetSpeed({'playerid' : playerid, 'speed' : value})
             elif value == "forward":

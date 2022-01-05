@@ -17,12 +17,12 @@ def ping(host):
     """
 
     response_list = pythonping.ping(host, size=40, count=1)
-    logging.info("PING "+host+": "+str(response_list).split("\n")[0])
+    logging.debug("PING "+host+": "+str(response_list).split("\n")[0])
     
     if "Reply from "+host in str(response_list): return True 
     
     response_list = pythonping.ping(host, size=40, count=1)
-    logging.info("PING "+host+": "+str(response_list).split("\n")[0])
+    logging.debug("PING "+host+": "+str(response_list).split("\n")[0])
 
     if "Reply from "+host in str(response_list): return True 
     else:                                        return False

@@ -8,6 +8,7 @@ import logging, time
 import modules.rm3json                 as rm3json
 import modules.rm3config               as rm3config
 import modules.rm3ping                 as rm3ping
+import modules.rm3stage                as rm3stage
 
 import interfaces.magichome.magichome  as device
 
@@ -42,7 +43,9 @@ class APIcontrol():
        self.api_config      = device_config
        self.api_device      = device
 
-       logging.info("_API-INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
+       self.logging = logging.getLogger("api.MAGIC")
+       self.logging.setLevel = rm3stage.log_set2level
+       self.logging.info("_INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
        
        self.connect()
             
@@ -56,7 +59,7 @@ class APIcontrol():
        connect = rm3ping.ping(self.api_config["IPAddress"])
        if not connect:
          self.status = self.not_connected + " ... PING"
-         logging.error(self.status)       
+         self.logging.warning(self.status)       
          return self.status
 
        self.status               = "Connected"
@@ -75,7 +78,7 @@ class APIcontrol():
            return self.status
 
        try:
-           self.api.jc               = APIaddOn(self.api)
+           self.api.jc               = APIaddOn(self.api,self.logging)
            self.api.jc.status        = self.status
            self.api.jc.not_connected = self.not_connected
           
@@ -95,7 +98,7 @@ class APIcontrol():
        '''
        
        while self.working:
-         logging.info(".")
+         self.logging.debug(".")
          time.sleep(0.2)
        return
        
@@ -121,12 +124,12 @@ class APIcontrol():
        self.working = True
 
        if self.status == "Connected":
-         if self.log_command: logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+         if self.log_command: self.logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
 
          try:
            command = "self.api."+command
            result = eval(command)
-           logging.debug(str(result))
+           self.logging.debug(str(result))
 
            if "error" in result:
              self.working = False
@@ -162,12 +165,12 @@ class APIcontrol():
        else:               command_param = [command]
 
        if self.status == "Connected":
-         if self.log_command: logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+         if self.log_command: self.logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
 
          try:
            command = "self.api."+command_param[0]
            result = eval(command)
-           logging.debug(str(result))
+           self.logging.debug(str(result))
            
            if "error" in result:      
              if "message" in result["error"]: msg = str(result["error"]["message"])
@@ -245,7 +248,7 @@ class APIaddOn():
    did not found a way to increase or decrease volume directly
    '''
 
-   def __init__(self,api):
+   def __init__(self,api,logger):
    
       self.addon          = "jc://addon/magic-home/"
       self.api            = api
@@ -261,6 +264,7 @@ class APIaddOn():
       self.last_preset    = 37
       self.power_status   = "OFF"
       self.mode           = "COLOR"
+      self.logging        = logger
       
       self.last_request_time   = time.time()
       self.last_request_data   = {}
@@ -282,7 +286,7 @@ class APIaddOn():
           return { "result", "turn_on" }
          
        except Exception as e:
-          logging.error("Error during turn on: "+str(e))
+          self.logging.error("Error during turn on: "+str(e))
           self.power_status = "ERROR"
           return { "error", e }
               
@@ -305,7 +309,7 @@ class APIaddOn():
           return { "result", "turn_off" }
          
        except Exception as e:
-          logging.error("Error during turn off: "+str(e))
+          self.logging.error("Error during turn off: "+str(e))
           self.power_status = "ERROR"
           return { "error", e }
        
@@ -342,7 +346,7 @@ class APIaddOn():
           return { "result", "set_color" }
          
        except Exception as e:
-          logging.error("Error during setting color: "+str(e))
+          self.logging.error("Error during setting color: "+str(e))
           self.power_status = "ERROR"
           return { "error", e }
 
@@ -367,7 +371,7 @@ class APIaddOn():
           return { "result", "preset" }
          
        except Exception as e:
-          logging.error("Error during setting preset: "+str(e))
+          self.logging.error("Error during setting preset: "+str(e))
           self.power_status = "ERROR"
           return { "error", e }
        
@@ -390,7 +394,7 @@ class APIaddOn():
             return { "result", "speed" }
             
          except Exception as e:
-            logging.error("Error during setting preset: "+str(e))
+            self.logging.error("Error during setting preset: "+str(e))
             return { "error", e }
 
      else:
@@ -421,7 +425,7 @@ class APIaddOn():
             return { "result", "brightness" }
             
          except Exception as e:
-            logging.error("Error during setting brightness: "+str(e))
+            self.logging.error("Error during setting brightness: "+str(e))
             self.power_status = "ERROR"
             return { "error", e }
               
@@ -479,9 +483,9 @@ class APIaddOn():
            status["set"] = "." #{"a" : int(parts[7][1:3],16), "b" : int(parts[8][1:3],16) }
            
       except Exception as e:
-        logging.error("Error decoding output: "+str(e))
-        logging.debug("... "+str(raw_status))
-        logging.error("... "+str(parts))
+        self.logging.error("Error decoding output: "+str(e))
+        self.logging.debug("... "+str(raw_status))
+        self.logging.error("... "+str(parts))
 
         status["rgb"] = "#000000"
         status["RGB"] = {"r" : 0, "g" : 0, "b" : 0 }
@@ -499,7 +503,7 @@ class APIaddOn():
 
       if self.status == "Connected":      
 
-        logging.debug(str(self.last_request_time)+"__"+str(time.time()))
+        self.logging.debug(str(self.last_request_time)+"__"+str(time.time()))
         
         if self.last_request_time < time.time() - self.cache_wait:
         
@@ -508,7 +512,7 @@ class APIaddOn():
               self.power_status = "ON"
             
            except Exception as e:
-              logging.error("Error during requesting data: "+str(e))
+              self.logging.error("Error during requesting data: "+str(e))
               return { "error" : "error during requesting data: "+str(e) }	
 #              self.power_status = "ERROR"
 #              return { "error", e }
@@ -545,8 +549,8 @@ class APIaddOn():
    def test(self):
    
      if self.status == "Connected":
-       logging.info("MAGIC-HOME: ..... TEST TEST TEST TEST TEST TEST TEST TEST")
-       logging.info(str(self.api.get_status()))
+       self.logging.info("MAGIC-HOME: ..... TEST TEST TEST TEST TEST TEST TEST TEST")
+       self.logging.info(str(self.api.get_status()))
 
        self.api.turn_on()
        time.sleep(0.3)
@@ -575,7 +579,7 @@ class APIaddOn():
             return { "result", "preset" }
             
          except Exception as e:
-            logging.error("Error during testing: "+str(e))
+            self.logging.error("Error during testing: "+str(e))
             self.power_status = "ERROR"
             return { "error", e }
 

@@ -44,6 +44,9 @@ class configCache (threading.Thread):
                                      "rollout"  : rm3stage.rollout
                                      } }
 
+       self.logging = logging.getLogger("cache")
+       self.logging.setLevel = rm3stage.log_set2level
+            
     #------------------       
 
     def run(self):
@@ -51,7 +54,7 @@ class configCache (threading.Thread):
        loop running in the background
        '''
 
-       logging.info( "Starting " + self.name )
+       self.logging.info( "Starting " + self.name )
        while not self.stopProcess:
        
            # No update when in sleeping mode (no API request since a "cache_sleep")
@@ -70,7 +73,7 @@ class configCache (threading.Thread):
 
            # Reread values from config files
            if self.cache_update == True:
-               logging.info("Cache: reread config files ('" + self.name + "'): ...")
+               self.logging.info("Cache: reread config files ('" + self.name + "'): ...")
                
                i = 0
                for key in self.cache:
@@ -78,7 +81,7 @@ class configCache (threading.Thread):
                     self.cache[key] = rm3json.read(key)
                     i += 1
 
-               logging.info("... ("+str(i)+")")
+               self.logging.info("... ("+str(i)+")")
                self.cache_time        = time.time()
                self.cache_update      = False
 
@@ -86,7 +89,7 @@ class configCache (threading.Thread):
            else:
                time.sleep(self.wait)
 
-       logging.info( "Exiting " + self.name )
+       self.logging.info( "Exiting " + self.name )
 
     #------------------       
 
@@ -97,7 +100,7 @@ class configCache (threading.Thread):
 
         self.cache_update     = True
         self.cache_update_api = True
-        logging.info("Enforce cache update (" + self.name + ") "+str(self.cache_update))
+        self.logging.info("Enforce cache update (" + self.name + ") "+str(self.cache_update))
 
 
     #------------------       
@@ -107,10 +110,10 @@ class configCache (threading.Thread):
         else read from file
         '''
 
-        logging.debug("readConfig: "+config_file)
+        self.logging.debug("readConfig: "+config_file)
         if config_file not in self.cache or from_file:
             self.cache[config_file] = rm3json.read(config_file)
-            logging.debug("... from file.")
+            self.logging.debug("... from file.")
 
         return self.cache[config_file]
 
@@ -167,8 +170,8 @@ class configCache (threading.Thread):
                  if not "ERROR" in config: self.configMethods[device] = config["data"]["method"]
                  
         elif "ERROR" in status:
-          logging.error("ERROR while reading '"+rm3config.active_devices+"'!")
-          logging.error(str(status))
+          self.logging.error("ERROR while reading '"+rm3config.active_devices+"'!")
+          self.logging.error(str(status))
     
         # if device is given return only device status
         if selected_device != "" and selected_device in status and "status" in status[selected_device]:
