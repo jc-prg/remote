@@ -31,7 +31,7 @@ class APIcontrol():
        '''
        
        self.api_name        = api_name       
-       self.api_description = "PyP100"
+       self.api_description = "API for Tapo-Link P100"
        self.not_connected   = "ERROR: Device not connected ("+api_name+"/"+device+")."
        self.status          = "Start"
        self.method          = "query"

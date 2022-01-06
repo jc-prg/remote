@@ -109,7 +109,8 @@ class connect(threading.Thread):
                self.logging.error("Could not connect to "+api+" - Error in config file ("+rm3config.commands + api + "/00_interface.json)")
         
         for key in self.api:
-           self.available[key] = self.api[key].api_description
+           dev_key             = key.split("_")[1]
+           self.available[key] = self.api[key].api_description + " ["+dev_key+"]"
 
         while not self.stopProcess:
            time.sleep(self.wait)

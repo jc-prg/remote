@@ -32,7 +32,7 @@ class APIcontrol():
        '''
        
        self.api_name        = api_name       
-       self.api_description = "API for KODI Servers (basic functionality, under development)"
+       self.api_description = "API for KODI Servers"
        self.not_connected   = "ERROR: Device not connected ("+api_name+"/"+device+")."
        self.status          = "Start"
        self.method          = "query"

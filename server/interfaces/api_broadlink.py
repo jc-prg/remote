@@ -41,7 +41,7 @@ class APIcontrol():
        '''
        
        self.api_name        = api_name       
-       self.api_description = "Infrared Broadlink RM3"
+       self.api_description = "API for Infrared Broadlink RM3"
        self.not_connected   = "ERROR: Device not connected ("+api_name+"/"+device+")."
        self.status          = "Start"
        self.method          = "record"

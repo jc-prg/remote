@@ -31,7 +31,7 @@ class APIcontrol():
        '''
        
        self.api_name        = api_name       
-       self.api_description = "Magic Home (implementation in progress)"
+       self.api_description = "API for LED via Magic Home"
        self.not_connected   = "ERROR: Device not connected ("+api_name+"/"+device+")."
        self.status          = "Start"
        self.method          = "query"

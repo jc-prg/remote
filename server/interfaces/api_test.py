@@ -28,7 +28,7 @@ class APIcontrol():
        '''
        
        self.api_name        = api_name  
-       self.api_description = "Test API Description for automatic testing"
+       self.api_description = "Test API for automatic testing"
        self.not_connected   = "ERROR: Device not connected ("+api_name+"/"+device+")."
        self.status          = "Start"
        self.working         = False
