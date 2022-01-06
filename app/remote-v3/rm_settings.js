@@ -107,26 +107,25 @@ function rmSettings (name) {	// IN PROGRESS
 		var audio2     = main_device["settings"]["label"];
 		var cookie     = appCookie.get("remote");
 
-		setting  = this.tab.start();
-		setting += this.tab.row( 	"Status:", 		this.app_stat );
-		setting += this.tab.row( 	"Versions:",
-						"App: " 		+ appVersion + " / " + this.test_info + " (" + rollout + ")<br/>" +
-						"API: " 		+ this.data["API"]["version"] + " / " + this.data["API"]["rollout"] + "<br/>" +
-						"Modules: jcMsg " 	+ appMsg.appVersion +  
+		// version information
+		set_temp  = this.tab.start();
+		set_temp += this.tab.row( "Client:",	 appVersion + " / " + this.test_info + " (" + rollout + ")" );
+		set_temp += this.tab.row( "Server:",	 this.data["API"]["version"] + " / " + this.data["API"]["rollout"] );
+		set_temp += this.tab.row( "Modules:",	 
+		                               "jcMsg " 		+ appMsg.appVersion +  
 						" / jcApp "		+ appFW.appVersion +
 						" / jcAppFW "		+ appFwVersion +
 						" / jcCookies "	+ appCookie.appVersion +  
 						" / jcSlider "		+ rm3slider.appVersion );
-		setting += this.tab.row( 	"Sources:", 		"<a href='https://github.com/jc-prg/remote/' style='color:white' target='_blank'>https://github.com/jc-prg/remote/</a>");
-		setting += this.tab.row( 	"Cookie:", 		cookie );
-		setting += this.tab.row( 	"Button:", 		this.app_last );
-		setting += this.tab.row( 	"Audio:",		 audio2 + "<br/>" + audio1 );
-		
+		set_temp += this.tab.row( "Sources:", "<a href='https://github.com/jc-prg/remote/' style='color:white' target='_blank'>https://github.com/jc-prg/remote/</a>");
+		set_temp += this.tab.end();
+		setting  += this.basic.container("setting_version","Versions",set_temp,true);
+
+		// sceen & display
+		set_temp  = this.tab.start();
 		var d_width  = screen.width;
 		var d_height = screen.height;
-		setting += this.tab.row( 	"Device:", 		d_width + "x" + d_height );
-		setting += this.tab.row( 	"Window:", 		document.body.clientWidth + "x" + document.body.clientHeight );
-		setting += this.tab.row( 	"Screen:", 		
+		set_temp += this.tab.row( 	"Screen:", 		
 						"<div class='screen_default'>default screen</div>" + 
 						"<div class='screen_big'>big screen</div>" + 
 						"<div class='screen_iphone'>iPhone screen (portrait)</div>" + 
@@ -134,16 +133,34 @@ function rmSettings (name) {	// IN PROGRESS
 						"<div class='screen_ipad'>iPad screen (portrait)</div>" + 
 						"<div class='screen_ipad_landscape'>iPad screen (landscape)</div>" + 
 						"");	
+		set_temp += this.tab.row( 	"Device:", 		d_width + "x" + d_height );
+		set_temp += this.tab.row( 	"Window:", 		document.body.clientWidth + "x" + document.body.clientHeight );
+		set_temp += this.tab.row(	"Position:",		"<div id='scrollPosition'>0 px</div>" );
+		set_temp += this.tab.row( 	"Theme:", 		appTheme );
+		set_temp += this.tab.end();
+		setting  += this.basic.container("setting_display","Screen &amp; Display",set_temp,true);
 
-		setting += this.tab.row(	"Position:",		"<div id='scrollPosition'>0 px</div>" );
-		setting += this.tab.row( 	"Theme:", 		appTheme );
-		setting += this.tab.row(	"Interfaces:",		this.interface_list() );
-		setting += this.tab.row(	"Exec time:",          this.exec_time_list() );
-		setting += this.tab.row( 	"Status:",
+		// status
+		set_temp  = this.tab.start();
+		set_temp += this.tab.row( 	"Server:", 		this.app_stat );
+		set_temp += this.tab.row( 	"API Overview:",
+						this.interface_list() + "<br/>"
+						);
+		set_temp += this.tab.row(	"API Speed:",		this.exec_time_list() );
+		set_temp += this.tab.row( 	"API Details:",
 						this.device_list("select_dev_status", this.app_name+".device_list_status('select_dev_status','dev_status');") +
 						"<span id='dev_status'>default</span>"
 						);		
-		setting += this.tab.end();
+		set_temp += this.tab.end();
+		setting  += this.basic.container("setting_status","Server- &amp; API-Status",set_temp,false);
+
+		// status
+		set_temp  = this.tab.start();
+		set_temp += this.tab.row( 	"Cookie:",	cookie );
+		set_temp += this.tab.row( 	"Button:",	this.app_last );
+		set_temp += this.tab.row( 	"Audio:",	audio2 + "<br/>" + audio1 );
+		set_temp += this.tab.end();
+		setting  += this.basic.container("setting_other","Other",set_temp,false);
 		
 		this.write(0,lang("VERSION_AND_STATUS"),setting);
 
