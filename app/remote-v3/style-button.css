@@ -147,6 +147,15 @@ button {
     border-width     	: 2px;
 }
 
+.button.updown {
+    width  		: 30px;
+    height 		: 30px;
+    margin		: 1px;
+}
+
+.button.updown:disabled {
+    background		: gray;
+}
 
 /* colored buttons */
 

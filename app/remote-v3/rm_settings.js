@@ -52,8 +52,9 @@ function rmSettings (name) {	// IN PROGRESS
 	this.mode         = "";
 	
 	this.logging      = new jcLogging(this.app_name);
+	this.btn          = new rmRemoteButtons(name);			// rm_remotes-elements.js
 	this.basic        = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
-	this.tab          = new rmRemoteTable(name+".tab");		// rm_remotes-elements.js
+	this.tab          = new rmRemoteTable(name+".tab");			// rm_remotes-elements.js
 	
 	// init settings / set vars
 	this.init               = function (data) {
@@ -157,14 +158,15 @@ function rmSettings (name) {	// IN PROGRESS
 		if (showButton)       { b_show  = "show code"; } else { b_show  = "hide code"; }
 		if (deactivateButton) { b_deact = "allways enabled"; }  else { b_deact = "enabled if ON"; }
 
+		this.btn.height = "30px";
+		this.btn.width  = "120px";
 
 		// Relaod & Updates
 		setting   = "";
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row(	"<center>" +
-						//this.button("window.open('" + RESTurl + "api/reload/','_blank');", "reload (API)") + "&nbsp;" +
-						this.button("appForceReload(true);", "reload (Scroll)") + "&nbsp;" +
-						this.button("appFW.requestAPI('GET',['version','" + appVersion +"'], '', appMsg.alertReturn,'wait');", "Check Updates") +
+						this.btn.sized("set01","reload (scroll)","","appForceReload(true);") + "&nbsp;" +
+						this.btn.sized("set02","check updates","","appFW.requestAPI(#GET#,[#version#,#" + appVersion +"#], ##, appMsg.alertReturn,#wait#);") +
 						"</center>"
 					);
 		set_temp += this.tab.end();
@@ -173,9 +175,9 @@ function rmSettings (name) {	// IN PROGRESS
 		// API Calls and information
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row(	"<center>" +
-						this.button("window.open('" + RESTurl + "api/list/','_blank');", "REST API : list") + "&nbsp;" +
-						this.button("window.open('" + RESTurl + "api/status/','_blank');", "REST API : status") + "&nbsp;" +
-						this.button("window.open('" + RESTurl + "api/ui/','_blank');",   "Swagger/UI") +
+						this.btn.sized("set11","REST API : list",  "","window.open(#" + RESTurl + "api/list/#,#_blank#);") + "&nbsp;" +
+						this.btn.sized("set12","REST API : status","","window.open(#" + RESTurl + "api/status/#,#_blank#);") + "&nbsp;" +
+						this.btn.sized("set13","Swagger/UI",       "","window.open(#" + RESTurl + "api/ui/#,#_blank#);") + "&nbsp;" +
 						"</center>"
 					);
 		set_temp += this.tab.end();
@@ -184,8 +186,8 @@ function rmSettings (name) {	// IN PROGRESS
 		// reset device values
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row(	"<center>" +
-						this.button("appMsg.confirm('" + q1 + "', 'appFW.requestAPI(#GET#,[#reset#],##,apiAlertReturn );' );" , "Dev ON/OFF") + "&nbsp;" +
-						this.button("appMsg.confirm('" + q2 + "', 'appFW.requestAPI(#GET#,[#reset-audio#],##,apiAlertReturn );' );" , "Audio Level") +
+						this.btn.sized("set21","Dev ON/OFF", "","appMsg.confirm(#" + q1 + "#, #appFW.requestAPI(##GET##,[##reset##],####,apiAlertReturn );#);") + "&nbsp;" +
+						this.btn.sized("set22","Audio Level","", "appMsg.confirm(#" + q2 + "#, #appFW.requestAPI(##GET##,[##reset-audio##],####,apiAlertReturn );# );") + "&nbsp;" +
 						"</center>"
 					);
 		set_temp += this.tab.end();
@@ -194,8 +196,8 @@ function rmSettings (name) {	// IN PROGRESS
 		// button behavior
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row(	"<center>" +
-						this.button(this.app_name+".button_show();",  b_show ) + "&nbsp;" +
-						this.button(this.app_name+".button_deact();", b_deact ) +
+						this.btn.sized("set31",b_show, "",this.app_name+".button_show();") + "&nbsp;" +
+						this.btn.sized("set32",b_deact,"",this.app_name+".button_deact();") + "&nbsp;" +
 						"</center>"
 					);
 		set_temp += this.tab.end();
@@ -232,6 +234,10 @@ function rmSettings (name) {	// IN PROGRESS
 		var scenes   = this.data["DATA"]["scenes"];
 		
 		this.logging.default(scenes);
+
+		this.btn.width  = "30px";
+		this.btn.height = "30px";		
+
 		for (var key in scenes) { scenes[key]["position"] = scenes[key]["settings"]["position"]; this.logging.default(key);}		 
 		var order  = sortDict(scenes,"position");
 		for (var i=0;i<order.length;i++) {
@@ -239,8 +245,9 @@ function rmSettings (name) {	// IN PROGRESS
 			var button  = "";			
 			var visible = scenes[key]["settings"]["visible"];
 
-			if (i > 0)  			{ button += this.button_small("apiDeviceMovePosition_exe(#scene#,#"+key+"#,#-1#);"+this.app_name+".mode = '';","<b>&uarr;</b>"); }
-			if (i < order.length-1)	{ button += this.button_small("apiDeviceMovePosition_exe(#scene#,#"+key+"#,#1#);"+this.app_name+".mode = '';", "<b>&darr;</b>"); }
+			if (i > 0)			{ button += this.btn.sized(id="mv_sce_"+i,label="<b>&uarr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#scene#,#"+key+"#,#-1#);",disabled=""); }
+			else				{ button += this.btn.sized(id="mv_sce_"+i,label="",             style="updown",script_apiCommandSend="",disabled="disabled"); }
+			if (i < order.length-1)	{ button += this.btn.sized(id="mv_sce_"+i,label="<b>&darr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#scene#,#"+key+"#,#1#);",disabled=""); }
 			
 			if (visible == "no")    	{ set_temp += this.tab.row("<i>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</i>",button); }
 			else                    	{ set_temp += this.tab.row("<b>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</b>",button); }
@@ -257,12 +264,13 @@ function rmSettings (name) {	// IN PROGRESS
 			var key     = order[i];
 			var button  = "";			
 			var visible = this.data["DATA"]["devices"][key]["settings"]["visible"];
+						
+			if (i > 0)			{ button += this.btn.sized(id="mv_dev_"+i,label="<b>&uarr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#device#,#"+key+"#,#-1#);",disabled=""); }
+			else				{ button += this.btn.sized(id="mv_dev_"+i,label="",             style="updown",script_apiCommandSend="",disabled="disabled"); }
+			if (i < order.length-1)	{ button += this.btn.sized(id="mv_dev_"+i,label="<b>&darr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#device#,#"+key+"#,#1#);",disabled=""); }
 			
-			if (i > 0)  		 { button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#-1#);","<b>&uarr;</b>"); }
-			if (i < order.length-1) { button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#1#);", "<b>&darr;</b>"); }
-			
-			if (visible == "no")    { set_temp += this.tab.row("<i>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</i>",button); }
-			else                    { set_temp += this.tab.row("<b>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</b>",button); }		
+			if (visible == "no")		{ set_temp += this.tab.row("<i>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</i>",button); }
+			else				{ set_temp += this.tab.row("<b>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</b>",button); }		
 			}
 		
 		set_temp   += this.tab.end();
@@ -272,6 +280,9 @@ function rmSettings (name) {	// IN PROGRESS
 
 		// Edit Remote Settings
 		setting   = "";
+		this.btn.width  = "120px";		
+		this.btn.height = "30px";		
+
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row( "ID:",  		this.input("add_device_id") );
 		set_temp += this.tab.row( "Label:", 		this.input("add_device_descr") );
@@ -280,7 +291,9 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.line();
 		set_temp += this.tab.row( "Device-Config:",	this.input("add_device_device")+".json" );
 		set_temp += this.tab.row( "Remote-Config:",	this.input("add_device_remote")+".json" );
-		set_temp += this.tab.row( this.button("apiDeviceAdd(['add_device_id','add_device_descr','add_device_api','add_device','add_device_device','add_device_remote'],"+onchange2+");","Add Device"), "" );
+		set_temp += this.tab.row( "<center>" +
+					   this.btn.sized(id="add_dev",label="Add Device",style="","apiDeviceAdd([#add_device_id#,#add_device_descr#,#add_device_api#,#add_device#,#add_device_device#,#add_device_remote#],"+onchange2+");") +
+					   "</center>", false);
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_add_device","Add device",set_temp,false); 
 
@@ -288,7 +301,9 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.row( "ID:",  	this.input("add_scene_id") );
 		set_temp += this.tab.row( "Label:", 	this.input("add_scene_label") );
 		set_temp += this.tab.row( "Description:", this.input("add_scene_descr") );
-		set_temp += this.tab.row( this.button("apiSceneAdd(['add_scene_id','add_scene_label','add_scene_descr']);","Add Scene",""), "" );
+		set_temp += this.tab.row( "<center>" +
+					   this.btn.sized(id="add_scene",label="Add Scene",style="","apiSceneAdd([#add_scene_id#,#add_scene_descr#,#add_scene_label#]);") +
+					   "</center>", false);
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_add_scene","Add scene",set_temp,false); 
 
@@ -306,7 +321,7 @@ function rmSettings (name) {	// IN PROGRESS
 		setting  += this.basic.container("setting_makros_manual","JSON makros - manual",lang("MANUAL_MAKROS"),false); 
 
 		setting  += "<center><br/><br/>";
-		setting  += this.button("apiMakroChange(['makro','scene-on','scene-off','dev-on','dev-off']);","Save","");
+		setting  += this.btn.sized("apiMakroChange(['makro','scene-on','scene-off','dev-on','dev-off']);","Save","");
 		setting  += "</center>";
 
 		this.write(2,"Change Makros",setting);
@@ -520,19 +535,7 @@ function rmSettings (name) {	// IN PROGRESS
 		this.show();		// recreate settings page
 		}
 
-	//------------------------------
-	this.button             = function (onclick,label,disabled="")	{ 
-		onclick = onclick.replace(/#/g,"'"); 
-        	if (disabled == "disabled") { style = "background-color:gray;"; } else { style = ""; }
-		return "<button style=\"" + style + "width:"+ this.input_width + ";margin:1px;\" onClick=\"javascript:"+onclick+"\" "+disabled+">"+label+"</button>"; 
-		}
-		
-	this.button_small       = function (onclick,label,disabled="")	{ 
-		onclick = onclick.replace(/#/g,"'"); 
-        	if (disabled == "disabled") { style = "background-color:gray;"; } else { style = ""; }
-        	return "<button style=\"" + style + "width:"+ this.input_width + ";margin:1px;width:40px;\" onClick=\"javascript:"+onclick+"\"  "+disabled+">"+label+"</button>";
-		}
-	
+	//------------------------------	
 	this.input              = function (id,onclick="",oninput="") { 
 		
 		text = "<input id=\"" + id + "\" oninput=\""+oninput+"\" style='width:" + this.input_width + ";margin:1px;'>"; 

@@ -158,18 +158,24 @@ function rmRemoteButtons(name) {
 	this.app_name       = name;
 	this.data           = {};
 	this.edit_mode      = false;
-	this.width          = "50px";
-
+	
 	this.logging        = new jcLogging(this.app_name);
 	this.tooltip        = new jcTooltip(this.app_name + ".tooltip");
 	this.keyboard       = new rmRemoteKeyboard(name+".keyboard");	// rm_remotes-keyboard.js
+	
+	// set default button size
+	this.default_size	= function () {	
+		this.width	= "";
+		this.height	= "";
+		this.margin	= "";
+		}
+	this.default_size();
 
-
-	this.default		= function (id, label, style, script_apiCommandSend, disabled ){
+	// default buttons
+	this.default		= function (id, label, style, script_apiCommandSend, disabled="", btnstyle="" ){
 	
 	        var onContext  = "";
 	        var onClick    = "";
-	        if (script_apiCommandSend != "") { onClick    = "onclick='" + script_apiCommandSend + "'"; }
 	        
 	        if (Array.isArray(script_apiCommandSend)) {
 	                var test   = "onmousedown_left_right(event,'alert(#left#);','alert(#right#);');"
@@ -177,15 +183,31 @@ function rmRemoteButtons(name) {
 	                onClick    = "onmousedown='"+onClick+"'";
 	                onContext  = "oncontextmenu=\"return false;\"";
 	                }
+	        else if (script_apiCommandSend != "") { 
+	        	onClick    = "onclick='" + script_apiCommandSend + "'"; 
+	        	onClick    = onClick.replace(/##/g, "$$!$$");
+	        	onClick    = onClick.replace(/#/g, "\"");
+	        	onClick    = onClick.replace(/$$!$$/g, "#");
+	        	}
 	
 		if (style != "") { style = " " + style; }
-		var button = "<button id='" + id.toLowerCase() + "' class='button" + style + "' " + onClick + " " + onContext + " " + disabled + " >" + label + "</button>"; // style='float:left;'
+		var button = "<button id='" + id.toLowerCase() + "' class='button" + style + "' " + btnstyle + " " + onClick + " " + onContext + " " + disabled + " >" + label + "</button>"; // style='float:left;'
 		return button;
 		}
 
+	// default with size from values
+	this.sized		= function (id, label, style, script_apiCommandSend, disabled="") {
+		var btnstyle	= "";
+	        if (this.width  != "") { btnstyle += "width:" + this.width + ";max-width:" + this.width + ";"; }
+	        if (this.height != "") { btnstyle += "height:" + this.height + ";max-height:" + this.height + ";"; }
+	        if (btnstyle    != "") { btnstyle  = "style='" + btnstyle + "'"; }
+	        
+	        return this.default(id, label, style, script_apiCommandSend, disabled, btnstyle);
+		}
+	        
 	// button edit mode		
 	this.edit		= function (onclick,label,disabled="") {
-        	var style = "width:" + this.width + ";margin:1px;";
+        	var style = "width:" + this.width + ";height:"+this.height+";margin:"+this.margin+";";
         	if (disabled == "disabled") { style += "background-color:gray;"; }
         	return "<button style=\""+style+"\" onClick=\""+onclick+"\" "+disabled+">"+label+"</button>";
         	}

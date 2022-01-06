@@ -185,8 +185,9 @@ function rmRemote(name) {
 	// create remote for a specific device
 	this.device_remote        = function (id="", device="", preview_remote="", preview_display="", preview_display_size="") {
 
-		var preview	       = false;	
-		var remote             = "<div id='remote_button' display='block'>";
+		var preview	= false;	
+		var remote	= "<div id='remote_button' display='block'>";
+		this.button.default_size();			
 		
 		if (!this.data["DATA"]["devices"][device]["remote"]) {
 			appMsg.alert(lang("MISSING_DATA",[device,this.data["DATA"]["devices"][device]["config"]["remote"]+".json",this.data["DATA"]["devices"][device]["config"]["device"]+".json"]));
