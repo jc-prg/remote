@@ -40,18 +40,18 @@ var language_app = {
 		
 		"MAKRO_PLEASE_WAIT"		: "Executing commands, please wait a few seconds!",
 		
-		"MANUAL_CHANNEL"		: "<b>Edit Channels:</b><ul class='help'>" +
+		"MANUAL_CHANNEL"		: "<i>Edit Channels:</i><br/><br/><ul class='help'>" +
 						  "<li>Fill dict for channel definition using the JSON format: " +
 						  "<i>&quot;Channel Name&quot; : [ &quot;button&quot;, &quot;button&quot;, &quot;makro&quot;]</i></li>" +
 						  "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;makro_type&gt;_&lt;button&gt;&quot; to define buttons in channel makro; makro types are: makro, scene-on, scene-off, dev-on, dev-off</li>" +
 						  "</ul>",
-		"MANUAL_DEVICES"		: "<b>Edit Devices for Scene</b><ul class='help'>" +
+		"MANUAL_DEVICES"		: "<i>Edit Devices for Scene</i><br/><br/><ul class='help'>" +
 						  "<li>Fill array of included devices using the JSON format: [&quot;device_id&quot;,&quot;device_id&quot;]</i>.</li>" +
 						  "</ul>",
-		"MANUAL_DISPLAY"		: "<b>Edit Display Definition</b><ul class='help'>" +
+		"MANUAL_DISPLAY"		: "<i>Edit Display Definition</i><br/><br/><ul class='help'>" +
 						  "<li>Fill dict for display definition using the JSON format: <i>&quot;Label&quot; : &quot;field_from_device&quot;</i>.</li>" +
 						  "</ul>",
-		"MANUAL_REMOTE"		: "<b>Edit Device Remote Control:</b><ul class='help'>" +
+		"MANUAL_REMOTE"		: "<i>Edit Device Remote Control:</i><br/><br/><ul class='help'>" +
 						  "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
 						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
 						  "<li>Add &quot;DISPLAY&quot; to add a display that show status information (details defined below).</li>" +
@@ -59,13 +59,13 @@ var language_app = {
 						  "<li>Add &quot;COLOR-PICKER||send-command&quot; to add an input element to select a color.</li>" +
 						  "<li>Add &quot;.&quot; to add an empty space.</li>" +
 						  "</ul>",
-		"MANUAL_SCENE"			: "<b>Edit Scene Remote Control:</b><ul class='help'>" +
+		"MANUAL_SCENE"			: "<i>Edit Scene Remote Control:</i><br/><br/><ul class='help'>" +
 						  "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
 						  "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;makro_type&gt;_&lt;button&gt;&quot; to define buttons in the remote layout; makro types are: makro, scene-on, scene-off, dev-on, dev-off</li>" +
 						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
 						  "<li>Add &quot;.&quot; to add an empty space.</li>" +
 						  "</ul>",
-		"MANUAL_MAKROS"		: "<b>Edit Makros:</b><ul class='help'>" +
+		"MANUAL_MAKROS"		: "<i>Edit Makros:</i><br/><br/><ul class='help'>" +
 						  "<li>Define makros using the JSON format</li>" +
 						  "<li>Combine buttons from any defined remote control and integers for seconds to wait</li>" +
 						  "<li>Makro types are: <ul>" + 

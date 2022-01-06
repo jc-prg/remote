@@ -73,7 +73,6 @@ class configCache (threading.Thread):
 
            # Reread values from config files
            if self.cache_update == True:
-               self.logging.info("Cache: reread config files ('" + self.name + "'): ...")
                
                i = 0
                for key in self.cache:
@@ -81,7 +80,9 @@ class configCache (threading.Thread):
                     self.cache[key] = rm3json.read(key)
                     i += 1
 
-               self.logging.info("... ("+str(i)+")")
+               self.logging.info("Reread "+str(i)+" config files into the cache (" + self.name + ")")
+               self.logging.debug(str(self.cache))
+               
                self.cache_time        = time.time()
                self.cache_update      = False
 

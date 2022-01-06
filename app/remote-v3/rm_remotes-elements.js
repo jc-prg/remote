@@ -71,7 +71,48 @@ function rmRemoteBasic(name) {
 		remote += "</div>";
 		return remote;
 		}
+		
+	this.edit_line	= function (text="") {
+          	var remote = "";
+		remote += "<div style='border:1px solid;height:1px;margin:5px;margin-top:10px;padding:0px;'>";
+		if (text != "") { remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>"; }
+		remote += "</div>";
+		return remote;
+		}
+		
+	this.container  = function(id,title,text="",open=true) {
+		var onclick  = ' onclick="'+this.app_name+'.container_showHide(\''+id+'\')"; '
+		var display  = "";
+		var link     = "&minus;";
+		var ct       = "";
+		
+		if (open == false) {
+			link    = "+";
+			display = "display:none;";
+			}
+		
+		ct  += "<div id='"+id+"_header' style='width:100%;padding:5px;padding-top:10px;' "+onclick+">[<span id='"+id+"_link'>"+link+"</span>]&nbsp;&nbsp;<b>"+title+"</b></div>";	
+		ct  += "<div id='"+id+"_status' style='display:none;'>"+open+"</div>";	
+		ct  += "<div id='"+id+"_body' style='width:95%;background:gray;padding:5px;"+display+"'>";	
+		ct  += text;	
+		ct  += "</div>";	
+		
+		return ct;
+		}
 
+	this.container_showHide = function( id, open="" ) {
+		status = document.getElementById(id+"_status").innerHTML;
+		if (status == "true") { 
+			document.getElementById(id+"_body").style.display = "none"; 
+			document.getElementById(id+"_status").innerHTML   = "false";
+			document.getElementById(id+"_link").innerHTML     = "+";
+			}
+		else {
+			document.getElementById(id+"_body").style.display = "block"; 
+			document.getElementById(id+"_status").innerHTML   = "true";
+			document.getElementById(id+"_link").innerHTML     = "&minus;";
+			}
+		}
 	}
 	
 
