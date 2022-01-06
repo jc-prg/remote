@@ -22,6 +22,7 @@ var language_app = {
 		"BUTTON_SELECT"		: "Please select button.",
 		
 		"CHANNEL_USE_JSON"		: "Please use JSON to edit the channel list.",
+		"CHANGE_ORDER"			: "Change Order",
 		"CHANGE_ORDER_SCENES"		: "Change Order of Scenes",
 		"CHANGE_ORDER_DEVICES"		: "Change Order of Devices",
 

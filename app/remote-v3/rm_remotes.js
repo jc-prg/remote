@@ -477,7 +477,7 @@ function rmRemote(name) {
 				);
 		edit    += this.tab.end();
 
-		remote += this.basic.container("remote_edit_add","Add elements",edit,true);
+		remote += this.basic.container("remote_edit_add","Add elements",edit,false);
 		remote += this.basic.container("display_size","Display size",this.basic.select("remote_display_size","display size", display_sizes, "", remote_displaysize),false);		
 
 		// load template
@@ -800,7 +800,7 @@ function rmRemote(name) {
 				"</center>", false
 				);
 		edit   += this.tab.end();
-		remote += this.basic.container("scene_add","Add elements",edit,true);
+		remote += this.basic.container("scene_add","Add elements",edit,false);
 		remote += this.basic.container("display_size","Display size", this.basic.select("scene_display_size","display size", display_sizes, "", remote_displaysize),false);
 
 		// load template

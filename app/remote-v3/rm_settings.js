@@ -30,7 +30,7 @@ function rmSettings (name)
 	this.button_stage       = function ()
 	this.button             = function (onclick,label,disabled="")
 	this.button_small       = function (onclick,label,disabled="")
-	this.tab_row            = function (td1,td2)
+	this.tab.row            = function (td1,td2)
 	this.input              = function (id,onclick="",oninput="")
 	this.select             = function (id,title,data,onchange="")
 	this.remoteToggleEditMode = function ()
@@ -50,8 +50,11 @@ function rmSettings (name) {	// IN PROGRESS
 	this.initial_load = true;
 	this.edit_mode    = false;
 	this.mode         = "";
+	
 	this.logging      = new jcLogging(this.app_name);
-
+	this.basic        = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
+	this.tab          = new rmRemoteTable(name+".tab");		// rm_remotes-elements.js
+	
 	// init settings / set vars
 	this.init               = function (data) {
 		// set data
@@ -88,6 +91,7 @@ function rmSettings (name) {	// IN PROGRESS
 	this.create_setting     = function () {
 		// Set Vars
 		var setting    = "";
+		var set_temp   = "";
 
 		// Show Server Infos
 		var main_audio  = this.data["CONFIG"]["main-audio"];  // get main audio device from file
@@ -105,8 +109,9 @@ function rmSettings (name) {	// IN PROGRESS
 		var audio2     = main_device["settings"]["label"];
 		var cookie     = appCookie.get("remote");
 
-		setting  = this.tab_row( 	"Status:", 		this.app_stat );
-		setting += this.tab_row( 	"Versions:",
+		setting  = this.tab.start();
+		setting += this.tab.row( 	"Status:", 		this.app_stat );
+		setting += this.tab.row( 	"Versions:",
 						"App: " 		+ appVersion + " / " + this.test_info + " (" + rollout + ")<br/>" +
 						"API: " 		+ this.data["API"]["version"] + " / " + this.data["API"]["rollout"] + "<br/>" +
 						"Modules: jcMsg " 	+ appMsg.appVersion +  
@@ -114,16 +119,16 @@ function rmSettings (name) {	// IN PROGRESS
 						" / jcAppFW "		+ appFwVersion +
 						" / jcCookies "	+ appCookie.appVersion +  
 						" / jcSlider "		+ rm3slider.appVersion );
-		setting += this.tab_row( 	"Sources:", 		"<a href='https://github.com/jc-prg/remote/' style='color:white' target='_blank'>https://github.com/jc-prg/remote/</a>");
-		setting += this.tab_row( 	"Cookie:", 		cookie );
-		setting += this.tab_row( 	"Button:", 		this.app_last );
-		setting += this.tab_row( 	"Audio:",		 audio2 + "<br/>" + audio1 );
+		setting += this.tab.row( 	"Sources:", 		"<a href='https://github.com/jc-prg/remote/' style='color:white' target='_blank'>https://github.com/jc-prg/remote/</a>");
+		setting += this.tab.row( 	"Cookie:", 		cookie );
+		setting += this.tab.row( 	"Button:", 		this.app_last );
+		setting += this.tab.row( 	"Audio:",		 audio2 + "<br/>" + audio1 );
 		
 		var d_width  = screen.width;
 		var d_height = screen.height;
-		setting += this.tab_row( 	"Device:", 		d_width + "x" + d_height );
-		setting += this.tab_row( 	"Window:", 		document.body.clientWidth + "x" + document.body.clientHeight );
-		setting += this.tab_row( 	"Screen:", 		
+		setting += this.tab.row( 	"Device:", 		d_width + "x" + d_height );
+		setting += this.tab.row( 	"Window:", 		document.body.clientWidth + "x" + document.body.clientHeight );
+		setting += this.tab.row( 	"Screen:", 		
 						"<div class='screen_default'>default screen</div>" + 
 						"<div class='screen_big'>big screen</div>" + 
 						"<div class='screen_iphone'>iPhone screen (portrait)</div>" + 
@@ -132,16 +137,18 @@ function rmSettings (name) {	// IN PROGRESS
 						"<div class='screen_ipad_landscape'>iPad screen (landscape)</div>" + 
 						"");	
 
-		setting += this.tab_row(	"Position:",		"<div id='scrollPosition'>0 px</div>" );
-		setting += this.tab_row( 	"Theme:", 		appTheme );
-		setting += this.tab_row(	"Interfaces:",		this.interface_list() );
-		setting += this.tab_row(	"Exec time:",          this.exec_time_list() );
-		setting += this.tab_row( 	"Status:",
+		setting += this.tab.row(	"Position:",		"<div id='scrollPosition'>0 px</div>" );
+		setting += this.tab.row( 	"Theme:", 		appTheme );
+		setting += this.tab.row(	"Interfaces:",		this.interface_list() );
+		setting += this.tab.row(	"Exec time:",          this.exec_time_list() );
+		setting += this.tab.row( 	"Status:",
 						this.device_list("select_dev_status", this.app_name+".device_list_status('select_dev_status','dev_status');") +
 						"<span id='dev_status'>default</span>"
-						);
-
+						);		
+		setting += this.tab.end();
+		
 		this.write(0,lang("VERSION_AND_STATUS"),setting);
+
 
 		// Edit Server Settings
 		var q1   = lang("RESET_SWITCH_OFF");
@@ -150,35 +157,62 @@ function rmSettings (name) {	// IN PROGRESS
 		if (showButton)       { b_show  = "show code"; } else { b_show  = "hide code"; }
 		if (deactivateButton) { b_deact = "allways enabled"; }  else { b_deact = "enabled if ON"; }
 
-		setting  = this.tab_row( 	"Server:",
-						//this.button("remoteInit(false);" + this.app_name + ".show();", "reload") +
-						this.button("window.open('" + RESTurl + "api/reload/','_blank');", "reload (API)") +
-						this.button("appForceReload(true);", "reload (Scroll)") +
-						this.button("window.open('" + RESTurl + "api/list/','_blank');", "REST API : list") +
-						this.button("window.open('" + RESTurl + "api/status/','_blank');", "REST API : status") +
+
+		// Relaod & Updates
+		setting   = "";
+		set_temp  = this.tab.start();
+		set_temp += this.tab.row(	"<center>" +
+						//this.button("window.open('" + RESTurl + "api/reload/','_blank');", "reload (API)") + "&nbsp;" +
+						this.button("appForceReload(true);", "reload (Scroll)") + "&nbsp;" +
+						this.button("appFW.requestAPI('GET',['version','" + appVersion +"'], '', appMsg.alertReturn,'wait');", "Check Updates") +
+						"</center>"
+					);
+		set_temp += this.tab.end();
+		setting  += this.basic.container("setting_reload","Reload &amp; updates",set_temp,true);
+
+		// API Calls and information
+		set_temp  = this.tab.start();
+		set_temp += this.tab.row(	"<center>" +
+						this.button("window.open('" + RESTurl + "api/list/','_blank');", "REST API : list") + "&nbsp;" +
+						this.button("window.open('" + RESTurl + "api/status/','_blank');", "REST API : status") + "&nbsp;" +
 						this.button("window.open('" + RESTurl + "api/ui/','_blank');",   "Swagger/UI") +
-						this.button("appFW.requestAPI('GET',['version','" + appVersion +"'], '', appMsg.alertReturn,'wait');", "Check Updates")
+						"</center>"
 					);
-		setting += this.tab_row( 	"Reset:",
-						this.button("appMsg.confirm('" + q1 + "', 'appFW.requestAPI(#GET#,[#reset#],##,apiAlertReturn );' );" , "Dev ON/OFF") +
-						this.button("appMsg.confirm('" + q2 + "', 'appFW.requestAPI(#GET#,[#reset-audio#],##,apiAlertReturn );' );" , "Audio Level")
-					);
-		setting += this.tab_row( 	"Buttons:",
-						this.button(this.app_name+".button_show();",  b_show ) +
-						this.button(this.app_name+".button_deact();", b_deact )
-					);
-		setting += "</table><br/><hr style='border:white 1px solid;margin:5px;'/><br/><table width='100%'>";
+		set_temp += this.tab.end();
+		setting  += this.basic.container("setting_api","API calls &amp; swagger interface",set_temp,false);
 
+		// reset device values
+		set_temp  = this.tab.start();
+		set_temp += this.tab.row(	"<center>" +
+						this.button("appMsg.confirm('" + q1 + "', 'appFW.requestAPI(#GET#,[#reset#],##,apiAlertReturn );' );" , "Dev ON/OFF") + "&nbsp;" +
+						this.button("appMsg.confirm('" + q2 + "', 'appFW.requestAPI(#GET#,[#reset-audio#],##,apiAlertReturn );' );" , "Audio Level") +
+						"</center>"
+					);
+		set_temp += this.tab.end();
+		setting  += this.basic.container("setting_reset","Reset device values",set_temp,false);
 
+		// button behavior
+		set_temp  = this.tab.start();
+		set_temp += this.tab.row(	"<center>" +
+						this.button(this.app_name+".button_show();",  b_show ) + "&nbsp;" +
+						this.button(this.app_name+".button_deact();", b_deact ) +
+						"</center>"
+					);
+		set_temp += this.tab.end();
+		setting  += this.basic.container("setting_buttons","Button behavior",set_temp,false);
+
+		// button color codes
 		var buttons = "";
 		for (var key in colors_power) {
 			buttons += "<button class='button' style='background-color:"+colors_power[key]+";width:100px;'>"+key+"</button>";
 			}
 
-		setting += this.tab_row( 	"Color Codes:",	buttons );
+		set_temp  = this.tab.start();
+		set_temp += this.tab.row( buttons );
+		set_temp += this.tab.end();
+		setting  += this.basic.container("setting_colorcodes","Button color codes",set_temp,false);
 
-
-		this.write(1,"Change Settings",setting);
+		this.write(1,"Server &amp; Client Settings",setting);
 		this.write(2);
 		this.write(3);
 		}
@@ -191,28 +225,12 @@ function rmSettings (name) {	// IN PROGRESS
 		var onchange2 = this.app_name + ".create_edit_FileNames";
 		
 		// Change Order of Scenes or Devices			
-		setting = "";	
-		var devices = this.data["DATA"]["devices"];
-		this.logging.default(devices);
-		for (var key in devices) { devices[key]["position"] = devices[key]["settings"]["position"]; this.logging.default(key); }
-		var order  = sortDict(devices,"position");
-		for (var i=0;i<order.length;i++) {
-			var key     = order[i];
-			var button  = "";			
-			var visible = this.data["DATA"]["devices"][key]["settings"]["visible"];
-			
-			if (i > 0)  		 { button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#-1#);","up"); }
-			if (i < order.length-1) { button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#1#);","down"); }
-			
-			if (visible == "no")    { setting += this.tab_row("<i>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</i>",button); }
-			else                    { setting += this.tab_row("<b>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</b>",button); }		
-			}
-			
-		setting += "</table>"
-			 + "<hr><center><b>"+lang("CHANGE_ORDER_SCENES")+"</b></center><hr/>"
-			 + "<table width=\"100%\">";
+		var setting  = "";
+		var set_temp = this.tab.start(); 	
 
-		var scenes = this.data["DATA"]["scenes"];
+		var devices  = this.data["DATA"]["devices"];
+		var scenes   = this.data["DATA"]["scenes"];
+		
 		this.logging.default(scenes);
 		for (var key in scenes) { scenes[key]["position"] = scenes[key]["settings"]["position"]; this.logging.default(key);}		 
 		var order  = sortDict(scenes,"position");
@@ -221,70 +239,77 @@ function rmSettings (name) {	// IN PROGRESS
 			var button  = "";			
 			var visible = scenes[key]["settings"]["visible"];
 
-			if (i > 0)  			{ button += this.button_small("apiDeviceMovePosition_exe(#scene#,#"+key+"#,#-1#);"+this.app_name+".mode = '';","up"); }
-			if (i < order.length-1)	{ button += this.button_small("apiDeviceMovePosition_exe(#scene#,#"+key+"#,#1#);"+this.app_name+".mode = '';","down"); }
+			if (i > 0)  			{ button += this.button_small("apiDeviceMovePosition_exe(#scene#,#"+key+"#,#-1#);"+this.app_name+".mode = '';","<b>&uarr;</b>"); }
+			if (i < order.length-1)	{ button += this.button_small("apiDeviceMovePosition_exe(#scene#,#"+key+"#,#1#);"+this.app_name+".mode = '';", "<b>&darr;</b>"); }
 			
-			if (visible == "no")    { setting += this.tab_row("<i>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</i>",button); }
-			else                    { setting += this.tab_row("<b>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</b>",button); }
+			if (visible == "no")    	{ set_temp += this.tab.row("<i>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</i>",button); }
+			else                    	{ set_temp += this.tab.row("<b>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</b>",button); }
 			}
 
-		this.write(0,lang("CHANGE_ORDER_DEVICES"),setting);
+		set_temp   += this.tab.end();
+		setting    += this.basic.container("setting_scene_order",lang("CHANGE_ORDER_SCENES"),set_temp,false); 
+		set_temp    = this.tab.start(); 	
+	
+		this.logging.default(devices);
+		for (var key in devices) { devices[key]["position"] = devices[key]["settings"]["position"]; this.logging.default(key); }
+		var order  = sortDict(devices,"position");
+		for (var i=0;i<order.length;i++) {
+			var key     = order[i];
+			var button  = "";			
+			var visible = this.data["DATA"]["devices"][key]["settings"]["visible"];
+			
+			if (i > 0)  		 { button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#-1#);","<b>&uarr;</b>"); }
+			if (i < order.length-1) { button += this.button_small("apiDeviceMovePosition_exe(#device#,#"+key+"#,#1#);", "<b>&darr;</b>"); }
+			
+			if (visible == "no")    { set_temp += this.tab.row("<i>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</i>",button); }
+			else                    { set_temp += this.tab.row("<b>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</b>",button); }		
+			}
+		
+		set_temp   += this.tab.end();
+		setting    += this.basic.container("setting_device_order",lang("CHANGE_ORDER_DEVICES"),set_temp,false); 
+
+		this.write(1,lang("CHANGE_ORDER"),setting);
 
 		// Edit Remote Settings
-		setting = "";
-		setting += this.tab_row( "ID:",  		this.input("add_device_id") );
-		setting += this.tab_row( "Label:", 		this.input("add_device_descr") );
-		setting += this.tab_row( "Interface:",  	this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"]) );
-		setting += this.tab_row( "Device Name:",	this.input("add_device",onchange,onchange) );
-		setting += "<tr><td colspan='2'><hr/></td></tr>";
-		setting += this.tab_row( "Device-Config:",	this.input("add_device_device")+".json" );
-		setting += this.tab_row( "Remote-Config:",	this.input("add_device_remote")+".json" );
-		setting += this.tab_row( this.button("apiDeviceAdd(['add_device_id','add_device_descr','add_device_api','add_device','add_device_device','add_device_remote'],"+onchange2+");","Add Device"), "" );
+		setting   = "";
+		set_temp  = this.tab.start();
+		set_temp += this.tab.row( "ID:",  		this.input("add_device_id") );
+		set_temp += this.tab.row( "Label:", 		this.input("add_device_descr") );
+		set_temp += this.tab.row( "Interface:",  	this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"]) );
+		set_temp += this.tab.row( "Device Name:",	this.input("add_device",onchange,onchange) );
+		set_temp += this.tab.line();
+		set_temp += this.tab.row( "Device-Config:",	this.input("add_device_device")+".json" );
+		set_temp += this.tab.row( "Remote-Config:",	this.input("add_device_remote")+".json" );
+		set_temp += this.tab.row( this.button("apiDeviceAdd(['add_device_id','add_device_descr','add_device_api','add_device','add_device_device','add_device_remote'],"+onchange2+");","Add Device"), "" );
+		set_temp += this.tab.end();
+		setting  += this.basic.container("setting_add_device","Add device",set_temp,false); 
 
-		setting += "<tr><td colspan='2'><center><hr/><b>"+lang("REMOTE_ADD")+" (Scene)</b><hr/></center></td></tr>";
-	
-		setting += this.tab_row( "ID:",  	this.input("add_scene_id") );
-		setting += this.tab_row( "Label:", 	this.input("add_scene_label") );
-		setting += this.tab_row( "Description:", this.input("add_scene_descr") );
-		setting += this.tab_row( this.button("apiSceneAdd(['add_scene_id','add_scene_label','add_scene_descr']);","Add Scene",""), "" );
+		set_temp  = this.tab.start();
+		set_temp += this.tab.row( "ID:",  	this.input("add_scene_id") );
+		set_temp += this.tab.row( "Label:", 	this.input("add_scene_label") );
+		set_temp += this.tab.row( "Description:", this.input("add_scene_descr") );
+		set_temp += this.tab.row( this.button("apiSceneAdd(['add_scene_id','add_scene_label','add_scene_descr']);","Add Scene",""), "" );
+		set_temp += this.tab.end();
+		setting  += this.basic.container("setting_add_scene","Add scene",set_temp,false); 
 
-		this.write(1,lang("REMOTE_ADD")+" (Device)",setting);					
+		this.write(0,lang("REMOTE_ADD"),setting);					
 
 
 		// Edit Makros 01		
-		setting = "";
-		setting += this.display_json("makro", this.data["DATA"]["makros"]["makro"], "makros");
-		setting += "</table>"
-		setting += "<hr/>";
-		setting += this.button("apiMakroChange(['makro','scene-on','scene-off','dev-on','dev-off']);","Save changes","");
-		setting += "</center>";		
+		setting   = "";
+		setting  += this.basic.container("setting_makros1","JSON makros [general]",		this.display_json("makro", this.data["DATA"]["makros"]["makro"], "makros"),false); 
+		setting  += this.basic.container("setting_makros2","JSON makros [device ON]",	this.display_json("dev-on", this.data["DATA"]["makros"]["dev-on"], "makros"),false); 
+		setting  += this.basic.container("setting_makros3","JSON makros [device OFF]",	this.display_json("dev-off", this.data["DATA"]["makros"]["dev-off"], "makros"),false); 
+		setting  += this.basic.container("setting_makros4","JSON makros [scene ON]",		this.display_json("scene-on", this.data["DATA"]["makros"]["scene-on"], "makros"),false); 
+		setting  += this.basic.container("setting_makros5","JSON makros [scene OFF]",	this.display_json("scene-off", this.data["DATA"]["makros"]["scene-off"], "makros"),false); 
 
-		setting += "<br/><hr style='border: 1px solid white;'/><br/>";
-		setting += lang("MANUAL_MAKROS");
+		setting  += this.basic.container("setting_makros_manual","JSON makros - manual",lang("MANUAL_MAKROS"),false); 
+
+		setting  += "<center><br/><br/>";
+		setting  += this.button("apiMakroChange(['makro','scene-on','scene-off','dev-on','dev-off']);","Save","");
+		setting  += "</center>";
 
 		this.write(2,"Change Makros",setting);
-		
-		// Edit Makros 01		
-		setting = "";
-		setting += this.display_json("scene-on", this.data["DATA"]["makros"]["scene-on"], "makros");
-		setting += "</table>"
-			 + "<hr><center><b>Scene OFF Makros</b></center><hr/>"
-			 + "<table width=\"100%\">";
-		setting += this.display_json("scene-off", this.data["DATA"]["makros"]["scene-off"], "makros");
-		setting += "</table>"
-			 + "<hr><center><b>Device ON Makros</b></center><hr/>"
-			 + "<table width=\"100%\">";
-		setting += this.display_json("dev-on", this.data["DATA"]["makros"]["dev-on"], "makros");
-		setting += "</table>"
-			 + "<hr><center><b>Device OFF Makros</b></center><hr/>"
-			 + "<table width=\"100%\">";
-		setting += this.display_json("dev-off", this.data["DATA"]["makros"]["dev-off"], "makros");
-		setting += "<hr/>";
-		setting += this.button("apiMakroChange(['makro','scene-on','scene-off','dev-on','dev-off']);","Save changes","");
-		setting += "</table>";		
-		setting += "</center>";		
-		
-		this.write(3,"Scene ON Makros",setting);
 		}
 
 
@@ -314,10 +339,10 @@ function rmSettings (name) {	// IN PROGRESS
 
 		var element 	= this.e_settings[nr];
 		if (label != "") {
-			var content 	= "<center><table width=\"100%\">"
-					+ "<center><b>" + label + "</b></center><hr/>"
+			var content 	= "<center><b>" + label + "</b></center>"
+					+ this.basic.edit_line()
 					+ text
-					+ "</table></center>";
+					+ this.basic.edit_line();
 			}
 		else { var content = ""; }
 
@@ -505,10 +530,9 @@ function rmSettings (name) {	// IN PROGRESS
 	this.button_small       = function (onclick,label,disabled="")	{ 
 		onclick = onclick.replace(/#/g,"'"); 
         	if (disabled == "disabled") { style = "background-color:gray;"; } else { style = ""; }
-        	return "<button style=\"" + style + "width:"+ this.input_width + ";margin:1px;width:60px;\" onClick=\"javascript:"+onclick+"\"  "+disabled+">"+label+"</button>";
+        	return "<button style=\"" + style + "width:"+ this.input_width + ";margin:1px;width:40px;\" onClick=\"javascript:"+onclick+"\"  "+disabled+">"+label+"</button>";
 		}
 	
-	this.tab_row            = function (td1,td2) 	{ return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
 	this.input              = function (id,onclick="",oninput="") { 
 		
 		text = "<input id=\"" + id + "\" oninput=\""+oninput+"\" style='width:" + this.input_width + ";margin:1px;'>"; 
