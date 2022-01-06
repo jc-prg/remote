@@ -121,7 +121,7 @@ function apiMakroChange(data=[]) {
 	send_data = {};
 	for (var i=0;i<data.length;i++) {
 		var key            = data[i];
-		try		{ send_data[key] = JSON.parse(getValueById(key)); }
+			try		{ send_data[key] = JSON.parse(getValueById(key)); }
 		catch(e)	{ appMsg.alert("<b>JSON Makro " + key + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 		}
 
@@ -252,11 +252,15 @@ function apiDeviceJsonEdit(device,json_buttons,json_display,display_size) {
 
 //--------------------------------
 
-function apiDeviceMovePosition_exe(type,device,direction) { appFW.requestAPI( "POST", ["move",type,device,direction], "", apiDeviceMovePosition); }
+function apiDeviceMovePosition_exe(type,device,direction) { appFW.requestAPI( "POST", ["move",type,device,direction], "", apiDeviceMovePosition_get); }
+function apiDeviceMovePosition_get(data) {
+	appFW.requestAPI("GET",["list"],"",apiDeviceMovePosition);
+	}
 function apiDeviceMovePosition(data) {
-	rm3settings.mode = "";
-	rm3settings.create();
 	remoteReload_load();
+	rm3settings.mode = "";
+	rm3settings.data = data;
+	rm3settings.create();
 	}
 	
 	
@@ -279,7 +283,7 @@ function apiDeviceAdd(data,onchange) {
         
 //	if (dataAll["DATA"]["devices"][send_data["id"]]){ appMsg.alert("Device '" + device + "' already exists!"); return; }
 	if (dataAll["DATA"]["devices"][send_data["id"]]){ appMsg.alert(lang("DEVICE_EXISTS",[send_data["id"]])); return; }
-	else if (send_data["id"] == "")			{ appMsg.alert(lang("DEVICE_INSERT_ID")); return; }
+	else if (send_data["id"] == "")		{ appMsg.alert(lang("DEVICE_INSERT_ID")); return; }
 	else if (send_data["label"] == "")		{ appMsg.alert(lang("DEVICE_INSERT_LABEL")); return; }
 	else if (send_data["api"] == "") 		{ appMsg.alert(lang("DEVICE_SELECT_API")); return; }
 	else if (send_data["device"] == "") 		{ appMsg.alert(lang("DEVICE_INSERT_NAME")); return;	}
