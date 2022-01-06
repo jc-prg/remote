@@ -91,9 +91,9 @@ function rmRemoteBasic(name) {
 			display = "display:none;";
 			}
 		
-		ct  += "<div id='"+id+"_header' style='width:100%;padding:5px;padding-top:10px;' "+onclick+">[<span id='"+id+"_link'>"+link+"</span>]&nbsp;&nbsp;<b>"+title+"</b></div>";	
+		ct  += "<div id='"+id+"_header' class='remote_group_header' "+onclick+">[<span id='"+id+"_link'>"+link+"</span>]&nbsp;&nbsp;<b>"+title+"</b></div>";	
 		ct  += "<div id='"+id+"_status' style='display:none;'>"+open+"</div>";	
-		ct  += "<div id='"+id+"_body' style='width:95%;background:gray;padding:5px;"+display+"'>";	
+		ct  += "<div id='"+id+"_body'   class='remote_group' style='"+display+"'>";	
 		ct  += text;	
 		ct  += "</div>";	
 		
@@ -467,7 +467,7 @@ function rmRemoteDisplays(name) {
 	this.json		= function ( id, json, format="" ) {
         
         	var text = "";
-        	text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:320px;height:160px;\">";
+        	text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:95%;height:160px;\">";
         	if (format == "buttons") {
 	        	var x=0;
 	        	text += "[\n";

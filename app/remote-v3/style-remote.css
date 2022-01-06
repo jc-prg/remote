@@ -101,6 +101,24 @@ ul.help ul li {
    width		: 90%;
    height		: 20px;
    }
+   
+.remote_group {
+	width		: 96%;
+	background	: gray;
+	padding	: 5px;
+	border-radius	: 5px;
+	margin		: 2px;
+  	}
+	   
+.remote_group_header {
+	width		:  100%;
+	padding	:    5px;
+	padding-top	:   10px;
+	}
+
+.remote_group_header:hover {
+	color		: yellow;
+	}
 
 #frame3    { z-index: 61; }
 
