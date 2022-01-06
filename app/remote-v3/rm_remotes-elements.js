@@ -80,7 +80,13 @@ function rmRemoteBasic(name) {
 		return remote;
 		}
 		
+	this.container_open = {};
+		
 	this.container  = function(id,title,text="",open=true) {
+	
+		if (this.container_open[id] != undefined)	{ open = this.container_open[id]; }
+		else						{ this.container_open[id] = open; }
+	
 		var onclick  = ' onclick="'+this.app_name+'.container_showHide(\''+id+'\')"; '
 		var display  = "";
 		var link     = "&minus;";
@@ -106,11 +112,13 @@ function rmRemoteBasic(name) {
 			document.getElementById(id+"_body").style.display = "none"; 
 			document.getElementById(id+"_status").innerHTML   = "false";
 			document.getElementById(id+"_link").innerHTML     = "+";
+			this.container_open[id] = false;
 			}
 		else {
 			document.getElementById(id+"_body").style.display = "block"; 
 			document.getElementById(id+"_status").innerHTML   = "true";
 			document.getElementById(id+"_link").innerHTML     = "&minus;";
+			this.container_open[id] = true;
 			}
 		}
 	}

@@ -342,7 +342,7 @@ function rmSettings (name) {	// IN PROGRESS
 			var content 	= "<center><b>" + label + "</b></center>"
 					+ this.basic.edit_line()
 					+ text
-					+ this.basic.edit_line();
+					+ "<br/>";
 			}
 		else { var content = ""; }
 

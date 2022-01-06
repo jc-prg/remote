@@ -408,8 +408,8 @@ function rmRemote(name) {
 		edit    += this.tab.row( "Remote:",  		device_data["config"]["remote"]+".json" );
 		edit    += this.tab.end();
 		remote  += this.basic.container("remote_api","API information",edit,false);
-		remote += this.basic.edit_line();
-		
+		remote  += "<br/>";
+				
 		this.logging.default(device_data);
 		setTextById(id,remote);
 		}
@@ -528,8 +528,6 @@ function rmRemote(name) {
 				this.button.edit(this.app_name+".device_remote('frame3','"+device+"','remote_json_buttons','remote_json_display','remote_display_size');"+this.app_name+".device_notused('frame5','"+device+"','remote_json_buttons');","preview") +
 				"</center><br/>";
 		
-		remote += this.basic.edit_line();
-
 		setTextById(id,remote);
 		//return remote;
 		}
@@ -732,7 +730,8 @@ function rmRemote(name) {
 		edit   += this.tab.row("Remote:&nbsp;&nbsp;", 	this.data["DATA"]["scenes"][scene]["config"]["remote"]+".json" );
 		edit   += this.tab.end();
 		remote += this.basic.container("scene_info","Scene information",edit,false);
-		remote  += this.basic.edit_line();
+		remote  += "<br/>";
+
 		
 	        if (this.edit_mode)     { elementVisible(id); }
 	        else                    { elementHidden(id,"device_edit"); return; }
@@ -840,7 +839,6 @@ function rmRemote(name) {
 				this.button.edit("apiSceneJsonEdit('"+scene+"','scene_json_buttons','scene_json_channel','scene_json_devices','scene_json_display','scene_display_size');","save","") + "&nbsp;" +
 				this.button.edit(this.app_name+".scene_remote('frame3','"+scene+"','scene_json_buttons','scene_json_display','scene_display_size');"+this.app_name+".scene_channels('frame5','"+scene+"','scene_json_channel');","preview") +
 				"</center><br/>";
-		remote += this.basic.edit_line();
 
 		setTextById(id,remote);
 		}
