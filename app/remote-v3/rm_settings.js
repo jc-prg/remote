@@ -299,9 +299,9 @@ function rmSettings (name) {	// IN PROGRESS
 
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row( "ID:",  		this.input("add_device_id") );
-		set_temp += this.tab.row( "Label:", 		this.input("add_device_descr") );
-		set_temp += this.tab.row( "Interface:",  	this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"]) );
-		set_temp += this.tab.row( "Device Name:",	this.input("add_device",onchange,onchange) );
+		set_temp += this.tab.row( "Label:", 		this.input("add_device_descr",onclick=onchange,oninput=onchange) );
+		set_temp += this.tab.row( "Interface:",  	this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"],onchange) );
+		set_temp += this.tab.row( "Device Name:",	this.input("add_device",onclick=onchange,oninput=onchange) );
 		set_temp += this.tab.line();
 		set_temp += this.tab.row( "Device-Config:",	this.input("add_device_device")+".json" );
 		set_temp += this.tab.row( "Remote-Config:",	this.input("add_device_remote")+".json" );
