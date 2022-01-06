@@ -11,7 +11,7 @@
 ./remote-v3/rm_config_stage.js (-1)
 ----------------------------
 ----------------------------
-./remote-v3/rm_functions-api.js (484)
+./remote-v3/rm_functions-api.js (482)
 ----------------------------
 function apiCheckUpdates()
 function apiCheckUpdates_msg( data )
@@ -30,6 +30,7 @@ function apiSceneDelete(scene_id)
 function apiDeviceEdit(device,prefix,fields)
 function apiDeviceJsonEdit(device,json_buttons,json_display,display_size)
 function apiDeviceMovePosition_exe(type,device,direction)
+function apiDeviceMovePosition_get(data)
 function apiDeviceMovePosition(data)
 function apiDeviceAdd(data,onchange)
 function apiDeviceDelete_exe(device)
@@ -43,7 +44,7 @@ function apiButtonAdd(device_id, button_id)
 function apiButtonDelete_exe(device,button)
 function apiButtonDelete(device_id, button_id)
 function apiMakroSend( makro, device="", content="" )
-function apiMakroSend_hide( data )
+function apiMakroSend_return( data )
 ----------------------------
 ./remote-v3/rm_functions.js (60)
 ----------------------------
@@ -92,32 +93,37 @@ function rmMenu(name, menu)
 ./remote-v3/rm_remotes-color-picker.js (-1)
 ----------------------------
 ----------------------------
-./remote-v3/rm_remotes-elements.js (493)
+./remote-v3/rm_remotes-elements.js (570)
 ----------------------------
 function rmRemoteBasic(name)
-	this.input                = function (id,value="")
-	this.select               = function (id,title,data,onchange="",selected_value="")
-	this.line		  = function (text="")
+	this.input	= function (id,value="")
+	this.select	= function (id,title,data,onchange="",selected_value="")
+	this.line	= function (text="")
+	this.edit_line	= function (text="")
+	this.container  = function(id,title,text="",open=true)
+	this.container_showHide = function( id, open="" )
 function rmRemoteTable(name)
 	this.start	= function (width="100%")
 	this.row	= function (td1,td2="")
-	this.line	  	  = function (text="")
+	this.line	= function (text="")
 	this.end	= function ()
 function rmRemoteButtons(name)
-	this.default               = function (id, label, style, script_apiCommandSend, disabled )
-	this.edit          = function (onclick,label,disabled="")
-	this.device        = function (id, label, device, style, cmd, disabled )
-	this.device_keyboard   = function (id, label, device, style, cmd, disabled )
-	this.device_add    = function (id, label, device, style, cmd, disabled )
-	this.makro         = function (id, label, scene, style, makro, disabled )
-	this.channel       = function (id, label, scene, makro, style, disabled="")
-	this.image         = function (label,style)
+	this.default_size	= function ()
+	this.default		= function (id, label, style, script_apiCommandSend, disabled="", btnstyle="" )
+	this.sized		= function (id, label, style, script_apiCommandSend, disabled="")
+	this.edit		= function (onclick,label,disabled="")
+	this.device		= function (id, label, device, style, cmd, disabled )
+	this.device_keyboard	= function (id, label, device, style, cmd, disabled )
+	this.device_add	= function (id, label, device, style, cmd, disabled )
+	this.makro		= function (id, label, scene, style, makro, disabled )
+	this.channel		= function (id, label, scene, makro, style, disabled="")
+	this.image		= function (label,style)
 function rmRemoteDisplays(name)
-	this.default              = function (id, device, type="devices", style="", display_data={})
-	this.sizes       = function ()
-	this.alert        = function (id, device, type="", style="" )
-	this.mediainfo   = function (id, device, style="")
-	this.json	  = function ( id, json, format="" )
+	this.default		= function (id, device, type="devices", style="", display_data={})
+	this.sizes		= function ()
+	this.alert		= function (id, device, type="", style="" )
+	this.mediainfo		= function (id, device, style="")
+	this.json		= function ( id, json, format="" )
 	this.tab_row             = function (td1,td2="")
 	this.tab_line	  	  = function (text="")
 function writeMakroButton ()
@@ -153,7 +159,7 @@ function jcSlider2 ( name, container )
 	this.info		= function()
 		alert("Please define a function to be called on change.")
 ----------------------------
-./remote-v3/rm_remotes.js (1159)
+./remote-v3/rm_remotes.js (1214)
 ----------------------------
 function rmRemote(name)
 	this.init                 = function (data)
@@ -195,7 +201,7 @@ function rmRemote(name)
 	this.empty               = function (id,comment="")
 	this.show                = function (device="")
 ----------------------------
-./remote-v3/rm_settings.js (536)
+./remote-v3/rm_settings.js (572)
 ----------------------------
 function rmSettings (name)
 	this.init               = function (data)
@@ -220,9 +226,6 @@ function rmSettings (name)
 	this.button_show        = function ()
 	this.button_deact       = function (menu_entry=false)
 	this.button_stage       = function ()
-	this.button             = function (onclick,label,disabled="")
-	this.button_small       = function (onclick,label,disabled="")
-	this.tab_row            = function (td1,td2)
 	this.input              = function (id,onclick="",oninput="")
 	this.select             = function (id,title,data,onchange="")
 	this.remoteToggleEditMode = function ()
@@ -240,7 +243,7 @@ function rmStart(name)
 	this.remoteToggleEditMode = function()
 	this.image                = function(file)
 ----------------------------
-./remote-v3/rm_status.js (583)
+./remote-v3/rm_status.js (582)
 ----------------------------
 function statusShowVolume_old( volume, maximum, vol_color, novol_color="" )
 function statusShowVolume( volume )
@@ -273,7 +276,8 @@ function statusCheck_display(data={})
   2 - apiDeviceJsonEdit
   1 - apiDeviceMovePosition
   5 - apiDeviceMovePosition_exe
-  2 - apiMakroSend_hide
+  1 - apiDeviceMovePosition_get
+  2 - apiMakroSend_return
   3 - apiRemoteChangeVisibility
   2 - apiSceneAdd
   2 - apiSceneDelete
@@ -283,7 +287,7 @@ function statusCheck_display(data={})
   1 - apiSetVolume
   1 - apiTemplateAdd
   2 - apiTemplateAdd_exe
- 35 - image
+ 33 - image
   1 - jcSlider2
   4 - remoteDropDown
   2 - remoteDropDown_load
@@ -301,11 +305,11 @@ function statusCheck_display(data={})
   1 - remoteUpdate
   2 - rmMenu
   2 - rmRemote
-  2 - rmRemoteBasic
-  2 - rmRemoteButtons
+  3 - rmRemoteBasic
+  3 - rmRemoteButtons
   2 - rmRemoteDisplays
-  2 - rmRemoteKeyboard
-  2 - rmRemoteTable
+  3 - rmRemoteKeyboard
+  3 - rmRemoteTable
   2 - rmSettings
   2 - rmSlider
   2 - rmStart
@@ -320,6 +324,6 @@ function statusCheck_display(data={})
   1 - statusCheck_load
   2 - statusCheck_sceneButton
   1 - statusShowVolume
- 72 - to
+ 75 - to
   1 - writeKeyBoard
   1 - writeMakroButton

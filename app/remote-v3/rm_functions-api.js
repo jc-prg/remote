@@ -22,6 +22,7 @@ function apiSceneDelete(scene_id)
 function apiDeviceEdit(device,prefix,fields)
 function apiDeviceJsonEdit(device,json_buttons,json_display,display_size)
 function apiDeviceMovePosition_exe(type,device,direction)
+function apiDeviceMovePosition_get(data)
 function apiDeviceMovePosition(data)
 function apiDeviceAdd(data,onchange)
 function apiDeviceDelete_exe(device)
@@ -35,7 +36,7 @@ function apiButtonAdd(device_id, button_id)
 function apiButtonDelete_exe(device,button)
 function apiButtonDelete(device_id, button_id)
 function apiMakroSend( makro, device="", content="" )
-function apiMakroSend_hide( data )
+function apiMakroSend_return( data )
 */
 //--------------------------------
 
