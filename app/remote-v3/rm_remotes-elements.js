@@ -8,6 +8,7 @@
 function rmRemoteBasic(name)
 	this.input	= function (id,value="")
 	this.select	= function (id,title,data,onchange="",selected_value="")
+	this.select_array  = function (id,title,data,onchange="",selected_value="")
 	this.line	= function (text="")
 	this.edit_line	= function (text="")
 	this.container  = function(id,title,text="",open=true)
@@ -28,6 +29,12 @@ function rmRemoteButtons(name)
 	this.makro		= function (id, label, scene, style, makro, disabled )
 	this.channel		= function (id, label, scene, makro, style, disabled="")
 	this.image		= function (label,style)
+function rmRemoteJSON(name)
+	this.textarea		= function ( id, json, format="" )
+	this.textarea_replace	= function ( id, json, format="" )
+	this.json2text		= function ( id, json, format="" )
+        this.text2json		= function ( json_text, id="" )
+        this.get_value		= function ( id, default_data="" )
 function rmRemoteDisplays(name)
 	this.default		= function (id, device, type="devices", style="", display_data={})
 	this.sizes		= function ()
@@ -63,6 +70,19 @@ function rmRemoteBasic(name) {
                         if (selected_value == key) { selected = "selected"; }
                         if (key != "default") {
                                 item += "<option value=\"" + key + "\" "+selected+">" + data[key] + "</option>";
+                        }       }
+                item     += "</select>";
+                return item;
+                }
+
+	this.select_array  = function (id,title,data,onchange="",selected_value="") {
+                var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
+                item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
+                for (var key in data) {
+                        var selected = "";
+                        if (selected_value == key) { selected = "selected"; }
+                        if (key != "default") {
+                                item += "<option value=\"" + data[key] + "\" "+selected+">" + data[key] + "</option>";
                         }       }
                 item     += "</select>";
                 return item;
@@ -312,7 +332,104 @@ function rmRemoteButtons(name) {
 
 
 // ------------------------------------------------------------------------------------
+
+function rmRemoteJSON(name) {
+	this.app_name       = name;
+	this.data           = {};
+	this.logging        = new jcLogging(this.app_name);
+
+
+	// create textarea to edit JSON
+	this.textarea		= function ( id, json, format="" ) {
+        	var text = "";
+        	text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:95%;height:160px;\">";
+        	text += this.json2text( id, json, format );
+		text += "</textarea></center>";
+        	return text;
+		}
+		
+	// replace JSON in area
+	this.textarea_replace	= function ( id, json, format="" ) {
+		var text = "";
+		text    += this.json2text( id, json, format );
+		element  = document.getElementById(id);
+		
+		if (element)	{ element.value = text; }
+		else		{ this.logging.error("Replace JSON in textarea - Element not found: "+id ); }
+		}
+
+        // show json for buttons in text field
+	this.json2text		= function ( id, json, format="" ) {        
+		var text = "";
+        	if (format == "buttons") {
+	        	var x=0;
+	        	text += "[\n";
+        		for (var i=0;i<json.length;i++) {
+        			x++;
+        			text += "\""+json[i]+"\"";
+        			if (i+1 < json.length)						{ text += ", "; }
+        			if (Number.isInteger((x)/4))   				{ text += "\n\n"; x = 0; }
+        			if (json.length > i+1 && json[i+1].includes("LINE") && x > 0) { text += "\n\n"; x = 0; }
+        			if (json[i].includes("LINE"))					{ text += "\n\n"; x = 0; }
+        			if (json[i].includes("HEADER-IMAGE"))				{ text += "\n\n"; x = 0; }
+        			if (json[i].includes("SLIDER"))				{ text += "\n\n"; x = 0; }
+        			if (json[i].includes("COLOR-PICKER"))				{ text += "\n\n"; x = 0; }
+        			}
+	        	text += "\n]";
+        		}
+        	else if (format == "channels") {
+        		json = JSON.stringify(json);
+        		json = json.replace( /],/g, "],\n\n" );
+        		json = json.replace( /:/g, ":\n   " );
+        		json = json.replace( /{/g, "{\n" );
+        		json = json.replace( /}/g, "\n}" );
+        		text += json;
+        		}
+        	else {
+        		json = JSON.stringify(json);
+        		json = json.replace( /,/g, ",\n" );
+        		json = json.replace( /{/g, "{\n" );
+        		json = json.replace( /}/g, "\n}" );
+        		text += json;
+        		}
+        	return text;
+        	}
+        	
+        // convert text 2 json ...
+        this.text2json		= function ( json_text, id="" ) {
+
+		// if string return value
+        	if (json_text == "" || 
+        	   (json_text.indexOf("[") < 0 && json_text.indexOf("{") < 0 && json_text.indexOf("\""))) { return json_text; }
+        	
+        	// parse and return object
+		try 		{ var object = JSON.parse(json_text); } 
+		catch(e) 	{ 
+			alert(lang("FORMAT_INCORRECT")+": "+e); 
+			this.logging.error(lang("FORMAT_INCORRECT")+" / "+id+": "+e);
+			this.logging.error(json_text);
+			return default_data;
+			}
+		this.logging.debug(object);
+		return object;
+        	}
+        
+        // get JSON value (and check if correct)
+        this.get_value		= function ( id, default_data="" ) {
+		element = document.getElementById(id);
+		this.logging.debug(this.app_name+".get_value: "+id);
+
+		if (!element)	{ 
+			this.logging.error(this.app_name+".get_value: element not found "+id);
+			return default_data;
+			}
+
+		return this.text2json( element.value, id );
+		}
+        	
+	}
 	
+// ------------------------------------------------------------------------------------
 
 function rmRemoteDisplays(name) {
 

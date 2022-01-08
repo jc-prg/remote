@@ -22,9 +22,11 @@ var language_app = {
 		"BUTTON_SELECT"		: "Please select button.",
 		
 		"CHANNEL_USE_JSON"		: "Please use JSON to edit the channel list.",
-		"CHANGE_ORDER"			: "Change Order",
-		"CHANGE_ORDER_SCENES"		: "Change Order of Scenes",
-		"CHANGE_ORDER_DEVICES"		: "Change Order of Devices",
+		"CHANGE_ORDER"			: "Change order",
+		"CHANGE_ORDER_SCENES"		: "Change order of scenes",
+		"CHANGE_ORDER_DEVICES"		: "Change order of devices",
+
+		"COLORPICKER_SELECT_CMD"	: "Select command, to insert color picker.",
 
 		"DEVICE_ASK_DELETE"		: "Do you really want to delete device '{0}'?",
 		"DEVICE_DONT_EXISTS"		: "Device '{0}' doesn't exists!",
@@ -36,6 +38,12 @@ var language_app = {
 		"DEVICE_SELECT_API"		: "Please select API for device.",
 		"DEVICE_SELECT_TEMPLATE"	: "Please select template to create remote for device.",
 		"DEVICE_SELECT_VISIBLITY"	: "Please select if device should be visible or hidden.",		
+		
+		"DISPLAY_LABEL_SELECT"		: "Select label to be deleted in the display.",
+		"DISPLAY_LABEL_DONT_EXIST"	: "Selected label doesn't exist in display definition.",
+		"DISPLAY_VALUE_SELECT"		: "Select device and value to be added in the display.",
+		"DISPLAY_LABEL_ADD"		: "Insert label for the additional value in the display.",
+		"DISPLAY_LABEL_EXISTS_ALREADY" : "Label already exists in the display.",
 
 		"FORMAT_INCORRECT"		: "format is not correct",
 		
@@ -104,7 +112,12 @@ var language_app = {
 		"SCENE_INSERT_ID"		: "Please insert ID for scene (no special characters).",
 		"SCENE_INSERT_LABEL"		: "Please insert label for scene.",
 		"SCENE_SELECT"			: "Please select scene.",
-		
+
+		"SLIDER_SELECT_CMD"		: "Select command, to insert slider.",
+		"SLIDER_SELECT_PARAM"		: "Select parameter, to insert slider.",
+		"SLIDER_INSERT_DESCR"		: "Insert description, to insert slider.",
+		"SLIDER_INSERT_MINMAX"		: "Insert minimum and maximum value (min-max), to insert slider.",
+
 		"SETTINGS"			: "Settings",
 		"TEXT_INPUT"			: "Text input",
 		

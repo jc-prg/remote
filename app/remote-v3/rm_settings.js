@@ -16,8 +16,8 @@ function rmSettings (name)
 	this.show               = function ()
 	this.hide               = function ()
 	this.onoff              = function ()
-	this.display_json	  = function ( id, json, format="" )
-	this.device_list        = function (id,onchange="")
+        this.device_list_container	= function ()
+	this.device_list	= function (id,onchange="")
 	this.interface_list     = function ()
 	this.interface_list_update = function ()
 	this.exec_time_list     = function ()
@@ -52,6 +52,7 @@ function rmSettings (name) {	// IN PROGRESS
 	this.btn          = new rmRemoteButtons(name);			// rm_remotes-elements.js
 	this.basic        = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
 	this.tab          = new rmRemoteTable(name+".tab");			// rm_remotes-elements.js
+	this.json         = new rmRemoteJSON(name+".json");			// rm_remotes-elements.js
 	
 	// init settings / set vars
 	this.init               = function (data) {
@@ -142,20 +143,7 @@ function rmSettings (name) {	// IN PROGRESS
 
 		// status
 		set_temp  = this.tab.start();
-		set_temp += this.tab.row( 	"Server:", 		this.app_stat );
-		set_temp += this.tab.row( 	"API Overview:",
-						this.interface_list() + "<br/>"
-						);
-		set_temp += this.tab.row(	"API Speed:",		this.exec_time_list() );
-		set_temp += this.tab.row( 	"API Details:",
-						this.device_list("select_dev_status", this.app_name+".device_list_status('select_dev_status','dev_status');") +
-						"<span id='dev_status'>default</span>"
-						);		
-		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_status","Server- &amp; API-Status",set_temp,false);
-
-		// status
-		set_temp  = this.tab.start();
+		set_temp += this.tab.row( 	"Server:", 	this.app_stat );
 		set_temp += this.tab.row( 	"Cookie:",	cookie );
 		set_temp += this.tab.row( 	"Button:",	this.app_last );
 		set_temp += this.tab.row( 	"Audio:",	audio2 + "<br/>" + audio1 );
@@ -229,7 +217,22 @@ function rmSettings (name) {	// IN PROGRESS
 		setting  += this.basic.container("setting_colorcodes","Button color codes",set_temp,false);
 
 		this.write(1,"Server &amp; Client Settings",setting);
-		this.write(2);
+
+
+		// status
+		setting   = "";
+		setting  += this.device_list_container();
+
+		set_temp  = this.tab.start();
+		set_temp += this.tab.row(	"API Speed:",		this.exec_time_list() );
+		set_temp += this.tab.row( 	"API Details:",
+						this.device_list("select_dev_status", this.app_name+".device_list_status('select_dev_status','dev_status');") +
+						"<span id='dev_status'>default</span>"
+						);		
+		set_temp += this.tab.end();
+		setting  += this.basic.container("setting_api03","Server- &amp; API-Status",set_temp,false);
+
+		this.write(2,"Interfaces",setting);
 		this.write(3);
 		}
 
@@ -298,6 +301,16 @@ function rmSettings (name) {	// IN PROGRESS
 		this.btn.height = "30px";		
 
 		set_temp  = this.tab.start();
+		set_temp += this.tab.row( "ID:",  	this.input("add_scene_id") );
+		set_temp += this.tab.row( "Label:", 	this.input("add_scene_label") );
+		set_temp += this.tab.row( "Description:", this.input("add_scene_descr") );
+		set_temp += this.tab.row( "<center>" +
+					   this.btn.sized(id="add_scene",label="Add Scene",style="","apiSceneAdd([#add_scene_id#,#add_scene_descr#,#add_scene_label#]);") +
+					   "</center>", false);
+		set_temp += this.tab.end();
+		setting  += this.basic.container("setting_add_scene","Add scene",set_temp,false); 
+
+		set_temp  = this.tab.start();
 		set_temp += this.tab.row( "ID:",  		this.input("add_device_id") );
 		set_temp += this.tab.row( "Label:", 		this.input("add_device_descr",onclick=onchange,oninput=onchange) );
 		set_temp += this.tab.row( "Interface:",  	this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"],onchange) );
@@ -311,26 +324,16 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_add_device","Add device",set_temp,false); 
 
-		set_temp  = this.tab.start();
-		set_temp += this.tab.row( "ID:",  	this.input("add_scene_id") );
-		set_temp += this.tab.row( "Label:", 	this.input("add_scene_label") );
-		set_temp += this.tab.row( "Description:", this.input("add_scene_descr") );
-		set_temp += this.tab.row( "<center>" +
-					   this.btn.sized(id="add_scene",label="Add Scene",style="","apiSceneAdd([#add_scene_id#,#add_scene_descr#,#add_scene_label#]);") +
-					   "</center>", false);
-		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_add_scene","Add scene",set_temp,false); 
-
 		this.write(0,lang("REMOTE_ADD"),setting);					
 
 
 		// Edit Makros 01		
 		setting   = "";
-		setting  += this.basic.container("setting_makros1","JSON makros [general]",		this.display_json("makro", this.data["DATA"]["makros"]["makro"], "makros"),false); 
-		setting  += this.basic.container("setting_makros2","JSON makros [device ON]",	this.display_json("dev-on", this.data["DATA"]["makros"]["dev-on"], "makros"),false); 
-		setting  += this.basic.container("setting_makros3","JSON makros [device OFF]",	this.display_json("dev-off", this.data["DATA"]["makros"]["dev-off"], "makros"),false); 
-		setting  += this.basic.container("setting_makros4","JSON makros [scene ON]",		this.display_json("scene-on", this.data["DATA"]["makros"]["scene-on"], "makros"),false); 
-		setting  += this.basic.container("setting_makros5","JSON makros [scene OFF]",	this.display_json("scene-off", this.data["DATA"]["makros"]["scene-off"], "makros"),false); 
+		setting  += this.basic.container("setting_makros1","JSON makros [general]",		this.json.textarea("makro", this.data["DATA"]["makros"]["makro"], "makros"),false); 
+		setting  += this.basic.container("setting_makros2","JSON makros [device ON]",	this.json.textarea("dev-on", this.data["DATA"]["makros"]["dev-on"], "makros"),false); 
+		setting  += this.basic.container("setting_makros3","JSON makros [device OFF]",	this.json.textarea("dev-off", this.data["DATA"]["makros"]["dev-off"], "makros"),false); 
+		setting  += this.basic.container("setting_makros4","JSON makros [scene ON]",		this.json.textarea("scene-on", this.data["DATA"]["makros"]["scene-on"], "makros"),false); 
+		setting  += this.basic.container("setting_makros5","JSON makros [scene OFF]",	this.json.textarea("scene-off", this.data["DATA"]["makros"]["scene-off"], "makros"),false); 
 
 		setting  += this.basic.container("setting_makros_manual","JSON makros - manual",lang("MANUAL_MAKROS"),false); 
 
@@ -414,32 +417,48 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	//------------------------------
-        // show json for buttons in text field
-	this.display_json	  = function ( id, json, format="" ) {
         
+        
+        // show devices in containers
+        this.device_list_container	= function () {
         	var text = "";
-        	text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:320px;height:160px;\">";
-		if (format == "makros") {
-        		json = JSON.stringify(json);
-        		json = json.replace( /],/g, "],\n\n" );
-        		json = json.replace( /:/g, ":\n   " );
-        		json = json.replace( /,/g, ", " );
-        		json = json.replace( /{/g, "{\n" );
-        		json = json.replace( /}/g, "\n}" );
-        		text += json;
+        	var list = {}
+        	for (var key in this.data["STATUS"]["devices"]) {
+        		var def_info = this.data["STATUS"]["devices"][key];
+        		var api_dev  = def_info["api"].split("_");
+        		if (! list[api_dev[0]]) { list[api_dev[0]] = {}; }
+        		if (! list[api_dev[0]][def_info["api"]]) { list[api_dev[0]][def_info["api"]] = {}; }
+        		list[api_dev[0]][def_info["api"]][key] = def_info;
         		}
-        	else {
-        		json = JSON.stringify(json);
-        		json = json.replace( /,/g, ",\n" );
-        		json = json.replace( /{/g, "{\n" );
-        		json = json.replace( /}/g, "\n}" );
-        		text += json;
-        		}
-		text += "</textarea></center>";
+        	for (var key in list) { if (key != "") {        		
+        		var details = ""; //JSON.stringify(list[key]);
+			details += "<i>API-Status:</i>";
+       		details += "<ul>";
+        		for (var key2 in list[key]) {
+       			var values = this.data["STATUS"]["interfaces"][key2];
+       			details += "<li><i>"+key2+"</i>:<br/><text id='api_status_"+key2+"'>"+values+"</text></li>";
+				}
+			// last-query, exec-time ... if available
+       		details += "</ul>";
+			details += "<i>Devices:</i>";
+       		details += "<ul>";
+        		for (var key2 in list[key]) {
+        			//details += "<b>"+key2+"</b><br>";
+        			for (var key3 in list[key][key2]) {
+        				var values = JSON.stringify(list[key][key2][key3]);
+        				values = values.replace( /,/g, ",<br/>");
+        				values = values.replace( /:/g, ": ");
+        				
+        				details += "<li><i><b>"+key3+":</b></i> " + list[key][key2][key3]["power"] + "</li>";
+	        			}
+        			}
+        		details += "</ul>";
+        		text += this.basic.container("details_"+key,"Interface: "+key+" </b><text id='api_status_"+key+"'> &nbsp;...</text>",details,false);
+        		} }
         	return text;
         	}
 
-	this.device_list        = function (id,onchange="") {
+	this.device_list	= function (id,onchange="") {
 		var list = {};
 		for (var key in this.data["DATA"]["devices"]){
 			list[key] = this.data["DATA"]["devices"][key]["settings"]["label"];
