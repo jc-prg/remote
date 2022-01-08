@@ -202,6 +202,20 @@ function statusCheck(data={}) {
 
 function statusCheck_apiConnection(data) {
 	// check api status
+	var api_summary = {};
+	
+	for (var key in data["STATUS"]["interfaces"]) {
+		var api_dev = key.split("_");
+		if (!api_summary[api_dev[0]]) { api_summary[api_dev[0]] = ""; }
+		if (data["STATUS"]["interfaces"][key] == "Connected" && api_summary[api_dev[0]] != "ERROR") 	{ api_summary[api_dev[0]] = "OK"; } 
+		else													{ api_summary[api_dev[0]] = "ERROR"; } 
+		}
+		
+	for (var key in api_summary) {
+		if (api_summary[key] == "OK") 	{ setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_connect + "'>" + api_summary[key] + "</font>"); }
+		else					{ setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_error + "'>" + api_summary[key] + "</font>"); }
+		}
+	
 	for (var key in data["STATUS"]["interfaces"]) {
 		var status = data["STATUS"]["interfaces"][key];
 		if (status == "Connected") 	{ setTextById("api_status_" + key, "<font color='" + color_api_connect + "'>" + status + "</font>"); }
@@ -518,11 +532,12 @@ function statusCheck_display(data={}) {
 	    		var device_api         = data["STATUS"]["devices"][key]["api"];
 	    		var device_api_status  = data["STATUS"]["interfaces"][device_api];
 			var connected   	= device_api_status.toLowerCase();
-			
-			display.push("api");
-			display.push("api-status");
-			display.push("api-last-query");
-			
+			/*
+			if (!display["api"])			{ display.push("api"); }
+			if (!display["api-status"])		{ display.push("api-status"); }
+			if (!display["api-last-query"])	{ display.push("api-last-query"); }
+			if (!display["api-last-send"])	{ display.push("api-last-send"); }
+			*/
 			for (var i=0; i<display.length; i++) {
 				var vkey     = display[i];
 				var element2 = document.getElementById("display_full_" + key + "_" + vkey);

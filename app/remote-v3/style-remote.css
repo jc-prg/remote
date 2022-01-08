@@ -108,6 +108,7 @@ ul.help ul li {
 	padding	: 5px;
 	border-radius	: 5px;
 	margin		: 2px;
+	overflow	: hidden;
   	}
 	   
 .remote_group_header {
