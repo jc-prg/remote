@@ -21,21 +21,30 @@ class connect(threading.Thread):
     def __init__(self,configFiles):
         '''
         Initialize Interfaces
-        '''
-	    
+        '''	    
         threading.Thread.__init__(self)
+
         self.api          = {}
         self.available    = {}
-        self.stopProcess  = False
-        self.wait         = 15       # seconds to check connection
-        self.configFiles  = configFiles
         self.name         = "deviceInterfaces"
+        self.stopProcess  = False
+        self.wait         = 15                                   # seconds to check connection
+        self.configFiles  = configFiles
         self.check_error  = time.time()
         self.last_message = ""
         self.methods      = {
             "send"        : "Send command via API (send)",
             "record"      : "Record per device (record)",
             "query"       : "Request per API (query)"
+            }
+        self.api_modules  = {
+            "KODI"        : "api_kodi",
+            "SONY"        : "api_sony",
+            "TEST"        : "api_test",
+            "MAGIC-HOME"  : "api_magichome",
+            "TAPO-P100"   : "api_p100",
+            "BROADLINK"   : "api_broadlink",
+            "EISCP-ONKYO" : "api_eiscp"
             }
             
         self.logging = logging.getLogger("api")
@@ -62,6 +71,7 @@ class connect(threading.Thread):
           self.logging.error("Error while requesting infos from "+rm3config.active_devices+".json: "+str(e))
           return
           
+        self.logging.info(".................... CONNECT INTERFACES ....................")
         for device in active_devices:       
             self.logging.debug("Load API for device "+device+" ...")
             api = active_devices[device]["config"]["interface_api"]
@@ -77,34 +87,19 @@ class connect(threading.Thread):
             if dev_config != {}:
                api_dev = api + "_" + dev
                
-               if api == "KODI"        and api_dev not in self.api:
-                  import interfaces.api_kodi
-                  self.api[api_dev] = interfaces.api_kodi.APIcontrol(api,dev,dev_config,self.log_commands)
-                  
-               if api == "EISCP-ONKYO" and api_dev not in self.api:
-                  import interfaces.api_eiscp
-                  self.api[api_dev] = interfaces.api_eiscp.APIcontrol(api,dev,dev_config,self.log_commands)
-                  
-               if api == "BROADLINK"   and api_dev not in self.api:
-                  import interfaces.api_broadlink
-                  self.api[api_dev] = interfaces.api_broadlink.APIcontrol(api,dev,dev_config,self.log_commands)
-                  
-               if api == "SONY"        and api_dev not in self.api:
-                  import interfaces.api_sony
-                  self.api[api_dev] = interfaces.api_sony.APIcontrol(api,dev,dev_config,self.log_commands)
-                  
-               if api == "MAGIC-HOME"  and api_dev not in self.api:  
-                  import interfaces.api_magichome
-                  self.api[api_dev] = interfaces.api_magichome.APIcontrol(api,dev,dev_config,self.log_commands)
-                  
-               if api == "TAPO-P100"   and api_dev not in self.api:
-                  import interfaces.api_p100
-                  self.api[api_dev] = interfaces.api_p100.APIcontrol(api,dev,dev_config,self.log_commands)
-                  
-               if api == "TEST"        and api_dev not in self.api:  
-                  import interfaces.api_test
-                  self.api[api_dev] = interfaces.api_test.APIcontrol(api,dev,dev_config,self.log_commands)
-
+               if api in self.api_modules and api_dev not in self.api:
+                  cmd_import  = "import interfaces." + self.api_modules[api]
+                  cmd_connect = "interfaces." + self.api_modules[api] + ".APIcontrol(api,dev,dev_config,self.log_commands)"
+                  try:
+                    exec(compile(cmd_import,"string","exec"))
+                    self.api[api_dev]      = eval(cmd_connect)                    
+                  except ModuleNotFoundError:
+                    self.logging.error("Could not connect API: Module '"+self.api_modules[api]+".py' not found ("+api_dev+")")
+                  except Exception as e:
+                    self.logging.error("Could not connect API: "+str(e)+" ("+api_dev+")")
+                  except:
+                    self.logging.error("Could not connect API: Unknown reason ("+api_dev+")")
+                                 
             else:
                self.logging.error("Could not connect to "+api+" - Error in config file ("+rm3config.commands + api + "/00_interface.json)")
         
@@ -113,8 +108,8 @@ class connect(threading.Thread):
            self.available[key] = self.api[key].api_description + " ["+dev_key+"]"
 
         while not self.stopProcess:
-           time.sleep(self.wait)
            self.check_connection()
+           time.sleep(self.wait)
              
         self.logging.info( "Exiting " + self.name )
 

@@ -50,7 +50,7 @@ class APIcontrol():
        self.logging.setLevel = rm3stage.log_set2level
        self.logging.info("_INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
        
-       self.connect()
+       #self.connect()
             
    #-------------------------------------------------
 

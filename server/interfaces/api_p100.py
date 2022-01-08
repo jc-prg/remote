@@ -48,7 +48,7 @@ class APIcontrol():
        self.logging.setLevel = rm3stage.log_set2level
        self.logging.info("_INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
               
-       self.connect()
+       #self.connect()
             
    #-------------------------------------------------
    
@@ -334,13 +334,10 @@ class APIaddOn():
         if status["device_on"]:        self.power_status = "ON"
         else:                          self.power_status = "OFF" 
         
-        if param == "location":        return { "result": status["location"] }
+        if param in status:            return { "result": status["location"] }
         elif param == "status":        return { "result": str(status) }
-        elif param == "type":          return { "result": status["type"] }
-        elif param == "model":         return { "result": status["model"] }
-        elif param == "device_on":     return { "result": status["device_on"] }
-        elif param == "overheated":    return { "result": status["overheated"] }
-        elif param == "power":         return { "result": self.power_status }
+        elif param == "power":         return { "result": self.power_status }        
+        
         else:                          return { "error" : "unknown tag '"+param+"'" }
 
       else:

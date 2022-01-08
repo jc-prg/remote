@@ -47,7 +47,7 @@ class APIcontrol():
           log = logging.getLogger("sonyapilib.device")
           log.setLevel(logging.CRITICAL)
        
-       self.connect()
+       #self.connect()
             
    #-------------------------------------------------
    
