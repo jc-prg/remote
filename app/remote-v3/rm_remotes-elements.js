@@ -515,7 +515,7 @@ function rmRemoteDisplays(name) {
 		else			{ text  = text.replace( /##DISPLAY##/g, "none" ); }
         	for (var key in display_data) {
       			var label = "<data class='display-label'>"+key+":</data>";
-			var input = "<data class='display-input' id='display_"+device+"_"+display_data[key]+"_edit'>edit mode</data>";
+			var input = "<data class='display-input-shorten' id='display_"+device+"_"+display_data[key]+"_edit'>{"+display_data[key]+"}</data>";
 	        	text += "<div class='display-element "+style+"'>"+label+input+"</div>";
 	        	}
 		text += display_end;

@@ -259,22 +259,47 @@ function statusCheck_sceneButton(data) {
 		if (scene_status[key] == "ON") {
 			statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
 			statusButtonSetColor( "scene_off_"+key, "" );
+
+			elementHidden( "display_"+key+"_EDIT_MODE");
+			elementVisible("display_"+key+"_ON");
+			elementHidden( "display_"+key+"_OFF");
+			elementHidden( "display_"+key+"_ERROR");
 			}
 		else if (scene_status[key] == "OTHER") {
 			statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
 			statusButtonSetColor( "scene_off_"+key, "" );
+
+			elementHidden( "display_"+key+"_EDIT_MODE");
+			elementVisible("display_"+key+"_ON");
+			elementHidden( "display_"+key+"_OFF");
+			elementHidden( "display_"+key+"_ERROR");
 			}
 		else if (scene_status[key] == "ERROR") {
 			statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
 			statusButtonSetColor( "scene_off_"+key, scene_status[key] );
+
+			elementHidden( "display_"+key+"_EDIT_MODE");
+			elementHidden( "display_"+key+"_ON");
+			elementHidden( "display_"+key+"_OFF");
+			elementVisible("display_"+key+"_ERROR");
 			}
 		else if (scene_status[key] == "OFF") {
 			statusButtonSetColor( "scene_off_"+key,  scene_status[key] );
 			statusButtonSetColor( "scene_on_"+key, "" );
+
+			elementHidden( "display_"+key+"_EDIT_MODE");
+			elementHidden( "display_"+key+"_ON");
+			elementVisible("display_"+key+"_OFF");
+			elementHidden( "display_"+key+"_ERROR");
+			}
+		if (rm3remotes.edit_mode) {
+			elementVisible("display_"+key+"_EDIT_MODE");
+			elementHidden( "display_"+key+"_ON");
+			elementHidden( "display_"+key+"_OFF");
+			elementHidden( "display_"+key+"_ERROR");
 			}
 		}
 	}
-
 	
 //-----------------------------------------
 

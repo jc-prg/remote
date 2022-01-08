@@ -57,6 +57,15 @@
    width        : 90px;
 }
 
+.display-input-shorten {
+   float        : left;
+   width        : 90px;
+
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+}
+
 .display-detail {
    float        : left;
    width        : 300px;
