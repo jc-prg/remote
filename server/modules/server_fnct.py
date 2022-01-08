@@ -80,12 +80,13 @@ def RmReadData_devices(selected=[],remotes=True):
                 data_temp["remote"]    = remote["data"]
                 data_temp["interface"] = {}
 
-                if "method"   in interface_def:  data_temp["interface"]["method"]      = interface_def["method"]              
-                if "values"   in interface_def:  data_temp["interface"]["values"]      = interface_def["values"]              
-                if "commands" in interface_def:  data_temp["interface"]["commands"]    = interface_def["commands"] 
-                if "url"      in interface_def:  data_temp["interface"]["url"]         = interface_def["url"] 
-                if "queries"  in interface_def:  data_temp["interface"]["query_list"]  = list(interface_def["queries"].keys())                 
-                if "buttons"  in interface_def:  data_temp["interface"]["button_list"] = list(interface_def["buttons"].keys())                 
+                if "method"    in interface_def:  data_temp["interface"]["method"]      = interface_def["method"]              
+                if "values"    in interface_def:  data_temp["interface"]["values"]      = interface_def["values"]              
+                if "commands"  in interface_def:  data_temp["interface"]["commands"]    = interface_def["commands"] 
+                if "url"       in interface_def:  data_temp["interface"]["url"]         = interface_def["url"] 
+                if "queries"   in interface_def:  data_temp["interface"]["query_list"]  = list(interface_def["queries"].keys())                 
+                if "buttons"   in interface_def:  data_temp["interface"]["button_list"] = list(interface_def["buttons"].keys())                 
+                if "send-data" in interface_def:  data_temp["interface"]["send_list"]   = list(interface_def["send-data"].keys())                 
              
              data[device] = data_temp
 
