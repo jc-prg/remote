@@ -39,11 +39,13 @@ var language_app = {
 		"DEVICE_SELECT_TEMPLATE"	: "Please select template to create remote for device.",
 		"DEVICE_SELECT_VISIBLITY"	: "Please select if device should be visible or hidden.",		
 		
+		"DISPLAY_EXISTS"		: "Display already exists, only one display is supported.",
 		"DISPLAY_LABEL_SELECT"		: "Select label to be deleted in the display.",
 		"DISPLAY_LABEL_DONT_EXIST"	: "Selected label doesn't exist in display definition.",
 		"DISPLAY_VALUE_SELECT"		: "Select device and value to be added in the display.",
 		"DISPLAY_LABEL_ADD"		: "Insert label for the additional value in the display.",
 		"DISPLAY_LABEL_EXISTS_ALREADY" : "Label already exists in the display.",
+		"DISPLAY_NOT_ADDED"		: "No display added yet. Changes below will have no effect.",
 
 		"FORMAT_INCORRECT"		: "format is not correct",
 		
