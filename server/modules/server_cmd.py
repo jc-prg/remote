@@ -329,7 +329,7 @@ def RemoteMakro(makro):
 #### --> check, if makro is defined ... (or work with try: / except:)
 #### --> check, why order isn't correct in some cases (dev-on / dev-off)
         
-        logging.warning("Decoded makro-string 1st: "+str(commands_1st))
+        logging.debug("Decoded makro-string 1st: "+str(commands_1st))
 
         # decode makros: scene-on/off
         for command in commands_1st:
@@ -341,7 +341,7 @@ def RemoteMakro(makro):
             else:                          commands_2nd.extend([command])
           else:                            commands_2nd.extend([command])
           
-        logging.warning("Decoded makro-string 2nd: "+str(commands_2nd))
+        logging.debug("Decoded makro-string 2nd: "+str(commands_2nd))
 
         # decode makros: dev-on/off
         for command in commands_2nd:
@@ -353,7 +353,7 @@ def RemoteMakro(makro):
             else:                        commands_3rd.extend([command])
           else:                          commands_3rd.extend([command])
           
-        logging.warning("Decoded makro-string 3rd: "+str(commands_3rd))
+        logging.debug("Decoded makro-string 3rd: "+str(commands_3rd))
 
         # decode makros: makro
         for command in commands_3rd:
@@ -364,7 +364,7 @@ def RemoteMakro(makro):
             else:                        commands_4th.extend([command])
           else:                          commands_4th.extend([command])
           
-        logging.warning("Decoded makro-string 4th: "+str(commands_4th))
+        logging.debug("Decoded makro-string 4th: "+str(commands_4th))
                   
         # execute buttons
         for command in commands_4th:
