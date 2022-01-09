@@ -51,7 +51,7 @@ The file 00_interface.json defines the connect to a specific device:
 * if you want to addess more than one device per API add one section per device
 * the connection between remote and device plus API is defined in the file \_ACTIVE-DEVICES.json
 
-```bash
+```json
 {
   "Devices" : {
     "living_room" : {                        # 1st interface using this API 
@@ -78,7 +78,7 @@ The file 00_interface.json defines the connect to a specific device:
 
 The file 00_default.json defines button commands, queries, send commands etc. that are valid for all devices that uses a specific interfaces.
 
-```bash
+```json
 {
   "data": {
     "buttons" : {          # define button per command, e.g.
