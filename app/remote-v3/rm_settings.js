@@ -492,7 +492,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 		
 	this.exec_time_list_update = function () {
-		document.getElementById('setting_exec_time_list').innerHTML = this.exec_time_list();
+		setTextById('setting_exec_time_list', this.exec_time_list());
 		}
 
 	this.button_list        = function (id,filter="") {
