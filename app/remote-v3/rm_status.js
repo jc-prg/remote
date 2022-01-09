@@ -493,14 +493,35 @@ function statusCheck_display(data={}) {
 		else					{ var device_status = ""; }
 		
 		if (device_api_status == "Connected" && device_status.includes("ON")) {
-			if (media_info && devices[key]["status"]["current-playing"] && devices[key]["status"]["current-playing"] != "") {
+		
+			// to be transfered to server: single source for playing information
+			// -> add 'queries-content-info = ["current-playing","usb-net-title"]' to config files
+			// -> offer value via API
+			// -> use it here to check if one of those values contains (relevant) information
+					
+			var status              = devices[key]["status"];
+			var playing_information = ["current-playing","usb-net-title"];
+			var playing_content     = "";
+			
+			for (var i=0;i<playing_information.length;i++) {
+
+				if (status[playing_information[i]] 
+				    && status[playing_information[i]] != "" 
+				    && status[playing_information[i]] != "Error"
+				    && status[playing_information[i]] != "no media"
+				    && status[playing_information[i]] != "no data"
+				    ) {
+					playing_content = status[playing_information[i]];
+					}
+				}
+		
+			if (media_info && playing_content != "") {
 
 				if (media_info_content)	{ var current_media_info_content = media_info_content.innerHTML; }
 				else				{ var current_media_info_content = ""; }
 				
-
-				if (devices[key]["status"]["current-playing"] != "no media" && rm3remotes.active_name == key) {				
-					current_media_info_content = devices[key]["status"]["current-playing"];
+				if (playing_content != "" && rm3remotes.active_name == key) {				
+					current_media_info_content = playing_content;
 					current_playing            = "&nbsp;<br/><center>";
 					current_playing           += "<marquee style='width:98%' scrollamount='3' scrolldelay='10' id='media_info_content'>"+current_media_info_content+"</marquee>";
 					current_playing           += "</center>&nbsp;<hr/>";
