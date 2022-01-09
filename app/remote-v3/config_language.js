@@ -27,6 +27,9 @@ var language_app = {
 		"CHANGE_ORDER_DEVICES"		: "Change order of devices",
 
 		"COLORPICKER_SELECT_CMD"	: "Select command, to insert color picker.",
+		
+		"COMMAND_DELETE_INFO"		: "When deleted you can record a command for a button again.",
+		"COMMAND_RECORD_INFO"		: "Undefined buttons are colored blue. Click to record an IR command for those buttons.",
 
 		"DEVICE_ASK_DELETE"		: "Do you really want to delete device '{0}'?",
 		"DEVICE_DONT_EXISTS"		: "Device '{0}' doesn't exists!",
@@ -48,6 +51,8 @@ var language_app = {
 		"DISPLAY_NOT_ADDED"		: "No display added yet. Changes below will have no effect.",
 
 		"FORMAT_INCORRECT"		: "format is not correct",
+		
+		"HEADER_IMAGE_EXISTS"		: "There is already a HEADER-IMAGE in this remote control.",
 		
 		"MAKRO_PLEASE_WAIT"		: "Executing commands, please wait a few seconds!",
 		
