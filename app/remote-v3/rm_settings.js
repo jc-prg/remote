@@ -6,31 +6,31 @@
 //--------------------------------
 /* INDEX:
 function rmSettings (name)
-	this.init               = function (data)
-	this.create             = function ()
-	this.create_setting     = function ()
-	this.create_edit        = function ()
-	this.create_edit_FileNames 	= function ()
-	this.write              = function (nr,label="",text="")
-	this.is_filled		= function (nr)
-	this.show               = function ()
-	this.hide               = function ()
-	this.onoff              = function ()
+	this.init			= function (data)
+	this.create			= function ()
+	this.create_setting		= function ()
+	this.create_edit		= function ()
+	this.create_edit_FileNames	= function ()
+	this.write			= function (nr,label="",text="")
+	this.is_filled			= function (nr)
+	this.show			= function ()
+	this.hide			= function ()
+	this.onoff			= function ()
         this.device_list_container	= function ()
-	this.device_list	= function (id,onchange="")
-	this.interface_list     = function ()
-	this.interface_list_update = function ()
-	this.exec_time_list     = function ()
-	this.exec_time_list_update = function ()
-	this.button_list        = function (id,filter="")
-	this.button_list_change = function (id_filter, id_list, id_list_container)
-	this.device_list_status = function (id_filter, id_list_container)
-	this.button_show        = function ()
-	this.button_deact       = function (menu_entry=false)
-	this.button_stage       = function ()
-	this.input              = function (id,onclick="",oninput="")
-	this.select             = function (id,title,data,onchange="")
-	this.remoteToggleEditMode = function ()
+	this.device_list		= function (id,onchange="")
+	this.interface_list		= function ()
+	this.interface_list_update	= function ()
+	this.exec_time_list		= function ()
+	this.exec_time_list_update	= function ()
+	this.button_list		= function (id,filter="")
+	this.button_list_change	= function (id_filter, id_list, id_list_container)
+	this.device_list_status	= function (id_filter, id_list_container)
+	this.button_show		= function ()
+	this.button_deact		= function (menu_entry=false)
+	this.button_stage		= function ()
+	this.input			= function (id,onclick="",oninput="")
+	this.select			= function (id,title,data,onchange="")
+	this.remoteToggleEditMode	= function ()
 */
 //--------------------------------
 
@@ -55,7 +55,7 @@ function rmSettings (name) {	// IN PROGRESS
 	this.json         = new rmRemoteJSON(name+".json");			// rm_remotes-elements.js
 	
 	// init settings / set vars
-	this.init               = function (data) {
+	this.init			= function (data) {
 		// set data
 		this.data = data;
 		
@@ -79,7 +79,7 @@ function rmSettings (name) {	// IN PROGRESS
 	//------------------------------
 
 	// write settings page
-	this.create             = function () {
+	this.create			= function () {
 	
 		if (this.edit_mode && this.mode != "edit") 		{ this.create_edit();    this.mode = "edit"; }
 		else if (!this.edit_mode && this.mode != "setting")	{ this.create_setting(); this.mode = "setting"; }
@@ -87,7 +87,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 
-	this.create_setting     = function () {
+	this.create_setting		= function () {
 		// Set Vars
 		var setting    = "";
 		var set_temp   = "";
@@ -238,7 +238,7 @@ function rmSettings (name) {	// IN PROGRESS
 
 	//------------------------------
 
-	this.create_edit        = function () {
+	this.create_edit		= function () {
 	
 		var onchange  = this.app_name + ".create_edit_FileNames()";
 		var onchange2 = this.app_name + ".create_edit_FileNames";
@@ -345,7 +345,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 
-	this.create_edit_FileNames 	= function () {
+	this.create_edit_FileNames	= function () {
 	
 		replace_minus   = [" ","/","\\",":","&","#","?"];
 		
@@ -367,7 +367,7 @@ function rmSettings (name) {	// IN PROGRESS
 	//------------------------------
 
 	// write settings category
-	this.write              = function (nr,label="",text="") {
+	this.write			= function (nr,label="",text="") {
 
 		var element 	= this.e_settings[nr];
 		if (label != "") {
@@ -381,25 +381,30 @@ function rmSettings (name) {	// IN PROGRESS
 		setTextById(element,content);
 		}
 		
-	this.is_filled		= function (nr) {
+	this.is_filled			= function (nr) {
 		var element 	= this.e_settings[nr];
 		if (element.innerHTML != "")	{ return true; }
 		else				{ return false; }
 		}
 
 	//------------------------------
-	this.show               = function () { if (this.active == false) { this.onoff(); showRemoteInBackground(0); } }
-	this.hide               = function () { if (this.active == true ) { this.onoff(); } }
+	this.show			= function () { if (this.active == false) { this.onoff(); showRemoteInBackground(0); } }
+	this.hide			= function () { if (this.active == true ) { this.onoff(); } }
 
-	this.onoff              = function () {
+	this.onoff			= function () {
 
 		if (this.active)	{ 
+			setNavTitle(this.header_title);
+			
 			show_settings = false;
 			show_remotes  = true;
 			this.active   = false;
 			if (rm3remotes.active_type == "start") { showRemoteInBackground(1); }
 			}
 		else			{ 
+			this.header_title = getTextById("header_title");
+			setNavTitle("Settings");
+			
 			show_settings = true;
 			show_remotes  = false;
 			this.active   = true;  
@@ -435,8 +440,9 @@ function rmSettings (name) {	// IN PROGRESS
 			details += "<i>API-Status:</i>";
        		details += "<ul>";
         		for (var key2 in list[key]) {
-       			var values = this.data["STATUS"]["interfaces"][key2];
-       			details += "<li><i>"+key2+"</i>:<br/><text id='api_status_"+key2+"'>"+values+"</text></li>";
+       			var values  = this.data["STATUS"]["interfaces"][key2];
+       			var api_dev = key2.split("_");
+       			details += "<li><i>"+api_dev[1]+"</i>: <text id='api_status_"+key2+"'>"+values+"</text></li>";
 				}
 			// last-query, exec-time ... if available
        		details += "</ul>";
@@ -458,7 +464,7 @@ function rmSettings (name) {	// IN PROGRESS
         	return text;
         	}
 
-	this.device_list	= function (id,onchange="") {
+	this.device_list		= function (id,onchange="") {
 		var list = {};
 		for (var key in this.data["DATA"]["devices"]){
 			list[key] = this.data["DATA"]["devices"][key]["settings"]["label"];
@@ -466,7 +472,7 @@ function rmSettings (name) {	// IN PROGRESS
 		return this.select(id,"device",list,onchange);
 		}
 
-	this.interface_list     = function () {
+	this.interface_list		= function () {
 		var text = "<div id='setting_interface_list'>";
 		for (var key in this.data["STATUS"]["interfaces"]) {
 			text += key + ":<br><div id='api_status_"+key+"'>";
@@ -478,11 +484,11 @@ function rmSettings (name) {	// IN PROGRESS
 		return text;
 		}
 		
-	this.interface_list_update = function () {
+	this.interface_list_update	= function () {
 		setTextById('setting_interface_list', this.interface_list());
 		}
 
-	this.exec_time_list     = function () {
+	this.exec_time_list		= function () {
 		var text = "<div id='setting_exec_time_list'>";
 		for (var key in this.data["STATUS"]["request_time"]) {
 			text += key + ": " + (Math.round(this.data["STATUS"]["request_time"][key]*1000)/1000) + "s<br/>";
@@ -491,11 +497,11 @@ function rmSettings (name) {	// IN PROGRESS
 		return text;
 		}
 		
-	this.exec_time_list_update = function () {
+	this.exec_time_list_update	= function () {
 		setTextById('setting_exec_time_list', this.exec_time_list());
 		}
 
-	this.button_list        = function (id,filter="") {
+	this.button_list		= function (id,filter="") {
 		var list = {};
 		if (filter != "" && filter in this.data["DATA"]["devices"]) {
 			for (var key in this.data["DATA"]["devices"][filter]["buttons"]){
@@ -505,14 +511,14 @@ function rmSettings (name) {	// IN PROGRESS
 		return this.select(id,"button",list);
 		}
 
-	this.button_list_change = function (id_filter, id_list, id_list_container) {
+	this.button_list_change	= function (id_filter, id_list, id_list_container) {
 	        var filter_list = document.getElementById(id_filter);
 	        var filter      = filter_list.options[filter_list.selectedIndex].value;
 	        var list        = this.button_list( id_list, filter );
 	        setTextById( id_list_container, list );
         	}
 
-	this.device_list_status = function (id_filter, id_list_container) {
+	this.device_list_status	= function (id_filter, id_list_container) {
 		var status = "<br/>";
 	        var filter_list = document.getElementById(id_filter);
 	        var filter      = filter_list.options[filter_list.selectedIndex].value;
@@ -538,7 +544,7 @@ function rmSettings (name) {	// IN PROGRESS
 
 	// show button code in header if pressed button
 
-	this.button_show        = function () {
+	this.button_show		= function () {
 		if (showButton)	{ showButton = false; }
 		else			{ showButton = true; }
 		this.create();
@@ -546,7 +552,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	// deactivate buttons if device / scene is switched off
-	this.button_deact       = function (menu_entry=false) {
+	this.button_deact		= function (menu_entry=false) {
 		if (deactivateButton) 	{ deactivateButton = false; }
 		else			{ deactivateButton = true; }
 		if (menu_entry == false) {
@@ -559,7 +565,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	// switch server connection between test and prod stage
-	this.button_stage       = function () {
+	this.button_stage		= function () {
 		if (connect2stage == "Test")	{ connect2stage = "Prod"; appFW.appUrl = RESTurl_prod; }
 		else				{ connect2stage = "Test"; appFW.appUrl = RESTurl_test; }
 
@@ -569,7 +575,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	//------------------------------	
-	this.input              = function (id,onclick="",oninput="") { 
+	this.input			= function (id,onclick="",oninput="") { 
 		
 		text = "<input id=\"" + id + "\" oninput=\""+oninput+"\" style='width:" + this.input_width + ";margin:1px;'>"; 
 		if (onclick != "") {
@@ -580,7 +586,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 		
 
-	this.select             = function (id,title,data,onchange="") {
+	this.select			= function (id,title,data,onchange="") {
 		var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
 		item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
 		for (var key in data) {
@@ -592,7 +598,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	// show hide edit mode for remotes
-	this.remoteToggleEditMode = function () {
+	this.remoteToggleEditMode	= function () {
 		if (this.edit_mode)  { this.edit_mode = false; }
 		else                 { this.edit_mode = true; }
 		

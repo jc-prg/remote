@@ -53,8 +53,9 @@ function setNavTitle (title)
 function image(file)
 function writeKeyBoard ()
 ----------------------------
-./remote-v3/rm_main.js (248)
+./remote-v3/rm_main.js (258)
 ----------------------------
+function remoteMainMenu (cookie_erase=true)
 function remoteInit (first_load=true)
 function remoteFirstLoad_load()
 function remoteFirstLoad(data)
@@ -166,7 +167,7 @@ function jcSlider2 ( name, container )
 	this.info		= function()
 		alert("Please define a function to be called on change.")
 ----------------------------
-./remote-v3/rm_remotes.js (1414)
+./remote-v3/rm_remotes.js (1479)
 ----------------------------
 function rmRemote(name)
 	this.init			= function (data)
@@ -177,27 +178,27 @@ function rmRemote(name)
 	this.device_notused		= function (id, device, preview_remote="")
 	this.device_notused_showhide	= function ()
 	this.device_edit		= function (id, device)
-	this.device_edit_json		= function (id, device, remote="", display="", displaysize="")
+	this.device_edit_json		= function (id, device, preview_remote="", preview_display="", preview_display_size="")
 	this.scene_remote_preview	= function (scene)
 	this.scene_remote		= function (id="", scene="", preview_remote="", preview_display="", preview_display_size="")
 	this.scene_channels		= function (id, scene, preview_channel="")
 		channels = channels.sort(function (a, b)
 	this.scene_description		= function (id, scene)
 	this.scene_edit		= function (id, scene)
-	this.scene_edit_json		= function (id,scene,remote="",channel="",display="", displaysize="")
+	this.scene_edit_json		= function (id, scene, preview_remote="", preview_channel="", preview_display="", preview_display_size="")
 	this.scene_header_image	= function (id, scene)
 	this.remote_preview		= function (type, name)
 	this.remote_add_header		= function (type,scene,button,remote,position="")
 	this.remote_add_display	= function (type,scene,button,remote,position="")
 	this.remote_add_line		= function (type,scene,button,remote,position="")
-	this.remote_add_slider		= function (type,scene,button,remote,position="")
+	this.remote_add_slider		= function (type,scene,slider_cmd,slider_param,slider_descr,slider_minmax,remote,position="")
 	this.remote_add_colorpicker	= function (type,scene,button,remote,position="")
 	this.remote_add_button		= function (type,scene,button,remote,position="")
 	this.remote_delete_button	= function (type,scene,button,remote)
 	this.remote_move_button	= function (type,scene,button,remote,left_right)
 	this.remote_import_templates	= function (type,scene,template,remote)
-	this.display_add_value		= function (type,scene,value,label,display_json,display_size)
-	this.display_delete_value	= function (display_json,remove_label)
+	this.display_add_value		= function (type,scene,device,value,label,display_json,display_size)
+	this.display_delete_value	= function (type,scene,display_json,remove_label)
 	this.remoteToggleEditMode	= function ()
 	this.command_select		= function (id,device="")
 	this.command_select_record	= function (id,device="")
@@ -205,7 +206,8 @@ function rmRemote(name)
 	this.button_list		= function (device)
 	this.template_list		= function (type="")
 	this.template_select		= function (id,title,data,onchange="")
-	this.button_select		= function (id,device="")
+	this.button_select		= function (id,device="",remote_definition={})
+	this.device_display_select	= function (device,id)
 	this.scene_display_select	= function (div_id,id,device)
 	this.scene_button_select	= function (div_id,id,device)
 	this.colorPicker		= function (id, device, type="devices", data)
@@ -213,34 +215,34 @@ function rmRemote(name)
 	this.empty			= function (id, comment="" )
 	this.show			= function (device="" )
 ----------------------------
-./remote-v3/rm_settings.js (605)
+./remote-v3/rm_settings.js (606)
 ----------------------------
 function rmSettings (name)
-	this.init               = function (data)
-	this.create             = function ()
-	this.create_setting     = function ()
-	this.create_edit        = function ()
-	this.create_edit_FileNames 	= function ()
-	this.write              = function (nr,label="",text="")
-	this.is_filled		= function (nr)
-	this.show               = function ()
-	this.hide               = function ()
-	this.onoff              = function ()
+	this.init			= function (data)
+	this.create			= function ()
+	this.create_setting		= function ()
+	this.create_edit		= function ()
+	this.create_edit_FileNames	= function ()
+	this.write			= function (nr,label="",text="")
+	this.is_filled			= function (nr)
+	this.show			= function ()
+	this.hide			= function ()
+	this.onoff			= function ()
         this.device_list_container	= function ()
-	this.device_list	= function (id,onchange="")
-	this.interface_list     = function ()
-	this.interface_list_update = function ()
-	this.exec_time_list     = function ()
-	this.exec_time_list_update = function ()
-	this.button_list        = function (id,filter="")
-	this.button_list_change = function (id_filter, id_list, id_list_container)
-	this.device_list_status = function (id_filter, id_list_container)
-	this.button_show        = function ()
-	this.button_deact       = function (menu_entry=false)
-	this.button_stage       = function ()
-	this.input              = function (id,onclick="",oninput="")
-	this.select             = function (id,title,data,onchange="")
-	this.remoteToggleEditMode = function ()
+	this.device_list		= function (id,onchange="")
+	this.interface_list		= function ()
+	this.interface_list_update	= function ()
+	this.exec_time_list		= function ()
+	this.exec_time_list_update	= function ()
+	this.button_list		= function (id,filter="")
+	this.button_list_change	= function (id_filter, id_list, id_list_container)
+	this.device_list_status	= function (id_filter, id_list_container)
+	this.button_show		= function ()
+	this.button_deact		= function (menu_entry=false)
+	this.button_stage		= function ()
+	this.input			= function (id,onclick="",oninput="")
+	this.select			= function (id,title,data,onchange="")
+	this.remoteToggleEditMode	= function ()
 ----------------------------
 ./remote-v3/rm_start.js (182)
 ----------------------------
@@ -255,7 +257,7 @@ function rmStart(name)
 	this.remoteToggleEditMode = function()
 	this.image                = function(file)
 ----------------------------
-./remote-v3/rm_status.js (597)
+./remote-v3/rm_status.js (643)
 ----------------------------
 function statusShowVolume_old( volume, maximum, vol_color, novol_color="" )
 function statusShowVolume( volume )
@@ -304,7 +306,7 @@ function statusCheck_display(data={})
   4 - remoteDropDown
   2 - remoteDropDown_load
   1 - remoteFirstLoad
-  2 - remoteFirstLoad_load
+  3 - remoteFirstLoad_load
   2 - remoteInitData
   1 - remoteInitData_load
   2 - remoteLastFromCookie
@@ -313,7 +315,7 @@ function statusCheck_display(data={})
   2 - remoteSetSliderDevice
   3 - remoteStartMenu
   2 - remoteStartMenu_load
- 12 - remoteToggleEditMode
+ 10 - remoteToggleEditMode
   1 - remoteUpdate
   2 - rmMenu
   2 - rmRemote
@@ -337,6 +339,6 @@ function statusCheck_display(data={})
   1 - statusCheck_load
   2 - statusCheck_sceneButton
   1 - statusShowVolume
- 77 - to
+ 88 - to
   1 - writeKeyBoard
   1 - writeMakroButton

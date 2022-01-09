@@ -14,27 +14,27 @@ function rmRemote(name)
 	this.device_notused		= function (id, device, preview_remote="")
 	this.device_notused_showhide	= function ()
 	this.device_edit		= function (id, device)
-	this.device_edit_json		= function (id, device, remote="", display="", displaysize="")
+	this.device_edit_json		= function (id, device, preview_remote="", preview_display="", preview_display_size="")
 	this.scene_remote_preview	= function (scene)
 	this.scene_remote		= function (id="", scene="", preview_remote="", preview_display="", preview_display_size="")
 	this.scene_channels		= function (id, scene, preview_channel="")
 		channels = channels.sort(function (a, b)
 	this.scene_description		= function (id, scene)
 	this.scene_edit		= function (id, scene)
-	this.scene_edit_json		= function (id,scene,remote="",channel="",display="", displaysize="")
+	this.scene_edit_json		= function (id, scene, preview_remote="", preview_channel="", preview_display="", preview_display_size="")
 	this.scene_header_image	= function (id, scene)
 	this.remote_preview		= function (type, name)
 	this.remote_add_header		= function (type,scene,button,remote,position="")
 	this.remote_add_display	= function (type,scene,button,remote,position="")
 	this.remote_add_line		= function (type,scene,button,remote,position="")
-	this.remote_add_slider		= function (type,scene,button,remote,position="")
+	this.remote_add_slider		= function (type,scene,slider_cmd,slider_param,slider_descr,slider_minmax,remote,position="")
 	this.remote_add_colorpicker	= function (type,scene,button,remote,position="")
 	this.remote_add_button		= function (type,scene,button,remote,position="")
 	this.remote_delete_button	= function (type,scene,button,remote)
 	this.remote_move_button	= function (type,scene,button,remote,left_right)
 	this.remote_import_templates	= function (type,scene,template,remote)
-	this.display_add_value		= function (type,scene,value,label,display_json,display_size)
-	this.display_delete_value	= function (display_json,remove_label)
+	this.display_add_value		= function (type,scene,device,value,label,display_json,display_size)
+	this.display_delete_value	= function (type,scene,display_json,remove_label)
 	this.remoteToggleEditMode	= function ()
 	this.command_select		= function (id,device="")
 	this.command_select_record	= function (id,device="")
@@ -42,7 +42,8 @@ function rmRemote(name)
 	this.button_list		= function (device)
 	this.template_list		= function (type="")
 	this.template_select		= function (id,title,data,onchange="")
-	this.button_select		= function (id,device="")
+	this.button_select		= function (id,device="",remote_definition={})
+	this.device_display_select	= function (device,id)
 	this.scene_display_select	= function (div_id,id,device)
 	this.scene_button_select	= function (div_id,id,device)
 	this.colorPicker		= function (id, device, type="devices", data)
@@ -129,7 +130,6 @@ function rmRemote(name) {
 			return;
 			}
 			
-
 		// set active remote (type, id)
 		this.active_name    = rm_id;
 		this.active_type    = type;
@@ -143,11 +143,16 @@ function rmRemote(name) {
 		rm3start.active     = "start";
 		startActive         = false;
 		
+		var edit_mode       = "";
+		if (this.edit_mode) { edit_mode = " / EDIT"; }
+		
 		// format frame1, frame2 for edit mode
 		document.getElementById("frame1").className = "setting_bg";
 		document.getElementById("frame2").className = "setting_bg";
 		
 		if (type == "device") {
+		
+			setNavTitle(this.data["DATA"]["devices"][rm_id]["settings"]["label"] + edit_mode);
 
 			// set vars
 			this.logging.default("Write Device Remote Control: " + rm_id);
@@ -165,6 +170,8 @@ function rmRemote(name) {
 			this.show(rm_id);
 			}
 		else if (type == "scene") {
+
+			setNavTitle(this.data["DATA"]["scenes"][rm_id]["settings"]["label"] + edit_mode);
 
 			// set vars
 			this.logging.default("Write Scene Remote Control: " + rm_id);
@@ -609,13 +616,13 @@ function rmRemote(name) {
 				this.command_select_record("rec_button",device),
 				this.button.edit("apiCommandRecord('"+device+"','rec_button');","record command")
 				);
-			edit  += this.tab.row( "<small>Undefined buttons are colored blue. Click to record an IR command for those buttons.</small>", false);
+			edit  += this.tab.row( "<small>"+lang("COMMAND_RECORD_INFO")+"</small>", false);
 			edit  += this.tab.line();
 			edit  += this.tab.row(
 				this.command_select("del_command",device),
 				this.button.edit("apiCommandDelete('"+device+"','del_command');","delete command")
 				);
-			edit  += this.tab.row( "<small>When deleted you can record a command for a button again.</small>", false);
+			edit  += this.tab.row( "<small>"+lang("COMMAND_DELETE_INFO")+"</small>", false);
 			edit  += this.tab.end();
 			this.button.height = "30px";
 			remote += this.basic.container("remote_edit_rec-edit","Record / delete commands",edit,false);
@@ -1053,7 +1060,7 @@ function rmRemote(name) {
 			this.remote_preview( type, scene );
 			}
 		else {
-			appMsg.alert("There is already a HEADER-IMAGE in this remote control.");
+			appMsg.alert(lang("HEADER_IMAGE_EXISTS"));
 			}
 		}
 
@@ -1065,7 +1072,7 @@ function rmRemote(name) {
 			this.remote_preview( type, scene );
 			}
 		else {
-			appMsg.alert("There is already a DISPLAY element in this remote control.");
+			appMsg.alert(lang("DISPLAY_EXISTS"));
 			}
 		}
 
@@ -1352,7 +1359,7 @@ function rmRemote(name) {
 		var device_info           = this.data["DATA"]["devices"][device]["interface"]["query_list"];		
 		var on_change             = "document.getElementById('"+id+"').value = this.value;";
 
-		device_display_values = this.basic.select_array("scene_display_value","display value ("+device+")",device_info,on_change);
+		device_display_values = this.basic.select_array("scene_display_value","value ("+device+")",device_info,on_change);
 
 		setTextById(div_id,device_display_values);
 		}

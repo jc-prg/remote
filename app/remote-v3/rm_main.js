@@ -2,6 +2,7 @@
 // jc://remote/
 //--------------------------------
 /* INDEX:
+function remoteMainMenu (cookie_erase=true)
 function remoteInit (first_load=true)
 function remoteFirstLoad_load()
 function remoteFirstLoad(data)
