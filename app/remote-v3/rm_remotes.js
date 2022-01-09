@@ -469,6 +469,7 @@ function rmRemote(name) {
 		else					{ remote_definition  = this.json.get_value(preview_remote,this.data["DATA"]["devices"][device]["remote"]["remote"]); preview = true; }
 		if (preview_display == "")		{ remote_display     = this.data["DATA"]["devices"][device]["remote"]["display"]; }
 		else					{ remote_display     = this.json.get_value(preview_display,this.data["DATA"]["devices"][device]["remote"]["display"]); preview = true; }
+		if (remote_display == undefined)	{ remote_display     = {}; }	
 		if (preview_display_size == "")	{ remote_displaysize = this.data["DATA"]["devices"][device]["remote"]["display-size"]; }
 		else					{ remote_displaysize = this.json.get_value(preview_display_size,this.data["DATA"]["devices"][device]["remote"]["display-size"]); preview = true; }		
 		if (remote_displaysize == undefined)	{ remote_displaysize = "middle"; }
@@ -477,7 +478,6 @@ function rmRemote(name) {
 		var remote = "";
 		remote += "<center><b>Edit remote &quot;"+device_info["label"]+"&quot;</b> ["+device+"]</center>";
 		remote += this.basic.edit_line();
-
 			
 		// Add elements
 		var link_template = this.app_name+".remote_import_templates('device','"+device+"','add_template','remote_json_buttons');";
@@ -499,12 +499,14 @@ function rmRemote(name) {
 				);
 		edit    += this.tab.line();
 		if (this.data["DATA"]["devices"][device]["interface"]["send_list"].length > 0 || this.data["DATA"]["devices"][device]["interface"]["query_list"] > 0) {
+			var onchange_slider_param = this.app_name+".remote_prepare_slider('device','"+device+"','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax','remote_json_buttons');";
+
 			edit    += this.tab.row( 
 				this.basic.select_array("add_slider_cmd","send-command", this.data["DATA"]["devices"][device]["interface"]["send_list"], "", ""), 
 				this.button.edit("","","disabled") 
 				);
 			edit    += this.tab.row( 
-				this.basic.select_array("add_slider_param","parameter", this.data["DATA"]["devices"][device]["interface"]["query_list"], "", ""),
+				this.basic.select_array("add_slider_param","parameter", this.data["DATA"]["devices"][device]["interface"]["query_list"], onchange_slider_param, ""),
 				this.button.edit("","","disabled") 
 				);
 			edit    += this.tab.row( 
@@ -898,7 +900,8 @@ function rmRemote(name) {
 
 		if (preview_display == "")		{ remote_display     = scene_remote["display"]; }
 		else					{ remote_display     = this.json.get_value(preview_display,scene_remote["display"]); preview = true; }
-		
+		if (remote_display == undefined)	{ remote_display     = {}; }		
+
 		if (preview_channel == "")		{ remote_channel     = scene_remote["channel"]; }
 		else					{ remote_channel     = this.json.get_value(preview_channel,scene_remote["channel"]); preview = true; }
 		
@@ -1083,7 +1086,7 @@ function rmRemote(name) {
 		this.remote_preview( type, scene );
 		}
 
-	// add a line with description
+	// add a slider with description
 	this.remote_add_slider		= function (type,scene,slider_cmd,slider_param,slider_descr,slider_minmax,remote,position="") {
 	
 		var s_cmd    = getValueById(slider_cmd);
@@ -1100,6 +1103,31 @@ function rmRemote(name) {
 		this.remote_add_button(type,scene,button,remote,position);
 		this.remote_preview( type, scene );
 		}
+
+	// prepare slider
+	this.remote_prepare_slider	= function (type,scene,slider_cmd,slider_param,slider_descr,slider_minmax,remote,position="") {
+
+		var s_param  = getValueById(slider_param);
+		var s_descr  = "description";
+		if (s_param == ""  || s_param == undefined)	{ appMsg.alert(lang("SLIDER_SELECT_PARAM")); return; }
+
+		s_descr = s_param.charAt(0).toUpperCase() + s_param.slice(1);
+		setValueById(slider_descr, s_descr);
+		
+		var cmd_definition = this.data["DATA"]["devices"][scene]["interface"]["values"];
+
+		alert(JSON.stringify(cmd_definition[s_param]));
+		
+		if (cmd_definition && cmd_definition[s_param]) {
+			var min = "min";
+			var max = "max";
+			var exist = false;
+			if (cmd_definition[s_param]["min"] != undefined)	{ min = cmd_definition[s_param]["min"]; exist = true; }
+			if (cmd_definition[s_param]["max"] != undefined)	{ max = cmd_definition[s_param]["max"]; exist = true; }
+			if (exist)						{ setValueById(slider_minmax, min+"-"+max); }
+			}		
+		}
+
 
 	// add a line with description
 	this.remote_add_colorpicker	= function (type,scene,button,remote,position="") {
