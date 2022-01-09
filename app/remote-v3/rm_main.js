@@ -44,17 +44,27 @@ remoteInit(first_load=true);
 // initiale settings and load menus
 //----------------------------------
 
-function remoteInit (first_load=true) {
+function remoteMainMenu (cookie_erase=true) {
 
+	rm3settings.hide();
 	setNavTitle(appTitle);
-
+	showRemoteInBackground(1);
+	if (cookie_erase) { appCookie.erase('remote'); }
+	
 	setTextById("menuItems","");
 	setTextById("frame1","");
 	setTextById("frame2","");
 	setTextById("frame3","");
 	setTextById("frame4","");
 	setTextById("frame5","");
-		
+
+	remoteFirstLoad_load();	
+	}
+
+
+function remoteInit (first_load=true) {
+
+	remoteMainMenu (cookie_erase=false);
 	if (first_load) {
 		showRemoteInBackground(1);			// show start screen
 		setTextById("frame4","<center>Loading data ...</center>");
