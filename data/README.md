@@ -97,7 +97,7 @@ The file 00_default.json defines button commands, queries, send commands etc. th
         },
     "send-data": {                        # define commands to send data to device, e.g.
         "send-text" : "Input.SendText(text='{DATA}',done=False)" 
-        }
+        },
     "url": "",                            # URL to device specific application / UI -> 00_interface
     "values": {                           # define default values for buttons & queries, e.g.
         "power": [ "on", "off" ],
