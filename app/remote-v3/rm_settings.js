@@ -479,7 +479,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 		
 	this.interface_list_update = function () {
-		document.getElementById('setting_interface_list').innerHTML = this.interface_list();
+		setTextById('setting_interface_list', this.interface_list());
 		}
 
 	this.exec_time_list     = function () {
