@@ -81,25 +81,25 @@ The file 00_default.json defines button commands, queries, send commands etc. th
 ```json
 {
   "data": {
-    "buttons" : {          # define button per command, e.g.
+    "buttons" : {                         # define button per command, e.g.
         "on" : "jc.turn_on()"
         },
-    "commands" : {         # define data type of command (enum, integer), e.g.
+    "commands" : {                        # define data type of command (enum, integer), e.g.
         "mute" : { 
             "command" : "audio-muting=",
             "type" : "enum"
             }
         },
-    "description" : "",    # description for the device
-    "method" : "",         # define if device works with query or record 
-    "queries" : {          # define queries to get data from device, e.g.
+    "description" : "",                   # description for the device
+    "method" : "",                        # define if device works with query or record 
+    "queries" : {                         # define queries to get data from device, e.g.
         "mode" : "jc.get_info('mode')"
         },
-    "send-data": {         # define commands to send data to device, e.g.
+    "send-data": {                        # define commands to send data to device, e.g.
         "send-text" : "Input.SendText(text='{DATA}',done=False)" 
         }
-    "url": "",             # URL to device specific application / UI -> 00_interface
-    "values": {            # define default values for buttons & queries, e.g.
+    "url": "",                            # URL to device specific application / UI -> 00_interface
+    "values": {                           # define default values for buttons & queries, e.g.
         "power": [ "on", "off" ],
         "mute" : [ "on", "off", "toggle" ],
         "value" : { "max": 100, "min": 1 }
