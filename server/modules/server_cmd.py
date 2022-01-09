@@ -55,7 +55,7 @@ def remoteAPI_start(setting=[]):
        data["CONFIG"]["button_images"]     = configFiles.read(modules.icons_dir + "/index")
        data["CONFIG"]["button_colors"]     = configFiles.read(modules.buttons  + "button_colors")
        data["CONFIG"]["scene_images"]      = configFiles.read(modules.scene_img_dir + "/index")
-    
+       data["CONFIG"]["devices"]           = RmReadData_devices([],True,True)    
        data["CONFIG"]["interfaces"]        = deviceAPIs.available
        data["CONFIG"]["methods"]           = deviceAPIs.methods
     

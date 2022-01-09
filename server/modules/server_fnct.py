@@ -35,19 +35,20 @@ def refreshCache():
 # Read data
 #---------------------------
 
-def RmReadData_devices(selected=[],remotes=True):
+def RmReadData_devices(selected=[],remotes=True,config_only=False):
     '''
     read config data for devices and combine with remote definition
     '''
-    data   = {}
-    data   = configFiles.read_status()
-
+    config_keys = ["buttons","commands","queries","send-data","send","values","url","method"]
+    data        = {}
+    data        = configFiles.read_status()
+ 
     # read data for active devices
     for device in data:
        if data[device]["config"]["interface_api"] != "":
           if selected == [] or device in selected:
 	
-             key        = data[device]["config"]["device"]
+             device_key = data[device]["config"]["device"]
              key_remote = data[device]["config"]["remote"]
              interface  = data[device]["config"]["interface_api"]
              data_temp  = data[device]
@@ -55,41 +56,55 @@ def RmReadData_devices(selected=[],remotes=True):
              
              if remotes:
 
-                interface_def         = configFiles.read(modules.commands + interface + "/" + key)     # button definitions, presets, queries ...
+                interface_def         = configFiles.read(modules.commands + interface + "/" + device_key)  # button definitions, presets, queries ...
                 interface_def_default = configFiles.read(modules.commands + interface + "/00_default") # button definitions, presets, queries ...
              
                 if "ERROR" in remote or "ERROR" in interface_def or "ERROR" in interface_def_default:
-                   logging.error("Error while reading configuration for device ("+key+")")
+                   logging.error("Error while reading configuration for device ("+device_key+")")
                    continue
-                   
-                interface_def         = interface_def["data"]
-                interface_def_default = interface_def_default["data"]
-             
-                # combine default interface definition and device specific definition
-                for value in interface_def_default: 
-                   if value != "description":
-                   
-                      if not value in interface_def:      
-                         interface_def[value] = interface_def_default[value]                   
-                      
-                      else:
-                        for key in interface_def_default[value]:                  
-                          if not key in interface_def[value]:
-                            interface_def[value][key] = interface_def_default[value][key]
-                    
+                
+                interface_def_device   = interface_def["data"]
+                interface_def_default  = interface_def_default["data"]
+                interface_def_combined = {}
+
+                for value in config_keys:
+
+                  if value in interface_def_default:   interface_def_combined[value] = interface_def_default[value]
+                  elif value == "method":              interface_def_combined[value] = ""
+                  elif value == "url":                 interface_def_combined[value] = ""
+                  else:                                interface_def_combined[value] = {}
+
+                  if value in interface_def_device and value != "method" and value != "url":
+                     for key in interface_def_device[value]:
+                         interface_def_combined[value][key] = interface_def_device[value][key]
+                         
+                  elif value in interface_def_device:
+                     interface_def_combined[value] = interface_def_device[value]
+                             
                 data_temp["remote"]    = remote["data"]
                 data_temp["interface"] = {}
 
-                if "method"    in interface_def:  data_temp["interface"]["method"]      = interface_def["method"]              
-                if "values"    in interface_def:  data_temp["interface"]["values"]      = interface_def["values"]              
-                if "commands"  in interface_def:  data_temp["interface"]["commands"]    = interface_def["commands"] 
-                if "url"       in interface_def:  data_temp["interface"]["url"]         = interface_def["url"] 
-                if "queries"   in interface_def:  data_temp["interface"]["query_list"]  = list(interface_def["queries"].keys())                 
-                if "buttons"   in interface_def:  data_temp["interface"]["button_list"] = list(interface_def["buttons"].keys())                 
-                if "send-data" in interface_def:  data_temp["interface"]["send_list"]   = list(interface_def["send-data"].keys())                 
-             
+                data_temp["interface"]["interface_def"]  = [ interface + "/" + device_key + ".json", interface + "/00_default.json" ]
+                data_temp["interface"]["interface_api"]  = data[device]["config"]["interface_api"] + "_" + data[device]["config"]["interface_dev"]
+                data_temp["interface"]["method"]      = interface_def_combined["method"]              
+                data_temp["interface"]["values"]      = interface_def_combined["values"]              
+                data_temp["interface"]["commands"]    = interface_def_combined["commands"] 
+                data_temp["interface"]["url"]         = interface_def_combined["url"]
+                data_temp["interface"]["query_list"]  = list(interface_def_combined["queries"].keys())                 
+                data_temp["interface"]["button_list"] = list(interface_def_combined["buttons"].keys())                 
+                data_temp["interface"]["send_list"]   = list(interface_def_combined["send-data"].keys())                 
+
              data[device] = data_temp
 
+    if config_only:
+      data_new = {}
+      for device in data:
+        if "interface" in data[device]:
+          data_new[device] = data[device]["interface"] 
+          
+      logging.debug(str(data_new))
+      return data_new
+                   
     return data
 
 #---------------------------
@@ -269,9 +284,10 @@ def RmReadData_templates(selected=[]):
 
 #---------------------------
 
-
 def RmReadData(selected=[]):
-    '''Read all relevant data and create data structure'''
+    '''
+    Read all relevant data and create data structure
+    '''
 
     data    = {}
     btnfile = ["buttons","queries","values","commands","url"]
@@ -279,7 +295,7 @@ def RmReadData(selected=[]):
     # if update required
     if configFiles.cache_update or "_api" not in configFiles.cache: 
     
-        data["devices"]       = RmReadData_devices(selected)
+        data["devices"]       = RmReadData_devices(selected,True,False)
         data["makros"]        = RmReadData_makros(selected)
         data["scenes"]        = RmReadData_scenes(selected)
         data["templates"]     = RmReadData_templates(selected)["templates"]
@@ -591,7 +607,7 @@ def editDevice(device,info):
     
 
     # read central config file
-    active_json          = RmReadData_devices(selected=[],remotes=False)
+    active_json          = RmReadData_devices(selected=[],remotes=False,config_only=False)
 
     logging.info(active_json)
 
@@ -1053,7 +1069,7 @@ def devicesGetStatus(data,readAPI=False):
     '''
 
     #devices = configFiles.read_status()
-    devices = RmReadData_devices()
+    devices = RmReadData_devices([],True,False)
    
     # set reload status
     if readAPI == True: 
