@@ -56,13 +56,13 @@ ul.help ul li {
 }
 
 .app_content {
-   height	: 100vh;
    width	: 100%;
    position	: absolute;
    left	: 0px;
    top		: 0px;
    z-index	: 1;
    padding	: 8px;
+   margin	: 0px;
 }
 
 

@@ -163,18 +163,18 @@ function rmMenu(name, menu) {
 		}
 
 	this.entry_script         = function(script,label) {
-  		return "<li><a onClick=\"javascript:" + script + ";"+this.app_name+".click_menu();setNavTitle('" + label + "');\">"+label+"</a></li>";
+  		return "<li><a onClick=\"javascript:" + script + ";"+this.app_name+".click_menu();\">"+label+"</a></li>";
 		}
 
 	this.entry_device         = function(device,label) {
-		return "<li><a onclick=\"rm3remotes.create('device','" + device + "');rm3settings.hide();"+this.app_name+".click_menu();setNavTitle('" + label + "');\" >" + label.replace(/#/g,"'") + "</a></li>";
+		return "<li><a onclick=\"rm3remotes.create('device','" + device + "');rm3settings.hide();"+this.app_name+".click_menu();\" >" + label.replace(/#/g,"'") + "</a></li>";
 		}
 
 	this.entry_scene          = function(scene,label) {
-		return "<li><a onclick=\"rm3remotes.create('scene','" + scene + "');rm3settings.hide();"+this.app_name+".click_menu();setNavTitle('" + label + "');\" >" + label.replace(/#/g,"'") + "</a></li>";
+		return "<li><a onclick=\"rm3remotes.create('scene','" + scene + "');rm3settings.hide();"+this.app_name+".click_menu();\" >" + label.replace(/#/g,"'") + "</a></li>";
 		}
 
-        this.writeMenu            = function(menutext) {
+	this.writeMenu            = function(menutext) {
         	if (typeof this.menuItems == "string") {
         		setTextById(this.menuItems,menutext);
         		}
@@ -184,7 +184,7 @@ function rmMenu(name, menu) {
         			}
         		}
         	}
-        this.readMenu             = function() {
+	this.readMenu             = function() {
         	if (typeof this.menuItems == "string") {
         		return getTextById(this.menuItems);
         		}
