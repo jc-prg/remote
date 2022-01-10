@@ -139,10 +139,12 @@ function remoteReload(data) {
 //--------------------------------
 
 function remoteSetSliderDevice(data) {
-	main_audio 	= data["CONFIG"]["main-audio"];
-	if (data["DATA"]["devices"][main_audio]["interface"]["values"]["vol"]) {
-		min     = data["DATA"]["devices"][main_audio]["interface"]["values"]["vol"]["min"];
-		max     = data["DATA"]["devices"][main_audio]["interface"]["values"]["vol"]["max"];		
+	main_audio = data["CONFIG"]["main-audio"];
+	var values = data["CONFIG"]["devices"][main_audio]["data"]["values"];
+	         
+	if (values["vol"]) {
+		min     = values["vol"]["min"];
+		max     = values["vol"]["max"];		
 		}
 	else {
 		min    = 0;

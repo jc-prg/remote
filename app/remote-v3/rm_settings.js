@@ -93,11 +93,12 @@ function rmSettings (name) {	// IN PROGRESS
 		var set_temp   = "";
 
 		// Show Server Infos
-		var main_audio  = this.data["CONFIG"]["main-audio"];  // get main audio device from file
-		var main_device = this.data["DATA"]["devices"][main_audio];
+		var main_audio         = this.data["CONFIG"]["main-audio"];  // get main audio device from file
+		var main_device_config = this.data["CONFIG"]["devices"][main_audio];
+		var main_device        = this.data["DATA"]["devices"][main_audio];
 		var audio_max  = "";
-		if (main_device["interface"]["values"] && main_device["interface"]["values"]["vol"]) {
-			audio_max  = main_device["interface"]["values"]["vol"]["max"];
+		if (main_device_config["data"]["values"] && main_device_config["data"]["values"]["vol"]) {
+			audio_max  = main_device_config["data"]["values"]["vol"]["max"];
 			}
 		else {
 			audio_max  = 100;

@@ -571,12 +571,13 @@ function rmRemoteDisplays(name) {
 			
 		else {
 			var power = this.data["DATA"][type][device]["status"];
-			if (this.data["DATA"]["devices"][device]["interface"]["query_list"])	{ display_data = this.data["DATA"]["devices"][device]["interface"]["query_list"]; }
-			else									{ display_data = ["ERROR","No display defined"]; } 
+			var queries = this.data["CONFIG"]["devices"][device]["commands"]["get"];
+			if (this.data["CONFIG"]["devices"][device] && queries)	{ display_data = queries; }
+			else								{ display_data = ["ERROR","No display defined"]; } 
 
         		this.logging.debug(device,"debug");
-        		this.logging.debug(this.data["DATA"]["devices"][device]["status"],"debug");
-        		this.logging.debug(this.data["DATA"]["devices"][device]["interface"]["query_list"],"debug");
+        		this.logging.debug(power,"debug");
+        		this.logging.debug(queries,"debug");
         		this.logging.debug(display_data,"debug");
 
 			text  += "<center id='display_full_"+device+"_power'>"+power+"</center><hr/>";        		
@@ -585,7 +586,8 @@ function rmRemoteDisplays(name) {
       		text  += this.tab_row("start","100%");
         				
         	for (var i=0; i<display_data.length; i++) {
-      			if (display_data[i] != "power" && display_data[i] != "api" && display_data[i] != "api-status" && display_data[i] != "api-last-query") {
+
+      			if (display_data[i] != "power" && display_data[i].substring && display_data[i].substring(0,3) != "api") { // || display_data[i].indexOf("api") != 0)) {
 	        		var label = "<data class='display-label'>"+display_data[i]+":</data>";
 				var input = "<data class='display-detail' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>";
 		        	//text += "<div class='display-element alert'>"+label+input+"</div><br/>";
@@ -595,8 +597,9 @@ function rmRemoteDisplays(name) {
         	text  += this.tab_row("<hr/>",false);
 
       		text  += this.tab_row("<data class='display-label'>API:</data>", "<data class='display-detail' id='display_full_"+device+"_api'>no data</data>" );
-      		text  += this.tab_row("<data class='display-label'>API Status:</data>", "<data class='display-detail' id='display_full_"+device+"_api-status'>no data</data>" );
-      		text  += this.tab_row("<data class='display-label'>API Last Query:</data>", "<data class='display-detail' id='display_full_"+device+"_api-last-query'>no data</data>" );
+      		text  += this.tab_row("<data class='display-label'>Status:</data>", "<data class='display-detail' id='display_full_"+device+"_api-status'>no data</data>" );
+      		text  += this.tab_row("<data class='display-label'>Last&nbsp;Send:</data>", "<data class='display-detail' id='display_full_"+device+"_api-last-send'>no data</data>" );
+      		text  += this.tab_row("<data class='display-label'>Last&nbsp;Query:</data>", "<data class='display-detail' id='display_full_"+device+"_api-last-query'>no data</data>" );
         	text  += this.tab_row("end");
 
         	text  += "</div>";
