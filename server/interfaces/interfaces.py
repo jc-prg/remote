@@ -54,7 +54,7 @@ class connect(threading.Thread):
            self.log_commands = False
         else:
            self.log_commands = True
-
+           
     
     def run(self):
         '''
@@ -277,16 +277,16 @@ class connect(threading.Thread):
                else:                                    button_code = "ERROR, wrong method (!query) or no data transmitted."
                if not "ERROR" in button_code:           button_code = button_code.replace("{DATA}",value)
 
-               if self.log_commands:      logging.info("...... SEND-DATA "+api_dev+" / "+button+" ('"+str(value)+"'/"+method+")")
-               if self.log_commands:      logging.info("...... "+str(button_code))
+               if self.log_commands:      self.logging.info("...... SEND-DATA "+api_dev+" / "+button+" ('"+str(value)+"'/"+method+")")
+               if self.log_commands:      self.logging.info("...... "+str(button_code))
                
             else:            
                if  method == "record":                  button_code = self.get_command( call_api, "buttons", device, button ) 
                elif method == "query" and value == "":  button_code = self.get_command( call_api, "buttons", device, button )
                else:                                    button_code = self.create_command( call_api, device, button, value ) 
 
-               if self.log_commands:      logging.info("...... SEND "+api_dev+" / "+button+" ('"+str(value)+"'/"+method+")")
-               if self.log_commands:      logging.info("...... "+str(button_code))
+               if self.log_commands:      self.logging.info("...... SEND "+api_dev+" / "+button+" ('"+str(value)+"'/"+method+")")
+               if self.log_commands:      self.logging.info("...... "+str(button_code))
 
             if "ERROR" in button_code: return_msg = "ERROR: could not read/create command from button code (send/"+mode+"/"+button+"); " + button_code
             elif api_dev in self.api:  return_msg = self.api[api_dev].send(device,button_code)
@@ -294,6 +294,8 @@ class connect(threading.Thread):
             
             if not "ERROR" in return_msg and self.api[api_dev].method == "record" and value != "":
                self.save_status(device, button, value)
+            elif not "ERROR" in return_msg and self.api[api_dev].method == "query":
+               self.save_status(device, "api-last-send","add")
            
         else:
             return_msg = self.api[api_dev].status
@@ -387,6 +389,8 @@ class connect(threading.Thread):
         save status of button to active.json
         '''
 
+        self.logging.info("SAVE STATUS")
+
         return_msg = ""
         active     = self.configFiles.read_status()
         
@@ -397,7 +401,6 @@ class connect(threading.Thread):
         if device in active:
           if not "status" in active[device]: active[device]["status"] = {}
           active[device]["status"][param]  = status
-          active[device]["status"]["TEST"] = str(time.time()) + " / " + param
           active[device]["status"]["api-last-send"] = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')
           return_msg = "OK"
           
