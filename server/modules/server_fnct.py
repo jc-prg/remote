@@ -49,10 +49,12 @@ def RmReadData_devicesConfig():
     
        interface  = data[device]["config"]["interface_api"]
        device_key = data[device]["config"]["device"]
-       
+              
        if interface == "":
-          logging.warning("No interface defined ("+device+"/"+device_key+")")
-          continue
+         if device != "default":
+           logging.warning("No interface defined ("+device+"/"+device_key+")")
+           logging.warning(device + ": " +str(data[device]))
+         continue
 
        interface_def_device   = configFiles.read(modules.commands + interface + "/" + device_key)  # button definitions, presets, queries ...
        interface_def_default  = configFiles.read(modules.commands + interface + "/00_default")     # button definitions, presets, queries ...
@@ -78,7 +80,6 @@ def RmReadData_devicesConfig():
                          
        elif value in interface_def_device:
            interface_def_combined[value] = interface_def_device[value]
-
 
        data_config[device]                               = {}
        data_config[device]["buttons"]                    = list(interface_def_combined["buttons"].keys())                 
@@ -121,19 +122,22 @@ def RmReadData_devices(selected=[],remotes=True,config_only=False):
              device_key = data[device]["config"]["device"]
              key_remote = data[device]["config"]["remote"]
              interface  = data[device]["config"]["interface_api"]
-             data_temp  = data[device]
              remote     = configFiles.read(modules.remotes  + key_remote)                              # remote layout & display
-             
+
+             data_temp              = data[device]
+             data_temp["remote"]    = remote["data"]
+
+             # should not be necessary any more ... but how ever, if removed RmReadConfig_devices doesn't work             
              if remotes:
 
-                interface_def         = configFiles.read(modules.commands + interface + "/" + device_key)  # button definitions, presets, queries ...
+                interface_def_device  = configFiles.read(modules.commands + interface + "/" + device_key)  # button definitions, presets, queries ...
                 interface_def_default = configFiles.read(modules.commands + interface + "/00_default") # button definitions, presets, queries ...
              
-                if "ERROR" in remote or "ERROR" in interface_def or "ERROR" in interface_def_default:
+                if "ERROR" in remote or "ERROR" in interface_def_device or "ERROR" in interface_def_default:
                    logging.error("Error while reading configuration for device ("+device_key+")")
                    continue
                 
-                interface_def_device   = interface_def["data"]
+                interface_def_device   = interface_def_device["data"]
                 interface_def_default  = interface_def_default["data"]
                 interface_def_combined = {}
 
@@ -150,30 +154,8 @@ def RmReadData_devices(selected=[],remotes=True,config_only=False):
                          
                   elif value in interface_def_device:
                      interface_def_combined[value] = interface_def_device[value]
-                             
-                data_temp["remote"]    = remote["data"]
-                data_temp["interface"] = {}
-
-                data_temp["interface"]["interface_def"]  = [ interface + "/" + device_key + ".json", interface + "/00_default.json" ]
-                data_temp["interface"]["interface_api"]  = data[device]["config"]["interface_api"] + "_" + data[device]["config"]["interface_dev"]
-                data_temp["interface"]["method"]      = interface_def_combined["method"]              
-                data_temp["interface"]["values"]      = interface_def_combined["values"]              
-                data_temp["interface"]["commands"]    = interface_def_combined["commands"] 
-                data_temp["interface"]["url"]         = interface_def_combined["url"]
-                data_temp["interface"]["query_list"]  = list(interface_def_combined["queries"].keys())                 
-                data_temp["interface"]["button_list"] = list(interface_def_combined["buttons"].keys())                 
-                data_temp["interface"]["send_list"]   = list(interface_def_combined["send-data"].keys())                 
-
+                                             
              data[device] = data_temp
-
-    if config_only:
-      data_new = {}
-      for device in data:
-        if "interface" in data[device]:
-          data_new[device] = data[device]["interface"] 
-          
-      logging.debug(str(data_new))
-      return data_new
                    
     return data
 
@@ -1140,6 +1122,7 @@ def devicesGetStatus(data,readAPI=False):
 
     #devices = configFiles.read_status()
     devices = RmReadData_devices([],True,False)
+    config  = RmReadData_devicesConfig()
    
     # set reload status
     if readAPI == True: 
@@ -1149,22 +1132,25 @@ def devicesGetStatus(data,readAPI=False):
     
     # read status of all devices
     for device in devices:
+
+        if device == "default":
+          continue
     
         if "status" not in devices[device]:
            devices[device]["status"] = {}
            
-        if device in data and "interface" in data[device] and "method" in data[device]["interface"]:
+        if device in data and "interface" in config[device] and "method" in config[device]["interface"]:
           
-          interface     = data[device]["config"]["interface_api"]         
-          api_dev       = data[device]["config"]["interface_api"] + "_" + data[device]["config"]["interface_dev"]
-          method        = data[device]["interface"]["method"]
+          interface     = config[device]["interface"]["interface_api"]         
+          api_dev       = config[device]["interface"]["interface_api"] + "_" + config[device]["interface"]["interface_dev"]
+          method        = config[device]["interface"]["method"]
           
           # get status values from config files, if connected
           if api_dev in deviceAPIs.api and deviceAPIs.api[api_dev].status == "Connected":
 
               # preset values
-              if method != "query" and "commands" in devices[device]["interface"]:
-                 for value in devices[device]["interface"]["commands"]:
+              if method != "query" and "types" in config[device]["data"]:
+                 for value in config[device]["data"]["types"]:
                     if not value in devices[device]["status"]:
                        devices[device]["status"][value] = ""
                     
@@ -1174,8 +1160,8 @@ def devicesGetStatus(data,readAPI=False):
               
               # request update for devices with API query
               if method == "query" and readAPI == True:
-                queueQuery.add2queue ([0.1])                                                            # wait a few seconds before queries
-                queueQuery.add2queue ([[interface,device,data[device]["interface"]["query_list"],""]])  # add querylist per device
+                queueQuery.add2queue ([0.1])                                                      # wait a few seconds before queries
+                queueQuery.add2queue ([[interface,device,config[device]["commands"]["get"],""]])  # add querylist per device
               
     # set reload status
     if readAPI == True: 

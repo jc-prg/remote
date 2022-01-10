@@ -383,8 +383,8 @@ def RemoteMakro(makro):
                logging.error(error_msg)
                continue
             
-            interface                   = data["DATA"]["devices"][device]["config"]["interface_api"]  # get interface / API
-            method                      = data["DATA"]["devices"][device]["interface"]["method"]
+            interface                   = data["CONFIG"]["devices"][device]["interface"]["interface_api"]  # get interface / API
+            method                      = data["CONFIG"]["devices"][device]["interface"]["method"]
 
             # check if future state defined
             if "||" in button_status:   button,status = button_status.split("||",1)                   # split button and future state           
@@ -445,12 +445,13 @@ def RemoteOnOff(device,button):
         status          = ""
         types           = {}
         presets         = {}
+        dont_send       = False
         
         data            = remoteAPI_start()
-        interface       = data["DATA"]["devices"][device]["config"]["interface_api"]
+
         method          = deviceAPIs.method(device)
-        api_dev         = interface+"_"+data["DATA"]["devices"][device]["config"]["interface_dev"]
-        dont_send       = False
+        interface       = data["CONFIG"]["devices"][device]["interface"]["interface_api"]
+        api_dev         = data["CONFIG"]["devices"][device]["interface"]["api"]
 
         logging.info("__BUTTON: " +device+"/"+button+" ("+interface+"/"+method+")")
 
@@ -458,8 +459,8 @@ def RemoteOnOff(device,button):
         if method == "record":
                   
           # Get method and presets
-          if "commands" in data["DATA"]["devices"][device]["interface"]:  types   = data["DATA"]["devices"][device]["interface"]["commands"]
-          if "values"   in data["DATA"]["devices"][device]["interface"]:  presets = data["DATA"]["devices"][device]["interface"]["values"]        
+          if "types"  in data["CONFIG"]["devices"][device]["data"]:  types   = data["CONFIG"]["devices"][device]["data"]["types"]
+          if "values" in data["CONFIG"]["devices"][device]["data"]:  presets = data["CONFIG"]["devices"][device]["data"]["values"]        
 
           # special with power buttons
           if button == "on-off" or button == "on" or button == "off":  value = "power"

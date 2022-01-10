@@ -95,11 +95,11 @@ class queueApiCalls (threading.Thread):
              try:
                 result = self.device_apis.send(interface,device,button,state)
                 self.execution_time(device,request_time,time.time())
+                self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')                
 
              except Exception as e:
                 result = "ERROR queue query_list (send,"+interface+","+device+"): " + str(e)
                 self.logging.error(result)
-
 
           elif self.query_send == "query":
              result = ""
@@ -112,7 +112,6 @@ class queueApiCalls (threading.Thread):
                    self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)') 
                    devices[device]["status"]["api-last-query"] = self.last_query_time
                    devices[device]["status"]["api-status"]     = self.device_apis.api[self.device_apis.api_device(device)].status
-                   #devices[device]["status"]["power"]          = self.device_apis.api[self.device_apis.api_device(device)].power_status()
 
                 except Exception as e:
                    result = "ERROR queue query_list (query,"+interface+","+device+","+value+"): " + str(e)             
