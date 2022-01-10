@@ -35,9 +35,79 @@ def refreshCache():
 # Read data
 #---------------------------
 
+def RmReadData_devicesConfig():
+    '''
+    read configuration of all devices
+    '''
+    config_keys = ["buttons","commands","queries","send-data","send","values","url","method"]
+    data        = {}
+    data        = configFiles.read_status()
+    data_config = {}
+        
+    # read data for active devices
+    for device in data:
+    
+       interface  = data[device]["config"]["interface_api"]
+       device_key = data[device]["config"]["device"]
+       
+       if interface == "":
+          logging.warning("No interface defined ("+device+"/"+device_key+")")
+          continue
+
+       interface_def_device   = configFiles.read(modules.commands + interface + "/" + device_key)  # button definitions, presets, queries ...
+       interface_def_default  = configFiles.read(modules.commands + interface + "/00_default")     # button definitions, presets, queries ...
+
+       if "ERROR" in interface_def_device or "ERROR" in interface_def_default:
+          logging.error("Error while reading configuration for device ("+device_key+")")
+          continue
+
+       interface_def_device   = interface_def_device["data"]
+       interface_def_default  = interface_def_default["data"]
+       interface_def_combined = {}
+
+       for value in config_keys:
+
+         if value in interface_def_default:   interface_def_combined[value] = interface_def_default[value]
+         elif value == "method":              interface_def_combined[value] = ""
+         elif value == "url":                 interface_def_combined[value] = ""
+         else:                                interface_def_combined[value] = {}
+
+       if value in interface_def_device and value != "method" and value != "url":
+         for key in interface_def_device[value]:
+           interface_def_combined[value][key] = interface_def_device[value][key]
+                         
+       elif value in interface_def_device:
+           interface_def_combined[value] = interface_def_device[value]
+
+
+       data_config[device]                               = {}
+       data_config[device]["buttons"]                    = list(interface_def_combined["buttons"].keys())                 
+       
+       data_config[device]["interface"]                  = {}
+       data_config[device]["interface"]["method"]        = interface_def_combined["method"]              
+       data_config[device]["interface"]["files"]         = [ interface + "/00_interface.json", interface + "/00_default.json", interface + "/" + device_key + ".json" ]
+       data_config[device]["interface"]["api"]           = data[device]["config"]["interface_api"] + "_" + data[device]["config"]["interface_dev"]
+       data_config[device]["interface"]["interface_api"] = data[device]["config"]["interface_api"]
+       data_config[device]["interface"]["interface_dev"] = data[device]["config"]["interface_dev"]
+       data_config[device]["interface"]["device"]        = device_key
+
+       data_config[device]["commands"]                   = {}
+       data_config[device]["commands"]["get"]            = list(interface_def_combined["queries"].keys())                 
+       data_config[device]["commands"]["set"]            = list(interface_def_combined["send-data"].keys())                 
+       
+       data_config[device]["data"]                       = {}
+       data_config[device]["data"]["types"]              = interface_def_combined["commands"]
+       data_config[device]["data"]["values"]             = interface_def_combined["values"]
+
+       data_config[device]["url"]                        = interface_def_combined["url"]
+       
+    return data_config
+
+
+
 def RmReadData_devices(selected=[],remotes=True,config_only=False):
     '''
-    read config data for devices and combine with remote definition
+    read data for devices and combine with remote definition -> base for CONFIG and STATUS also
     '''
     config_keys = ["buttons","commands","queries","send-data","send","values","url","method"]
     data        = {}
