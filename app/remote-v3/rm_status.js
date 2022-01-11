@@ -64,8 +64,15 @@ function statusShowVolume( volume ) {
 // change button color
 function statusButtonActiveInactive(id,active) {
 	if (document.getElementById(id)) {
-		if (active) 	{ document.getElementById(id).style.backgroundColor = ""; } 			// reset to CSS color
+		if (active) 	{ document.getElementById(id).style.backgroundColor = ""; } 				// reset to CSS color
 		else 		{ document.getElementById(id).style.backgroundColor = color_button_inactive; }	// color defined in rm_config.js
+		}
+	}
+	
+function statusButtonActiveInactive_color(id,active) {
+	if (document.getElementById(id)) {
+		if (active) 	{ document.getElementById(id).style.opacity = "0.8"; }
+		else 		{ document.getElementById(id).style.opacity = "0.4"; }	
 		}
 	}
 	
@@ -99,10 +106,9 @@ function statusCheck_inactive(data) {
 		return;
 		}
 
-	var device         = data["DATA"]["devices"];
+	var device_status  = {};
 	var devices_status = data["STATUS"]["devices"];
 	var devices_config = data["CONFIG"]["devices"];
-	var device_status  = {};
 	var filter         = false;
 	var scene_status   = {};
 
@@ -134,12 +140,13 @@ function statusCheck_inactive(data) {
 		
 	// deactive makro_buttons (check scene status, deactivate all buttons from list starting with "makro")
 	if (rm3remotes.active_type == "scene" && scene_status[rm3remotes.active_name] != "ON") {
+	
 		for (var i=0; i<rm3remotes.active_buttons.length; i++) {
 			var button1 = rm3remotes.active_buttons[i].split("_");
 			if (button1[0] == "makro") { statusButtonActiveInactive(button1[0]+"_"+button1[1],false); }
 			}
 		}
-	else {
+	else if (rm3remotes.active_type == "scene") {
 		for (var i=0; i<rm3remotes.active_buttons.length; i++) {
 			var button1 = rm3remotes.active_buttons[i].split("_");
 			if (button1[0] == "makro") { statusButtonActiveInactive(button1[0]+"_"+button1[1],true); }
@@ -147,29 +154,38 @@ function statusCheck_inactive(data) {
 		}
 
 	// check device status - if OFF change color of buttons to gray
-	for (var key in device_status) {
+	var buttons_color  = data["CONFIG"]["button_colors"];
+	var buttons_power  = {"on":1, "off":1, "on-off":1};
 
-		// if filter set to only one device -> do not check other
-		if (filter == false) { 
-		
-			// if device off -> set all buttons off
-			if (devices_config[key] && devices_config[key]["buttons"] && device_status[key] != "ON") {
-				var buttons = devices_config[key]["buttons"];
-				for (var i=0; i<buttons.length; i++) {
-					if (buttons[i] != "red" && buttons[i] != "blue" && buttons[i] != "yellow" && buttons[i] != "green"
-						&& buttons[i] != "on" && buttons[i] != "off" && buttons[i] != "on-off") {
-						statusButtonActiveInactive(key+"_"+buttons[i],false);
-						}
-				}
-			}
-			// if device on -> set all buttons on
-			else if (devices_config[key] && typeof devices_config[key]["buttons"] == "object") {
-				var buttons = devices_config[key]["buttons"];
-				for (var i=0; i<buttons.length; i++) {
-					if (buttons[i] != "red" && buttons[i] != "blue" && buttons[i] != "yellow" && buttons[i] != "green"
-						&& buttons[i] != "on" && buttons[i] != "off" && buttons[i] != "on-off") {
-						statusButtonActiveInactive(key+"_"+buttons[i],true);
-						}
+	for (var device in devices_status) { 
+	
+		if (devices_config[device] && devices_config[device]["buttons"] && devices_status[device] && devices_status[device]["power"]) {
+
+			var api        = devices_config[device]["interface"]["api"];
+			var api_status = data["STATUS"]["interfaces"][api]; 
+			
+			for (var i=0;i<devices_config[device]["buttons"].length;i++) {
+				var button   = devices_config[device]["buttons"][i].toLowerCase();
+				var power_on = true; 
+				if (devices_status[device]["power"].toUpperCase() != "ON") { power_on = false; }
+				if (devices_status[device]["api-status"] != "Connected")   { power_on = false; }
+				if (api_status != "Connected")                             { power_on = false; }
+
+				if (!buttons_color[button] && !buttons_power[button] && !power_on) {
+					statusButtonActiveInactive(device+"_"+button,false);
+					}
+				else if (!buttons_color[button] && !buttons_power[button] && power_on) {
+					statusButtonActiveInactive(device+"_"+button,true);
+					}
+				else if (!buttons_power[button] && !power_on) {
+					statusButtonActiveInactive_color(device+"_"+button,false);
+					}
+				else if (!buttons_power[button] && power_on) {
+					statusButtonActiveInactive_color(device+"_"+button,true);
+					}		
+				else {
+					statusButtonActiveInactive(device+"_"+button,true);
+					statusButtonActiveInactive_color(device+"_"+button,true);
 					}
 				}
 			}
