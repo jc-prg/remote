@@ -102,6 +102,17 @@ class APIcontrol():
 
    #-------------------------------------------------
    
+   def reconnect(self):
+       '''
+       close socket & reconnect
+       '''
+       if self.api.s:
+         self.api.s.close()
+       self.connect()
+       
+   
+   #-------------------------------------------------
+   
    def wait_if_working(self):
        '''
        Some devices run into problems, if send several requests at the same time
@@ -187,8 +198,10 @@ class APIcontrol():
            return "ERROR "+self.api_name+" - query*: " + str(e) + " | " + command
 
          if "error" in result:      
+           if "Errno 9" in result["error"]: self.reconnect()
            if "message" in result["error"]: msg = str(result["error"]["message"])
            else:                            msg = str(result["error"])
+           
            self.working = False
            return "ERROR "+self.api_name+" - " + msg
              
