@@ -46,6 +46,9 @@ class APIcontrol():
        self.count_error     = 0
        self.count_success   = 0
        self.log_command     = log_command
+
+       self.power_status    = "STARTING"
+       self.brightness      = 1      
        
        self.api_config      = device_config
        self.api_device      = device
@@ -331,7 +334,7 @@ class APIaddOn():
      set color including brightness
      '''
      
-     if g == 0 and b == 0 and ":" in r:
+     if g == 0 and b == 0 and ":" in str(r):
        data = r.split(":")
        r    = int(data[0])
        g    = int(data[1])
@@ -553,7 +556,7 @@ class APIaddOn():
            self.last_request_raw_data = raw_status
            self.last_request_time     = time.time()           
 
-           status_info["brightness"] = str(round(self.brightness*100))+"%"
+           status_info["brightness"] = str(round(self.brightness*100))
            status_info["color_rgb"]  = "("+str(self.last_r)+","+str(self.last_g)+","+str(self.last_b)+")"
            status_info["rgb"]        = status_info["color_rgb"]
            status_info["preset"]     = self.last_preset
