@@ -470,18 +470,15 @@ class APIaddOn():
 	b'\x813#6#\x1f\x00\x00\x00\x00\n\x00\x0fh'	SEND PRESET
         
         -> App is able to decode ??
+        -> API answers seem to be not stable, partly not a correct byte code
       '''
       dec_status = {}
       raw_status = str(raw_status_input)
 
-      try:
-        if "$" in raw_status:  dec_status["power"] = "OFF"
-        else:                  dec_status["power"] = "ON"
-        if "a#" in raw_status: dec_status["mode"]  = "COLOR"
-        else:                  dec_status["mode"]  = "PRESET"
-
-      except Exception as e:
-        self.logging.error("Error decoding power status: "+str(e))
+      if "$" in raw_status:  dec_status["power"] = "OFF"
+      else:                  dec_status["power"] = "ON"
+      if "a#" in raw_status: dec_status["mode"]  = "COLOR"
+      else:                  dec_status["mode"]  = "PRESET"
 
       if "#" in raw_status:
         data = raw_status.split("#")
