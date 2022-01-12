@@ -62,20 +62,20 @@ function statusShowVolume( volume ) {
 //-----------------------------------------
 
 // change button color
+function statusSliderActiveInactive(id,active) {
+	if (document.getElementById(id)) {
+		if (active) 	{ document.getElementById(id).classList.remove("device_off"); } 				// reset to CSS color
+		else 		{ document.getElementById(id).classList.add("device_off"); }	// color defined in rm_config.js
+		}
+	}
+
 function statusButtonActiveInactive(id,active) {
 	if (document.getElementById(id)) {
-		if (active) 	{ document.getElementById(id).style.backgroundColor = ""; } 				// reset to CSS color
-		else 		{ document.getElementById(id).style.backgroundColor = color_button_inactive; }	// color defined in rm_config.js
+		if (active) 	{ document.getElementById(id).classList.remove("device_off"); }
+		else 		{ document.getElementById(id).classList.add("device_off"); }	
 		}
 	}
-	
-function statusButtonActiveInactive_color(id,active) {
-	if (document.getElementById(id)) {
-		if (active) 	{ document.getElementById(id).style.opacity = "0.8"; }
-		else 		{ document.getElementById(id).style.opacity = "0.4"; }	
-		}
-	}
-	
+		
 //-----------------------------------------
 // show buttons in different colors (depending if devices are ON or OFF)
 //-----------------------------------------
@@ -164,28 +164,32 @@ function statusCheck_inactive(data) {
 			var api        = devices_config[device]["interface"]["api"];
 			var api_status = data["STATUS"]["interfaces"][api]; 
 			
+			var power_on = true; 
+			if (devices_status[device]["power"].toUpperCase() != "ON") { power_on = false; }
+			if (devices_status[device]["api-status"] != "Connected")   { power_on = false; }
+			if (api_status != "Connected")                             { power_on = false; }
+
+			for (var i=0;i<devices_config[device]["commands"]["set"].length;i++) {
+				var button = devices_config[device]["commands"]["set"][i];
+				if (!power_on) {
+					statusButtonActiveInactive("slider_"+device+"_"+button+"_input",false);
+					}
+				else {
+					statusButtonActiveInactive("slider_"+device+"_"+button+"_input",true);
+					}
+				}
+				
 			for (var i=0;i<devices_config[device]["buttons"].length;i++) {
 				var button   = devices_config[device]["buttons"][i].toLowerCase();
-				var power_on = true; 
-				if (devices_status[device]["power"].toUpperCase() != "ON") { power_on = false; }
-				if (devices_status[device]["api-status"] != "Connected")   { power_on = false; }
-				if (api_status != "Connected")                             { power_on = false; }
 
-				if (!buttons_color[button] && !buttons_power[button] && !power_on) {
+				if (!buttons_power[button] && !power_on) {
 					statusButtonActiveInactive(device+"_"+button,false);
 					}
-				else if (!buttons_color[button] && !buttons_power[button] && power_on) {
-					statusButtonActiveInactive(device+"_"+button,true);
-					}
-				else if (!buttons_power[button] && !power_on) {
-					statusButtonActiveInactive_color(device+"_"+button,false);
-					}
 				else if (!buttons_power[button] && power_on) {
-					statusButtonActiveInactive_color(device+"_"+button,true);
+					statusButtonActiveInactive(device+"_"+button,true);
 					}		
 				else {
 					statusButtonActiveInactive(device+"_"+button,true);
-					statusButtonActiveInactive_color(device+"_"+button,true);
 					}
 				}
 			}

@@ -35,19 +35,19 @@
 
 /* The slider itself */
 .rm-slider {
-	z-index	: 100;
-  	width		: 83%;
-  	height		: 25px;
-  	float		: left;
-  	margin		: 3px;
+	z-index		: 100;
+  	width			: 83%;
+  	height			: 25px;
+  	float			: left;
+  	margin			: 3px;
 
-	background         : #DDDDDD; /* Grey background */
-	opacity            : 0.8; /* Set transparency (for mouse-over effects on hover) */
-	-webkit-transition : .2s; /* 0.2 seconds transition on hover */
-  	transition	: opacity .2s;
+	background		: #DDDDDD; /* Grey background */
+	opacity		: 0.8; /* Set transparency (for mouse-over effects on hover) */
+	-webkit-transition	: .2s; /* 0.2 seconds transition on hover */
+  	transition		: opacity .2s;
   	
-	border		: 2px solid #777777;
-	border-radius	: 13px;  	
+	border			: 2px solid #777777;
+	border-radius		: 13px;  	
 }
 
 .rm-slidervalue {
@@ -64,13 +64,13 @@
 	border-radius	: 5px;
   	
   	color		: #222222;
-  	font-face      : Helvetica,Arial;
-  	font-size      : 11px;
-  	line-height    : 25px;
+  	font-family	: Helvetica,Arial;
+  	font-weight	: bold;
+  	font-size	: 11px;
+  	line-height	: 25px;
   	
-  	font-weight    : bold;
-  	text-align     : center;
-  	vertical-align : middle;
+  	text-align	: center;
+  	vertical-align	: middle;
 	}
 
 .rm-sliderlabel {
@@ -93,21 +93,29 @@
 
 /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
 .rm-slider::-webkit-slider-thumb {
-  	-webkit-appearance: none; /* Override default look */
+  	-webkit-appearance: none;	/* Override default look */
   	appearance    : none;
-  	width         : 25px; /* Set a specific slider handle width */
-  	height        : 25px; /* Slider handle height */
-  	background    : green; /* Green background */
-  	cursor        : pointer; /* Cursor on hover */
+  	width         : 25px;		/* Set a specific slider handle width */
+  	height        : 25px;		/* Slider handle height */
+  	background    : green;		/* Green background */
+  	cursor        : pointer;	/* Cursor on hover */
   	border-radius : 13px;
 }
 
+.rm-slider.device_off::-webkit-slider-thumb {
+  	background    : darkred;		/* Green background */
+}
+
 .rm-slider::-moz-range-thumb {
-	width         : 25px; /* Set a specific slider handle width */
-	height        : 25px; /* Slider handle height */
-  	background    : green; /* Green background */
-  	cursor        : pointer; /* Cursor on hover */
+	width         : 25px;		/* Set a specific slider handle width */
+	height        : 25px;		/* Slider handle height */
+  	background    : green; 	/* Green background */
+  	cursor        : pointer;	/* Cursor on hover */
   	border-radius : 13px;
+}
+
+.rm-slider.device_off::-moz-range-thumb {
+  	background    : darkred;		/* Green background */
 }
 
 /* EOF */
