@@ -388,9 +388,6 @@ class connect(threading.Thread):
         '''
         save status of button to active.json
         '''
-
-        self.logging.info("SAVE STATUS")
-
         return_msg = ""
         active     = self.configFiles.read_status()
         

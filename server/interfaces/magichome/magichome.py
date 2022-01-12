@@ -156,7 +156,7 @@ class MagicHomeApi:
             message_length = len(bytes)
             self.s.send(struct.pack("B"*message_length, *bytes))
             # Close the connection unless requested not to
-            if self.keep_alive is False:
+            if self.keep_alive is False and self.s:
                 self.s.close
         except socket.error as exc:
             print("Caught exception socket.error : %s" % exc)
