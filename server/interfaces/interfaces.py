@@ -267,7 +267,7 @@ class connect(threading.Thread):
         api_dev = self.api_device( device )
         self.check_errors( device )        
 
-        self.logging.info("__SEND: "+api_dev+" / " + button + ":" + value + " ("+self.api[api_dev].status+")")
+        self.logging.info("__SEND: " + api_dev + " / " + device + "_" + button + ":" + value + " ("+self.api[api_dev].status+")")
 
         if self.api[api_dev].status == "Connected":
             method = self.method(device)
@@ -330,7 +330,7 @@ class connect(threading.Thread):
             if api_dev in self.api:    return_msg = self.api[api_dev].record(device,button)
             else:                      return_msg = "ERROR: API not available ("+api_dev+")"
 
-            if self.log_commands:      logging.info("...... "+str(return_msg))
+            if self.log_commands: self.logging.info("...... "+str(return_msg))
 
         else:
             return_msg = self.api[api_dev].status
@@ -415,30 +415,28 @@ class connect(threading.Thread):
         translate device and button to command for the specific device
         '''
 
-        # read data -> to be moved to cache?!
+        value_list    = [ "buttons", "queries", "commands", "values", "send-data" ]            
         active        = self.configFiles.read_status()
         api           = dev_api.split("_")[0]
         
         if device in active:
           device_code  = active[device]["config"]["device"]
           buttons      = self.configFiles.read(rm3config.commands + api + "/" + device_code)
+          
+          if self.log_commands:
+             self.logging.info("...... button-file: " + api + "/" + device_code + ".json")	
     
-          # add button definitions from default.json if exist
           if rm3json.ifexist(rm3config.commands + api + "/00_default"):
              buttons_default = self.configFiles.read(rm3config.commands + api + "/00_default")
-
-             value_list      = [ "buttons", "queries", "commands", "values", "send-data" ]            
-             for value in value_list:
-                if not value in buttons["data"]: buttons["data"][value] = {}             
-                if value in buttons_default["data"]:
-                   for key in buttons_default["data"][value]:
-                     buttons["data"][value][key] = buttons_default["data"][value][key]
+             if self.log_commands:
+                self.logging.info("...... button-default-file: " + api + "/00_default.json")	
              
           # check for errors or return button code
-          if "ERROR" in buttons or "ERROR" in active:         return "ERROR get_command: buttons not defined for device ("+device+")"
-          elif button in buttons["data"][button_query]:       return buttons["data"][button_query][button]
-          else:                                               return "ERROR get_command: button not defined ("+device+"_"+button+")"
-        else:                                                 return "ERROR get_command: device not found ("+device+")"
+          if "ERROR" in buttons or "ERROR" in active:           return "ERROR get_command: buttons not defined for device ("+device+")"
+          elif button in buttons["data"][button_query]:         return buttons["data"][button_query][button]
+          elif button in buttons_default["data"][button_query]: return buttons_default["data"][button_query][button]
+          else:                                                 return "ERROR get_command: button not defined ("+device+"_"+button+")"
+        else:                                                   return "ERROR get_command: device not found ("+device+")"
 
 #-------------------------------------------------
 
