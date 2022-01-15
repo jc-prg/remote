@@ -51,7 +51,6 @@ class sonyDevice():
         self.waiting_for_registration = False       
 
         self.logging = logging.getLogger("api.SONYlib")
-        self.logging.setLevel = rm3stage.log_set2level
 
         # SOAPcalls // tested with SONY BDP S4500
 
