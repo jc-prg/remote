@@ -111,7 +111,7 @@ function statusCheck_inactive(data) {
 	var devices_config = data["CONFIG"]["devices"];
 	var filter         = false;
 	var scene_status   = {};
-
+	
 	// get scene status from devices status and definition (see statusCheck) -> move to rm_remote.js
 	for (var key in data["DATA"]["scenes"]) {
 		if (data["DATA"]["scenes"][key]["remote"] && data["DATA"]["scenes"][key]["remote"]["devices"]) {
@@ -139,7 +139,7 @@ function statusCheck_inactive(data) {
 		}
 		
 	// deactive makro_buttons (check scene status, deactivate all buttons from list starting with "makro")
-	if (rm3remotes.active_type == "scene" && scene_status[rm3remotes.active_name] != "ON") {
+	if (rm3remotes.active_type == "scene" && scene[rm3remotes.active_name] != "ON") {
 	
 		for (var i=0; i<rm3remotes.active_buttons.length; i++) {
 			var button1 = rm3remotes.active_buttons[i].split("_");
@@ -201,9 +201,6 @@ function statusCheck_inactive(data) {
 function statusCheck_load() {	rm3app.requestAPI("GET",["list"], "", statusCheck, "" ); }
 function statusCheck(data={}) {
 
-	// if manual mode -> ignore status check
-	if (deactivateButton) { return; }     
-
 	// if not data includes -> error	
 	if (!data["DATA"] || !data["STATUS"]) {
 		console.error("statusCheck: data not loaded.");
@@ -211,12 +208,12 @@ function statusCheck(data={}) {
 		return;
 		}
 			
+	statusCheck_display(data);
 	statusCheck_inactive(data);
 	statusCheck_buttonsOnOff(data);
 	statusCheck_sceneButton(data);
 	statusCheck_audioMute(data);
 	statusCheck_apiConnection(data);
-	statusCheck_display(data);
 	}
 
 
@@ -279,46 +276,62 @@ function statusCheck_sceneButton(data) {
 	for (var key in scene_status) {
 	
 		if (scene_status[key] == "ON") {
-			statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
-			statusButtonSetColor( "scene_off_"+key, "" );
-
+			if (deactivateButton == false) {
+				statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
+				statusButtonSetColor( "scene_off_"+key, "" );
+				}
 			elementHidden( "display_"+key+"_EDIT_MODE");
 			elementVisible("display_"+key+"_ON");
 			elementHidden( "display_"+key+"_OFF");
 			elementHidden( "display_"+key+"_ERROR");
+			elementHidden( "display_"+key+"_MANUAL");
 			}
 		else if (scene_status[key] == "OTHER") {
-			statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
-			statusButtonSetColor( "scene_off_"+key, "" );
-
+			if (deactivateButton == false) {
+				statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
+				statusButtonSetColor( "scene_off_"+key, "" );
+				}
 			elementHidden( "display_"+key+"_EDIT_MODE");
 			elementVisible("display_"+key+"_ON");
 			elementHidden( "display_"+key+"_OFF");
 			elementHidden( "display_"+key+"_ERROR");
+			elementHidden( "display_"+key+"_MANUAL");
 			}
 		else if (scene_status[key] == "ERROR") {
-			statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
-			statusButtonSetColor( "scene_off_"+key, scene_status[key] );
-
+			if (deactivateButton == false) {
+				statusButtonSetColor( "scene_on_"+key,  scene_status[key] );
+				statusButtonSetColor( "scene_off_"+key, scene_status[key] );
+				}
 			elementHidden( "display_"+key+"_EDIT_MODE");
 			elementHidden( "display_"+key+"_ON");
 			elementHidden( "display_"+key+"_OFF");
 			elementVisible("display_"+key+"_ERROR");
+			elementHidden( "display_"+key+"_MANUAL");
 			}
 		else if (scene_status[key] == "OFF") {
-			statusButtonSetColor( "scene_off_"+key,  scene_status[key] );
-			statusButtonSetColor( "scene_on_"+key, "" );
-
+			if (deactivateButton == false) {
+				statusButtonSetColor( "scene_off_"+key,  scene_status[key] );
+				statusButtonSetColor( "scene_on_"+key, "" );
+				}
 			elementHidden( "display_"+key+"_EDIT_MODE");
 			elementHidden( "display_"+key+"_ON");
 			elementVisible("display_"+key+"_OFF");
 			elementHidden( "display_"+key+"_ERROR");
+			elementHidden( "display_"+key+"_MANUAL");
+			}
+		if (deactivateButton) {
+			elementHidden( "display_"+key+"_EDIT_MODE");
+			elementHidden( "display_"+key+"_ON");
+			elementHidden( "display_"+key+"_OFF");
+			elementHidden( "display_"+key+"_ERROR");
+			elementVisible("display_"+key+"_MANUAL");
 			}
 		if (rm3remotes.edit_mode) {
 			elementVisible("display_"+key+"_EDIT_MODE");
 			elementHidden( "display_"+key+"_ON");
 			elementHidden( "display_"+key+"_OFF");
 			elementHidden( "display_"+key+"_ERROR");
+			elementHidden( "display_"+key+"_MANUAL");
 			}
 		}
 	}
@@ -369,6 +382,7 @@ function statusCheck_audioMute(data) {
 
 function statusCheck_buttonsOnOff(data={}) {
 
+
 	// check device status and change color of power buttons / main menu buttons device
 	var devices    = data["STATUS"]["devices"];
 	for (var device in devices) {
@@ -377,95 +391,109 @@ function statusCheck_buttonsOnOff(data={}) {
 	    var device_api_status  = data["STATUS"]["interfaces"][device_api];
 
 	    console.debug("Device Status: "+device);
-
 	    for (var key2 in devices[device]) {
 	    
 	      // if power status
 	      if (key2.includes("power")) {
-	        key = device;
+
+	        var key = device;
 	        if (key2 != "power") { key += "_"+key2; }
 	        
 	        //console.error("TEST "+key1+"_"+key2+" = "+devices[key1]["status"][key2]);
 		check_button = devices[device][key2];
 		connection   = device_api_status.toLowerCase();					 // indicator if server is already ready to interact with client
-			
-		if (connection != "connected") {
-			statusButtonSetColor( "device_" + key, "ERROR" ); // main menu button
-			statusButtonSetColor( key + "_on-off", "ERROR" ); // on-off device button		
-			statusButtonSetColor( key + "_on",     "ERROR" );
-			statusButtonSetColor( key + "_off",    "ERROR" );
 
+		if (connection != "connected") {
+			if (deactivateButton == false) {			
+				statusButtonSetColor( "device_" + key, "ERROR" ); // main menu button
+				statusButtonSetColor( key + "_on-off", "ERROR" ); // on-off device button		
+				statusButtonSetColor( key + "_on",     "ERROR" );
+				statusButtonSetColor( key + "_off",    "ERROR" );
+				}
 			elementVisible("display_"+key+"_ERROR");
 			elementHidden( "display_"+key+"_ON");
 			elementHidden( "display_"+key+"_OFF");
 			elementHidden( "display_"+key+"_EDIT_MODE");
+			elementHidden( "display_"+key+"_MANUAL");
 			}
 
 		else if (typeof check_button == "string") {
 			check_button = check_button.toUpperCase()
 			
 			if (check_button.includes("ON")) {
-				statusButtonSetColor( "device_" + key, "ON" ); // main menu button
-				statusButtonSetColor( key + "_on-off", "ON" ); // on-off device button		
-				statusButtonSetColor( key + "_on",  "ON" );
-				statusButtonSetColor( key + "_off", "" );
-
+				if (deactivateButton == false) {			
+					statusButtonSetColor( "device_" + key, "ON" ); // main menu button
+					statusButtonSetColor( key + "_on-off", "ON" ); // on-off device button		
+					statusButtonSetColor( key + "_on",  "ON" );
+					statusButtonSetColor( key + "_off", "" );
+					}
 				elementHidden( "display_"+key+"_ERROR");
 				elementVisible("display_"+key+"_ON");
 				elementHidden( "display_"+key+"_OFF");
+				elementHidden( "display_"+key+"_MANUAL");
 				}
 			else if (check_button.includes("OFF")) {
-				statusButtonSetColor( "device_" + key, "OFF" ); // main menu button
-				statusButtonSetColor( key + "_on-off", "OFF" ); // on-o:16
-				statusButtonSetColor( key + "_off", "OFF" );
-				statusButtonSetColor( key + "_on",  "" );				
-
+				if (deactivateButton == false) {			
+					statusButtonSetColor( "device_" + key, "OFF" ); // main menu button
+					statusButtonSetColor( key + "_on-off", "OFF" ); // on-o:16
+					statusButtonSetColor( key + "_off", "OFF" );
+					statusButtonSetColor( key + "_on",  "" );				
+					}
 				elementHidden( "display_"+key+"_ERROR");
 				elementHidden( "display_"+key+"_ON");
 				elementVisible("display_"+key+"_OFF");
+				elementHidden( "display_"+key+"_MANUAL");
 				}	
 			else if (check_button.includes("ERROR")) {
-				statusButtonSetColor( "device_" + key, "ERROR" ); // main menu button
-				statusButtonSetColor( key + "_on-off", "ERROR" ); // on-o:16
-				statusButtonSetColor( key + "_off", "ERROR" );
-				statusButtonSetColor( key + "_on",  "ERROR" );				
-
-				elementVisible( "display_"+key+"_ERROR");
+				if (deactivateButton == false) {			
+					statusButtonSetColor( "device_" + key, "ERROR" ); // main menu button
+					statusButtonSetColor( key + "_on-off", "ERROR" ); // on-o:16
+					statusButtonSetColor( key + "_off", "ERROR" );
+					statusButtonSetColor( key + "_on",  "ERROR" );				
+					}
+				elementVisible("display_"+key+"_ERROR");
 				elementHidden( "display_"+key+"_ON");
-				elementHidden("display_"+key+"_OFF");
+				elementHidden( "display_"+key+"_OFF");
+				elementHidden( "display_"+key+"_MANUAL");
 				}	
 			}
 			
 		else if (typeof check_button == "object") {
 			if (check_button.indexOf("off") >= 0) {
-				statusButtonSetColor( "device_" + key, "OFF" ); // main menu button
-				statusButtonSetColor( key + "_on-off", "OFF" ); // on-off device button		
-				statusButtonSetColor( key + "_off", "OFF" );
-				statusButtonSetColor( key + "_on",  "" );
-
+				if (deactivateButton == false) {			
+					statusButtonSetColor( "device_" + key, "OFF" ); // main menu button
+					statusButtonSetColor( key + "_on-off", "OFF" ); // on-off device button		
+					statusButtonSetColor( key + "_off", "OFF" );
+					statusButtonSetColor( key + "_on",  "" );
+					}
 				elementHidden( "display_"+key+"_ERROR");
 				elementHidden( "display_"+key+"_ON");
 				elementVisible("display_"+key+"_OFF");
+				elementHidden( "display_"+key+"_MANUAL");
 				}	
 			else if (check_button.indexOf("on") >= 0) {
-				statusButtonSetColor( "device_" + key, "ON" ); // main menu button
-				statusButtonSetColor( key + "_on-off", "ON" ); // on-off device button		
-				statusButtonSetColor( key + "_on",  "ON" );
-				statusButtonSetColor( key + "_off", "" );
+				if (deactivateButton == false) {			
+					statusButtonSetColor( "device_" + key, "ON" ); // main menu button
+					statusButtonSetColor( key + "_on-off", "ON" ); // on-off device button		
+					statusButtonSetColor( key + "_on",  "ON" );
+					statusButtonSetColor( key + "_off", "" );
+					}
 				elementHidden( "display_"+key+"_ERROR");
-
 				elementVisible("display_"+key+"_ON");
 				elementHidden( "display_"+key+"_OFF");
+				elementHidden( "display_"+key+"_MANUAL");
 				}
 			else if (check_button.includes("Error") || check_button.includes("ERROR") || check_button.includes("error")) {
-				statusButtonSetColor( "device_" + key, "ERROR" ); // main menu button
-				statusButtonSetColor( key + "_on-off", "ERROR" ); // on-o:16
-				statusButtonSetColor( key + "_off", "ERROR" );
-				statusButtonSetColor( key + "_on",  "ERROR" );				
-
-				elementVisible( "display_"+key+"_ERROR");
+				if (deactivateButton == false) {			
+					statusButtonSetColor( "device_" + key, "ERROR" ); // main menu button
+					statusButtonSetColor( key + "_on-off", "ERROR" ); // on-o:16
+					statusButtonSetColor( key + "_off", "ERROR" );
+					statusButtonSetColor( key + "_on",  "ERROR" );				
+					}
+				elementVisible("display_"+key+"_ERROR");
 				elementHidden( "display_"+key+"_ON");
-				elementHidden("display_"+key+"_OFF");
+				elementHidden( "display_"+key+"_OFF");
+				elementHidden( "display_"+key+"_MANUAL");
 				}	
 			}
 		else {
@@ -473,13 +501,22 @@ function statusCheck_buttonsOnOff(data={}) {
 			elementHidden( "display_"+key+"_ON");
 			elementHidden( "display_"+key+"_OFF");
 			elementHidden( "display_"+key+"_EDIT_MODE");
+			elementHidden( "display_"+key+"_MANUAL");
 			}	
 			
+		if (deactivateButton) {
+			elementHidden( "display_"+key+"_EDIT_MODE");
+			elementHidden( "display_"+key+"_ON");
+			elementHidden( "display_"+key+"_OFF");
+			elementHidden( "display_"+key+"_ERROR");
+			elementVisible("display_"+key+"_MANUAL");
+			}
 		if (rm3remotes.edit_mode) {
 			elementVisible("display_"+key+"_EDIT_MODE");
 			elementHidden( "display_"+key+"_ON");
 			elementHidden( "display_"+key+"_OFF");
 			elementHidden( "display_"+key+"_ERROR");
+			elementHidden( "display_"+key+"_MANUAL");
 			}
 		
 	        }

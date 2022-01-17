@@ -79,3 +79,8 @@
    background	: #660000;
 }
 
+.display.display_manual {
+   background	: #222244;
+   color	: lightgray;
+}
+

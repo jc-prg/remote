@@ -46,6 +46,7 @@ function rmSettings (name) {	// IN PROGRESS
 	this.input_width  = "110px";
 	this.initial_load = true;
 	this.edit_mode    = false;
+	this.manual_mode  = false;
 	this.mode         = "";
 	
 	this.logging      = new jcLogging(this.app_name);
@@ -554,8 +555,14 @@ function rmSettings (name) {	// IN PROGRESS
 
 	// deactivate buttons if device / scene is switched off
 	this.button_deact		= function (menu_entry=false) {
-		if (deactivateButton) 	{ deactivateButton = false; }
-		else			{ deactivateButton = true; }
+		if (deactivateButton) 	{ 
+			deactivateButton = false;
+			this.manual_mode = false;
+			}
+		else			{ 
+			deactivateButton = true;
+			this.manual_mode = true;
+			}
 		if (menu_entry == false) {
 			this.create();
 			this.show();

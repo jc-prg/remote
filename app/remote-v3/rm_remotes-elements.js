@@ -520,6 +520,15 @@ function rmRemoteDisplays(name) {
 	        	}
 		text += display_end;
 
+		// display if MANUAL_MODE
+		text += display_start;
+		text  = text.replace( /##STATUS##/g, "MANUAL" );
+		text  = text.replace( /##STYLE##/g, style + " display_manual" );
+		if (rm3settings.manual_mode)	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
+		else				{ text  = text.replace( /##DISPLAY##/g, "none" ); }
+		text += "<center>MANUAL MODE<br/><i>no information available</i></center>";
+		text += display_end;
+
 		// display if OFF
 		text += display_start;
 		text  = text.replace( /##STATUS##/g, "OFF" );
