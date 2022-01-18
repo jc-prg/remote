@@ -139,7 +139,7 @@ function statusCheck_inactive(data) {
 		}
 		
 	// deactive makro_buttons (check scene status, deactivate all buttons from list starting with "makro")
-	if (rm3remotes.active_type == "scene" && scene[rm3remotes.active_name] != "ON") {
+	if (rm3remotes.active_type == "scene" && scene_status[rm3remotes.active_name] != "ON") {
 	
 		for (var i=0; i<rm3remotes.active_buttons.length; i++) {
 			var button1 = rm3remotes.active_buttons[i].split("_");
