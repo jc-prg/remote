@@ -88,7 +88,7 @@ class APIcontrol():
        '''
        
        while self.working:
-         self.logging.info(".")
+         self.logging.debug(".")
          time.sleep(0.2)
        return
 
