@@ -39,6 +39,8 @@ class sonyDevice():
         '''
         initialize device
         '''
+        self.logging       = logging.getLogger("api.SONYlib")
+
         self.device_ip     = ip
         self.device_name   = name
         self.device_config = config
@@ -49,8 +51,6 @@ class sonyDevice():
         
         self.available_commands       = []
         self.waiting_for_registration = False       
-
-        self.logging = logging.getLogger("api.SONYlib")
 
         # SOAPcalls // tested with SONY BDP S4500
 
