@@ -385,6 +385,14 @@ function rmRemoteJSON(name) {
         		json = json.replace( /}/g, "\n}" );
         		text += json;
         		}
+        	else if (format == "makros") {
+        		json = JSON.stringify(json);
+        		json = json.replace( /],/g, "],\n\n" );
+        		json = json.replace( /:/g, ":\n" );
+        		json = json.replace( /{/g, "{\n" );
+        		json = json.replace( /}/g, "\n}" );
+        		text += json;
+        		}
         	else {
         		json = JSON.stringify(json);
         		json = json.replace( /,/g, ",\n" );
