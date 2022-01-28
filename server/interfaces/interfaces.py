@@ -302,8 +302,16 @@ class connect(threading.Thread):
         
 
         if "ERROR" in str(return_msg) or "error" in str(return_msg):
+        
+           if "'APIcontrol' object has no attribute 'api'" in return_msg:
+             return_msg = "ERROR: Interface not ready yet ("+api_dev+")"
+           elif "Device is off" in return_msg:
+             self.logging.info(return_msg)
+             return return_msg
+           
            if self.last_message != return_msg:
-             self.logging.warn(return_msg)
+             self.logging.warning(return_msg)
+
            self.last_message = return_msg
            self.check_errors_count(device,True)
            
@@ -337,7 +345,7 @@ class connect(threading.Thread):
 
         if "ERROR" in str(return_msg) or "error" in str(return_msg):
            if self.last_message != return_msg:
-             self.logging.warn(return_msg)
+             self.logging.warning(return_msg)
            self.last_message = return_msg
            self.check_errors_count(device,True)
         else:
@@ -372,6 +380,13 @@ class connect(threading.Thread):
              return_msg = self.api[api_dev].status
 
         if "ERROR" in str(return_msg) or "error" in str(return_msg):
+
+           if "'APIcontrol' object has no attribute 'api'" in return_msg:
+             return_msg = "ERROR: Interface not ready yet ("+api_dev+")"
+           elif "Device is off" in return_msg:
+             self.logging.info(return_msg)
+             return return_msg
+           
            if self.last_message != return_msg:
              self.logging.warn(return_msg)
            self.last_message = return_msg
