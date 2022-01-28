@@ -484,9 +484,12 @@ def RemoteOnOff(device,button):
             
               if types[value]["type"] == "enum":    status = RemoteToggle( current_status, presets[value] )
               if types[value]["type"] == "integer":
-                 minimum   = presets[value]["min"]
-                 maximum   = presets[value]["max"]
-                 direction = button[-1:]
+                 minimum        = int(presets[value]["min"])
+                 maximum        = int(presets[value]["max"])
+                 direction      = button[-1:]
+                 current_status = current_status.strip()
+                 if current_status: current_status = int(current_status)
+                 else:              current_status = 0
                
                  if   direction == "+" and current_status < maximum: status = current_status + 1
                  elif direction == "+":                              dont_send = True
