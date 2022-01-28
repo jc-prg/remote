@@ -11,8 +11,9 @@ import modules.rm3config   as remote
 # set start time and write title/version/stage
 #----------------------------------------------
 remote.start_time = time.time()
+start_string      = remote.APIname + remote.APIversion + "   (stage:" + str(stage.rollout) + "/log-level:" + stage.log_level + ")"
 print("----------------------------------------------------------------")
-print(remote.APIname + remote.APIversion + "   (stage:" + str(stage.rollout) + "/log-level:" + stage.log_level + ")")
+print(start_string)
 print("----------------------------------------------------------------")
 
 # start and configure logging
@@ -43,6 +44,12 @@ else:
                        format='%(asctime)s | %(levelname)-8s %(name)-10s | %(message)s',
                        datefmt='%d.%m.%y %H:%M:%S',
                        level=stage.log_set2level)
+
+   eval("logging."+stage.log_level.lower()+"('----------------------------------------------------------------')")
+   eval("logging."+stage.log_level.lower()+"('"+start_string+"')")
+   eval("logging."+stage.log_level.lower()+"('----------------------------------------------------------------')")
+                       
+                       
 
 # load API modules
 #----------------------------------------------
