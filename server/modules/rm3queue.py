@@ -59,7 +59,7 @@ class queueApiCalls (threading.Thread):
              # send life sign from time to time
              if count * self.wait > 360:
                 tt = time.time()
-                self.logging.warning("Queue running "+str(tt))
+                self.logging.info("Queue running "+str(tt))
                 count = 0
 
            count += 1             

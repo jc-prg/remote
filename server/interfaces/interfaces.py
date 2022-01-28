@@ -160,7 +160,7 @@ class connect(threading.Thread):
               connect = rm3ping.ping(self.api[key].api_config["IPAddress"])
               if not connect:
                 self.api[key].status = self.api[key].not_connected + " ... PING"
-                self.logging.warning(self.api[key].status)
+                self.logging.info(self.api[key].status)
                 
             if connect:
               self.reconnect(key)
