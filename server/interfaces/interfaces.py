@@ -267,7 +267,7 @@ class connect(threading.Thread):
         api_dev = self.api_device( device )
         self.check_errors( device )        
 
-        self.logging.info("__SEND: " + api_dev + " / " + device + "_" + button + ":" + value + " ("+self.api[api_dev].status+")")
+        self.logging.info("__SEND: " + api_dev + " / " + device + "_" + button + ":" + str(value) + " ("+self.api[api_dev].status+")")
 
         if self.api[api_dev].status == "Connected":
             method = self.method(device)
