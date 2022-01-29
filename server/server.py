@@ -51,6 +51,12 @@ else:
                        
                        
 
+# load remote server modules
+#----------------------------------------------
+
+from modules.server_fnct import *
+from modules.server_cmd  import *
+
 # load API modules
 #----------------------------------------------
 

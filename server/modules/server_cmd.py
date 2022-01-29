@@ -18,7 +18,9 @@ from Crypto.Cipher import AES
 #---------------------------
 
 import interfaces
-import modules
+
+import modules.rm3stage
+import modules.rm3config
 
 from modules.server_fnct import *
 
@@ -30,8 +32,8 @@ Status                 = "Starting"
 
 #---------------------------
 
-if modules.test: Stage = "Test Stage"
-else:            Stage = "Prod Stage"
+if modules.rm3stage.test: Stage = "Test Stage"
+else:                     Stage = "Prod Stage"
 
 #-------------------------------------------------
 # Start and end of API answer
@@ -42,7 +44,7 @@ def remoteAPI_start(setting=[]):
     create data structure for API response and read relevant data from config files
     '''
 
-    global Status, LastAPICall
+    global Status, LastAPICall, RmReadData_errors
     
     # set time for last action -> re-read API information only if clients connected
     configFiles.cache_lastaction           = time.time() 
@@ -54,9 +56,9 @@ def remoteAPI_start(setting=[]):
 #---------------------------> optimize structure, names ... e.g. images_*, list_*, ...
 
        data["CONFIG"]                      = {}
-       data["CONFIG"]["button_images"]     = configFiles.read(modules.icons_dir + "/index")
-       data["CONFIG"]["button_colors"]     = configFiles.read(modules.buttons  + "button_colors")
-       data["CONFIG"]["scene_images"]      = configFiles.read(modules.scene_img_dir + "/index")
+       data["CONFIG"]["button_images"]     = configFiles.read(modules.rm3stage.icons_dir + "/index")
+       data["CONFIG"]["button_colors"]     = configFiles.read(modules.rm3config.buttons  + "button_colors")
+       data["CONFIG"]["scene_images"]      = configFiles.read(modules.rm3stage.scene_img_dir + "/index")
        data["CONFIG"]["devices"]           = RmReadData_devicesConfig()    
        data["CONFIG"]["interfaces"]        = deviceAPIs.available
        data["CONFIG"]["methods"]           = deviceAPIs.methods
@@ -80,6 +82,7 @@ def remoteAPI_start(setting=[]):
     data["STATUS"]["interfaces"]           = deviceAPIs.status()
     data["STATUS"]["system"]               = {} #  to be filled in remoteAPI_end()
     data["STATUS"]["request_time"]         = queueSend.avarage_exec
+    data["STATUS"]["config_errors"]        = RmReadData_errors
       
     return data
     
@@ -96,9 +99,9 @@ def remoteAPI_end(data,setting=[]):
     data["REQUEST"]["load-time"] = time.time() - data["REQUEST"]["start-time"]
     data["STATUS"]["system"]     = {
         "message"               :  Status,
-        "server_start"          :  modules.start_time,
-        "server_start_duration" :  modules.start_duration,
-        "server_running"        :  time.time() - modules.start_time
+        "server_start"          :  modules.rm3config.start_time,
+        "server_start_duration" :  modules.rm3config.start_duration,
+        "server_running"        :  time.time() - modules.rm3config.start_time
         }
         
     #--------------------------------
@@ -177,15 +180,15 @@ def RemoteCheckUpdate(APPversion):
         d    = {}
         data = remoteAPI_start()
 
-        if (APPversion == modules.APPversion):
+        if (APPversion == modules.rm3config.APPversion):
             d["ReturnCode"]   = "800"
-            d["ReturnMsg"]    = "OK: "  + modules.ErrorMsg("800")
-        elif (APPversion in modules.APPsupport):
+            d["ReturnMsg"]    = "OK: "  + modules.rm3config.ErrorMsg("800")
+        elif (APPversion in modules.rm3config.APPsupport):
             d["ReturnCode"]   = "801"
-            d["ReturnMsg"]    = "WARN: "+ modules.ErrorMsg("801")
+            d["ReturnMsg"]    = "WARN: "+ modules.rm3config.ErrorMsg("801")
         else:
             d["ReturnCode"]   = "802"
-            d["ReturnMsg"]    = "WARN: "+ modules.ErrorMsg("802")
+            d["ReturnMsg"]    = "WARN: "+ modules.rm3config.ErrorMsg("802")
 
 
         data["REQUEST"]["Return"]     = d["ReturnMsg"]
@@ -487,7 +490,7 @@ def RemoteOnOff(device,button):
                  minimum        = int(presets[value]["min"])
                  maximum        = int(presets[value]["max"])
                  direction      = button[-1:]
-                 current_status = current_status.strip()
+                 current_status = str(current_status).strip()
                  if current_status: current_status = int(current_status)
                  else:              current_status = 0
                
@@ -507,6 +510,8 @@ def RemoteOnOff(device,button):
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
         data["REQUEST"]["Command"]   = "OnOff"
+        
+        logging.info("... add to queue ["+str(api_dev)+","+str(device)+","+str(button)+","+str(status)+"]")
         
         if dont_send: data["REQUEST"]["Return"] = "Dont send "+device+"/"+button+" as values not valid ("+str(current_status)+")."
         else:         data["REQUEST"]["Return"] = queueSend.add2queue([[api_dev,device,button,status]])

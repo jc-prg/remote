@@ -114,7 +114,7 @@ class queueApiCalls (threading.Thread):
                    devices[device]["status"]["api-status"]     = self.device_apis.api[self.device_apis.api_device(device)].status
 
                 except Exception as e:
-                   result = "ERROR queue query_list (query,"+interface+","+device+","+value+"): " + str(e)             
+                   result = "ERROR queue query_list (query,"+str(interface)+","+str(device)+","+str(value)+"): " + str(e)             
                    self.logging.error(result)
 
                 if not "ERROR" in str(result):  devices[device]["status"][value] = str(result)
