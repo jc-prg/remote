@@ -215,13 +215,30 @@ function rmRemote(name) {
 		var remote	= "<div id='remote_button' display='block'>";
 		this.button.default_size();			
 		
-		if (!this.data["DATA"]["devices"][device]["remote"]) {
+		if (this.data["DATA"]["devices"][device]["remote"] && this.data["CONFIG"]["devices"][device]) {
+			var remote_displaysize = this.data["DATA"]["devices"][device]["remote"]["display-size"];
+			var remote_label       = this.data["DATA"]["devices"][device]["settings"]["label"];
+			var remote_buttons     = this.data["CONFIG"]["devices"][device]["buttons"];
+			}		
+		else {
+			if (this.data["STATUS"]["config_errors"]["devices"][device]) {
+				var errors = this.data["STATUS"]["config_errors"]["devices"][device];
+				remote += "<b class='entry_error'>"+lang("REMOTE_CONFIG_ERROR",[device])+"</b>";
+				remote += "<hr/><ul>";
+				for (key in errors) {
+					remote += "<li><u>"+key+"</u>:<br/>"+errors[key]+"</li>";
+					}
+				remote += "</ul>";
+				}
+			else {
+				remote += lang("REMOTE_CONFIG_ERROR_UNKNOWN",[device]);
+				}
+			remote += "</div>";
+			setTextById(id,remote);
 			appMsg.alert(lang("MISSING_DATA",[device,this.data["DATA"]["devices"][device]["config"]["remote"]+".json",this.data["DATA"]["devices"][device]["config"]["device"]+".json"]));
+			return;
 			}
-
-		var remote_displaysize = this.data["DATA"]["devices"][device]["remote"]["display-size"];
-		var remote_label       = this.data["DATA"]["devices"][device]["settings"]["label"];
-		var remote_buttons     = this.data["CONFIG"]["devices"][device]["buttons"];
+			
 		// -------------------> ??? Update to new API definition
 		
 		var remote_definition  = [];
@@ -317,6 +334,11 @@ function rmRemote(name) {
 
 	// create list of buttons not used in RM definition (for devices)
 	this.device_notused		= function (id, device, preview_remote="") {
+	
+		if (!this.data["DATA"]["devices"][device] || !this.data["DATA"]["devices"][device]["remote"] || !this.data["DATA"]["devices"][device]["buttons"]) { 
+			setTextById(id,"");
+			return;
+			}
 
 		var remote            = "";
 		var notused           = [];
@@ -669,12 +691,35 @@ function rmRemote(name) {
 	// create remote for a specific scene
 	this.scene_remote		= function (id="", scene="", preview_remote="", preview_display="", preview_display_size="") {
 	    
-    		var preview		= false;
-    		var scene_definition   = this.data["DATA"]["scenes"][scene];
-		var remote_label 	= this.data["DATA"]["scenes"][scene]["settings"]["label"];
 		var remote            	= "";
 		var remote_definition 	= [];
 		var remote_channel 	= [];
+
+		if (this.data["DATA"]["scenes"][scene] && this.data["DATA"]["scenes"][scene]["remote"] && this.data["DATA"]["scenes"][scene]["remote"]["remote"]) {
+			}		
+		else {
+			if (this.data["STATUS"]["config_errors"]["scenes"][scene]) {
+				var errors = this.data["STATUS"]["config_errors"]["scenes"][scene];
+				remote += "<b class='entry_error'>"+lang("REMOTE_CONFIG_ERROR",[scene])+"</b>";
+				remote += "<hr/><ul>";
+				for (key in errors) {
+					remote += "<li><u>"+key+"</u>:<br/>"+errors[key]+"</li>";
+					}
+				remote += "</ul>";
+				}
+			else {
+				remote += lang("REMOTE_CONFIG_ERROR_UNKNOWN",[scene]);
+				}
+			remote += "</div>";
+			setTextById(id,remote);
+			appMsg.alert(lang("MISSING_DATA_SCENE",[scene,this.data["DATA"]["scenes"][scene]["config"]["remote"]+".json"]));
+			return;
+			}
+			
+
+    		var preview		= false;
+    		var scene_definition   = this.data["DATA"]["scenes"][scene];
+		var remote_label 	= this.data["DATA"]["scenes"][scene]["settings"]["label"];
 
 		var makros 		= this.data["DATA"]["makros"]["makro"];
 		var makros_sceneOn	= this.data["DATA"]["makros"]["scene-on"];
@@ -778,6 +823,12 @@ function rmRemote(name) {
 
 	// create list of channels (for scenes)
 	this.scene_channels		= function (id, scene, preview_channel="") {
+
+		if (this.data["DATA"]["scenes"][scene] && this.data["DATA"]["scenes"][scene]["remote"] && this.data["DATA"]["scenes"][scene]["remote"]["remote"]) {}
+		else {
+			setTextById(id,"");
+			return;
+			}
 
 		var remote     = "";
 		var scene_data = this.data["DATA"]["scenes"][scene];

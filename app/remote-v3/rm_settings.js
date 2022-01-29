@@ -460,16 +460,24 @@ function rmSettings (name) {	// IN PROGRESS
 					var command_on    = "appFW.requestAPI('GET',['set','"+key3+"','power','ON'], '', '', '' );setTextById('CHANGE_STATUS_"+key3+"','ON');"; //rm3settings.onoff();remoteInit();";
 					var command_off   = "appFW.requestAPI('GET',['set','"+key3+"','power','OFF'], '', '', '' );setTextById('CHANGE_STATUS_"+key3+"','OFF');"; //rm3settings.onoff();remoteInit();";
 					var power_status  = list[key][key2][key3]["power"]; //.toUpperCase();
-					var method        = this.data["CONFIG"]["devices"][key3]["interface"]["method"];
+					
 					var label         = this.data["DATA"]["devices"][key3]["settings"]["label"];
 					var visibility    = this.data["DATA"]["devices"][key3]["settings"]["visible"];
-					var hidden        = "";
+
+					if (this.data["CONFIG"]["devices"][key3]) {
+						var method        = this.data["CONFIG"]["devices"][key3]["interface"]["method"];
+						var hidden        = "";
 					
-					if (method == "record" && power_status == "ON")	{ power_status = "<u id=\"CHANGE_STATUS_"+key3+"\"><status onclick=\""+command_off+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>"; }
-					if (method == "record" && power_status == "OFF")	{ power_status = "<u id=\"CHANGE_STATUS_"+key3+"\"><status onclick=\""+command_on+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>"; }
-					if (visibility != "yes")				{ hidden = "*"; }
+						if (method == "record" && power_status == "ON")	{ power_status = "<u id=\"CHANGE_STATUS_"+key3+"\"><status onclick=\""+command_off+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>"; }
+						if (method == "record" && power_status == "OFF")	{ power_status = "<u id=\"CHANGE_STATUS_"+key3+"\"><status onclick=\""+command_on+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>"; }
+						if (visibility != "yes")				{ hidden = "*"; }
         				
-        				details += "<li><b>["+key3+"]</b> <i>"+label+":</i> " + power_status + hidden + "</li>";
+        					details += "<li><b>["+key3+"]</b> <i>"+label+":</i> " + power_status + hidden + "</li>";
+        					}
+        				else {
+						var error        = this.data["STATUS"]["config_errors"]["devices"][key3];
+        					details += "<li><b>["+key3+"]</b> <i>"+label+":</i> <font color='" + color_api_error + "'>ERROR in configuration file</font></li>";
+        					}
 	        			}
         			}
         		details += "</ul>";

@@ -97,14 +97,18 @@ function rmMenu(name, menu) {
 
 		// set vars
     		var menu   = this.readMenu();
+    		if (this.data["STATUS"])	{ var error  = this.data["STATUS"]["config_errors"]["devices"]; }
+    		else				{ var error = {}; }
+    		
     		for (var key in data) { if (data[key]["settings"]["position"]) { data[key]["position"] = data[key]["settings"]["position"]; }}
 		var order  = sortDict(data,"position");
     		var i      = 0;
 		for (var j=0;j<order.length;j++) {
 			device = order[j];
 			if (device != "default") {
-			        if (data[device]["settings"]["visible"] != "no")	{ menu  += this.entry_device( device, data[device]["settings"]["label"] ); }
-			        else if (this.edit_mode)				{ menu  += this.entry_device( device, "<div class=#hidden_entry_edit#>.(" + data[device]["settings"]["label"] + ").</div>" ); }
+				if (device in error)						{ menu  += this.entry_device( device, "<div class=#entry_error#>! " + data[device]["settings"]["label"] + "</div>" ); }
+			        else if (data[device]["settings"]["visible"] != "no")	{ menu  += this.entry_device( device, data[device]["settings"]["label"] ); }
+			        else if (this.edit_mode)					{ menu  += this.entry_device( device, "<div class=#hidden_entry_edit#>.(" + data[device]["settings"]["label"] + ").</div>" ); }
 				}
         		}
     		this.writeMenu(menu + "<li><hr/></li>");
@@ -124,6 +128,8 @@ function rmMenu(name, menu) {
     		if (data) {} else { return; }
     		
     		var menu   = this.readMenu();
+    		if (this.data["STATUS"])	{ var error  = this.data["STATUS"]["config_errors"]["scenes"]; }
+    		else				{ var error = {}; }
     		
     		for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }    		
 		var order  = sortDict(data,"position");
@@ -131,7 +137,8 @@ function rmMenu(name, menu) {
 		for (var j=0;j<order.length;j++) {
 			scene = order[j];
 			if (data[scene]["settings"]["label"]) {
-			        if (data[scene]["settings"]["visible"] != "no")	{ menu  += this.entry_scene( scene, data[scene]["settings"]["label"] ); }
+				if (scene in error)					{ menu  += this.entry_scene( scene, "<div class=#entry_error#>! " + data[scene]["settings"]["label"] + "</div>" ); }
+			        else if (data[scene]["settings"]["visible"] != "no")	{ menu  += this.entry_scene( scene, data[scene]["settings"]["label"] ); }
 			        else if (this.edit_mode)				{ menu  += this.entry_scene( scene, "<div class=#hidden_entry_edit#>.(" + data[scene]["settings"]["label"] + ").</div>" ); }
 				}
         		}

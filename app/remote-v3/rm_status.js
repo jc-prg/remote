@@ -132,7 +132,7 @@ function statusCheck_inactive(data) {
 			//console.debug(key + " - on:" + dev_on + " / off:" + required.length + " / " + scene_status[key]);
 			}
 		else {
-			console.error("ERROR statusCheck_inactive");
+			console.error("ERROR statusCheck_inactive: "+key);
 			console.error(data["DATA"]["scenes"][key]);
 			required = [];
 			}
@@ -221,13 +221,18 @@ function statusCheck(data={}) {
 
 function statusCheck_apiConnection(data) {
 	// check api status
-	var api_summary = {};
+	var api_summary    = {};
+	var config_errors  = data["STATUS"]["config_errors"]["devices"];
+	var config_devices = data["STATUS"]["devices"]; 
 	
 	for (var key in data["STATUS"]["interfaces"]) {
 		var api_dev = key.split("_");
 		if (!api_summary[api_dev[0]]) { api_summary[api_dev[0]] = ""; }
 		if (data["STATUS"]["interfaces"][key] == "Connected" && api_summary[api_dev[0]] != "ERROR") 	{ api_summary[api_dev[0]] = "OK"; } 
 		else													{ api_summary[api_dev[0]] = "ERROR"; } 
+		for (key2 in config_devices) {
+			if (config_errors[key2] && config_errors[key2] != {} && config_devices[key2]["api"] == key)	{ api_summary[api_dev[0]] = "ERROR"; } 
+			}
 		}
 		
 	for (var key in api_summary) {
@@ -382,11 +387,12 @@ function statusCheck_audioMute(data) {
 
 function statusCheck_buttonsOnOff(data={}) {
 
-
 	// check device status and change color of power buttons / main menu buttons device
 	var devices    = data["STATUS"]["devices"];
 	for (var device in devices) {
 	
+	    if (!data["CONFIG"]["devices"][device]) { continue; }
+
 	    var device_api         = data["STATUS"]["devices"][device]["api"];
 	    var device_api_status  = data["STATUS"]["interfaces"][device_api];
 
@@ -402,7 +408,7 @@ function statusCheck_buttonsOnOff(data={}) {
 	        //console.error("TEST "+key1+"_"+key2+" = "+devices[key1]["status"][key2]);
 		check_button = devices[device][key2];
 		connection   = device_api_status.toLowerCase();					 // indicator if server is already ready to interact with client
-
+			
 		if (connection != "connected") {
 			if (deactivateButton == false) {			
 				statusButtonSetColor( "device_" + key, "ERROR" ); // main menu button
@@ -538,6 +544,8 @@ function statusCheck_display(data={}) {
 
 	// set colors
 	for (var key in devices) {
+	
+		if (!data["CONFIG"]["devices"][key]) { continue; }
 	
 		// media info ...
 		var media_info         = document.getElementById("media_info");

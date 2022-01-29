@@ -101,6 +101,7 @@ var language_app = {
 						  //, \"scene-on_&lt;scene&lt;\"
 						  
 		"MISSING_DATA"			: "Data are missing for '{0}'.<br/>Check files '{1}' and '{2}' in data directory.",
+		"MISSING_DATA_SCENE"		: "Data are missing for '{0}'.<br/>Check file '{1}' in data directory.",
 		
 		"MODE_EDIT"			: "Edit Mode",
 		"MODE_INTELLIGENT"		: "Intelligent Mode",
@@ -109,11 +110,16 @@ var language_app = {
 		"PLEASE_WAIT"			: "Please wait ... .",
 		
 		"REMOTE_ADD"			: "Add Remote Control",
+		"REMOTE_CONFIG_ERROR"		: "Error in remote config file(s) '{0}': ",
+		"REMOTE_CONFIG_ERROR_UNKNOWN"	: "Unknown error in remote config file(s) '{0}'",
 		"RELOAD_TAKES_LONGER"		: "Reload takes longer than expected ...",
 		"RELOAD_TAKES_MUCH_LONGER"	: "Reload takes longer than much expected ...",
 		"RESET_SWITCH_OFF"		: "Reset Devices:<br/>switch off all devices before.",
 		"RESET_VOLUME_TO_ZERO"		: "Reset Audio Settings:<br/>set the volume of all audio devices to mininum (0) before.",
 		
+		"SCENE_CONFIG_ERROR"		: "Error in scene config file(s) '{0}': ",
+		"SCENE_CONFIG_ERROR_UNKNOWN"	: "Unknown error in scene config file(s) '{0}'",
+
 		"SCENE_ASK_DELETE"		: "Do you really want to delete scene '{0}'?",
 		"SCENE_EXISTS"			: "Scene '{0}' already exists!",
 		"SCENE_INSERT_ID"		: "Please insert ID for scene (no special characters).",

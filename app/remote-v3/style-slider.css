@@ -92,6 +92,20 @@
 }
 
 /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.rm-slider::-webkit-slider-runnable-track {
+  	-webkit-appearance: none;	/* Override default look */
+  	appearance    : none;
+  	width         : 25px;		/* Set a specific slider handle width */
+  	height        : 25px;		/* Slider handle height */
+  	background    : green;		/* Green background */
+  	cursor        : pointer;	/* Cursor on hover */
+  	border-radius : 13px;
+}
+
+.rm-slider.device_off::-webkit-slider-runnable-track {
+  	background    : darkred;		/* Green background */
+}
+
 .rm-slider::-webkit-slider-thumb {
   	-webkit-appearance: none;	/* Override default look */
   	appearance    : none;
