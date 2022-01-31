@@ -19,7 +19,7 @@ In the meanwhile a few additional APIs are integrated ...
 ## Supported Hardware
 
 * Broadlink RM 3 Mini - Infrared receiver/sender
-* Several ONKYO devices with API (see section modelsets in the file eiscp-commands.yaml in https://github.com/miracle2k/onkyo-eiscp)
+* Several ONKYO devices with API (see section modelsets in the file [eiscp-commands.yaml](https://github.com/miracle2k/onkyo-eiscp/blob/master/eiscp-commands.yaml))
 * Several SONY devices with API (see README in https://https://github.com/alexmohr/sonyapilib)
 * KODI server
 * Magic Home compartibel LED strips 
