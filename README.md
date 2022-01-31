@@ -29,6 +29,7 @@ Remotes with header and color picker (updated dark theme)
 ![edit mode](docs/remote_edit.png)
 Edit remote layouts in a browser
 
+<img src="./docs/remote_iphone_01.PNG" width="50px">
 ![screenshot](./docs/remote_iphone_01.PNG =50x)
 ![screenshot](./docs/remote_iphone_02.PNG =50x)
 ![screenshot](./docs/remote_iphone_03.PNG =50x)
