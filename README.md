@@ -20,17 +20,20 @@ In the meanwhile a few additional APIs are integrated ...
 ![light theme](docs/remote_standard.png)
 Light theme on iPhone XS
 
-![dark theme](docs/remote_dark.png)
-Dark theme on iPhone XS
+### Default theme on iPhone XS
 
-![edit mode](docs/remote_edit.png)
-Edit remote layouts in a browser
+### Default theme in the browser
+
+<img src="./docs/remote_browser_01.png" width="50%"><img src="remote_browser_02.png" width="150px">
 
 ### Dark theme on iPhone XS
 
-<img src="./docs/remote_iphone_01.PNG" width="150px"><img src="./docs/remote_iphone_02.PNG" width="150px"><img src="./docs/remote_iphone_03.PNG" width="150px"><img src="./docs/remote_iphone_04.PNG" width="150px">
-<img src="./docs/remote_iphone_05.PNG" width="150px"><img src="./docs/remote_iphone_06.PNG" width="150px"><img src="./docs/remote_iphone_07.PNG" width="150px"><img src="./docs/remote_iphone_08.PNG" width="150px">
-<img src="./docs/remote_iphone_09.PNG" width="150px"><img src="./docs/remote_iphone_10.PNG" width="150px"><img src="./docs/remote_iphone_11.PNG" width="150px"><img src="./docs/remote_iphone_12.PNG" width="150px"><img src="./docs/remote_iphone_13.PNG" width="150px">
+<img src="./docs/remote_iphone_01.PNG" width="150px"><img src="./docs/remote_iphone_02.PNG" width="150px">
+<img src="./docs/remote_iphone_03.PNG" width="150px"><img src="./docs/remote_iphone_04.PNG" width="150px">
+<img src="./docs/remote_iphone_05.PNG" width="150px"><img src="./docs/remote_iphone_06.PNG" width="150px">
+<img src="./docs/remote_iphone_07.PNG" width="150px"><img src="./docs/remote_iphone_08.PNG" width="150px">
+<img src="./docs/remote_iphone_09.PNG" width="150px"><img src="./docs/remote_iphone_10.PNG" width="150px">
+<img src="./docs/remote_iphone_11.PNG" width="150px"><img src="./docs/remote_iphone_12.PNG" width="150px"><img src="./docs/remote_iphone_13.PNG" width="150px">
 
 ### Edit mode on iPhone XS
 
