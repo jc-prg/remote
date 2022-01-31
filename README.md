@@ -11,7 +11,7 @@ In the meanwhile a few additional APIs are integrated ...
 - [Screenshots](#screenshots)
 - [Data structure](#data-structure)
 - [Main features](#main-feature)
-- [Used Sources](#used-sources)
+- [Used sources](#used-sources)
 - [How to setup the software](#how-to-setup-the-software)
 - [Disclaimer](#disclaimer)
 
@@ -124,7 +124,7 @@ The integration of the device APIs is done in an easy way, so that the integrati
 * remote control for scenes incl. makros
 * control devices via IR sender/receiver (Broadlink RM3 Mini)
 
-## Used Sources
+## Used sources
 
 Many thanks to the authors ...
   
@@ -134,9 +134,9 @@ Many thanks to the authors ...
 * SonyApiLib (https://https://github.com/alexmohr/sonyapilib)
 * MagicHome API (https://github.com/adamkempenich/magichome-python)
 * PyP100 API (https://github.com/fishbigger/TapoP100)
-* Free icons from (https://icon-icons.com/), (https://www.freeicons.io/), (https://www.flaticon.com/), and (https://icons8.com/)
-* Free images from (https://unsplash.com/)
+* Free icons and images: (https://icon-icons.com/), (https://www.freeicons.io/), (https://www.flaticon.com/), (https://icons8.com/), (https://unsplash.com/)
 * jc://modules/ (https://github.com/jc-prg/modules)
+* jc://app-framework/ (https://github.com/jc-prg/app-framework)
 
 
 ## How to setup the software
