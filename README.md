@@ -159,33 +159,42 @@ In order to use jc://remote/ as it is, the following software must be installed:
 ```bash
 $ git clone https://github.com/jc-prg/remote.git
 $ git submodule update --init
+$ cd remote
 ```
 
 2. Change settings: [sample.config_prod](./config/sample.config_prod)
 
 ```bash
-$ cd remote\config
+$ cd config
 $ cp sample.config_prod config_prod
 $ ./create prod
+$ cd ..
 ```
 
-3. Build and start via docker-compose ..
+3. Copy sample remote controls
 
 ```bash
-$ cd ..
+$ cd data/_sample
+$ ./install-config
+$ cd ../..
+```
+
+4. Build and start via docker-compose ..
+
+```bash
 $ docker-compose build
 $ ./start start
 ```
 
-4. Open in browser, e.g. http://localhost:81/
+5. Open in browser, e.g. http://localhost:81/
 
-5. Install via autostart - add the following line to /etc/rc.local
+6. Install via autostart - add the following line to /etc/rc.local
 
 ```bash
-/<your_path_to_remote>/start start
+/&lt;your_path_to_remote&gt;/start start
 ```
 
-6. Update from Github (works, if configuration file has not changed)
+7. Update from Github (works, if configuration file has not changed)
 
 ```bash
 $ ./start update
