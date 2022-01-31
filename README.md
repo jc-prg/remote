@@ -5,6 +5,17 @@ Therefore I found the **Broadlink RM 3 Mini** and sources on Github to control t
 as my new ONKYO receiver come with their own API and I started to rework my software and to integrate the first device via API directly.
 In the meanwhile a few additional APIs are integrated ...
 
+## Table of Content
+
+- [Supported Hardware](#supported-hardware)
+- [Screenshots](#screenshots)
+- [Data structure](#data-structure)
+- [Main features](#main-feature)
+- [Used Sources](#used-sources)
+- [How to setup the software](#how-to-setup-the-software)
+- [Disclaimer](#disclaimer)
+
+
 ## Supported Hardware
 
 * Broadlink RM 3 Mini - Infrared receiver/sender
@@ -63,8 +74,9 @@ In the meanwhile a few additional APIs are integrated ...
 
 * add remote control for LED strips compartible with MagicHome
 * add remote control for Tapo SmartPlugs
-* add slider and color-picker
+* add slider and color-picker for remotes
 * stablize API connections
+* optimize logging and add error handling for JSON files
 
 ### App v2.6 / Server v1.9
 
