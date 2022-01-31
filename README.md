@@ -191,7 +191,7 @@ $ ./start start
 6. Install via autostart - add the following line to /etc/rc.local
 
 ```bash
-/&lt;your_path_to_remote&gt;/start start
+/<your_path_to_remote>/start start
 ```
 
 7. Update from Github (works, if configuration file has not changed)
