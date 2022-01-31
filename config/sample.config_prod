@@ -29,7 +29,7 @@ export REMOTE_DIR_SCENES_INDEX="$REMOTE_DIR_DATA/buttons/scenes/index.json" # di
 
 
 # Docker-Compose
-export DOCKERCOMPOSE_DIR="/usr/local/bin"
+export DOCKERCOMPOSE_DIR="/usr/local/bin"                    # directory to docker-compose
 
 # Images
 export REMOTE_DOCKERIMAGE_CLIENT="php:7.1-apache"            # docker image for the client (tested: php:7.1-apache)
