@@ -24,7 +24,7 @@ Light theme on iPhone XS
 
 ### Default theme in the browser
 
-<img src="./docs/remote_browser_01.png" width="50%"><img src="remote_browser_02.png" width="150px">
+<img src="./docs/remote_browser_01.png" width="50%"><img src="remote_browser_03.png" width="150px">
 
 ### Dark theme on iPhone XS
 
