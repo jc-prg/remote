@@ -29,7 +29,7 @@ In the meanwhile a few additional APIs are integrated ...
 
 ### Default theme in the browser
 
-<img src="./docs/remote_browser_01.png" width="50%"> <img src="./docs/remote_browser_03.png" width="50%">
+<img src="./docs/remote_browser_01.png" width="48%"> <img src="./docs/remote_browser_03.png" width="48%">
 
 ### Dark theme on iPhone XS
 
@@ -50,8 +50,8 @@ In the meanwhile a few additional APIs are integrated ...
 
 ### Edit mode in the browser
 
-<img src="./docs/remote_browser_edit_01.png" width="50%"> <img src="./docs/remote_browser_edit_02.png" width="50%">
-<img src="./docs/remote_browser_edit_03.png" width="50%">
+<img src="./docs/remote_browser_edit_01.png" width="48%"> <img src="./docs/remote_browser_edit_02.png" width="48%">
+<img src="./docs/remote_browser_edit_03.png" width="48%">
 
 ## Data structure
 
