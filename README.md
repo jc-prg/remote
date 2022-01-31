@@ -128,15 +128,15 @@ The integration of the device APIs is done in an easy way, so that the integrati
 
 Many thanks to the authors ...
   
-* BlackBeanControl (https://github.com/davorf/BlackBeanControl)
-* eiscp-onkyo (https://github.com/miracle2k/onkyo-eiscp)
-* KodiJson (https://github.com/jcsaaddupuy/python-kodijson)
-* SonyApiLib (https://https://github.com/alexmohr/sonyapilib)
-* MagicHome API (https://github.com/adamkempenich/magichome-python)
-* PyP100 API (https://github.com/fishbigger/TapoP100)
-* Free icons and images: (https://icon-icons.com/), (https://www.freeicons.io/), (https://www.flaticon.com/), (https://icons8.com/), (https://unsplash.com/)
-* jc://modules/ (https://github.com/jc-prg/modules)
-* jc://app-framework/ (https://github.com/jc-prg/app-framework)
+* [BlackBeanControl](https://github.com/davorf/BlackBeanControl)
+* [eiscp-onkyo](https://github.com/miracle2k/onkyo-eiscp)
+* [KodiJson](https://github.com/jcsaaddupuy/python-kodijson)
+* [SonyApiLib](https://https://github.com/alexmohr/sonyapilib)
+* [MagicHome API](https://github.com/adamkempenich/magichome-python)
+* [PyP100 API](https://github.com/fishbigger/TapoP100)
+* Free icons and images: https://icon-icons.com/, https://www.freeicons.io/, https://www.flaticon.com/, https://icons8.com/, https://unsplash.com/
+* [jc://modules/](https://github.com/jc-prg/modules)
+* [jc://app-framework/](https://github.com/jc-prg/app-framework)
 
 
 ## How to setup the software
