@@ -29,10 +29,18 @@ Remotes with header and color picker (updated dark theme)
 ![edit mode](docs/remote_edit.png)
 Edit remote layouts in a browser
 
-<img src="./docs/remote_iphone_01.PNG" width="50px">
-![screenshot](./docs/remote_iphone_01.PNG =50x)
-![screenshot](./docs/remote_iphone_02.PNG =50x)
-![screenshot](./docs/remote_iphone_03.PNG =50x)
+<img src="./docs/remote_iphone_01.PNG" width="100px">
+<img src="./docs/remote_iphone_02.PNG" width="100px">
+<img src="./docs/remote_iphone_03.PNG" width="100px">
+<img src="./docs/remote_iphone_04.PNG" width="100px">
+<img src="./docs/remote_iphone_05.PNG" width="100px">
+<img src="./docs/remote_iphone_06.PNG" width="100px">
+<img src="./docs/remote_iphone_07.PNG" width="100px">
+<img src="./docs/remote_iphone_08.PNG" width="100px">
+<img src="./docs/remote_iphone_09.PNG" width="100px">
+<img src="./docs/remote_iphone_10.PNG" width="100px">
+<img src="./docs/remote_iphone_11.PNG" width="100px">
+<img src="./docs/remote_iphone_12.PNG" width="100px">
 
 ## Data structure
 
