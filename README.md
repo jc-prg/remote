@@ -15,10 +15,7 @@ In the meanwhile a few additional APIs are integrated ...
 * Tapo SmartPlugs P100
 * *Other devices easily can be integrated*
 
-## Screenshots 
-
-![light theme](docs/remote_standard.png)
-Light theme on iPhone XS
+## Screenshots
 
 ### Default theme on iPhone XS
 
