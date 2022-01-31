@@ -158,11 +158,11 @@ $ git clone https://github.com/jc-prg/remote.git
 $ git submodule update --init
 ```
 
-2. Change settings
+2. Change settings 
 
 ```bash
 $ cd remote\config
-$ cp sample.config_prod config_prod
+$ cp [sample.config_prod](./config/sample.config_prod) config_prod
 $ ./create prod
 ```
 
