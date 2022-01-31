@@ -28,19 +28,19 @@ Light theme on iPhone XS
 
 ### Dark theme on iPhone XS
 
-<img src="./docs/remote_iphone_01.PNG" width="20%"><img src="./docs/remote_iphone_02.PNG" width="20%">
-<img src="./docs/remote_iphone_03.PNG" width="20%"><img src="./docs/remote_iphone_04.PNG" width="20%">
-<img src="./docs/remote_iphone_05.PNG" width="20%"><img src="./docs/remote_iphone_06.PNG" width="20%">
-<img src="./docs/remote_iphone_07.PNG" width="20%"><img src="./docs/remote_iphone_08.PNG" width="20%">
-<img src="./docs/remote_iphone_09.PNG" width="20%"><img src="./docs/remote_iphone_10.PNG" width="20%">
-<img src="./docs/remote_iphone_11.PNG" width="20%"><img src="./docs/remote_iphone_12.PNG" width="20%"><img src="./docs/remote_iphone_13.PNG" width="20%">
+<img src="./docs/remote_iphone_01.PNG" width="17%"><img src="./docs/remote_iphone_02.PNG" width="17%">
+<img src="./docs/remote_iphone_03.PNG" width="17%"><img src="./docs/remote_iphone_04.PNG" width="17%">
+<img src="./docs/remote_iphone_05.PNG" width="17%"><img src="./docs/remote_iphone_06.PNG" width="17%">
+<img src="./docs/remote_iphone_07.PNG" width="17%"><img src="./docs/remote_iphone_08.PNG" width="17%">
+<img src="./docs/remote_iphone_09.PNG" width="17%"><img src="./docs/remote_iphone_10.PNG" width="17%">
+<img src="./docs/remote_iphone_11.PNG" width="17%"><img src="./docs/remote_iphone_12.PNG" width="17%"><img src="./docs/remote_iphone_13.PNG" width="17%">
 
 ### Edit mode on iPhone XS
 
-<img src="./docs/remote_edit_iphone_01.PNG" width="20%"><img src="./docs/remote_edit_iphone_02.PNG" width="20%">
-<img src="./docs/remote_edit_iphone_03.PNG" width="20%"><img src="./docs/remote_edit_iphone_04.PNG" width="20%">
-<img src="./docs/remote_edit_iphone_05.PNG" width="20%"><img src="./docs/remote_edit_iphone_06.PNG" width="20%">
-<img src="./docs/remote_edit_iphone_07.PNG" width="20%"><img src="./docs/remote_edit_iphone_08.PNG" width="20%">
+<img src="./docs/remote_edit_iphone_01.PNG" width="17%"><img src="./docs/remote_edit_iphone_02.PNG" width="17%">
+<img src="./docs/remote_edit_iphone_03.PNG" width="17%"><img src="./docs/remote_edit_iphone_04.PNG" width="17%">
+<img src="./docs/remote_edit_iphone_05.PNG" width="17%"><img src="./docs/remote_edit_iphone_06.PNG" width="17%">
+<img src="./docs/remote_edit_iphone_07.PNG" width="17%"><img src="./docs/remote_edit_iphone_08.PNG" width="17%">
 
 ## Data structure
 
