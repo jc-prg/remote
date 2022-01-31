@@ -29,6 +29,10 @@ Remotes with header and color picker (updated dark theme)
 ![edit mode](docs/remote_edit.png)
 Edit remote layouts in a browser
 
+![](docs/remote_iphone_01.PNG =50x)
+![](docs/remote_iphone_02.PNG =50x)
+![](docs/remote_iphone_03.PNG =50x)
+
 ## Data structure
 
 * [Description of data and configuration files](data/README.md)
