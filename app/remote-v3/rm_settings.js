@@ -340,7 +340,8 @@ function rmSettings (name) {	// IN PROGRESS
 		setting  += this.basic.container("setting_makros_manual","JSON makros - manual",lang("MANUAL_MAKROS"),false); 
 
 		setting  += "<center><br/><br/>";
-		setting  += this.btn.sized("apiMakroChange(['makro','scene-on','scene-off','dev-on','dev-off']);","Save","");
+//		setting  += this.btn.sized("apiMakroChange(['makro','scene-on','scene-off','dev-on','dev-off']);",lang("BUTTON_T_SAVE"),"");
+		setting  += this.btn.sized(id="add_scene",label=lang("BUTTON_T_SAVE"),style="","apiMakroChange([#makro#,#scene-on#,#scene-off#,#dev-on#,#dev-off#]);","");
 		setting  += "</center>";
 
 		this.write(2,"Change Makros",setting);
