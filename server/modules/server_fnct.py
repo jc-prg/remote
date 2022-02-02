@@ -75,51 +75,56 @@ def RmReadData_devicesConfig():
            logging.warning(device + ": " +str(data[device]))
          continue
 
-       interface_def_device   = configFiles.read(modules.rm3config.commands + interface + "/" + device_key)  # button definitions, presets, queries ...
+       interface_def_device   = configFiles.read(modules.rm3config.commands + interface + "/" + device_key)       # button definitions, presets, queries ...
        interface_def_default  = configFiles.read(modules.rm3config.commands + interface + "/00_default")     # button definitions, presets, queries ...
 
        if "ERROR" in interface_def_device or "ERROR" in interface_def_default:
           logging.error("Error while reading configuration for device ("+device_key+")")
-          continue
+          
+       else:
+         interface_def_device   = interface_def_device["data"]
+         interface_def_default  = interface_def_default["data"]
+         interface_def_combined = {}
 
-       interface_def_device   = interface_def_device["data"]
-       interface_def_default  = interface_def_default["data"]
-       interface_def_combined = {}
+         logging.warning(device_key+"/"+interface)
 
-       for value in config_keys:
+         for value in config_keys:
 
-         if value in interface_def_default:   interface_def_combined[value] = interface_def_default[value]
-         elif value == "method":              interface_def_combined[value] = ""
-         elif value == "url":                 interface_def_combined[value] = ""
-         else:                                interface_def_combined[value] = {}
+           if value in interface_def_default:   interface_def_combined[value] = interface_def_default[value]
+           elif value == "method":              interface_def_combined[value] = ""
+           elif value == "url":                 interface_def_combined[value] = ""
+           else:                                interface_def_combined[value] = {}
 
-       if value in interface_def_device and value != "method" and value != "url":
-         for key in interface_def_device[value]:
-           interface_def_combined[value][key] = interface_def_device[value][key]
+           if value in interface_def_device and value != "method" and value != "url":
+             logging.warning(value)
+             for key in interface_def_device[value]:
+               interface_def_combined[value][key] = interface_def_device[value][key]
                          
-       elif value in interface_def_device:
-           interface_def_combined[value] = interface_def_device[value]
+           elif value in interface_def_device:
+             interface_def_combined[value] = interface_def_device[value]
 
-       data_config[device]                               = {}
-       data_config[device]["buttons"]                    = list(interface_def_combined["buttons"].keys())                 
+         data_config[device]                               = {}
+         data_config[device]["buttons"]                    = {}
+         if interface_def_combined["buttons"] != "":
+           data_config[device]["buttons"] = list(interface_def_combined["buttons"].keys())                 
        
-       data_config[device]["interface"]                  = {}
-       data_config[device]["interface"]["method"]        = interface_def_combined["method"]              
-       data_config[device]["interface"]["files"]         = [ interface + "/00_interface.json", interface + "/00_default.json", interface + "/" + device_key + ".json" ]
-       data_config[device]["interface"]["api"]           = data[device]["config"]["interface_api"] + "_" + data[device]["config"]["interface_dev"]
-       data_config[device]["interface"]["interface_api"] = data[device]["config"]["interface_api"]
-       data_config[device]["interface"]["interface_dev"] = data[device]["config"]["interface_dev"]
-       data_config[device]["interface"]["device"]        = device_key
+         data_config[device]["interface"]                  = {}
+         data_config[device]["interface"]["method"]        = interface_def_combined["method"]              
+         data_config[device]["interface"]["files"]         = [ interface + "/00_interface.json", interface + "/00_default.json", interface + "/" + device_key + ".json" ]
+         data_config[device]["interface"]["api"]           = data[device]["config"]["interface_api"] + "_" + data[device]["config"]["interface_dev"]
+         data_config[device]["interface"]["interface_api"] = data[device]["config"]["interface_api"]
+         data_config[device]["interface"]["interface_dev"] = data[device]["config"]["interface_dev"]
+         data_config[device]["interface"]["device"]        = device_key
 
-       data_config[device]["commands"]                   = {}
-       data_config[device]["commands"]["get"]            = list(interface_def_combined["queries"].keys())                 
-       data_config[device]["commands"]["set"]            = list(interface_def_combined["send-data"].keys())                 
+         data_config[device]["commands"]                   = {}
+         data_config[device]["commands"]["get"]            = list(interface_def_combined["queries"].keys())                 
+         data_config[device]["commands"]["set"]            = list(interface_def_combined["send-data"].keys())                 
        
-       data_config[device]["data"]                       = {}
-       data_config[device]["data"]["types"]              = interface_def_combined["commands"]
-       data_config[device]["data"]["values"]             = interface_def_combined["values"]
+         data_config[device]["data"]                       = {}
+         data_config[device]["data"]["types"]              = interface_def_combined["commands"]
+         data_config[device]["data"]["values"]             = interface_def_combined["values"]
 
-       data_config[device]["url"]                        = interface_def_combined["url"]
+         data_config[device]["url"]                        = interface_def_combined["url"]
        
     return data_config
 
@@ -134,11 +139,15 @@ def RmReadData_devices(selected=[],remotes=True,config_only=False):
     config_keys = ["buttons","commands","queries","send-data","send","values","url","method"]
     data        = {}
     data        = configFiles.read_status()
+    
+    if "ERROR" in data:
+       logging.error("ERROR while requesting devices status, main config file seems to be defect!")
+       return data
  
     # read data for active devices
     for device in data:
 
-       if data[device]["config"]["interface_api"] != "":  ### ERROR: TypeError: string indices must be integers
+       if data[device]["config"]["interface_api"] != "":
           if selected == [] or device in selected:
 	
              device_key = data[device]["config"]["device"]
@@ -584,14 +593,16 @@ def addDevice(device,device_data):
     add new device to config file and create command/remote files
     '''
     
-    interface     = device_data["api"]
+    logging.warning(str(device_data))
+    
+    interface,interface_dev = device_data["api"].split("_")
     config_remote = device_data["config_remote"]
     config_device = device_data["config_device"]
     
     ## Check if exists    
     active_json         = configFiles.read_status()
     
-    if device in active_json:                                                         return("WARN: Device " + device + " already exists (active).")
+    if device in active_json:                                                                           return("WARN: Device " + device + " already exists (active).")
     if modules.rm3json.ifexist(modules.rm3config.commands +interface+"/"+device_data["config_device"]): return("WARN: Device " + device + " already exists (devices).")
     if modules.rm3json.ifexist(modules.rm3config.remotes  +device_data["config_remote"]):               return("WARN: Device " + device + " already exists (remotes).") 
     
@@ -609,7 +620,7 @@ def addDevice(device,device_data):
         "config"           : {
                "device"        : device_data["config_device"],
                "remote"        : device_data["config_remote"],
-               "interface_api" : device_data["api"],
+               "interface_api" : interface,
                "interface_dev" : "default"
         	},
         "settings" : {

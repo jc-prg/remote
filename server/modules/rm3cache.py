@@ -77,7 +77,8 @@ class configCache (threading.Thread):
                i = 0
                for key in self.cache:
                   if key != "_api":
-                    self.cache[key] = rm3json.read(key)
+                    key_path = key.replace("**","/")
+                    self.cache[key] = rm3json.read(key_path)
                     i += 1
 
                self.logging.info("Reread "+str(i)+" config files into the cache (" + self.name + ")")
@@ -136,12 +137,13 @@ class configCache (threading.Thread):
         else read from file
         '''
 
+        config_file_key = config_file.replace("/","**")
         self.logging.debug("readConfig: "+config_file)
         if config_file not in self.cache or from_file:
-            self.cache[config_file] = rm3json.read(config_file)
+            self.cache[config_file_key] = rm3json.read(config_file)
             self.logging.debug("... from file.")
 
-        return self.cache[config_file]
+        return self.cache[config_file_key]
 
     #---------------------------
 
@@ -149,8 +151,9 @@ class configCache (threading.Thread):
         '''
         write config to file and update cache
         '''
+        config_file_key = config_file.replace("/","**")
         rm3json.write(config_file,value,"cache.write "+source)
-        self.cache[config_file] = value
+        self.cache[config_file_key] = value
 
 
     #---------------------------
@@ -220,8 +223,9 @@ class configCache (threading.Thread):
             if key in relevant_keys:
                status_temp[dev][key] = status[dev][key]                        
 
+        active_devices_key = rm3config.active_devices.replace("/","**")
         self.write(rm3config.active_devices, status_temp, "cache.write_status "+source)
-        self.cache[rm3config.active_devices] = status_temp
+        self.cache[active_devices_key] = status_temp
     
 #-------------------------------------------------
 # EOF
