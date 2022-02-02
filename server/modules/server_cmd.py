@@ -330,9 +330,7 @@ def RemoteMakro(makro):
         commands_2nd              = []
         commands_3rd              = []
         commands_4th              = []
-        
-#### --> check, if makro is defined ... (or work with try: / except:)
-#### --> check, why order isn't correct in some cases (dev-on / dev-off)
+        return_msg                = ""
         
         logging.debug("Decoded makro-string 1st: "+str(commands_1st))
 
@@ -341,8 +339,12 @@ def RemoteMakro(makro):
           command_str = str(command)
           if not command_str.isnumeric() and "_" in command:  
             device,button = command.split("_",1)
-            if "scene-on_" in command:     commands_2nd.extend(data["DATA"]["makros"]["scene-on"][button])
-            elif "scene-off_" in command:  commands_2nd.extend(data["DATA"]["makros"]["scene-off"][button])
+            if "scene-on_" in command:
+              if button in data["DATA"]["makros"]["scene-on"]:  commands_2nd.extend(data["DATA"]["makros"]["scene-on"][button])
+              else:                                             return_msg += "; ERROR: makro not defined ("+command+")"
+            elif "scene-off_" in command:
+              if button in data["DATA"]["makros"]["scene-off"]: commands_2nd.extend(data["DATA"]["makros"]["scene-off"][button])
+              else:                                             return_msg += "; ERROR: makro not defined ("+command+")"
             else:                          commands_2nd.extend([command])
           else:                            commands_2nd.extend([command])
           
@@ -353,8 +355,12 @@ def RemoteMakro(makro):
           command_str = str(command)
           if not command_str.isnumeric() and "_" in command:  
             device,button = command.split("_",1)
-            if "dev-on_" in command:     commands_3rd.extend(data["DATA"]["makros"]["dev-on"][button])
-            elif "dev-off_" in command:  commands_3rd.extend(data["DATA"]["makros"]["dev-off"][button])
+            if "dev-on_" in command:
+              if button in data["DATA"]["makros"]["dev-on"]:  commands_3rd.extend(data["DATA"]["makros"]["dev-on"][button])
+              else:                                           return_msg += "; ERROR: makro not defined ("+command+")"
+            elif "dev-off_" in command:
+              if button in data["DATA"]["makros"]["dev-off"]:  commands_3rd.extend(data["DATA"]["makros"]["dev-off"][button])
+              else:                                           return_msg += "; ERROR: makro not defined ("+command+")"
             else:                        commands_3rd.extend([command])
           else:                          commands_3rd.extend([command])
           
@@ -365,7 +371,9 @@ def RemoteMakro(makro):
           command_str = str(command)
           if not command_str.isnumeric() and "_" in command:  
             device,button = command.split("_",1)
-            if "makro_" in command:      commands_4th.extend(data["DATA"]["makros"]["makro"][button])
+            if "makro_" in command:
+              if button in data["DATA"]["makros"]["makro"]:  commands_4th.extend(data["DATA"]["makros"]["makro"][button])
+              else:                                          return_msg += "; ERROR: makro not defined ("+command+")"
             else:                        commands_4th.extend([command])
           else:                          commands_4th.extend([command])
           
@@ -381,8 +389,8 @@ def RemoteMakro(makro):
             device,button_status        = command.split("_",1)                                        # split device and button
             
             if device not in data["DATA"]["devices"]:
-               error_msg                   = ";ERROR: Device defined in makro not found ("+device+")"
-               data["REQUEST"]["Return"]  += error_msg
+               error_msg                = "; ERROR: Device defined in makro not found ("+device+")"
+               return_msg              += error_msg
                logging.error(error_msg)
                continue
             
@@ -410,19 +418,21 @@ def RemoteMakro(makro):
               
               if data["DATA"]["devices"][device]["status"][status_var] != status:
               
-                  data["REQUEST"]["Return"]  += ";" + queueSend.add2queue([[interface,device,button,status]])
+                  return_msg  += ";" + queueSend.add2queue([[interface,device,button,status]])
             
             # if no future state is defined just add command to queue
             elif status == "":
-                data["REQUEST"]["Return"]  += ";" + queueSend.add2queue([[interface,device,button,""]])
+                return_msg  += ";" + queueSend.add2queue([[interface,device,button,""]])
                 
           # if command is numeric, add to queue directly (time to wait)
           elif command_str.isnumeric():
-            data["REQUEST"]["Return"]  += ";" + queueSend.add2queue([float(command)])
+            return_msg  += ";" + queueSend.add2queue([float(command)])
 
         refreshCache()
-        data["DATA"]              = {}
-        data                      = remoteAPI_end(data,["no-config"])        
+        if return_msg != "":
+          data["REQUEST"]["Return"] = return_msg 
+        data["DATA"]                = {}
+        data                        = remoteAPI_end(data,["no-config"])        
         return data
 
 #-------------------------------------------------
