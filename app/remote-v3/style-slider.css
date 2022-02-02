@@ -94,42 +94,47 @@
 /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
 .rm-slider::-webkit-slider-runnable-track {
   	-webkit-appearance: none;	/* Override default look */
-  	appearance    : none;
-  	width         : 25px;		/* Set a specific slider handle width */
-  	height        : 25px;		/* Slider handle height */
-  	background    : green;		/* Green background */
-  	cursor        : pointer;	/* Cursor on hover */
-  	border-radius : 13px;
+  	appearance	: none;
+  	width		: 29px;		/* Set a specific slider handle width */
+  	height		: 29px;		/* Slider handle height */
+  	background	: #223322;		/* Green background */
+  	cursor		: pointer;	/* Cursor on hover */
+  	border-radius	: 15px;
+	border		: 2px solid #777777;
 }
 
 .rm-slider.device_off::-webkit-slider-runnable-track {
-  	background    : darkred;		/* Green background */
+  	background    : #332222;		/* Green background */
 }
 
 .rm-slider::-webkit-slider-thumb {
   	-webkit-appearance: none;	/* Override default look */
-  	appearance    : none;
-  	width         : 25px;		/* Set a specific slider handle width */
-  	height        : 25px;		/* Slider handle height */
-  	background    : green;		/* Green background */
-  	cursor        : pointer;	/* Cursor on hover */
-  	border-radius : 13px;
+  	appearance	: none;
+  	width		: 25px;		/* Set a specific slider handle width */
+  	height		: 25px;		/* Slider handle height */
+  	background	: green;		/* Green background */
+  	cursor		: pointer;	/* Cursor on hover */
+  	border-radius	: 13px;
+	border		: 2px solid #00cc00;
 }
 
 .rm-slider.device_off::-webkit-slider-thumb {
-  	background    : darkred;		/* Green background */
+  	background	: darkred;		/* Green background */
+	border		: 2px solid #cc0000;
 }
 
 .rm-slider::-moz-range-thumb {
-	width         : 25px;		/* Set a specific slider handle width */
-	height        : 25px;		/* Slider handle height */
-  	background    : green; 	/* Green background */
-  	cursor        : pointer;	/* Cursor on hover */
-  	border-radius : 13px;
+	width		: 25px;		/* Set a specific slider handle width */
+	height		: 25px;		/* Slider handle height */
+  	background	: green; 	/* Green background */
+  	cursor		: pointer;	/* Cursor on hover */
+  	border-radius	: 13px;
+	border		: 2px solid #00cc00;
 }
 
 .rm-slider.device_off::-moz-range-thumb {
-  	background    : darkred;		/* Green background */
+  	background	: darkred;		/* Green background */
+	border		: 2px solid #cc0000;
 }
 
 /* EOF */
