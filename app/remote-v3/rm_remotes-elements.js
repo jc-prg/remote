@@ -232,7 +232,11 @@ function rmRemoteButtons(name) {
 	        
 	// button edit mode		
 	this.edit		= function (onclick,label,disabled="") {
-        	var style = "width:" + this.width + ";height:"+this.height+";margin:"+this.margin+";";
+		var style = "";
+		if (this.width != "")  { style += "width:" + this.width + ";"; }
+		if (this.height != "") { style += "height:"+this.height+";"; }
+		if (this.margin != "") { style += "margin:"+this.margin+";"; }
+
         	if (disabled == "disabled") { style += "background-color:gray;"; }
         	return "<button style=\""+style+"\" onClick=\""+onclick+"\" "+disabled+">"+label+"</button>";
         	}
