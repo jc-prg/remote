@@ -334,7 +334,7 @@ class APIaddOn():
         if status["device_on"]:        self.power_status = "ON"
         else:                          self.power_status = "OFF" 
         
-        if param in status:            return { "result": status["location"] }
+        if param in status:            return { "result": status[param] }
         elif param == "status":        return { "result": str(status) }
         elif param == "power":         return { "result": self.power_status }        
         
