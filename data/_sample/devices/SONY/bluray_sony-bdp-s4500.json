@@ -53,24 +53,52 @@
             "zoomin": "ZoomIn",
             "zoomout": "ZoomOut"
         },
-        "description": "SONY BDP-S4500",
-        "method": "query",
-        "queries": {
-            "media_duration": "SOAP=GetMediaInfo::MediaDuration",
-            "media_medium": "SOAP=GetMediaInfo::PlayMedium",
-            "media_tracks": "SOAP=GetMediaInfo::NrTracks",
-            "playing": "playing",
-            "playing_soap": "SOAP=GetTransportInfo::CurrentTransportState",
-            "position_abs_cnt": "SOAP=GetPositionInfo::AbsCount",
-            "position_abs_time": "SOAP=GetPositionInfo::AbsTime",
-            "position_duration": "SOAP=GetPositionInfo::TrackDuration",
-            "position_metadata": "SOAP=GetPositionInfo::TrackMetaData",
-            "position_rel_cnt": "SOAP=GetPositionInfo::RelCount",
-            "position_rel_time": "SOAP=GetPositionInfo::RelTime",
-            "position_track": "SOAP=GetPositionInfo::Track",
-            "test": "CMD=test",
-            "power": "power"
+        "commands" : {
+            "power": {
+             	"get" : "power",
+             	"type" : "enum",
+             	"values" : ["ON", "OFF"]
+             	},
+            "media_duration": {
+             	"get" : "SOAP=GetMediaInfo::MediaDuration"
+             	},
+            "media_medium": {
+             	"get" : "SOAP=GetMediaInfo::PlayMedium"
+             	},
+            "media_tracks": {
+             	"get" : "SOAP=GetMediaInfo::NrTracks"
+             	},
+            "playing": {
+             	"get" : "playing"
+             	},
+            "playing_soap": {
+             	"get" : "SOAP=GetTransportInfo::CurrentTransportState"
+             	},
+            "position_abs_cnt": {
+             	"get" : "SOAP=GetPositionInfo::AbsCount"
+             	},
+            "position_abs_time": {
+             	"get" : "SOAP=GetPositionInfo::AbsTime"
+             	},
+            "position_duration": {
+             	"get" : "SOAP=GetPositionInfo::TrackDuration"
+             	},
+            "position_metadata": {
+             	"get" : "SOAP=GetPositionInfo::TrackMetaData"
+             	},
+            "position_rel_cnt": {
+             	"get" : "SOAP=GetPositionInfo::RelCount"
+             	},
+            "position_rel_time": {
+             	"get" : "SOAP=GetPositionInfo::RelTime"
+             	},
+            "position_track": {
+             	"get" : "SOAP=GetPositionInfo::Track" 
+             	},
+            "test": {
+             	"get" : "CMD=test"
+             	}
         },
-        "values": {}
+        "description": "SONY BDP-S4500"
     }
 }

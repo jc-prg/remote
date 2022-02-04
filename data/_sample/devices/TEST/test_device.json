@@ -2,10 +2,7 @@
     "data": {
         "buttons": {},
         "commands": {},
-        "description": "test device",
-        "method": "record",
-        "queries": {},
-        "values": {}
+        "description": "test device"
     },
-    "info": "jc://remote/ - In this files the commands foreach button, queries, the query method is defined."
+    "info": "jc://remote/ - In this files the device-specific commands and buttons are defined."
 }

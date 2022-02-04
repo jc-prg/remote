@@ -24,11 +24,13 @@
         },
         "commands": {},
         "description": "Magic Home (API)",
-        "display": {},
         "method": "query",
-        "queries": {},
-        "send-data": {},
-        "url": "",
-        "values": {}
-    }
+        "send-data": {
+            "send-brightness": "jc.set_brightness({DATA})",
+            "send-color": "jc.set_color({DATA})",
+            "send-preset": "jc.set_preset({DATA})",
+            "send-speed": "jc.set_speed({DATA})",
+            "send-text": "jc.set_color({DATA})"
+        }
+   }
 }

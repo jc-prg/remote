@@ -1,16 +1,12 @@
 {
     "data": {
 	"description" : "API to SONY devices",
+	"method" : "query",
 	"buttons" : {
        	},
-	"queries" : {
-       	},
-	"values" : {
+	"commands" : {
        	},
 	"display" : {
-       	},
-	"send-data" : {
-        }
-
+       	}
    }
 }

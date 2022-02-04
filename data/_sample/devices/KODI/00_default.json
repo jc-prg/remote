@@ -47,40 +47,42 @@
 		"weather": "GUI.ActivateWindow({'window':'weather'})"
 		},
         "commands": {
-		"mute"  : { "type": "enum" },
-		"power" : { "type": "enum" },
-		"vol"   : { "type": "integer" }
+		"mute"  : { 
+			"get": "jc.PlayerMetadata('muted')",
+			"type": "enum",
+			"values" : [ "False", "True" ]
+			},
+		"power" : { 
+			"get": "jc.PowerStatus()",
+			"type": "enum",
+			"values" : [ "ON" ]
+			},
+		"vol"   : { 
+			"get": "jc.PlayerMetadata('volume')",
+			"type": "integer",
+			"values": { "max": 100, "min": 0 }
+			},
+		"addons": { "get" : "jc.PlayerMetadata('addon-list')" },
+		"audiostreams": { "get" : "jc.PlayerMetadata('audiostreams')" },
+		"current-playing": { "get" : "jc.PlayerMetadata('info')" },
+		"genre": { "get" : "jc.PlayerMetadata('genre')" },
+		"item": { "get" : "jc.PlayerMetadata('item-position')" },
+		"playing": { "get" : "jc.PlayerMetadata('playing')" },
+		"playlist": { "get" : "jc.PlayerMetadata('playlist-position')" },
+		"plot": { "get" : "jc.PlayerMetadata('plot')" },
+		"type": { "get" : "jc.PlayerMetadata('type')" },
+		"version": { "get" : "jc.PlayerMetadata('version')" },
+		"subtitles": { "get" : "jc.PlayerMetadata('subtitles')" },
+		"subtitle-enabled": { "get" : "jc.PlayerMetadata('subtitleenabled')" },
+		"current-subtitle": { "get" : "jc.PlayerMetadata('currentsubtitle')" },
+		"audiostreams": { "get" : "jc.PlayerMetadata('audiostreams')" },
+		"current-audiostream": { "get" : "jc.PlayerMetadata('currentaudiostream')" },
+		"current-audiostream-name": { "get" : "jc.PlayerMetadata('currentaudiostream','name')" },
+		"send-text" : { "set" : "Input.SendText(text='{DATA}',done=False)" },
+		"send-text-enter" : { "set" : "Input.SendText(text='{DATA}',done=True)" }
 		},
-        "queries"     : {
-		"addons": "jc.PlayerMetadata('addon-list')",
-		"audiostreams": "jc.PlayerMetadata('audiostreams')",
-		"current-playing": "jc.PlayerMetadata('info')",
-		"genre": "jc.PlayerMetadata('genre')",
-		"item": "jc.PlayerMetadata('item-position')",
-		"mute": "jc.PlayerMetadata('muted')",
-		"playing": "jc.PlayerMetadata('playing')",
-		"playlist": "jc.PlayerMetadata('playlist-position')",
-		"plot": "jc.PlayerMetadata('plot')",
-		"power": "jc.PowerStatus()",
-		"type": "jc.PlayerMetadata('type')",
-		"version": "jc.PlayerMetadata('version')",
-		"vol": "jc.PlayerMetadata('volume')",
-		"subtitles": "jc.PlayerMetadata('subtitles')",
-		"subtitle-enabled": "jc.PlayerMetadata('subtitleenabled')",
-		"current-subtitle": "jc.PlayerMetadata('currentsubtitle')",
-		"audiostreams": "jc.PlayerMetadata('audiostreams')",
-		"current-audiostream": "jc.PlayerMetadata('currentaudiostream')",
-		"current-audiostream-name": "jc.PlayerMetadata('currentaudiostream','name')"
-		},
-	"values" : {
-		"mute"  : [ "False", "True" ],
-		"power" : [ "ON" ],
-		"vol"   : { "max": 100, "min": 0 }
-		},
-	"send-data" : {
-		"send-text" : "Input.SendText(text='{DATA}',done=False)",
-		"send-text-enter" : "Input.SendText(text='{DATA}',done=True)"
-        	}
+        "queries"     : {},
+	"send-data" : {}
 
    }
 }
