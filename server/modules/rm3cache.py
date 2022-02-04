@@ -195,8 +195,10 @@ class configCache (threading.Thread):
               key       = status[device]["config"]["device"]
               interface = status[device]["config"]["interface_api"]
               if interface != "" and key != "":
-                 config = self.read(rm3config.commands + interface + "/" + key)
-                 if not "ERROR" in config: self.configMethods[device] = config["data"]["method"]
+                 config         = self.read(rm3config.commands + interface + "/" + key)
+                 config_default = self.read(rm3config.commands + interface + "/00_default")
+                 if not "ERROR" in config and "method" in config["data"]:                   self.configMethods[device] = config["data"]["method"] 
+                 elif not "ERROR" in config_default and "method" in config_default["data"]: self.configMethods[device] = config_default["data"]["method"]
                  
         elif "ERROR" in status:
           self.logging.error("ERROR while reading '"+rm3config.active_devices+"'!")
