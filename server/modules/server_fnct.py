@@ -58,7 +58,7 @@ def RmReadData_devicesConfig():
     '''
     read configuration of all devices
     '''
-    config_keys = ["buttons","commands","queries","send-data","send","values","url","method"]
+    config_keys = ["buttons","commands","url","method"]
     data        = {}
     data        = configFiles.read_status()
     data_config = {}
@@ -114,8 +114,9 @@ def RmReadData_devicesConfig():
          data_config[device]["interface"]["device"]        = device_key
 
          data_config[device]["commands"]                   = {}
-         data_config[device]["commands"]["get"]            = list(interface_def_combined["queries"].keys())                 
-         data_config[device]["commands"]["set"]            = list(interface_def_combined["send-data"].keys())
+         data_config[device]["commands"]["definition"]     = {}
+         data_config[device]["commands"]["get"]            = []
+         data_config[device]["commands"]["set"]            = []
          
          if "commands" in interface_def_combined:
            data_config[device]["commands"]["definition"]     = interface_def_combined["commands"]
@@ -126,13 +127,17 @@ def RmReadData_devicesConfig():
              if "set" in interface_def_combined["commands"][key]: 
                if not key in data_config[device]["commands"]["set"]: 
                   data_config[device]["commands"]["set"].append(key)
-         else:
-           data_config[device]["commands"]["definition"]     = {}
+          
+         for key in data_config[device]["commands"]["definition"]:
+            if not "str" in str(type(data_config[device]["commands"]["definition"][key])):
+              data_config[device]["commands"]["definition"][key]["cmd"] = []
+              if "get" in data_config[device]["commands"]["definition"][key]: 
+                data_config[device]["commands"]["definition"][key]["cmd"].append("get")
+                del data_config[device]["commands"]["definition"][key]["get"]
+              if "set" in data_config[device]["commands"]["definition"][key]: 
+                data_config[device]["commands"]["definition"][key]["cmd"].append("set")
+                del data_config[device]["commands"]["definition"][key]["set"]
          
-         data_config[device]["data"]                       = {}
-         data_config[device]["data"]["types"]              = interface_def_combined["commands"]
-         data_config[device]["data"]["values"]             = interface_def_combined["values"]
-
          data_config[device]["url"]                        = interface_def_combined["url"]
        
     return data_config
@@ -649,7 +654,7 @@ def addDevice(device,device_data):
         
     ## add to devices = button definitions
     buttons = {
-        "info" : "jc://remote/ - In this file the commands foreach button, queries, the query method is defined.",
+        "info" : "jc://remote/ - In this file the commands and buttons are defined.",
         "data" : {
             "description" : device_data["label"] + ": " + device_data["device"],
             "buttons"     : {},
@@ -1218,8 +1223,8 @@ def devicesGetStatus(data,readAPI=False):
           if api_dev in deviceAPIs.api and deviceAPIs.api[api_dev].status == "Connected":
 
               # preset values
-              if method != "query" and "types" in config[device]["data"]:
-                 for value in config[device]["data"]["types"]:
+              if method != "query":
+                 for value in config[device]["commands"]["definition"]:
                     if not value in devices[device]["status"]:
                        devices[device]["status"][value] = ""
                     
