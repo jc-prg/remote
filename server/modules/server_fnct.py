@@ -150,7 +150,7 @@ def RmReadData_devices(selected=[],remotes=True,config_only=False):
     '''
     global RmReadData_errors
     
-    config_keys = ["buttons","commands","queries","send-data","send","values","url","method"]
+    config_keys = ["buttons","commands","url","method"]
     data        = {}
     data        = configFiles.read_status()
     
@@ -418,7 +418,7 @@ def RmReadData(selected=[]):
     '''
 
     data    = {}
-    btnfile = ["buttons","queries","values","commands","url"]
+    btnfile = ["buttons","commands","url"]
     
     # if update required
     if configFiles.cache_update or "_api" not in configFiles.cache: 
