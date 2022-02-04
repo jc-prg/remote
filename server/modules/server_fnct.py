@@ -86,8 +86,6 @@ def RmReadData_devicesConfig():
          interface_def_default  = interface_def_default["data"]
          interface_def_combined = {}
 
-         logging.warning(device_key+"/"+interface)
-
          for value in config_keys:
 
            if value in interface_def_default:   interface_def_combined[value] = interface_def_default[value]
@@ -96,7 +94,6 @@ def RmReadData_devicesConfig():
            else:                                interface_def_combined[value] = {}
 
            if value in interface_def_device and value != "method" and value != "url":
-             logging.warning(value)
              for key in interface_def_device[value]:
                interface_def_combined[value][key] = interface_def_device[value][key]
                          
@@ -118,8 +115,20 @@ def RmReadData_devicesConfig():
 
          data_config[device]["commands"]                   = {}
          data_config[device]["commands"]["get"]            = list(interface_def_combined["queries"].keys())                 
-         data_config[device]["commands"]["set"]            = list(interface_def_combined["send-data"].keys())                 
-       
+         data_config[device]["commands"]["set"]            = list(interface_def_combined["send-data"].keys())
+         
+         if "commands" in interface_def_combined:
+           data_config[device]["commands"]["definition"]     = interface_def_combined["commands"]
+           for key in interface_def_combined["commands"]:
+             if "get" in interface_def_combined["commands"][key]: 
+               if not key in data_config[device]["commands"]["get"]: 
+                  data_config[device]["commands"]["get"].append(key)
+             if "set" in interface_def_combined["commands"][key]: 
+               if not key in data_config[device]["commands"]["set"]: 
+                  data_config[device]["commands"]["set"].append(key)
+         else:
+           data_config[device]["commands"]["definition"]     = {}
+         
          data_config[device]["data"]                       = {}
          data_config[device]["data"]["types"]              = interface_def_combined["commands"]
          data_config[device]["data"]["values"]             = interface_def_combined["values"]
@@ -643,12 +652,8 @@ def addDevice(device,device_data):
         "info" : "jc://remote/ - In this file the commands foreach button, queries, the query method is defined.",
         "data" : {
             "description" : device_data["label"] + ": " + device_data["device"],
-            "method"      : deviceAPIs.api[device_data["api"]].method,
-            "interface"   : device_data["api"],
             "buttons"     : {},
-            "queries"     : {},
-            "commands"    : {},
-            "values"      : {}
+            "commands"    : {}
             }
         }
     try:                   configFiles.write(modules.rm3config.commands + interface+"/"+device_data["config_device"],buttons)

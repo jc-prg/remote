@@ -882,6 +882,26 @@ definitions:
               commands:
                 type: object
                 properties:
+                  definition:
+                    type: object
+                    properties:
+                      "<command>":
+                        type: object
+                        properties:
+                          get:
+                            type: string
+                          set:
+                            type: string
+                          type:
+                            type: string
+                          param:
+                            type: array
+                            items:
+                              type: string
+                          values:
+                            type: array
+                            items:
+                              type: string
                   set:
                     type: array
                     items:
@@ -890,13 +910,6 @@ definitions:
                     type: array
                     items:
                       type: string
-              data:
-                type: object
-                properties:
-                  types: 
-                    type: object
-                  values:
-                    type: object
               interface:
                 type: object
                 properties:
@@ -925,7 +938,7 @@ definitions:
       devices:
         type: object
         properties:
-          "<device-id":
+          "<device-id>":
             type: object
             properties:
               config:

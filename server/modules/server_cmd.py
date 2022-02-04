@@ -473,7 +473,12 @@ def RemoteOnOff(device,button):
                   
           # Get method and presets
           if "types"  in data["CONFIG"]["devices"][device]["data"]:  types   = data["CONFIG"]["devices"][device]["data"]["types"]
-          if "values" in data["CONFIG"]["devices"][device]["data"]:  presets = data["CONFIG"]["devices"][device]["data"]["values"]        
+          if "values" in data["CONFIG"]["devices"][device]["data"]:  presets = data["CONFIG"]["devices"][device]["data"]["values"]
+          
+          definition = data["CONFIG"]["devices"][device]["commands"]["definition"]
+          
+          # -> ...[device]["commands"]["definition"][key]["type"]   -> to be transformed below
+          # -> ...[device]["commands"]["definition"][key]["values"] -> to be transformed below
 
           # special with power buttons
           if button == "on-off" or button == "on" or button == "off":  value = "power"
@@ -489,7 +494,38 @@ def RemoteOnOff(device,button):
             if button == "on":            status = "ON" 
             if button == "off":           status = "OFF" 
             if button == "on-off":        status = RemoteToggle( current_status, ["ON","OFF"] )
+
+          elif value in definition and "type" in definition[value] and ("values" in definition[value] or "param" in definition[value]):
+          
+            d_type   = definition[value]["type"]
+            if "param" in definition[value]:
+              d_values = definition[value]["param"]
+            else:
+              d_values = definition[value]["values"]
             
+            if device_status == "ON":
+              if d_type == "enum":    status = RemoteToggle( current_status, d_values )
+              elif d_type == "integer" and "min" in d_values and "max" in d_values:
+                 minimum        = int(d_values["min"])
+                 maximum        = int(d_values["max"])
+                 direction      = button[-1:]
+                 current_status = str(current_status).strip()
+                 if current_status: current_status = int(current_status)
+                 else:              current_status = 0
+               
+                 if   direction == "+" and current_status < maximum: status = current_status + 1
+                 elif direction == "+":                              dont_send = True
+                 elif direction == "-" and current_status > minimum: status = current_status - 1
+                 elif direction == "-":                              dont_send = True
+                 
+              else:
+                 logging.warning("RemoteOnOff - Unknown command definition: "+device+"_"+button+":"+value+" ("+d_type+"/"+str(d_values)+")") 
+                 
+            else:
+               logging.debug("RemoteOnOff - Device is off: "+device)
+               dont_send = True
+
+#----------------------------- OLD
           # other buttons with defined values
           elif value in types and value in presets:
           
@@ -512,6 +548,7 @@ def RemoteOnOff(device,button):
             else:
                logging.debug("RemoteOnOff - Device is off: "+device)
                dont_send = True
+#----------------------------- OLD
                
           else:
             logging.warn("RemoteOnOff - Command not defined: "+device+"_"+value)

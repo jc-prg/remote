@@ -434,9 +434,13 @@ class connect(threading.Thread):
         active        = self.configFiles.read_status()
         api           = dev_api.split("_")[0]
         
+        if button_query == "queries":     type_new = "get"
+        elif button_query == "send-data": type_new = "set"
+        else:                             type_new = "N/A"
+        
         if device in active:
-          device_code  = active[device]["config"]["device"]
-          buttons      = self.configFiles.read(rm3config.commands + api + "/" + device_code)
+          device_code    = active[device]["config"]["device"]
+          buttons_device = self.configFiles.read(rm3config.commands + api + "/" + device_code)
           
           if self.log_commands:
              self.logging.info("...... button-file: " + api + "/" + device_code + ".json")	
@@ -445,13 +449,22 @@ class connect(threading.Thread):
              buttons_default = self.configFiles.read(rm3config.commands + api + "/00_default")
              if self.log_commands:
                 self.logging.info("...... button-default-file: " + api + "/00_default.json")	
-             
+
           # check for errors or return button code
-          if "ERROR" in buttons or "ERROR" in active:           return "ERROR get_command: buttons not defined for device ("+device+")"
-          elif button in buttons["data"][button_query]:         return buttons["data"][button_query][button]
-          elif button in buttons_default["data"][button_query]: return buttons_default["data"][button_query][button]
-          else:                                                 return "ERROR get_command: button not defined ("+device+"_"+button+")"
-        else:                                                   return "ERROR get_command: device not found ("+device+")"
+          if "ERROR" in buttons_device or "ERROR" in active:
+             return "ERROR get_command: buttons not defined for device ("+device+")"
+          elif "commands" in buttons_device["data"] and button in buttons_device["data"]["commands"] and type_new in buttons_device["data"]["commands"][button]: 
+             return buttons_device["data"]["commands"][button][type_new]
+          elif "commands" in buttons_default["data"] and button in buttons_default["data"]["commands"] and type_new in buttons_default["data"]["commands"][button]: 
+             return buttons_default["data"]["commands"][button][type_new]
+          elif button in buttons_device["data"][button_query]:
+             return buttons_device["data"][button_query][button]
+          elif button in buttons_default["data"][button_query]:
+             return buttons_default["data"][button_query][button]
+          else:
+             return "ERROR get_command: button not defined ("+device+"_"+button+")"
+        else:
+           return "ERROR get_command: device not found ("+device+")"
 
 #-------------------------------------------------
 
