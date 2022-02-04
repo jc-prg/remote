@@ -622,10 +622,13 @@ function statusCheck_display(data={}) {
 				var element2 = document.getElementById("display_full_" + key + "_" + vkey);
 				var status   = device_status[vkey];
 				
-				if (device_config["data"]["values"] && device_config["data"]["values"][vkey] && vkey == "vol") {
-					if (device_config["data"]["values"][vkey]["max"]) { 
-							status = statusShowVolume_old( device_status[vkey], device_config["data"]["values"][vkey]["max"], vol_color2, novol_color ) + " &nbsp; ["+device_status[vkey]+"]"; 
-							}
+				if (vkey == "vol" 
+				    && device_config["commands"]["definition"] 
+				    && device_config["commands"]["definition"][vkey]
+				    && device_config["commands"]["definition"][vkey]["values"]
+				    && device_config["commands"]["definition"][vkey]["values"]["max"]) {
+				    
+					status = statusShowVolume_old( device_status[vkey], device_config["commands"]["definition"][vkey]["values"]["max"], vol_color2, novol_color ) + " &nbsp; ["+device_status[vkey]+"]"; 
 					}
 									
 				if (status && vkey == "power") {
