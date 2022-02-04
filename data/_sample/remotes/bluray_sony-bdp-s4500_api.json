@@ -2,9 +2,9 @@
     "data": {
         "description": "SONY BDP-S4500",
         "display": {
-            "Duration": "media_duration",
-            "Position": "position_abs_time",
-            "Status": "playing_soap"
+            "Duration": "media-duration",
+            "Position": "position-abs-time",
+            "Status": "playing-soap"
         },
         "remote": [
             "open",

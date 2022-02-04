@@ -59,40 +59,40 @@
              	"type" : "enum",
              	"values" : ["ON", "OFF"]
              	},
-            "media_duration": {
+            "media-duration": {
              	"get" : "SOAP=GetMediaInfo::MediaDuration"
              	},
-            "media_medium": {
+            "media-medium": {
              	"get" : "SOAP=GetMediaInfo::PlayMedium"
              	},
-            "media_tracks": {
+            "media-tracks": {
              	"get" : "SOAP=GetMediaInfo::NrTracks"
              	},
             "playing": {
              	"get" : "playing"
              	},
-            "playing_soap": {
+            "playing-soap": {
              	"get" : "SOAP=GetTransportInfo::CurrentTransportState"
              	},
-            "position_abs_cnt": {
+            "position-abs-cnt": {
              	"get" : "SOAP=GetPositionInfo::AbsCount"
              	},
-            "position_abs_time": {
+            "position-abs-time": {
              	"get" : "SOAP=GetPositionInfo::AbsTime"
              	},
-            "position_duration": {
+            "position-duration": {
              	"get" : "SOAP=GetPositionInfo::TrackDuration"
              	},
-            "position_metadata": {
+            "position-metadata": {
              	"get" : "SOAP=GetPositionInfo::TrackMetaData"
              	},
-            "position_rel_cnt": {
+            "position-rel-cnt": {
              	"get" : "SOAP=GetPositionInfo::RelCount"
              	},
-            "position_rel_time": {
+            "position-rel-time": {
              	"get" : "SOAP=GetPositionInfo::RelTime"
              	},
-            "position_track": {
+            "position-track": {
              	"get" : "SOAP=GetPositionInfo::Track" 
              	},
             "test": {

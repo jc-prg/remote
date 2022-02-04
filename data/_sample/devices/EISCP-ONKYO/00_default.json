@@ -18,8 +18,8 @@
        		"values"	: { "min" : 0, "max" : 70 }
        		},
        	"power" : { 
-       		"get"		: "master-power=query",
-       		"set"		: "master-power={DATA}",
+       		"get"		: "system-power=query",
+       		"set"		: "system-power={DATA}",
        		"type"		: "enum",
        		"param"	: [ "on", "off" ],
        		"values"	: [ "on", "off" ]
