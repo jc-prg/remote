@@ -372,8 +372,13 @@ function statusCheck_audioMute(data) {
 	var main_audio_vol	= devices[main_audio]["vol"];
 	var main_audio_mute	= devices[main_audio]["mute"].toUpperCase();
 
-	if (devices_config[main_audio] && devices_config[main_audio]["data"]["values"] && devices_config[main_audio]["data"]["values"]["vol"]) {
-		main_audio_max  = devices_config[main_audio]["data"]["values"]["vol"]["max"];
+	if (devices_config[main_audio] 
+	    && devices_config[main_audio]["commands"]["definition"] 
+	    && devices_config[main_audio]["commands"]["definition"]["vol"] 
+	    && devices_config[main_audio]["commands"]["definition"]["vol"]["values"]
+	    && devices_config[main_audio]["commands"]["definition"]["vol"]["values"]["max"]
+	    ) {
+		main_audio_max  = devices_config[main_audio]["commands"]["definition"]["vol"]["values"]["max"];
 		}
 
 	// check volume and show in navigation bar

@@ -97,9 +97,14 @@ function rmSettings (name) {	// IN PROGRESS
 		var main_audio         = this.data["CONFIG"]["main-audio"];  // get main audio device from file
 		var main_device_config = this.data["CONFIG"]["devices"][main_audio];
 		var main_device        = this.data["DATA"]["devices"][main_audio];
-		var audio_max  = "";
-		if (main_device_config["data"]["values"] && main_device_config["data"]["values"]["vol"]) {
-			audio_max  = main_device_config["data"]["values"]["vol"]["max"];
+		var audio_max		= 100;
+
+		if (main_device_config["commands"]["definition"] 
+		    && main_device_config["commands"]["definition"]["vol"] 
+		    && main_device_config["commands"]["definition"]["vol"]["values"]
+		    && main_device_config["commands"]["definition"]["vol"]["values"]["max"]
+		    ) {
+			audio_max  = main_device_config["commands"]["definition"]["vol"]["values"]["max"];
 			}
 		else {
 			audio_max  = 100;

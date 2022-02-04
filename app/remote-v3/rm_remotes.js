@@ -451,7 +451,7 @@ function rmRemote(name) {
 
 		this.button.width = "120px";
 		edit    += this.tab.start();
-		if (device != this.data["CONFIG"]["main-audio"] && device_status["vol"] != undefined) 
+		if (device != this.data["CONFIG"]["main-audio"] && device_config["commands"]["definition"]["vol"] && device_config["commands"]["definition"]["vol"] != undefined) 
 										{ edit  += this.tab.row(lang("AUDIO_SET_AS_MAIN",[this.data["CONFIG"]["main-audio"]]),this.button.edit("setMainAudio('"+device+"');","set main device","")); }
 		else if (device == this.data["CONFIG"]["main-audio"]) 	{ edit  += this.tab.row(lang("AUDIO_IS_MAIN"),false); }
 		else 								{ edit  += this.tab.row(lang("AUDIO_N/A_AS_MAIN"),false); }
@@ -1187,17 +1187,18 @@ function rmRemote(name) {
 		s_descr = s_param.charAt(0).toUpperCase() + s_param.slice(1);
 		setValueById(slider_descr, s_descr);
 		
-		var cmd_definition = this.data["CONFIG"]["devices"][device]["data"]["values"];
+		var cmd_definition = this.data["CONFIG"]["devices"][device]["commands"]["definition"];
 
-		alert(JSON.stringify(cmd_definition[s_param]));
-		
+		console.info(JSON.stringify(cmd_definition[s_param]));
 		if (cmd_definition && cmd_definition[s_param]) {
 			var min = "min";
 			var max = "max";
 			var exist = false;
-			if (cmd_definition[s_param]["min"] != undefined)	{ min = cmd_definition[s_param]["min"]; exist = true; }
-			if (cmd_definition[s_param]["max"] != undefined)	{ max = cmd_definition[s_param]["max"]; exist = true; }
-			if (exist)						{ setValueById(slider_minmax, min+"-"+max); }
+			if (cmd_definition[s_param]["values"]) {
+				if (cmd_definition[s_param]["values"]["min"] != undefined)	{ min = cmd_definition[s_param]["values"]["min"]; exist = true; }
+				if (cmd_definition[s_param]["values"]["max"] != undefined)	{ max = cmd_definition[s_param]["values"]["max"]; exist = true; }
+				}				
+			if (exist) { setValueById(slider_minmax, min+"-"+max); }
 			}		
 		}
 

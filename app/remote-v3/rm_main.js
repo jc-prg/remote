@@ -140,18 +140,20 @@ function remoteReload(data) {
 
 function remoteSetSliderDevice(data) {
 	main_audio = data["CONFIG"]["main-audio"];
-	var values = data["CONFIG"]["devices"][main_audio]["data"]["values"];
+	var values = data["CONFIG"]["devices"][main_audio]["commands"]["definition"]["vol"]["values"];
+	var min    = 0;
+	var max    = 100;
 	         
-	if (values["vol"]) {
-		min     = values["vol"]["min"];
-		max     = values["vol"]["max"];		
+	if (values["min"] >= 0 && values["max"] > 0) {
+		min     = values["min"];
+		max     = values["max"];
 		}
 	else {
 		min    = 0;
 		max    = 100;
 		console.error("Min and max values not defined, set to 0..100!");
 		}
-	label      	= data["DATA"]["devices"][main_audio]["label"];
+	label      	= data["DATA"]["devices"][main_audio]["settings"]["label"];
 	
 	rm3slider.init(min,max,label+" ("+main_audio+")");
 	rm3slider.device = main_audio;
