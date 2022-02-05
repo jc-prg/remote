@@ -444,7 +444,7 @@ function rmRemote(name) {
 				"<input id='remote_visibility' value='"+remote_visible+"' style='display:none;'>"+
 				this.button.edit("apiRemoteChangeVisibility('remote','"+device+"','remote_visibility');",lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
 				this.button.edit("apiDeviceEdit('"+device+"','edit','description,label,interface,method');",lang("BUTTON_T_SAVE")) + "&nbsp;" +
-				this.button.edit("apiDeviceDelete('"+device+"');","delete") + "</center>"
+				this.button.edit("apiDeviceDelete_exe('"+device+"');","delete") + "</center>"
 				);		
 		edit    += this.tab.line();
 		edit    += this.tab.end();
