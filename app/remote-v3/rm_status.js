@@ -669,7 +669,7 @@ function statusCheck_display(data={}) {
 					status = device_api_status;
 					}
 
-				if (status.replace)		{ status = status.replace(/,/g,", "); }
+				if (status && status.replace)	{ status = status.replace(/,/g,", "); }
 				if (element2 && status)	{ element2.innerHTML = status; }
 				}
 			}
