@@ -181,7 +181,7 @@ function remoteDropDown(data) {
 	rm3menu.init(        data );	// load data to class
 	rm3menu.add_scenes(  data["DATA"]["scenes"] );
 	rm3menu.add_devices( data["DATA"]["devices"] );	
-	rm3menu.add_script( "rm3settings.onoff();rm3settings.mode='';", 	lang("SETTINGS"));
+	rm3menu.add_script( "rm3settings.onoff();", 				lang("SETTINGS"));
 	rm3menu.add_script( "remoteToggleEditMode();", 			lang("MODE_EDIT") + edit_on );
 	rm3menu.add_script( "rm3settings.button_deact(true);remoteInit();",	deact_link);        
 	//rm3menu.add_script( "remoteForceReload(true);", "Force Reload");
@@ -192,18 +192,28 @@ function remoteDropDown(data) {
 
 function remoteToggleEditMode() {
 	var settings = rm3settings.active;
-	
-	rm3remotes.remoteToggleEditMode();
-	rm3menu.remoteToggleEditMode();
-	rm3start.remoteToggleEditMode();
-	rm3settings.remoteToggleEditMode();
-	
-	remoteDropDown_load();
-	
-	if (startActive && rm3settings.active != true) {
+
+	if (settings) {
+		rm3remotes.remoteToggleEditMode();
+		rm3start.remoteToggleEditMode();
+		rm3settings.remoteToggleEditMode();
+		rm3settings.onoff();
+		}
+	else if (startActive) {
+		rm3remotes.remoteToggleEditMode();
+		rm3settings.remoteToggleEditMode();
+		rm3start.remoteToggleEditMode();
 		remoteStartMenu_load();
-		if (settings) {rm3settings.onoff();}  // when settings -> don't switch back to remotes (workaround)
-		}	
+		}
+	else {
+		rm3start.remoteToggleEditMode();
+		rm3settings.remoteToggleEditMode();
+		rm3remotes.remoteToggleEditMode();
+		}
+
+	rm3menu.remoteToggleEditMode();
+	remoteDropDown_load();
+
 	}
 
 
