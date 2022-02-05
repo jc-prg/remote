@@ -472,13 +472,7 @@ def RemoteOnOff(device,button):
         if method == "record":
                   
           # Get method and presets
-          if "types"  in data["CONFIG"]["devices"][device]["data"]:  types   = data["CONFIG"]["devices"][device]["data"]["types"]
-          if "values" in data["CONFIG"]["devices"][device]["data"]:  presets = data["CONFIG"]["devices"][device]["data"]["values"]
-          
           definition = data["CONFIG"]["devices"][device]["commands"]["definition"]
-          
-          # -> ...[device]["commands"]["definition"][key]["type"]   -> to be transformed below
-          # -> ...[device]["commands"]["definition"][key]["values"] -> to be transformed below
 
           # special with power buttons
           if button == "on-off" or button == "on" or button == "off":  value = "power"
