@@ -686,11 +686,15 @@ def deleteDevice(device):
     delete device from json config file and delete device related files
     '''
     
-    devices              = {}
-    active_json          = configFiles.read_status()   
-    interface            = active_json[device]["config"]["interface_api"]
-    device_code          = active_json[device]["config"]["device"]  
-    device_remote        = active_json[device]["config"]["remote"]  
+    message               = ""
+    devices               = {}
+    active_json           = configFiles.read_status()   
+    interface             = active_json[device]["config"]["interface_api"]
+    device_code           = active_json[device]["config"]["device"]  
+    device_remote         = active_json[device]["config"]["remote"]  
+    file_device_remote    = modules.rm3config.remotes + device_remote
+    file_inferface_remote = modules.rm3config.commands + interface + "/" + device_code
+    
     
     if "ERROR" in active_json:                                                return("ERROR: Could not read ACTIVE_JSON (active).")
     if not device in active_json:                                             return("ERROR: Device " + device + " doesn't exists (active).")
@@ -706,16 +710,29 @@ def deleteDevice(device):
     configFiles.write_status(active_json,"deleteDevice")
 
     try:    
-      modules.rm3json.delete(modules.rm3config.remotes  + device_remote)
-      modules.rm3json.delete(modules.rm3config.commands + interface + "/" + device_code)
-      
-      if not modules.rm3json.ifexist(modules.rm3config.commands + interface + "/" + device_code) and not modules.rm3json.ifexist(modules.rm3config.remotes + device_remote):
-        return "OK: Device '" + device + "' deleted."
+      modules.rm3json.delete(file_device_remote)
+      modules.rm3json.delete(file_inferface_remote)
+            
+      if not modules.rm3json.ifexist(file_device_remote) and not modules.rm3json.ifexist(file_interface_remote):
+        message = "OK: Device '" + device + "' deleted."
       else:
-        return "ERROR: Could not delete device '" + device + "'"
+        message = "ERROR: Could not delete device '" + device + "'"
         
     except Exception as e:
-      return "ERROR: Could not delete device '" + device + "': " + str(e)
+      message = "ERROR: Could not delete device '" + device + "': " + str(e)
+
+    if "OK" in message:
+      try:
+        file_inferface_remote = file_inferface_remote.replace("/","**")
+        file_device_remote    = file_device_remote.replace("/","**")        
+        del configFiles.cache[file_inferface_remote]
+        del configFiles.cache[file_device_remote]
+        
+      except Exception as e:
+        message += "; ERROR: " + str(e)
+    
+      
+    return message
 
 
 #---------------------------------------
