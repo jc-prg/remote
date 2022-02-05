@@ -197,7 +197,8 @@ function remoteToggleEditMode() {
 		rm3remotes.remoteToggleEditMode();
 		rm3start.remoteToggleEditMode();
 		rm3settings.remoteToggleEditMode();
-		rm3settings.onoff();
+		if(!startActive)	{ rm3settings.onoff(); }
+		else			{ remoteStartMenu_load(); }
 		}
 	else if (startActive) {
 		rm3remotes.remoteToggleEditMode();
