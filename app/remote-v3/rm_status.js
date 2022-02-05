@@ -622,7 +622,7 @@ function statusCheck_display(data={}) {
 				var element2 = document.getElementById("display_full_" + key + "_" + vkey);
 				var status   = device_status[vkey];
 				
-				if (vkey == "vol" 
+				if (vkey == "vol" 	
 				    && device_config["commands"]["definition"] 
 				    && device_config["commands"]["definition"][vkey]
 				    && device_config["commands"]["definition"][vkey]["values"]

@@ -299,9 +299,10 @@ function apiDeviceDelete_exe(device) { appFW.requestAPI("DELETE",["device",devic
 function apiDeviceDelete(device_id) {
 
 	var device = check_if_element_or_value(device_id,true);
-	if (device == "")               { appMsg.alert(lang("DEVICE_SELECT")); return; }
+	if (device == "")  { appMsg.alert(lang("DEVICE_SELECT")); return; }
 
 	appMsg.confirm(lang("DEVICE_ASK_DELETE",[device]),"apiDeviceDelete_exe('" + device + "');");
+	remoteMainMenu(cookie_erase=true);
 	}
 
 //================================
