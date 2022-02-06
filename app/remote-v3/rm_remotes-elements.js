@@ -592,8 +592,8 @@ function rmRemoteDisplays(name) {
 			
 		else {
 			var power = this.data["DATA"][type][device]["status"];
-			var queries = this.data["CONFIG"]["devices"][device]["commands"]["get"];
-			if (this.data["CONFIG"]["devices"][device] && queries)	{ display_data = queries; }
+			var queries = this.data["CONFIG"]["devices"][device]["commands"]["definition"];
+			if (this.data["CONFIG"]["devices"][device] && queries)	{ display_data = Object.keys(queries); }
 			else								{ display_data = ["ERROR","No display defined"]; } 
 
         		this.logging.debug(device,"debug");
@@ -601,7 +601,7 @@ function rmRemoteDisplays(name) {
         		this.logging.debug(queries,"debug");
         		this.logging.debug(display_data,"debug");
 
-			text  += "<center id='display_full_"+device+"_power'>"+power+"</center><hr/>";        		
+			text  += "<center id='display_full_"+device+"_power'>"+power["api-status"]+": "+power["power"] + "</center><hr/>";        		
 			}
 
       		text  += this.tab_row("start","100%");
