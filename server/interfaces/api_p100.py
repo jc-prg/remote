@@ -273,6 +273,10 @@ class APIaddOn():
       self.last_request_data   = {}
       self.cache_wait          = 1      
 
+      self.logging = logging.getLogger("api.P100")
+      self.logging.setLevel = rm3stage.log_set2level
+
+
    #-------------------------------------------------
 
    def turn_on(self):

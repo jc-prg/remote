@@ -250,6 +250,9 @@ class APIaddOn():
       self.cache_metadata = {}             # cache metadata to reduce api requests
       self.cache_time     = time.time()    # init cache time
       self.cache_wait     = 2              # time in seconds how much time should be between two api metadata requests
+
+      self.logging = logging.getLogger("api.KODI")
+      self.logging.setLevel = rm3stage.log_set2level
       
    #-------------------------------------------------
        
