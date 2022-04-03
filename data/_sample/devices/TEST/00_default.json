@@ -1,16 +1,19 @@
 {
     "data": {
-        "description" : "API to test device",
         "buttons" : {
+        	"on" : "test",
+        	"off" : "test"
        	},
-       "queries" : {
+        "commands" : {
+        	"power" : {
+        		"get" : "test",
+        		"type" : "enum",
+        		"values" : ["ON","OFF"]
+        		}
        	},
-      	"values" : {
-       	},
-      	"display" : {
-       	},
-       "send-data" : {
-        }
+        "description" : "API to test device",
+        "method" : "query"
+   },
+   "info": "jc://remote/ - In this files the API-specific commands and buttons are defined."
 
-   }
 }

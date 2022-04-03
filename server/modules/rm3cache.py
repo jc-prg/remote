@@ -44,6 +44,9 @@ class configCache (threading.Thread):
                                      "rollout"  : rm3stage.rollout
                                      } }
 
+       self.logging = logging.getLogger("cache")
+       self.logging.setLevel = rm3stage.log_set2level
+            
     #------------------       
 
     def run(self):
@@ -51,7 +54,7 @@ class configCache (threading.Thread):
        loop running in the background
        '''
 
-       logging.info( "Starting " + self.name )
+       self.logging.info( "Starting " + self.name )
        while not self.stopProcess:
        
            # No update when in sleeping mode (no API request since a "cache_sleep")
@@ -70,15 +73,17 @@ class configCache (threading.Thread):
 
            # Reread values from config files
            if self.cache_update == True:
-               logging.info("Cache: reread config files ('" + self.name + "'): ...")
                
                i = 0
                for key in self.cache:
                   if key != "_api":
-                    self.cache[key] = rm3json.read(key)
+                    key_path = key.replace("**","/")
+                    self.cache[key] = rm3json.read(key_path)
                     i += 1
 
-               logging.info("... ("+str(i)+")")
+               self.logging.info("Reread "+str(i)+" config files into the cache (" + self.name + ")")
+               self.logging.debug(str(self.cache))
+               
                self.cache_time        = time.time()
                self.cache_update      = False
 
@@ -86,7 +91,32 @@ class configCache (threading.Thread):
            else:
                time.sleep(self.wait)
 
-       logging.info( "Exiting " + self.name )
+       self.logging.info( "Exiting " + self.name )
+
+
+    #------------------  
+         
+    def check_config(self):
+       '''
+       read and check main config_files
+       '''
+
+       error_msg = {}       
+       check = self.read(rm3config.active_devices)
+       if "ERROR" in check:
+          error_msg[rm3config.active_devices] = check["ERROR_MSG"]
+       check = self.read(rm3config.active_scenes)
+       if "ERROR" in check:
+          error_msg[rm3config.active_scenes] = check["ERROR_MSG"]
+       check = self.read(rm3config.active_makros)
+       if "ERROR" in check:
+          error_msg[rm3config.active_makros] = check["ERROR_MSG"]
+          
+       if error_msg != {}:
+          self.logging.error("Error while reading MAIN CONFIG FILES:")
+          for key in error_msg:
+             self.logging.error(" - "+rm3stage.data_dir+"/"+key+".json: "+str(error_msg[key]))
+          return "ERROR"
 
     #------------------       
 
@@ -97,7 +127,7 @@ class configCache (threading.Thread):
 
         self.cache_update     = True
         self.cache_update_api = True
-        logging.info("Enforce cache update (" + self.name + ") "+str(self.cache_update))
+        self.logging.info("Enforce cache update (" + self.name + ") "+str(self.cache_update))
 
 
     #------------------       
@@ -107,12 +137,13 @@ class configCache (threading.Thread):
         else read from file
         '''
 
-        logging.debug("readConfig: "+config_file)
+        config_file_key = config_file.replace("/","**")
+        self.logging.debug("readConfig: "+config_file)
         if config_file not in self.cache or from_file:
-            self.cache[config_file] = rm3json.read(config_file)
-            logging.debug("... from file.")
+            self.cache[config_file_key] = rm3json.read(config_file)
+            self.logging.debug("... from file.")
 
-        return self.cache[config_file]
+        return self.cache[config_file_key]
 
     #---------------------------
 
@@ -120,8 +151,9 @@ class configCache (threading.Thread):
         '''
         write config to file and update cache
         '''
+        config_file_key = config_file.replace("/","**")
         rm3json.write(config_file,value,"cache.write "+source)
-        self.cache[config_file] = value
+        self.cache[config_file_key] = value
 
 
     #---------------------------
@@ -163,12 +195,14 @@ class configCache (threading.Thread):
               key       = status[device]["config"]["device"]
               interface = status[device]["config"]["interface_api"]
               if interface != "" and key != "":
-                 config = self.read(rm3config.commands + interface + "/" + key)
-                 if not "ERROR" in config: self.configMethods[device] = config["data"]["method"]
+                 config         = self.read(rm3config.commands + interface + "/" + key)
+                 config_default = self.read(rm3config.commands + interface + "/00_default")
+                 if not "ERROR" in config and "method" in config["data"]:                   self.configMethods[device] = config["data"]["method"] 
+                 elif not "ERROR" in config_default and "method" in config_default["data"]: self.configMethods[device] = config_default["data"]["method"]
                  
         elif "ERROR" in status:
-          logging.error("ERROR while reading '"+rm3config.active_devices+"'!")
-          logging.error(str(status))
+          self.logging.error("ERROR while reading '"+rm3config.active_devices+"'!")
+          self.logging.error(str(status))
     
         # if device is given return only device status
         if selected_device != "" and selected_device in status and "status" in status[selected_device]:
@@ -191,8 +225,9 @@ class configCache (threading.Thread):
             if key in relevant_keys:
                status_temp[dev][key] = status[dev][key]                        
 
+        active_devices_key = rm3config.active_devices.replace("/","**")
         self.write(rm3config.active_devices, status_temp, "cache.write_status "+source)
-        self.cache[rm3config.active_devices] = status_temp
+        self.cache[active_devices_key] = status_temp
     
 #-------------------------------------------------
 # EOF

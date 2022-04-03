@@ -9,6 +9,7 @@ import codecs, json, netaddr
 import modules.rm3json                 as rm3json
 import modules.rm3config               as rm3config
 import modules.rm3ping                 as rm3ping
+import modules.rm3stage                as rm3stage
 
 import interfaces.broadlink.broadlink  as broadlink
 
@@ -40,7 +41,7 @@ class APIcontrol():
        '''
        
        self.api_name        = api_name       
-       self.api_description = "Infrared Broadlink RM3"
+       self.api_description = "API for Infrared Broadlink RM3"
        self.not_connected   = "ERROR: Device not connected ("+api_name+"/"+device+")."
        self.status          = "Start"
        self.method          = "record"
@@ -55,9 +56,11 @@ class APIcontrol():
        self.api_config["MACAddress"] = netaddr.EUI(self.api_config["MACAddress"])
        self.api_config["Timeout"]    = int(self.api_config["Timeout"])
 
-       logging.info("_API-INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"]+":"+str(self.api_config["Port"])+")")
-       
-       self.connect()
+       self.logging = logging.getLogger("api.RM3")
+       self.logging.setLevel = rm3stage.log_set2level
+       self.logging.info("_INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
+              
+       #self.connect()
             
    #-------------------------------------------------
    
@@ -69,7 +72,7 @@ class APIcontrol():
        connect = rm3ping.ping(self.api_config["IPAddress"])
        if not connect:
          self.status = self.not_connected + " ... PING"
-         logging.error(self.status)       
+         self.logging.warning(self.status)       
          return self.status
 
        self.count_error          = 0
@@ -82,7 +85,7 @@ class APIcontrol():
 
        except e as Exception:
          self.status = self.not_connected + " ... CONNECT " + str(e)
-         logging.error(self.status)
+         self.logging.error(self.status)
        
        if check_on_startup:
          try:
@@ -91,7 +94,7 @@ class APIcontrol():
              time.sleep(0.5)
          except e as Exception:
            self.status = "ERROR IR Device: "+str(e)
-           logging.error(self.status)
+           self.logging.error(self.status)
     
        return self.status
        
@@ -104,7 +107,7 @@ class APIcontrol():
        '''
        
        while self.working:
-         logging.debug(".")
+         self.logging.debug(".")
          time.sleep(0.2)
        return
        
@@ -127,7 +130,7 @@ class APIcontrol():
        self.working = True
 
        if self.status == "Connected":
-         if self.log_command: logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+         if self.log_command: self.logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
          
          try:
            DecodedCommand = codecs.decode(command,'hex')  # python3
@@ -163,7 +166,7 @@ class APIcontrol():
        self.working = True
 
        if self.status == "Connected":
-         if self.log_command: logging.info("_RECORD: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+         if self.log_command: self.logging.info("_RECORD: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
 
          code = device + "_" + command
          self.api.enter_learning()

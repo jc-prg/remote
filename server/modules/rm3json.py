@@ -7,6 +7,10 @@ jsonPath   = rm3stage.data_dir+"/"
 jsonAppDir = path.dirname(path.abspath(__file__))
 jsonSettingsPath = ""
 
+
+json_logging = logging.getLogger("json")
+json_logging.setLevel = rm3stage.log_set2level
+
 #--------------------------------------------
 
 def init():
@@ -26,13 +30,13 @@ def read(file,data_dir=True):
     if data_dir == True: file2 = path.join(jsonAppDir,jsonPath,file1)
     else:                file2 = path.join(jsonAppDir,"..",file1)
     
-    logging.debug(file2)
+    json_logging.debug(file2)
     
     try:
       with open(file2) as json_data:
         d = json.load(json_data)
     except Exception as e:
-      logging.error("Error reading JSON file ("+file+"): " + str(e))
+      json_logging.error("Error reading JSON file ("+file+"): " + str(e))
       d = { 
             "ERROR"     : "Could not read JSON file: " + file,
             "ERROR_MSG" : str(e)
@@ -69,7 +73,7 @@ def write(file, data, call_from=""):
     with open(file2, 'wb') as outfile:
         json.dump(data, codecs.getwriter('utf-8')(outfile), ensure_ascii=False, sort_keys=True, indent=4)
         
-    logging.debug("write ... "+file+" ...from:"+call_from)
+    json_logging.debug("write ... "+file+" ...from:"+call_from)
 
 
 #--------------------------------------------

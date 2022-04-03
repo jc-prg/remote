@@ -27,11 +27,45 @@
   font-weight: none; 
 }
 
+/* manual text */
+
+ul.help { 
+	margin-bottom	: 5px; 
+	margin-top	: 3px; 
+	}
+ul.help li { 
+	margin-left	: -15px;
+	margin-bottom	: 5px; 
+	margin-top	: 3px; 
+	}
+ul.help ul li { 
+	margin-left	: -25px; 
+	margin-bottom	: 5px; 
+	margin-top	: 3px; 
+	}
+
 /* height of app start screen */
 
 .app_background {
-   height: 100vh;
+   height	: 100vh;
+   width	: 100%;
+   position	: fixed;
+   left	: 0px;
+   top		: 0px;
+   z-index	: 0;
 }
+
+.app_content {
+   width	: 100%;
+   position	: absolute;
+   left	: 0px;
+   top		: 0px;
+   z-index	: 1;
+   padding	: 8px;
+   margin	: 0px;
+}
+
+
 
 /* default size for boxes and buttons = iPhone 5c */
 /* boxes for remote controlls */
@@ -67,6 +101,25 @@
    width		: 90%;
    height		: 20px;
    }
+   
+.remote_group {
+	width		: 96%;
+	background	: gray;
+	padding	: 5px;
+	border-radius	: 5px;
+	margin		: 2px;
+	overflow	: hidden;
+  	}
+	   
+.remote_group_header {
+	width		:  100%;
+	padding	:    5px;
+	padding-top	:   10px;
+	}
+
+.remote_group_header:hover {
+	color		: yellow;
+	}
 
 #frame3    { z-index: 61; }
 

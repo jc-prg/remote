@@ -22,6 +22,7 @@ function apiSceneDelete(scene_id)
 function apiDeviceEdit(device,prefix,fields)
 function apiDeviceJsonEdit(device,json_buttons,json_display,display_size)
 function apiDeviceMovePosition_exe(type,device,direction)
+function apiDeviceMovePosition_get(data)
 function apiDeviceMovePosition(data)
 function apiDeviceAdd(data,onchange)
 function apiDeviceDelete_exe(device)
@@ -35,7 +36,7 @@ function apiButtonAdd(device_id, button_id)
 function apiButtonDelete_exe(device,button)
 function apiButtonDelete(device_id, button_id)
 function apiMakroSend( makro, device="", content="" )
-function apiMakroSend_hide( data )
+function apiMakroSend_return( data )
 */
 //--------------------------------
 
@@ -121,7 +122,7 @@ function apiMakroChange(data=[]) {
 	send_data = {};
 	for (var i=0;i<data.length;i++) {
 		var key            = data[i];
-		try		{ send_data[key] = JSON.parse(getValueById(key)); }
+			try		{ send_data[key] = JSON.parse(getValueById(key)); }
 		catch(e)	{ appMsg.alert("<b>JSON Makro " + key + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 		}
 
@@ -252,11 +253,15 @@ function apiDeviceJsonEdit(device,json_buttons,json_display,display_size) {
 
 //--------------------------------
 
-function apiDeviceMovePosition_exe(type,device,direction) { appFW.requestAPI( "POST", ["move",type,device,direction], "", apiDeviceMovePosition); }
+function apiDeviceMovePosition_exe(type,device,direction) { appFW.requestAPI( "POST", ["move",type,device,direction], "", apiDeviceMovePosition_get); }
+function apiDeviceMovePosition_get(data) {
+	appFW.requestAPI("GET",["list"],"",apiDeviceMovePosition);
+	}
 function apiDeviceMovePosition(data) {
-	rm3settings.mode = "";
-	rm3settings.create();
 	remoteReload_load();
+	rm3settings.mode = "";
+	rm3settings.data = data;
+	rm3settings.create();
 	}
 	
 	
@@ -279,7 +284,7 @@ function apiDeviceAdd(data,onchange) {
         
 //	if (dataAll["DATA"]["devices"][send_data["id"]]){ appMsg.alert("Device '" + device + "' already exists!"); return; }
 	if (dataAll["DATA"]["devices"][send_data["id"]]){ appMsg.alert(lang("DEVICE_EXISTS",[send_data["id"]])); return; }
-	else if (send_data["id"] == "")			{ appMsg.alert(lang("DEVICE_INSERT_ID")); return; }
+	else if (send_data["id"] == "")		{ appMsg.alert(lang("DEVICE_INSERT_ID")); return; }
 	else if (send_data["label"] == "")		{ appMsg.alert(lang("DEVICE_INSERT_LABEL")); return; }
 	else if (send_data["api"] == "") 		{ appMsg.alert(lang("DEVICE_SELECT_API")); return; }
 	else if (send_data["device"] == "") 		{ appMsg.alert(lang("DEVICE_INSERT_NAME")); return;	}
@@ -294,9 +299,10 @@ function apiDeviceDelete_exe(device) { appFW.requestAPI("DELETE",["device",devic
 function apiDeviceDelete(device_id) {
 
 	var device = check_if_element_or_value(device_id,true);
-	if (device == "")               { appMsg.alert(lang("DEVICE_SELECT")); return; }
+	if (device == "")  { appMsg.alert(lang("DEVICE_SELECT")); return; }
 
 	appMsg.confirm(lang("DEVICE_ASK_DELETE",[device]),"apiDeviceDelete_exe('" + device + "');");
+	remoteMainMenu(cookie_erase=true);
 	}
 
 //================================
@@ -460,22 +466,16 @@ function apiButtonDelete(device_id, button_id) {
 
 function apiMakroSend( makro, device="", content="" ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
 
-	appMsg.wait_small(lang("PLEASE_WAIT") + "<br/>");
 	console.log( "Send makro: " + makro );
-	
 	dc = [ "makro", makro ];
-	appFW.requestAPI( "GET", dc, "", apiMakroSend_hide );
-	
-	// device content info (scenes) => move to API, add to var "dc" in step before
-	device_media_info[device] = content;
-	
-	// if request takes more time, hide message after 5 seconds
-	setTimeout(function(){ appMsg.hide(); }, 5000);
+	appFW.requestAPI( "GET", dc, "", apiMakroSend_return );
+	device_media_info[device] = content;	
 	}
 	
 	
-function apiMakroSend_hide( data ) {
-	appMsg.hide();
+function apiMakroSend_return( data ) {
+	console.log("Send makro return :");
+	console.log(data);
 	}
 
 // --------------------

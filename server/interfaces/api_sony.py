@@ -39,9 +39,15 @@ class APIcontrol():
        self.api_config      = device_config
        self.api_device      = device
 
-       logging.info("_API-INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
+       self.logging = logging.getLogger("api.SONY")
+       self.logging.setLevel = rm3stage.log_set2level
+       self.logging.info("_INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
        
-       self.connect()
+       if rm3stage.log_apiext == "NO":
+          log = logging.getLogger("sonyapilib.device")
+          log.setLevel(logging.CRITICAL)
+       
+       #self.connect()
             
    #-------------------------------------------------
    
@@ -53,7 +59,7 @@ class APIcontrol():
        connect = rm3ping.ping(self.api_config["IPAddress"])
        if not connect:
          self.status = self.not_connected + " ... PING"
-         logging.error(self.status)       
+         self.logging.warning(self.status)       
          return self.status
 
        self.status               = "Connected"
@@ -82,7 +88,7 @@ class APIcontrol():
        '''
        
        while self.working:
-         logging.info(".")
+         self.logging.debug(".")
          time.sleep(0.2)
        return
 
@@ -107,7 +113,7 @@ class APIcontrol():
        self.working = True
        
        if self.status == "Connected":
-         if self.log_command: logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+         if self.log_command: self.logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
 
          try:
            result  = self.api.send(command)
@@ -134,7 +140,7 @@ class APIcontrol():
        self.working = True
 
        if self.status == "Connected":
-         if self.log_command: logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+         if self.log_command: self.logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
 
          if "=" in command:
            params  = command.split("=")

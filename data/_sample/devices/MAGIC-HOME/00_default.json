@@ -16,28 +16,43 @@
 		"white": "jc.set_color(255, 255, 255)",
 		"yellow": "jc.set_color(255, 255, 0)"
 		},
-        "commands": {
-		},
-        "queries"     : {
-		"brightness": "jc.get_info('brightness')",
-		"color": "jc.get_info('color_rgb')",
-		"color_raw": "jc.get_info('color_rgb_raw')",
-		"mode": "jc.get_info('mode')",
-		"power": "jc.get_info('power')",
-		"preset": "jc.get_info('preset')",
-		"speed": "jc.get_info('preset_speed')",
-		"status": "jc.get_info('raw_status')"
-        	},
-	"values" : {
-		},
-	"display" : {
-       	},
-	"send-data" : {
-		"send-brightness": "jc.set_brightness({DATA})",
-		"send-color": "jc.set_color({DATA})",
-		"send-preset": "jc.set_preset({DATA})",
-		"send-speed": "jc.set_speed({DATA})",
-		"send-text": "jc.set_color({DATA})"
-        	}
-   }
+	"commands" : {
+		"brightness" : {
+			"get" : "jc.get_info('brightness')",
+			"set": "jc.set_brightness({DATA})",
+	            	"type" : "integer",
+	            	"values" : { "max": 100, "min": 0 }
+	            	},
+	        "color" : {
+	        	"get" : "jc.get_info('rgb')",
+			"set" : "jc.set_color({DATA})"
+	        	},
+	        "mode" : {
+	        	"get" : "jc.get_info('mode')"
+	        	},
+		"power" : { 
+			"get" : "jc.get_info('power')",
+	               "type" : "enum", 
+	               "values" : ["on", "off" ]
+	               },
+		"preset" : { 
+			"get" : "jc.get_info('preset')",
+			"set" : "jc.set_preset({DATA})",
+	               "type" : "integer",
+	               "values" : { "max": 56, "min": 37 }	
+	               },
+		"speed" : { 
+			"get" : "jc.get_info('speed')",
+			"set": "jc.set_speed({DATA})",
+	               "type" : "integer",
+	               "values" : { "max": 100, "min": 1 }
+	               },
+	        "status" : {
+	        	"get" : "jc.get_info('raw_status')"
+	        	},
+	        "text" : {
+	        	"set" : "jc.set_color({DATA})" 
+	        	}
+		}
+    }
 }

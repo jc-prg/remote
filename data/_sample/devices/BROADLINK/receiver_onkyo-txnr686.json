@@ -36,34 +36,27 @@
         },
         "commands": {
             "mute": {
-                "command": "",
-                "type": "enum"
+                "type": "enum",
+                "values": [
+                    "ON",
+                    "OFF"
+                ]
             },
             "power": {
-                "command": "",
-                "type": "enum"
+                "type": "enum",
+                "values": [
+                    "ON",
+                    "OFF"
+                ]
             },
             "vol": {
-                "command": "",
-                "type": "integer"
-            }
+                "type": "integer",
+                "values": {
+                    "max": 69,
+                    "min": 1
+                }
         },
-        "description": "ONKYO TX-NR686B (IR)",
-        "method": "record",
-        "queries": {},
-        "values": {
-            "mute": [
-                "ON",
-                "OFF"
-            ],
-            "power": [
-                "ON",
-                "OFF"
-            ],
-            "vol": {
-                "max": 69,
-                "min": 1
-            }
+        "description": "ONKYO TX-NR686B (IR)"
         }
     }
 }

@@ -18,7 +18,9 @@ from Crypto.Cipher import AES
 #---------------------------
 
 import interfaces
-import modules
+
+import modules.rm3stage
+import modules.rm3config
 
 from modules.server_fnct import *
 
@@ -30,8 +32,8 @@ Status                 = "Starting"
 
 #---------------------------
 
-if modules.test: Stage = "Test Stage"
-else:            Stage = "Prod Stage"
+if modules.rm3stage.test: Stage = "Test Stage"
+else:                     Stage = "Prod Stage"
 
 #-------------------------------------------------
 # Start and end of API answer
@@ -42,7 +44,7 @@ def remoteAPI_start(setting=[]):
     create data structure for API response and read relevant data from config files
     '''
 
-    global Status, LastAPICall
+    global Status, LastAPICall, RmReadData_errors
     
     # set time for last action -> re-read API information only if clients connected
     configFiles.cache_lastaction           = time.time() 
@@ -50,12 +52,14 @@ def remoteAPI_start(setting=[]):
     if not "status-only" in setting:
        data                                = configFiles.api_init
        data["DATA"]                        = RmReadData()
+       
+#---------------------------> optimize structure, names ... e.g. images_*, list_*, ...
 
-       data["CONFIG"]                      = {}  
-       data["CONFIG"]["button_images"]     = configFiles.read(modules.icons_dir + "/index")
-       data["CONFIG"]["button_colors"]     = configFiles.read(modules.buttons  + "button_colors")
-       data["CONFIG"]["scene_images"]      = configFiles.read(modules.scene_img_dir + "/index")
-    
+       data["CONFIG"]                      = {}
+       data["CONFIG"]["button_images"]     = configFiles.read(modules.rm3stage.icons_dir + "/index")
+       data["CONFIG"]["button_colors"]     = configFiles.read(modules.rm3config.buttons  + "button_colors")
+       data["CONFIG"]["scene_images"]      = configFiles.read(modules.rm3stage.scene_img_dir + "/index")
+       data["CONFIG"]["devices"]           = RmReadData_devicesConfig()    
        data["CONFIG"]["interfaces"]        = deviceAPIs.available
        data["CONFIG"]["methods"]           = deviceAPIs.methods
     
@@ -78,6 +82,7 @@ def remoteAPI_start(setting=[]):
     data["STATUS"]["interfaces"]           = deviceAPIs.status()
     data["STATUS"]["system"]               = {} #  to be filled in remoteAPI_end()
     data["STATUS"]["request_time"]         = queueSend.avarage_exec
+    data["STATUS"]["config_errors"]        = RmReadData_errors
       
     return data
     
@@ -94,9 +99,9 @@ def remoteAPI_end(data,setting=[]):
     data["REQUEST"]["load-time"] = time.time() - data["REQUEST"]["start-time"]
     data["STATUS"]["system"]     = {
         "message"               :  Status,
-        "server_start"          :  modules.start_time,
-        "server_start_duration" :  modules.start_duration,
-        "server_running"        :  time.time() - modules.start_time
+        "server_start"          :  modules.rm3config.start_time,
+        "server_start_duration" :  modules.rm3config.start_duration,
+        "server_running"        :  time.time() - modules.rm3config.start_time
         }
         
     #--------------------------------
@@ -175,15 +180,15 @@ def RemoteCheckUpdate(APPversion):
         d    = {}
         data = remoteAPI_start()
 
-        if (APPversion == modules.APPversion):
+        if (APPversion == modules.rm3config.APPversion):
             d["ReturnCode"]   = "800"
-            d["ReturnMsg"]    = "OK: "  + modules.ErrorMsg("800")
-        elif (APPversion in modules.APPsupport):
+            d["ReturnMsg"]    = "OK: "  + modules.rm3config.ErrorMsg("800")
+        elif (APPversion in modules.rm3config.APPsupport):
             d["ReturnCode"]   = "801"
-            d["ReturnMsg"]    = "WARN: "+ modules.ErrorMsg("801")
+            d["ReturnMsg"]    = "WARN: "+ modules.rm3config.ErrorMsg("801")
         else:
             d["ReturnCode"]   = "802"
-            d["ReturnMsg"]    = "WARN: "+ modules.ErrorMsg("802")
+            d["ReturnMsg"]    = "WARN: "+ modules.rm3config.ErrorMsg("802")
 
 
         data["REQUEST"]["Return"]     = d["ReturnMsg"]
@@ -325,39 +330,54 @@ def RemoteMakro(makro):
         commands_2nd              = []
         commands_3rd              = []
         commands_4th              = []
+        return_msg                = ""
         
-#### --> check, if makro is defined ... (or work with try: / except:)
-        
+        logging.debug("Decoded makro-string 1st: "+str(commands_1st))
+
         # decode makros: scene-on/off
         for command in commands_1st:
           command_str = str(command)
           if not command_str.isnumeric() and "_" in command:  
             device,button = command.split("_",1)
-            if "scene-on_" in command:     commands_2nd.extend(data["DATA"]["makros"]["scene-on"][button])
-            elif "scene-off_" in command:  commands_2nd.extend(data["DATA"]["makros"]["scene-off"][button])
+            if "scene-on_" in command:
+              if button in data["DATA"]["makros"]["scene-on"]:  commands_2nd.extend(data["DATA"]["makros"]["scene-on"][button])
+              else:                                             return_msg += "; ERROR: makro not defined ("+command+")"
+            elif "scene-off_" in command:
+              if button in data["DATA"]["makros"]["scene-off"]: commands_2nd.extend(data["DATA"]["makros"]["scene-off"][button])
+              else:                                             return_msg += "; ERROR: makro not defined ("+command+")"
             else:                          commands_2nd.extend([command])
-          else:                            commands_3rd.extend([command])
+          else:                            commands_2nd.extend([command])
           
+        logging.debug("Decoded makro-string 2nd: "+str(commands_2nd))
+
         # decode makros: dev-on/off
         for command in commands_2nd:
           command_str = str(command)
           if not command_str.isnumeric() and "_" in command:  
             device,button = command.split("_",1)
-            if "dev-on_" in command:     commands_3rd.extend(data["DATA"]["makros"]["dev-on"][button])
-            elif "dev-off_" in command:  commands_3rd.extend(data["DATA"]["makros"]["dev-off"][button])
+            if "dev-on_" in command:
+              if button in data["DATA"]["makros"]["dev-on"]:  commands_3rd.extend(data["DATA"]["makros"]["dev-on"][button])
+              else:                                           return_msg += "; ERROR: makro not defined ("+command+")"
+            elif "dev-off_" in command:
+              if button in data["DATA"]["makros"]["dev-off"]:  commands_3rd.extend(data["DATA"]["makros"]["dev-off"][button])
+              else:                                           return_msg += "; ERROR: makro not defined ("+command+")"
             else:                        commands_3rd.extend([command])
           else:                          commands_3rd.extend([command])
           
+        logging.debug("Decoded makro-string 3rd: "+str(commands_3rd))
+
         # decode makros: makro
         for command in commands_3rd:
           command_str = str(command)
           if not command_str.isnumeric() and "_" in command:  
             device,button = command.split("_",1)
-            if "makro_" in command:      commands_4th.extend(data["DATA"]["makros"]["makro"][button])
+            if "makro_" in command:
+              if button in data["DATA"]["makros"]["makro"]:  commands_4th.extend(data["DATA"]["makros"]["makro"][button])
+              else:                                          return_msg += "; ERROR: makro not defined ("+command+")"
             else:                        commands_4th.extend([command])
           else:                          commands_4th.extend([command])
           
-        logging.debug("Decoded makro-string: "+str(commands_4th))
+        logging.debug("Decoded makro-string 4th: "+str(commands_4th))
                   
         # execute buttons
         for command in commands_4th:
@@ -366,12 +386,19 @@ def RemoteMakro(makro):
           
             status                      = ""
             power_buttons               = ["on","on-off","off"]
-            device,button_status        = command.split("_",1)                         # split device and button
-            interface                   = data["DATA"]["devices"][device]["config"]["interface_api"] # get interface / API
-            method                      = data["DATA"]["devices"][device]["interface"]["method"]
+            device,button_status        = command.split("_",1)                                        # split device and button
+            
+            if device not in data["DATA"]["devices"]:
+               error_msg                = "; ERROR: Device defined in makro not found ("+device+")"
+               return_msg              += error_msg
+               logging.error(error_msg)
+               continue
+            
+            interface                   = data["CONFIG"]["devices"][device]["interface"]["interface_api"]  # get interface / API
+            method                      = data["CONFIG"]["devices"][device]["interface"]["method"]
 
             # check if future state defined
-            if "||" in button_status:   button,status = button_status.split("||",1)                              # split button and future state           
+            if "||" in button_status:   button,status = button_status.split("||",1)                   # split button and future state           
             else:                       button        = button_status
 
             if button in power_buttons: status_var    = "power"
@@ -391,19 +418,21 @@ def RemoteMakro(makro):
               
               if data["DATA"]["devices"][device]["status"][status_var] != status:
               
-                  data["REQUEST"]["Return"]  += ";" + queueSend.add2queue([[interface,device,button,status]])
+                  return_msg  += ";" + queueSend.add2queue([[interface,device,button,status]])
             
             # if no future state is defined just add command to queue
             elif status == "":
-                data["REQUEST"]["Return"]  += ";" + queueSend.add2queue([[interface,device,button,""]])
+                return_msg  += ";" + queueSend.add2queue([[interface,device,button,""]])
                 
           # if command is numeric, add to queue directly (time to wait)
           elif command_str.isnumeric():
-            data["REQUEST"]["Return"]  += ";" + queueSend.add2queue([float(command)])
+            return_msg  += ";" + queueSend.add2queue([float(command)])
 
         refreshCache()
-        data["DATA"]              = {}
-        data                      = remoteAPI_end(data,["no-config"])        
+        if return_msg != "":
+          data["REQUEST"]["Return"] = return_msg 
+        data["DATA"]                = {}
+        data                        = remoteAPI_end(data,["no-config"])        
         return data
 
 #-------------------------------------------------
@@ -429,12 +458,13 @@ def RemoteOnOff(device,button):
         status          = ""
         types           = {}
         presets         = {}
+        dont_send       = False
         
         data            = remoteAPI_start()
-        interface       = data["DATA"]["devices"][device]["config"]["interface_api"]
+
         method          = deviceAPIs.method(device)
-        api_dev         = interface+"_"+data["DATA"]["devices"][device]["config"]["interface_dev"]
-        dont_send       = False
+        interface       = data["CONFIG"]["devices"][device]["interface"]["interface_api"]
+        api_dev         = data["CONFIG"]["devices"][device]["interface"]["api"]
 
         logging.info("__BUTTON: " +device+"/"+button+" ("+interface+"/"+method+")")
 
@@ -442,8 +472,7 @@ def RemoteOnOff(device,button):
         if method == "record":
                   
           # Get method and presets
-          if "commands" in data["DATA"]["devices"][device]["interface"]:  types   = data["DATA"]["devices"][device]["interface"]["commands"]
-          if "values"   in data["DATA"]["devices"][device]["interface"]:  presets = data["DATA"]["devices"][device]["interface"]["values"]        
+          definition = data["CONFIG"]["devices"][device]["commands"]["definition"]
 
           # special with power buttons
           if button == "on-off" or button == "on" or button == "off":  value = "power"
@@ -459,7 +488,38 @@ def RemoteOnOff(device,button):
             if button == "on":            status = "ON" 
             if button == "off":           status = "OFF" 
             if button == "on-off":        status = RemoteToggle( current_status, ["ON","OFF"] )
+
+          elif value in definition and "type" in definition[value] and ("values" in definition[value] or "param" in definition[value]):
+          
+            d_type   = definition[value]["type"]
+            if "param" in definition[value]:
+              d_values = definition[value]["param"]
+            else:
+              d_values = definition[value]["values"]
             
+            if device_status == "ON":
+              if d_type == "enum":    status = RemoteToggle( current_status, d_values )
+              elif d_type == "integer" and "min" in d_values and "max" in d_values:
+                 minimum        = int(d_values["min"])
+                 maximum        = int(d_values["max"])
+                 direction      = button[-1:]
+                 current_status = str(current_status).strip()
+                 if current_status: current_status = int(current_status)
+                 else:              current_status = 0
+               
+                 if   direction == "+" and current_status < maximum: status = current_status + 1
+                 elif direction == "+":                              dont_send = True
+                 elif direction == "-" and current_status > minimum: status = current_status - 1
+                 elif direction == "-":                              dont_send = True
+                 
+              else:
+                 logging.warning("RemoteOnOff - Unknown command definition: "+device+"_"+button+":"+value+" ("+d_type+"/"+str(d_values)+")") 
+                 
+            else:
+               logging.debug("RemoteOnOff - Device is off: "+device)
+               dont_send = True
+
+#----------------------------- OLD
           # other buttons with defined values
           elif value in types and value in presets:
           
@@ -467,9 +527,12 @@ def RemoteOnOff(device,button):
             
               if types[value]["type"] == "enum":    status = RemoteToggle( current_status, presets[value] )
               if types[value]["type"] == "integer":
-                 minimum   = presets[value]["min"]
-                 maximum   = presets[value]["max"]
-                 direction = button[-1:]
+                 minimum        = int(presets[value]["min"])
+                 maximum        = int(presets[value]["max"])
+                 direction      = button[-1:]
+                 current_status = str(current_status).strip()
+                 if current_status: current_status = int(current_status)
+                 else:              current_status = 0
                
                  if   direction == "+" and current_status < maximum: status = current_status + 1
                  elif direction == "+":                              dont_send = True
@@ -479,6 +542,7 @@ def RemoteOnOff(device,button):
             else:
                logging.debug("RemoteOnOff - Device is off: "+device)
                dont_send = True
+#----------------------------- OLD
                
           else:
             logging.warn("RemoteOnOff - Command not defined: "+device+"_"+value)
@@ -487,6 +551,8 @@ def RemoteOnOff(device,button):
         data["REQUEST"]["Device"]    = device
         data["REQUEST"]["Button"]    = button
         data["REQUEST"]["Command"]   = "OnOff"
+        
+        logging.info("... add to queue ["+str(api_dev)+","+str(device)+","+str(button)+","+str(status)+"]")
         
         if dont_send: data["REQUEST"]["Return"] = "Dont send "+device+"/"+button+" as values not valid ("+str(current_status)+")."
         else:         data["REQUEST"]["Return"] = queueSend.add2queue([[api_dev,device,button,status]])

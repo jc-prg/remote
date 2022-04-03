@@ -4,10 +4,10 @@ import time
 # ---------------------------------
 
 APIname    = "jc://remote/"
-APIversion = "v2.0.3"
-APPversion = "v2.7.3"
+APIversion = "v2.0.7"
+APPversion = "v2.7.7"
 APPsupport = [APPversion, 
-             "v2.7.2", "v2.7.1","v2.7.0"
+             "v2.7.7"
              ]  # other supported versions
 
 # ---------------------------------
@@ -26,6 +26,7 @@ shorten_info_to = 50
 
 # ---------------------------------
 
+rest_api   = "modules/swagger.yml"
 interfaces = "interfaces/"          # interface definition
 
 devices    = "devices/"             # devices, overview in "_active.json"

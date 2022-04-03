@@ -5,29 +5,64 @@ Therefore I found the **Broadlink RM 3 Mini** and sources on Github to control t
 as my new ONKYO receiver come with their own API and I started to rework my software and to integrate the first device via API directly.
 In the meanwhile a few additional APIs are integrated ...
 
+## Table of Content
+
+- [Supported Hardware](#supported-hardware)
+- [Screenshots](#screenshots)
+- [Data structure](#data-structure)
+- [Main features](#main-feature)
+- [Used sources](#used-sources)
+- [How to setup the software](#how-to-setup-the-software)
+- [Disclaimer](#disclaimer)
+
+
 ## Supported Hardware
 
 * Broadlink RM 3 Mini - Infrared receiver/sender
-* Several ONKYO devices with API (see section modelsets in the file eiscp-commands.yaml in https://github.com/miracle2k/onkyo-eiscp)
-* Several SONY devices with API (see README in https://https://github.com/alexmohr/sonyapilib)
+* Several ONKYO devices with API (see section modelsets [eiscp-commands.yaml](https://github.com/miracle2k/onkyo-eiscp/blob/master/eiscp-commands.yaml))
+* Several SONY devices with API (see [compartibilty list](https://github.com/alexmohr/sonyapilib#compatibility-list))
 * KODI server
 * Magic Home compartibel LED strips 
 * Tapo SmartPlugs P100
 * *Other devices easily can be integrated*
 
-## Screenshots 
+## Screenshots
 
-![light theme](docs/remote_standard.png)
-Light theme on iPhone XS
+### Default theme on iPhone XS
 
-![dark theme](docs/remote_dark.png)
-Dark theme on iPhone XS
+<img src="./docs/remote_iphone_default_01.PNG" width="17%"> <img src="./docs/remote_iphone_default_02.PNG" width="17%">
+<img src="./docs/remote_iphone_default_03.PNG" width="17%"> <img src="./docs/remote_iphone_default_04.PNG" width="17%">
+<img src="./docs/remote_iphone_default_05.PNG" width="17%"> <img src="./docs/remote_iphone_default_06.PNG" width="17%">
+<img src="./docs/remote_iphone_default_07.PNG" width="17%"> <img src="./docs/remote_iphone_default_08.PNG" width="17%">
+<img src="./docs/remote_iphone_default_09.PNG" width="17%"> <img src="./docs/remote_iphone_default_10.PNG" width="17%">
+<img src="./docs/remote_iphone_default_11.PNG" width="17%"> <img src="./docs/remote_iphone_default_12.PNG" width="17%">
+<img src="./docs/remote_iphone_default_13.PNG" width="17%">
 
-![scenes with header](docs/remote_new.png)
-Remotes with header and color picker (updated dark theme)
+### Default theme in the browser
 
-![edit mode](docs/remote_edit.png)
-Edit remote layouts in a browser
+<img src="./docs/remote_browser_01.png" width="48%"> <img src="./docs/remote_browser_03.png" width="48%">
+
+### Dark theme on iPhone XS
+
+<img src="./docs/remote_iphone_01.PNG" width="17%"> <img src="./docs/remote_iphone_02.PNG" width="17%">
+<img src="./docs/remote_iphone_03.PNG" width="17%"> <img src="./docs/remote_iphone_04.PNG" width="17%">
+<img src="./docs/remote_iphone_05.PNG" width="17%"> <img src="./docs/remote_iphone_06.PNG" width="17%">
+<img src="./docs/remote_iphone_07.PNG" width="17%"> <img src="./docs/remote_iphone_08.PNG" width="17%">
+<img src="./docs/remote_iphone_09.PNG" width="17%"> <img src="./docs/remote_iphone_10.PNG" width="17%">
+<img src="./docs/remote_iphone_11.PNG" width="17%"> <img src="./docs/remote_iphone_12.PNG" width="17%"> <img src="./docs/remote_iphone_13.PNG" width="17%">
+
+### Edit mode on iPhone XS
+
+<img src="./docs/remote_edit_iphone_01.PNG" width="17%"> <img src="./docs/remote_edit_iphone_02.PNG" width="17%">
+<img src="./docs/remote_edit_iphone_03.PNG" width="17%"> <img src="./docs/remote_edit_iphone_04.PNG" width="17%">
+<img src="./docs/remote_edit_iphone_05.PNG" width="17%"> <img src="./docs/remote_edit_iphone_06.PNG" width="17%">
+<img src="./docs/remote_edit_iphone_07.PNG" width="17%"> <img src="./docs/remote_edit_iphone_08.PNG" width="17%">
+
+
+### Edit mode in the browser
+
+<img src="./docs/remote_browser_edit_01.png" width="48%"> <img src="./docs/remote_browser_edit_02.png" width="48%">
+<img src="./docs/remote_browser_edit_03.png" width="48%">
 
 ## Data structure
 
@@ -39,8 +74,9 @@ Edit remote layouts in a browser
 
 * add remote control for LED strips compartible with MagicHome
 * add remote control for Tapo SmartPlugs
-* add slider and color-picker
+* add slider and color-picker for remotes
 * stablize API connections
+* optimize logging and add error handling for JSON files
 
 ### App v2.6 / Server v1.9
 
@@ -88,19 +124,22 @@ The integration of the device APIs is done in an easy way, so that the integrati
 * remote control for scenes incl. makros
 * control devices via IR sender/receiver (Broadlink RM3 Mini)
 
-## Used Sources
+## Used sources
 
 Many thanks to the authors ...
   
-* BlackBeanControl (https://github.com/davorf/BlackBeanControl)
-* eiscp-onkyo (https://github.com/miracle2k/onkyo-eiscp)
-* KodiJson (https://github.com/jcsaaddupuy/python-kodijson)
-* SonyApiLib (https://https://github.com/alexmohr/sonyapilib)
-* MagicHome API (https://github.com/adamkempenich/magichome-python)
-* PyP100 API (https://github.com/fishbigger/TapoP100)
-* Free icons from (https://icon-icons.com/), (https://www.freeicons.io/), (https://www.flaticon.com/), and (https://icons8.com/)
-* Free images from (https://unsplash.com/)
-* jc://modules/ (https://github.com/jc-prg/modules)
+* [BlackBeanControl](https://github.com/davorf/BlackBeanControl)
+* [eiscp-onkyo](https://github.com/miracle2k/onkyo-eiscp)
+* [KodiJson](https://github.com/jcsaaddupuy/python-kodijson)
+* [SonyApiLib](https://https://github.com/alexmohr/sonyapilib)
+* [MagicHome API](https://github.com/adamkempenich/magichome-python)
+* [PyP100 API](https://github.com/fishbigger/TapoP100)
+* Free icons and images: https://icon-icons.com/, https://www.freeicons.io/, https://www.flaticon.com/, https://icons8.com/, https://unsplash.com/
+
+Own included modules:
+
+* [jc://modules/](https://github.com/jc-prg/modules)
+* [jc://app-framework/](https://github.com/jc-prg/app-framework)
 
 
 ## How to setup the software
@@ -120,33 +159,42 @@ In order to use jc://remote/ as it is, the following software must be installed:
 ```bash
 $ git clone https://github.com/jc-prg/remote.git
 $ git submodule update --init
+$ cd remote
 ```
 
-2. Change settings
+2. Change settings: [sample.config_prod](./config/sample.config_prod)
 
 ```bash
-$ cd remote\config
+$ cd config
 $ cp sample.config_prod config_prod
 $ ./create prod
+$ cd ..
 ```
 
-3. Build and start via docker-compose ..
+3. Copy sample remote controls
 
 ```bash
-$ cd ..
+$ cd data/_sample
+$ ./install-config
+$ cd ../..
+```
+
+4. Build and start via docker-compose ..
+
+```bash
 $ docker-compose build
 $ ./start start
 ```
 
-4. Open in browser, e.g. http://localhost:81/
+5. Open in browser, e.g. http://localhost:81/
 
-5. Install via autostart - add the following line to /etc/rc.local
+6. Install via autostart - add the following line to /etc/rc.local
 
 ```bash
 /<your_path_to_remote>/start start
 ```
 
-6. Update from Github (works, if configuration file has not changed)
+7. Update from Github (works, if configuration file has not changed)
 
 ```bash
 $ ./start update

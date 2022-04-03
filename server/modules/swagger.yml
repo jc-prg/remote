@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: "1.7.2"
+  version: "1.8.0"
   title: "jc://remote/"
   description: API to control remote control devices
   
@@ -840,8 +840,25 @@ definitions:
     properties:
       devices:
         type: object
+        properties:
+          "<device-id>":
+            type: object
+            properties:
+              "<device-specific-key-value-pairs>":
+                type: string
+      interfaces:
+        type: object
+        properties:
+          "<api-interface>":
+            type: string
       last_button:
         type: string
+      request_time:
+        type: object
+      scenes:
+        type: array
+        items:
+          type: string
       system:
         type: object
 
@@ -852,8 +869,66 @@ definitions:
         type: object
       button_images:
         type: object
+      devices:
+        type: object
+        properties:
+          "<device-id>":
+            type: object
+            properties:
+              buttons:
+                type: array
+                items:
+                  type: string
+              commands:
+                type: object
+                properties:
+                  definition:
+                    type: object
+                    properties:
+                      "<command>":
+                        type: object
+                        properties:
+                          get:
+                            type: string
+                          set:
+                            type: string
+                          type:
+                            type: string
+                          param:
+                            type: array
+                            items:
+                              type: string
+                          values:
+                            type: array
+                            items:
+                              type: string
+                  set:
+                    type: array
+                    items:
+                      type: string
+                  get:
+                    type: array
+                    items:
+                      type: string
+              interface:
+                type: object
+                properties:
+                  api:
+                    type: string
+                  files:
+                    type: array
+                    items:
+                      type: string
+                  method:
+                    type: string
+                    items:
+                      type: string
+              url:
+                type: string
       interfaces:
         type: object
+      main-audio:
+        type: string
       methods:
         type: object
 
@@ -863,46 +938,48 @@ definitions:
       devices:
         type: object
         properties:
-          "<device-name>":
+          "<device-id>":
             type: object
             properties:
-              button_list:
+              config:
                 type: object
-              buttons:
-                type: object
-              description:
-                type: array
-                items:
-                  type: string
-              display:
-                type: object
-              image:
-                type: string
-              interface:
-                type: string
-              label:
-                type: string
-              method:
-                type: string
-              queries:
-                type: object
-              query_list:
-                type: array
-                items:
-                  type: string
               remote:
-                type: array
-                items:
-                  type: string
+                type: object
+                properties:
+                  description:
+                    type: string
+                  display:
+                    type: object
+                  remote:
+                    type: array
+                    items:
+                      type: string
+                  type:
+                    type: string
+                    enum: ["device"]
+              settings:
+                type: object
+                properties:
+                  description:
+                    type: string
+                  image:
+                    type: string
+                  label:
+                    type: string
+                  main-audio:
+                    type: string
+                    enum: ["yes","no"]
+                  position:
+                    type: integer
+                  visible:
+                    type: string
+                    enum: ["yes","no"]
               status:
                 type: object
-              visible:
-                type: string
-                enum: ["yes","no"]
       scenes:
         type: object
         properties:
-          "<scene-name>":
+          "<scene-id>":
             type: object
             properties:
               label:

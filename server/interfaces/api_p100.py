@@ -8,6 +8,7 @@ import logging, time
 import modules.rm3json                 as rm3json
 import modules.rm3config               as rm3config
 import modules.rm3ping                 as rm3ping
+import modules.rm3stage                as rm3stage
 
 import interfaces.p100.PyP100      as device
 
@@ -30,7 +31,7 @@ class APIcontrol():
        '''
        
        self.api_name        = api_name       
-       self.api_description = "PyP100 (implementation in progress)"
+       self.api_description = "API for Tapo-Link P100"
        self.not_connected   = "ERROR: Device not connected ("+api_name+"/"+device+")."
        self.status          = "Start"
        self.method          = "query"
@@ -43,9 +44,11 @@ class APIcontrol():
        self.api_config      = device_config
        self.api_device      = device
 
-       logging.info("_API-INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
-       
-       self.connect()
+       self.logging = logging.getLogger("api.P100")
+       self.logging.setLevel = rm3stage.log_set2level
+       self.logging.info("_INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
+              
+       #self.connect()
             
    #-------------------------------------------------
    
@@ -57,7 +60,7 @@ class APIcontrol():
        connect = rm3ping.ping(self.api_config["IPAddress"])
        if not connect:
          self.status = self.not_connected + " ... PING"
-         logging.error(self.status)       
+         self.logging.warning(self.status)       
          return self.status
 
        self.status               = "Connected"
@@ -77,7 +80,7 @@ class APIcontrol():
            return self.status
            
        try:
-           self.api.jc               = APIaddOn(self.api)
+           self.api.jc               = APIaddOn(self.api,self.logging)
            self.api.jc.status        = self.status
            self.api.jc.not_connected = self.not_connected
           
@@ -97,7 +100,7 @@ class APIcontrol():
        '''
        
        while self.working:
-         logging.info(".")
+         self.logging.debug(".")
          time.sleep(0.2)
        return
        
@@ -123,12 +126,12 @@ class APIcontrol():
        self.working = True
 
        if self.status == "Connected":
-         if self.log_command: logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+         if self.log_command: self.logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
          
          try:
            command = "self.api."+command
            result = eval(command)
-           logging.debug(str(result))
+           self.logging.debug(str(result))
 
            if "error" in result:
              self.working = False
@@ -163,12 +166,12 @@ class APIcontrol():
        else:               command_param = [command]
 
        if self.status == "Connected":
-         if self.log_command: logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+         if self.log_command: self.logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
 
          try:
            command = "self.api."+command_param[0]
            result = eval(command)
-           logging.debug(str(result))
+           self.logging.debug(str(result))
            
            if "error" in result:      
              if "message" in result["error"]: msg = str(result["error"]["message"])
@@ -255,7 +258,7 @@ class APIaddOn():
    individual commands for API
    '''
 
-   def __init__(self,api):
+   def __init__(self,api,logger):
    
       self.addon          = "jc://addon/p100/"
       self.api            = api
@@ -264,10 +267,16 @@ class APIaddOn():
       self.cache_time     = time.time()    # init cache time
       self.cache_wait     = 2              # time in seconds how much time should be between two api metadata requests
       self.power_status   = "OFF"
+      self.logging        = logger
       
       self.last_request_time   = time.time()
       self.last_request_data   = {}
       self.cache_wait          = 1      
+
+      self.logging = logging.getLogger("api.P100")
+      self.logging.setLevel = rm3stage.log_set2level
+
+
    #-------------------------------------------------
 
    def turn_on(self):
@@ -307,7 +316,7 @@ class APIaddOn():
 
       if self.status == "Connected":      
 
-        logging.debug(str(self.last_request_time)+"__"+str(time.time()))
+        self.logging.debug(str(self.last_request_time)+"__"+str(time.time()))
         
         if self.last_request_time < time.time() - self.cache_wait:
            status = self.api.getDeviceInfo()
@@ -317,7 +326,7 @@ class APIaddOn():
         else:
            status = self.last_request_data
 
-        logging.debug(str(status))
+        self.logging.debug(str(status))
         
         if "error_code" in status and status["error_code"] != 0:
            return { "error" : "device error ("+str(status["result"])+")" }
@@ -329,13 +338,10 @@ class APIaddOn():
         if status["device_on"]:        self.power_status = "ON"
         else:                          self.power_status = "OFF" 
         
-        if param == "location":        return { "result": status["location"] }
+        if param in status:            return { "result": status[param] }
         elif param == "status":        return { "result": str(status) }
-        elif param == "type":          return { "result": status["type"] }
-        elif param == "model":         return { "result": status["model"] }
-        elif param == "device_on":     return { "result": status["device_on"] }
-        elif param == "overheated":    return { "result": status["overheated"] }
-        elif param == "power":         return { "result": self.power_status }
+        elif param == "power":         return { "result": self.power_status }        
+        
         else:                          return { "error" : "unknown tag '"+param+"'" }
 
       else:
@@ -348,8 +354,8 @@ class APIaddOn():
      if self.status == "Connected":
      
        status = self.api.getDeviceInfo()
-       logging.info("PyP100: ..... TEST TEST TEST TEST TEST TEST TEST TEST")
-       logging.info(str(status))
+       self.logging.info("PyP100: ..... TEST TEST TEST TEST TEST TEST TEST TEST")
+       self.logging.info(str(status))
        
        if self.power_status == "ON":
           self.api.turnOff()

@@ -39,6 +39,8 @@ class sonyDevice():
         '''
         initialize device
         '''
+        self.logging       = logging.getLogger("api.SONYlib")
+
         self.device_ip     = ip
         self.device_name   = name
         self.device_config = config
@@ -95,7 +97,7 @@ class sonyDevice():
           text_file.close()
           
         except Exception as e:
-          logging.error("SONY load device: "+str(e))
+          self.logging.error("SONY load device: "+str(e))
 
     #-----------------------------
 
@@ -108,7 +110,7 @@ class sonyDevice():
         import os
         sony_device = None
         
-        logging.info("SONY load: "+self.device_ip+", " +self.device_name+", "+self.device_config)
+        self.logging.info("SONY load: "+self.device_ip+", " +self.device_name+", "+self.device_config)
                 
         try:
           if os.path.exists(self.device_config):
@@ -116,11 +118,11 @@ class sonyDevice():
                 json_data   = content_file.read()
             sony_device = SonyDevice.load_from_json(json_data)
           else:
-            logging.error("SONY load device: file not found ("+self.device_config+")")
+            self.logging.error("SONY load device: file not found ("+self.device_config+")")
           return sony_device
           
         except Exception as e:
-          logging.error("SONY load device: "+str(e))
+          self.logging.error("SONY load device: "+str(e))
 
     #-----------------------------
     
@@ -129,7 +131,7 @@ class sonyDevice():
         register device / device must be on for registration
         -> request registration
         '''
-        logging.info("SONY Start Registration")
+        self.logging.info("SONY Start Registration")
         
         self.device = SonyDevice(self.device_ip, self.device_name)
         self.device.register()
@@ -144,7 +146,7 @@ class sonyDevice():
         register device / device must be on for registration
         -> return PIN for registration and save data
         '''
-        logging.info("SONY Finish Registration")
+        self.logging.info("SONY Finish Registration")
         
         if self.wating_for_registration:        
             if self.device.send_authentication(pin):  self.save_device()
@@ -168,12 +170,12 @@ class sonyDevice():
         '''
         if cmd == "PowerOn" and self.get_status("power") == False: 
           try:
-            logging.info("SONY wake on lan: START ("+self.device.mac+"/"+self.device_ip+")")
+            self.logging.info("SONY wake on lan: START ("+self.device.mac+"/"+self.device_ip+")")
             self.device.wakeonlan(self.device_ip)
             time.sleep(3)
 
           except Exception as e:
-            logging.error("SONY wake on lan: "+str(e))
+            self.logging.error("SONY wake on lan: "+str(e))
 
 
         elif cmd == "PowerOff" and self.get_status("power") == True:
@@ -253,16 +255,16 @@ class sonyDevice():
         result = "test"
         try:
           result = self.device._send_http(self.device._get_action("getContentInformation").url, method=HttpMethod.GET)
-          logging.warning(result.text)
+          self.logging.warning(result.text)
 
           result = self.device._send_http(self.device._get_action("getSystemInformation").url, method=HttpMethod.GET)
-          logging.warning(result.text)
+          self.logging.warning(result.text)
           
           result = self.device._send_http(self.device._get_action("getContentURL").url, method=HttpMethod.GET)
-          logging.warning(result.text)
+          self.logging.warning(result.text)
 
           result = self.device._send_http(self.device._get_action("getStatus").url, method=HttpMethod.GET)
-          logging.warning(result.text)
+          self.logging.warning(result.text)
 
         except Exception as e:
           return "ERROR: " + str(e)
@@ -289,7 +291,7 @@ class sonyDevice():
         get status ...
         '''
         
-        logging.debug("SONY get_status: "+str(cmd)+"/"+str(param)+" - " + str(self.device.get_power_status()))    
+        self.logging.debug("SONY get_status: "+str(cmd)+"/"+str(param)+" - " + str(self.device.get_power_status()))    
         if cmd == "power":               return self.device.get_power_status()
         
         if self.device.get_power_status():

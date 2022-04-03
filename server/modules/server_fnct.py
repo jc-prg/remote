@@ -3,22 +3,41 @@
 # (c) Christoph Kloth
 #-----------------------------------
 
-import configparser
-import sys, getopt
-import time, binascii
-import netaddr, codecs
 import logging
-import json
-
-from os import path
-from Crypto.Cipher import AES
 
 #---------------------------
 # import jc://remote/ modules
 #---------------------------
 
+import modules.rm3cache
+configFiles       = modules.rm3cache.configCache("configFiles")
+if configFiles.check_config() == "ERROR": exit()
+else: configFiles.start()
+
+#---------------------------
+
 import interfaces
-import modules
+deviceAPIs        = interfaces.connect(configFiles)
+deviceAPIs.start()
+
+#---------------------------
+
+from modules.rm3queue import queueApiCalls
+
+queueSend         = queueApiCalls("queueSend", "send", deviceAPIs)
+queueSend.start()
+
+queueQuery        = queueApiCalls("queueQuery","query",deviceAPIs)
+queueQuery.config = configFiles
+queueQuery.start()
+
+#---------------------------
+
+import modules.rm3json
+import modules.rm3stage
+import modules.rm3config
+
+RmReadData_errors = {}
 
 #---------------------------
 # see initialization of thread ad the end ...
@@ -35,60 +54,172 @@ def refreshCache():
 # Read data
 #---------------------------
 
-def RmReadData_devices(selected=[],remotes=True):
+def RmReadData_devicesConfig():
     '''
-    read config data for devices and combine with remote definition
+    read configuration of all devices
     '''
-    data   = {}
-    data   = configFiles.read_status()
-
+    config_keys = ["buttons","commands","url","method"]
+    data        = {}
+    data        = configFiles.read_status()
+    data_config = {}
+        
     # read data for active devices
     for device in data:
+    
+       interface  = data[device]["config"]["interface_api"]
+       device_key = data[device]["config"]["device"]
+              
+       if interface == "":
+         if device != "default":
+           logging.warning("No interface defined ("+device+"/"+device_key+")")
+           logging.warning(device + ": " +str(data[device]))
+         continue
+
+       interface_def_device   = configFiles.read(modules.rm3config.commands + interface + "/" + device_key)       # button definitions, presets, queries ...
+       interface_def_default  = configFiles.read(modules.rm3config.commands + interface + "/00_default")     # button definitions, presets, queries ...
+
+       if "ERROR" in interface_def_device or "ERROR" in interface_def_default:
+          logging.error("Error while reading configuration for device ("+device_key+")")
+          
+       else:
+         interface_def_device   = interface_def_device["data"]
+         interface_def_default  = interface_def_default["data"]
+         interface_def_combined = {}
+
+         for value in config_keys:
+
+           if value in interface_def_default:   interface_def_combined[value] = interface_def_default[value]
+           elif value == "method":              interface_def_combined[value] = ""
+           elif value == "url":                 interface_def_combined[value] = ""
+           else:                                interface_def_combined[value] = {}
+
+           if value in interface_def_device and value != "method" and value != "url":
+             for key in interface_def_device[value]:
+               interface_def_combined[value][key] = interface_def_device[value][key]
+                         
+           elif value in interface_def_device:
+             interface_def_combined[value] = interface_def_device[value]
+
+         data_config[device]                               = {}
+         data_config[device]["buttons"]                    = {}
+         if interface_def_combined["buttons"] != "":
+           data_config[device]["buttons"] = list(interface_def_combined["buttons"].keys())                 
+       
+         data_config[device]["interface"]                  = {}
+         data_config[device]["interface"]["method"]        = interface_def_combined["method"]              
+         data_config[device]["interface"]["files"]         = [ interface + "/00_interface.json", interface + "/00_default.json", interface + "/" + device_key + ".json" ]
+         data_config[device]["interface"]["api"]           = data[device]["config"]["interface_api"] + "_" + data[device]["config"]["interface_dev"]
+         data_config[device]["interface"]["interface_api"] = data[device]["config"]["interface_api"]
+         data_config[device]["interface"]["interface_dev"] = data[device]["config"]["interface_dev"]
+         data_config[device]["interface"]["device"]        = device_key
+
+         data_config[device]["commands"]                   = {}
+         data_config[device]["commands"]["definition"]     = {}
+         data_config[device]["commands"]["get"]            = []
+         data_config[device]["commands"]["set"]            = []
+         
+         if "commands" in interface_def_combined:
+           data_config[device]["commands"]["definition"]     = interface_def_combined["commands"]
+           for key in interface_def_combined["commands"]:
+             if "get" in interface_def_combined["commands"][key]: 
+               if not key in data_config[device]["commands"]["get"]: 
+                  data_config[device]["commands"]["get"].append(key)
+             if "set" in interface_def_combined["commands"][key]: 
+               if not key in data_config[device]["commands"]["set"]: 
+                  data_config[device]["commands"]["set"].append(key)
+          
+         for key in data_config[device]["commands"]["definition"]:
+            if not "str" in str(type(data_config[device]["commands"]["definition"][key])):
+              data_config[device]["commands"]["definition"][key]["cmd"] = []
+              if "get" in data_config[device]["commands"]["definition"][key]: 
+                data_config[device]["commands"]["definition"][key]["cmd"].append("get")
+                del data_config[device]["commands"]["definition"][key]["get"]
+              if "set" in data_config[device]["commands"]["definition"][key]: 
+                data_config[device]["commands"]["definition"][key]["cmd"].append("set")
+                del data_config[device]["commands"]["definition"][key]["set"]
+         
+         data_config[device]["url"]                        = interface_def_combined["url"]
+       
+    return data_config
+
+#---------------------------
+
+def RmReadData_devices(selected=[],remotes=True,config_only=False):
+    '''
+    read data for devices and combine with remote definition -> base for CONFIG and STATUS also
+    '''
+    global RmReadData_errors
+    
+    config_keys = ["buttons","commands","url","method"]
+    data        = {}
+    data        = configFiles.read_status()
+    
+    if "ERROR" in data:
+       logging.error("ERROR while requesting devices status, main config file seems to be defect!")
+       return data
+ 
+    # read data for active devices
+    for device in data:
+
        if data[device]["config"]["interface_api"] != "":
           if selected == [] or device in selected:
 	
-             key        = data[device]["config"]["device"]
+             device_key = data[device]["config"]["device"]
              key_remote = data[device]["config"]["remote"]
              interface  = data[device]["config"]["interface_api"]
-             data_temp  = data[device]
-             remote     = configFiles.read(modules.remotes  + key_remote)                              # remote layout & display
-             
+             remote     = configFiles.read(modules.rm3config.remotes  + key_remote)                              # remote layout & display
+
+             if not "devices" in RmReadData_errors: RmReadData_errors["devices"] = {}             
+             if "ERROR" in remote:
+                logging.error("Error reading config file '"+key_remote+"': "+remote["ERROR_MSG"])
+                if not device in RmReadData_errors["devices"]: RmReadData_errors["devices"][device] = {}
+                RmReadData_errors["devices"][device][modules.rm3config.remotes+key_remote+".json"] = remote["ERROR_MSG"]
+                continue
+             elif device in RmReadData_errors["devices"]:
+                if not device in RmReadData_errors["devices"]: RmReadData_errors["devices"] = {}
+                del RmReadData_errors["devices"][device]
+                
+             data_temp              = data[device]
+             data_temp["remote"]    = remote["data"]
+
+             # should not be necessary any more ... but how ever, if removed RmReadConfig_devices doesn't work             
              if remotes:
 
-                interface_def         = configFiles.read(modules.commands + interface + "/" + key)     # button definitions, presets, queries ...
-                interface_def_default = configFiles.read(modules.commands + interface + "/00_default") # button definitions, presets, queries ...
+                interface_def_device  = configFiles.read(modules.rm3config.commands + interface + "/" + device_key)  # button definitions, presets, queries ...
+                interface_def_default = configFiles.read(modules.rm3config.commands + interface + "/00_default") # button definitions, presets, queries ...
              
-                if "ERROR" in remote or "ERROR" in interface_def or "ERROR" in interface_def_default:
-                   logging.error("Error while reading configuration for device ("+key+")")
+                if "ERROR" in interface_def_device:
+                   logging.error("Error reading config file '"+device_key+"': "+interface_def_device["ERROR_MSG"])
+                   if not device in RmReadData_errors["devices"]: RmReadData_errors["devices"][device] = {}
+                   RmReadData_errors["devices"][device][modules.rm3config.commands+interface+"/"+device_key+".json"] = interface_def_device["ERROR_MSG"]
                    continue
                    
-                interface_def         = interface_def["data"]
-                interface_def_default = interface_def_default["data"]
-             
-                # combine default interface definition and device specific definition
-                for value in interface_def_default: 
-                   if value != "description":
-                   
-                      if not value in interface_def:      
-                         interface_def[value] = interface_def_default[value]                   
-                      
-                      else:
-                        for key in interface_def_default[value]:                  
-                          if not key in interface_def[value]:
-                            interface_def[value][key] = interface_def_default[value][key]
-                    
-                data_temp["remote"]    = remote["data"]
-                data_temp["interface"] = {}
+                if "ERROR" in interface_def_default:
+                   logging.error("Error reading config file '"+device_key+"': "+interface_def_default["ERROR_MSG"])
+                   if not device in RmReadData_errors["devices"]: RmReadData_errors["devices"][device] = {}
+                   RmReadData_errors["devices"][device][modules.rm3config.commands+interface+"/00_default.json"] = interface_def_default["ERROR_MSG"]
+                   continue
+                
+                interface_def_device   = interface_def_device["data"]
+                interface_def_default  = interface_def_default["data"]
+                interface_def_combined = {}
 
-                if "method"   in interface_def:  data_temp["interface"]["method"]      = interface_def["method"]              
-                if "values"   in interface_def:  data_temp["interface"]["values"]      = interface_def["values"]              
-                if "commands" in interface_def:  data_temp["interface"]["commands"]    = interface_def["commands"] 
-                if "url"      in interface_def:  data_temp["interface"]["url"]         = interface_def["url"] 
-                if "queries"  in interface_def:  data_temp["interface"]["query_list"]  = list(interface_def["queries"].keys())                 
-                if "buttons"  in interface_def:  data_temp["interface"]["button_list"] = list(interface_def["buttons"].keys())                 
-             
+                for value in config_keys:
+
+                  if value in interface_def_default:   interface_def_combined[value] = interface_def_default[value]
+                  elif value == "method":              interface_def_combined[value] = ""
+                  elif value == "url":                 interface_def_combined[value] = ""
+                  else:                                interface_def_combined[value] = {}
+
+                  if value in interface_def_device and value != "method" and value != "url":
+                     for key in interface_def_device[value]:
+                         interface_def_combined[value][key] = interface_def_device[value][key]
+                         
+                  elif value in interface_def_device:
+                     interface_def_combined[value] = interface_def_device[value]
+                                             
              data[device] = data_temp
-
+                   
     return data
 
 #---------------------------
@@ -127,7 +258,8 @@ def RmReadData_sceneStatus():
 
     # read data for active devices
     for scene in data:
-       status[scene]         = data[scene]["remote"]["devices"]
+     if data[scene]["remote"] != "error":
+       status[scene] = data[scene]["remote"]["devices"]
 
     return status
 
@@ -164,7 +296,7 @@ def RmReadData_makros(selected=[]):
     read config data for makros
     '''
     data = {}
-    data = configFiles.read(modules.active_makros)
+    data = configFiles.read(modules.rm3config.active_makros)
     return data
 
 
@@ -184,7 +316,7 @@ def RmWriteData_makros(data):
     for key in var_delete:
        del data[key]          
 
-    configFiles.write(modules.active_makros, data,"RmWriteData_makros()")
+    configFiles.write(modules.rm3config.active_makros, data,"RmWriteData_makros()")
 
 #---------------------------
 
@@ -192,18 +324,30 @@ def RmReadData_scenes(selected=[],remotes=True):
     '''
     read config data for scenes and combine with remote definition
     '''
-    data = {}
-    data = configFiles.read(modules.active_scenes)
+    global RmReadData_errors
     
+    data = {}
+    data = configFiles.read(modules.rm3config.active_scenes)
+    
+    if not "scenes" in RmReadData_errors: RmReadData_errors["scenes"] = {}             
     if remotes:
       for scene in data:
         if selected == [] or scene in selected:
           remote_file   = data[scene]["config"]["remote"]
           try:
-            remote_config = configFiles.read(modules.scenes + remote_file)       
-            data[scene]["remote"] = remote_config["data"]
+            remote_config = configFiles.read(modules.rm3config.scenes + remote_file)       
+            if "data" in remote_config:
+               data[scene]["remote"] = remote_config["data"]
+            if "ERROR" in remote_config:
+               logging.error("Error reading config file '"+remote_file+"': "+remote_config["ERROR_MSG"])
+               if not scene in RmReadData_errors["scenes"]: RmReadData_errors["scenes"][scene] = {}
+               RmReadData_errors["scenes"][scene][modules.rm3config.scenes+remote_file+".json"] = remote_config["ERROR_MSG"]
+               data[scene]["remote"] = "error"
           except Exception as e:
-            logging.error("Reading scene failed: "+str(scene)+" / "+str(selected)+" ("+str(e)+")") 
+            error_msg = "Reading scene failed: "+str(scene)+" / "+str(selected)+" ("+str(e)+")"
+            logging.error(error_msg) 
+            if not scene in RmReadData_errors["scenes"]: RmReadData_errors["scenes"][scene] = {}
+            RmReadData_errors["scenes"][scene][modules.rm3config.scenes+remote_file+".json"] = error_msg
             data[scene]["remote"] = "error"
         else:
           logging.error("Scene not found: "+str(scene)+" / "+str(selected))
@@ -242,14 +386,14 @@ def RmReadData_templates(selected=[]):
     data["template_list"]  = {}
         
     if selected == []:
-       templates = modules.available(modules.templates)
+       templates = modules.rm3json.available(modules.rm3config.templates)
        
        for template in templates:    
           template_keys = template.split("/")
           template_key  = template_keys[len(template_keys)-1]
-          template_data = configFiles.read(modules.templates + template)
+          template_data = configFiles.read(modules.rm3config.templates + template)
             
-          logging.debug(modules.templates+template)
+          logging.debug(modules.rm3config.templates+template)
             
           if "ERROR" in template_data:  data["templates"][template] = template_data
           else: 
@@ -268,17 +412,18 @@ def RmReadData_templates(selected=[]):
 
 #---------------------------
 
-
 def RmReadData(selected=[]):
-    '''Read all relevant data and create data structure'''
+    '''
+    Read all relevant data and create data structure
+    '''
 
     data    = {}
-    btnfile = ["buttons","queries","values","commands","url"]
+    btnfile = ["buttons","commands","url"]
     
     # if update required
     if configFiles.cache_update or "_api" not in configFiles.cache: 
     
-        data["devices"]       = RmReadData_devices(selected)
+        data["devices"]       = RmReadData_devices(selected,True,False)
         data["makros"]        = RmReadData_makros(selected)
         data["scenes"]        = RmReadData_scenes(selected)
         data["templates"]     = RmReadData_templates(selected)["templates"]
@@ -320,7 +465,7 @@ def addScene(scene,info):
     active_json  =  RmReadData_scenes(selected=[],remotes=False) # configFiles.read(modules.active_scenes)
     
     if scene in active_json: 					return("WARN: Scene " + scene + " already exists (active).")
-    if modules.ifexist(modules.remotes + "scene_" + scene):	return("WARN: Scene " + scene + " already exists (remotes).")
+    if modules.rm3json.ifexist(modules.rm3config.remotes + "scene_" + scene):	return("WARN: Scene " + scene + " already exists (remotes).")
     
     logging.info("addScene: add " + scene)
 
@@ -365,7 +510,7 @@ def addScene(scene,info):
             }
         }
     
-    try:                    configFiles.write(modules.remotes + "scene_" + scene,remote)
+    try:                    configFiles.write(modules.rm3config.remotes + "scene_" + scene,remote)
     except Exception as e:  return "ERROR: " + str(e)
 
     return ("OK: Scene " + scene + " added.")
@@ -401,7 +546,7 @@ def editScene(scene,info):
     active_json          = RmReadData_scenes(selected=[],remotes=False)
 
     # read remote layout definitions
-    remotes              = configFiles.read(modules.remotes + "scene_" + scene)
+    remotes              = configFiles.read(modules.rm3config.remotes + "scene_" + scene)
     if "ERROR" in remotes: return("ERROR: Scene " + scene + " doesn't exists (remotes).") 
     
     i = 0
@@ -422,7 +567,7 @@ def editScene(scene,info):
 #    except Exception as e: return "ERROR: could not write changes (active) - "+str(e)
 
     # write remote layout definition
-    try:                   configFiles.write(modules.remotes + "scene_"+ scene, remotes)
+    try:                   configFiles.write(modules.rm3config.remotes + "scene_"+ scene, remotes)
     except Exception as e: return "ERROR: could not write changes (remotes) - "+str(e)
     
     if i > 0: return "OK: Edited device parameters of "+scene+" ("+str(i)+" changes)"
@@ -440,15 +585,15 @@ def deleteScene(scene):
     
     if "ERROR" in active_json:                                     return("ERROR: Could not read ACTIVE_JSON (active).")
     if not scene in active_json:                                   return("ERROR: Scene " + scene + " doesn't exists (active).")
-    if not modules.ifexist(modules.remotes  + "scene_" + scene):   return("ERROR: Scene " + scene + " doesn't exists (remotes).") 
+    if not modules.rm3json.ifexist(modules.rm3config.remotes  + "scene_" + scene):   return("ERROR: Scene " + scene + " doesn't exists (remotes).") 
 
     del active_json[scene]        
     #configFiles.write(modules.active_scenes, active_json)
     RmWriteData_scenes(active_json)
 
     try:    
-      modules.delete(modules.remotes + "scene_" + scene)
-      if not modules.ifexist(modules.remotes + "scene_" + scene):  return "OK: Scene '" + scene + "' deleted."
+      modules.rm3json.delete(modules.rm3config.remotes + "scene_" + scene)
+      if not modules.rm3json.ifexist(modules.rm3config.remotes + "scene_" + scene):  return "OK: Scene '" + scene + "' deleted."
       else:                                                        return "ERROR: Could not delete scene '" + scene + "'"
     except Exception as e:                                         return "ERROR: Could not delete scene '" + scene + "': " + str(e)
     
@@ -462,16 +607,18 @@ def addDevice(device,device_data):
     add new device to config file and create command/remote files
     '''
     
-    interface     = device_data["api"]
+    logging.warning(str(device_data))
+    
+    interface,interface_dev = device_data["api"].split("_")
     config_remote = device_data["config_remote"]
     config_device = device_data["config_device"]
     
     ## Check if exists    
     active_json         = configFiles.read_status()
     
-    if device in active_json:                                                         return("WARN: Device " + device + " already exists (active).")
-    if modules.ifexist(modules.commands +interface+"/"+device_data["config_device"]): return("WARN: Device " + device + " already exists (devices).")
-    if modules.ifexist(modules.remotes  +device_data["config_remote"]):               return("WARN: Device " + device + " already exists (remotes).") 
+    if device in active_json:                                                                           return("WARN: Device " + device + " already exists (active).")
+    if modules.rm3json.ifexist(modules.rm3config.commands +interface+"/"+device_data["config_device"]): return("WARN: Device " + device + " already exists (devices).")
+    if modules.rm3json.ifexist(modules.rm3config.remotes  +device_data["config_remote"]):               return("WARN: Device " + device + " already exists (remotes).") 
     
     logging.info("addDevice: add " + device)
     
@@ -487,7 +634,7 @@ def addDevice(device,device_data):
         "config"           : {
                "device"        : device_data["config_device"],
                "remote"        : device_data["config_remote"],
-               "interface_api" : device_data["api"],
+               "interface_api" : interface,
                "interface_dev" : "default"
         	},
         "settings" : {
@@ -507,18 +654,14 @@ def addDevice(device,device_data):
         
     ## add to devices = button definitions
     buttons = {
-        "info" : "jc://remote/ - In this file the commands foreach button, queries, the query method is defined.",
+        "info" : "jc://remote/ - In this file the commands and buttons are defined.",
         "data" : {
             "description" : device_data["label"] + ": " + device_data["device"],
-            "method"      : deviceAPIs.api[device_data["api"]].method,
-            "interface"   : device_data["api"],
             "buttons"     : {},
-            "queries"     : {},
-            "commands"    : {},
-            "values"      : {}
+            "commands"    : {}
             }
         }
-    try:                   configFiles.write(modules.commands + interface+"/"+device_data["config_device"],buttons)
+    try:                   configFiles.write(modules.rm3config.commands + interface+"/"+device_data["config_device"],buttons)
     except Exception as e: return "ERROR: " + str(e)
 
     ## add to remotes = button layout
@@ -530,7 +673,7 @@ def addDevice(device,device_data):
            "display"     : {}
            }
         }    
-    try:                   configFiles.write(modules.remotes +device_data["config_remote"],remote)
+    try:                   configFiles.write(modules.rm3config.remotes +device_data["config_remote"],remote)
     except Exception as e: return "ERROR: " + str(e)
             
     return("OK: Device " + device + " added.")
@@ -543,16 +686,20 @@ def deleteDevice(device):
     delete device from json config file and delete device related files
     '''
     
-    devices              = {}
-    active_json          = configFiles.read_status()   
-    interface            = active_json[device]["config"]["interface_api"]
-    device_code          = active_json[device]["config"]["device"]  
-    device_remote        = active_json[device]["config"]["remote"]  
+    message               = ""
+    devices               = {}
+    active_json           = configFiles.read_status()   
+    interface             = active_json[device]["config"]["interface_api"]
+    device_code           = active_json[device]["config"]["device"]  
+    device_remote         = active_json[device]["config"]["remote"]  
+    file_device_remote    = modules.rm3config.remotes + device_remote
+    file_inferface_remote = modules.rm3config.commands + interface + "/" + device_code
+    
     
     if "ERROR" in active_json:                                                return("ERROR: Could not read ACTIVE_JSON (active).")
     if not device in active_json:                                             return("ERROR: Device " + device + " doesn't exists (active).")
-    if not modules.ifexist(modules.commands +interface+"/"+device_code):      return("ERROR: Device " + device + " doesn't exists (commands).")
-    if not modules.ifexist(modules.remotes  +device_remote):                  return("ERROR: Device " + device + " doesn't exists (remotes).") 
+    if not modules.rm3json.ifexist(modules.rm3config.commands +interface+"/"+device_code):      return("ERROR: Device " + device + " doesn't exists (commands).")
+    if not modules.rm3json.ifexist(modules.rm3config.remotes  +device_remote):                  return("ERROR: Device " + device + " doesn't exists (remotes).") 
 
     interface = active_json[device]["config"]["interface_api"]  ############# funtioniert nicht so richtig ...
     for entry in active_json:
@@ -563,16 +710,29 @@ def deleteDevice(device):
     configFiles.write_status(active_json,"deleteDevice")
 
     try:    
-      modules.delete(modules.remotes  + device_remote)
-      modules.delete(modules.commands + interface + "/" + device_code)
-      
-      if not modules.ifexist(modules.commands + interface + "/" + device_code) and not modules.ifexist(modules.remotes + device_remote):
-        return "OK: Device '" + device + "' deleted."
+      modules.rm3json.delete(file_device_remote)
+      modules.rm3json.delete(file_inferface_remote)
+            
+      if not modules.rm3json.ifexist(file_device_remote) and not modules.rm3json.ifexist(file_interface_remote):
+        message = "OK: Device '" + device + "' deleted."
       else:
-        return "ERROR: Could not delete device '" + device + "'"
+        message = "ERROR: Could not delete device '" + device + "'"
         
     except Exception as e:
-      return "ERROR: Could not delete device '" + device + "': " + str(e)
+      message = "ERROR: Could not delete device '" + device + "': " + str(e)
+
+    if "OK" in message:
+      try:
+        file_inferface_remote = file_inferface_remote.replace("/","**")
+        file_device_remote    = file_device_remote.replace("/","**")        
+        del configFiles.cache[file_inferface_remote]
+        del configFiles.cache[file_device_remote]
+        
+      except Exception as e:
+        message += "; ERROR: " + str(e)
+    
+      
+    return message
 
 
 #---------------------------------------
@@ -590,7 +750,7 @@ def editDevice(device,info):
     
 
     # read central config file
-    active_json          = RmReadData_devices(selected=[],remotes=False)
+    active_json          = RmReadData_devices(selected=[],remotes=False,config_only=False)
 
     logging.info(active_json)
 
@@ -599,11 +759,11 @@ def editDevice(device,info):
     device_remote        = active_json[device]["config"]["remote"]  
     
     # read command definition
-    commands             = configFiles.read(modules.commands +interface+"/"+device_code)
+    commands             = configFiles.read(modules.rm3config.commands +interface+"/"+device_code)
     if "ERROR" in commands: return("ERROR: Device " + device + " doesn't exists (commands).")
 
     # read remote layout definitions
-    remotes              = configFiles.read(modules.remotes + device_remote)
+    remotes              = configFiles.read(modules.rm3config.remotes + device_remote)
     if "ERROR" in remotes: return("ERROR: Device " + device + " doesn't exists (remotes).") 
     
     i = 0
@@ -627,11 +787,11 @@ def editDevice(device,info):
     except Exception as e:  return "ERROR: could not write changes (active) - "+str(e)
 
     # write command definition
-    try:                    configFiles.write(modules.commands +interface+"/"+device_code, commands)
+    try:                    configFiles.write(modules.rm3config.commands +interface+"/"+device_code, commands)
     except Exception as e:  return "ERROR: could not write changes (commands) - "+str(e)
 
     # write remote layout definition
-    try:                    configFiles.write(modules.remotes +device_remote, remotes)
+    try:                    configFiles.write(modules.rm3config.remotes +device_remote, remotes)
     except Exception as e:  return "ERROR: could not write changes (remotes) - "+str(e)
 
     if i > 0: return "OK: Edited device parameters of "+device+" ("+str(i)+" changes)"
@@ -651,7 +811,7 @@ def addCommand2Button(device,button,command):
     interface     = config[device]["config"]["interface_api"]
     device_code   = config[device]["config"]["device"]  
     device_remote = config[device]["config"]["remote"]  
-    data          = configFiles.read(modules.commands+interface+"/"+device_code)
+    data          = configFiles.read(modules.rm3config.commands+interface+"/"+device_code)
     
     if "data" in data:
         if button in data["data"]["buttons"].keys():
@@ -661,7 +821,7 @@ def addCommand2Button(device,button,command):
             command = command.replace("b'","")
             command = command.replace("'","")
             data["data"]["buttons"][button] = command
-            configFiles.write(modules.commands+interface+"/"+device_code,data)
+            configFiles.write(modules.rm3config.commands+interface+"/"+device_code,data)
             return "OK: Button '" + device + "_" + button + "' recorded and saved: " + str(command)
     else:
         return "ERROR: Device '" + device + "' does not exists."
@@ -677,7 +837,7 @@ def addButton(device,button):
     interface     = config[device]["config"]["interface_api"]
     device_code   = config[device]["config"]["device"]  
     device_remote = config[device]["config"]["remote"]  
-    data          = configFiles.read(modules.remotes+device_remote)
+    data          = configFiles.read(modules.rm3config.remotes+device_remote)
 #    data        = configFiles.read(modules.remotes+interface+"/"+device_code)
     
     if "data" in data:
@@ -687,7 +847,7 @@ def addButton(device,button):
             if button == "DOT": button = "."
             data["data"]["remote"].append(button)
             #configFiles.write(modules.remotes+interface+"/"+device_code,data)
-            configFiles.write(modules.remotes+device_remote,data)
+            configFiles.write(modules.rm3config.remotes+device_remote,data)
             return "OK: Button '" + device + "_" + button + "' added."
     else:
         return "ERROR: Device '" + device + "' does not exists."        
@@ -702,13 +862,13 @@ def deleteCmd(device, button):
     config      = configFiles.read_status()
     interface   = config[device]["config"]["interface_api"]  
     device_code = config[device]["config"]["device"]  
-    data        = configFiles.read(modules.commands+interface+"/"+device_code)
+    data        = configFiles.read(modules.rm3config.commands+interface+"/"+device_code)
     
     if data["data"]:
         if button in data["data"]["buttons"].keys():
         
             data["data"]["buttons"].pop(button,None)
-            data = configFiles.write(modules.commands+interface+"/"+device_code,data)
+            data = configFiles.write(modules.rm3config.commands+interface+"/"+device_code,data)
             return "OK: Command '" + device + "_" + button + "' deleted."
         else:
             return "ERROR: Command '" + device + "_" + button + "' does not exist."
@@ -728,13 +888,13 @@ def deleteButton(device, button_number):
     interface     = config[device]["config"]["interface_api"]
     device_code   = config[device]["config"]["device"]  
     device_remote = config[device]["config"]["remote"]  
-    data          = configFiles.read(modules.remotes+device_remote)
+    data          = configFiles.read(modules.rm3config.remotes+device_remote)
 #    data         = configFiles.read(modules.remotes+interface+"/"+device_code)
     
     if data["data"] and data["data"]["remote"]:
         if buttonNumber >= 0 and buttonNumber < len(data["data"]["remote"]):
             data["data"]["remote"].pop(buttonNumber)
-            data = configFiles.write(modules.remotes+device_remote,data)
+            data = configFiles.write(modules.rm3config.remotes+device_remote,data)
             return "OK: Button '" + device + " [" + str(buttonNumber) + "] deleted."
         else:
             return "ERROR: Button '" + device + " [" + str(buttonNumber) + "] does not exist."
@@ -778,12 +938,12 @@ def addTemplate(device,template):
     add / overwrite remote layout definition by template
     '''
 
-    templates     = configFiles.read(modules.templates + template)
+    templates     = configFiles.read(modules.rm3config.templates + template)
     config        = configFiles.read_status()
     interface     = config[device]["config"]["interface_api"]
     device_code   = config[device]["config"]["device"]
     device_remote = config[device]["config"]["remote"]  
-    data          = configFiles.read(modules.remotes+device_remote)
+    data          = configFiles.read(modules.rm3config.remotes+device_remote)
 
     # check if error
     if "data" not in data.keys():  return "ERROR: Device '" + device + "' does not exists."
@@ -793,7 +953,7 @@ def addTemplate(device,template):
 
         if "data" in templates:    data["data"]["remote"]           = templates["data"]["remote"]
         else:                      data["data"]["remote"]           = templates[template]["remote"]
-        configFiles.write(modules.remotes+device_remote,data)
+        configFiles.write(modules.rm3config.remotes+device_remote,data)
         return "OK: Template '" + template + "' added to '" + device + "'."
             
     # overwrite layout from template
@@ -802,7 +962,7 @@ def addTemplate(device,template):
         if "data" in templates:    data["data"]["remote"]           = templates["data"]["remote"]
         else:                      data["data"]["remote"]           = templates[template]["remote"]
 
-        configFiles.write(modules.remotes+device_remote,data)
+        configFiles.write(modules.rm3config.remotes+device_remote,data)
         return "OK: Remote definition of '" + device + "' overwritten by template '" + template + "'."
         
     # template doesn't exist
@@ -986,7 +1146,7 @@ def resetStatus():
     
       if status[key]["config"]["interface_api"] != "":     
         device_code = configFiles.translate_device(key)
-        device      = configFiles.read(modules.commands + status[key]["config"]["interface_api"] + "/" + device_code)
+        device      = configFiles.read(modules.rm3config.commands + status[key]["config"]["interface_api"] + "/" + device_code)
         logging.info("Reset Device: " + device_code + "/" + status[key]["config"]["interface_api"])
       
         if device["data"]["method"] != "query":
@@ -1009,7 +1169,7 @@ def resetAudio():
       if status[key]["config"]["interface_api"] != "":     
       
         device_code = configFiles.translate_device(key)
-        device      = configFiles.read(modules.commands + status[key]["config"]["interface_api"] + "/" + device_code)
+        device      = configFiles.read(modules.rm3config.commands + status[key]["config"]["interface_api"] + "/" + device_code)
         logging.info("Reset Device: " + device_code + "/" + status[key]["config"]["interface_api"])
       
         if device["data"]["method"] != "query":      
@@ -1052,7 +1212,8 @@ def devicesGetStatus(data,readAPI=False):
     '''
 
     #devices = configFiles.read_status()
-    devices = RmReadData_devices()
+    devices = RmReadData_devices([],True,False)
+    config  = RmReadData_devicesConfig()
    
     # set reload status
     if readAPI == True: 
@@ -1062,22 +1223,25 @@ def devicesGetStatus(data,readAPI=False):
     
     # read status of all devices
     for device in devices:
+
+        if device == "default":
+          continue
     
         if "status" not in devices[device]:
            devices[device]["status"] = {}
            
-        if device in data and "interface" in data[device] and "method" in data[device]["interface"]:
+        if device in data and device in config and "interface" in config[device] and "method" in config[device]["interface"]:
           
-          interface     = data[device]["config"]["interface_api"]         
-          api_dev       = data[device]["config"]["interface_api"] + "_" + data[device]["config"]["interface_dev"]
-          method        = data[device]["interface"]["method"]
+          interface     = config[device]["interface"]["interface_api"]         
+          api_dev       = config[device]["interface"]["interface_api"] + "_" + config[device]["interface"]["interface_dev"]
+          method        = config[device]["interface"]["method"]
           
           # get status values from config files, if connected
           if api_dev in deviceAPIs.api and deviceAPIs.api[api_dev].status == "Connected":
 
               # preset values
-              if method != "query" and "commands" in devices[device]["interface"]:
-                 for value in devices[device]["interface"]["commands"]:
+              if method != "query":
+                 for value in config[device]["commands"]["definition"]:
                     if not value in devices[device]["status"]:
                        devices[device]["status"][value] = ""
                     
@@ -1087,8 +1251,8 @@ def devicesGetStatus(data,readAPI=False):
               
               # request update for devices with API query
               if method == "query" and readAPI == True:
-                queueQuery.add2queue ([0.1])                                                            # wait a few seconds before queries
-                queueQuery.add2queue ([[interface,device,data[device]["interface"]["query_list"],""]])  # add querylist per device
+                queueQuery.add2queue ([0.1])                                                      # wait a few seconds before queries
+                queueQuery.add2queue ([[interface,device,config[device]["commands"]["get"],""]])  # add querylist per device
               
     # set reload status
     if readAPI == True: 
@@ -1155,23 +1319,6 @@ def setButtonValue(device,button,state):
         logging.warn("setButtonValue: Wrong method ("+method+","+device+","+button+")")
         return "ERROR: Wrong method ("+method+")"
 
-
-#-------------------------------------------------
-# Initialize cache, device API and queues
-#-------------------------------------------------
-
-configFiles       = modules.configCache("configFiles")
-configFiles.start()
-
-deviceAPIs        = interfaces.connect(configFiles)
-deviceAPIs.start()
-
-queueSend         = modules.queueApiCalls("queueSend", "send", deviceAPIs)
-queueSend.start()
-
-queueQuery        = modules.queueApiCalls("queueQuery","query",deviceAPIs)
-queueQuery.config = configFiles
-queueQuery.start()
 
 #-------------------------------------------------
 # EOF

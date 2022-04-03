@@ -8,12 +8,20 @@ import logging, time
 import modules.rm3json                 as rm3json
 import modules.rm3config               as rm3config
 import modules.rm3ping                 as rm3ping
+import modules.rm3stage                as rm3stage
 
 import interfaces.magichome.magichome  as device
 
 #-------------------------------------------------
 # API-class
 #-------------------------------------------------
+
+######### to be solved:
+## Error during requesting data: [Errno 9] Bad file descriptor
+## -> def get_info()
+## And other Error
+## ERROR MAGIC-HOME - query*: list index out of range | self.api.jc.get_info('power')
+
 
 shorten_info_to = rm3config.shorten_info_to
 
@@ -30,7 +38,7 @@ class APIcontrol():
        '''
        
        self.api_name        = api_name       
-       self.api_description = "Magic Home (implementation in progress)"
+       self.api_description = "API for LED via Magic Home"
        self.not_connected   = "ERROR: Device not connected ("+api_name+"/"+device+")."
        self.status          = "Start"
        self.method          = "query"
@@ -38,14 +46,17 @@ class APIcontrol():
        self.count_error     = 0
        self.count_success   = 0
        self.log_command     = log_command
+
+       self.power_status    = "STARTING"
+       self.brightness      = 1      
        
        self.api_config      = device_config
        self.api_device      = device
 
-       logging.info("_API-INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
-       
-       self.connect()
-            
+       self.logging = logging.getLogger("api.MAGIC")
+       self.logging.setLevel = rm3stage.log_set2level
+       self.logging.info("_INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
+                   
    #-------------------------------------------------
    
    def connect(self):
@@ -56,7 +67,7 @@ class APIcontrol():
        connect = rm3ping.ping(self.api_config["IPAddress"])
        if not connect:
          self.status = self.not_connected + " ... PING"
-         logging.error(self.status)       
+         self.logging.warning(self.status)       
          return self.status
 
        self.status               = "Connected"
@@ -71,11 +82,13 @@ class APIcontrol():
 
        except Exception as e:
            self.status = self.not_connected + " ... CONNECT " + str(e)
-           #self.api.get_status()           
            return self.status
+           
+#       if self.api.connected == False:
+#          self.status = self.not_connected + " ... API-CONNECT " + self.api.connection_status
 
        try:
-           self.api.jc               = APIaddOn(self.api)
+           self.api.jc               = APIaddOn(self.api,self.logging)
            self.api.jc.status        = self.status
            self.api.jc.not_connected = self.not_connected
           
@@ -89,13 +102,24 @@ class APIcontrol():
 
    #-------------------------------------------------
    
+   def reconnect(self):
+       '''
+       close socket & reconnect
+       '''
+       if self.api.s:
+         self.api.s.close()
+       self.connect()
+       
+   
+   #-------------------------------------------------
+   
    def wait_if_working(self):
        '''
        Some devices run into problems, if send several requests at the same time
        '''
        
        while self.working:
-         logging.info(".")
+         self.logging.debug(".")
          time.sleep(0.2)
        return
        
@@ -121,12 +145,12 @@ class APIcontrol():
        self.working = True
 
        if self.status == "Connected":
-         if self.log_command: logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+         if self.log_command: self.logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
 
          try:
            command = "self.api."+command
            result = eval(command)
-           logging.debug(str(result))
+           self.logging.debug(str(result))
 
            if "error" in result:
              self.working = False
@@ -162,30 +186,33 @@ class APIcontrol():
        else:               command_param = [command]
 
        if self.status == "Connected":
-         if self.log_command: logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+         if self.log_command: self.logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
 
          try:
            command = "self.api."+command_param[0]
            result = eval(command)
-           logging.debug(str(result))
-           
-           if "error" in result:      
-             if "message" in result["error"]: msg = str(result["error"]["message"])
-             else:                            msg = str(result["error"])
-             self.working = False
-             return "ERROR "+self.api_name+" - " + msg
-             
-           elif not "result" in result: 
-             self.working = False
-             return "ERROR "+self.api_name+" - unexpected result format."
-           
-           else:
-             if len(command_param) > 1: result_param = eval("result['result']"+command_param[1])
-             else:                      result_param = str(result['result'])
+           self.logging.debug(str(result))
            
          except Exception as e:
            self.working = False
            return "ERROR "+self.api_name+" - query*: " + str(e) + " | " + command
+
+         if "error" in result:      
+           if "Errno 9" in result["error"]: self.reconnect()
+           if "message" in result["error"]: msg = str(result["error"]["message"])
+           else:                            msg = str(result["error"])
+           
+           self.working = False
+           return "ERROR "+self.api_name+" - " + msg
+             
+         elif not "result" in result: 
+           self.working = False
+           return "ERROR "+self.api_name+" - unexpected result format."
+           
+         else:
+           if len(command_param) > 1: result_param = eval("result['result']"+command_param[1])
+           else:                      result_param = str(result['result'])
+           
        else:
            self.working = False
            return "ERROR "+self.api_name+": Not connected"
@@ -245,14 +272,14 @@ class APIaddOn():
    did not found a way to increase or decrease volume directly
    '''
 
-   def __init__(self,api):
+   def __init__(self,api,logger):
    
       self.addon          = "jc://addon/magic-home/"
       self.api            = api
       self.volume         = 0
       self.cache_metadata = {}             # cache metadata to reduce api requests
       self.cache_time     = time.time()    # init cache time
-      self.cache_wait     = 2              # time in seconds how much time should be between two api metadata requests
+      self.cache_wait     = 5              # time in seconds how much time should be between two api metadata requests
       self.brightness     = 1
       self.last_r         = 0
       self.last_g         = 0
@@ -261,10 +288,10 @@ class APIaddOn():
       self.last_preset    = 37
       self.power_status   = "OFF"
       self.mode           = "COLOR"
+      self.logging        = logger
       
       self.last_request_time   = time.time()
       self.last_request_data   = {}
-      self.cache_wait          = 1
       
    #-------------------------------------------------
 
@@ -282,7 +309,7 @@ class APIaddOn():
           return { "result", "turn_on" }
          
        except Exception as e:
-          logging.error("Error during turn on: "+str(e))
+          self.logging.error("Error during turn on: "+str(e))
           self.power_status = "ERROR"
           return { "error", e }
               
@@ -305,7 +332,7 @@ class APIaddOn():
           return { "result", "turn_off" }
          
        except Exception as e:
-          logging.error("Error during turn off: "+str(e))
+          self.logging.error("Error during turn off: "+str(e))
           self.power_status = "ERROR"
           return { "error", e }
        
@@ -315,12 +342,12 @@ class APIaddOn():
    
    #-------------------------------------------------
    
-   def set_color(self, r, g="", b=""):
+   def set_color(self, r, g=0, b=0):
      '''
      set color including brightness
      '''
      
-     if g == "" and b == "":
+     if g == 0 and b == 0 and ":" in str(r):
        data = r.split(":")
        r    = int(data[0])
        g    = int(data[1])
@@ -331,6 +358,7 @@ class APIaddOn():
        self.last_r = r
        self.last_g = g
        self.last_b = b
+       
        r = int(r*self.brightness)
        g = int(g*self.brightness)
        b = int(b*self.brightness)
@@ -342,7 +370,7 @@ class APIaddOn():
           return { "result", "set_color" }
          
        except Exception as e:
-          logging.error("Error during setting color: "+str(e))
+          self.logging.error("Error during setting color: "+str(e))
           self.power_status = "ERROR"
           return { "error", e }
 
@@ -367,7 +395,7 @@ class APIaddOn():
           return { "result", "preset" }
          
        except Exception as e:
-          logging.error("Error during setting preset: "+str(e))
+          self.logging.error("Error during setting preset: "+str(e))
           self.power_status = "ERROR"
           return { "error", e }
        
@@ -390,7 +418,7 @@ class APIaddOn():
             return { "result", "speed" }
             
          except Exception as e:
-            logging.error("Error during setting preset: "+str(e))
+            self.logging.error("Error during setting preset: "+str(e))
             return { "error", e }
 
      else:
@@ -421,7 +449,7 @@ class APIaddOn():
             return { "result", "brightness" }
             
          except Exception as e:
-            logging.error("Error during setting brightness: "+str(e))
+            self.logging.error("Error during setting brightness: "+str(e))
             self.power_status = "ERROR"
             return { "error", e }
               
@@ -430,7 +458,7 @@ class APIaddOn():
    
    #-------------------------------------------------
    
-   def decode_status(self,raw_status):
+   def decode_status(self,raw_status_input):
       '''
       decode device string for status, e.g. 
 
@@ -455,39 +483,51 @@ class APIaddOn():
 	b'\x813#6#\x1f\x00\x00\x00\x00\n\x00\x0fh'	SEND PRESET
         
         -> App is able to decode ??
+        -> API answers seem to be not stable, partly not a correct byte code
       '''
-      status = {}
-      
-      if "$" in raw_status:  status["power"] = "OFF"
-      else:                  status["power"] = "ON"
-      if "a#" in raw_status: status["mode"]  = "COLOR"
-      else:                  status["mode"]  = "PRESET"
+      dec_status = {}
+      raw_status = str(raw_status_input)
 
-      data = raw_status.split("#")
+      if "$" in raw_status:  dec_status["power"] = "OFF"
+      else:                  dec_status["power"] = "ON"
+      if "a#" in raw_status: dec_status["mode"]  = "COLOR"
+      else:                  dec_status["mode"]  = "PRESET"
 
-      if status["power"] == "ON":  parts = data[2].split("\\")
-      else:                        parts = data[1].split("\\")
-      
+      if "#" in raw_status:
+        data = raw_status.split("#")
+      else:
+        self.logging.error("Error decoding unkown raw status: "+str(raw_status))
+        dec_status = {
+          "mode" : "unknown",
+          "rgb"  : "unknown",
+          "RGB"  : "unknown",
+          "set"  : "unknown"
+          }
+        return dec_status
+
       try:
-        if status["mode"] == "COLOR":
-           status["rgb"] = "#"+parts[2][1:3]+parts[3][1:3]+parts[4][1:3]
-           status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16)} #, "x" : int(parts[5][1:3],16) }
-           status["set"] = "." # {"a" : int(parts[7][1:3],16), "b" : int(parts[8][1:3],16), "c" : int(parts[9][1:3],16) }
+        if dec_status["power"] == "ON":  parts = data[2].split("\\")
+        else:                            parts = data[1].split("\\")
+      
+        if dec_status["mode"] == "COLOR":
+           dec_status["rgb"] = "#"+parts[2][1:3]+parts[3][1:3]+parts[4][1:3]
+           dec_status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16)} #, "x" : int(parts[5][1:3],16) }
+           dec_status["set"] = "." # {"a" : int(parts[7][1:3],16), "b" : int(parts[8][1:3],16), "c" : int(parts[9][1:3],16) }
         else:
-           status["rgb"] = "#"+parts[2][1:3]+parts[3][1:3]+parts[4][1:3]
-           status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16)} #, "x" : int(parts[5][1:3],16) }
-           status["set"] = "." #{"a" : int(parts[7][1:3],16), "b" : int(parts[8][1:3],16) }
+           dec_status["rgb"] = "#"+parts[2][1:3]+parts[3][1:3]+parts[4][1:3]
+           dec_status["RGB"] = {"r" : int(parts[2][1:3],16), "g" : int(parts[3][1:3],16), "b" : int(parts[4][1:3],16)} #, "x" : int(parts[5][1:3],16) }
+           dec_status["set"] = "." #{"a" : int(parts[7][1:3],16), "b" : int(parts[8][1:3],16) }
            
       except Exception as e:
-        logging.error("Error decoding output: "+str(e))
-        logging.debug("... "+str(raw_status))
-        logging.error("... "+str(parts))
+        self.logging.error("Error decoding output: "+str(e))
+        self.logging.debug("... "+str(raw_status))
+        self.logging.error("... "+str(parts))
 
-        status["rgb"] = "#000000"
-        status["RGB"] = {"r" : 0, "g" : 0, "b" : 0 }
-        status["set"] = "."
+        dec_status["rgb"] = "#000000"
+        dec_status["RGB"] = {"r" : 0, "g" : 0, "b" : 0 }
+        dec_status["set"] = "."
       
-      return status
+      return dec_status
    
    
    #-------------------------------------------------
@@ -497,44 +537,50 @@ class APIaddOn():
       return data
       ''' 
 
+      status_info = {}
+      self.logging.debug("..."+param)
+      
       if self.status == "Connected":      
 
-        logging.debug(str(self.last_request_time)+"__"+str(time.time()))
-        
-        if self.last_request_time < time.time() - self.cache_wait:
+        self.logging.debug(str(self.last_request_time)+"__"+str(time.time()))        
+        if not self.last_request_data or self.last_request_data == {} or self.last_request_time < time.time() - self.cache_wait:
         
            try:
               raw_status = self.api.get_status()
               self.power_status = "ON"
+              status_info["raw_status"] = str(raw_status)        
             
            except Exception as e:
-              logging.error("Error during requesting data: "+str(e))
-              return { "error" : "error during requesting data: "+str(e) }	
-#              self.power_status = "ERROR"
-#              return { "error", e }
+              self.logging.error("Error requesting data: "+str(e))
+              return { "error" : "error requesting data: "+str(e) }	
               
-           self.last_request_data = raw_status
-           self.last_request_time = time.time()
-           
-        else:
-           raw_status = self.last_request_data
+           try:
+              self.logging.debug("RAW STATUS: "+str(raw_status))
+              status_info  = self.decode_status(raw_status)
+              self.last_request_data = status_info
 
-        raw_status = str(raw_status)        
-        brightness = str(round(self.brightness*100))+"%"
-        color_rgb  = "("+str(self.last_r)+","+str(self.last_g)+","+str(self.last_b)+")"
-        status     = self.decode_status(raw_status)
-        status_str = str(status)
-        
-        if param == "brightness":      return { "result": brightness }
-        elif param == "color_rgb":     return { "result": color_rgb }
-        elif param == "color_rgb_raw": return { "result": status["rgb"] }
-        elif param == "power":         return { "result": status["power"] }
-        elif param == "mode":          return { "result": status["mode"] }
-        elif param == "preset":        return { "result": self.last_preset }
-        elif param == "preset_speed":  return { "result": self.last_speed }
-        elif param == "raw_status":    return { "result": raw_status }
-        else:                          return { "error" : "unknown tag '"+param+"'" }
-        
+           except Exception as e:
+              self.logging.error("Error decoding data: "+str(e))
+              return { "error" : "error decoding data: "+str(e) }	
+
+           self.last_request_raw_data = raw_status
+           self.last_request_time     = time.time()           
+
+           status_info["brightness"] = str(round(self.brightness*100))
+           status_info["color_rgb"]  = "("+str(self.last_r)+","+str(self.last_g)+","+str(self.last_b)+")"
+           status_info["rgb"]        = status_info["color_rgb"]
+           status_info["preset"]     = self.last_preset
+           status_info["speed"]      = self.last_speed
+           status_info["raw_status"] = str(raw_status)
+           self.last_request_data    = status_info
+
+        else:
+            status_info = self.last_request_data
+            self.logging.debug("USE CACHE: "+str(status_info))
+                    
+        if param in status_info:    return { "result": status_info[param] }
+        else:                       return { "error" : "unknown tag '"+param+"'" }
+
         return { "result" : "get_info" }
 
       else:
@@ -545,8 +591,8 @@ class APIaddOn():
    def test(self):
    
      if self.status == "Connected":
-       logging.info("MAGIC-HOME: ..... TEST TEST TEST TEST TEST TEST TEST TEST")
-       logging.info(str(self.api.get_status()))
+       self.logging.info("MAGIC-HOME: ..... TEST TEST TEST TEST TEST TEST TEST TEST")
+       self.logging.info(str(self.api.get_status()))
 
        self.api.turn_on()
        time.sleep(0.3)
@@ -575,7 +621,7 @@ class APIaddOn():
             return { "result", "preset" }
             
          except Exception as e:
-            logging.error("Error during testing: "+str(e))
+            self.logging.error("Error during testing: "+str(e))
             self.power_status = "ERROR"
             return { "error", e }
 

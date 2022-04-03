@@ -38,47 +38,34 @@
         },
         "commands": {
             "mute": {
-                "command": "",
-                "type": "enum"
+                "type": "enum",
+                "values": [
+                    "ON",
+                    "OFF"
+                ]
             },
             "power": {
-                "command": "",
-                "type": "enum"
+                "type": "enum",
+                "values": [
+                    "ON",
+                    "OFF"
+                ]
             },
             "radiotv": {
-                "command": "",
-                "type": "enum"
+                "type": "enum",
+                "values": [
+                    "RADIO",
+                    "TV"
+                ]
             },
             "vol": {
-                "command": "",
-                "type": "integer"
+                "type": "integer",
+                "values": {
+                    "max": 17,
+                    "min": 0
+                }
             }
         },
-        "description": "TOPFIELD CBP-2001CI+",
-        "method": "record",
-        "queries": {
-            "mute": "",
-            "power": "",
-            "radiotv": "",
-            "vol": ""
-        },
-        "values": {
-            "mute": [
-                "ON",
-                "OFF"
-            ],
-            "power": [
-                "ON",
-                "OFF"
-            ],
-            "radiotv": [
-                "RADIO",
-                "TV"
-            ],
-            "vol": {
-                "max": 17,
-                "min": 0
-            }
-        }
+        "description": "TOPFIELD CBP-2001CI+"
     }
 }

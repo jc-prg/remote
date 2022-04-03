@@ -25,7 +25,9 @@
   .display-element.h1w4,    .display-element.h2w4			{ width : 142px; }
   .display-element.h3w2,    .display-element.h4w2			{ width : 142px; }
 
+  #audio1         	{ right  : 145px; }
   #audio2         	{ right  : 145px; }
+
   .remote         	{ width  : 335px; }
   .channel-entry 	{ width  : 163px; }
   .rm-slider-button	{ width  : 320px; }

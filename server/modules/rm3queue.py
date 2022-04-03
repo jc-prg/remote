@@ -8,6 +8,7 @@ import logging, time, datetime, threading
 
 import modules
 import modules.rm3config     as rm3config
+import modules.rm3stage      as rm3stage
 
 
 #-------------------------------------------------
@@ -35,21 +36,22 @@ class queueApiCalls (threading.Thread):
        self.exec_times     = {}
        self.avarage_exec   = {}
 
+       self.logging = logging.getLogger("queue")
+       self.logging.setLevel = rm3stage.log_set2level
+            
     #------------------       
        
     def run(self):
        '''loop running in the background'''
        
-       logging.info( "Starting " + self.name )
+       self.logging.info( "Starting " + self.name )
        count = 0
        while not self.stopProcess:
-       
-           logging.debug(".")
-           
+                  
            if len(self.queue) > 0:
              command = self.queue.pop(0)
              self.execute(command)
-             #logging.info("."+command[1]+command[2])
+             #self.logging.info("."+command[1]+command[2])
              
            else:
              time.sleep(self.wait)
@@ -57,12 +59,12 @@ class queueApiCalls (threading.Thread):
              # send life sign from time to time
              if count * self.wait > 360:
                 tt = time.time()
-                logging.warning("Queue running "+str(tt))
+                self.logging.info("Queue running "+str(tt))
                 count = 0
 
            count += 1             
              
-       logging.info( "Exiting " + self.name )
+       self.logging.info( "Exiting " + self.name )
        
     #------------------       
     
@@ -86,18 +88,18 @@ class queueApiCalls (threading.Thread):
        
           interface,device,button,state,request_time = command
           
-          logging.debug("Queue: Execute "+self.name+" - "+str(interface)+":"+str(device)+":"+str(button)+":"+str(state)+":"+str(request_time))
-          logging.debug(str(command))
+          self.logging.debug("Queue: Execute "+self.name+" - "+str(interface)+":"+str(device)+":"+str(button)+":"+str(state)+":"+str(request_time))
+          self.logging.debug(str(command))
           
           if self.query_send == "send":   
              try:
                 result = self.device_apis.send(interface,device,button,state)
                 self.execution_time(device,request_time,time.time())
+                self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')                
 
              except Exception as e:
                 result = "ERROR queue query_list (send,"+interface+","+device+"): " + str(e)
-                logging.error(result)
-
+                self.logging.error(result)
 
           elif self.query_send == "query":
              result = ""
@@ -110,11 +112,10 @@ class queueApiCalls (threading.Thread):
                    self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)') 
                    devices[device]["status"]["api-last-query"] = self.last_query_time
                    devices[device]["status"]["api-status"]     = self.device_apis.api[self.device_apis.api_device(device)].status
-                   #devices[device]["status"]["power"]          = self.device_apis.api[self.device_apis.api_device(device)].power_status()
 
                 except Exception as e:
-                   result = "ERROR queue query_list (query,"+interface+","+device+","+value+"): " + str(e)             
-                   logging.error(result)
+                   result = "ERROR queue query_list (query,"+str(interface)+","+str(device)+","+str(value)+"): " + str(e)             
+                   self.logging.error(result)
 
                 if not "ERROR" in str(result):  devices[device]["status"][value] = str(result)
                 else:                           devices[device]["status"][value] = "Error"
@@ -145,7 +146,7 @@ class queueApiCalls (threading.Thread):
        add single command or list of commands to queue
        '''
        
-       logging.debug("Add to queue "+self.name+": "+str(commands))
+       self.logging.debug("Add to queue "+self.name+": "+str(commands))
        
        # set reload status
        if "START_OF_RELOAD" in str(commands): self.reload = True
@@ -196,7 +197,7 @@ class queueApiCalls (threading.Thread):
         self.avarage_exec[device] = total / len(self.exec_times[device])
         avarage_diff              = self.avarage_exec[device] - avarage_start
         
-        logging.info("...... EXEC TIME '"+device+"' avarage: " + str(round(self.avarage_exec[device],avarage_round)) + " / last " + str(round(duration,avarage_round)) + " / change " + str(round(avarage_diff,avarage_round)))
+        self.logging.info("...... EXEC TIME '"+device+"' avarage: " + str(round(self.avarage_exec[device],avarage_round)) + " / last " + str(round(duration,avarage_round)) + " / change " + str(round(avarage_diff,avarage_round)))
         
         
 #-------------------------------------------------

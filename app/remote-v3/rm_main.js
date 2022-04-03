@@ -2,6 +2,7 @@
 // jc://remote/
 //--------------------------------
 /* INDEX:
+function remoteMainMenu (cookie_erase=true)
 function remoteInit (first_load=true)
 function remoteFirstLoad_load()
 function remoteFirstLoad(data)
@@ -44,17 +45,27 @@ remoteInit(first_load=true);
 // initiale settings and load menus
 //----------------------------------
 
-function remoteInit (first_load=true) {
+function remoteMainMenu (cookie_erase=true) {
 
+	rm3settings.hide();
 	setNavTitle(appTitle);
-
+	showRemoteInBackground(1);
+	if (cookie_erase) { appCookie.erase('remote'); }
+	
 	setTextById("menuItems","");
 	setTextById("frame1","");
 	setTextById("frame2","");
 	setTextById("frame3","");
 	setTextById("frame4","");
 	setTextById("frame5","");
-		
+
+	remoteFirstLoad_load();	
+	}
+
+
+function remoteInit (first_load=true) {
+
+	remoteMainMenu (cookie_erase=false);
 	if (first_load) {
 		showRemoteInBackground(1);			// show start screen
 		setTextById("frame4","<center>Loading data ...</center>");
@@ -128,17 +139,21 @@ function remoteReload(data) {
 //--------------------------------
 
 function remoteSetSliderDevice(data) {
-	main_audio 	= data["CONFIG"]["main-audio"];
-	if (data["DATA"]["devices"][main_audio]["interface"]["values"]["vol"]) {
-		min     = data["DATA"]["devices"][main_audio]["interface"]["values"]["vol"]["min"];
-		max     = data["DATA"]["devices"][main_audio]["interface"]["values"]["vol"]["max"];		
+	main_audio = data["CONFIG"]["main-audio"];
+	var values = data["CONFIG"]["devices"][main_audio]["commands"]["definition"]["vol"]["values"];
+	var min    = 0;
+	var max    = 100;
+	         
+	if (values["min"] >= 0 && values["max"] > 0) {
+		min     = values["min"];
+		max     = values["max"];
 		}
 	else {
 		min    = 0;
 		max    = 100;
 		console.error("Min and max values not defined, set to 0..100!");
 		}
-	label      	= data["DATA"]["devices"][main_audio]["label"];
+	label      	= data["DATA"]["devices"][main_audio]["settings"]["label"];
 	
 	rm3slider.init(min,max,label+" ("+main_audio+")");
 	rm3slider.device = main_audio;
@@ -166,7 +181,7 @@ function remoteDropDown(data) {
 	rm3menu.init(        data );	// load data to class
 	rm3menu.add_scenes(  data["DATA"]["scenes"] );
 	rm3menu.add_devices( data["DATA"]["devices"] );	
-	rm3menu.add_script( "rm3settings.onoff();rm3settings.mode='';", 	lang("SETTINGS"));
+	rm3menu.add_script( "rm3settings.onoff();", 				lang("SETTINGS"));
 	rm3menu.add_script( "remoteToggleEditMode();", 			lang("MODE_EDIT") + edit_on );
 	rm3menu.add_script( "rm3settings.button_deact(true);remoteInit();",	deact_link);        
 	//rm3menu.add_script( "remoteForceReload(true);", "Force Reload");
@@ -177,16 +192,29 @@ function remoteDropDown(data) {
 
 function remoteToggleEditMode() {
 	var settings = rm3settings.active;
-	
-	rm3remotes.remoteToggleEditMode();
+
+	if (settings) {
+		rm3remotes.remoteToggleEditMode();
+		rm3start.remoteToggleEditMode();
+		rm3settings.remoteToggleEditMode();
+		if(!startActive)	{ rm3settings.onoff(); }
+		else			{ remoteStartMenu_load(); }
+		}
+	else if (startActive) {
+		rm3remotes.remoteToggleEditMode();
+		rm3settings.remoteToggleEditMode();
+		rm3start.remoteToggleEditMode();
+		remoteStartMenu_load();
+		}
+	else {
+		rm3start.remoteToggleEditMode();
+		rm3settings.remoteToggleEditMode();
+		rm3remotes.remoteToggleEditMode();
+		}
+
 	rm3menu.remoteToggleEditMode();
-	rm3start.remoteToggleEditMode();
-	rm3settings.remoteToggleEditMode();
-	
 	remoteDropDown_load();
-	if (startActive) { remoteStartMenu_load(); }
-	
-	if (settings) {rm3settings.onoff();}  // when settings -> don't switch back to remotes (workaround)
+
 	}
 
 

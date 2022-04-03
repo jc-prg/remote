@@ -1,6 +1,5 @@
 {
     "data": {
-	"description" : "API to connect to several devices from ONKYO",
 	"buttons" : {
         	"on"      	: "system-power=on",
         	"off"     	: "system-power=off",
@@ -10,22 +9,30 @@
         	"mute-off"	: "audio-muting=off",
         	"mute-on"	: "audio-muting=on"
        	},
-	"commands" :{
-       		"vol"	: { "command" : "master-volume=", "type" : "integer" },
-       		"power" : { "command" : "system-power=",  "type" : "enum" },
-       		"mute"  : { "command" : "audio-muting=",  "type" : "enum" }
+	"commands" : {
+       	"vol"	: { 
+       		"get"		: "master-volume=query",
+       		"set"		: "master-volume={DATA}",
+       		"type"		: "integer",
+       		"param"	: [ "level-up", "level-down" ],
+       		"values"	: { "min" : 0, "max" : 70 }
+       		},
+       	"power" : { 
+       		"get"		: "system-power=query",
+       		"set"		: "system-power={DATA}",
+       		"type"		: "enum",
+       		"param"	: [ "on", "off" ],
+       		"values"	: [ "on", "off" ]
+       		},
+       	"mute"  : {
+       		"get"		: "audio-muting=query",
+       		"set"		: "audio-muting={DATA}",
+       		"type" 	: "enum",
+       		"param"	: [ "on", "off" ],
+       		"values"	: [ "on", "off", "toggle" ]
+       		}
        	},
-	"queries" : {
-       		"power"   : "system-power=query",
-        		"vol"     : "master-volume=query",
-        		"mute"    : "audio-muting=query"
-       	},
-	"values" : {
-       		"power"   : [ "on", "off" ],
-       		"vol"     : { "min" : 0, "max" : 70 },
-       		"mute"    : [ "on", "off", "toggle" ]
-       	},
-	"display"   : {},
-	"send-date" : {}
+	"description" : "API to connect to several devices from ONKYO - default set vor all devices",
+        "method" : "query"
    }
 }

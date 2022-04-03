@@ -19,9 +19,9 @@
   .button.notfound          { border : solid 1px #990000; }
   .button.notfound:disabled { border : solid 1px #990000; background-color : #221111; }
 
-  .button.header_image {
-    border             : #000000 solid 3px;
-  }
+  .button.device_off	{ background-color: black; }
+
+  .button.header_image { border: #000000 solid 3px; }
   .header_image_fade {
     font-size : 30px;
     font-weight : bold;

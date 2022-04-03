@@ -8,6 +8,7 @@ import logging, time
 import modules.rm3json                 as rm3json
 import modules.rm3config               as rm3config
 import modules.rm3ping                 as rm3ping
+import modules.rm3stage                as rm3stage
 
 import interfaces.eiscp as eiscp
 
@@ -45,9 +46,11 @@ class APIcontrol():
        self.api_config      = device_config
        self.api_ip          = self.api_config["IPAddress"]
 
-       logging.info("_API-INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
+       self.logging = logging.getLogger("api.ONKYO")
+       self.logging.setLevel = rm3stage.log_set2level
+       self.logging.info("_INIT: "+self.api_name+" - " + self.api_description + " (" + self.api_config["IPAddress"] +")")
        
-       self.connect()
+       #self.connect()
             
    #-------------------------------------------------
 
@@ -65,7 +68,7 @@ class APIcontrol():
        connect = rm3ping.ping(self.api_config["IPAddress"])
        if not connect:
          self.status = self.not_connected + " ... PING"
-         logging.error(self.status)       
+         self.logging.warning(self.status)       
          return self.status
 
        self.status               = "Connected"
@@ -80,7 +83,7 @@ class APIcontrol():
        except Exception as e:
           self.status = "Error connecting to ONKYO device: " + str(e)
           self.api.command("system-power query") # send a command to check if connected
-          logging.warning(self.status)
+          self.logging.warning(self.status)
 
        try:
           self.api.jc               = APIaddOn(self.api)
@@ -90,7 +93,7 @@ class APIcontrol():
        except Exception as e:
           self.status               = self.not_connected + " ... CONNECT " + str(e)
           self.api.jc.status        = self.status
-          logging.warning(self.status)
+          self.logging.warning(self.status)
    
    
    #-------------------------------------------------
@@ -101,7 +104,7 @@ class APIcontrol():
        '''
        
        while self.working:
-         logging.debug(".")
+         self.logging.debug(".")
          time.sleep(0.2)
        return
        
@@ -127,7 +130,7 @@ class APIcontrol():
        self.working = True
 
        if self.status == "Connected":
-         if self.log_command: logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+         if self.log_command: self.logging.info("_SEND: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
 
          button_code = command.replace("="," ")
          try:
@@ -160,17 +163,17 @@ class APIcontrol():
        if "||" in command: command_param = command.split("||")
        else:               command_param = [command]      
        
-       logging.debug(command)
+       self.logging.debug(command)
 
        if self.status == "Connected":
-         if self.log_command: logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
+         if self.log_command: self.logging.info("_QUERY: "+device+"/"+command[:shorten_info_to]+" ... ("+self.api_name+")")
        
          if "jc." in command:
          
            try:
              command = "self.api."+command
              result = eval(command)
-             logging.debug(str(result))
+             self.logging.debug(str(result))
            
              if "error" in result:
                self.working = False
@@ -182,7 +185,7 @@ class APIcontrol():
          
          else:
            button_code = command_param[0] #format: zone.parameter=command
-           logging.debug("Button-Code: "+button_code[:shorten_info_to]+"... ("+self.api_name+")")
+           self.logging.debug("Button-Code: "+button_code[:shorten_info_to]+"... ("+self.api_name+")")
            try:
              result  = self.api.command(button_code)
              self.api.disconnect()
@@ -196,7 +199,7 @@ class APIcontrol():
              return result
            
          result = result[1]
-         logging.debug(str(result))
+         self.logging.debug(str(result))
 
          # if || try to extract data from the result
          if "||" in command:
@@ -206,9 +209,9 @@ class APIcontrol():
            try:
              result2 = eval(new_cmd)
              result  = result2
-             logging.debug(new_cmd+": "+str(result))
+             self.logging.debug(new_cmd+": "+str(result))
            except Exception as e:
-             logging.warning("Not able to extract data: "+new_cmd+" / "+str(e))
+             self.logging.warning("Not able to extract data: "+new_cmd+" / "+str(e))
            
        else:
          self.working = False
@@ -269,9 +272,12 @@ class APIaddOn():
       self.cache_metadata = {}             # cache metadata to reduce api requests
       self.cache_time     = time.time()    # init cache time
       self.cache_wait     = 2              # time in seconds how much time should be between two api metadata requests
+
+      self.logging = logging.getLogger("api.ONKYO")
+      self.logging.setLevel = rm3stage.log_set2level
       
    #-------------------------------------------------
-   
+   	
    def metadata(self,tags=""):
       '''
       Return metadata ... combined values
@@ -293,13 +299,13 @@ class APIaddOn():
           else:           md = artist + ": " + title + " (Album: " + album + ")"
             
           self.api.disconnect()
-          logging.info(md)
+          self.logging.info(md)
           
         except Exception as e:
           self.api.disconnect()
           
           error = "ERROR "+self.addon+" - metadata ("+tags+"): " + str(e) 
-          logging.warning(error)
+          self.logging.warning(error)
           return error
           
       elif tags == "net-info":

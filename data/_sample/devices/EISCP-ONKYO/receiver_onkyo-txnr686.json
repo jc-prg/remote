@@ -35,65 +35,24 @@
             "vol+": "master-volume=level-up",
             "vol-": "master-volume=level-down"
         },
-        "buttons_error": {
-            "music-mode": "listening-mode=music"
-        },
         "commands": {
-            "mute": {
-                "command": "audio-muting=",
-                "type": "enum"
-            },
-            "power": {
-                "command": "system-power=",
-                "type": "enum"
-            },
-            "vol": {
-                "command": "master-volume=",
-                "type": "integer"
-            }
+      	     "a-v-sync": { "get" : "a-v-sync=query" },
+             "audio-info": { "get" : "audio-information=query" },
+             "audio-source": { "get" : "audio-selector=query" },
+             "current-playing": { "get" : "jc.metadata('net-info')" },
+             "dimmer": { "get" : "dimmer-level=query" },
+             "display": { "get" : "display-mode=query" },
+             "listening": { "get" : "listening-mode=query" },
+             "sleep-set": { "get" : "sleep-set=qstn" },
+             "source": { "get" : "input-selector=query||[1]" },
+             "temperature": { "get" : "temperature-data=query||[4:]" },
+             "timer": { "get" : "sleep-set=qstn" },
+             "tuning": { "get" : "tuning=query||+' Hz'" },
+             "usb-net-album": { "get" : "dock.net-usb-album-name-info=query" },
+             "usb-net-artist": { "get" : "dock.net-usb-artist-name-info=query" },
+             "usb-net-title": { "get" : "dock.net-usb-title-name=query" },
+             "video-info": { "get" : "video-information=query" }
         },
-        "description": "ONKYO TX-NR686B (API)",
-        "method": "query",
-        "queries": {
-            "a-v-sync": "a-v-sync=query",
-            "audio-info": "audio-information=query",
-            "audio-source": "audio-selector=query",
-            "current-playing": "jc.metadata('net-info')",
-            "dimmer": "dimmer-level=query",
-            "display": "display-mode=query",
-            "listening": "listening-mode=query",
-            "mute": "audio-muting=query",
-            "power": "system-power=query",
-            "sleep-set": "sleep-set=qstn",
-            "source": "input-selector=query||[1]",
-            "temperature": "temperature-data=query||[4:]",
-            "timer": "sleep-set=qstn",
-            "tuning": "tuning=query||+' Hz'",
-            "usb-net-album": "dock.net-usb-album-name-info=query",
-            "usb-net-artist": "dock.net-usb-artist-name-info=query",
-            "usb-net-title": "dock.net-usb-title-name=query",
-            "video-info": "video-information=query",
-            "vol": "master-volume=query"
-        },
-        "queries_error": {
-            "dolby-volume": "dolby-volume=query",
-            "video-output": "video-output-selector=query"
-        },
-        "send-data": {},
-        "values": {
-            "mute": [
-                "on",
-                "off",
-                "toggle"
-            ],
-            "power": [
-                "on",
-                "off"
-            ],
-            "vol": {
-                "max": 70,
-                "min": 0
-            }
-        }
+        "description": "ONKYO TX-NR686B (API)"
     }
 }

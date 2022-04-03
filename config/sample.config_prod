@@ -4,36 +4,44 @@
 # make changes for your environment
 #---------------------------------------------
 
-export REMOTE_CURRENT_STAGE="prod"
-export REMOTE_IS_TEST="False"
-export REMOTE_GIT_BRANCH="master"
+export REMOTE_CURRENT_STAGE="prod"                           # name for the stage (usually prod, test, dev)
+export REMOTE_IS_TEST="False"                                # "True" of test system, else "False"
+export REMOTE_GIT_BRANCH="master"                            # used git branch
 
 # Ports
-export REMOTE_CLIENT_PORT=81
-export REMOTE_SERVER_PORT=5001
+export REMOTE_CLIENT_PORT=81                                 # port for the client (http)
+export REMOTE_SERVER_PORT=5001                               # port for the API (http/REST)
 
 # Docker container names
-export REMOTE_DOCKER_CLIENT="remote_client_prod"
-export REMOTE_DOCKER_SERVER="remote_server_prod"
+export REMOTE_DOCKER_CLIENT="remote_client_prod"             # name for docker container of the client
+export REMOTE_DOCKER_SERVER="remote_server_prod"             # name for docker container of the server
 
 # Directories
-export REMOTE_DIR="/projects/prod/remote"
-export REMOTE_DIR_DATA="$REMOTE_DIR/data"
-export REMOTE_DIR_CLIENT="$REMOTE_DIR/app"
-export REMOTE_DIR_SERVER="$REMOTE_DIR/server"
-export REMOTE_DIR_JCMODULES="$REMOTE_DIR/app/modules"
-export REMOTE_DIR_ICONS="$REMOTE_DIR_DATA/buttons/default"
-export REMOTE_DIR_ICON_INDEX="$REMOTE_DIR_ICONS/index.json"
-export REMOTE_DIR_SCENES="$REMOTE_DIR_DATA/buttons/scenes"
-export REMOTE_DIR_SCENES_INDEX="$REMOTE_DIR_DATA/buttons/scenes/index.json"
+export REMOTE_DIR="/projects/prod/remote"                    # directory to this software
+export REMOTE_DIR_DATA="$REMOTE_DIR/data"                    # data directory
+export REMOTE_DIR_CLIENT="$REMOTE_DIR/app"                   # directory to app (usually no need to change)
+export REMOTE_DIR_SERVER="$REMOTE_DIR/server"                # directory to server (usually no need to change)
+export REMOTE_DIR_JCMODULES="$REMOTE_DIR/app/modules"        # directory to jc-modules (usually no need to change)
+export REMOTE_DIR_ICONS="$REMOTE_DIR_DATA/buttons/default"   # directory to button images (usually no need to change)
+export REMOTE_DIR_ICON_INDEX="$REMOTE_DIR_ICONS/index.json"  # directory to index file for button images (usually no need to change)
+export REMOTE_DIR_SCENES="$REMOTE_DIR_DATA/buttons/scenes"   # directory to scene images (usually no need to change)
+export REMOTE_DIR_SCENES_INDEX="$REMOTE_DIR_DATA/buttons/scenes/index.json" # directory to index file for scene images (usually no need to change)
 
 
 # Docker-Compose
-export DOCKERCOMPOSE_DIR="/usr/local/bin"
+export DOCKERCOMPOSE_DIR="/usr/local/bin"                    # directory to docker-compose
 
 # Images
-export REMOTE_DOCKERIMAGE_CLIENT="php:7.1-apache"
-export REMOTE_DOCKERIMAGE_SERVER="./config/container" # "./config/container" for Ubuntu or similar or "./config/container_arm" for Raspberry Pi 
+export REMOTE_DOCKERIMAGE_CLIENT="php:7.1-apache"            # docker image for the client (tested: php:7.1-apache)
+export REMOTE_DOCKERIMAGE_SERVER="./config/container"        # "./config/container" for Ubuntu or similar or "./config/container_arm" for Raspberry Pi 
+
+# Log Level
+export REMOTE_LOG_LEVEL="WARNING"                            # set log level: INFO, DEBUG, WARNING, ERROR
+export REMOTE_LOG_WEBSERVER="NO"                             # shall webserver data be logged in default level: YES (info), NO (warning)   
+export REMOTE_LOG_APIDATA="NO"                               # shall data from API request be logged: YES, NO
+export REMOTE_LOG_APIEXTERNAL="NO"                           # shall external API data be logged: YES, NO
+export REMOTE_LOG_TO_FILE="YES"                              # shall logging done into a logfile: YES, NO
+export REMOTE_LOG_FILENAME="/log/server.log"                 # path to logfile (if YES)
 
 #---------------------------------------------
 export THIS_IS_THE_PROJECT_TEMPLATE="Please edit not here, but the orginial configuration file. This files is created using a template."

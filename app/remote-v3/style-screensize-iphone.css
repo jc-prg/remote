@@ -26,7 +26,9 @@
   .display-element.h1w4,    .display-element.h2w4			{ width : 146px; }
   .display-element.h3w2,    .display-element.h4w2			{ width : 146px; }
 
+  #audio1 		{ right: 125px; }
   #audio2 		{ right: 125px; }
+  #audio3 		{ right: 45px; }
 
   .remote		{ width  : 340px; }
   .setting_bg		{ width  : 340px; }
@@ -61,7 +63,9 @@
   .display-element.h1w4,    .display-element.h2w4			{ width : 142px; }
   .display-element.h3w2,    .display-element.h4w2			{ width : 142px; }
 
+  #audio1 		{ right: 125px; }
   #audio2 		{ right: 125px; }
+  #audio3 		{ right: 45px; }
 
   .remote         	{ width  : 335px; }
   .channel-entry 	{ width  : 163px; }
