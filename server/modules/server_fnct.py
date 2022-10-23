@@ -405,7 +405,7 @@ def RmWriteData_scenes(data):
             if key in data[scene]:
                 del data[scene][key]
 
-    configFiles.write(modules.active_scenes, data, "RmWriteData_scenes()")
+    configFiles.write(modules.rm3config.active_scenes, data, "RmWriteData_scenes()")
 
 
 # ---------------------------
