@@ -263,12 +263,18 @@ function statusCheck_sceneButton(data) {
 		var required = data["STATUS"]["scenes"][key];
 		for (var i=0;i<required.length;i++) {
 
-	    		var device_api         = data["STATUS"]["devices"][required[i]]["api"];
-	    		var device_api_status  = data["STATUS"]["interfaces"][device_api];
-			device_status[required[i]]  = devices[required[i]]["status"]["power"].toUpperCase();
+	        var device_api         = data["STATUS"]["devices"][required[i]]["api"];
+	        var device_api_status  = data["STATUS"]["interfaces"][device_api];
 
-			if (device_status[required[i]] == "ON")	{ dev_on += 1; }
-			if (device_api_status != "Connected")		{ dev_error += 1; }
+	        if (devices[required[i]]["status"]["power"]) {
+			    device_status[required[i]]  = devices[required[i]]["status"]["power"].toUpperCase();
+			}
+			else {
+			    device_status[required[i]] = "";
+			}
+
+			if (device_status[required[i]] == "ON") { dev_on += 1; }
+			if (device_api_status != "Connected")   { dev_error += 1; }
 			}
 
 		if (dev_error > 0)		 	{ scene_status[key] = "ERROR"; }
