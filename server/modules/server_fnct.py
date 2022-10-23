@@ -1,14 +1,4 @@
-# API commands defined in swagger.yml
-# -----------------------------------
-# (c) Christoph Kloth
-# -----------------------------------
-
 import logging
-
-# ---------------------------
-# import jc://remote/ modules
-# ---------------------------
-
 import modules.rm3cache
 
 configFiles = modules.rm3cache.configCache("configFiles")
@@ -17,14 +7,10 @@ if configFiles.check_config() == "ERROR":
 else:
     configFiles.start()
 
-# ---------------------------
-
 import interfaces
 
 deviceAPIs = interfaces.connect(configFiles)
 deviceAPIs.start()
-
-# ---------------------------
 
 from modules.rm3queue import queueApiCalls
 
@@ -35,8 +21,6 @@ queueQuery = queueApiCalls("queueQuery", "query", deviceAPIs)
 queueQuery.config = configFiles
 queueQuery.start()
 
-# ---------------------------
-
 import modules.rm3json
 import modules.rm3stage
 import modules.rm3config
@@ -44,20 +28,12 @@ import modules.rm3config
 RmReadData_errors = {}
 
 
-# ---------------------------
-# see initialization of thread ad the end ...
-# ---------------------------
-
 def refreshCache():
     '''
     Reset vars to enforce a refresh of all cached data
     '''
     configFiles.update()
 
-
-# ---------------------------
-# Read data
-# ---------------------------
 
 def RmReadData_devicesConfig():
     '''
@@ -157,8 +133,6 @@ def RmReadData_devicesConfig():
     return data_config
 
 
-# ---------------------------
-
 def RmReadData_devices(selected=[], remotes=True, config_only=False):
     '''
     read data for devices and combine with remote definition -> base for CONFIG and STATUS also
@@ -251,8 +225,6 @@ def RmReadData_devices(selected=[], remotes=True, config_only=False):
     return data
 
 
-# ---------------------------
-
 def RmReadData_deviceStatus():
     '''
     read status data for devices 
@@ -274,9 +246,6 @@ def RmReadData_deviceStatus():
     return status
 
 
-# ---------------------------
-
-
 def RmReadData_sceneStatus():
     '''
     read status data for devices 
@@ -292,8 +261,6 @@ def RmReadData_sceneStatus():
 
     return status
 
-
-# ---------------------------
 
 def RmWriteData_devices(data):
     '''
@@ -318,8 +285,6 @@ def RmWriteData_devices(data):
         configFiles.write_status(data, "RmWriteData_devices()")
 
 
-# ---------------------------
-
 def RmReadData_makros(selected=[]):
     '''
     read config data for makros
@@ -328,8 +293,6 @@ def RmReadData_makros(selected=[]):
     data = configFiles.read(modules.rm3config.active_makros)
     return data
 
-
-# ---------------------------
 
 def RmWriteData_makros(data):
     '''
@@ -347,8 +310,6 @@ def RmWriteData_makros(data):
 
     configFiles.write(modules.rm3config.active_makros, data, "RmWriteData_makros()")
 
-
-# ---------------------------
 
 def RmReadData_scenes(selected=[], remotes=True):
     '''
@@ -387,8 +348,6 @@ def RmReadData_scenes(selected=[], remotes=True):
     return data
 
 
-# ---------------------------
-
 def RmWriteData_scenes(data):
     '''
     write config data for scenes and remove temp parameter required e.g. for REST API
@@ -407,8 +366,6 @@ def RmWriteData_scenes(data):
 
     configFiles.write(modules.rm3config.active_scenes, data, "RmWriteData_scenes()")
 
-
-# ---------------------------
 
 def RmReadData_templates(selected=[]):
     '''
@@ -446,8 +403,6 @@ def RmReadData_templates(selected=[]):
 
     return data
 
-
-# ---------------------------
 
 def RmReadData(selected=[]):
     '''
@@ -490,10 +445,6 @@ def RmReadData(selected=[]):
 
     return data
 
-
-# ---------------------------
-# EDIT SCENE REMOTES
-# ---------------------------
 
 def addScene(scene, info):
     '''
@@ -555,8 +506,6 @@ def addScene(scene, info):
 
     return ("OK: Scene " + scene + " added.")
 
-
-# ---------------------------------------
 
 def editScene(scene, info):
     '''
@@ -628,8 +577,6 @@ def editScene(scene, info):
         return "ERROR: no data key matched with keys from config-files (" + str(info.keys) + ")"
 
 
-# ---------------------------------------
-
 def deleteScene(scene):
     '''
     delete scene from json config file and scene device related files
@@ -657,10 +604,6 @@ def deleteScene(scene):
     except Exception as e:
         return "ERROR: Could not delete scene '" + scene + "': " + str(e)
 
-
-# ---------------------------
-# EDIT DEVICE REMOTES
-# ---------------------------
 
 def addDevice(device, device_data):
     '''
@@ -748,8 +691,6 @@ def addDevice(device, device_data):
     return ("OK: Device " + device + " added.")
 
 
-# ---------------------------------------
-
 def deleteDevice(device):
     '''
     delete device from json config file and delete device related files
@@ -805,8 +746,6 @@ def deleteDevice(device):
 
     return message
 
-
-# ---------------------------------------
 
 def editDevice(device, info):
     '''
@@ -876,10 +815,6 @@ def editDevice(device, info):
         return "ERROR: no data key matched with keys from config-files (" + str(info.keys) + ")"
 
 
-# ---------------------------
-# EDIT BUTTONS AND COMMANDS
-# ---------------------------
-
 def addCommand2Button(device, button, command):
     '''
     add new command to button or change existing
@@ -904,8 +839,6 @@ def addCommand2Button(device, button, command):
     else:
         return "ERROR: Device '" + device + "' does not exists."
 
-
-# ---------------------------------------
 
 def addButton(device, button):
     '''
@@ -956,8 +889,6 @@ def deleteCmd(device, button):
         return "ERROR: Device '" + device + "' does not exist."
 
 
-# ---------------------------------------
-
 def deleteButton(device, button_number):
     '''
     delete button (not command) from json config file
@@ -981,10 +912,6 @@ def deleteButton(device, button_number):
     else:
         return "ERROR: Device '" + device + "' does not exist."
 
-
-# ---------------------------------------
-# MAKROS
-# ---------------------------------------
 
 def editMakros(makros):
     '''
@@ -1013,10 +940,6 @@ def editMakros(makros):
 
     return "OK, saved makro file."
 
-
-# ---------------------------------------
-# TEMPLATES
-# ---------------------------------------
 
 def addTemplate(device, template):
     '''
@@ -1060,10 +983,6 @@ def addTemplate(device, template):
         return "ERROR: Template '" + template + "' does't exists."
 
 
-# ---------------------------------------
-# REMOTES
-# ---------------------------------------
-
 def changeVisibility(type, device, visibility):
     '''
     change visibility in device configuration (yes/no)
@@ -1101,8 +1020,6 @@ def changeVisibility(type, device, visibility):
     else:
         return "ERROR: changeVisibility - Type doesn't exist (" + type + ")."
 
-
-# -----------------------------------------------
 
 def moveDeviceScene(button_type, device, direction):
     '''
@@ -1190,10 +1107,6 @@ def moveDeviceScene(button_type, device, direction):
     return return_msg
 
 
-# -----------------------------------------------
-# Read and set status
-# -----------------------------------------------
-
 def setStatus(device, key, value):
     '''
     change status and write to file
@@ -1216,8 +1129,6 @@ def setStatus(device, key, value):
 
     return "TBC: setStatus: " + device + "/" + key + "/" + str(value)
 
-
-# -----------------------------------------------
 
 def getStatus(device, key):
     '''get status of device'''
@@ -1260,8 +1171,6 @@ def resetStatus():
     return "TBC: Reset POWER to OFF for devices without API"
 
 
-# -----------------------------------------------
-
 def resetAudio():
     '''set status for all devices to OFF'''
 
@@ -1285,8 +1194,6 @@ def resetAudio():
     return "TBC: Reset AUDIO to 0 for devices without API"
 
 
-# -----------------------------------------------
-
 def setMainAudioDevice(device):
     '''
     set device as main audio device
@@ -1308,10 +1215,6 @@ def setMainAudioDevice(device):
     configFiles.write_status(status, "resetAudio")
     return return_msg
 
-
-# -----------------------------------------------
-# Device status
-# -----------------------------------------------
 
 def devicesGetStatus(data, readAPI=False):
     '''
@@ -1374,10 +1277,6 @@ def devicesGetStatus(data, readAPI=False):
     return data
 
 
-# -----------------------------------------------
-# get / set status of specific value
-# -----------------------------------------------
-
 def getButtonValue(device, button):
     '''
     Get Status from device for a specific button or display value
@@ -1400,8 +1299,6 @@ def getButtonValue(device, button):
 
     return "OK"
 
-
-# -----------------------------------------------
 
 def setButtonValue(device, button, state):
     '''
@@ -1434,5 +1331,3 @@ def setButtonValue(device, button, state):
         logging.warn("setButtonValue: Wrong method (" + method + "," + device + "," + button + ")")
         return "ERROR: Wrong method (" + method + ")"
 
-# -------------------------------------------------
-# EOF
