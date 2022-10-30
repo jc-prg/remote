@@ -93,6 +93,8 @@ function setMainAudio(device) 		{ appFW.requestAPI( "POST", ["main-audio",device
 function setVolume(main_audio,volume)		{ appFW.requestAPI( "GET",  ["set",main_audio,"vol",volume], 	"", remoteReload_load ); }
 function apiSetVolume(volume)			{ appFW.requestAPI( "GET",  ["set",rm3slider.device,"vol",volume],	"", remoteReload_load ); }
 
+///--------------------------------> doesnt work????
+
 //================================
 // TEMPLATES
 //================================
