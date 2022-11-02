@@ -4,27 +4,6 @@
 // slider for volume control
 // requires jc-volume-slider-<version>.css
 //-----------------------------------------
-/* INDEX
-function rmSlider(name)
-	this.setOnChange	= function(callOnChange="")
-	this.setShowVolume	= function(showVolume="")
-	this.sliderHTML	= function(name,label,device,command,min,max,init="")
-function jcSlider2 ( name, container )
-	this.setOnChange	= function(callOnChange="")
-	this.setShowVolume	= function(showVolume="")
-	this.init		= function( min, max, label )
-		this.slider.oninput		= function( )
-		this.slider.onmousedown		= function()
-		this.slider.onmouseup		= function()
-		this.slider.ontouchstart	= function()
-		this.slider.ontouchend		= function()
-	this.setPosition	= function(top=false,bottom=false,left=false,right=false)
-	this.set_value		= function( value )
-	this.show_hide		= function()
-	this.info		= function()
-		alert("Please define a function to be called on change.")
-*/
-//-----------------------------------------
 /* SAMPLE IMPLEMENTATION
 
 var mboxSlider  = new jcSlider( name="mboxSlider", container="audio_slider");	// create slider
@@ -68,9 +47,9 @@ function rmSlider(name) {
 		var setValueCmd;
 		var defaultValue;
 			
-		if (init.indexOf("%") > 0)		{ init = init.replace(/%/g,""); }
-		if (init != "" && init != "Error")	{ defaultValue = init; }
-		else					{ defaultValue = min; }
+		if (init.indexOf("%") > 0)          { init = init.replaceAll("%",""); }
+		if (init != "" && init != "Error")  { defaultValue = init; }
+		else                                { defaultValue = min; }
 		
 		setValueCmd  = " onInput=\"document.getElementById('"+name+"_value').innerHTML=this.value;\" ";
 		setValueCmd += " onMouseUp=\"appFW.requestAPI('GET',[ 'send-data', '"+device+"', '"+command+"', this.value ], '','');\" ";
@@ -82,13 +61,38 @@ function rmSlider(name) {
  		this.slider_code   		+= "<div id=\""+name+"_value\" class=\"rm-slidervalue\">"+defaultValue+"</div>";
 		this.slider_code   		+= "</div>";
 		return this.slider_code;
-		}		
-	
 	}
 
+	this.toggleHTML = function(name, label, device, command_on, command_off, init="") {
+		var setValueCmd, class_init;
+		var setValueCmd_red    = " this.className='rm-slider device_off'; slider.disabled = false; ";
+		var setValueCmd_green  = " this.className='rm-slider device_on'; slider.disabled = false; ";
+		var setValueCmd_gray   = " this.className='rm-slider device_undef'; slider.disabled = true;";
+		var setValueCmd_set    = " this.className='rm-slider device_set'; ";
+		var defaultValue;
 
-//-----------------------------------------
-// EOF
+		var value_key          = name.split("_");
+		if (value_key.length > 1)   { value_key = value_key[1]; }
+		else                        { value_key = name; }
+
+
+		setValueCmd             =  "";
+		setValueCmd             += " onClick=\"if(this.value==0) { "+setValueCmd_set+" } else { "+setValueCmd_set+" };\" "
+		setValueCmd             += " onTouchEnds=\"if(this.value==0) { "+setValueCmd_set+" } else { "+setValueCmd_set+" };\" "
+//		setValueCmd             +=  " onMouseUp=\"if(this.value==0) { this.value=1; } else { this.value=0; }; document.getElementById('"+name+"_value').innerHTML = this.value;\" ";
+		setValueCmd             += " ";
+
+        if (init == "")       { defaultValue = "0";  class_init = "device_undef"; }
+        else if (init == "1") { defaultValue = init; class_init = "device_on"; }
+        else if (init == "0") { defaultValue = init; class_init = "device_off"; }
+
+		this.toggle_code   		=  "<div id=\"toggle_"+name+"_container\" class=\"rm-slidecontainer\" style=\"display:block\">";
+  		this.toggle_code   		+= "<input type=\"range\" min=\"0\" max=\"1\" value=\""+defaultValue+"\" class=\"rm-slider "+class_init+"\" id=\"toggle_"+device+"_"+value_key+"_input\" "+setValueCmd+">";
+		this.toggle_code   		+= "</div>";
+		return this.toggle_code;
+	}
+
+	}
 
 
 

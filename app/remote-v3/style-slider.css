@@ -21,69 +21,117 @@
    float           : left;
    display         : inline-block;
    vertical-align  : top;
-
 }
 
+.rm-toggle-button {
+   color           : #222222;
+   font-size       :   9px;
+
+   width           :  64px;
+   height          :  40px;
+   padding         :   2px;
+   margin          :   4px;
+
+   border-radius   :   6px;
+   border          : 0px solid #bbbbbb;
+   background-color: #cccccc;
+
+   overflow        : hidden;
+   float           : left;
+   display         : inline-block;
+   vertical-align  : top;
+}
+
+.rm-toggle-label {
+   color           : #222222;
+   font-size       :   9px;
+
+   width           :  204px;
+   height          :  40px;
+   padding         :   2px;
+   padding-left    :  10px;
+   margin          :   4px;
+
+   border-radius   :   6px;
+   border          : 0px solid #bbbbbb;
+   background-color: #cccccc;
+   color           : black;
+
+   overflow        : hidden;
+   float           : left;
+   display         : inline-block;
+   vertical-align  : top;
+   text-align      : left;
+   font-size       : 12px;
+}
+
+.rm-toggle-label.long {
+   width           :  204px;
+}
+
+.rm-toggle-label.short {
+   width           :  64px;
+}
 
 /* ---------------------------------------- */
 
 .rm-slidecontainer {
-    	z-index       : 99;
-  	width         : 100%;
-  	height        : 64px;
+    z-index       : 99;
+    width         : 100%;
+    height        : 64px;
 }
 
 /* The slider itself */
 .rm-slider {
-	z-index		: 100;
-  	width			: 83%;
-  	height			: 25px;
-  	float			: left;
-  	margin			: 3px;
+	z-index       : 100;
+  	width         : 83%;
+  	height        : 25px;
+  	float         : left;
+  	margin        : 3px;
 
-	background		: #DDDDDD; /* Grey background */
-	opacity		: 0.8; /* Set transparency (for mouse-over effects on hover) */
-	-webkit-transition	: .2s; /* 0.2 seconds transition on hover */
-  	transition		: opacity .2s;
+	background    : #DDDDDD; /* Grey background */
+	opacity       : 0.8; /* Set transparency (for mouse-over effects on hover) */
+	-webkit-transition : .2s; /* 0.2 seconds transition on hover */
+  	transition    : opacity .2s;
   	
-	border			: 2px solid #777777;
-	border-radius		: 13px;  	
+	border        : 2px solid #777777;
+	border-radius : 13px;
 }
 
 .rm-slidervalue {
-  	z-index	: 99;
-  	width		: 10%;
-  	height		: 25px;
-  	float		: left;
-  	margin		: 3px;
+  	z-index         : 99;
+  	width           : 10%;
+  	height          : 25px;
+  	float           : left;
+  	margin          : 3px;
 
-  	background     : #DDDDDD; /* Grey background */
-	opacity        : 0.9; /* Set transparency (for mouse-over effects on hover) */
+  	background      : #DDDDDD; /* Grey background */
+	opacity         : 0.9; /* Set transparency (for mouse-over effects on hover) */
   	
-	border		: 2px solid #777777;
-	border-radius	: 5px;
+	border          : 2px solid #777777;
+	border-radius   : 5px;
   	
-  	color		: #222222;
-  	font-family	: Helvetica,Arial;
-  	font-weight	: bold;
-  	font-size	: 11px;
-  	line-height	: 25px;
+  	color           : #222222;
+  	font-family     : Helvetica,Arial;
+  	font-weight     : bold;
+  	font-size       : 11px;
+  	line-height     : 25px;
   	
-  	text-align	: center;
-  	vertical-align	: middle;
+  	text-align      : center;
+  	vertical-align  : middle;
 	}
 
 .rm-sliderlabel {
-	z-index	: 99;
-	width		: 90%;
-	float		: left;
+	z-index         : 99;
+	width           : 90%;
+	float           : left;
 	
-	padding	: 5px;
-	padding-left	: 10px;
+	padding	        : 5px;
+	padding-left    : 10px;
 
-	font-family	: Sans-serif, Arial, Helvetica;
-	font-size	: 12px;
-	text-align	: left;	
+	font-family     : Sans-serif, Arial, Helvetica;
+	font-size       : 12px;
+	text-align      : left;
 	}
 
 /* Mouse-over effects */
@@ -93,48 +141,50 @@
 
 /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
 .rm-slider::-webkit-slider-runnable-track {
-  	-webkit-appearance: none;	/* Override default look */
-  	appearance	: none;
-  	width		: 29px;		/* Set a specific slider handle width */
-  	height		: 29px;		/* Slider handle height */
-  	background	: #223322;		/* Green background */
-  	cursor		: pointer;	/* Cursor on hover */
-  	border-radius	: 15px;
-	border		: 2px solid #777777;
-}
-
-.rm-slider.device_off::-webkit-slider-runnable-track {
-  	background    : #332222;		/* Green background */
+  	-webkit-appearance  : none;	/* Override default look */
+  	appearance          : none;
+  	width               : 29px;		/* Set a specific slider handle width */
+  	height              : 29px;		/* Slider handle height */
+  	background          : #223322;		/* Green background */
+  	cursor              : pointer;	/* Cursor on hover */
+  	border-radius       : 15px;
+	border              : 2px solid #777777;
 }
 
 .rm-slider::-webkit-slider-thumb {
-  	-webkit-appearance: none;	/* Override default look */
-  	appearance	: none;
-  	width		: 25px;		/* Set a specific slider handle width */
-  	height		: 25px;		/* Slider handle height */
-  	background	: green;		/* Green background */
-  	cursor		: pointer;	/* Cursor on hover */
-  	border-radius	: 13px;
-	border		: 2px solid #00cc00;
-}
-
-.rm-slider.device_off::-webkit-slider-thumb {
-  	background	: darkred;		/* Green background */
-	border		: 2px solid #cc0000;
+  	-webkit-appearance  : none;	/* Override default look */
+  	appearance          : none;
+  	width               : 25px;		/* Set a specific slider handle width */
+  	height              : 25px;		/* Slider handle height */
+  	background          : green;		/* Green background */
+  	cursor              : pointer;	/* Cursor on hover */
+  	border-radius       : 13px;
+	border              : 2px solid #00cc00;
 }
 
 .rm-slider::-moz-range-thumb {
-	width		: 25px;		/* Set a specific slider handle width */
-	height		: 25px;		/* Slider handle height */
-  	background	: green; 	/* Green background */
-  	cursor		: pointer;	/* Cursor on hover */
-  	border-radius	: 13px;
-	border		: 2px solid #00cc00;
+	width               : 25px;		/* Set a specific slider handle width */
+	height              : 25px;		/* Slider handle height */
+  	background          : green; 	/* Green background */
+  	cursor              : pointer;	/* Cursor on hover */
+  	border-radius       : 13px;
+	border              : 2px solid #00cc00;
 }
 
-.rm-slider.device_off::-moz-range-thumb {
-  	background	: darkred;		/* Green background */
-	border		: 2px solid #cc0000;
-}
+.rm-slider.device_off::-webkit-slider-runnable-track    { background: #332222; }
+.rm-slider.device_off::-webkit-slider-thumb             { background : darkred;  border : 2px solid #cc0000; }
+.rm-slider.device_off::-moz-range-thumb                 { background : darkred;  border : 2px solid #cc0000; }
+
+.rm-slider.device_on::-webkit-slider-runnable-track     { background: #332222; }
+.rm-slider.device_on::-webkit-slider-thumb              { background : green;  border : 2px solid #00cc00; }
+.rm-slider.device_on::-moz-range-thumb                  { background : green;  border : 2px solid #00cc00; }
+
+.rm-slider.device_undef::-webkit-slider-runnable-track  { background: #332222; }
+.rm-slider.device_undef::-webkit-slider-thumb           { background : gray;  border : 2px solid #cccccc; }
+.rm-slider.device_undef::-moz-range-thumb               { background : gray;  border : 2px solid #cccccc; }
+
+.rm-slider.device_set::-webkit-slider-runnable-track  { background: #332222; }
+.rm-slider.device_set::-webkit-slider-thumb           { background : blue;  border : 2px solid lightblue; }
+.rm-slider.device_set::-moz-range-thumb               { background : blue;  border : 2px solid lightblue; }
 
 /* EOF */

@@ -10,15 +10,15 @@
   .screen_iphone { display : block; }
   .screen_default { display : none; }
   
-  .button        			 	{ width  :  76px; max-width  :  76px; }
-  .button.big,   .button.big_edit     	{ width  : 105px; max-width  : 105px; }
-  .button.small, .button.small_edit   	{ width  :  62px; max-width  :  62px; }
-  .button.header_image				{ width  : 332px; max-width  : 332px; }
+  .button                               { width  :  76px; max-width  :  76px; }
+  .button.big,   .button.big_edit       { width  : 105px; max-width  : 105px; }
+  .button.small, .button.small_edit     { width  :  62px; max-width  :  62px; }
+  .button.header_image                  { width  : 332px; max-width  : 332px; }
   
-  .display								{ font-size : 10px; }
-  .display.small, .display.middle					{ width  : 160px; }
-  .display.big,   .display.h1w4, .display.h2w4			{ width  : 320px; }
-  .display.h1w2,  .display.h2w2, .display.h3w2, .display.h4w2	{ width  : 160px; } 
+  .display                                                      { font-size : 10px; }
+  .display.small, .display.middle                               { width  : 160px; }
+  .display.big,   .display.h1w4, .display.h2w4                  { width  : 320px; }
+  .display.h1w2,  .display.h2w2, .display.h3w2, .display.h4w2   { width  : 160px; }
  
   .display-element,         .display-element.small			{ width :  70px; }
   .display-element.middle,  .display-element.big			{ width : 146px; }
@@ -30,13 +30,15 @@
   #audio2 		{ right: 125px; }
   #audio3 		{ right: 45px; }
 
-  .remote		{ width  : 340px; }
-  .setting_bg		{ width  : 340px; }
-  .channel-entry	{ width  : 166px; }
-  .rm-slider-button	{ width  : 328px; }
-  .color-picker	{ width  : 328px; }
-  .remote-line		{ width  : 322px; }
-  
+  .remote           { width  : 340px; }
+  .setting_bg       { width  : 340px; }
+  .channel-entry    { width  : 166px; }
+  .color-picker     { width  : 328px; }
+  .remote-line      { width  : 322px; }
+
+  .rm-slider-button     { width  : 328px; }
+  .rm-toggle-button     { width  :  76px; }
+  .rm-toggle-label.long { width  : 242px; }
 }
 
 
@@ -52,10 +54,10 @@
   .button.small, .button.small_edit   	{ width  :  60px; max-width  :  60px; }
   .button.header_image				{ width  : 328px; max-width  : 328px; }
   
-  .display								{ font-size : 10px; }
-  .display.small, .display.middle					{ width  : 156px; }
-  .display.big,   .display.h1w4, .display.h2w4			{ width  : 320px; }
-  .display.h1w2,  .display.h2w2, .display.h3w2, .display.h4w2	{ width  : 156px; } 
+  .display                                                     { font-size : 10px; }
+  .display.small, .display.middle                              { width  : 156px; }
+  .display.big,   .display.h1w4, .display.h2w4                 { width  : 320px; }
+  .display.h1w2,  .display.h2w2, .display.h3w2, .display.h4w2  { width  : 156px; }
  
   .display-element,         .display-element.small			{ width :  68px; }
   .display-element.middle,  .display-element.big			{ width : 142px; }
@@ -67,12 +69,14 @@
   #audio2 		{ right: 125px; }
   #audio3 		{ right: 45px; }
 
-  .remote         	{ width  : 335px; }
-  .channel-entry 	{ width  : 163px; }
-  .rm-slider-button	{ width  : 320px; }
+  .remote           { width  : 335px; }
+  .channel-entry    { width  : 163px; }
   .setting_bg 		{ width  : 335px; }
-  .color-picker	{ width  : 320px; }
-  .remote-line		{ width  : 322px; }
+  .color-picker     { width  : 320px; }
+  .remote-line      { width  : 322px; }
   
+  .rm-slider-button     { width  : 320px; }
+  .rm-toggle-button     { width  :  74px; }
+  .rm-toggle-label.long { width  : 240px; }
 }
 

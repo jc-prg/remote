@@ -129,22 +129,22 @@ button {
 }
 
 .button.small {
-    width  		: 51px;
-    height 		: 50px;
-    max-width          : 51px;
-    max-height         : 50px;
-    margin 		:  3px;
+    width        : 51px;
+    height       : 50px;
+    max-width    : 51px;
+    max-height   : 50px;
+    margin       :  3px;
 }
 
 .button.small_edit { 
-    width  		: 60px; 
-    height 		: 50px;
-    max-width          : 60px;
-    max-height         : 50px;
-    margin 		:  3px;
-    border           	: blue;
-    border-style     	: solid;
-    border-width     	: 2px;
+    width        : 60px;
+    height       : 50px;
+    max-width    : 60px;
+    max-height   : 50px;
+    margin       :  3px;
+    border       : blue;
+    border-style : solid;
+    border-width : 2px;
 }
 
 .button.updown {

@@ -6,6 +6,18 @@
 	color              : gray;	
 	}
 	
+  .rm-toggle-button {
+	background-color   : #000000; /* Grey background */
+	border             : 0px solid #222222;
+	color              : gray;
+	}
+
+  .rm-toggle-label {
+	background-color   : #000000; /* Grey background */
+	border             : 0px solid #222222;
+	color              : white;
+	}
+
   .rm-slider {
 	background         : #222222; /* Grey background */
 	}
