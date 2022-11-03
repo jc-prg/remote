@@ -12,7 +12,7 @@ import modules.rm3ping as rm3ping
 import modules.rm3stage as rm3stage
 
 
-class connect(threading.Thread):
+class Connect(threading.Thread):
     '''
     class to control all interfaces including a continuous check if interfaces still available
     '''
@@ -62,6 +62,7 @@ class connect(threading.Thread):
         """
 
         self.logging.info("Starting " + self.name)
+
         try:
             active_devices = self.configFiles.read_status()
         except Exception as e:
@@ -74,8 +75,8 @@ class connect(threading.Thread):
             api = active_devices[device]["config"]["interface_api"]
             dev = active_devices[device]["config"]["interface_dev"]
 
+            dev_config = {}
             if rm3json.if_exist(rm3config.commands + api + "/00_interface"):
-                dev_config = {}
                 api_config = self.configFiles.read(rm3config.commands + api + "/00_interface")
                 if "Devices" in api_config and dev in api_config["Devices"]:
                     dev_config = api_config["Devices"][dev]
@@ -295,7 +296,8 @@ class connect(threading.Thread):
                 if self.log_commands:      self.logging.info("...... " + str(button_code))
 
             if "ERROR" in button_code:
-                return_msg = "ERROR: could not read/create command from button code (send/" + mode + "/" + button + "); " + button_code
+                return_msg = "ERROR: could not read/create command from button code (send/" + \
+                             device + "/" + button + "); " + button_code
             elif api_dev in self.api:
                 return_msg = self.api[api_dev].send(device, button_code)
             else:
@@ -478,10 +480,10 @@ class connect(threading.Thread):
         else:
             return "ERROR get_command: device not found (" + device + ")"
 
-    def create_command(self, api, device, button, value):
-        '''
+    def create_command(self, dev_api, device, button, value):
+        """
         create command with "button" and value, including check if value is correct
-        '''
+        """
 
         # read data -> to be moved to cache?!
         active = self.configFiles.read_status()
@@ -527,6 +529,3 @@ class connect(threading.Thread):
                 return "ERROR create_command: command not defined (" + device + ", " + button + ")"
         else:
             return "ERROR create_command: device not found (" + button + ")"
-
-# -------------------------------------------------
-# EOF
