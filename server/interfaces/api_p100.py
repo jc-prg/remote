@@ -159,14 +159,20 @@ class APIcontrol():
             command_param = [command]
 
         if self.status == "Connected":
-            if self.log_command: self.logging.info(
-                "_QUERY: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+            if self.log_command:
+                self.logging.info("_QUERY: "+device+ "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
 
             try:
                 command = "self.api." + command_param[0]
                 result = eval(command)
                 self.logging.debug(str(result))
 
+            except Exception as e:
+                self.working = False
+                return "ERROR " + self.api_name + " - query*: " + str(e) + " | " + command + " | " + \
+                       str(result) + " | " + str(self.api.jc.info_result)
+
+            try:
                 if "error" in result:
                     if "message" in result["error"]:
                         msg = str(result["error"]["message"])
@@ -191,7 +197,7 @@ class APIcontrol():
 
             except Exception as e:
                 self.working = False
-                return "ERROR " + self.api_name + " - query*: " + str(e) + " | " + command + " | " + str(result)
+                return "ERROR " + self.api_name + " - query°: " + str(e) + " | " + command + " | " + str(result)
         else:
             self.working = False
             return "ERROR " + self.api_name + ": Not connected"
@@ -261,12 +267,15 @@ class APIaddOn():
         self.addon = "jc://addon/p100/"
         self.api = api
         self.volume = 0
+        self.status = "Start"
         self.cache_metadata = {}  # cache metadata to reduce api requests
         self.cache_time = time.time()  # init cache time
         self.cache_wait = 2  # time in seconds how much time should be between two api metadata requests
         self.power_status = "OFF"
         self.logging = logger
-
+        self.not_connected = "Connection Error api.P100"
+        self.info_answer = {}
+        self.info_result = {}
         self.last_request_time = time.time()
         self.last_request_data = {}
         self.cache_wait = 1
@@ -304,48 +313,64 @@ class APIaddOn():
         """
         return data
         """
-# in some cases this def returns {} ... WHY?
-
+        info_result = {}
         if self.status == "Connected":
 
             self.logging.debug(str(self.last_request_time) + "__" + str(time.time()))
 
             if self.last_request_time < time.time() - self.cache_wait:
-                status = self.api.getDeviceInfo()
-                self.last_request_data = status
-                self.last_request_time = time.time()
-
+                try:
+                    self.info_answer = self.api.getDeviceInfo()
+                except Exception as e:
+                    self.info_answer = {"error_code": 10, "error": "Exception during API request", "error_msg": str(e)}
+                #self.logging.info(".:|"+param+"|:."+str(self.info_answer))
+                if "result" in self.info_answer:
+                    self.last_request_data = self.info_answer.copy()
+                    self.last_request_time = time.time()
+                self.logging.debug(str(self.info_answer))
             else:
-                status = self.last_request_data
+                self.info_answer = self.last_request_data.copy()
 
-            self.logging.debug(str(status))
+            self.logging.debug(str(self.info_answer))
 
-            if "error_code" in status and status["error_code"] != 0:
-                return {"error": "device error (" + str(status["result"]) + "|" + str(status["error_code"]) + ")"}
-            elif "error_code" in status and "result" in status:
-                status = status["result"]
-            elif status == {}:
-                return {"error": "device error (empty response from device {})"}
+            if "error_code" in self.info_answer and self.info_answer["error_code"] != 0:
+                if "result" in self.info_answer:
+                    #self.logging.info("---" + param + "---" + str(self.info_answer))
+                    info_result = {"error": "device error (" + str(self.info_answer["result"]) + "|" +
+                                        str(self.info_answer["error_code"]) + ")"}
+            elif "error_code" in self.info_answer and "result" in self.info_answer:
+                #self.logging.info("+++"+param+"+++"+str(self.info_answer))
+                info_result = self.info_answer["result"].copy()
+            elif self.info_answer == {}:
+                #self.logging.info("..." + param + "..." + str(self.info_answer))
+                info_result = {"error": "device error (empty response from device {})"}
             else:
-                return {"error": "device error (unexpected API answer)"}
+                self.logging.info(":::" + param + ":::" + str(self.info_answer))
+                info_result = {"error": "device error (unexpected API answer)"}
 
-            if status["device_on"]:
+            if "device_on" in info_result and info_result["device_on"]:
                 self.power_status = "ON"
-            else:
+            elif "device_on" in info_result:
                 self.power_status = "OFF"
 
-            if param in status:
-                return {"result": status[param]}
-            elif param == "status":
-                return {"result": str(status)}
-            elif param == "power":
-                return {"result": self.power_status}
-
-            else:
-                return {"error": "unknown tag '" + param + "'"}
+            if "error" not in info_result:
+                if param in info_result:
+                    info_result = {"result": info_result[param], "param": param}
+                elif param == "status":
+                    info_result = {"result": str(info_result), "param": param}
+                elif param == "power":
+                    info_result = {"result": self.power_status, "param": param}
+                elif info_result == {} and "error" in self.info_answer:
+                    info_result = {"error": "empty results (" + param + "||" + str(self.info_answer["error"]) + ")."}
+                elif info_result == {}:
+                    info_result = {"error": "empty results (" + param + "||" + str(self.info_answer) + ")."}
+                else:
+                    info_result = {"error": "unknown tag '" + param + "' ("+str(info_result)+")."}
 
         else:
-            return self.not_connected
+            info_result = self.not_connected
+
+        return info_result
 
     def test(self):
 
