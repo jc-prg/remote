@@ -1,15 +1,17 @@
 import logging
 import modules.rm3cache
 
-configFiles = modules.rm3cache.configCache("configFiles")
+configInterfaces = modules.rm3cache.ConfigInterfaces("configInterfaces")
+configFiles = modules.rm3cache.ConfigCache("ConfigFiles")
 if configFiles.check_config() == "ERROR":
     exit()
 else:
     configFiles.start()
+    configInterfaces.start()
 
 import interfaces
 
-deviceAPIs = interfaces.connect(configFiles)
+deviceAPIs = interfaces.Connect(configFiles)
 deviceAPIs.start()
 
 from modules.rm3queue import queueApiCalls
@@ -433,7 +435,7 @@ def RmReadData(selected=[]):
         data = configFiles.cache["_api"]
 
     # Update API data based on cache value
-    if configFiles.cache_update_api:
+    if configInterfaces.cache_update_api:
         logging.info("Update config data from api.")
         data["devices"] = devicesGetStatus(data["devices"], readAPI=True)
 
@@ -453,7 +455,7 @@ def addScene(scene, info):
     active_json = RmReadData_scenes(selected=[], remotes=False)  # configFiles.read(modules.active_scenes)
 
     if scene in active_json:                    return ("WARN: Scene " + scene + " already exists (active).")
-    if modules.rm3json.ifexist(modules.rm3config.remotes + "scene_" + scene):    return (
+    if modules.rm3json.if_exist(modules.rm3config.remotes + "scene_" + scene):    return (
                 "WARN: Scene " + scene + " already exists (remotes).")
 
     logging.info("addScene: add " + scene)
@@ -588,7 +590,7 @@ def deleteScene(scene):
         "ERROR: Could not read ACTIVE_JSON (active).")
     if not scene in active_json:                                   return (
                 "ERROR: Scene " + scene + " doesn't exists (active).")
-    if not modules.rm3json.ifexist(modules.rm3config.remotes + "scene_" + scene):   return (
+    if not modules.rm3json.if_exist(modules.rm3config.remotes + "scene_" + scene):   return (
                 "ERROR: Scene " + scene + " doesn't exists (remotes).")
 
     del active_json[scene]
@@ -597,7 +599,7 @@ def deleteScene(scene):
 
     try:
         modules.rm3json.delete(modules.rm3config.remotes + "scene_" + scene)
-        if not modules.rm3json.ifexist(modules.rm3config.remotes + "scene_" + scene):
+        if not modules.rm3json.if_exist(modules.rm3config.remotes + "scene_" + scene):
             return "OK: Scene '" + scene + "' deleted."
         else:
             return "ERROR: Could not delete scene '" + scene + "'"
@@ -621,9 +623,9 @@ def addDevice(device, device_data):
 
     if device in active_json:                                                                           return (
                 "WARN: Device " + device + " already exists (active).")
-    if modules.rm3json.ifexist(modules.rm3config.commands + interface + "/" + device_data["config_device"]): return (
+    if modules.rm3json.if_exist(modules.rm3config.commands + interface + "/" + device_data["config_device"]): return (
                 "WARN: Device " + device + " already exists (devices).")
-    if modules.rm3json.ifexist(modules.rm3config.remotes + device_data["config_remote"]):               return (
+    if modules.rm3json.if_exist(modules.rm3config.remotes + device_data["config_remote"]):               return (
                 "WARN: Device " + device + " already exists (remotes).")
 
     logging.info("addDevice: add " + device)
@@ -709,9 +711,9 @@ def deleteDevice(device):
         "ERROR: Could not read ACTIVE_JSON (active).")
     if not device in active_json:                                             return (
                 "ERROR: Device " + device + " doesn't exists (active).")
-    if not modules.rm3json.ifexist(modules.rm3config.commands + interface + "/" + device_code):      return (
+    if not modules.rm3json.if_exist(modules.rm3config.commands + interface + "/" + device_code):      return (
                 "ERROR: Device " + device + " doesn't exists (commands).")
-    if not modules.rm3json.ifexist(modules.rm3config.remotes + device_remote):                  return (
+    if not modules.rm3json.if_exist(modules.rm3config.remotes + device_remote):                  return (
                 "ERROR: Device " + device + " doesn't exists (remotes).")
 
     interface = active_json[device]["config"]["interface_api"]  ############# funtioniert nicht so richtig ...
@@ -726,7 +728,7 @@ def deleteDevice(device):
         modules.rm3json.delete(file_device_remote)
         modules.rm3json.delete(file_inferface_remote)
 
-        if not modules.rm3json.ifexist(file_device_remote) and not modules.rm3json.ifexist(file_interface_remote):
+        if not modules.rm3json.if_exist(file_device_remote) and not modules.rm3json.if_exist(file_interface_remote):
             message = "OK: Device '" + device + "' deleted."
         else:
             message = "ERROR: Could not delete device '" + device + "'"
@@ -1272,7 +1274,7 @@ def devicesGetStatus(data, readAPI=False):
         queueQuery.add2queue(["END_OF_RELOAD"])
 
     # mark API update as done
-    configFiles.cache_update_api = False
+    configInterfaces.cache_update_api = False
 
     return data
 
