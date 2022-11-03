@@ -55,7 +55,7 @@ def delete(file):
     os.remove(filename)
 
 
-def ifexist(file):
+def if_exist(file):
     filename = path.join(jsonAppDir, jsonPath, file + ".json")
 
     try:
