@@ -66,26 +66,36 @@ function statusCheck_sliderToggle(data) {
                     }
                 statusToggleColor("toggle_"+device+"_"+key+"_input", value);
                 }
+
+            if (document.getElementById("slider_"+device+"_send-"+key+"_input")) {
+
+                slider = document.getElementById("slider_"+device+"_send-"+key+"_input");
+                if (device_api_status.toLowerCase() == "connected" && value.toLowerCase() != "error")   {
+                    // console.debug("statusCheck_sliderToggle: "+device+"_"+key+"="+value+" - "+device_api_status)
+                    statusSliderActiveInactive("slider_"+device+"_send-"+key+"_input", true);
+                    }
+                else {
+                    value = "Error";
+                    console.debug("statusCheck_sliderToggle: "+device+"_send-"+key+"="+value+" - "+device_api_status)
+                    statusSliderActiveInactive("slider_"+device+"_send-"+key+"_input", false);
+                    }
+                }
             }
 	    }
     }
 
 
 // change slider color
-function statusSliderActiveInactive(id,active) {
+function statusSliderActiveInactive(id, active) {
 	if (document.getElementById(id)) {
 	    slider = document.getElementById(id);
 		if (active) {
-		    slider.classList.remove("device_set");
-		    slider.classList.remove("device_off");
-		    slider.classList.remove("device_undef");
-		    slider.classList.add("device_on");
+		    slider.className = "rm-slider device_on";
+		    slider.disabled = false;
 		    }
 		else {
-		    slider.classList.remove("device_set");
-		    slider.classList.remove("device_on");
-		    slider.classList.remove("device_undef");
-		    slider.classList.add("device_off");
+		    slider.className = "rm-slider device_undef";
+		    slider.disabled = true;
 		    }
 		}
 	}
