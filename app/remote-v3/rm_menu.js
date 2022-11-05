@@ -3,25 +3,6 @@
 //--------------------------------
 // class for drop down menu
 //--------------------------------
-/* INDEX:
-function rmMenu(name, menu)
-        this.init                 = function(data)
-    		window.onresize = function(event)
-        this.click_menu          = function()
-        this.menu_height	  = function()
-	this.add_devices          = function(data)
-	this.remoteToggleEditMode = function()
-	this.add_scenes           = function(data)
-	this.add_script           = function(script,label)
-	this.add_link             = function(link,label)
-	this.entry_link           = function(link,label)
-	this.entry_script         = function(script,label)
-	this.entry_device         = function(device,label)
-	this.entry_scene          = function(scene,label)
-        this.writeMenu            = function(menutext)
-        this.readMenu             = function()
-*/
-//--------------------------------
 
 var rmMenu_visibleWidth = 875;
 
@@ -131,30 +112,36 @@ function rmMenu(name, menu) {
 	this.add_scenes           = function(data) {
 
 		// return if no data
-    		if (data) {} else { return; }
-    		
-    		var menu   = this.readMenu();
-    		if (this.data["STATUS"])	{ var error  = this.data["STATUS"]["config_errors"]["scenes"]; }
-    		else				{ var error = {}; }
-    		
-    		for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }    		
+        if (data) {} else { return; }
+
+        var menu   = this.readMenu();
+        if (this.data["STATUS"])    { var error  = this.data["STATUS"]["config_errors"]["scenes"]; }
+        else                        { var error = {}; }
+
+        for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }
 		var order  = sortDict(data,"position");
-		
+
 		for (var j=0;j<order.length;j++) {
 			scene = order[j];
 			if (data[scene]["settings"]["label"]) {
 				if (scene in error) {
-				        if (data[scene]["settings"]["visible"] != "no")	{ menu  += this.entry_scene( scene, "<div class=#entry_error#>! " + data[scene]["settings"]["label"] + "</div>" ); }
-				        else if (this.edit_mode)				{ menu  += this.entry_scene( scene, "<div class=#entry_error#>.(" + data[scene]["settings"]["label"] + ").</div>" ); }
+				        if (data[scene]["settings"]["visible"] != "no")	{
+				            menu  += this.entry_scene( scene, "<div class=#entry_error#>! " + data[scene]["settings"]["label"] + "</div>" );
+				            console.warn("addScenes: "+scene);
+				            console.warn(error[scene]);
+				            }
+				        else if (this.edit_mode) {
+				            menu  += this.entry_scene( scene, "<div class=#entry_error#>.(" + data[scene]["settings"]["label"] + ").</div>" );
+				            }
 					}
 				else {
 				        if (data[scene]["settings"]["visible"] != "no")	{ menu  += this.entry_scene( scene, data[scene]["settings"]["label"] ); }
 				        else if (this.edit_mode)				{ menu  += this.entry_scene( scene, "<div class=#hidden_entry_edit#>.(" + data[scene]["settings"]["label"] + ").</div>" ); }
 					}
 				}
-        		}
+            }
 
-    		this.writeMenu(menu + "<li><hr/></li>");
+        this.writeMenu(menu + "<li><hr/></li>");
 		}
 
 
