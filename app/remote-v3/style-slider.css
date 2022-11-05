@@ -34,7 +34,7 @@
 
    border-radius   :   6px;
    border          : 0px solid #bbbbbb;
-   background-color: #cccccc;
+   background-color: #dddddd;
 
    overflow        : hidden;
    float           : left;
@@ -54,7 +54,7 @@
 
    border-radius   :   6px;
    border          : 0px solid #bbbbbb;
-   background-color: #cccccc;
+   background-color: #dddddd;
    color           : black;
 
    overflow        : hidden;
@@ -83,18 +83,21 @@
 
 /* The slider itself */
 .rm-slider {
+  	-webkit-appearance  : none;     /* Override default look */
+
 	z-index       : 100;
   	width         : 83%;
   	height        : 25px;
   	float         : left;
   	margin        : 3px;
 
-	background    : #DDDDDD; /* Grey background */
-	opacity       : 0.8; /* Set transparency (for mouse-over effects on hover) */
 	-webkit-transition : .2s; /* 0.2 seconds transition on hover */
   	transition    : opacity .2s;
-  	
-	border        : 2px solid #777777;
+/*
+    background    : #DDDDDD;
+    opacity       : 0.8;
+    border        : 2px solid #777777;
+*/
 	border-radius : 13px;
 }
 
@@ -141,28 +144,29 @@
 
 /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
 .rm-slider::-webkit-slider-runnable-track {
-  	-webkit-appearance  : none;	/* Override default look */
+  	-webkit-appearance  : none;     /* Override default look */
   	appearance          : none;
   	width               : 29px;		/* Set a specific slider handle width */
   	height              : 29px;		/* Slider handle height */
-  	background          : #223322;		/* Green background */
+  	background          : #223322;	/* Green background */
   	cursor              : pointer;	/* Cursor on hover */
   	border-radius       : 15px;
 	border              : 2px solid #777777;
 }
 
 .rm-slider::-webkit-slider-thumb {
-  	-webkit-appearance  : none;	/* Override default look */
+  	-webkit-appearance  : none;	    /* Override default look */
   	appearance          : none;
   	width               : 25px;		/* Set a specific slider handle width */
   	height              : 25px;		/* Slider handle height */
-  	background          : green;		/* Green background */
+  	background          : green;	/* Green background */
   	cursor              : pointer;	/* Cursor on hover */
   	border-radius       : 13px;
 	border              : 2px solid #00cc00;
 }
 
 .rm-slider::-moz-range-thumb {
+  	-webkit-appearance  : none;	    /* Override default look */
 	width               : 25px;		/* Set a specific slider handle width */
 	height              : 25px;		/* Slider handle height */
   	background          : green; 	/* Green background */
