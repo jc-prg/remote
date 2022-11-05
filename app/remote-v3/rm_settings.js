@@ -69,7 +69,7 @@ function rmSettings (name) {	// IN PROGRESS
 			if (test) 	{this.test_info = "Test Stage";}
 			else 		{this.test_info = "Prod Stage";}
 			
-                	this.inital_load = false;
+                	this.initial_load = false;
                 	this.logging.default("Initialized new class 'rmSettings'.");
                 	}
                 else {
