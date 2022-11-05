@@ -240,28 +240,27 @@ function rmRemoteButtons(name) {
 
 	// create button for multiple commands (makro)
 	this.makro           = function (id, label, scene, style, makro, disabled ) {	// ALT: ( id, makro, label, style, disabled ) {
-	        if (makro) {
-        	        var d = this.image( label, style );
-                	var makro_string = "";
-                	var makro_wait = "";
+        if (makro) {
+            var d = this.image( label, style );
+            var makro_string = "";
+            var makro_wait = "";
 
-                	for (var i=0; i<makro.length; i++) { 
-                	
-                		if (isNaN(makro[i]) && makro[i].indexOf("WAIT") > -1) {
-                			var wait = makro[i].split("-");
-                			makro_wait = 'appMsg.wait_time("'+lang("MAKRO_PLEASE_WAIT")+'", '+wait[1]+');';
-                			}
-                		else { 
-                			makro_string = makro_string + makro[i] + "::";
-                			}
-                		}
-                	var b = this.default( id, d[0], d[1], 'apiMakroSend("'+makro_string+'","'+scene+'");'+makro_wait, disabled );
-			this.logging.debug("button_makro - "+b);
-			return b;
-                	}
-        	else {	return this.default( id, label, style+" notfound", "", "disabled" );
-                	}
-		}
+            for (var i=0; i<makro.length; i++) {
+
+                if (isNaN(makro[i]) && makro[i].indexOf("WAIT") > -1) {
+                    var wait = makro[i].split("-");
+                    makro_wait = 'appMsg.wait_time("'+lang("MAKRO_PLEASE_WAIT")+'", '+wait[1]+');';
+                    }
+                else {
+                    makro_string = makro_string + makro[i] + "::";
+                    }
+                }
+            var b = this.default( id, d[0], d[1], 'apiMakroSend("'+makro_string+'","'+scene+'");'+makro_wait, disabled );
+            this.logging.debug("button_makro - "+b);
+            return b;
+            }
+        else { return this.default( id, label, style+" notfound", "", "disabled" ); }
+        }
 		
 	// create button for channel (makro)
 	this.channel         = function (id, label, scene, makro, style, disabled="") {

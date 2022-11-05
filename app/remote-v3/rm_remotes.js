@@ -53,7 +53,7 @@ function rmRemote(name) {
 			this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance);
 	                
                 	this.logging.default("Initialized new class 'rmRemotes'.");
-                	this.inital_load = false;
+                	this.initial_load = false;
                 	}
                 else {	this.logging.default("Reload data 'rmRemotes'.");
                 	}
@@ -641,6 +641,7 @@ function rmRemote(name) {
 		var remote            = "";
 		var remote_definition = [];
 		var remote_channel    = [];
+		var toggle_done;
 
 		if (this.data["DATA"]["scenes"][scene] && this.data["DATA"]["scenes"][scene]["remote"] && this.data["DATA"]["scenes"][scene]["remote"]["remote"]) {
 			}		
@@ -740,23 +741,33 @@ function rmRemote(name) {
 			else if (button[1] == "keyboard")            { this.keyboard.set_device(button[0]);
                                                            next_button = this.button.device_keyboard( cmd, button[1], device, "", cmd, "" );
                                                            this.active_buttons.push(cmd); }
-			else if (button == "HEADER-IMAGE")           { next_button = this.scene_header_image(id, scene); }
+			else if (button[0].indexOf("HEADER-IMAGE") == 0) {
+			                                               var toggle_html = "";
+			                                               if (remote_definition[i+1].indexOf("TOGGLE") == 0 && button_def.indexOf("toggle") > 0) {
+			                                                    var toggle = remote_definition[i+1];
+			                                                    toggle_html = this.slider_element_toggle(id, toggle, "devices", toggle.split("||"), short=true);
+			                                                    toggle_done = i+1;
+			                                                    }
+			                                               next_button = this.scene_header_image(id, scene, toggle_html);
+			                                               }
 			else if (button == "DISPLAY")                { next_button = this.display.default(id, scene, "scenes", remote_displaysize, remote_display); }
 
 			else if (button.length > 1 && button[1].indexOf("SLIDER") == 0)
 			                                             { next_button = this.slider_element(id, button[0], "devices", button[1].split("||")); }
-			else if (button_def.indexOf("TOGGLE") == 0)
-			                                             { next_button = this.slider_element_toggle(id, button_def, "devices", button_def.split("||")); }
-
+			else if (button_def.indexOf("TOGGLE") == 0)  { if (i != toggle_done) {
+			                                                    next_button = this.slider_element_toggle(id, button_def, "devices", button_def.split("||"), short=false);
+			                                                    }
+			                                             }
 			else 						                 { next_button = this.button.device( cmd, button[1], remote_label, "", cmd, "" );
 			                                               this.active_buttons.push(cmd); }
 									  
 			if (this.edit_mode) {
-				if (button[0].indexOf("LINE") == 0)			{ this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,20); }
-				else if (button[0].indexOf("HEADER-IMAGE") == 0)	{ this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,160); }
-				else if (button[0].indexOf("SLIDER") == 0)		{ this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,50); }
-				else if (button[0].indexOf("DISPLAY") == 0)		{ this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
-				else				    			{ this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
+				if (button[0].indexOf("LINE") == 0)                 { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,20); }
+				else if (button[0].indexOf("HEADER-IMAGE") == 0)    { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,160); }
+				else if (button[0].indexOf("SLIDER") == 0)          { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,50); }
+				else if (button[0].indexOf("TOGGLE") == 0)          { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,50); }
+				else if (button[0].indexOf("DISPLAY") == 0)         { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
+				else                                                { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
 				next_button = this.tooltip.create( next_button, contextmenu, i );
 				}
 
@@ -824,7 +835,7 @@ function rmRemote(name) {
 		if (this.edit_mode)     { elementVisible(id); }
 		else                    { elementHidden(id,"scene_edit"); return; }
 	        
-	        if (this.data["STATUS"]["config_errors"]["scenes"][scene] || !this.data["DATA"]["scenes"][scene]["settings"]) {
+        if (this.data["STATUS"]["config_errors"]["scenes"][scene] || !this.data["DATA"]["scenes"][scene]["settings"]) {
 	        	setTextById(id,"");
 	        	return;
 	        	}
@@ -876,13 +887,13 @@ function rmRemote(name) {
 	// create edit panel to edit JSON data
 	this.scene_edit_json         = function (id, scene, preview_remote="", preview_channel="", preview_display="", preview_display_size="") {
 	
-	        if (this.edit_mode)		{ elementVisible(id); }
-	        else				{ elementHidden(id,"scene_edit_json"); return; }
+        if (this.edit_mode) { elementVisible(id); }
+        else                { elementHidden(id,"scene_edit_json"); return; }
 
-	        if (this.data["STATUS"]["config_errors"]["scenes"][scene] || !this.data["DATA"]["scenes"][scene]["settings"]) {
-	        	setTextById(id,"");
-	        	return;
-	        	}
+        if (this.data["STATUS"]["config_errors"]["scenes"][scene] || !this.data["DATA"]["scenes"][scene]["settings"]) {
+            setTextById(id,"");
+            return;
+            }
 
 		var scene_remote  	= this.data["DATA"]["scenes"][scene]["remote"];
 		var scene_info    	= this.data["DATA"]["scenes"][scene]["settings"];
@@ -892,8 +903,8 @@ function rmRemote(name) {
 		var link_template 	= this.app_name+".remote_import_templates('scene','"+scene+"','add_template','scene_json_buttons');";
 		var link_preview  	= this.app_name+".scene_remote_preview('"+scene+"');";
 	        
-	        var device_display	= {};
-	        var device_makro	= {};
+        var device_display	= {};
+        var device_makro	= {};
 	        
 		for (key in this.data["DATA"]["devices"]) { 
 			device_makro[key]   = "Device: "+remote_info[key]["settings"]["label"];
@@ -907,19 +918,19 @@ function rmRemote(name) {
 		var device_display_onchange = this.app_name +".scene_display_select(div_id='add_display_input','add_display_value','add_display_device');";			
 				
 		// check if preview
-		if (preview_remote == "")		{ remote_definition  = scene_remote["remote"]; }
-		else					{ remote_definition  = this.json.get_value(preview_remote, scene_remote["remote"]); preview = true; }
+		if (preview_remote == "")       { remote_definition  = scene_remote["remote"]; }
+		else                            { remote_definition  = this.json.get_value(preview_remote, scene_remote["remote"]); preview = true; }
 
-		if (preview_display == "")		{ remote_display     = scene_remote["display"]; }
-		else					{ remote_display     = this.json.get_value(preview_display,scene_remote["display"]); preview = true; }
-		if (remote_display == undefined)	{ remote_display     = {}; }		
+		if (preview_display == "")      { remote_display     = scene_remote["display"]; }
+		else                            { remote_display     = this.json.get_value(preview_display,scene_remote["display"]); preview = true; }
+		if (remote_display == undefined) { remote_display     = {}; }
 
-		if (preview_channel == "")		{ remote_channel     = scene_remote["channel"]; }
-		else					{ remote_channel     = this.json.get_value(preview_channel,scene_remote["channel"]); preview = true; }
+		if (preview_channel == "")      { remote_channel     = scene_remote["channel"]; }
+		else                            { remote_channel     = this.json.get_value(preview_channel,scene_remote["channel"]); preview = true; }
 		
 		if (preview_display_size == "")	{ remote_displaysize = scene_remote["display-size"]; }
-		else					{ remote_displaysize = this.json.get_value(preview_display_size,scene_remote["display-size"]); preview = true; }
-		if (remote_displaysize == undefined)	{ remote_displaysize = "middle"; }
+		else                            { remote_displaysize = this.json.get_value(preview_display_size,scene_remote["display-size"]); preview = true; }
+		if (remote_displaysize == undefined) { remote_displaysize = "middle"; }
 
 
 		// header
@@ -987,8 +998,8 @@ function rmRemote(name) {
 				this.button.edit("N/A","","disabled") 
 				);
 		edit   += this.tab.row(
-				this.basic.input("scene_display_label",lang("LANG")),
-				this.button.edit(display_add_cmd,lang("BUTTON_T_VALUE")) 
+				this.basic.input("scene_display_label",lang("LABEL")),
+				this.button.edit(display_add_cmd,lang("BUTTON_T_VALUE"))
 				);
 		edit   += this.tab.line();
 		edit   += this.tab.row(
@@ -1041,7 +1052,7 @@ function rmRemote(name) {
 		}
 
     // create header image for scenes
-	this.scene_header_image      = function (id, scene, selected="") {
+	this.scene_header_image      = function (id, scene, toggle_html, selected="") {
 	
 		var scene_info    = this.data["DATA"]["scenes"][scene]["settings"];
 		var scene_images  = this.data["CONFIG"]["scene_images"];
@@ -1056,7 +1067,13 @@ function rmRemote(name) {
 			}
 
 		if (image && image != "") {
-			return "<button class='button header_image' style='background-image:url("+rm3scene_dir+image+")'><div class='header_image_fade'><div class='header_image_text'>&nbsp;<br/>"+label+"</div></div></button>";
+			var image_html = "<button class='button header_image' style='background-image:url("+rm3scene_dir+image+")'>";
+			image_html    += " <div class='header_image_toggle_container' id='toggle_place_"+id+"'>"+toggle_html+"</div>";
+			image_html    += " <div class='header_image_fade'>";
+			image_html    += "  <div class='header_image_text'>&nbsp;<br/>&nbsp;<br/>"+label+"</div>";
+			image_html    += " </div>";
+			image_html    += "</button>";
+			return image_html;
 			}
 		}
 
@@ -1307,17 +1324,19 @@ function rmRemote(name) {
 			list[key] = key;
 			}
 
-		return this.basic.select(id,"header-image",list,"rm3remotes.image_preview();",selected);
+		return this.basic.select(id,"header-image",list,"rm3remotes.image_preview('"+id+"');",selected);
 		}
 
 	// header-image preview
-	this.image_preview          = function () {
+	this.image_preview          = function (id) {
 	    var images     = this.data["CONFIG"]["scene_images"];
-	    var selected   = getValueById("edit_image");
-	    var image_html = this.scene_header_image(id, scene, selected);
-	    var image_html = "<img src='"+rm3scene_dir+images[selected][0]+"' style='width:100%;'>";
-	    image_html += "<br/><small><a href='" + images[selected][1]+"' target='_blank'>"+ images[selected][1]+"</a></small><br/>&nbsp;";
-	    setTextById("scene_edit_header_image", image_html);
+        var selected   = getValueById("edit_image");
+        if (images[selected]) {
+            var image_html = this.scene_header_image(id, scene, selected);
+            var image_html = "<img src='"+rm3scene_dir+images[selected][0]+"' style='width:100%;'>";
+            image_html += "<br/><small><a href='" + images[selected][1]+"' target='_blank'>"+ images[selected][1]+"</a></small><br/>&nbsp;";
+            setTextById("scene_edit_header_image", image_html);
+            }
 	}
                         
 	// return list of buttons for a device
@@ -1494,17 +1513,32 @@ function rmRemote(name) {
 		}
 
 	// create toggle element (ON | OFF) - "TOGGLE||<status-field>||<description/label>||<TOGGLE_CMD_ON>||<TOGGLE_CMD_OFF>"
-	this.slider_element_toggle  = function (id, device, type="device", data) {
+	this.slider_element_toggle  = function (id, device, type="device", data, short=false) {
 		console.debug("slider_element_toggle: "+id+"/"+device+"/"+type+"/"+data);
 
 		var init, key, status_data;
+		var reset_value = "";
 		var key;
 		var min = 0;
 		var max = 1;
+		var device_id = device.split("_");
+		device_id = device_id[0].split("||");
 
-       	var display_start = "<button id=\"slider_"+device+"_"+data[1]+"\" class=\"rm-toggle-label long\">"+data[2]+"</button>";
-       	display_start    += "<button id=\"slider_"+device+"_"+data[1]+"\" class=\"rm-toggle-button\">";
-       	var display_end   = "</button>";
+        if (this.data["CONFIG"]["devices"][device_id[1]] && this.data["CONFIG"]["devices"][device_id[1]]["interface"]["method"] != "query") {
+            reset_value   = "<font style='color:gray'>[<status onclick=\"appFW.requestAPI('GET',['set','"+device_id[1]+"','power','OFF'], '', '', '' );\" style='cursor:pointer;'>OFF</status> | ";
+            reset_value      += "<status onclick=\"appFW.requestAPI('GET',['set','"+device_id[1]+"','power','ON'], '', '', '' );\" style='cursor:pointer;'>ON</status>]</font>";
+            }
+       	var toggle_start  = "";
+       	var toggle_end    = "";
+       	if (!short) {
+       	    toggle_start   += "<button id=\"slider_"+device+"_"+data[1]+"\" class=\"rm-toggle-label long\">"+data[2]+" &nbsp; &nbsp;  "+reset_value+"</button>";
+       	    toggle_start   += "<button id=\"slider_"+device+"_"+data[1]+"\" class=\"rm-toggle-button\">";
+            toggle_end     += "</button>";
+       	    }
+       	else {
+       	    toggle_start   += "<div class='header_image_toggle'>"
+       	    toggle_end     += "</div>"
+       	    }
 
        	var device_key    = data[1].split("_");
         if (device_key.length > 1) { device = device_key[0]; key = device_key[1]}
@@ -1527,9 +1561,9 @@ function rmRemote(name) {
 		//var remote_data   = this.data["DATA"][type][device]["remote"];
 		//var status_data   = this.data["STATUS"]["devices"][device];
 
-       	var text = display_start;
+       	var text = toggle_start;
        	text += this.slider.toggleHTML(name=data[1], label=data[2], device=device, command_on=data[3], command_off=data[4], init);
-       	text += display_end;
+       	text += toggle_end;
        	return text;
 	}
 	

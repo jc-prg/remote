@@ -64,30 +64,39 @@ function rmSlider(name) {
 	}
 
 	this.toggleHTML = function(name, label, device, command_on, command_off, init="") {
+
 		var setValueCmd, class_init;
-		var setValueCmd_red    = " this.className='rm-slider device_off'; slider.disabled = false; ";
-		var setValueCmd_green  = " this.className='rm-slider device_on'; slider.disabled = false; ";
+		var setValueCmd_red    = " this.className='rm-slider device_off';   slider.disabled = false; ";
+		var setValueCmd_green  = " this.className='rm-slider device_on';    slider.disabled = false; ";
 		var setValueCmd_gray   = " this.className='rm-slider device_undef'; slider.disabled = true;";
 		var setValueCmd_set    = " this.className='rm-slider device_set'; ";
 		var defaultValue;
 
-		var value_key          = name.split("_");
+		var value_key          =    name.split("_");
 		if (value_key.length > 1)   { value_key = value_key[1]; }
 		else                        { value_key = name; }
 
+        var setCmdOn             = "if (document.getElementById('toggle_"+device+"_"+value_key+"_value').value==1) ";
+        setCmdOn                += "{ apiCommandSend('"+command_on+"','','','toggle'); }";
+        setCmdOn                += " else ";
+        setCmdOn                += "{ apiCommandSend('"+command_off+"','','','toggle'); } ";
 
-		setValueCmd             =  "";
-		setValueCmd             += " onClick=\"if(this.value==0) { "+setValueCmd_set+" } else { "+setValueCmd_set+" };\" "
-		setValueCmd             += " onTouchEnds=\"if(this.value==0) { "+setValueCmd_set+" } else { "+setValueCmd_set+" };\" "
-//		setValueCmd             +=  " onMouseUp=\"if(this.value==0) { this.value=1; } else { this.value=0; }; document.getElementById('"+name+"_value').innerHTML = this.value;\" ";
-		setValueCmd             += " ";
+        var setCmdOnClick        = "if(this.value==0) { "+setValueCmd_set+" } ";
+        setCmdOnClick           += "else { "+setValueCmd_set+" };document.getElementById('toggle_"+device+"_"+value_key+"_value').value=this.value;"+setCmdOn;
+
+//        setCmdOnClick           += "alert(this.value+'|'+document.getElementById('toggle_"+device+"_"+value_key+"_value').value+'|'+document.getElementById('toggle_"+device+"_"+value_key+"_last_value').value);";
+
+		var setValueCmd          = " onClick=\""+setCmdOnClick+"\" ";
+		setValueCmd             += " onTouchEnds=\""+setCmdOnClick+"\" ";
 
         if (init == "")       { defaultValue = "0";  class_init = "device_undef"; }
         else if (init == "1") { defaultValue = init; class_init = "device_on"; }
         else if (init == "0") { defaultValue = init; class_init = "device_off"; }
 
 		this.toggle_code   		=  "<div id=\"toggle_"+name+"_container\" class=\"rm-slidecontainer\" style=\"display:block\">";
-  		this.toggle_code   		+= "<input type=\"range\" min=\"0\" max=\"1\" value=\""+defaultValue+"\" class=\"rm-slider "+class_init+"\" id=\"toggle_"+device+"_"+value_key+"_input\" "+setValueCmd+">";
+        this.toggle_code   		+= "<input type=\"range\" min=\"0\" max=\"1\" value=\""+defaultValue+"\" class=\"rm-slider "+class_init+"\" id=\"toggle_"+device+"_"+value_key+"_input\" "+setValueCmd+">";
+  		this.toggle_code        += "<input id=\"toggle_"+device+"_"+value_key+"_value\" value=\""+defaultValue+"\" style=\"display:none\">";
+  		this.toggle_code        += "<input id=\"toggle_"+device+"_"+value_key+"_last_value\" value=\""+defaultValue+"\" style=\"display:none\">";
 		this.toggle_code   		+= "</div>";
 		return this.toggle_code;
 	}
