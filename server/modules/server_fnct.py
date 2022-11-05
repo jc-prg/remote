@@ -31,16 +31,16 @@ RmReadData_errors = {}
 
 
 def refreshCache():
-    '''
+    """
     Reset vars to enforce a refresh of all cached data
-    '''
+    """
     configFiles.update()
 
 
 def RmReadData_devicesConfig():
-    '''
+    """
     read configuration of all devices
-    '''
+    """
     config_keys = ["buttons", "commands", "url", "method"]
     data = {}
     data = configFiles.read_status()
@@ -136,9 +136,9 @@ def RmReadData_devicesConfig():
 
 
 def RmReadData_devices(selected=[], remotes=True, config_only=False):
-    '''
+    """
     read data for devices and combine with remote definition -> base for CONFIG and STATUS also
-    '''
+    """
     global RmReadData_errors
 
     config_keys = ["buttons", "commands", "url", "method"]
@@ -228,9 +228,9 @@ def RmReadData_devices(selected=[], remotes=True, config_only=False):
 
 
 def RmReadData_deviceStatus():
-    '''
-    read status data for devices 
-    '''
+    """
+    read status data for devices
+    """
     status = {}
     data = {}
     data = configFiles.read_status()
@@ -249,9 +249,9 @@ def RmReadData_deviceStatus():
 
 
 def RmReadData_sceneStatus():
-    '''
-    read status data for devices 
-    '''
+    """
+    read status data for devices
+    """
     status = {}
     data = {}
     data = RmReadData_scenes()  # configFiles.read(modules.active_scenes)
@@ -265,9 +265,9 @@ def RmReadData_sceneStatus():
 
 
 def RmWriteData_devices(data):
-    '''
+    """
     write config data for devices and remove data not required in the file
-    '''
+    """
     var_relevant = ["config", "settings", "status"]
 
     logging.info(str(data))
@@ -297,9 +297,9 @@ def RmReadData_makros(selected=[]):
 
 
 def RmWriteData_makros(data):
-    '''
+    """
     write config data for scenes and remove temp parameter required e.g. for REST API
-    '''
+    """
     var_relevant = ["description", "makro", "dev-on", "dev-off", "scene-on", "scene-off"]
     var_delete = []
 
@@ -314,9 +314,9 @@ def RmWriteData_makros(data):
 
 
 def RmReadData_scenes(selected=[], remotes=True):
-    '''
+    """
     read config data for scenes and combine with remote definition
-    '''
+    """
     global RmReadData_errors
 
     data = {}
@@ -335,7 +335,7 @@ def RmReadData_scenes(selected=[], remotes=True):
                         logging.error("Error reading config file '" + remote_file + "': " + remote_config["ERROR_MSG"])
                         if not scene in RmReadData_errors["scenes"]: RmReadData_errors["scenes"][scene] = {}
                         RmReadData_errors["scenes"][scene][modules.rm3config.scenes + remote_file + ".json"] = \
-                        remote_config["ERROR_MSG"]
+                            remote_config["ERROR_MSG"]
                         data[scene]["remote"] = "error"
                 except Exception as e:
                     error_msg = "Reading scene failed: " + str(scene) + " / " + str(selected) + " (" + str(e) + ")"
@@ -351,9 +351,9 @@ def RmReadData_scenes(selected=[], remotes=True):
 
 
 def RmWriteData_scenes(data):
-    '''
+    """
     write config data for scenes and remove temp parameter required e.g. for REST API
-    '''
+    """
     var_relevant = ["config", "settings", "status"]
     var_delete = []
 
@@ -370,9 +370,9 @@ def RmWriteData_scenes(data):
 
 
 def RmReadData_templates(selected=[]):
-    '''
+    """
     read config data for templates
-    '''
+    """
     data = {}
     data["templates"] = {}
     data["template_list"] = {}
@@ -407,9 +407,9 @@ def RmReadData_templates(selected=[]):
 
 
 def RmReadData(selected=[]):
-    '''
+    """
     Read all relevant data and create data structure
-    '''
+    """
 
     data = {}
     btnfile = ["buttons", "commands", "url"]
@@ -449,25 +449,26 @@ def RmReadData(selected=[]):
 
 
 def addScene(scene, info):
-    '''
+    """
     add new scene in active_jsons and create scene remote layout
-    '''
+    """
     active_json = RmReadData_scenes(selected=[], remotes=False)  # configFiles.read(modules.active_scenes)
 
-    if scene in active_json:                    return ("WARN: Scene " + scene + " already exists (active).")
+    if scene in active_json:
+        return "WARN: Scene " + scene + " already exists (active)."
     if modules.rm3json.if_exist(modules.rm3config.remotes + "scene_" + scene):    return (
-                "WARN: Scene " + scene + " already exists (remotes).")
+            "WARN: Scene " + scene + " already exists (remotes).")
 
     logging.info("addScene: add " + scene)
 
-    ## set last position
+    # set last position
     active_json_position = 0
     for key in active_json:
         if active_json[key]["settings"]["position"] > active_json_position:
             active_json_position = active_json[key]["settings"]["position"]
     active_json_position += 1
 
-    ## add to _active.json 
+    # add to _active.json
     active_json[scene] = {
         "config": {
             "remote": "scene_" + scene
@@ -489,7 +490,7 @@ def addScene(scene, info):
     except Exception as e:
         return "ERROR: " + str(e)
 
-    ## add to devices = button definitions
+    # add to devices = button definitions
     remote = {
         "info": "jc://remote/ - In this file the remote layout and channel makros for the scene are defined.",
         "data": {
@@ -510,43 +511,44 @@ def addScene(scene, info):
 
 
 def editScene(scene, info):
-    '''
+    """
     edit scene data in json file
-    '''
+    """
     keys_active = ["label", "description", "image"]
     keys_remotes = ["label", "remote", "channel", "devices", "display", "display-size", "type"]
 
     # check data format
-    if not isinstance(info, dict):                        return "ERROR: wrong data format - not a dict."
+    if not isinstance(info, dict):
+        return "ERROR: wrong data format - not a dict."
     if "remote" in info:
-        if not isinstance(info["remote"], list):            return "ERROR: wrong data format - 'remote' is not a list."
+        if not isinstance(info["remote"], list):
+            return "ERROR: wrong data format - 'remote' is not a list."
         for entry in info["remote"]:
-            if not isinstance(entry,
-                              str):                   return "ERROR: wrong data format - 'remote' other than strings (" + str(
-                entry) + ")."
+            if not isinstance(entry, str):
+                return "ERROR: wrong data format - 'remote' other than strings (" + str(entry) + ")."
     if "devices" in info:
-        if not isinstance(info["devices"], list):           return "ERROR: wrong data format - 'devices' is not a list."
+        if not isinstance(info["devices"], list):
+            return "ERROR: wrong data format - 'devices' is not a list."
         for entry in info["devices"]:
-            if not isinstance(entry,
-                              str):                   return "ERROR: wrong data format - 'devices' other than strings (" + str(
-                entry) + ")."
+            if not isinstance(entry, str):
+                return "ERROR: wrong data format - 'devices' other than strings (" + str(entry) + ")."
     if "channel" in info:
-        if not isinstance(info["channel"], dict):           return "ERROR: wrong data format - 'channel' is not a dict."
+        if not isinstance(info["channel"], dict):
+            return "ERROR: wrong data format - 'channel' is not a dict."
         for key in info["channel"]:
-            if not isinstance(info["channel"][key],
-                              list):  return "ERROR: wrong data format - 'channel' contains not a list (" + str(
-                key) + ")."
+            if not isinstance(info["channel"][key], list):
+                return "ERROR: wrong data format - 'channel' contains not a list (" + str(key) + ")."
             for entry in info["channel"][key]:
-                if not isinstance(entry,
-                                  str):                return "ERROR: wrong data format - 'channel' list contains other than strings (" + str(
-                    entry) + ")."
+                if not isinstance(entry, str):
+                    return "ERROR: wrong data format - 'channel' list contains other than strings (" + str(entry) + ")."
 
     # read central config file
     active_json = RmReadData_scenes(selected=[], remotes=False)
 
     # read remote layout definitions
     remotes = configFiles.read(modules.rm3config.remotes + "scene_" + scene)
-    if "ERROR" in remotes: return ("ERROR: Scene " + scene + " doesn't exists (remotes).")
+    if "ERROR" in remotes:
+        return "ERROR: Scene " + scene + " doesn't exists (remotes)."
 
     i = 0
     for key in keys_active:
@@ -580,18 +582,18 @@ def editScene(scene, info):
 
 
 def deleteScene(scene):
-    '''
+    """
     delete scene from json config file and scene device related files
-    '''
+    """
 
     active_json = RmReadData_scenes(selected=[], remotes=False)  # configFiles.read(modules.active_scenes)
 
     if "ERROR" in active_json:                                     return (
         "ERROR: Could not read ACTIVE_JSON (active).")
     if not scene in active_json:                                   return (
-                "ERROR: Scene " + scene + " doesn't exists (active).")
+            "ERROR: Scene " + scene + " doesn't exists (active).")
     if not modules.rm3json.if_exist(modules.rm3config.remotes + "scene_" + scene):   return (
-                "ERROR: Scene " + scene + " doesn't exists (remotes).")
+            "ERROR: Scene " + scene + " doesn't exists (remotes).")
 
     del active_json[scene]
     # configFiles.write(modules.active_scenes, active_json)
@@ -608,9 +610,9 @@ def deleteScene(scene):
 
 
 def addDevice(device, device_data):
-    '''
+    """
     add new device to config file and create command/remote files
-    '''
+    """
 
     logging.warning(str(device_data))
 
@@ -622,11 +624,11 @@ def addDevice(device, device_data):
     active_json = configFiles.read_status()
 
     if device in active_json:                                                                           return (
-                "WARN: Device " + device + " already exists (active).")
+            "WARN: Device " + device + " already exists (active).")
     if modules.rm3json.if_exist(modules.rm3config.commands + interface + "/" + device_data["config_device"]): return (
-                "WARN: Device " + device + " already exists (devices).")
+            "WARN: Device " + device + " already exists (devices).")
     if modules.rm3json.if_exist(modules.rm3config.remotes + device_data["config_remote"]):               return (
-                "WARN: Device " + device + " already exists (remotes).")
+            "WARN: Device " + device + " already exists (remotes).")
 
     logging.info("addDevice: add " + device)
 
@@ -694,9 +696,9 @@ def addDevice(device, device_data):
 
 
 def deleteDevice(device):
-    '''
+    """
     delete device from json config file and delete device related files
-    '''
+    """
 
     message = ""
     devices = {}
@@ -710,11 +712,11 @@ def deleteDevice(device):
     if "ERROR" in active_json:                                                return (
         "ERROR: Could not read ACTIVE_JSON (active).")
     if not device in active_json:                                             return (
-                "ERROR: Device " + device + " doesn't exists (active).")
+            "ERROR: Device " + device + " doesn't exists (active).")
     if not modules.rm3json.if_exist(modules.rm3config.commands + interface + "/" + device_code):      return (
-                "ERROR: Device " + device + " doesn't exists (commands).")
+            "ERROR: Device " + device + " doesn't exists (commands).")
     if not modules.rm3json.if_exist(modules.rm3config.remotes + device_remote):                  return (
-                "ERROR: Device " + device + " doesn't exists (remotes).")
+            "ERROR: Device " + device + " doesn't exists (remotes).")
 
     interface = active_json[device]["config"]["interface_api"]  ############# funtioniert nicht so richtig ...
     for entry in active_json:
@@ -750,9 +752,9 @@ def deleteDevice(device):
 
 
 def editDevice(device, info):
-    '''
+    """
     edit device data in json file
-    '''
+    """
 
     keys_active = ["label", "image", "description", "main-audio", "interface"]
     keys_commands = ["description", "method"]
@@ -818,9 +820,9 @@ def editDevice(device, info):
 
 
 def addCommand2Button(device, button, command):
-    '''
+    """
     add new command to button or change existing
-    '''
+    """
 
     config = configFiles.read_status()
     interface = config[device]["config"]["interface_api"]
@@ -843,9 +845,9 @@ def addCommand2Button(device, button, command):
 
 
 def addButton(device, button):
-    '''
+    """
     add new button to remote layout
-    '''
+    """
 
     config = configFiles.read_status()
     interface = config[device]["config"]["interface_api"]
@@ -870,9 +872,9 @@ def addButton(device, button):
 
 
 def deleteCmd(device, button):
-    '''
+    """
     delete command (not button) from json config file
-    '''
+    """
 
     config = configFiles.read_status()
     interface = config[device]["config"]["interface_api"]
@@ -892,9 +894,9 @@ def deleteCmd(device, button):
 
 
 def deleteButton(device, button_number):
-    '''
+    """
     delete button (not command) from json config file
-    '''
+    """
 
     buttonNumber = int(button_number)
     config = configFiles.read_status()
@@ -916,9 +918,9 @@ def deleteButton(device, button_number):
 
 
 def editMakros(makros):
-    '''
+    """
     check if format is correct and save makros
-    '''
+    """
     makro_keys = ["makro", "dev-on", "dev-off", "scene-on", "scene-off"]
 
     if not isinstance(makros, dict):                  return "ERROR: wrong data format - not a dict."
@@ -944,9 +946,9 @@ def editMakros(makros):
 
 
 def addTemplate(device, template):
-    '''
+    """
     add / overwrite remote layout definition by template
-    '''
+    """
 
     templates = configFiles.read(modules.rm3config.templates + template)
     config = configFiles.read_status()
@@ -986,9 +988,9 @@ def addTemplate(device, template):
 
 
 def changeVisibility(type, device, visibility):
-    '''
+    """
     change visibility in device configuration (yes/no)
-    '''
+    """
 
     if type == "remote":
 
@@ -1024,9 +1026,9 @@ def changeVisibility(type, device, visibility):
 
 
 def moveDeviceScene(button_type, device, direction):
-    '''
+    """
     move device or scene button, direction => -x steps backward / x steps forward
-    '''
+    """
 
     if button_type == "device":
         status = configFiles.read_status()
@@ -1110,9 +1112,9 @@ def moveDeviceScene(button_type, device, direction):
 
 
 def setStatus(device, key, value):
-    '''
+    """
     change status and write to file
-    '''
+    """
 
     status = configFiles.read_status()
 
@@ -1133,8 +1135,9 @@ def setStatus(device, key, value):
 
 
 def getStatus(device, key):
-    '''get status of device'''
-
+    """
+    get status of device
+    """
     status = configFiles.read_status()
 
     if not device in status:
@@ -1153,7 +1156,9 @@ def getStatus(device, key):
 
 
 def resetStatus():
-    '''set status for all devices to OFF'''
+    """
+    set status for all devices to OFF
+    """
 
     status = configFiles.read_status()
 
@@ -1174,7 +1179,9 @@ def resetStatus():
 
 
 def resetAudio():
-    '''set status for all devices to OFF'''
+    """
+    set status for all devices to OFF
+    """
 
     status = configFiles.read_status()
 
@@ -1197,9 +1204,9 @@ def resetAudio():
 
 
 def setMainAudioDevice(device):
-    '''
+    """
     set device as main audio device
-    '''
+    """
 
     return_msg = ""
     status = configFiles.read_status()
@@ -1219,10 +1226,10 @@ def setMainAudioDevice(device):
 
 
 def devicesGetStatus(data, readAPI=False):
-    '''
+    """
     read status data from config file (method=record) and/or device APIs (method=query)
     data -> data["DATA"]["devices"]
-    '''
+    """
 
     # devices = configFiles.read_status()
     devices = RmReadData_devices([], True, False)
@@ -1280,9 +1287,9 @@ def devicesGetStatus(data, readAPI=False):
 
 
 def getButtonValue(device, button):
-    '''
+    """
     Get Status from device for a specific button or display value
-    '''
+    """
 
     power_buttons = ["on", "on-off", "off"]
     if button in power_buttons: button = "power"
@@ -1303,10 +1310,10 @@ def getButtonValue(device, button):
 
 
 def setButtonValue(device, button, state):
-    '''
+    """
     Set Status of device for a specific button or display value (method = "record")
     used via callback from queueSend also
-    '''
+    """
 
     power_buttons = ["on", "on-off", "off"]
     vol_buttons = ["vol+", "vol-"]
@@ -1332,4 +1339,3 @@ def setButtonValue(device, button, state):
     else:
         logging.warn("setButtonValue: Wrong method (" + method + "," + device + "," + button + ")")
         return "ERROR: Wrong method (" + method + ")"
-
