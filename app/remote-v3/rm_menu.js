@@ -12,7 +12,7 @@ function rmMenu(name, menu) {
 	this.app_name    = name;
 	this.data        = {};
 	this.edit_mode   = false;
-	this.inital_load = true;
+	this.initial_load = true;
 	this.logging     = new jcLogging(this.app_name);
 
         // load data with devices (deviceConfig["devices"])
@@ -23,7 +23,7 @@ function rmMenu(name, menu) {
 
                 if (this.initial_load) { 
                 	this.logging.default("Initialized new class 'rmMenu'.");
-                	this.inital_load = false;
+                	this.initial_load = false;
                 	}
                 else {	this.logging.default("Reload data 'rmMenu'.");
                 	}
