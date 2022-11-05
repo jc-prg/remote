@@ -1,25 +1,6 @@
 //--------------------------------
 // jc://remote/
 //--------------------------------
-/* INDEX:
-function remoteMainMenu (cookie_erase=true)
-function remoteInit (first_load=true)
-function remoteFirstLoad_load()
-function remoteFirstLoad(data)
-function remoteUpdate(data)
-function remoteInitData_load()
-function remoteInitData(data)
-function remoteReload_load()
-function remoteReload(data)
-function remoteSetSliderDevice(data)
-function remoteDropDown_load()
-function remoteDropDown(data)
-function remoteToggleEditMode()
-function remoteStartMenu_load()
-function remoteStartMenu(data)
-function remoteLastFromCookie()
-*/
-//--------------------------------
 
 var rm3background  = "remote-v3/img/remote2.png";
 var rm3scene_dir   = "/scenes/";
@@ -32,7 +13,7 @@ var rm3slider  = new jcSlider( name="rm3sider", container="audio_slider");	// cr
 rm3slider.init(min=0,max=100,label="loading");				// set device information
 rm3slider.setPosition(top="45px",bottom=false,left=false,right="10px");	// set position (if not default)
 rm3slider.setOnChange(apiSetVolume);						// -> setVolume (api call to set volume -> this.callOnChange( this.value ))
-rm3slider.setShowVolume(statusShowVolume);					// -> showVolume e.g. in header
+rm3slider.setShowVolume(statusShow_volume);					// -> showVolume e.g. in header
 
 var rm3menu     = new rmMenu(     "rm3menu", ["menuItems","menuItems2"] );
 var rm3start    = new rmStart(    "rm3start" );
