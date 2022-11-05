@@ -144,8 +144,14 @@ var language_app = {
 		"MANUAL_SCENE"			: "<i>Edit Scene Remote Control:</i><br/><br/><ul class='help'>" +
 						  "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
 						  "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;makro_type&gt;_&lt;button&gt;&quot; to define buttons in the remote layout; makro types are: makro, scene-on, scene-off, dev-on, dev-off</li>" +
-						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
 						  "<li>Add &quot;.&quot; to add an empty space.</li>" +
+						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
+						  "<li>Add &quot;HEADER-IMAGE&quot; to add an image. The image can be selected in the scene settings.</li>" +
+						  "<li>Add &quot;TOGGLE||&lt;device&gt;_&lt;value&gt;||&lt;description&gt;||&lt;command_on&gt;||&lt;command_off&gt;&quot; to add a toggle."+
+						    " This is supported for values with ON|OFF or TRUE|FALSE only." +
+						    " If the toggle shall be integrated into the header image, use &quot;HEADER-IMAGE||toggle&quot;.</li>" +
+						  "<li>Add &quot;SLIDER||send-&lt;value&gt;||&lt;description&gt;||&lt;range-from&gt;-&lt;range-to&gt;||&lt;value&gt;&quot; to add a slider."+
+						    " This is support for devices with query mode and if a number can be send via API." +
 						  "</ul>",
 		"MANUAL_MAKROS"		: "<i>Edit Makros:</i><br/><br/><ul class='help'>" +
 						  "<li>Define makros using the JSON format</li>" +
