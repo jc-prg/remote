@@ -23,16 +23,16 @@ else:
 
 
 def remoteAPI_start(setting=[]):
-    '''
+    """
     create data structure for API response and read relevant data from config files
-    '''
+    """
 
     global Status, LastAPICall, RmReadData_errors
 
     # set time for last action -> re-read API information only if clients connected
     configFiles.cache_lastaction = time.time()
 
-    if not "status-only" in setting:
+    if "status-only" not in setting:
         data = configFiles.api_init
         data["DATA"] = RmReadData()
 
@@ -54,7 +54,8 @@ def remoteAPI_start(setting=[]):
                 break
     else:
         data = configFiles.api_init
-        if "DATA" in data: del data["DATA"]
+        if "DATA" in data:
+            del data["DATA"]
 
     data["REQUEST"] = {}
     data["REQUEST"]["start-time"] = time.time()
@@ -72,9 +73,9 @@ def remoteAPI_start(setting=[]):
 
 
 def remoteAPI_end(data, setting=[]):
-    '''
+    """
     add system status and timing data to API response
-    '''
+    """
 
     global Status
 
@@ -102,9 +103,9 @@ def remoteAPI_end(data, setting=[]):
 
 
 def RemoteToggle(current_value, complete_list):
-    '''
-        get net value from list
-        '''
+    """
+    get net value from list
+    """
 
     logging.warn("Toggle: " + current_value + ": " + str(complete_list))
 
@@ -118,7 +119,7 @@ def RemoteToggle(current_value, complete_list):
 
     match += 1
 
-    if match > -1 and match < len(complete_list):
+    if -1 < match < len(complete_list):
         value = complete_list[match]
     elif match == len(complete_list):
         value = complete_list[0]
@@ -130,9 +131,9 @@ def RemoteToggle(current_value, complete_list):
 
 
 def RemoteReload():
-    '''
-        reload interfaces and reload config data in cache
-        '''
+    """
+    reload interfaces and reload config data in cache
+    """
 
     logging.warning("Request cache reload and device reconnect.")
 
@@ -149,18 +150,18 @@ def RemoteReload():
 
 
 def RemoteCheckUpdate(APPversion):
-    '''
-        Check if app is supported by this server version
-        '''
+    """
+    Check if app is supported by this server version
+    """
 
     refreshCache()
     d = {}
     data = remoteAPI_start()
 
-    if (APPversion == modules.rm3config.APPversion):
+    if APPversion == modules.rm3config.APPversion:
         d["ReturnCode"] = "800"
         d["ReturnMsg"] = "OK: " + modules.rm3config.ErrorMsg("800")
-    elif (APPversion in modules.rm3config.APPsupport):
+    elif APPversion in modules.rm3config.APPsupport:
         d["ReturnCode"] = "801"
         d["ReturnMsg"] = "WARN: " + modules.rm3config.ErrorMsg("801")
     else:
@@ -176,9 +177,9 @@ def RemoteCheckUpdate(APPversion):
 
 
 def RemoteList():
-    '''
-        Load and list all data
-        '''
+    """
+    Load and list all data
+    """
 
     data = remoteAPI_start()
     data["REQUEST"]["Return"] = "OK: Returned list and status data."
@@ -188,9 +189,9 @@ def RemoteList():
 
 
 def RemoteStatus():
-    '''
-        Load and list all data
-        '''
+    """
+    Load and list all data
+    """
 
     data = remoteAPI_start(["status-only"])
     data["REQUEST"]["Return"] = "OK: Returned status data."
@@ -200,9 +201,9 @@ def RemoteStatus():
 
 
 def Remote(device, button):
-    '''
-        send command and return JSON msg
-        '''
+    """
+    send command and return JSON msg
+    """
 
     data = remoteAPI_start()
     interface = configFiles.cache["_api"]["devices"][device]["config"]["interface_api"]
@@ -222,9 +223,9 @@ def Remote(device, button):
 
 
 def RemoteSendText(device, button, text):
-    '''
-        send command and return JSON msg
-        '''
+    """
+    send command and return JSON msg
+    """
 
     data = remoteAPI_start()
     data["REQUEST"]["Device"] = device
@@ -248,9 +249,9 @@ def RemoteSendText(device, button, text):
 
 
 def RemoteSet(device, command, value):
-    '''
-        send command incl. value and return JSON msg
-        '''
+    """
+    send command incl. value and return JSON msg
+    """
 
     data = remoteAPI_start()
     interface = configFiles.cache["_api"]["devices"][device]["config"]["interface_api"]
@@ -417,9 +418,9 @@ def RemoteMakro(makro):
 
 
 def RemoteMakroChange(makros):
-    '''
-        Change Makros and save to _ACTIVE-MAKROS.json
-        '''
+    """
+    Change Makros and save to _ACTIVE-MAKROS.json
+    """
     data = remoteAPI_start()
     data["REQUEST"]["Return"] = editMakros(makros)
     data["REQUEST"]["Command"] = "ChangeMakros"
@@ -429,9 +430,9 @@ def RemoteMakroChange(makros):
 
 
 def RemoteOnOff(device, button):
-    '''
-        check old status and document new status
-        '''
+    """
+    check old status and document new status
+    """
 
     status = ""
     types = {}
@@ -565,9 +566,9 @@ def RemoteOnOff(device, button):
 
 
 def RemoteReset():
-    '''
-        set status of all devices to OFF and return JSON msg
-        '''
+    """
+    set status of all devices to OFF and return JSON msg
+    """
 
     data = remoteAPI_start()
     data["REQUEST"]["Return"] = resetStatus()
@@ -579,9 +580,9 @@ def RemoteReset():
 
 
 def RemoteResetAudio():
-    '''
-        set status of all devices to OFF and return JSON msg
-        '''
+    """
+    set status of all devices to OFF and return JSON msg
+    """
 
     data = remoteAPI_start()
     data["REQUEST"]["Return"] = resetAudio()
@@ -593,9 +594,9 @@ def RemoteResetAudio():
 
 
 def RemoteChangeMainAudio(device):
-    '''
-        set device as main audio device (and reset other)
-        '''
+    """
+    set device as main audio device (and reset other)
+    """
 
     data = remoteAPI_start()
     data["REQUEST"]["Return"] = setMainAudioDevice(device)
@@ -607,9 +608,9 @@ def RemoteChangeMainAudio(device):
 
 
 def RemoteMove(type, device, direction):
-    '''
-        Move position of device in start menu and drop down menu
-        '''
+    """
+    Move position of device in start menu and drop down menu
+    """
 
     data = remoteAPI_start()
     data["REQUEST"]["Return"] = moveDeviceScene(type, device, direction)
@@ -621,9 +622,9 @@ def RemoteMove(type, device, direction):
 
 
 def RemoteAddButton(device, button):
-    '''
-        Learn Button and safe to init-file
-        '''
+    """
+    Learn Button and safe to init-file
+    """
 
     data = remoteAPI_start()
 
@@ -638,9 +639,9 @@ def RemoteAddButton(device, button):
 
 
 def RemoteRecordCommand(device, button):
-    '''
-        Learn Button and safe to init-file
-        '''
+    """
+    Learn Button and safe to init-file
+    """
 
     data = remoteAPI_start()
     interface = data["DATA"]["devices"][device]["config"]["interface_api"]
@@ -648,7 +649,7 @@ def RemoteRecordCommand(device, button):
 
     EncodedCommand = deviceAPIs.record(interface, device, button)
 
-    if not "ERROR" in str(EncodedCommand):
+    if "ERROR" not in str(EncodedCommand):
         data["REQUEST"]["Return"] = addCommand2Button(device, button, EncodedCommand)
     else:
         data["REQUEST"]["Return"] = str(EncodedCommand)
@@ -663,9 +664,9 @@ def RemoteRecordCommand(device, button):
 
 
 def RemoteDeleteCommand(device, button):
-    '''
-        Delete button from layout file
-        '''
+    """
+    Delete button from layout file
+    """
 
     data = remoteAPI_start()
     data["REQUEST"]["Return"] = deleteCmd(device, button)
@@ -679,9 +680,9 @@ def RemoteDeleteCommand(device, button):
 
 
 def RemoteDeleteButton(device, button_number):
-    '''
-        Delete button from layout file
-        '''
+    """
+    Delete button from layout file
+    """
 
     data = remoteAPI_start()
     data["REQUEST"]["Return"] = deleteButton(device, button_number)
@@ -695,9 +696,9 @@ def RemoteDeleteButton(device, button_number):
 
 
 def RemoteChangeVisibility(type, device, value):
-    '''
-        change visibility of device in config file
-        '''
+    """
+    change visibility of device in config file
+    """
 
     data = remoteAPI_start()
     data["REQUEST"]["Return"] = changeVisibility(type, device, value)
@@ -711,9 +712,9 @@ def RemoteChangeVisibility(type, device, value):
 
 
 def RemoteAddDevice(device, device_data):
-    '''
-        add device in config file and create config files for remote and command
-        '''
+    """
+    add device in config file and create config files for remote and command
+    """
 
     data = remoteAPI_start()
     data["REQUEST"]["Return"] = addDevice(device, device_data)
@@ -727,9 +728,9 @@ def RemoteAddDevice(device, device_data):
 
 
 def RemoteEditDevice(device, info):
-    '''
-        Edit data of device
-        '''
+    """
+    Edit data of device
+    """
     logging.info(str(info))
 
     data = remoteAPI_start()
@@ -743,9 +744,9 @@ def RemoteEditDevice(device, info):
 
 
 def RemoteDeleteDevice(device):
-    '''
-        delete device from config file and delete device related files
-        '''
+    """
+    delete device from config file and delete device related files
+    """
 
     data = remoteAPI_start()
     data["REQUEST"]["Return"] = deleteDevice(device)
@@ -758,10 +759,9 @@ def RemoteDeleteDevice(device):
 
 
 def RemoteAddScene(scene, info):
-    '''
-        add device in config file and create config files for remote and command
-        '''
-
+    """
+    add device in config file and create config files for remote and command
+    """
     data = remoteAPI_start()
     data["REQUEST"]["Return"] = addScene(scene, info)
     data["REQUEST"]["Scene"] = scene
@@ -791,9 +791,9 @@ def RemoteEditScene(scene, info):
 
 
 def RemoteDeleteScene(scene):
-    '''
-        delete device from config file and delete device related files
-        '''
+    """
+    delete device from config file and delete device related files
+    """
 
     data = remoteAPI_start()
     data["REQUEST"]["Return"] = deleteScene(scene)
@@ -806,9 +806,9 @@ def RemoteDeleteScene(scene):
 
 
 def RemoteAddTemplate(device, template):
-    '''
-        add / overwrite remote template
-        '''
+    """
+    add / overwrite remote template
+    """
 
     data = remoteAPI_start()
     data["REQUEST"]["Return"] = addTemplate(device, template)
@@ -822,9 +822,9 @@ def RemoteAddTemplate(device, template):
 
 
 def RemoteTest():
-    '''
-        Test new functions
-        '''
+    """
+    Test new functions
+    """
 
     data = remoteAPI_start()
     data["TEST"] = RmReadData("")

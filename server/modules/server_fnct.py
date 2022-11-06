@@ -288,9 +288,9 @@ def RmWriteData_devices(data):
 
 
 def RmReadData_makros(selected=[]):
-    '''
+    """
     read config data for makros
-    '''
+    """
     data = {}
     data = configFiles.read(modules.rm3config.active_makros)
     return data
@@ -322,7 +322,9 @@ def RmReadData_scenes(selected=[], remotes=True):
     data = {}
     data = configFiles.read(modules.rm3config.active_scenes)
 
-    if not "scenes" in RmReadData_errors: RmReadData_errors["scenes"] = {}
+    if "scenes" not in RmReadData_errors:
+        RmReadData_errors["scenes"] = {}
+
     if remotes:
         for scene in data:
             if selected == [] or scene in selected:
@@ -331,18 +333,29 @@ def RmReadData_scenes(selected=[], remotes=True):
                     remote_config = configFiles.read(modules.rm3config.scenes + remote_file)
                     if "data" in remote_config:
                         data[scene]["remote"] = remote_config["data"]
+                    else:
+                        logging.error("Could not read remote data: "+modules.rm3config.scenes + remote_file)
+                        data[scene]["remote_error"] = {
+                            "file": modules.rm3config.scenes + remote_file,
+                            "file_data": remote_config
+                        }
+
                     if "ERROR" in remote_config:
                         logging.error("Error reading config file '" + remote_file + "': " + remote_config["ERROR_MSG"])
-                        if not scene in RmReadData_errors["scenes"]: RmReadData_errors["scenes"][scene] = {}
+                        if scene not in RmReadData_errors["scenes"]:
+                            RmReadData_errors["scenes"][scene] = {}
                         RmReadData_errors["scenes"][scene][modules.rm3config.scenes + remote_file + ".json"] = \
                             remote_config["ERROR_MSG"]
                         data[scene]["remote"] = "error"
+
                 except Exception as e:
                     error_msg = "Reading scene failed: " + str(scene) + " / " + str(selected) + " (" + str(e) + ")"
                     logging.error(error_msg)
-                    if not scene in RmReadData_errors["scenes"]: RmReadData_errors["scenes"][scene] = {}
+                    if scene not in RmReadData_errors["scenes"]:
+                        RmReadData_errors["scenes"][scene] = {}
                     RmReadData_errors["scenes"][scene][modules.rm3config.scenes + remote_file + ".json"] = error_msg
                     data[scene]["remote"] = "error"
+
             else:
                 logging.error("Scene not found: " + str(scene) + " / " + str(selected))
                 return {}
@@ -414,14 +427,22 @@ def RmReadData(selected=[]):
     data = {}
     btnfile = ["buttons", "commands", "url"]
 
+    # workaround, as "remote" section is removed somehow after some JSON edits
+    if "_api" in configFiles.cache and "scenes" in configFiles.cache["_api"]:
+        for key in configFiles.cache["_api"]["scenes"]:
+            if "remote" not in configFiles.cache["_api"]["scenes"][key]:
+                configFiles.cache_update = True
+
     # if update required
     if configFiles.cache_update or "_api" not in configFiles.cache:
 
         data["devices"] = RmReadData_devices(selected, True, False)
         data["makros"] = RmReadData_makros(selected)
-        data["scenes"] = RmReadData_scenes(selected)
+        data["scenes"] = RmReadData_scenes(selected, True)
         data["templates"] = RmReadData_templates(selected)["templates"]
         data["template_list"] = RmReadData_templates(selected)["template_list"]
+
+        logging.warning("++++++++> "+str(data["scenes"]["music"].keys()))
 
         # save data in cache
         configFiles.cache["_api"] = data
@@ -445,7 +466,7 @@ def RmReadData(selected=[]):
     # Update status data        
     configFiles.cache["_api"] = data
 
-    return data
+    return data.copy()
 
 
 def addScene(scene, info):
@@ -507,7 +528,8 @@ def addScene(scene, info):
     except Exception as e:
         return "ERROR: " + str(e)
 
-    return ("OK: Scene " + scene + " added.")
+    configFiles.cache_update = True
+    return "OK: Scene " + scene + " added."
 
 
 def editScene(scene, info):
@@ -575,6 +597,8 @@ def editScene(scene, info):
     except Exception as e:
         return "ERROR: could not write changes (remotes) - " + str(e)
 
+    configFiles.cache_update = True
+
     if i > 0:
         return "OK: Edited device parameters of " + scene + " (" + str(i) + " changes)"
     else:
@@ -588,12 +612,12 @@ def deleteScene(scene):
 
     active_json = RmReadData_scenes(selected=[], remotes=False)  # configFiles.read(modules.active_scenes)
 
-    if "ERROR" in active_json:                                     return (
-        "ERROR: Could not read ACTIVE_JSON (active).")
-    if not scene in active_json:                                   return (
-            "ERROR: Scene " + scene + " doesn't exists (active).")
-    if not modules.rm3json.if_exist(modules.rm3config.remotes + "scene_" + scene):   return (
-            "ERROR: Scene " + scene + " doesn't exists (remotes).")
+    if "ERROR" in active_json:
+        return "ERROR: Could not read ACTIVE_JSON (active)."
+    if scene not in active_json:
+        return "ERROR: Scene " + scene + " doesn't exists (active)."
+    if not modules.rm3json.if_exist(modules.rm3config.remotes + "scene_" + scene):
+        return "ERROR: Scene " + scene + " doesn't exists (remotes)."
 
     del active_json[scene]
     # configFiles.write(modules.active_scenes, active_json)
@@ -601,6 +625,7 @@ def deleteScene(scene):
 
     try:
         modules.rm3json.delete(modules.rm3config.remotes + "scene_" + scene)
+        configFiles.cache_update = True
         if not modules.rm3json.if_exist(modules.rm3config.remotes + "scene_" + scene):
             return "OK: Scene '" + scene + "' deleted."
         else:
@@ -1006,7 +1031,6 @@ def changeVisibility(type, device, visibility):
         else:
             return "ERROR: Visibility value '" + visibility + "' does not exists."
 
-
     elif type == "scene":
 
         data = RmReadData_scenes(selected=[], remotes=False)  # configFiles.read(modules.active_scenes)
@@ -1016,6 +1040,7 @@ def changeVisibility(type, device, visibility):
         elif visibility == "yes" or visibility == "no":
             data[device]["settings"]["visible"] = visibility
             RmWriteData_scenes(data)
+            configFiles.cache_update = True
             return "OK: Change visibility for '" + device + "': " + visibility
 
         else:
@@ -1108,6 +1133,7 @@ def moveDeviceScene(button_type, device, direction):
     elif button_type == "scene":
         RmWriteData_scenes(status)  # configFiles.write(modules.active_scenes,status)
 
+    configFiles.cache_update = True
     return return_msg
 
 
