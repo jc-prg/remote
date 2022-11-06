@@ -148,9 +148,9 @@ class Connect(threading.Thread):
             return "ERROR: interface not defined (" + api_dev + "/" + device + ")"
 
     def check_connection(self):
-        '''
-        check IP connection and try reconnect if IP connection exists and status is not "Connected" 
-        '''
+        """
+        check IP connection and try reconnect if IP connection exists and status is not "Connected"
+        """
 
         self.logging.info("..................... CHECK CONNECTION (" + str(self.checking_interval) +
                           "s) .....................")
@@ -172,9 +172,9 @@ class Connect(threading.Thread):
                     self.reconnect(key)
 
     def reconnect(self, interface=""):
-        '''
+        """
         reconnect single device or all devices if status is not "Connected"
-        '''
+        """
 
         if interface == "":
             for key in self.api:
@@ -184,9 +184,9 @@ class Connect(threading.Thread):
             self.api[interface].connect()
 
     def test(self):
-        '''
+        """
         test all APIs
-        '''
+        """
 
         for key in self.api:
             status = self.api[key].test()
@@ -195,9 +195,9 @@ class Connect(threading.Thread):
         return "OK"
 
     def status(self, interface="", device=""):
-        '''
+        """
         return status of all devices or a selected device
-        '''
+        """
 
         status_all_interfaces = {}
         api_dev = interface + "_" + device
@@ -215,9 +215,9 @@ class Connect(threading.Thread):
             return "ERROR: API ... not found (" + api_dev + ")."
 
     def check_errors(self, device):
-        '''
+        """
         check the amount of errors, if more than 80% errors and at least 5 requests try to reconnect
-        '''
+        """
 
         api_dev = self.api_device(device)
 
@@ -239,9 +239,9 @@ class Connect(threading.Thread):
             self.reconnect(api_dev)
 
     def check_errors_count(self, device, is_error):
-        '''
+        """
         count errors and reset every x seconds
-        '''
+        """
 
         api_dev = self.api_device(device)
 
@@ -258,9 +258,9 @@ class Connect(threading.Thread):
         self.logging.debug("ERROR RATE ... error:" + str(is_error))
 
     def send(self, call_api, device, button, value=""):
-        '''
+        """
         send command if connected
-        '''
+        """
 
         return_msg = ""
         api_dev = self.api_device(device)
@@ -273,15 +273,25 @@ class Connect(threading.Thread):
             method = self.method(device)
 
             if button.startswith("send-"):
-                if method == "query" and value != "":
-                    button_code = self.get_command(call_api, "send-data", device, button)
-                else:
-                    button_code = "ERROR, wrong method (!query) or no data transmitted."
-                if not "ERROR" in button_code:           button_code = button_code.replace("{DATA}", value)
 
-                if self.log_commands:      self.logging.info(
-                    "...... SEND-DATA " + api_dev + " / " + button + " ('" + str(value) + "'/" + method + ")")
-                if self.log_commands:      self.logging.info("...... " + str(button_code))
+                button = button.split("-")[1]
+                if method == "query" and value != "":
+                    try:
+                        button_code = self.get_command(call_api, "send-data", device, button)
+                    except Exception as e:
+                        button_code = "ERROR send: count not get_command."
+                else:
+                    button_code = "ERROR send: wrong method (!query) or no data transmitted."
+
+                if "ERROR" not in button_code:
+                    button_code = button_code.replace("{DATA}", value)
+                else:
+                    self.logging.error(button_code)
+
+                if self.log_commands:
+                    self.logging.info("...... SEND-DATA " + api_dev + " / " + button + " ('" + str(value) + "'/" + method + ")")
+                if self.log_commands:
+                    self.logging.info("...... " + str(button_code))
 
             else:
                 if method == "record":
@@ -331,9 +341,9 @@ class Connect(threading.Thread):
         return return_msg
 
     def record(self, call_api, device, button):
-        '''
+        """
         record a command e.g. from IR device if connected
-        '''
+        """
 
         return_msg = ""
         api_dev = self.api_device(device)
@@ -371,11 +381,15 @@ class Connect(threading.Thread):
         api_dev = self.api_device(device)
         # self.check_errors(call_api, device)  #### -> leads to an error for some APIs
 
-        self.logging.debug("__QUERY: " + api_dev + " (" + self.api[api_dev].status + ")")
+        self.logging.debug("__QUERY: " + api_dev + " ("+device+","+button+";" + self.api[api_dev].status + ")")
 
         if api_dev in self.api and self.api[api_dev].status == "Connected":
 
-            button_code = self.get_command(call_api, "queries", device, button)
+            try:
+                button_code = self.get_command(call_api, "queries", device, button)
+            except Exception as e:
+                self.logging.error(button_code)
+                button_code = "ERROR query, get_command: "+str(e)
 
             if "ERROR" in button_code:
                 return_msg = "ERROR: could not read/create command from button code (query/" + device + "/" + button + "); " + button_code
@@ -435,9 +449,9 @@ class Connect(threading.Thread):
         return return_msg
 
     def get_command(self, dev_api, button_query, device, button):
-        '''
+        """
         translate device and button to command for the specific device
-        '''
+        """
 
         value_list = ["buttons", "queries", "commands", "values", "send-data"]
         active = self.configFiles.read_status()

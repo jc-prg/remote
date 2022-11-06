@@ -97,7 +97,8 @@ class queueApiCalls(threading.Thread):
                     self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')
 
                 except Exception as e:
-                    result = "ERROR queue query_list (send," + interface + "," + device + "): " + str(e)
+                    result = "ERROR queue query_list (send," + interface + "," + device + "," +\
+                             button + "=" + str(state) + "): " + str(e)
                     self.logging.error(result)
 
             elif self.query_send == "query":
