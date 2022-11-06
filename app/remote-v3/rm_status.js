@@ -491,7 +491,8 @@ function statusCheck_powerButton(data={}) {
 
                 var key = device;
                 if (key2 != "power") { key += "_"+key2; }
-                if (!document.getElementById(key+"_on-off") && !document.getElementById(key+"_on") && !document.getElementById(key+"_off")) { continue; }
+                if (!document.getElementById(key+"_on-off") && !document.getElementById(key+"_on") &&
+                    !document.getElementById(key+"_off") && !document.getElementById("device_"+key)) { continue; }
 
                 check_button = devices[device][key2];
                 connection   = device_api_status.toLowerCase();					 // indicator if server is already ready to interact with client
