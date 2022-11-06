@@ -81,12 +81,13 @@ def write(file, data, call_from=""):
 
     with open(file3, 'wb') as outfile:
         json.dump(data, codecs.getwriter('utf-8')(outfile), ensure_ascii=False, sort_keys=True, indent=4)
+    with open(file2, 'wb') as outfile:
+        json.dump(data, codecs.getwriter('utf-8')(outfile), ensure_ascii=False, sort_keys=True, indent=4)
 
-    if os.path.isfile(file2):
-        os.remove(file2)
-    os.rename(file3, file2)
+    if os.path.isfile(file3):
+        os.remove(file3)
 
-    json_logging.debug("write ... " + file + " ...from:" + call_from)
+    json_logging.debug("write ... " + file + " ... from:" + call_from)
 
 
 def available(directory):
