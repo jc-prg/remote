@@ -661,6 +661,8 @@ function rmRemote(name) {
 			remote += "</div>";
 			setTextById(id,remote);
 			appMsg.alert(lang("MISSING_DATA_SCENE",[scene,this.data["DATA"]["scenes"][scene]["config"]["remote"]+".json"]));
+			console.warn(lang("MISSING_DATA_SCENE"));
+			console.warn(this.data["DATA"]["scenes"][scene]);
 			return;
 			}
 			

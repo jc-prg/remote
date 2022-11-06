@@ -105,10 +105,10 @@ function remoteReload(data) {
 	// check if still used in a fct. -> to be removed
 	dataAll = data;
 
-//	remoteForceReload_checkIfReady(data);	// check if reloaded
-	remoteInitData(data);			// init and reload data
-	remoteDropDown(data);			// update drop down menu
-	remoteSetSliderDevice(data);		// set device for volume slider
+//	remoteForceReload_checkIfReady(data); // check if reloaded
+	remoteInitData(data);               // init and reload data
+	remoteDropDown(data);               // update drop down menu
+	remoteSetSliderDevice(data);        // set device for volume slider
         
 	// check device & audio status
 	statusCheck(data);	

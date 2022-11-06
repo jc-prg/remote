@@ -260,9 +260,14 @@ function statusCheck_deviceActive(data) {
 			
 			var power_on = true; 
 			if (devices_status[device]["power"].toUpperCase() != "ON") { power_on = false; }
-			if (devices_status[device]["api-status"] != "Connected")   { power_on = false; }
+			//if (devices_status[device]["api-status"] != "Connected")   { power_on = false; }
 			if (api_status != "Connected")                             { power_on = false; }
 
+			// show device status
+			console.debug("statusCheck_deviceActive: " + device + ", " + power_on +
+			              "(" + api_status + "," + devices_status[device]["power"] + ")");
+
+            // check if device of slider is active
 			for (var i=0;i<devices_config[device]["commands"]["set"].length;i++) {
 				var button = devices_config[device]["commands"]["set"][i];
 				if (!power_on) {
@@ -272,7 +277,8 @@ function statusCheck_deviceActive(data) {
 					statusShow_buttonActive("slider_"+device+"_"+button+"_input",true);
 					}
 				}
-				
+
+			// check if device of buttons is active
 			for (var i=0;i<devices_config[device]["buttons"].length;i++) {
 				var button   = devices_config[device]["buttons"][i].toLowerCase();
 
@@ -757,8 +763,8 @@ function statusCheck_display(data={}) {
 		}
 	}
 
-
 // show specific display and hide the others
+
 function statusShow_display(id, view) {
     var keys = ["ON", "OFF", "ERROR", "MANUAL", "EDIT_MODE"];
     if (document.getElementById("display_"+id+"_ON")) {

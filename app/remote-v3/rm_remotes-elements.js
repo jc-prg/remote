@@ -580,7 +580,7 @@ function rmRemoteDisplays(name) {
         	text  += "</div>";
 		appMsg.confirm(text,"",300);
 		statusCheck(this.data);
-        	}
+        }
         	
         // idea ... display for media information: mute (icon), volume (bar), info (title/artist/album/episode/...)
         // see: https://www.wbrnet.info/vbhtm/9261_Laufschriften_I.html

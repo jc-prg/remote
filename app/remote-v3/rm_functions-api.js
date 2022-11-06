@@ -28,22 +28,22 @@ function apiCheckUpdates_msg( data ) {
 function apiAlertReturn(data) {
 	var reload_timeout = 2000;
 	appMsg.alertReturn(data);
+
 	remoteReload_load();
-
-	setTimeout(function(){ rm3remotes.data = dataAll; }, reload_timeout-100);
+	//setTimeout(function(){ remoteUpdate(dataAll) }, reload_timeout );
+	setTimeout(function(){ rm3remotes.data = dataAll; rm3remotes.create(); }, reload_timeout );
 	
-	if (data["REQUEST"]["Command"] == "AddTemplate")  	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, reload_timeout); }
-	if (data["REQUEST"]["Command"] == "EditDevice")   	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, reload_timeout); }
-	if (data["REQUEST"]["Command"] == "EditScene")   	{ setTimeout(function(){ rm3remotes.create( "scene",  data["REQUEST"]["Scene"] ); }, reload_timeout); }
-	if (data["REQUEST"]["Command"] == "ChangeVisibility" )	{ 
-		if (data["REQUEST"]["Device"] == "device") 	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, reload_timeout); }
-		if (data["REQUEST"]["Device"] == "scene") 	{ setTimeout(function(){ rm3remotes.create( "scene", data["REQUEST"]["Device"] ); }, reload_timeout); }
-		}
-	
-        if (data["REQUEST"]["Command"] == "DeleteDevice") 	{ setTimeout(function(){ rm3cookie.set("remote",""); rm3remotes.create( "", "" ); }, reload_timeout); }
-        if (data["REQUEST"]["Command"] == "DeleteScene") 	{ setTimeout(function(){ rm3cookie.set("remote",""); rm3remotes.create( "", "" ); }, reload_timeout); }
-
+    if (data["REQUEST"]["Command"] == "AddTemplate")  	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, reload_timeout); }
+    if (data["REQUEST"]["Command"] == "EditDevice")   	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, reload_timeout); }
+    if (data["REQUEST"]["Command"] == "EditScene")   	{ setTimeout(function(){ rm3remotes.create( "scene",  data["REQUEST"]["Scene"] ); }, reload_timeout); }
+    if (data["REQUEST"]["Command"] == "ChangeVisibility" )	{
+        if (data["REQUEST"]["Device"] == "device") 	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, reload_timeout); }
+        if (data["REQUEST"]["Device"] == "scene") 	{ setTimeout(function(){ rm3remotes.create( "scene", data["REQUEST"]["Device"] ); }, reload_timeout); }
         }
+
+    if (data["REQUEST"]["Command"] == "DeleteDevice") 	{ setTimeout(function(){ rm3cookie.set("remote",""); rm3remotes.create( "", "" ); }, reload_timeout); }
+    if (data["REQUEST"]["Command"] == "DeleteScene") 	{ setTimeout(function(){ rm3cookie.set("remote",""); rm3remotes.create( "", "" ); }, reload_timeout); }
+    }
 
 // set main audio device
 function setMainAudio(device)           { appFW.requestAPI( "POST", ["main-audio",device], "", apiAlertReturn ); }
