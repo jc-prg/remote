@@ -16,7 +16,8 @@
         ],
         "label": "Fernsehen",
         "remote": [
-            "HEADER-IMAGE",
+            "HEADER-IMAGE||toggle",
+            "TOGGLE||plug02_power||Strom Medientechnik||makro_plug02-on||makro_plug02-off",
             "makro_tv",
             ".",
             "scene-on_tv3",
