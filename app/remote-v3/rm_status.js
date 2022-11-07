@@ -134,15 +134,15 @@ function statusShow_toggle(device, id_slider, id_value, status) {
     change          = false;
 
     if (status.toUpperCase() == "FALSE")            { status = "0"; }
-    else if (status.toUpperCase() == "OFF")         { status = "0"; }
     else if (status.toUpperCase().includes("OFF"))  { status = "0"; }
+    else if (status.toUpperCase() == "OFF")         { status = "0"; }
     else if (status.toUpperCase() == "TRUE")        { status = "1"; }
     else if (status.toUpperCase() == "ON")          { status = "1"; }
     else                                            { status = "E"; }
 
     //if (slider.value == slider_value.value && slider.className.includes("device_set")) {}
     // change only if different value from API (wait in status blue until new status is set server-side)
-    if (status != slider_value.value) {
+    if ((slider.className.includes("device_set") && status != slider_value.value) || !slider.className.includes("device_set")) {
 
         if (status == "0")      { slider.value = 0; }
         else if (status == "1") { slider.value = 1; }
