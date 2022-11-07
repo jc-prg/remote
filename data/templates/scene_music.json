@@ -76,8 +76,8 @@
         "remote": [
             ".",
             ".",
-            "scene-on_music",
-            "scene-off_music",
+            "scene-on",
+            "scene-off",
             "LINE||input device",
             "makro_radio",
             "makro_bluetooth",

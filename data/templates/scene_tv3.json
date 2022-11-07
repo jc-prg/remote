@@ -18,8 +18,8 @@
         "remote": [
             "makro_tv",
             ".",
-            "scene-on_tv3",
-            "scene-off_tv3",
+            "scene-on",
+            "scene-off",
             "LINE||channel",
             "tv2_1",
             "tv2_2",

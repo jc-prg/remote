@@ -11,8 +11,8 @@
         "remote": [
             ".",
             ".",
-            "scene-on_cinema",
-            "scene-off_cinema",
+            "scene-on",
+            "scene-off",
             "LINE",
             "makro_bluray",
             "makro_pc",

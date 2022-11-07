@@ -19,8 +19,8 @@
         "remote": [
             "makro_kodi",
             ".",
-            "scene-on_media",
-            "scene-off_media",
+            "scene-on",
+            "scene-off",
             "LINE",
             "media-center_home",
             "media-center_music",
