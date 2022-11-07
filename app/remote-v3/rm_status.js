@@ -74,15 +74,19 @@ function statusShow_volume( volume ) {
 function statusCheck_sliderToggle(data) {
 
 	var devices    = data["STATUS"]["devices"];
+
 	for (var device in devices) {
 	    if (!data["CONFIG"]["devices"][device]) { continue; }
 	    var device_api         = data["STATUS"]["devices"][device]["api"];
 	    var device_api_status  = data["STATUS"]["interfaces"][device_api];
 
         for (key in devices[device]) {
+            // toggle
             if (document.getElementById("toggle_"+device+"_"+key+"_input")) {
+
                 var toggle = document.getElementById("toggle_"+device+"_"+key+"_input");
                 var toggle_value = document.getElementById("toggle_"+device+"_"+key+"_value");
+
                 value  = devices[device][key];
                 if (device_api_status.toLowerCase() == "connected" && value.toLowerCase() != "error")   {
                     console.debug("statusCheck_sliderToggle: "+device+"_"+key+"="+value+" - "+device_api_status)
@@ -94,6 +98,7 @@ function statusCheck_sliderToggle(data) {
                 statusShow_toggle(device,"toggle_"+device+"_"+key+"_input","toggle_"+device+"_"+key+"_last_value", value);
                 }
 
+            // slider
             if (document.getElementById("slider_"+device+"_send-"+key+"_input")) {
                 slider = document.getElementById("slider_"+device+"_send-"+key+"_input");
                 if (device_api_status.toLowerCase() == "connected" && value.toLowerCase() != "error")   {

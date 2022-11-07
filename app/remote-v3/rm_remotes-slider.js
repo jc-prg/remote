@@ -63,7 +63,7 @@ function rmSlider(name) {
 		return this.slider_code;
 	}
 
-	this.toggleHTML = function(name, label, device, command_on, command_off, init="") {
+	this.toggleHTML = function(name, label, device, command_on, command_off, init="", disabled=false) {
 
 		var setValueCmd, class_init;
 		var setValueCmd_red    = " this.className='rm-slider device_off';   slider.disabled = false; ";
@@ -75,6 +75,8 @@ function rmSlider(name) {
 		var value_key          =    name.split("_");
 		if (value_key.length > 1)   { value_key = value_key[1]; }
 		else                        { value_key = name; }
+		if (disabled)               { input_disabled = "disabled"; }
+		else                        { input_disabled = ""; }
 
         var setCmdOn             = "if (document.getElementById('toggle_"+device+"_"+value_key+"_value').value==1) ";
         setCmdOn                += "{ apiCommandSend('"+command_on+"','','','toggle'); }";
@@ -94,7 +96,7 @@ function rmSlider(name) {
         else if (init == "0") { defaultValue = init; class_init = "device_off"; }
 
 		this.toggle_code   		=  "<div id=\"toggle_"+name+"_container\" class=\"rm-slidecontainer\" style=\"display:block\">";
-        this.toggle_code   		+= "<input type=\"range\" min=\"0\" max=\"1\" value=\""+defaultValue+"\" class=\"rm-slider "+class_init+"\" id=\"toggle_"+device+"_"+value_key+"_input\" "+setValueCmd+">";
+        this.toggle_code   		+= "<input type=\"range\" min=\"0\" max=\"1\" value=\""+defaultValue+"\" class=\"rm-slider "+class_init+"\" id=\"toggle_"+device+"_"+value_key+"_input\" " + setValueCmd +" " + input_disabled + ">";
   		this.toggle_code        += "<input id=\"toggle_"+device+"_"+value_key+"_value\" value=\""+defaultValue+"\" style=\"display:none\">";
   		this.toggle_code        += "<input id=\"toggle_"+device+"_"+value_key+"_last_value\" value=\""+defaultValue+"\" style=\"display:none\">";
 		this.toggle_code   		+= "</div>";

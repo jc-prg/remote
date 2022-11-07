@@ -1036,14 +1036,14 @@ function rmRemote(name) {
 		remote += this.basic.edit_line();
 
 		// edit JSON file
-		remote += this.basic.container("scene_json",		lang("JSON_REMOTE"),		this.json.textarea( "scene_json_buttons", remote_definition, "buttons" ),false);
-		remote += this.basic.container("scene_manual",	lang("JSON_REMOTE")+" - "+lang("MANUAL"),	lang("MANUAL_SCENE"),false);
-		remote += this.basic.container("channel_json",	lang("JSON_CHANNEL"),		this.json.textarea( "scene_json_channel", remote_channel, "channels"  ),false);
-		remote += this.basic.container("channel_manual",	lang("JSON_CHANNEL")+" - "+lang("MANUAL"),	lang("MANUAL_CHANNEL"),false);		
-		remote += this.basic.container("devices_definition",	lang("JSON_DEVICE"),		"Required Devices: &nbsp;"+this.basic.input("scene_json_devices", JSON.stringify(scene_remote["devices"])),false);
-		remote += this.basic.container("devices_manual",	lang("JSON_DEVICE")+" - "+lang("MANUAL"),	lang("MANUAL_DEVICES"),false);		
-		remote += this.basic.container("display_definition",	lang("JSON_DISPLAY"), 		this.json.textarea( "scene_json_display", remote_display ),false);
-		remote += this.basic.container("display_manual",	lang("JSON_DISPLAY")+" - "+lang("MANUAL"), 	lang("MANUAL_DISPLAY"),false);
+		remote += this.basic.container("scene_json",        lang("JSON_REMOTE"), this.json.textarea( "scene_json_buttons", remote_definition, "buttons" ),false);
+		remote += this.basic.container("scene_manual",      lang("JSON_REMOTE")+" - "+lang("MANUAL"),	lang("MANUAL_SCENE"),false);
+		remote += this.basic.container("channel_json",      lang("JSON_CHANNEL"), this.json.textarea( "scene_json_channel", remote_channel, "channels"  ),false);
+		remote += this.basic.container("channel_manual",    lang("JSON_CHANNEL")+" - "+lang("MANUAL"),	lang("MANUAL_CHANNEL"),false);
+		remote += this.basic.container("devices_definition",lang("JSON_DEVICE"), "Required Devices: &nbsp;"+this.basic.input("scene_json_devices", JSON.stringify(scene_remote["devices"])),false);
+		remote += this.basic.container("devices_manual",    lang("JSON_DEVICE")+" - "+lang("MANUAL"),	lang("MANUAL_DEVICES"),false);
+		remote += this.basic.container("display_definition",lang("JSON_DISPLAY"), this.json.textarea( "scene_json_display", remote_display ),false);
+		remote += this.basic.container("display_manual",    lang("JSON_DISPLAY")+" - "+lang("MANUAL"), 	lang("MANUAL_DISPLAY"),false);
 		remote += this.basic.edit_line();
 
 		remote += "<br/><center>" + 
@@ -1545,6 +1545,7 @@ function rmRemote(name) {
        	    toggle_end     += "</div>"
        	    }
 
+        var disabled      = false;
        	var device_key    = data[1].split("_");
         if (device_key.length > 1) { device = device_key[0]; key = device_key[1]}
         else                       { key = data[1]; }
@@ -1561,13 +1562,13 @@ function rmRemote(name) {
             else if (status_data[key].toUpperCase() == "OFF")     { init = "0"; }
             else                                                  { init = ""; }
         }
-        else { init = ""; }
+        else { init = ""; disabled = true; }
 
 		//var remote_data   = this.data["DATA"][type][device]["remote"];
 		//var status_data   = this.data["STATUS"]["devices"][device];
 
        	var text = toggle_start;
-       	text += this.slider.toggleHTML(name=data[1], label=data[2], device=device, command_on=data[3], command_off=data[4], init);
+       	text += this.slider.toggleHTML(name=data[1], label=data[2], device=device, command_on=data[3], command_off=data[4], init, disabled);
        	text += toggle_end;
        	return text;
 	}

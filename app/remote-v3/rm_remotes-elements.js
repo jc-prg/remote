@@ -300,10 +300,11 @@ function rmRemoteJSON(name) {
 
 	// create textarea to edit JSON
 	this.textarea           = function ( id, json, format="" ) {
-        	var text = "";
-        	text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:95%;height:160px;\">";
-        	text += this.json2text( id, json, format );
-		text += "</textarea></center>";
+            var text = "";
+            text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:95%;height:160px;\">";
+            text += this.json2text( id, json, format );
+            text.replaceAll('"', '<b>"</b>');
+	        text += "</textarea></center>";
         	return text;
 		}
 		
@@ -396,6 +397,7 @@ function rmRemoteJSON(name) {
 		}
         	
 	}
+
 	
 function rmRemoteDisplays(name) {
 
