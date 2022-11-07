@@ -30,23 +30,25 @@ function rmSlider(name) {
 	// set callback functions
 	this.setOnChange	= function(callOnChange="") {
 		if (callOnChange != "") { this.callOnChange = callOnChange; }
-		else			 { this.callOnChange = this.info; }
+		else                    { this.callOnChange = this.info; }
 		}
 		
 	this.setShowVolume	= function(showVolume="") {
-		if (showVolume != "")	 { this.showVolume = showVolume; }
-		else			 { this.showVolume = this.info;  }
+		if (showVolume != "")   { this.showVolume = showVolume; }
+		else                    { this.showVolume = this.info;  }
 		}
 
 	// initial callback functions (info via alert)
 	this.setOnChange();
 	this.setShowVolume();
 		
-	this.sliderHTML	= function(name,label,device,command,min,max,init="") {
+	this.sliderHTML	= function(name, label, device, command, min, max, init="", disabled=false) {
 
 		var setValueCmd;
 		var defaultValue;
 			
+		if (disabled)                       { input_disabled = "disabled"; add_class = " device_undef";}
+		else                                { input_disabled = ""; add_class = ""; }
 		if (init.indexOf("%") > 0)          { init = init.replaceAll("%",""); }
 		if (init != "" && init != "Error")  { defaultValue = init; }
 		else                                { defaultValue = min; }
@@ -57,7 +59,7 @@ function rmSlider(name) {
 	
 		this.slider_code   		=  "<div id=\""+name+"_container\" class=\"rm-slidecontainer\" style=\"display:block\">";
 		this.slider_code   		+= "<div  id=\""+name+"_label\" class=\"rm-sliderlabel\">"+label+"</div>";
-  		this.slider_code   		+= "<input type=\"range\" min=\""+min+"\" max=\""+max+"\" value=\""+defaultValue+"\" class=\"rm-slider\" id=\"slider_"+device+"_"+name+"_input\" "+setValueCmd+">";
+  		this.slider_code   		+= "<input type=\"range\" min=\""+min+"\" max=\""+max+"\" value=\""+defaultValue+"\" class=\"rm-slider "+add_class+"\" id=\"slider_"+device+"_"+name+"_input\" "+setValueCmd+" "+input_disabled+">";
  		this.slider_code   		+= "<div id=\""+name+"_value\" class=\"rm-slidervalue\">"+defaultValue+"</div>";
 		this.slider_code   		+= "</div>";
 		return this.slider_code;
@@ -101,8 +103,7 @@ function rmSlider(name) {
   		this.toggle_code        += "<input id=\"toggle_"+device+"_"+value_key+"_last_value\" value=\""+defaultValue+"\" style=\"display:none\">";
 		this.toggle_code   		+= "</div>";
 		return this.toggle_code;
-	}
-
+    	}
 	}
 
 

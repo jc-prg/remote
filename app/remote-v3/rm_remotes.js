@@ -1488,9 +1488,14 @@ function rmRemote(name) {
 		console.debug("slider_element: "+id+"/"+device+"/"+type+"/"+data);
 	
 		var init;
-		var remote_data  = this.data["DATA"][type][device]["remote"];
-		var status_data  = this.data["STATUS"]["devices"][device];
-		
+		var disabled = false;
+		var remote_data         = this.data["DATA"][type][device]["remote"];
+		var status_data         = this.data["STATUS"]["devices"][device];
+        var device_api          = this.data["STATUS"]["devices"][device]["api"];
+        var device_api_status   = this.data["STATUS"]["interfaces"][device_api];
+
+        if (device_api_status.toLowerCase() != "connected") { disabled = true; }
+
 		if (!this.data["DATA"][type]) {
 			this.logging.error(this.app_name+".slider() - type not supported ("+type+")");
 			return;
@@ -1512,7 +1517,7 @@ function rmRemote(name) {
         		}
         	
         	var text = display_start;
-        	text += this.slider.sliderHTML(name=data[1], label=data[2], device=device, command=data[1], min, max, init);
+        	text += this.slider.sliderHTML(name=data[1], label=data[2], device=device, command=data[1], min, max, init, disabled);
         	text += display_end;
         	return text;
 		}
