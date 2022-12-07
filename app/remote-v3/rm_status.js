@@ -760,8 +760,8 @@ function statusCheck_display(data={}) {
 							replace_value       = replace_value.replaceAll("'", '"');
 							console.debug("--------------------");
 							console.debug(replace_value);
-							eval ("var replace_content = JSON.parse(replace_value);");	 // refactor with let (otherwise security issue)
-							eval ("var replace_value = replace_content"+replace_index);	 // refactor with let (otherwise security issue)
+							eval ("var replace_content = JSON.parse(replace_value);");	  // refactor with let (otherwise security issue)
+							eval ("var replace_value = replace_content"+replace_index);	  // refactor with let (otherwise security issue)
 							}
 						}
 					}
