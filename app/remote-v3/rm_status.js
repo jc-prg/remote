@@ -757,6 +757,8 @@ function statusCheck_display(data={}) {
 						// workaround, check why not in the correct format (KODI?!)
 						if (replace_value != "no media" && replace_value != "Error") {
 							//console.warn(replace_value);
+							replace_value       = replace_value.replaceAll("\" :", "' :");
+							replace_value       = replace_value.replaceAll("\",", "',");
 							replace_value       = replace_value.replaceAll("\"", '&quot;');
 							replace_value       = replace_value.replaceAll("'", '"');
 							console.debug("--------------------");
