@@ -751,6 +751,7 @@ function statusCheck_display(data={}) {
 				
 				if (devices[replace_device] && replace_device_status && replace_device_status[replace_tag]) {
 					replace_value = replace_device_status[replace_tag];
+					replace_value_org = replace_value;
 					if (replace_index && replace_index != "") {
 					
 						// workaround, check why not in the correct format (KODI?!)
@@ -759,6 +760,7 @@ function statusCheck_display(data={}) {
 							replace_value       = replace_value.replaceAll("\"", '&quot;');
 							replace_value       = replace_value.replaceAll("'", '"');
 							console.debug("--------------------");
+							console.debug(replace_value_org);
 							console.debug(replace_value);
 							eval ("var replace_content = JSON.parse(replace_value);");	  // refactor with let (otherwise security issue)
 							eval ("var replace_value = replace_content"+replace_index);	  // refactor with let (otherwise security issue)
