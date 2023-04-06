@@ -30,7 +30,7 @@ def remoteAPI_start(setting=[]):
     global Status, LastAPICall, RmReadData_errors
 
     # set time for last action -> re-read API information only if clients connected
-    configFiles.cache_lastaction = time.time()
+    configFiles.cache_last_action = time.time()
 
     if "status-only" not in setting:
         data = configFiles.api_init
@@ -66,7 +66,7 @@ def remoteAPI_start(setting=[]):
     data["STATUS"]["scenes"] = RmReadData_sceneStatus()
     data["STATUS"]["interfaces"] = deviceAPIs.status()
     data["STATUS"]["system"] = {}  # to be filled in remoteAPI_end()
-    data["STATUS"]["request_time"] = queueSend.avarage_exec
+    data["STATUS"]["request_time"] = queueSend.average_exec
     data["STATUS"]["config_errors"] = RmReadData_errors
 
     return data

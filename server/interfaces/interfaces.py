@@ -1,9 +1,3 @@
-# -----------------------------------
-# API commands defined in swagger.yml
-# -----------------------------------
-# (c) Christoph Kloth
-# -----------------------------------
-
 import logging, time, threading, datetime
 
 import modules.rm3json as rm3json
@@ -266,8 +260,8 @@ class Connect(threading.Thread):
         api_dev = self.api_device(device)
         self.check_errors(device)
 
-        self.logging.info("__SEND: " + api_dev + " / " + device + "_" + button + ":" + str(value) + " (" + self.api[
-            api_dev].status + ")")
+        self.logging.info("__SEND: " + api_dev + " / " + device + "_" + button + ":" + str(value) +
+                          " (" + self.api[api_dev].status + ")")
 
         if self.api[api_dev].status == "Connected":
             method = self.method(device)
@@ -289,7 +283,8 @@ class Connect(threading.Thread):
                     self.logging.error(button_code)
 
                 if self.log_commands:
-                    self.logging.info("...... SEND-DATA " + api_dev + " / " + button + " ('" + str(value) + "'/" + method + ")")
+                    self.logging.info("...... SEND-DATA " + api_dev + " / " + button +
+                                      " ('" + str(value) + "'/" + method + ")")
                 if self.log_commands:
                     self.logging.info("...... " + str(button_code))
 
@@ -301,9 +296,11 @@ class Connect(threading.Thread):
                 else:
                     button_code = self.create_command(call_api, device, button, value)
 
-                if self.log_commands:      self.logging.info(
-                    "...... SEND " + api_dev + " / " + button + " ('" + str(value) + "'/" + method + ")")
-                if self.log_commands:      self.logging.info("...... " + str(button_code))
+                if self.log_commands:
+                    self.logging.info("...... SEND " + api_dev + " / " + button +
+                                      " ('" + str(value) + "'/" + method + ")")
+                if self.log_commands:
+                    self.logging.info("...... " + str(button_code))
 
             if "ERROR" in button_code:
                 return_msg = "ERROR: could not read/create command from button code (send/" + \
@@ -313,9 +310,9 @@ class Connect(threading.Thread):
             else:
                 return_msg = "ERROR: API not available (" + api_dev + ")"
 
-            if not "ERROR" in return_msg and self.api[api_dev].method == "record" and value != "":
+            if "ERROR" not in return_msg and self.api[api_dev].method == "record" and value != "":
                 self.save_status(device, button, value)
-            elif not "ERROR" in return_msg and self.api[api_dev].method == "query":
+            elif "ERROR" not in return_msg and self.api[api_dev].method == "query":
                 self.save_status(device, "api-last-send", "add")
 
         else:
@@ -357,7 +354,8 @@ class Connect(threading.Thread):
             else:
                 return_msg = "ERROR: API not available (" + api_dev + ")"
 
-            if self.log_commands: self.logging.info("...... " + str(return_msg))
+            if self.log_commands:
+                self.logging.info("...... " + str(return_msg))
 
         else:
             return_msg = self.api[api_dev].status
@@ -378,6 +376,7 @@ class Connect(threading.Thread):
         """
 
         return_msg = ""
+        button_code = ""
         api_dev = self.api_device(device)
         # self.check_errors(call_api, device)  #### -> leads to an error for some APIs
 
@@ -392,7 +391,8 @@ class Connect(threading.Thread):
                 button_code = "ERROR query, get_command: "+str(e)
 
             if "ERROR" in button_code:
-                return_msg = "ERROR: could not read/create command from button code (query/" + device + "/" + button + "); " + button_code
+                return_msg = "ERROR: could not read/create command from button code (query/" + device + "/" + button + \
+                             "); " + button_code
             elif api_dev in self.api:
                 return_msg = self.api[api_dev].query(device, button_code)
             else:
@@ -452,7 +452,7 @@ class Connect(threading.Thread):
         """
         translate device and button to command for the specific device
         """
-
+        buttons_default = {"data": {}}
         value_list = ["buttons", "queries", "commands", "values", "send-data"]
         active = self.configFiles.read_status()
         api = dev_api.split("_")[0]

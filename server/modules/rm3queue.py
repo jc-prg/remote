@@ -1,9 +1,3 @@
-# -----------------------------------
-# API commands defined in swagger.yml
-# -----------------------------------
-# (c) Christoph Kloth
-# -----------------------------------
-
 import logging, time, datetime, threading
 
 import modules
@@ -11,18 +5,19 @@ import modules.rm3config as rm3config
 import modules.rm3stage as rm3stage
 
 
-# -------------------------------------------------
-
-class queueApiCalls(threading.Thread):
+class QueueApiCalls(threading.Thread):
     """
     class to create a queue to send commands (or a chain of commands) to the devices
     -> see server_fnct.py: a queue for send commands and another queue for query commands, as query commands take some time
     """
 
     def __init__(self, name, query_send, device_apis):
-        '''create queue, set name'''
-
+        """
+        create queue, set name
+        """
         threading.Thread.__init__(self)
+        self.last_query_time = None
+        self.last_query = None
         self.queue = []
         self.name = name
         self.stopProcess = False
@@ -34,13 +29,15 @@ class queueApiCalls(threading.Thread):
         self.query_send = query_send
         self.reload = False
         self.exec_times = {}
-        self.avarage_exec = {}
+        self.average_exec = {}
 
         self.logging = logging.getLogger("queue")
         self.logging.setLevel = rm3stage.log_set2level
 
     def run(self):
-        """loop running in the background"""
+        """
+        loop running in the background
+        """
 
         self.logging.info("Starting " + self.name)
         count = 0
@@ -119,7 +116,7 @@ class queueApiCalls(threading.Thread):
                             value) + "): " + str(e)
                         self.logging.error(result)
 
-                    if not "ERROR" in str(result):
+                    if "ERROR" not in str(result):
                         devices[device]["status"][value] = str(result)
                     else:
                         devices[device]["status"][value] = "Error"
@@ -132,9 +129,9 @@ class queueApiCalls(threading.Thread):
             time.sleep(float(command))
 
     def add_reload_commands(self, commands):
-        '''
-       add list of commands required for reloading device data
-       '''
+        """
+        add list of commands required for reloading device data
+        """
 
         if commands == "RESET":
             self.device_reload = []
@@ -142,9 +139,9 @@ class queueApiCalls(threading.Thread):
             self.device_reload.append(commands)
 
     def add2queue(self, commands):
-        '''
-       add single command or list of commands to queue
-       '''
+        """
+        add single command or list of commands to queue
+        """
 
         self.logging.debug("Add to queue " + self.name + ": " + str(commands))
 
@@ -165,26 +162,26 @@ class queueApiCalls(threading.Thread):
         return "OK: Added command(s) to the queue '" + self.name + "': " + str(commands)
 
     def stop(self):
-        '''stop thread'''
+        """stop thread"""
 
         self.stopProcess = True
 
         # ------------------
 
     def execution_time(self, device, start_time, end_time):
-        '''
-        calculate the avarage execution time per device (duration between request time and time when executed)
-        '''
+        """
+        calculate the average execution time per device (duration between request time and time when executed)
+        """
 
-        avarage_round = 6
-        avarage_count = 20
-        avarage_start = 0
+        average_round = 6
+        average_count = 20
+        average_start = 0
         duration = end_time - start_time
 
         if device in self.exec_times:
-            avarage_start = self.avarage_exec[device]
+            average_start = self.average_exec[device]
             self.exec_times[device].append(duration)
-            if len(self.exec_times[device]) > avarage_count:
+            if len(self.exec_times[device]) > average_count:
                 self.exec_times[device].pop(1)
 
         else:
@@ -193,12 +190,9 @@ class queueApiCalls(threading.Thread):
 
         total = 0
         for d in self.exec_times[device]: total += d
-        self.avarage_exec[device] = total / len(self.exec_times[device])
-        avarage_diff = self.avarage_exec[device] - avarage_start
+        self.average_exec[device] = total / len(self.exec_times[device])
+        average_diff = self.average_exec[device] - average_start
 
-        self.logging.info("...... EXEC TIME '" + device + "' avarage: " + str(
-            round(self.avarage_exec[device], avarage_round)) + " / last " + str(
-            round(duration, avarage_round)) + " / change " + str(round(avarage_diff, avarage_round)))
-
-# -------------------------------------------------
-# EOF
+        self.logging.info("...... EXEC TIME '" + device + "' average: " + str(
+            round(self.average_exec[device], average_round)) + " / last " + str(
+            round(duration, average_round)) + " / change " + str(round(average_diff, average_round)))

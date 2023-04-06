@@ -14,12 +14,12 @@ import interfaces
 deviceAPIs = interfaces.Connect(configFiles)
 deviceAPIs.start()
 
-from modules.rm3queue import queueApiCalls
+from modules.rm3queue import QueueApiCalls
 
-queueSend = queueApiCalls("queueSend", "send", deviceAPIs)
+queueSend = QueueApiCalls("queueSend", "send", deviceAPIs)
 queueSend.start()
 
-queueQuery = queueApiCalls("queueQuery", "query", deviceAPIs)
+queueQuery = QueueApiCalls("queueQuery", "query", deviceAPIs)
 queueQuery.config = configFiles
 queueQuery.start()
 

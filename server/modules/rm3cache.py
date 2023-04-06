@@ -1,9 +1,3 @@
-# -----------------------------------
-# API commands defined in swagger.yml
-# -----------------------------------
-# (c) Christoph Kloth
-# -----------------------------------
-
 import logging, time
 import threading
 
@@ -11,10 +5,6 @@ import modules.rm3config as rm3config
 import modules.rm3json as rm3json
 import modules.rm3stage as rm3stage
 
-
-# -------------------------------------------------
-# read / write configuration
-# -------------------------------------------------
 
 class ConfigInterfaces(threading.Thread):
     """
@@ -27,7 +17,7 @@ class ConfigInterfaces(threading.Thread):
         self.stopProcess = False
         self.wait = 1
         self.cache_update_api = False
-        self.cache_time = time.time()  # initial time for timebased update
+        self.cache_time = time.time()  # initial time for time based update
         self.cache_interval = rm3config.refresh_device_status  # update interval in seconds (reread files)
 
         self.logging = logging.getLogger("cache.INT")
@@ -60,14 +50,14 @@ class ConfigInterfaces(threading.Thread):
 
 
 class ConfigCache(threading.Thread):
-    '''
+    """
     class to read and write configurations using a cache
-    '''
+    """
 
     def __init__(self, name):
-        '''
-       create class, set name
-       '''
+        """
+        create class, set name
+        """
 
         threading.Thread.__init__(self)
         self.name = name
@@ -75,10 +65,11 @@ class ConfigCache(threading.Thread):
         self.wait = 1
         self.cache = {}
         self.cache_time = time.time()  # initial time for timebased update
-        self.cache_lastaction = time.time()  # initial time for timestamp of last action
+        self.cache_last_action = time.time()  # initial time for timestamp of last action
         self.cache_interval = rm3config.refresh_config_cache  # update interval in seconds (reread files)
         self.cache_sleep = rm3config.refresh_config_sleep  # sleeping mode after x seconds
         self.cache_update = False  # foster manual update of files
+        self.cache_update_api = None
         self.configMethods = {}
         self.api_init = {"API": {
             "name": rm3config.APIname,
@@ -91,15 +82,15 @@ class ConfigCache(threading.Thread):
         self.logging.setLevel = rm3stage.log_set2level
 
     def run(self):
-        '''
-       loop running in the background
-       '''
+        """
+        loop running in the background
+        """
 
         self.logging.info("Starting " + self.name)
         while not self.stopProcess:
 
             # No update when in sleeping mode (no API request since a "cache_sleep")
-            if time.time() - self.cache_lastaction >= self.cache_sleep:
+            if time.time() - self.cache_last_action >= self.cache_sleep:
                 self.cache_update = False
                 self.cache_update_api = False
 
@@ -135,9 +126,9 @@ class ConfigCache(threading.Thread):
         self.logging.info("Exiting " + self.name)
 
     def check_config(self):
-        '''
-       read and check main config_files
-       '''
+        """
+        read and check main config_files
+        """
 
         error_msg = {}
         check = self.read(rm3config.active_devices)
@@ -157,18 +148,18 @@ class ConfigCache(threading.Thread):
             return "ERROR"
 
     def update(self):
-        '''
+        """
         set var to enforce update
-        '''
+        """
 
         self.cache_update = True
         self.logging.info("Enforce cache update (" + self.name + ") " + str(self.cache_update))
 
     def read(self, config_file, from_file=False):
-        '''
+        """
         read config from cache if not empty and not to old
         else read from file
-        '''
+        """
 
         config_file_key = config_file.replace("/", "**")
         self.logging.debug("readConfig: " + config_file)
@@ -179,17 +170,17 @@ class ConfigCache(threading.Thread):
         return self.cache[config_file_key]
 
     def write(self, config_file, value, source=""):
-        '''
+        """
         write config to file and update cache
-        '''
+        """
         config_file_key = config_file.replace("/", "**")
         rm3json.write(config_file, value, "cache.write " + source)
         self.cache[config_file_key] = value
 
     def translate_device(self, device):
-        '''
+        """
         get device name as file name
-        '''
+        """
 
         status = self.read(rm3config.active_devices)
         if device in status:
@@ -198,9 +189,9 @@ class ConfigCache(threading.Thread):
             return ""
 
     def get_method(self, device):
-        '''
+        """
         get method for device
-        '''
+        """
 
         status = self.read(rm3config.active_devices)
         interface = status[device]["config"]["interface_api"]
@@ -209,9 +200,9 @@ class ConfigCache(threading.Thread):
         return definition["data"]["method"]
 
     def read_status(self, selected_device=""):
-        '''
+        """
         read and return array
-        '''
+        """
         status = self.read(rm3config.active_devices)
 
         # initial load of methods (record vs. query)
@@ -223,9 +214,9 @@ class ConfigCache(threading.Thread):
                 if interface != "" and key != "":
                     config = self.read(rm3config.commands + interface + "/" + key)
                     config_default = self.read(rm3config.commands + interface + "/00_default")
-                    if not "ERROR" in config and "method" in config["data"]:
+                    if "ERROR" not in config and "method" in config["data"]:
                         self.configMethods[device] = config["data"]["method"]
-                    elif not "ERROR" in config_default and "method" in config_default["data"]:
+                    elif "ERROR" not in config_default and "method" in config_default["data"]:
                         self.configMethods[device] = config_default["data"]["method"]
 
         elif "ERROR" in status:
@@ -239,9 +230,9 @@ class ConfigCache(threading.Thread):
         return status
 
     def write_status(self, status, source=""):
-        '''
+        """
         write status and make sure only valid keys are saved
-        '''
+        """
         status_temp = {}
         relevant_keys = ["status", "config", "settings"]
 
@@ -254,6 +245,3 @@ class ConfigCache(threading.Thread):
         active_devices_key = rm3config.active_devices.replace("/", "**")
         self.write(rm3config.active_devices, status_temp, "cache.write_status " + source)
         self.cache[active_devices_key] = status_temp
-
-# -------------------------------------------------
-# EOF
