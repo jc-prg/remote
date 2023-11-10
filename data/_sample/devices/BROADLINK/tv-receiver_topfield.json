@@ -46,6 +46,7 @@
             },
             "power": {
                 "type": "enum",
+                "auto_off": 10800,
                 "values": [
                     "ON",
                     "OFF"
