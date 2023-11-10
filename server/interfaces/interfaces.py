@@ -7,14 +7,14 @@ import modules.rm3stage as rm3stage
 
 
 class Connect(threading.Thread):
-    '''
+    """
     class to control all interfaces including a continuous check if interfaces still available
-    '''
+    """
 
     def __init__(self, configFiles):
-        '''
+        """
         Initialize Interfaces
-        '''
+        """
         threading.Thread.__init__(self)
 
         self.api = {}
@@ -111,15 +111,16 @@ class Connect(threading.Thread):
             if self.checking_last + self.checking_interval < time.time():
                 self.checking_last = time.time()
                 self.check_connection()
+                self.check_activity()
             else:
                 time.sleep(1)
 
         self.logging.info("Exiting " + self.name)
 
     def api_device(self, device):
-        '''
+        """
         return short api_dev
-        '''
+        """
 
         try:
             active_devices = self.configFiles.read_status()
@@ -131,9 +132,9 @@ class Connect(threading.Thread):
             return "error_" + device
 
     def method(self, device=""):
-        '''
+        """
         return method of interface
-        '''
+        """
 
         api_dev = self.api_device(device)
         if api_dev in self.api:
@@ -145,7 +146,6 @@ class Connect(threading.Thread):
         """
         check IP connection and try reconnect if IP connection exists and status is not "Connected"
         """
-
         self.logging.info("..................... CHECK CONNECTION (" + str(self.checking_interval) +
                           "s) .....................")
 
@@ -164,6 +164,20 @@ class Connect(threading.Thread):
 
                 if connect:
                     self.reconnect(key)
+
+    def check_activity(self):
+        """
+        check when the last command was send and if an auto-off has to be reflected in the system status
+        """
+        self.logging.info("..................... CHECK ACTIVITY (" + str(self.checking_interval) +
+                          "s) .....................")
+        for key in self.api:
+            if self.api[key].last_action > 0:
+                self.logging.info(" * " + key + " : " + str(round((time.time() - self.api[key].last_action)*10)/10) +
+                                  "s  (" + self.api[key].last_action_cmd + ")")
+            else:
+                self.logging.info(" * " + key + " : INACTIVE since server start")
+        pass
 
     def reconnect(self, interface=""):
         """
@@ -423,9 +437,9 @@ class Connect(threading.Thread):
         return return_msg
 
     def save_status(self, device, button, status):
-        '''
+        """
         save status of button to active.json
-        '''
+        """
         return_msg = ""
         active = self.configFiles.read_status()
 
@@ -479,16 +493,21 @@ class Connect(threading.Thread):
             # check for errors or return button code
             if "ERROR" in buttons_device or "ERROR" in active:
                 return "ERROR get_command: buttons not defined for device (" + device + ")"
-            elif "commands" in buttons_device["data"] and button in buttons_device["data"]["commands"] and type_new in \
-                    buttons_device["data"]["commands"][button]:
+
+            elif "commands" in buttons_device["data"] and button in buttons_device["data"]["commands"] \
+                    and type_new in buttons_device["data"]["commands"][button]:
                 return buttons_device["data"]["commands"][button][type_new]
-            elif "commands" in buttons_default["data"] and button in buttons_default["data"]["commands"] and type_new in \
-                    buttons_default["data"]["commands"][button]:
+
+            elif "commands" in buttons_default["data"] and button in buttons_default["data"]["commands"] \
+                    and type_new in buttons_default["data"]["commands"][button]:
                 return buttons_default["data"]["commands"][button][type_new]
+
             elif button in buttons_device["data"][button_query]:
                 return buttons_device["data"][button_query][button]
+
             elif button in buttons_default["data"][button_query]:
                 return buttons_default["data"][button_query][button]
+
             else:
                 return "ERROR get_command: button not defined (" + device + "_" + button + ")"
         else:

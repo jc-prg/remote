@@ -32,7 +32,6 @@ class APIcontrol():
         """
         Initialize API / check connect to device
         """
-
         self.api_name = api_name
         self.api_description = "API for LED via Magic Home"
         self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
@@ -42,6 +41,8 @@ class APIcontrol():
         self.count_error = 0
         self.count_success = 0
         self.log_command = log_command
+        self.last_action = 0
+        self.last_action_cmd = ""
 
         self.power_status = "STARTING"
         self.brightness = 1
@@ -55,9 +56,9 @@ class APIcontrol():
             "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
 
     def connect(self):
-        '''
-       Connect / check connection
-       '''
+        """
+        Connect / check connection
+        """
 
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
@@ -96,17 +97,17 @@ class APIcontrol():
         return self.status
 
     def reconnect(self):
-        '''
-       close socket & reconnect
-       '''
+        """
+        close socket & reconnect
+        """
         if self.api.s:
             self.api.s.close()
         self.connect()
 
     def wait_if_working(self):
-        '''
-       Some devices run into problems, if send several requests at the same time
-       '''
+        """
+        Some devices run into problems, if send several requests at the same time
+        """
 
         while self.working:
             self.logging.debug(".")
@@ -114,19 +115,20 @@ class APIcontrol():
         return
 
     def power_status(self):
-        '''
-       request power status
-       '''
+        """
+        request power status
+        """
         return self.jc.get_info("power")
 
     def send(self, device, command):
-        '''
-       Send command to API
-       '''
-
+        """
+        Send command to API
+        """
         result = {}
         self.wait_if_working()
         self.working = True
+        self.last_action = time.time()
+        self.last_action_cmd = "SEND: " + device + "/" + command
 
         if self.status == "Connected":
             if self.log_command: self.logging.info(
@@ -156,13 +158,13 @@ class APIcontrol():
         return "OK"
 
     def query(self, device, command):
-        '''
-       Send command to API and wait for answer
-       '''
-
-        result = {}
+        """
+        Send command to API and wait for answer
+        """
         self.wait_if_working()
         self.working = True
+        self.last_action = time.time()
+        self.last_action_cmd = "QUERY: " + device + "/" + command
 
         if "||" in command:
             command_param = command.split("||")

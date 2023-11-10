@@ -30,7 +30,6 @@ class APIcontrol():
         """
         Initialize API / check connect to device
         """
-
         self.api_name = api_name
         self.api_description = "API for Tapo-Link P100"
         self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
@@ -40,7 +39,8 @@ class APIcontrol():
         self.count_error = 0
         self.count_success = 0
         self.log_command = log_command
-        self.status = "Start"
+        self.last_action = 0
+        self.last_action_cmd = ""
 
         self.api_config = device_config
         self.api_device = device
@@ -95,7 +95,6 @@ class APIcontrol():
         """
         Some devices run into problems, if send several requests at the same time
         """
-
         while self.working:
             self.logging.debug(".")
             time.sleep(0.2)
@@ -111,10 +110,10 @@ class APIcontrol():
         """
         Send command to API
         """
-
-        result = {}
         self.wait_if_working()
         self.working = True
+        self.last_action = time.time()
+        self.last_action_cmd = "SEND: " + device + "/" + command
 
         if self.status == "Connected":
             if self.log_command: self.logging.info(
@@ -147,10 +146,10 @@ class APIcontrol():
         """
         Send command to API and wait for answer
         """
-
-        result = ""
         self.wait_if_working()
         self.working = True
+        self.last_action = time.time()
+        self.last_action_cmd = "QUERY: " + device + "/" + command
 
         result = {}
         if "||" in command:
