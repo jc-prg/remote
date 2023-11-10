@@ -1,9 +1,10 @@
-test          = False
-rollout       = '${REMOTE_CURRENT_STAGE}'
-server_port   = ${REMOTE_SERVER_PORT}
-data_dir      = '${REMOTE_DIR_DATA}'
-icons_dir     = '${REMOTE_DIR_ICONS}'
-scene_img_dir = '${REMOTE_DIR_SCENES}'
+test           = False
+rollout        = '${REMOTE_CURRENT_STAGE}'
+server_port    = ${REMOTE_SERVER_PORT}
+client_port    = ${REMOTE_CLIENT_PORT}
+data_dir       = '${REMOTE_DIR_DATA}'
+icons_dir      = '${REMOTE_DIR_ICONS}'
+scene_img_dir  = '${REMOTE_DIR_SCENES}'
 
 log_level     = '${REMOTE_LOG_LEVEL}'					# set log level: INFO, DEBUG, WARNING, ERROR
 log_apidata   = '${REMOTE_LOG_APIDATA}'				# shall data from API request be logged: YES, NO

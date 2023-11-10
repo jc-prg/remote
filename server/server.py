@@ -17,6 +17,7 @@ print("----------------------------------------------------------------")
 print(start_string)
 print("----------------------------------------------------------------")
 print(" * Starting server on port: " + str(stage.server_port) + " (http://<url>:"+str(stage.server_port)+"/api/list/)")
+print(" * Starting client on port: " + str(stage.client_port) + "   (http://<url>:"+str(stage.client_port)+"/)")
 
 # start and configure logging
 # ----------------------------------------------
