@@ -18,7 +18,7 @@ import modules.rm3stage as rm3stage
 shorten_info_to = rm3config.shorten_info_to
 
 
-class APIcontrol():
+class ApiControl:
     """
     Integration of sample API to be use by jc://remote/
     """

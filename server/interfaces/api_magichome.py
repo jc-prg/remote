@@ -23,7 +23,7 @@ import interfaces.magichome.magichome as device
 shorten_info_to = rm3config.shorten_info_to
 
 
-class APIcontrol():
+class ApiControl:
     """
     Integration of Magic Home API to be use by jc://remote/
     """

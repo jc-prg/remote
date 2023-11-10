@@ -22,7 +22,7 @@ check_on_startup_commands = [
 ]
 
 
-class APIcontrol():
+class ApiControl:
     """
     Integration of BROADLINK API to be use by jc://remote/
     """
@@ -31,6 +31,7 @@ class APIcontrol():
         """
         Initialize API / check connect to device
         """
+        self.api = None
         self.api_name = api_name
         self.api_description = "API for Infrared Broadlink RM3"
         self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
@@ -106,7 +107,9 @@ class APIcontrol():
         """
         request power status
         """
-        return "N/A"
+        msg = "N/A"
+        self.logging.debug("power_status:" + msg)
+        return msg
 
     def send(self, device, command):
         """Send command to API"""
@@ -114,7 +117,7 @@ class APIcontrol():
         self.wait_if_working()
         self.working = True
         self.last_action = time.time()
-        self.last_action_cmd = "SEND: " + device + "/" + command
+        self.last_action_cmd = "SEND: " + device + "/" + command[:25] + "..."
 
         if self.status == "Connected":
             if self.log_command:
@@ -133,13 +136,15 @@ class APIcontrol():
             return "ERROR " + self.api_name + ": Not connected"
 
         self.working = False
-        return ("OK")
+        return "OK"
 
     def query(self, device, command):
         """
         Send command to API and wait for answer
         """
-        return "WARN: Not supported for this API"
+        msg = "WARN " + self.api_name + ": Not supported for this API"
+        self.logging.debug(msg)
+        return msg
 
     def record(self, device, command):
         """
@@ -170,12 +175,16 @@ class APIcontrol():
         return EncodedCommand
 
     def register(self, command, pin=""):
-        """Register command if device requires registration to initialize authentification"""
-
-        return "ERROR " + self.api_name + ": Not supported by this API"
+        """
+        Register command if device requires registration to initialize authentication
+        """
+        msg = "ERROR " + self.api_name + ": Not supported by this API"
+        self.logging.debug(msg)
+        return msg
 
     def test(self):
         """Test device by sending a couple of commands"""
-
-        return "WARN: Not implemented for this API"
+        msg = "WARN " + self.api_name + ": Not implemented for this API"
+        self.logging.debug(msg)
+        return msg
 

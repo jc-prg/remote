@@ -18,7 +18,7 @@ shorten_info_to = rm3config.shorten_info_to
 # API-class
 # -------------------------------------------------
 
-class APIcontrol():
+class ApiControl:
     """
      Integration of sample API to be use by jc://remote/
     """

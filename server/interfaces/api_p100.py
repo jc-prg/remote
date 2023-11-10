@@ -21,7 +21,7 @@ shorten_info_to = rm3config.shorten_info_to
 
 # -------------------------------------------------
 
-class APIcontrol():
+class ApiControl:
     """
     Integration of PyP100 API to be use by jc://remote/
     """

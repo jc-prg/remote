@@ -13,7 +13,7 @@ import interfaces.eiscp as eiscp
 shorten_info_to = rm3config.shorten_info_to
 
 
-class APIcontrol():
+class ApiControl:
     """
     Integration of sample API to be use by jc://remote/
     """
@@ -55,7 +55,6 @@ class APIcontrol():
         """
         Connect / check connection
         """
-
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
             self.status = self.not_connected + " ... PING"
@@ -100,10 +99,10 @@ class APIcontrol():
         """
         request power status
         """
-        status = self.query("system-power=query")
-        if "on" in str(status):
+        status = self.query("system-power=query", "")
+        if "on" in str(status).lower():
             return "ON"
-        if "off" in str(status):
+        if "off" in str(status).lower():
             return "OFF"
 
     def send(self, device, command):
@@ -268,7 +267,6 @@ class APIaddOn():
         # ERROR ... zwischen Titelwechseln (?) aktuell nur "R" als Wert zurück gegeben ... ?!
         # "no media" noch nicht implementiert
 
-        md = ""
         input_device = self.api.command("input-selector=query")[1]
 
         if tags == "net-info" and "net" in input_device:
