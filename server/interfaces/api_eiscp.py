@@ -218,7 +218,7 @@ class APIcontrol():
 
     def register(self, command, pin=""):
         """
-        Register command if device requires registration to initialize authentification
+        Register command if device requires registration to initialize authentication
         """
         return "ERROR " + self.api_name + ": Not supported by this API"
 
