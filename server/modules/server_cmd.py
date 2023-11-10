@@ -9,7 +9,6 @@ import modules.rm3stage
 import modules.rm3config
 from modules.server_fnct import *
 
-
 # ---------------------------
 
 Status = "Starting"
@@ -18,6 +17,7 @@ if modules.rm3stage.test:
     Stage = "Test Stage"
 else:
     Stage = "Prod Stage"
+
 
 # ---------------------------
 
@@ -64,7 +64,7 @@ def remoteAPI_start(setting=[]):
     data["STATUS"] = {}
     data["STATUS"]["devices"] = RmReadData_deviceStatus()
     data["STATUS"]["scenes"] = RmReadData_sceneStatus()
-    data["STATUS"]["interfaces"] = deviceAPIs.status()
+    data["STATUS"]["interfaces"] = deviceAPIs.api_get_status()
     data["STATUS"]["system"] = {}  # to be filled in remoteAPI_end()
     data["STATUS"]["request_time"] = queueSend.average_exec
     data["STATUS"]["config_errors"] = RmReadData_errors
@@ -141,7 +141,7 @@ def RemoteReload():
     data["REQUEST"]["Return"] = "OK: Configuration reloaded"
     data["REQUEST"]["Command"] = "Reload"
 
-    deviceAPIs.reconnect()
+    deviceAPIs.api_reconnect()
     devicesGetStatus(data, readAPI=True)
     refreshCache()
 
@@ -255,7 +255,7 @@ def RemoteSet(device, command, value):
 
     data = remoteAPI_start()
     interface = configFiles.cache["_api"]["devices"][device]["config"]["interface_api"]
-    method = deviceAPIs.method(device)
+    method = deviceAPIs.api_method(device)
 
     data["REQUEST"]["Device"] = device
     data["REQUEST"]["Button"] = command
@@ -441,7 +441,7 @@ def RemoteOnOff(device, button):
 
     data = remoteAPI_start()
 
-    method = deviceAPIs.method(device)
+    method = deviceAPIs.api_method(device)
     interface = data["CONFIG"]["devices"][device]["interface"]["interface_api"]
     api_dev = data["CONFIG"]["devices"][device]["interface"]["api"]
 
@@ -471,8 +471,8 @@ def RemoteOnOff(device, button):
             if button == "off":           status = "OFF"
             if button == "on-off":        status = RemoteToggle(current_status, ["ON", "OFF"])
 
-        elif value in definition and "type" in definition[value] and (
-                "values" in definition[value] or "param" in definition[value]):
+        elif value in definition and "type" in definition[value] \
+                and ("values" in definition[value] or "param" in definition[value]):
 
             d_type = definition[value]["type"]
             if "param" in definition[value]:
@@ -647,7 +647,7 @@ def RemoteRecordCommand(device, button):
     interface = data["DATA"]["devices"][device]["config"]["interface_api"]
     data["DATA"] = {}
 
-    EncodedCommand = deviceAPIs.record(interface, device, button)
+    EncodedCommand = deviceAPIs.api_record(interface, device, button)
 
     if "ERROR" not in str(EncodedCommand):
         data["REQUEST"]["Return"] = addCommand2Button(device, button, EncodedCommand)
@@ -831,6 +831,6 @@ def RemoteTest():
     data["REQUEST"]["Return"] = "OK: Test - show complete data structure"
     data["REQUEST"]["Command"] = "Test"
     data = remoteAPI_end(data, ["no-data"])
-    deviceAPIs.test()
+    deviceAPIs.api_test()
 
     return data
