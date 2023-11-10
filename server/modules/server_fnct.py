@@ -160,15 +160,18 @@ def RmReadData_devices(selected=[], remotes=True, config_only=False):
                 interface = data[device]["config"]["interface_api"]
                 remote = configFiles.read(modules.rm3config.remotes + key_remote)  # remote layout & display
 
-                if not "devices" in RmReadData_errors: RmReadData_errors["devices"] = {}
+                if "devices" not in RmReadData_errors:
+                    RmReadData_errors["devices"] = {}
                 if "ERROR" in remote:
                     logging.error("Error reading config file '" + key_remote + "': " + remote["ERROR_MSG"])
-                    if not device in RmReadData_errors["devices"]: RmReadData_errors["devices"][device] = {}
-                    RmReadData_errors["devices"][device][modules.rm3config.remotes + key_remote + ".json"] = remote[
-                        "ERROR_MSG"]
+                    if device not in RmReadData_errors["devices"]:
+                        RmReadData_errors["devices"][device] = {}
+                    RmReadData_errors["devices"][device][modules.rm3config.remotes+key_remote+".json"] = \
+                        remote["ERROR_MSG"]
                     continue
                 elif device in RmReadData_errors["devices"]:
-                    if not device in RmReadData_errors["devices"]: RmReadData_errors["devices"] = {}
+                    if device not in RmReadData_errors["devices"]:
+                        RmReadData_errors["devices"] = {}
                     del RmReadData_errors["devices"][device]
 
                 data_temp = data[device]
@@ -185,7 +188,8 @@ def RmReadData_devices(selected=[], remotes=True, config_only=False):
                     if "ERROR" in interface_def_device:
                         logging.error(
                             "Error reading config file '" + device_key + "': " + interface_def_device["ERROR_MSG"])
-                        if not device in RmReadData_errors["devices"]: RmReadData_errors["devices"][device] = {}
+                        if device not in RmReadData_errors["devices"]:
+                            RmReadData_errors["devices"][device] = {}
                         RmReadData_errors["devices"][device][
                             modules.rm3config.commands + interface + "/" + device_key + ".json"] = interface_def_device[
                             "ERROR_MSG"]
@@ -194,7 +198,8 @@ def RmReadData_devices(selected=[], remotes=True, config_only=False):
                     if "ERROR" in interface_def_default:
                         logging.error(
                             "Error reading config file '" + device_key + "': " + interface_def_default["ERROR_MSG"])
-                        if not device in RmReadData_errors["devices"]: RmReadData_errors["devices"][device] = {}
+                        if device not in RmReadData_errors["devices"]:
+                            RmReadData_errors["devices"][device] = {}
                         RmReadData_errors["devices"][device][
                             modules.rm3config.commands + interface + "/00_default.json"] = interface_def_default[
                             "ERROR_MSG"]
@@ -1328,7 +1333,7 @@ def getButtonValue(device, button):
     if method == "record":
         getStatus(device, button)
     elif method == "query":
-        return deviceAPIs.query(interface, device, button)
+        return deviceAPIs.api_query(interface, device, button)
     else:
         return "ERROR: Wrong method (" + method + ")"
 
