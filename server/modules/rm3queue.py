@@ -69,6 +69,7 @@ class QueueApiCalls(threading.Thread):
         """
 
         # read device information if query
+        devices = {}
         if self.config != "" and self.query_send == "query":
             devices = self.config.read_status()
 
@@ -89,7 +90,7 @@ class QueueApiCalls(threading.Thread):
 
             if self.query_send == "send":
                 try:
-                    result = self.device_apis.send(interface, device, button, state)
+                    result = self.device_apis.api_send(interface, device, button, state)
                     self.execution_time(device, request_time, time.time())
                     self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')
 
@@ -102,14 +103,15 @@ class QueueApiCalls(threading.Thread):
                 result = ""
                 for value in button:
                     try:
-                        result = self.device_apis.query(interface, device, value)
+                        result = self.device_apis.api_query(interface, device, value)
                         # self.execution_time(device,request_time,time.time())
 
                         self.last_query = device + "_" + value
                         self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')
                         devices[device]["status"]["api-last-query"] = self.last_query_time
-                        devices[device]["status"]["api-status"] = self.device_apis.api[
-                            self.device_apis.api_device(device)].status
+                        devices[device]["status"]["api-last-query-tc"] = int(time.time())
+                        devices[device]["status"]["api-status"] = \
+                            self.device_apis.api[self.device_apis.device_api_string(device)].status
 
                     except Exception as e:
                         result = "ERROR queue query_list (query," + str(interface) + "," + str(device) + "," + str(
@@ -165,8 +167,6 @@ class QueueApiCalls(threading.Thread):
         """stop thread"""
 
         self.stopProcess = True
-
-        # ------------------
 
     def execution_time(self, device, start_time, end_time):
         """
