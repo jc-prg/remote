@@ -328,7 +328,9 @@ class Connect(threading.Thread):
                 return_msg = "ERROR: API not available (" + api_dev + ")"
 
             if "ERROR" not in return_msg and self.api[api_dev].method == "record" and value != "":
-                self.device_save_status(device, button, value)
+                self.device_save_status(device, button=button, status=value)
+            elif "ERROR" not in return_msg and self.api[api_dev].method == "record":
+                self.device_save_status(device, "api-last-send", "add")
             elif "ERROR" not in return_msg and self.api[api_dev].method == "query":
                 self.device_save_status(device, "api-last-send", "add")
 
@@ -458,6 +460,11 @@ class Connect(threading.Thread):
             active[device]["status"][param] = status
             active[device]["status"]["api-last-send"] = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')
             active[device]["status"]["api-last-send-tc"] = int(time.time())
+
+            #power_auto_off = self.device_auto_power_off(device)
+            #if power_auto_off != 1:
+            #    active[device]["status"]["auto-power-off"] = power_auto_off["auto_off"]
+
             return_msg = "OK"
 
         else:

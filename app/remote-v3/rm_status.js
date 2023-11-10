@@ -33,6 +33,7 @@ function statusCheck(data={}) {
 	statusCheck_powerButtonScene(data);
 	statusCheck_audioMute(data);
 	statusCheck_apiConnection(data);
+	statusCheck_deviceIdle(data)
 
     var duration = Date.now() - start;
 	console.log("statusCheck: Updated all status elements ("+duration+"ms)");
@@ -299,6 +300,30 @@ function statusCheck_deviceActive(data) {
 				}
 			}
 		}
+	}
+
+
+// check how long device was idle (relevant for auto power off)
+function statusCheck_deviceIdle(data) {
+
+	if (!data["DATA"]) {
+		console.error("statusCheck_deviceActive: data not loaded.");
+		statusShowApiStatus("red", showButtonTime);
+		return;
+		}
+
+	var devices = data["DATA"]["devices"];
+	for (var device in devices) {
+	    var last_send = devices[device]["status"]["api-last-send-tc"];
+	    var auto_power_off = devices[device]["status"]["auto-power-off"];
+	    var current_time = Math.round(new Date().getTime() / 1000);
+
+        if (last_send != undefined && auto_power_off != undefined) {
+	        //console.log(" ....... " + (current_time - last_send) + " ... " + auto_power_off);
+	        var off = convert_second2time(auto_power_off - (current_time - last_send));
+            setTextById("device_auto_off_"+device, "-&gt;&nbsp;Auto-Power-Off  in " + off);
+	        }
+	    }
 	}
 
 
@@ -703,7 +728,8 @@ function statusCheck_display(data={}) {
 		// fill all keys in alert display
 		if (device_status && device_config && device_config["commands"]["get"]) {
 
-			var additional_keys    = ["api","api-status","api-last-query","api-last-record","api-last-send"];
+			var additional_keys    = ["api","api-status","api-last-query","api-last-record",
+			                          "api-last-send","api-auto-off"];
 			var display     	= device_config["commands"]["get"];
 			var connected   	= device_api_status.toLowerCase();
 			var device_status      = data["STATUS"]["devices"][key]; 
@@ -718,10 +744,10 @@ function statusCheck_display(data={}) {
 				var status   		= device_status[vkey];		
 
 				if (status && vkey == "power") {
-					if (connected != "connected")						{ status = "<b style='color:red;'>Connection Error:</b><br/>"+connected; }			
-			        	else if (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)	{ status = "<b style='color:lightgreen;'>Connected<b/>"; }
+					if (connected != "connected")                                       { status = "<b style='color:red;'>Connection Error:</b><br/>"+connected; }
+					else if (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)	{ status = "<b style='color:lightgreen;'>Connected<b/>"; }
 					else if (status.indexOf("OFF") >= 0 || status.indexOf("off") >= 0)	{ status = "<b style='color:gold;'>Connected: Power Off<b/>"; }
-        				else 									{ status = "<b style='color:red;'>Unknown Error:</b> "+status; }			
+        			else 									                            { status = "<b style='color:red;'>Unknown Error:</b> "+status; }
 					}
 				else if (status && vkey == "api-status") {
 					status = device_api_status;

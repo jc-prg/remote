@@ -4,35 +4,6 @@
 // (c) Christoph Kloth
 // settings page & functions
 //--------------------------------
-/* INDEX:
-function rmSettings (name)
-	this.init			= function (data)
-	this.create			= function ()
-	this.create_setting		= function ()
-	this.create_edit		= function ()
-	this.create_edit_FileNames	= function ()
-	this.write			= function (nr,label="",text="")
-	this.is_filled			= function (nr)
-	this.show			= function ()
-	this.hide			= function ()
-	this.onoff			= function ()
-        this.device_list_container	= function ()
-	this.device_list		= function (id,onchange="")
-	this.interface_list		= function ()
-	this.interface_list_update	= function ()
-	this.exec_time_list		= function ()
-	this.exec_time_list_update	= function ()
-	this.button_list		= function (id,filter="")
-	this.button_list_change	= function (id_filter, id_list, id_list_container)
-	this.device_list_status	= function (id_filter, id_list_container)
-	this.button_show		= function ()
-	this.button_deact		= function (menu_entry=false)
-	this.button_stage		= function ()
-	this.input			= function (id,onclick="",oninput="")
-	this.select			= function (id,title,data,onchange="")
-	this.remoteToggleEditMode	= function ()
-*/
-//--------------------------------
 
 
 function rmSettings (name) {	// IN PROGRESS
@@ -56,7 +27,7 @@ function rmSettings (name) {	// IN PROGRESS
 	this.json         = new rmRemoteJSON(name+".json");			// rm_remotes-elements.js
 	
 	// init settings / set vars
-	this.init			= function (data) {
+	this.init			        = function (data) {
 		// set data
 		this.data = data;
 		
@@ -77,18 +48,15 @@ function rmSettings (name) {	// IN PROGRESS
                 	}
 		}
 
-	//------------------------------
-
 	// write settings page
-	this.create			= function () {
+	this.create			        = function () {
 	
 		if (this.edit_mode && this.mode != "edit") 		{ this.create_edit();    this.mode = "edit"; }
 		else if (!this.edit_mode && this.mode != "setting")	{ this.create_setting(); this.mode = "setting"; }
 		else if (this.mode == "setting")			{ this.interface_list_update(); this.exec_time_list_update(); }
 		}
 
-
-	this.create_setting		= function () {
+	this.create_setting		    = function () {
 		// Set Vars
 		var setting    = "";
 		var set_temp   = "";
@@ -170,7 +138,7 @@ function rmSettings (name) {	// IN PROGRESS
 		this.btn.height = "30px";
 		this.btn.width  = "120px";
 
-		// Relaod & Updates
+		// Reload & Updates
 		setting   = "";
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row(	"<center>" +
@@ -221,7 +189,7 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row( buttons );
 		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_colorcodes","Button color codes",set_temp,false);
+		setting  += this.basic.container("setting_color_codes","Button color codes",set_temp,false);
 
 		this.write(1,"Server &amp; Client Settings",setting);
 
@@ -243,9 +211,7 @@ function rmSettings (name) {	// IN PROGRESS
 		this.write(3);
 		}
 
-	//------------------------------
-
-	this.create_edit		= function () {
+	this.create_edit		    = function () {
 	
 		var onchange  = this.app_name + ".create_edit_FileNames()";
 		var onchange2 = this.app_name + ".create_edit_FileNames";
@@ -352,7 +318,6 @@ function rmSettings (name) {	// IN PROGRESS
 		this.write(2,"Change Makros",setting);
 		}
 
-
 	this.create_edit_FileNames	= function () {
 	
 		replace_minus   = [" ","/","\\",":","&","#","?"];
@@ -372,10 +337,8 @@ function rmSettings (name) {	// IN PROGRESS
 		document.getElementById("add_device_remote").value = remote_file;
 		}
 
-	//------------------------------
-
 	// write settings category
-	this.write			= function (nr,label="",text="") {
+	this.write			        = function (nr,label="",text="") {
 
 		var element 	= this.e_settings[nr];
 		if (label != "") {
@@ -389,17 +352,16 @@ function rmSettings (name) {	// IN PROGRESS
 		setTextById(element,content);
 		}
 		
-	this.is_filled			= function (nr) {
+	this.is_filled			    = function (nr) {
 		var element 	= this.e_settings[nr];
 		if (element.innerHTML != "")	{ return true; }
 		else				{ return false; }
 		}
 
-	//------------------------------
-	this.show			= function () { if (this.active == false) { this.onoff(); showRemoteInBackground(0); } }
-	this.hide			= function () { if (this.active == true ) { this.onoff(); } }
+	this.show			        = function () { if (this.active == false) { this.onoff(); showRemoteInBackground(0); } }
+	this.hide			        = function () { if (this.active == true ) { this.onoff(); } }
 
-	this.onoff			= function () {
+	this.onoff			        = function () {
 
 		if (this.active)	{ 
 			setNavTitle(this.header_title);
@@ -429,70 +391,72 @@ function rmSettings (name) {	// IN PROGRESS
 		else if (show_settings)				{ elementHidden("frame1");  elementHidden("frame2"); elementHidden("frame3"); }
 		}
 
-	//------------------------------
-        
-        
-        // show devices in containers
-        this.device_list_container	= function () {
-        	var text = "";
-        	var list = {}
-        	for (var key in this.data["STATUS"]["devices"]) {
-        		var def_info = this.data["STATUS"]["devices"][key];
-        		var api_dev  = def_info["api"].split("_");
-        		if (! list[api_dev[0]]) { list[api_dev[0]] = {}; }
-        		if (! list[api_dev[0]][def_info["api"]]) { list[api_dev[0]][def_info["api"]] = {}; }
-        		list[api_dev[0]][def_info["api"]][key] = def_info;
-        		}
-        	for (var key in list) { if (key != "") {        		
-        		var details = ""; //JSON.stringify(list[key]);
-			details += "<i>API-Status:</i>";
-       		details += "<ul>";
-        		for (var key2 in list[key]) {
-       			var values  = this.data["STATUS"]["interfaces"][key2];
-       			var api_dev = key2.split("_");
-       			details += "<li><i>"+api_dev[1]+"</i>: <text id='api_status_"+key2+"'>"+values+"</text></li>";
-				}
-			// last-query, exec-time ... if available
-       		details += "</ul>";
-			details += "<i>Devices:</i>";
-       		details += "<ul>";
-        		for (var key2 in list[key]) {
-        			//details += "<b>"+key2+"</b><br>";
-        			for (var key3 in list[key][key2]) {
-        				var values = JSON.stringify(list[key][key2][key3]);
-        				values = values.replace( /,/g, ",<br/>");
-        				values = values.replace( /:/g, ": ");
+    // show devices in containers
+    this.device_list_container	= function () {
+        var text = "";
+        var list = {}
+        for (var key in this.data["STATUS"]["devices"]) {
+            var def_info = this.data["STATUS"]["devices"][key];
+            var api_dev  = def_info["api"].split("_");
+            if (! list[api_dev[0]]) { list[api_dev[0]] = {}; }
+            if (! list[api_dev[0]][def_info["api"]]) { list[api_dev[0]][def_info["api"]] = {}; }
+            list[api_dev[0]][def_info["api"]][key] = def_info;
+            }
+        for (var key in list) { if (key != "") {
+            var details = ""; //JSON.stringify(list[key]);
+        details += "<i>API-Status:</i>";
+        details += "<ul>";
+            for (var key2 in list[key]) {
+            var values  = this.data["STATUS"]["interfaces"][key2];
+            var api_dev = key2.split("_");
+            details += "<li><i>"+api_dev[1]+"</i>: <text id='api_status_"+key2+"'>"+values+"</text></li>";
+            }
+        // last-query, exec-time ... if available
+        details += "</ul>";
+        details += "<i>Devices:</i>";
+        details += "<ul>";
+            for (var key2 in list[key]) {
+                //details += "<b>"+key2+"</b><br>";
+                for (var key3 in list[key][key2]) {
+                    var values = JSON.stringify(list[key][key2][key3]);
+                    values = values.replace( /,/g, ",<br/>");
+                    values = values.replace( /:/g, ": ");
 
-					var command_on    = "appFW.requestAPI('GET',['set','"+key3+"','power','ON'], '', '', '' );setTextById('CHANGE_STATUS_"+key3+"','ON');"; //rm3settings.onoff();remoteInit();";
-					var command_off   = "appFW.requestAPI('GET',['set','"+key3+"','power','OFF'], '', '', '' );setTextById('CHANGE_STATUS_"+key3+"','OFF');"; //rm3settings.onoff();remoteInit();";
-					var power_status  = list[key][key2][key3]["power"]; //.toUpperCase();
-					
-					var label         = this.data["DATA"]["devices"][key3]["settings"]["label"];
-					var visibility    = this.data["DATA"]["devices"][key3]["settings"]["visible"];
+                var command_on    = "appFW.requestAPI('GET',['set','"+key3+"','power','ON'], '', '', '' );setTextById('CHANGE_STATUS_"+key3+"','ON');"; //rm3settings.onoff();remoteInit();";
+                var command_off   = "appFW.requestAPI('GET',['set','"+key3+"','power','OFF'], '', '', '' );setTextById('CHANGE_STATUS_"+key3+"','OFF');"; //rm3settings.onoff();remoteInit();";
+                var power_status  = list[key][key2][key3]["power"]; //.toUpperCase();
 
-					if (this.data["CONFIG"]["devices"][key3]) {
-						var method        = this.data["CONFIG"]["devices"][key3]["interface"]["method"];
-						var hidden        = "";
-					
-						if (method == "record" && power_status == "ON")	{ power_status = "<u id=\"CHANGE_STATUS_"+key3+"\"><status onclick=\""+command_off+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>"; }
-						if (method == "record" && power_status == "OFF")	{ power_status = "<u id=\"CHANGE_STATUS_"+key3+"\"><status onclick=\""+command_on+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>"; }
-						if (visibility != "yes")				{ hidden = "*"; }
-        				
-        					details += "<li><b>["+key3+"]</b> <i>"+label+":</i> " + power_status + hidden + "</li>";
-        					}
-        				else {
-						var error        = this.data["STATUS"]["config_errors"]["devices"][key3];
-        					details += "<li><b>["+key3+"]</b> <i>"+label+":</i> <font color='" + color_api_error + "'>ERROR in configuration file</font></li>";
-        					}
-	        			}
-        			}
-        		details += "</ul>";
-        		text += this.basic.container("details_"+key,"Interface: "+key+" </b><text id='api_status_"+key+"'> &nbsp;...</text>",details,false);
-        		} }
-        	return text;
-        	}
+                var label         = this.data["DATA"]["devices"][key3]["settings"]["label"];
+                var visibility    = this.data["DATA"]["devices"][key3]["settings"]["visible"];
 
-	this.device_list		= function (id,onchange="") {
+                if (this.data["CONFIG"]["devices"][key3]) {
+                    var method        = this.data["CONFIG"]["devices"][key3]["interface"]["method"];
+                    var hidden        = "";
+                    var idle          = "<small><idle id=\"device_auto_off_"+key3+"\"></idle></small>"
+
+                    if (method == "record" && power_status == "ON")  {
+                        power_status = "<u id=\"CHANGE_STATUS_"+key3+"\"><status onclick=\""+command_off+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
+                        }
+                    else if (method == "record" && power_status == "OFF") {
+                        power_status = "<u id=\"CHANGE_STATUS_"+key3+"\"><status onclick=\""+command_on+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
+                        }
+                    if (visibility != "yes") { hidden = "*"; }
+
+                    details += "<li><b>["+key3+"]</b> <i>"+label+":</i> " + power_status + hidden + "</li>" + idle;
+                    }
+                else {
+                    var error        = this.data["STATUS"]["config_errors"]["devices"][key3];
+                        details += "<li><b>["+key3+"]</b> <i>"+label+":</i> <font color='" + color_api_error + "'>ERROR in configuration file</font></li>";
+                        }
+                    }
+                }
+            details += "</ul>";
+            text += this.basic.container("details_"+key,"Interface: "+key+" </b><text id='api_status_"+key+"'> &nbsp;...</text>",details,false);
+            } }
+        return text;
+        }
+
+	this.device_list		    = function (id,onchange="") {
 		var list = {};
 		for (var key in this.data["DATA"]["devices"]){
 			list[key] = this.data["DATA"]["devices"][key]["settings"]["label"];
@@ -500,7 +464,7 @@ function rmSettings (name) {	// IN PROGRESS
 		return this.select(id,"device",list,onchange);
 		}
 
-	this.interface_list		= function () {
+	this.interface_list		    = function () {
 		var text = "<div id='setting_interface_list'>";
 		for (var key in this.data["STATUS"]["interfaces"]) {
 			text += key + ":<br><div id='api_status_"+key+"'>";
@@ -516,7 +480,7 @@ function rmSettings (name) {	// IN PROGRESS
 		setTextById('setting_interface_list', this.interface_list());
 		}
 
-	this.exec_time_list		= function () {
+	this.exec_time_list		    = function () {
 		var text = "<div id='setting_exec_time_list'>";
 		for (var key in this.data["STATUS"]["request_time"]) {
 			text += key + ": " + (Math.round(this.data["STATUS"]["request_time"][key]*1000)/1000) + "s<br/>";
@@ -529,7 +493,7 @@ function rmSettings (name) {	// IN PROGRESS
 		setTextById('setting_exec_time_list', this.exec_time_list());
 		}
 
-	this.button_list		= function (id,filter="") {
+	this.button_list		    = function (id,filter="") {
 		var list = {};
 		if (filter != "" && filter in this.data["DATA"]["devices"]) {
 			for (var key in this.data["DATA"]["devices"][filter]["buttons"]){
@@ -539,25 +503,25 @@ function rmSettings (name) {	// IN PROGRESS
 		return this.select(id,"button",list);
 		}
 
-	this.button_list_change	= function (id_filter, id_list, id_list_container) {
+	this.button_list_change	    = function (id_filter, id_list, id_list_container) {
 	        var filter_list = document.getElementById(id_filter);
 	        var filter      = filter_list.options[filter_list.selectedIndex].value;
 	        var list        = this.button_list( id_list, filter );
 	        setTextById( id_list_container, list );
         	}
 
-	this.device_list_status	= function (id_filter, id_list_container) {
-		var status = "<br/>";
-	        var filter_list = document.getElementById(id_filter);
-	        var filter      = filter_list.options[filter_list.selectedIndex].value;
+	this.device_list_status	    = function (id_filter, id_list_container) {
+		var status      = "<br/>";
+        var filter_list = document.getElementById(id_filter);
+        var filter      = filter_list.options[filter_list.selectedIndex].value;
 		for (var key in this.data["DATA"]["devices"][filter]["status"]) {
 			if (key == "power") {
 				command_on    = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','ON'], '', '', '' );rm3settings.onoff();remoteInit();";
 				command_off   = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','OFF'], '', '', '' );rm3settings.onoff();remoteInit();";
 				status_value  = this.data["DATA"]["devices"][filter]["status"][key];
-				if (status_value == "ON")	{ command_link = "<div onclick=\""+command_off+"\" style=\"cursor:pointer\">"+key+": <u>ON</u></div>"; }
+				if (status_value == "ON")	    { command_link = "<div onclick=\""+command_off+"\" style=\"cursor:pointer\">"+key+": <u>ON</u></div>"; }
 				else if (status_value == "OFF")	{ command_link = "<div onclick=\""+command_on +"\" style=\"cursor:pointer\">"+key+": <u>OFF</u></div>"; }
-				else				{ command_link = key + ": " + status_value + "</br>"; }
+				else				            { command_link = key + ": " + status_value + "</br>"; }
 				status += command_link;
 				}
 			else if (key != "presets") {
@@ -567,12 +531,8 @@ function rmSettings (name) {	// IN PROGRESS
 	        setTextById( id_list_container, status );
 		}
 
-
-	//------------------------------
-
 	// show button code in header if pressed button
-
-	this.button_show		= function () {
+	this.button_show		    = function () {
 		if (showButton)	{ showButton = false; }
 		else			{ showButton = true; }
 		this.create();
@@ -580,7 +540,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	// deactivate buttons if device / scene is switched off
-	this.button_deact		= function (menu_entry=false) {
+	this.button_deact		    = function (menu_entry=false) {
 		if (deactivateButton) 	{ 
 			deactivateButton = false;
 			this.manual_mode = false;
@@ -599,7 +559,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	// switch server connection between test and prod stage
-	this.button_stage		= function () {
+	this.button_stage		    = function () {
 		if (connect2stage == "Test")	{ connect2stage = "Prod"; appFW.appUrl = RESTurl_prod; }
 		else				{ connect2stage = "Test"; appFW.appUrl = RESTurl_test; }
 
@@ -608,8 +568,7 @@ function rmSettings (name) {	// IN PROGRESS
 		this.show();		// recreate settings page
 		}
 
-	//------------------------------	
-	this.input			= function (id,onclick="",oninput="") { 
+	this.input			        = function (id,onclick="",oninput="") {
 		
 		text = "<input id=\"" + id + "\" oninput=\""+oninput+"\" style='width:" + this.input_width + ";margin:1px;'>"; 
 		if (onclick != "") {
@@ -618,9 +577,8 @@ function rmSettings (name) {	// IN PROGRESS
 			
 		return text;
 		}
-		
 
-	this.select			= function (id,title,data,onchange="") {
+	this.select			        = function (id,title,data,onchange="") {
 		var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
 		item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
 		for (var key in data) {
