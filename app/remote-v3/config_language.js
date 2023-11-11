@@ -124,8 +124,8 @@ var language_app = {
 		
 		"MANUAL_CHANNEL"		: "<i>Edit Channels:</i><br/><br/><ul class='help'>" +
 						  "<li>Fill dict for channel definition using the JSON format: " +
-						  "<i>&quot;Channel Name&quot; : [ &quot;button&quot;, &quot;button&quot;, &quot;makro&quot;]</i></li>" +
-						  "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;makro_type&gt;_&lt;button&gt;&quot; to define buttons in channel makro; makro types are: makro, scene-on, scene-off, dev-on, dev-off</li>" +
+						  "<i>&quot;Channel Name&quot; : [ &quot;button&quot;, &quot;button&quot;, &quot;macro&quot;]</i></li>" +
+						  "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;macro_type&gt;_&lt;button&gt;&quot; to define buttons in channel macro; macro types are: macro, scene-on, scene-off, dev-on, dev-off</li>" +
 						  "</ul>",
 		"MANUAL_DEVICES"		: "<i>Edit Devices for Scene</i><br/><br/><ul class='help'>" +
 						  "<li>Fill array of included devices using the JSON format: [&quot;device_id&quot;,&quot;device_id&quot;]</i>.</li>" +
@@ -143,7 +143,7 @@ var language_app = {
 						  "</ul>",
 		"MANUAL_SCENE"			: "<i>Edit Scene Remote Control:</i><br/><br/><ul class='help'>" +
 						  "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
-						  "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;makro_type&gt;_&lt;button&gt;&quot; to define buttons in the remote layout; makro types are: makro, scene-on, scene-off, dev-on, dev-off</li>" +
+						  "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;macro_type&gt;_&lt;button&gt;&quot; to define buttons in the remote layout; macro types are: macro, scene-on, scene-off, dev-on, dev-off</li>" +
 						  "<li>Add &quot;.&quot; to add an empty space.</li>" +
 						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
 						  "<li>Add &quot;HEADER-IMAGE&quot; to add an image. The image can be selected in the scene settings.</li>" +
@@ -153,21 +153,21 @@ var language_app = {
 						  "<li>Add &quot;SLIDER||send-&lt;value&gt;||&lt;description&gt;||&lt;range-from&gt;-&lt;range-to&gt;||&lt;value&gt;&quot; to add a slider."+
 						    " This is support for devices with query mode and if a number can be send via API." +
 						  "</ul>",
-		"MANUAL_MAKROS"		: "<i>Edit Makros:</i><br/><br/><ul class='help'>" +
-						  "<li>Define makros using the JSON format</li>" +
+		"MANUAL_MAKROS"		: "<i>Edit Macros:</i><br/><br/><ul class='help'>" +
+						  "<li>Define macros using the JSON format</li>" +
 						  "<li>Combine buttons from any defined remote control and integers for seconds to wait</li>" +
-						  "<li>Makro types are: <ul>" + 
-						  	"<li><u>dev-on</u>: makros to switch a device on (e.g. switch on and set initial volume)</li>"+
-						  	"<li><u>dev-off</u>: makros to switch a device off</li>" +
+						  "<li>Macro types are: <ul>" +
+						  	"<li><u>dev-on</u>: macros to switch a device on (e.g. switch on and set initial volume)</li>"+
+						  	"<li><u>dev-off</u>: macros to switch a device off</li>" +
 						  	"<li><u>scene-on</u>: switch all device of a scene on, set input channels and similar</li>"+
 						  	"<li><u>scene-off</u>: switch all devices of a scene off</li>"+
-						  	"<li><u>makro</u>: all other makros</li>"+
+						  	"<li><u>macro</u>: all other macros</li>"+
 						  "</ul></li>"+
-						  "<li>Makro format: \"&lt;makro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
-						  "<li>Scene-on/off makros format: \"&lt;makro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
-						  "<li>Dev-on/off makros format: \"&lt;device&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"&lt;device&gt;_&lt;button&gt;||&lt;value&gt;\",] </li>" +
-						  "<li>Makros can be used for scenes, not for devices: 'makro_&lt;makro&gt;', 'scene-on_&lt;scene&gt;', 'scene-off_&lt;scene&gt;', 'dev-on_&lt;device&gt;', 'dev-off_&lt;device&gt;'</li>" +
-						  "<li>Start with &quot;WAIT-xx&quot; in a makro to show a message that it's necessary to wait for xx seconds</li>" + 
+						  "<li>Macro format: \"&lt;macro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
+						  "<li>Scene-on/off macros format: \"&lt;macro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
+						  "<li>Dev-on/off macros format: \"&lt;device&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"&lt;device&gt;_&lt;button&gt;||&lt;value&gt;\",] </li>" +
+						  "<li>Macros can be used for scenes, not for devices: 'macro_&lt;macro&gt;', 'scene-on_&lt;scene&gt;', 'scene-off_&lt;scene&gt;', 'dev-on_&lt;device&gt;', 'dev-off_&lt;device&gt;'</li>" +
+						  "<li>Start with &quot;WAIT-xx&quot; in a macro to show a message that it's necessary to wait for xx seconds</li>" +
 						  "</ul>",
 						  
 		"METHOD"			: "Method",
@@ -198,7 +198,7 @@ var language_app = {
 		"RESET_VOLUME_TO_ZERO"         : "Reset Audio Settings:<br/>set the volume of all audio devices to mininum (0) before.",
 
 		"SEND_DATA"                    : "Send data",
-		"SELECT_DEV_MAKRO"             : "select device or makro",
+		"SELECT_DEV_MAKRO"             : "select device or macro",
 		"SELECT_DEV_FIRST"             : "select device first",
 		
 		"SCENE_CONFIG_ERROR"           : "Error in scene config file(s) '{0}': ",

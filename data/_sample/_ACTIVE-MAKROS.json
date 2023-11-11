@@ -1,5 +1,5 @@
 {
-    "description": "In this file you can define all makros you need: <device/dev-on/scene-on/..>_<button>||<target_status>",
+    "description": "In this file you can define all macros you need: <device/dev-on/scene-on/..>_<button>||<target_status>",
     "dev-off": {
         "bd": [
             "bd_on-off||OFF"
@@ -75,7 +75,7 @@
             "tv2_mute||OFF"
         ]
     },
-    "makro": {
+    "macro": {
         "aa": [
             "bb",
             "c",

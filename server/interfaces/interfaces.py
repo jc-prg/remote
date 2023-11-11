@@ -170,6 +170,8 @@ class Connect(threading.Thread):
                 auto_power_off = self.device_auto_power_off(device)
                 if auto_power_off != -1:
                     self.logging.info("   -> " + device + " - auto-off: " + str(auto_power_off))
+                    if auto_power_off["switch_off"]:
+                        self.device_save_status(device, button="power", status="OFF")
 
     def api_reconnect(self, interface=""):
         """
@@ -486,7 +488,7 @@ class Connect(threading.Thread):
         except:
             return "error_" + device
 
-    def device_status(self, device):
+    def device_status(self, device) -> dict:
         """
         get status for a specific device
         """
@@ -494,9 +496,9 @@ class Connect(threading.Thread):
         if device in active_devices:
             return active_devices[device]
         else:
-            return "error_" + device
+            return {"ERROR":  device}
 
-    def device_configuration(self, device):
+    def device_configuration(self, device) -> dict:
         """
         return configuration file of a device
         """
@@ -507,7 +509,7 @@ class Connect(threading.Thread):
             device_config = self.configFiles.read(rm3config.commands + device_api + "/" + device_code)
             return device_config
         else:
-            return "ERROR: Device configuration doesn't exist."
+            return {"ERROR": "Device configuration doesn't exist."}
 
     def device_auto_power_off(self, device):
         """

@@ -103,7 +103,7 @@ var colors_power		= {
 
 var button_color = {};
 var button_img = {};
-var makro_def = {};
+var macro_def = {};
 var device_status = {};
 var remote_def = {};
 var remote_mix_def = {};

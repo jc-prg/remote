@@ -238,37 +238,37 @@ function rmRemoteButtons(name) {
 		return button;		
 		}		
 
-	// create button for multiple commands (makro)
-	this.makro           = function (id, label, scene, style, makro, disabled ) {	// ALT: ( id, makro, label, style, disabled ) {
-        if (makro) {
+	// create button for multiple commands (macro)
+	this.macro           = function (id, label, scene, style, macro, disabled ) {	// ALT: ( id, macro, label, style, disabled ) {
+        if (macro) {
             var d = this.image( label, style );
-            var makro_string = "";
-            var makro_wait = "";
+            var macro_string = "";
+            var macro_wait = "";
 
-            for (var i=0; i<makro.length; i++) {
+            for (var i=0; i<macro.length; i++) {
 
-                if (isNaN(makro[i]) && makro[i].indexOf("WAIT") > -1) {
-                    var wait = makro[i].split("-");
-                    makro_wait = 'appMsg.wait_time("'+lang("MAKRO_PLEASE_WAIT")+'", '+wait[1]+');';
+                if (isNaN(macro[i]) && macro[i].indexOf("WAIT") > -1) {
+                    var wait = macro[i].split("-");
+                    macro_wait = 'appMsg.wait_time("'+lang("MAKRO_PLEASE_WAIT")+'", '+wait[1]+');';
                     }
                 else {
-                    makro_string = makro_string + makro[i] + "::";
+                    macro_string = macro_string + macro[i] + "::";
                     }
                 }
-            var b = this.default( id, d[0], d[1], 'apiMakroSend("'+makro_string+'","'+scene+'");'+makro_wait, disabled );
-            this.logging.debug("button_makro - "+b);
+            var b = this.default( id, d[0], d[1], 'apiMacroSend("'+macro_string+'","'+scene+'");'+macro_wait, disabled );
+            this.logging.debug("button_macro - "+b);
             return b;
             }
         else { return this.default( id, label, style+" notfound", "", "disabled" ); }
         }
 		
-	// create button for channel (makro)
-	this.channel         = function (id, label, scene, makro, style, disabled="") {
-    		var makro_string = "";
-		for (var i=0; i<makro.length; i++) { makro_string = makro_string + makro[i] + "::"; }
+	// create button for channel (macro)
+	this.channel         = function (id, label, scene, macro, style, disabled="") {
+    		var macro_string = "";
+		for (var i=0; i<macro.length; i++) { macro_string = macro_string + macro[i] + "::"; }
 
-		this.logging.debug(label+" - "+makro_string);
-		return "<button id='" + id + "' class='channel-entry " + style + "' " + disabled + " onclick=\"javascript:apiMakroSend('" + makro_string + "','"+scene+"','"+label+"');\">" + label + "</button>";
+		this.logging.debug(label+" - "+macro_string);
+		return "<button id='" + id + "' class='channel-entry " + style + "' " + disabled + " onclick=\"javascript:apiMacroSend('" + macro_string + "','"+scene+"','"+label+"');\">" + label + "</button>";
 		}
 
 	// check if image exists for button
@@ -346,7 +346,7 @@ function rmRemoteJSON(name) {
         		json = json.replaceAll( "}", "\n}" );
         		text += json;
         		}
-        	else if (format == "makros") {
+        	else if (format == "macros") {
         		json = JSON.stringify(json);
         		json = json.replaceAll( "],", "],\n\n" );
         		json = json.replaceAll( ":", ":\n" );
@@ -651,17 +651,17 @@ function rmRemoteDisplays(name) {
 
 
 //----------------------------------
-// Handling of Makros
+// Handling of Macros
 //----------------------------------
-// Makroseiten schreiben
+// Macroseiten schreiben
 
-function writeMakroButton () {
+function writeMacroButton () {
     var buttons = "";
-    var makro   = makro_def["Main"];
+    var macro   = macro_def["Main"];
 
-    for (var key in makro) {
-        id      = makro[key];
-        buttons = buttons + sendButtonMakro( id, makro[key], key, "yellow", "" );
+    for (var key in macro) {
+        id      = macro[key];
+        buttons = buttons + sendButtonMacro( id, macro[key], key, "yellow", "" );
         }
 
     document.getElementById("frame2").innerHTML = buttons;

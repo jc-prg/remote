@@ -25,8 +25,8 @@
         "label": "Media Center",
         "remote": [
             "HEADER-IMAGE||toggle",
-            "TOGGLE||plug02_power||Strom Medientechnik||makro_plug02-on||makro_plug02-off",
-            "makro_kodi",
+            "TOGGLE||plug02_power||Strom Medientechnik||macro_plug02-on||macro_plug02-off",
+            "macro_kodi",
             ".",
             "scene-on",
             "scene-off",
@@ -67,5 +67,5 @@
         ],
         "type": "scene"
     },
-    "info": "jc://remote/ - In this file the remote layout and channel makros for the scene are defined."
+    "info": "jc://remote/ - In this file the remote layout and channel macros for the scene are defined."
 }

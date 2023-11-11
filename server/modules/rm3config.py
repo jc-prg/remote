@@ -22,7 +22,7 @@ DEBUG = False
 refresh_config_sleep = 5 * 60
 refresh_config_cache = 60
 refresh_device_status = 10
-refresh_device_connection = 120
+refresh_device_connection = 60
 
 # ---------------------------------
 
@@ -48,7 +48,7 @@ active = "_active"  # overview file name
 
 active_devices = "_ACTIVE-DEVICES"
 active_scenes = "_ACTIVE-SCENES"
-active_makros = "_ACTIVE-MAKROS"
+active_macros = "_ACTIVE-MAKROS"
 
 # ---------------------------------
 

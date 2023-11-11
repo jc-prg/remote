@@ -68,17 +68,17 @@ function apiTemplateAdd(device_id, template_id) {
 	appMsg.confirm(question,"apiTemplateAdd_exe('" + device + "','" + template + "'); ");
 	}
 	
-// edit makros
-function apiMakroChange(data=[]) {
+// edit macros
+function apiMacroChange(data=[]) {
 
 	send_data = {};
 	for (var i=0;i<data.length;i++) {
 		var key            = data[i];
 			try		{ send_data[key] = JSON.parse(getValueById(key)); }
-		catch(e)	{ appMsg.alert("<b>JSON Makro " + key + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+		catch(e)	{ appMsg.alert("<b>JSON Macro " + key + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 		}
 
-	appFW.requestAPI("PUT",["makro"], send_data, apiAlertReturn);
+	appFW.requestAPI("PUT",["macro"], send_data, apiAlertReturn);
 	}
 
 // create new device
@@ -246,10 +246,10 @@ function apiCommandSend(cmdButton, sync="", callback="", device="") {
 	var ee, vv;
 	var onoff = false;
 
-	// check if makro
-	var types = ["makro", "scene-on", "scene-off", "dev-on", "dev-off"];
+	// check if macro
+	var types = ["macro", "scene-on", "scene-off", "dev-on", "dev-off"];
 	for (var i=0;i<types.length;i++) {
-        if (cmdButton.startsWith(types[i]+"_")) { return apiMakroSend(cmdButton, device); }
+        if (cmdButton.startsWith(types[i]+"_")) { return apiMacroSend(cmdButton, device); }
         }
     console.debug("apiCommandSend: " + cmdButton);
 
@@ -323,17 +323,24 @@ function apiCommandRecord(device_id, button_id) {
 // add button to device
 function apiButtonAdd(device_id, button_id) {
 
-        var i=0;
+    var i=0;
 
-	if (document.getElementById(device_id)) 	{ var device	= document.getElementById(device_id).value.toLowerCase(); }
-	else					 	{ var device	= device_id; i++; }
-	if (document.getElementById(button_id)) 	{ var button	= document.getElementById(button_id).value; 
-							  if (button != "LINE")	{ button = button.toLowerCase(); }
-							  if (button == ".")		{ button = "DOT"; }
-							}
-	else						{ var button    = button_id; i++; }	
+	if (document.getElementById(device_id)) {
+	    var device	= document.getElementById(device_id).value.toLowerCase();
+	    }
+	else {
+	    var device	= device_id; i++;
+	    }
+	if (document.getElementById(button_id)) 	{
+	    var button	= document.getElementById(button_id).value;
+		if (button != "LINE")	{ button = button.toLowerCase(); }
+		if (button == ".")		{ button = "DOT"; }
+		}
+	else {
+	    var button    = button_id; i++;
+	    }
 	
-        cmd = "appFW.requestAPI('PUT',['button','"+device+"','"+button+"'], '', appMsg.alertReturn );";
+    cmd = "appFW.requestAPI('PUT',['button','"+device+"','"+button+"'], '', appMsg.alertReturn );";
 
 	if (device == "") { appMsg.alert(lang("DEVICE_SELECT")); return; }
 	if (button == "") { appMsg.alert(lang("BUTTON_INSERT_NAME")); return; }
@@ -362,48 +369,48 @@ function apiButtonDelete(device_id, button_id) {
 	appMsg.confirm(lang("BUTTON_ASK_DELETE_NUMBER",[button,device]),"apiButtonDelete_exe('"+device+"'," + button + "); ");
 	}
 
-// decompose makro data
-function apiMakroDecompose(makro) {
-    var types = ["makro", "scene-on", "scene-off", "scene-off", "dev-on", "dev-off"];
+// decompose macro data
+function apiMacroDecompose(macro) {
+    var types = ["macro", "scene-on", "scene-off", "scene-off", "dev-on", "dev-off"];
     for (var a=0;a<types.length;a++) {
-        if (makro.startsWith(types[a]+"_")) {
-            var makro_cmd = makro.split("_");
-            var makro_string = "";
-            var makro_wait = "";
-            var makro_data = rm3remotes.data["DATA"]["makros"][types[a]];
+        if (macro.startsWith(types[a]+"_")) {
+            var macro_cmd = macro.split("_");
+            var macro_string = "";
+            var macro_wait = "";
+            var macro_data = rm3remotes.data["DATA"]["macros"][types[a]];
 
-            if (makro_data[makro_cmd[1]]) {
-                for (var i=0; i<makro_data[makro_cmd[1]].length; i++) {
-                    var command = makro_data[makro_cmd[1]][i];
+            if (macro_data[macro_cmd[1]]) {
+                for (var i=0; i<macro_data[macro_cmd[1]].length; i++) {
+                    var command = macro_data[macro_cmd[1]][i];
                     if (command.startsWith && command.startsWith("WAIT")) {
                         var wait = command.split("-");
-                        makro_wait = 'appMsg.wait_time("'+lang("MAKRO_PLEASE_WAIT")+'", '+wait[1]+');';
+                        macro_wait = 'appMsg.wait_time("'+lang("MAKRO_PLEASE_WAIT")+'", '+wait[1]+');';
                         }
                     else {
-                        makro_string += makro_data[makro_cmd[1]][i] + "::";
+                        macro_string += macro_data[macro_cmd[1]][i] + "::";
                         }
                     }
                 }
             }
         }
-    console.debug("apiMakroDecompose: " + makro + " -> " + makro_string + " | " + makro_wait);
-    return [ makro_string, makro_wait ];
+    console.debug("apiMacroDecompose: " + macro + " -> " + macro_string + " | " + macro_wait);
+    return [ macro_string, macro_wait ];
     }
 
-// separate makro into single commands and send commands
-function apiMakroSend( makro, device="", content="" ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
-    console.debug("apiMakroSend: " + makro);
-    if (!makro.includes("::")) {
-        [makro_string, makro_wait] = apiMakroDecompose(makro);
-        makro = makro_string;
-        eval(makro_wait);
+// separate macro into single commands and send commands
+function apiMacroSend( macro, device="", content="" ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
+    console.debug("apiMacroSend: " + macro);
+    if (!macro.includes("::")) {
+        [macro_string, macro_wait] = apiMacroDecompose(macro);
+        macro = macro_string;
+        eval(macro_wait);
         }
-	dc = [ "makro", makro ];
-	appFW.requestAPI( "GET", dc, "", apiMakroSend_return );
+	dc = [ "macro", macro ];
+	appFW.requestAPI( "GET", dc, "", apiMacroSend_return );
 	device_media_info[device] = content;	
 	}
 
-function apiMakroSend_return( data ) {
-	console.log("Send makro return :");
+function apiMacroSend_return( data ) {
+	console.log("Send macro return :");
 	console.log(data);
 	}

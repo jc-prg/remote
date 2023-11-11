@@ -121,7 +121,7 @@ The integration of the device APIs is done in an easy way, so that the integrati
 ### App & Server 1.x
 
 * remote control for devices
-* remote control for scenes incl. makros
+* remote control for scenes incl. macros
 * control devices via IR sender/receiver (Broadlink RM3 Mini)
 
 ## Used sources

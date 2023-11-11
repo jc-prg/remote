@@ -137,9 +137,9 @@ class ConfigCache(threading.Thread):
         check = self.read(rm3config.active_scenes)
         if "ERROR" in check:
             error_msg[rm3config.active_scenes] = check["ERROR_MSG"]
-        check = self.read(rm3config.active_makros)
+        check = self.read(rm3config.active_macros)
         if "ERROR" in check:
-            error_msg[rm3config.active_makros] = check["ERROR_MSG"]
+            error_msg[rm3config.active_macros] = check["ERROR_MSG"]
 
         if error_msg != {}:
             self.logging.error("Error while reading MAIN CONFIG FILES:")

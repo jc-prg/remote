@@ -1,5 +1,5 @@
 {
-    "info": "jc://remote/ - In this file the remote layout and channel makros for the scene are defined.",
+    "info": "jc://remote/ - In this file the remote layout and channel macros for the scene are defined.",
     "data": {
         "channel": {},
         "description" : "Scene for KODI Media Center",
@@ -17,7 +17,7 @@
         "display-size": "middle",
         "label": "Media Center",
         "remote": [
-            "makro_kodi",
+            "macro_kodi",
             ".",
             "scene-on",
             "scene-off",

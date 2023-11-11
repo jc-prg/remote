@@ -300,22 +300,22 @@ function rmSettings (name) {	// IN PROGRESS
 		this.write(0,lang("REMOTE_ADD"),setting);					
 
 
-		// Edit Makros 01		
+		// Edit Macros 01
 		setting   = "";
-		setting  += this.basic.container("setting_makros1","JSON makros [general]",		this.json.textarea("makro", this.data["DATA"]["makros"]["makro"], "makros"),false); 
-		setting  += this.basic.container("setting_makros2","JSON makros [device ON]",	this.json.textarea("dev-on", this.data["DATA"]["makros"]["dev-on"], "makros"),false); 
-		setting  += this.basic.container("setting_makros3","JSON makros [device OFF]",	this.json.textarea("dev-off", this.data["DATA"]["makros"]["dev-off"], "makros"),false); 
-		setting  += this.basic.container("setting_makros4","JSON makros [scene ON]",		this.json.textarea("scene-on", this.data["DATA"]["makros"]["scene-on"], "makros"),false); 
-		setting  += this.basic.container("setting_makros5","JSON makros [scene OFF]",	this.json.textarea("scene-off", this.data["DATA"]["makros"]["scene-off"], "makros"),false); 
+		setting  += this.basic.container("setting_macros1","JSON macros [general]",		this.json.textarea("macro", this.data["DATA"]["macros"]["macro"], "macros"),false);
+		setting  += this.basic.container("setting_macros2","JSON macros [device ON]",	this.json.textarea("dev-on", this.data["DATA"]["macros"]["dev-on"], "macros"),false);
+		setting  += this.basic.container("setting_macros3","JSON macros [device OFF]",	this.json.textarea("dev-off", this.data["DATA"]["macros"]["dev-off"], "macros"),false);
+		setting  += this.basic.container("setting_macros4","JSON macros [scene ON]",		this.json.textarea("scene-on", this.data["DATA"]["macros"]["scene-on"], "macros"),false);
+		setting  += this.basic.container("setting_macros5","JSON macros [scene OFF]",	this.json.textarea("scene-off", this.data["DATA"]["macros"]["scene-off"], "macros"),false);
 
-		setting  += this.basic.container("setting_makros_manual","JSON makros - manual",lang("MANUAL_MAKROS"),false); 
+		setting  += this.basic.container("setting_macros_manual","JSON macros - manual",lang("MANUAL_MAKROS"),false);
 
 		setting  += "<center><br/><br/>";
-//		setting  += this.btn.sized("apiMakroChange(['makro','scene-on','scene-off','dev-on','dev-off']);",lang("BUTTON_T_SAVE"),"");
-		setting  += this.btn.sized(id="add_scene",label=lang("BUTTON_T_SAVE"),style="","apiMakroChange([#makro#,#scene-on#,#scene-off#,#dev-on#,#dev-off#]);","");
+//		setting  += this.btn.sized("apiMacroChange(['macro','scene-on','scene-off','dev-on','dev-off']);",lang("BUTTON_T_SAVE"),"");
+		setting  += this.btn.sized(id="add_scene",label=lang("BUTTON_T_SAVE"),style="","apiMacroChange([#macro#,#scene-on#,#scene-off#,#dev-on#,#dev-off#]);","");
 		setting  += "</center>";
 
-		this.write(2,"Change Makros",setting);
+		this.write(2,"Change Macros",setting);
 		}
 
 	this.create_edit_FileNames	= function () {
@@ -432,7 +432,7 @@ function rmSettings (name) {	// IN PROGRESS
                 if (this.data["CONFIG"]["devices"][key3]) {
                     var method        = this.data["CONFIG"]["devices"][key3]["interface"]["method"];
                     var hidden        = "";
-                    var idle          = "<small><idle id=\"device_auto_off_"+key3+"\"></idle></small>"
+                    var idle          = "<small id=\"device_auto_off_"+key3+"\"></small>"
 
                     if (method == "record" && power_status == "ON")  {
                         power_status = "<u id=\"CHANGE_STATUS_"+key3+"\"><status onclick=\""+command_off+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";

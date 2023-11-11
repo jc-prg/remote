@@ -292,20 +292,20 @@ def RmWriteData_devices(data):
         configFiles.write_status(data, "RmWriteData_devices()")
 
 
-def RmReadData_makros(selected=[]):
+def RmReadData_macros(selected=[]):
     """
-    read config data for makros
+    read config data for macros
     """
     data = {}
-    data = configFiles.read(modules.rm3config.active_makros)
+    data = configFiles.read(modules.rm3config.active_macros)
     return data
 
 
-def RmWriteData_makros(data):
+def RmWriteData_macros(data):
     """
     write config data for scenes and remove temp parameter required e.g. for REST API
     """
-    var_relevant = ["description", "makro", "dev-on", "dev-off", "scene-on", "scene-off"]
+    var_relevant = ["description", "macro", "dev-on", "dev-off", "scene-on", "scene-off"]
     var_delete = []
 
     for key in data:
@@ -315,7 +315,7 @@ def RmWriteData_makros(data):
     for key in var_delete:
         del data[key]
 
-    configFiles.write(modules.rm3config.active_makros, data, "RmWriteData_makros()")
+    configFiles.write(modules.rm3config.active_macros, data, "RmWriteData_macros()")
 
 
 def RmReadData_scenes(selected=[], remotes=True):
@@ -442,7 +442,7 @@ def RmReadData(selected=[]):
     if configFiles.cache_update or "_api" not in configFiles.cache:
 
         data["devices"] = RmReadData_devices(selected, True, False)
-        data["makros"] = RmReadData_makros(selected)
+        data["macros"] = RmReadData_macros(selected)
         data["scenes"] = RmReadData_scenes(selected, True)
         data["templates"] = RmReadData_templates(selected)["templates"]
         data["template_list"] = RmReadData_templates(selected)["template_list"]
@@ -518,7 +518,7 @@ def addScene(scene, info):
 
     # add to devices = button definitions
     remote = {
-        "info": "jc://remote/ - In this file the remote layout and channel makros for the scene are defined.",
+        "info": "jc://remote/ - In this file the remote layout and channel macros for the scene are defined.",
         "data": {
             "label": info["label"],
             "description": info["label"],
@@ -947,32 +947,32 @@ def deleteButton(device, button_number):
         return "ERROR: Device '" + device + "' does not exist."
 
 
-def editMakros(makros):
+def editMacros(macros):
     """
-    check if format is correct and save makros
+    check if format is correct and save macros
     """
-    makro_keys = ["makro", "dev-on", "dev-off", "scene-on", "scene-off"]
+    macro_keys = ["macro", "dev-on", "dev-off", "scene-on", "scene-off"]
 
-    if not isinstance(makros, dict):                  return "ERROR: wrong data format - not a dict."
-    for key in makros:
-        if not isinstance(makros[key], dict):          return "ERROR: wrong data format - not a dict (" + str(
+    if not isinstance(macros, dict):                  return "ERROR: wrong data format - not a dict."
+    for key in macros:
+        if not isinstance(macros[key], dict):          return "ERROR: wrong data format - not a dict (" + str(
             key) + ")."
-        if key not in makro_keys:                      return "ERROR: wrong data format - unknown key (" + str(
+        if key not in macro_keys:                      return "ERROR: wrong data format - unknown key (" + str(
             key) + ")"
-        for key2 in makros[key]:
-            if not isinstance(makros[key][key2], list): return "ERROR: wrong data format - makro is not a list (" + str(
+        for key2 in macros[key]:
+            if not isinstance(macros[key][key2], list): return "ERROR: wrong data format - macro is not a list (" + str(
                 key) + "/" + str(key2) + ")"
-            for list_key in makros[key][key2]:
+            for list_key in macros[key][key2]:
                 if not (isinstance(list_key, float) or isinstance(list_key, int)) and not isinstance(list_key, str):
                     return "ERROR: wrong data format - list entry is not a number or string (" + str(key) + "/" + str(
                         key2) + "/" + str(list_key) + ")"
 
-    makro_file = RmReadData_makros()
-    for key in makros:
-        makro_file[key] = makros[key]
-    RmWriteData_makros(makro_file)
+    macro_file = RmReadData_macros()
+    for key in macros:
+        macro_file[key] = macros[key]
+    RmWriteData_macros(macro_file)
 
-    return "OK, saved makro file."
+    return "OK, saved macro file."
 
 
 def addTemplate(device, template):

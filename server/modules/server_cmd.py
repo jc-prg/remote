@@ -275,84 +275,84 @@ def RemoteSet(device, command, value):
     return data
 
 
-def RemoteMakro(makro):
+def RemoteMacro(macro):
     """
-    send makro (list of commands)
+    send macro (list of commands)
     """
 
     data = remoteAPI_start()
-    data["REQUEST"]["Button"] = makro
+    data["REQUEST"]["Button"] = macro
     data["REQUEST"]["Return"] = "ERROR: Started but not finished..."  # deviceAPIs.send(interface,device,button)
-    data["REQUEST"]["Command"] = "Makro"
+    data["REQUEST"]["Command"] = "Macro"
 
-    commands_1st = makro.split("::")
+    commands_1st = macro.split("::")
     commands_2nd = []
     commands_3rd = []
     commands_4th = []
     return_msg = ""
 
-    logging.debug("Decoded makro-string 1st: " + str(commands_1st))
+    logging.debug("Decoded macro-string 1st: " + str(commands_1st))
 
-    # decode makros: scene-on/off
+    # decode macros: scene-on/off
     for command in commands_1st:
         command_str = str(command)
         if not command_str.isnumeric() and "_" in command:
             device, button = command.split("_", 1)
             if "scene-on_" in command:
-                if button in data["DATA"]["makros"]["scene-on"]:
-                    commands_2nd.extend(data["DATA"]["makros"]["scene-on"][button])
+                if button in data["DATA"]["macros"]["scene-on"]:
+                    commands_2nd.extend(data["DATA"]["macros"]["scene-on"][button])
                 else:
-                    return_msg += "; ERROR: makro not defined (" + command + ")"
+                    return_msg += "; ERROR: macro not defined (" + command + ")"
             elif "scene-off_" in command:
-                if button in data["DATA"]["makros"]["scene-off"]:
-                    commands_2nd.extend(data["DATA"]["makros"]["scene-off"][button])
+                if button in data["DATA"]["macros"]["scene-off"]:
+                    commands_2nd.extend(data["DATA"]["macros"]["scene-off"][button])
                 else:
-                    return_msg += "; ERROR: makro not defined (" + command + ")"
+                    return_msg += "; ERROR: macro not defined (" + command + ")"
             else:
                 commands_2nd.extend([command])
         else:
             commands_2nd.extend([command])
 
-    logging.debug("Decoded makro-string 2nd: " + str(commands_2nd))
+    logging.debug("Decoded macro-string 2nd: " + str(commands_2nd))
 
-    # decode makros: dev-on/off
+    # decode macros: dev-on/off
     for command in commands_2nd:
         command_str = str(command)
         if not command_str.isnumeric() and "_" in command:
             device, button = command.split("_", 1)
             if "dev-on_" in command:
-                if button in data["DATA"]["makros"]["dev-on"]:
-                    commands_3rd.extend(data["DATA"]["makros"]["dev-on"][button])
+                if button in data["DATA"]["macros"]["dev-on"]:
+                    commands_3rd.extend(data["DATA"]["macros"]["dev-on"][button])
                 else:
-                    return_msg += "; ERROR: makro not defined (" + command + ")"
+                    return_msg += "; ERROR: macro not defined (" + command + ")"
             elif "dev-off_" in command:
-                if button in data["DATA"]["makros"]["dev-off"]:
-                    commands_3rd.extend(data["DATA"]["makros"]["dev-off"][button])
+                if button in data["DATA"]["macros"]["dev-off"]:
+                    commands_3rd.extend(data["DATA"]["macros"]["dev-off"][button])
                 else:
-                    return_msg += "; ERROR: makro not defined (" + command + ")"
+                    return_msg += "; ERROR: macro not defined (" + command + ")"
             else:
                 commands_3rd.extend([command])
         else:
             commands_3rd.extend([command])
 
-    logging.debug("Decoded makro-string 3rd: " + str(commands_3rd))
+    logging.debug("Decoded macro-string 3rd: " + str(commands_3rd))
 
-    # decode makros: makro
+    # decode macros: macro
     for command in commands_3rd:
         command_str = str(command)
         if not command_str.isnumeric() and "_" in command:
             device, button = command.split("_", 1)
-            if "makro_" in command:
-                if button in data["DATA"]["makros"]["makro"]:
-                    commands_4th.extend(data["DATA"]["makros"]["makro"][button])
+            if "macro_" in command:
+                if button in data["DATA"]["macros"]["macro"]:
+                    commands_4th.extend(data["DATA"]["macros"]["macro"][button])
                 else:
-                    return_msg += "; ERROR: makro not defined (" + command + ")"
+                    return_msg += "; ERROR: macro not defined (" + command + ")"
             else:
                 commands_4th.extend([command])
         else:
             commands_4th.extend([command])
 
-    logging.debug("Decoded makro-string 4th: " + str(commands_4th))
+    logging.debug("Decoded macro-string 4th: " + str(commands_4th))
 
     # execute buttons
     for command in commands_4th:
@@ -364,7 +364,7 @@ def RemoteMakro(makro):
             device, button_status = command.split("_", 1)  # split device and button
 
             if device not in data["DATA"]["devices"]:
-                error_msg = "; ERROR: Device defined in makro not found (" + device + ")"
+                error_msg = "; ERROR: Device defined in macro not found (" + device + ")"
                 return_msg += error_msg
                 logging.error(error_msg)
                 continue
@@ -417,13 +417,13 @@ def RemoteMakro(makro):
     return data
 
 
-def RemoteMakroChange(makros):
+def RemoteMacroChange(macros):
     """
-    Change Makros and save to _ACTIVE-MAKROS.json
+    Change Macros and save to _ACTIVE-MAKROS.json
     """
     data = remoteAPI_start()
-    data["REQUEST"]["Return"] = editMakros(makros)
-    data["REQUEST"]["Command"] = "ChangeMakros"
+    data["REQUEST"]["Return"] = editMacros(macros)
+    data["REQUEST"]["Command"] = "ChangeMacros"
     data = remoteAPI_end(data)
 
     return data

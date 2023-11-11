@@ -211,21 +211,21 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
 
-  /makro/{makro}/:
+  /macro/{macro}/:
     get:
-      operationId: modules.server_cmd.RemoteMakro
+      operationId: modules.server_cmd.RemoteMacro
       tags:
         - send
       summary: send marko
-      description: the makro commands are send
+      description: the macro commands are send
       parameters:
-        - name: makro
+        - name: macro
           in: path
           type: string
           required: true
       responses:
         200:
-          description: Successfully send makro commands
+          description: Successfully send macro commands
           schema:
             properties:
               API:
@@ -238,22 +238,22 @@ paths:
                 $ref: "#/definitions/STATUS"
 
 
-  /makro/:
+  /macro/:
     put:
-      operationId: modules.server_cmd.RemoteMakroChange
+      operationId: modules.server_cmd.RemoteMacroChange
       tags:
         - send
       summary: edit marko
       description: change markose
       parameters:
-        - name: makros
+        - name: macros
           in: body
-          description: makros, dev-on/off, scene-on/off definition
+          description: macros, dev-on/off, scene-on/off definition
           schema:
             type: object     
       responses:
         200:
-          description: Successfully send makro commands
+          description: Successfully send macro commands
           schema:
             properties:
               API:
@@ -999,10 +999,10 @@ definitions:
                     type: array
                     items:
                       type: string
-      makros:
+      macros:
         type: object
         properties:
-          "<makro-name>":
+          "<macro-name>":
             type: object
             properties:
               "dev-on":
@@ -1019,7 +1019,7 @@ definitions:
                     type: array
                     items:
                       type: string
-              "makro":
+              "macro":
                 type: object
                 properties:
                   "<button-name>":

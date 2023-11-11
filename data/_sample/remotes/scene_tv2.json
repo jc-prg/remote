@@ -1,5 +1,5 @@
 {
-    "info": "jc://remote/ - In this file the remote layout and channel makros for the scene are defined.",
+    "info": "jc://remote/ - In this file the remote layout and channel macros for the scene are defined.",
     "data": {
         "channel": {
             "test channel [12]": [
@@ -17,8 +17,8 @@
         "label": "Fernsehen",
         "remote": [
             "HEADER-IMAGE||toggle",
-            "TOGGLE||plug02_power||Strom Medientechnik||makro_plug02-on||makro_plug02-off",
-            "makro_tv",
+            "TOGGLE||plug02_power||Strom Medientechnik||macro_plug02-on||macro_plug02-off",
+            "macro_tv",
             ".",
             "scene-on",
             "scene-off",
@@ -26,15 +26,15 @@
             "tv2_1",
             "tv2_2",
             "tv2_3",
-            "makro_vol+",
+            "macro_vol+",
             "tv2_4",
             "tv2_5",
             "tv2_6",
-            "makro_mute",
+            "macro_mute",
             "tv2_7",
             "tv2_8",
             "tv2_9",
-            "makro_vol-",
+            "macro_vol-",
             "tv2_back",
             "tv2_0",
             "tv2_info",

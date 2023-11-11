@@ -238,18 +238,18 @@ function statusCheck_deviceActive(data) {
 			}
 		}
 		
-	// deactive makro_buttons (check scene status, deactivate all buttons from list starting with "makro")
+	// deactive macro_buttons (check scene status, deactivate all buttons from list starting with "macro")
 	if (rm3remotes.active_type == "scene" && scene_status[rm3remotes.active_name] != "ON") {
 	
 		for (var i=0; i<rm3remotes.active_buttons.length; i++) {
 			var button1 = rm3remotes.active_buttons[i].split("_");
-			if (button1[0] == "makro") { statusShow_buttonActive(button1[0]+"_"+button1[1],false); }
+			if (button1[0] == "macro") { statusShow_buttonActive(button1[0]+"_"+button1[1],false); }
 			}
 		}
 	else if (rm3remotes.active_type == "scene") {
 		for (var i=0; i<rm3remotes.active_buttons.length; i++) {
 			var button1 = rm3remotes.active_buttons[i].split("_");
-			if (button1[0] == "makro") { statusShow_buttonActive(button1[0]+"_"+button1[1],true); }
+			if (button1[0] == "macro") { statusShow_buttonActive(button1[0]+"_"+button1[1],true); }
 			}
 		}
 
@@ -316,12 +316,18 @@ function statusCheck_deviceIdle(data) {
 	for (var device in devices) {
 	    var last_send = devices[device]["status"]["api-last-send-tc"];
 	    var auto_power_off = devices[device]["status"]["auto-power-off"];
+	    var power_status = devices[device]["status"]["power"];
 	    var current_time = Math.round(new Date().getTime() / 1000);
 
         if (last_send != undefined && auto_power_off != undefined) {
-	        //console.log(" ....... " + (current_time - last_send) + " ... " + auto_power_off);
-	        var off = convert_second2time(auto_power_off - (current_time - last_send));
-            setTextById("device_auto_off_"+device, "-&gt;&nbsp;Auto-Power-Off  in " + off);
+            if (power_status == "ON" && (auto_power_off - (current_time - last_send)) > 0) {
+	            //console.log(" ....... " + (current_time - last_send) + " ... " + auto_power_off);
+	            var off = convert_second2time(auto_power_off - (current_time - last_send));
+                setTextById("device_auto_off_"+device, "-&gt;&nbsp;Auto-Power-Off  in " + off);
+                }
+            else {
+                setTextById("device_auto_off_"+device, "°");
+                }
 	        }
 	    }
 	}
