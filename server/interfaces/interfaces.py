@@ -274,17 +274,17 @@ class Connect(threading.Thread):
         """
         send command if connected
         """
-
-        return_msg = ""
         api_dev = self.device_api_string(device)
+        method = self.api_method(device)
         self.api_errors(device)
-
         self.logging.info("__SEND: " + api_dev + " / " + device + "_" + button + ":" + str(value) +
                           " (" + self.api[api_dev].status + ")")
 
-        if self.api[api_dev].status == "Connected":
-            method = self.api_method(device)
+        if value.startswith("set-") and method == "record":
+            value = value.replace("set-", "")
+            self.device_save_status(device, button=button, status=value)
 
+        elif self.api[api_dev].status == "Connected":
             if button.startswith("send-"):
 
                 button = button.split("-")[1]
@@ -321,20 +321,22 @@ class Connect(threading.Thread):
                 if self.log_commands:
                     self.logging.info("...... " + str(button_code))
 
-            if "ERROR" in button_code:
+            # send if not error
+            if api_dev in self.api and "ERROR" not in button_code:
+                return_msg = self.api[api_dev].send(device, button_code)
+            elif "ERROR" in button_code:
                 return_msg = "ERROR: could not read/create command from button code (send/" + \
                              device + "/" + button + "); " + button_code
-            elif api_dev in self.api:
-                return_msg = self.api[api_dev].send(device, button_code)
             else:
                 return_msg = "ERROR: API not available (" + api_dev + ")"
 
+            # save status depending on device method
             if "ERROR" not in return_msg and self.api[api_dev].method == "record" and value != "":
                 self.device_save_status(device, button=button, status=value)
             elif "ERROR" not in return_msg and self.api[api_dev].method == "record":
-                self.device_save_status(device, "api-last-send", "add")
+                self.device_save_status(device, button="api-last-send", status="add")
             elif "ERROR" not in return_msg and self.api[api_dev].method == "query":
-                self.device_save_status(device, "api-last-send", "add")
+                self.device_save_status(device, button="api-last-send", status="add")
 
         else:
             return_msg = self.api[api_dev].status
@@ -344,7 +346,7 @@ class Connect(threading.Thread):
             if "'ApiControl' object has no attribute 'api'" in return_msg:
                 return_msg = "ERROR: Interface not ready yet (" + api_dev + ")"
             elif "Device is off" in return_msg:
-                self.logging.info(return_msg)
+                self.logging.debug(return_msg)
                 return return_msg
 
             if self.last_message != return_msg:
@@ -430,7 +432,7 @@ class Connect(threading.Thread):
             if "'ApiControl' object has no attribute 'api'" in return_msg:
                 return_msg = "ERROR: Interface not ready yet (" + api_dev + ")"
             elif "Device is off" in return_msg:
-                self.logging.info(return_msg)
+                self.logging.debug(return_msg)
                 return return_msg
 
             if self.last_message != return_msg:

@@ -319,11 +319,16 @@ function statusCheck_deviceIdle(data) {
 	    var power_status = devices[device]["status"]["power"];
 	    var current_time = Math.round(new Date().getTime() / 1000);
 
+	    if (document.getElementById("display_"+device+"_auto-power-off")) {
+	        setTextById("display_"+device+"_auto-power-off", power_status);
+	    }
+
         if (last_send != undefined && auto_power_off != undefined) {
             if (power_status == "ON" && (auto_power_off - (current_time - last_send)) > 0) {
 	            //console.log(" ....... " + (current_time - last_send) + " ... " + auto_power_off);
 	            var off = convert_second2time(auto_power_off - (current_time - last_send));
                 setTextById("device_auto_off_"+device, "-&gt;&nbsp;Auto-Power-Off  in " + off);
+    	        setTextById("display_"+device+"_auto-power-off", "-" + off);
                 }
             else {
                 setTextById("device_auto_off_"+device, "°");
@@ -630,11 +635,11 @@ function statusCheck_powerButton(data={}) {
 function statusCheck_display(data={}) {
 
 	// check status for displays
-	var devices		= data["DATA"]["devices"];
-	var scenes             = data["DATA"]["scenes"];
-	var vol_color		= "white";
-	var vol_color2		= "yellow";
-	var novol_color	= "darkgray";
+	var devices     = data["DATA"]["devices"];
+	var scenes      = data["DATA"]["scenes"];
+	var vol_color   = "white";
+	var vol_color2  = "yellow";
+	var novol_color = "darkgray";
 
 	// set colors
 	for (var key in devices) {
@@ -655,7 +660,7 @@ function statusCheck_display(data={}) {
 		
 		if (device_api_status == "Connected" && device_status["power"] && device_status["power"].includes("ON")) {
 		
-			// to be transfered to server: single source for playing information
+			// to be transferred to server: single source for playing information
 			// -> add 'queries-content-info = ["current-playing","usb-net-title"]' to config files
 			// -> offer value via API
 			// -> use it here to check if one of those values contains (relevant) information
@@ -677,8 +682,12 @@ function statusCheck_display(data={}) {
 		
 			if (media_info && playing_content != "") {
 
-				if (media_info_content)	{ var current_media_info_content = media_info_content.innerHTML; }
-				else				{ var current_media_info_content = ""; }
+				if (media_info_content)	{
+				    var current_media_info_content = media_info_content.innerHTML;
+				    }
+				else {
+				    var current_media_info_content = "";
+				    }
 				
 				if (playing_content != "" && rm3remotes.active_name == key) {				
 					current_media_info_content = playing_content;
@@ -703,28 +712,28 @@ function statusCheck_display(data={}) {
 		
 			var display     	= devices[key]["remote"]["display"];
 			var connected   	= device_api_status.toLowerCase();
-			var device_status      = data["STATUS"]["devices"][key]; 
+			var device_status   = data["STATUS"]["devices"][key];
 		        
-			for (var dkey in display) {
-				var vkey     = display[dkey];
-				var element  = document.getElementById("display_" + key + "_" + vkey);
-				var element2 = document.getElementById("display_full_" + key + "_" + vkey);
-				var status   = device_status[vkey];
-				
-				if (vkey == "vol" 	
+			for (var display_key in display) {
+				var value_key      = display[display_key];
+				var element        = document.getElementById("display_" + key + "_" + value_key);
+				var element2       = document.getElementById("display_full_" + key + "_" + value_key);
+				var status         = device_status[value_key];
+
+				if (value_key == "vol"
 				    && device_config["commands"]["definition"] 
-				    && device_config["commands"]["definition"][vkey]
-				    && device_config["commands"]["definition"][vkey]["values"]
-				    && device_config["commands"]["definition"][vkey]["values"]["max"]) {
+				    && device_config["commands"]["definition"][value_key]
+				    && device_config["commands"]["definition"][value_key]["values"]
+				    && device_config["commands"]["definition"][value_key]["values"]["max"]) {
 				    
-					status = statusShow_volume_old( device_status[vkey], device_config["commands"]["definition"][vkey]["values"]["max"], vol_color2, novol_color ) + " &nbsp; ["+device_status[vkey]+"]"; 
+					status = statusShow_volume_old( device_status[value_key], device_config["commands"]["definition"][value_key]["values"]["max"], vol_color2, novol_color ) + " &nbsp; ["+device_status[value_key]+"]";
 					}
 									
-				if (status && vkey == "power") {
-					if (connected != "connected")						{ status = "<b style='color:red;'>Connection Error:</b><br/>"+connected; }			
-			        	else if (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)	{ status = "<b style='color:lightgreen;'>Connected<b/>"; }
-					else if (status.indexOf("OFF") >= 0 || status.indexOf("off") >= 0)	{ status = "<b style='color:gold;'>Connected: Power Off<b/>"; }
-        				else 									{ status = "<b style='color:red;'>Unknown Error:</b> "+status; }			
+				if (status && value_key == "power") {
+					if (connected != "connected")                                       { status = "<b style='color:red;'>Connection Error:</b><br/>"+connected; }
+			        else if (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)    { status = "<b style='color:lightgreen;'>Connected<b/>"; }
+					else if (status.indexOf("OFF") >= 0 || status.indexOf("off") >= 0)  { status = "<b style='color:gold;'>Connected: Power Off<b/>"; }
+                    else                                                                { status = "<b style='color:red;'>Unknown Error:</b> "+status; }
 					}
 				if (status && element)  { element.innerHTML  = status; }
 				if (status && element2) { element2.innerHTML = status.replace(/,/g,"; "); }
@@ -734,33 +743,33 @@ function statusCheck_display(data={}) {
 		// fill all keys in alert display
 		if (device_status && device_config && device_config["commands"]["get"]) {
 
-			var additional_keys    = ["api","api-status","api-last-query","api-last-record",
-			                          "api-last-send","api-auto-off"];
-			var display     	= device_config["commands"]["get"];
-			var connected   	= device_api_status.toLowerCase();
-			var device_status      = data["STATUS"]["devices"][key]; 
+			var additional_keys = ["api","api-status","api-last-query","api-last-record",
+			                       "api-last-send","api-auto-off"];
+			var display         = device_config["commands"]["get"];
+			var connected       = device_api_status.toLowerCase();
+			var device_status   = data["STATUS"]["devices"][key];
 
 			for (var i=0; i<additional_keys.length; i++) {
 				if (!display[additional_keys[i]] && device_status[additional_keys[i]]) { display.push([additional_keys[i]]); }
 				}
 
 			for (var i=0; i<display.length; i++) {
-				var vkey     		= display[i];
-				var element2 		= document.getElementById("display_full_" + key + "_" + vkey);
-				var status   		= device_status[vkey];		
+				var value_key   = display[i];
+				var element2    = document.getElementById("display_full_" + key + "_" + value_key);
+				var status      = device_status[value_key];
 
-				if (status && vkey == "power") {
+				if (status && value_key == "power") {
 					if (connected != "connected")                                       { status = "<b style='color:red;'>Connection Error:</b><br/>"+connected; }
 					else if (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)	{ status = "<b style='color:lightgreen;'>Connected<b/>"; }
 					else if (status.indexOf("OFF") >= 0 || status.indexOf("off") >= 0)	{ status = "<b style='color:gold;'>Connected: Power Off<b/>"; }
         			else 									                            { status = "<b style='color:red;'>Unknown Error:</b> "+status; }
 					}
-				else if (status && vkey == "api-status") {
+				else if (status && value_key == "api-status") {
 					status = device_api_status;
 					}
 
-				if (status && status.replace)	{ status = status.replace(/,/g,", "); }
-				if (element2 && status)	{ element2.innerHTML = status; }
+				if (status && status.replace)   { status = status.replace(/,/g,", "); }
+				if (element2 && status)         { element2.innerHTML = status; }
 				}
 			}
 		}
@@ -815,9 +824,13 @@ function statusCheck_display(data={}) {
 
 function statusShow_display(id, view) {
     var keys = ["ON", "OFF", "ERROR", "MANUAL", "EDIT_MODE"];
-    if (document.getElementById("display_"+id+"_ON")) {
+    view = view.toUpperCase();
+    if (document.getElementById("display_"+id+"_"+view)) {
         for (var i=0;i<keys.length;i++) { elementHidden( "display_"+id+"_"+keys[i]); }
         elementVisible("display_"+id+"_"+view);
+        }
+    else {
+        console.warn("Error showing display: " + id + ":" + view);
         }
 }
 

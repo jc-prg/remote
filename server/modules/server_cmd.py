@@ -375,6 +375,8 @@ def RemoteMacro(macro):
             # check if future state defined
             if "||" in button_status:
                 button, status = button_status.split("||", 1)  # split button and future state
+                if "-" not in status:
+                    status = status.upper()
             else:
                 button = button_status
 
@@ -383,20 +385,12 @@ def RemoteMacro(macro):
             else:
                 status_var = button
 
-            if method != "query":
-                if button == "on":
-                    status = "ON"
-                elif button == "off":
-                    status = "OFF"
-            else:
-                status = ""
-
-            # if future state not already in place add command to queue              
+            # if future state not already in place add command to queue
             logging.debug(" ...i:" + interface + " ...d:" + device + " ...b:" + button + " ...s:" + status)
 
             if device in data["DATA"]["devices"] and status_var in data["DATA"]["devices"][device]["status"]:
-                logging.debug(" ...y:" + status_var + "=" + str(
-                    data["DATA"]["devices"][device]["status"][status_var]) + " -> " + status)
+                logging.debug(" ...y:" + status_var + "=" +
+                              str(data["DATA"]["devices"][device]["status"][status_var]) + " -> " + status)
 
                 if data["DATA"]["devices"][device]["status"][status_var] != status:
                     return_msg += ";" + queueSend.add2queue([[interface, device, button, status]])

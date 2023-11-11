@@ -84,8 +84,8 @@ class QueueApiCalls(threading.Thread):
 
             interface, device, button, state, request_time = command
 
-            self.logging.debug("Queue: Execute " + self.name + " - " + str(interface) + ":" + str(device) + ":" + str(
-                button) + ":" + str(state) + ":" + str(request_time))
+            self.logging.debug("Queue: Execute " + self.name + " - " + str(interface) + ":" + str(device) + ":" +
+                               str(button) + ":" + str(state) + ":" + str(request_time))
             self.logging.debug(str(command))
 
             if self.query_send == "send":
@@ -93,6 +93,7 @@ class QueueApiCalls(threading.Thread):
                     result = self.device_apis.api_send(interface, device, button, state)
                     self.execution_time(device, request_time, time.time())
                     self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')
+                    self.logging.debug(result)
 
                 except Exception as e:
                     result = "ERROR queue query_list (send," + interface + "," + device + "," +\
@@ -100,7 +101,6 @@ class QueueApiCalls(threading.Thread):
                     self.logging.error(result)
 
             elif self.query_send == "query":
-                result = ""
                 for value in button:
                     try:
                         result = self.device_apis.api_query(interface, device, value)
@@ -112,6 +112,7 @@ class QueueApiCalls(threading.Thread):
                         devices[device]["status"]["api-last-query-tc"] = int(time.time())
                         devices[device]["status"]["api-status"] = \
                             self.device_apis.api[self.device_apis.device_api_string(device)].status
+                        self.logging.debug(result)
 
                     except Exception as e:
                         result = "ERROR queue query_list (query," + str(interface) + "," + str(device) + "," + str(
@@ -144,7 +145,6 @@ class QueueApiCalls(threading.Thread):
         """
         add single command or list of commands to queue
         """
-
         self.logging.debug("Add to queue " + self.name + ": " + str(commands))
 
         # set reload status
@@ -153,13 +153,10 @@ class QueueApiCalls(threading.Thread):
 
         # or add command to queue
         else:
-
             for command in commands:
                 if "," in str(command):
                     command.append(time.time())  # add element to array
-                self.queue.append(command)  # add command array to queue
-
-            # self.queue.extend(commands)    # extend list with additional list
+                self.queue.append(command)       # add command array to queue
 
         return "OK: Added command(s) to the queue '" + self.name + "': " + str(commands)
 

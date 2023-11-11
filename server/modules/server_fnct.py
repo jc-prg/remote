@@ -110,19 +110,27 @@ def RmReadData_devicesConfig():
             data_config[device]["commands"]["get"] = []
             data_config[device]["commands"]["set"] = []
 
+            # check get and set definitions
             if "commands" in interface_def_combined:
                 data_config[device]["commands"]["definition"] = interface_def_combined["commands"]
+
                 for key in interface_def_combined["commands"]:
                     if "get" in interface_def_combined["commands"][key]:
-                        if not key in data_config[device]["commands"]["get"]:
+                        if key not in data_config[device]["commands"]["get"]:
                             data_config[device]["commands"]["get"].append(key)
+
                     if "set" in interface_def_combined["commands"][key]:
-                        if not key in data_config[device]["commands"]["set"]:
+                        if key not in data_config[device]["commands"]["set"]:
                             data_config[device]["commands"]["set"].append(key)
 
+                    if ("get" not in interface_def_combined["commands"][key]
+                            and "set" not in interface_def_combined["commands"][key]):
+                        data_config[device]["commands"]["get"].append(key)
+
             for key in data_config[device]["commands"]["definition"]:
-                if not "str" in str(type(data_config[device]["commands"]["definition"][key])):
+                if "str" not in str(type(data_config[device]["commands"]["definition"][key])):
                     data_config[device]["commands"]["definition"][key]["cmd"] = []
+
                     if "get" in data_config[device]["commands"]["definition"][key]:
                         data_config[device]["commands"]["definition"][key]["cmd"].append("get")
                         del data_config[device]["commands"]["definition"][key]["get"]

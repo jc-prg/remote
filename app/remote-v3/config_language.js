@@ -132,13 +132,14 @@ var language_app = {
 						  "</ul>",
 		"MANUAL_DISPLAY"		: "<i>Edit Display Definition</i><br/><br/><ul class='help'>" +
 						  "<li>Fill dict for display definition using the JSON format: <i>&quot;Label&quot; : &quot;field_from_device&quot;</i>.</li>" +
+						  "<li>If &quot;auto_off&quot; is defined for the device (check JSON file), use &quot;auto-power-off&quot; as field to show the time till the devices automatically switches of.</li>" +
 						  "</ul>",
 		"MANUAL_REMOTE"		: "<i>Edit Device Remote Control:</i><br/><br/><ul class='help'>" +
 						  "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
 						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
 						  "<li>Add &quot;DISPLAY&quot; to add a display that show status information (details defined below).</li>" +
-						  "<li>Add &quot;SLIDER||send-command||description||min-max||parameter&quot; to add a slider input element.</li>" +
-						  "<li>Add &quot;COLOR-PICKER||send-command&quot; to add an input element to select a color.</li>" +
+						  "<li>Add &quot;SLIDER||send-&lt;command&gt;||&lt;description&gt;||&lt;min&gt;-&lt;max&gt;||&lt;parameter&gt;&quot; to add a slider input element.</li>" +
+						  "<li>Add &quot;COLOR-PICKER||send-&lt;command&gt;&quot; to add an input element to select a color.</li>" +
 						  "<li>Add &quot;.&quot; to add an empty space.</li>" +
 						  "</ul>",
 		"MANUAL_SCENE"			: "<i>Edit Scene Remote Control:</i><br/><br/><ul class='help'>" +
@@ -149,7 +150,7 @@ var language_app = {
 						  "<li>Add &quot;HEADER-IMAGE&quot; to add an image. The image can be selected in the scene settings.</li>" +
 						  "<li>Add &quot;TOGGLE||&lt;device&gt;_&lt;value&gt;||&lt;description&gt;||&lt;command_on&gt;||&lt;command_off&gt;&quot; to add a toggle."+
 						    " This is supported for values with ON|OFF or TRUE|FALSE only." +
-						    " If the toggle shall be integrated into the header image, use &quot;HEADER-IMAGE||toggle&quot;.</li>" +
+						    " If the toggle shall be integrated into the header image, place it directly below the &quot;HEADER-IMAGE&quot; and use &quot;HEADER-IMAGE||toggle&quot;.</li>" +
 						  "<li>Add &quot;SLIDER||send-&lt;value&gt;||&lt;description&gt;||&lt;range-from&gt;-&lt;range-to&gt;||&lt;value&gt;&quot; to add a slider."+
 						    " This is support for devices with query mode and if a number can be send via API." +
 						  "</ul>",
@@ -168,6 +169,7 @@ var language_app = {
 						  "<li>Dev-on/off macros format: \"&lt;device&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"&lt;device&gt;_&lt;button&gt;||&lt;value&gt;\",] </li>" +
 						  "<li>Macros can be used for scenes, not for devices: 'macro_&lt;macro&gt;', 'scene-on_&lt;scene&gt;', 'scene-off_&lt;scene&gt;', 'dev-on_&lt;device&gt;', 'dev-off_&lt;device&gt;'</li>" +
 						  "<li>Start with &quot;WAIT-xx&quot; in a macro to show a message that it's necessary to wait for xx seconds</li>" +
+						  "<li>For devices without API (method=record) use e.g. \"&lt;button&gt;||set-&lt;value&gt;\" to set a value without sending the command. This can be useful if you work with wifi controlled outlets and a device always start in mode \"ON\".</li>" +
 						  "</ul>",
 						  
 		"METHOD"			: "Method",
@@ -209,7 +211,8 @@ var language_app = {
 		"SCENE_INSERT_ID"              : "Please insert ID for scene (no special characters).",
 		"SCENE_INSERT_LABEL"           : "Please insert label for scene.",
 		"SCENE_SELECT"                 : "Please select scene.",
-		
+
+		"SLIDER"                       : "slider",
 		"SLIDER_SELECT_CMD"            : "Select command, to insert slider.",
 		"SLIDER_SELECT_PARAM"          : "Select parameter, to insert slider.",
 		"SLIDER_INSERT_DESCR"          : "Insert description, to insert slider.",

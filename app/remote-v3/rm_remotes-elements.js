@@ -33,14 +33,17 @@ function rmRemoteBasic(name) {
                 }
 
 	this.select_array  = function (id,title,data,onchange="",selected_value="") {
+	            var control = {};
                 var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
                 item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
-                for (var key in data) {
+                data.forEach(function(key) {
                         var selected = "";
                         if (selected_value == key) { selected = "selected"; }
-                        if (key != "default") {
-                                item += "<option value=\"" + data[key] + "\" "+selected+">" + data[key] + "</option>";
-                        }       }
+                        if (key != "default" && !control[key]) {
+                                item += "<option value=\"" + key + "\" "+selected+">" + key + "</option>";
+                                control[key] = 1;
+                                }
+                        });
                 item     += "</select>";
                 return item;
                 }
@@ -429,32 +432,34 @@ function rmRemoteDisplays(name) {
 			return;
 			}
 		
-		if (display_data != {}) 		{}
-		else if (remote_data["display"])	{ display_data = remote_data["display"]; }
-		else					{ display_data["Error"] = "No display defined"; } 
+		if (display_data != {})             {}
+		else if (remote_data["display"])    { display_data = remote_data["display"]; }
+		else                                { display_data["Error"] = "No display defined"; }
 
-        	var text    = "";
-	        var status  = "";
+        var text    = "";
+        var status  = "";
 
-		if (type == "devices")			{ var onclick = "onclick=\"" + this.app_name + ".alert('"+id+"','"+device+"','"+type+"','##STYLE##');\""; }
-		else					{ var onclick = "disabled"; }        	
-        	var display_start = "<button id=\"display_"+device+"_##STATUS##\" class=\"display ##STYLE##\" style=\"display:##DISPLAY##\" "+onclick+">";
-        	var display_end   = "</button>";
-        	
-		if (this.edit_mode) 											{ status = "EDIT_MODE"; }		
-		else if (type == "scenes")										{ status = "ON"; }
-		else if (connected != "connected")									{ status = "ERROR"; }
-		else if (status_data["power"] == "ON" || status_data["power"] == "on")				{ status = "ON"; }
-		else if (status_data["power"].indexOf("OFF") >= 0 || status_data["power"].indexOf("off") >= 0)	{ status = "OFF" }
-		else													{ status = "ERROR"; }
+		if (type == "devices")      { var onclick = "onclick=\"" + this.app_name + ".alert('"+id+"','"+device+"','"+type+"','##STYLE##');\""; }
+		else                        { var onclick = "disabled"; }
+
+        var display_start = "<button id=\"display_"+device+"_##STATUS##\" class=\"display ##STYLE##\" style=\"display:##DISPLAY##\" "+onclick+">";
+        var display_end   = "</button>";
+
+		if (this.edit_mode)                                                     { status = "EDIT_MODE"; }
+		else if (type == "scenes")                                              { status = "ON"; }
+		else if (connected != "connected")                                      { status = "ERROR"; }
+		else if (status_data["power"] == "ON" || status_data["power"] == "on")  { status = "ON"; }
+		else if (status_data["power"].indexOf("OFF") >= 0 || status_data["power"].indexOf("off") >= 0)
+		                                                                        { status = "OFF" }
+		else                                                                    { status = "ERROR"; }
 
 		// display if ERROR
 		text += display_start;
 		text  = text.replace( /##STATUS##/g, "ERROR" );
 		text  = text.replace( /##STYLE##/g, style + " display_error" );
-		if (status == "ERROR" && !this.edit_mode)	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
-		else						{ text  = text.replace( /##DISPLAY##/g, "none" ); }
-		if (status_data["power"] == undefined)	{ status_data["power"] = "N/A"; }
+		if (status == "ERROR" && !this.edit_mode)       { text  = text.replace( /##DISPLAY##/g, "block" ); }
+		else                                            { text  = text.replace( /##DISPLAY##/g, "none" ); }
+		if (status_data["power"] == undefined)          { status_data["power"] = "N/A"; }
 		text += "<center><b>Connection Error</b>:</center>"; //<br/>";
 		text += "<center><i>"+connected+" :: Power-Status: "+status_data["power"].toUpperCase()+"</i></center>";
 		text += display_end;
@@ -464,36 +469,37 @@ function rmRemoteDisplays(name) {
 		text  = text.replace( /##STATUS##/g, "ON" );
 		text  = text.replace( /##STYLE##/g, style + " display_on" );
 		if (status == "ON" && !this.edit_mode)	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
-		else						{ text  = text.replace( /##DISPLAY##/g, "none" ); }
-        	for (var key in display_data) {
-        		var input_id = "";
-        		if (display_data[key].indexOf("_") >= 0) 	{ input_id = 'display_' + display_data[key]; }
-        		else						{ input_id = 'display_' + device + '_' + display_data[key]; }
-      			var label    = "<data class='display-label'>"+key+":</data>";
-			var input    = "<data class='display-input' id='"+input_id+"'>no data</data>";
-	        	text += "<div class='display-element "+style+"'>"+label+input+"</div>";
-	        	}
+		else                                    { text  = text.replace( /##DISPLAY##/g, "none" ); }
+
+        for (var key in display_data) {
+            var input_id = "";
+            if (display_data[key].indexOf("_") >= 0)    { input_id = 'display_' + display_data[key]; }
+            else                                        { input_id = 'display_' + device + '_' + display_data[key]; }
+            var label    = "<data class='display-label'>"+key+":</data>";
+            var input    = "<data class='display-input' id='"+input_id+"'>no data</data>";
+            text += "<div class='display-element "+style+"'>"+label+input+"</div>";
+            }
 		text += display_end;
 
 		// display if EDIT_MODE
 		text += display_start;
 		text  = text.replace( /##STATUS##/g, "EDIT_MODE" );
 		text  = text.replace( /##STYLE##/g, style + " display_on" );
-		if (this.edit_mode)	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
-		else			{ text  = text.replace( /##DISPLAY##/g, "none" ); }
-        	for (var key in display_data) {
-      			var label = "<data class='display-label'>"+key+":</data>";
+		if (this.edit_mode) { text  = text.replace( /##DISPLAY##/g, "block" ); }
+		else                { text  = text.replace( /##DISPLAY##/g, "none" ); }
+        for (var key in display_data) {
+            var label = "<data class='display-label'>"+key+":</data>";
 			var input = "<data class='display-input-shorten' id='display_"+device+"_"+display_data[key]+"_edit'>{"+display_data[key]+"}</data>";
-	        	text += "<div class='display-element "+style+"'>"+label+input+"</div>";
-	        	}
+            text += "<div class='display-element "+style+"'>"+label+input+"</div>";
+            }
 		text += display_end;
 
 		// display if MANUAL_MODE
 		text += display_start;
 		text  = text.replace( /##STATUS##/g, "MANUAL" );
 		text  = text.replace( /##STYLE##/g, style + " display_manual" );
-		if (rm3settings.manual_mode)	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
-		else				{ text  = text.replace( /##DISPLAY##/g, "none" ); }
+		if (rm3settings.manual_mode)    { text  = text.replace( /##DISPLAY##/g, "block" ); }
+		else                            { text  = text.replace( /##DISPLAY##/g, "none" ); }
 		text += "<center>MANUAL MODE<br/><i>no information available</i></center>";
 		text += display_end;
 
@@ -501,13 +507,13 @@ function rmRemoteDisplays(name) {
 		text += display_start;
 		text  = text.replace( /##STATUS##/g, "OFF" );
 		text  = text.replace( /##STYLE##/g, style + " display_off" );
-		if (status == "OFF"  && !this.edit_mode)	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
-		else						{ text  = text.replace( /##DISPLAY##/g, "none" ); }
+		if (status == "OFF"  && !this.edit_mode)    { text  = text.replace( /##DISPLAY##/g, "block" ); }
+		else                                        { text  = text.replace( /##DISPLAY##/g, "none" ); }
 		text += "<center>power off</center>";
 		text += display_end;
 
-        	return text;
-        	}
+        return text;
+        }
         	
 	this.sizes		= function () {
 		var sizes = {
@@ -606,13 +612,13 @@ function rmRemoteDisplays(name) {
         	for (var i=0;i<json.length;i++) {
         			x++;
         			text += "\""+json[i]+"\"";
-        			if (i+1 < json.length)						{ text += ", "; }
-        			if (Number.isInteger((x)/4))   				{ text += "\n\n"; x = 0; }
-        			if (json.length > i+1 && json[i+1].includes("LINE") && x > 0) { text += "\n\n"; x = 0; }
-        			if (json[i].includes("LINE"))					{ text += "\n\n"; x = 0; }
-        			if (json[i].includes("HEADER-IMAGE"))				{ text += "\n\n"; x = 0; }
-        			if (json[i].includes("SLIDER"))				{ text += "\n\n"; x = 0; }
-        			if (json[i].includes("COLOR-PICKER"))				{ text += "\n\n"; x = 0; }
+        			if (i+1 < json.length)                                          { text += ", "; }
+        			if (Number.isInteger((x)/4))                                    { text += "\n\n"; x = 0; }
+        			if (json.length > i+1 && json[i+1].includes("LINE") && x > 0)   { text += "\n\n"; x = 0; }
+        			if (json[i].includes("LINE"))                                   { text += "\n\n"; x = 0; }
+        			if (json[i].includes("HEADER-IMAGE"))                           { text += "\n\n"; x = 0; }
+        			if (json[i].includes("SLIDER"))                                 { text += "\n\n"; x = 0; }
+        			if (json[i].includes("COLOR-PICKER"))                           { text += "\n\n"; x = 0; }
         			}
 	       	text += "\n]";
         	}

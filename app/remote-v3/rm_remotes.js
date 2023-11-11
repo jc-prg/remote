@@ -1404,9 +1404,16 @@ function rmRemote(name) {
 
 	// return drop-down with display values
 	this.device_display_select      = function (device,id) {
-		var device_info           = this.data["CONFIG"]["devices"][device]["commands"]["get"];		
-		var device_display_values = this.basic.select_array(id,"display value",device_info,"");
+		var device_info           = this.data["CONFIG"]["devices"][device]["commands"]["get"];
 
+		if (this.data["CONFIG"]["devices"][device]["commands"]["definition"] && this.data["CONFIG"]["devices"][device]["commands"]["definition"]["power"]) {
+		    var power = this.data["CONFIG"]["devices"][device]["commands"]["definition"]["power"];
+		    if (power["auto_off"] && power["auto_off"] > 0) {
+		        if (device_info.indexOf("auto-power-off") == -1) { device_info.push("auto-power-off"); }
+		    }
+		}
+		device_info.sort();
+		var device_display_values = this.basic.select_array(id,"display value",device_info,"");
 		return device_display_values;
 		}	
 		
