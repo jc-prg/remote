@@ -150,9 +150,9 @@ class ApiControl:
             return "ERROR " + self.api_name + ": Not connected"
 
         if command == "power":
-            if result == True:
+            if result is True:
                 result = "ON"
-            elif result == False:
+            elif result is False:
                 result = "OFF"
             elif "Device is off" in result:
                 result = "OFF"
