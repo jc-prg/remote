@@ -118,7 +118,7 @@ var language_app = {
 		
 		"LOAD_TEMPLATE"         : "Load template",
 		
-		"MAKRO_PLEASE_WAIT"     : "Executing commands, please wait a few seconds!",
+		"MACRO_PLEASE_WAIT"     : "Executing commands, please wait a few seconds!",
 		
 		"MANUAL"                : "manual",
 		
@@ -153,7 +153,7 @@ var language_app = {
 						  "<li>Add &quot;SLIDER||send-&lt;value&gt;||&lt;description&gt;||&lt;range-from&gt;-&lt;range-to&gt;||&lt;value&gt;&quot; to add a slider."+
 						    " This is support for devices with query mode and if a number can be send via API." +
 						  "</ul>",
-		"MANUAL_MAKROS"		: "<i>Edit Macros:</i><br/><br/><ul class='help'>" +
+		"MANUAL_MACROS"		: "<i>Edit Macros:</i><br/><br/><ul class='help'>" +
 						  "<li>Define macros using the JSON format</li>" +
 						  "<li>Combine buttons from any defined remote control and integers for seconds to wait</li>" +
 						  "<li>Macro types are: <ul>" +
@@ -198,7 +198,7 @@ var language_app = {
 		"RESET_VOLUME_TO_ZERO"         : "Reset Audio Settings:<br/>set the volume of all audio devices to mininum (0) before.",
 
 		"SEND_DATA"                    : "Send data",
-		"SELECT_DEV_MAKRO"             : "select device or macro",
+		"SELECT_DEV_MACRO"             : "select device or macro",
 		"SELECT_DEV_FIRST"             : "select device first",
 		
 		"SCENE_CONFIG_ERROR"           : "Error in scene config file(s) '{0}': ",

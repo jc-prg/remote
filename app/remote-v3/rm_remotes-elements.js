@@ -249,7 +249,7 @@ function rmRemoteButtons(name) {
 
                 if (isNaN(macro[i]) && macro[i].indexOf("WAIT") > -1) {
                     var wait = macro[i].split("-");
-                    macro_wait = 'appMsg.wait_time("'+lang("MAKRO_PLEASE_WAIT")+'", '+wait[1]+');';
+                    macro_wait = 'appMsg.wait_time("'+lang("MACRO_PLEASE_WAIT")+'", '+wait[1]+');';
                     }
                 else {
                     macro_string = macro_string + macro[i] + "::";

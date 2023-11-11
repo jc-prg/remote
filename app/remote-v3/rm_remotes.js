@@ -952,7 +952,7 @@ function rmRemote(name) {
 				);
 		edit   += this.tab.row(
 				"<input id='add_button_value' style='display:none;'/>" +
-				"<div id='add_button_device_input'><i><small>-&gt; "+lang("SELECT_DEV_MAKRO")+"</small></i></div>",
+				"<div id='add_button_device_input'><i><small>-&gt; "+lang("SELECT_DEV_MACRO")+"</small></i></div>",
 				this.button.edit(this.app_name+".remote_add_button('scene','"+scene+"','add_button_value','scene_json_buttons');", lang("BUTTON_T"),"")
 				);
 

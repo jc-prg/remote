@@ -419,7 +419,7 @@ def RemoteMacro(macro):
 
 def RemoteMacroChange(macros):
     """
-    Change Macros and save to _ACTIVE-MAKROS.json
+    Change Macros and save to _ACTIVE-MACROS.json
     """
     data = remoteAPI_start()
     data["REQUEST"]["Return"] = editMacros(macros)

@@ -308,7 +308,7 @@ function rmSettings (name) {	// IN PROGRESS
 		setting  += this.basic.container("setting_macros4","JSON macros [scene ON]",		this.json.textarea("scene-on", this.data["DATA"]["macros"]["scene-on"], "macros"),false);
 		setting  += this.basic.container("setting_macros5","JSON macros [scene OFF]",	this.json.textarea("scene-off", this.data["DATA"]["macros"]["scene-off"], "macros"),false);
 
-		setting  += this.basic.container("setting_macros_manual","JSON macros - manual",lang("MANUAL_MAKROS"),false);
+		setting  += this.basic.container("setting_macros_manual","JSON macros - manual",lang("MANUAL_MACROS"),false);
 
 		setting  += "<center><br/><br/>";
 //		setting  += this.btn.sized("apiMacroChange(['macro','scene-on','scene-off','dev-on','dev-off']);",lang("BUTTON_T_SAVE"),"");

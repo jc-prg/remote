@@ -4,10 +4,10 @@ import time
 # ---------------------------------
 
 APIname = "jc://remote/"
-APIversion = "v2.1.1"
-APPversion = "v2.8.0"
+APIversion = "v2.1.2"
+APPversion = "v2.8.1"
 APPsupport = [APPversion,
-              "v2.7.7"
+              "v2.8.1"
               ]  # other supported versions
 
 # ---------------------------------
@@ -48,7 +48,7 @@ active = "_active"  # overview file name
 
 active_devices = "_ACTIVE-DEVICES"
 active_scenes = "_ACTIVE-SCENES"
-active_macros = "_ACTIVE-MAKROS"
+active_macros = "_ACTIVE-MACROS"
 
 # ---------------------------------
 

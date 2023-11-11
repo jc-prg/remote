@@ -10,7 +10,7 @@
 
 * _active configuration_
   - \_ACTIVE-DEVICES.json
-  - \_ACTIVE-MAKROS.json
+  - \_ACTIVE-MACROS.json
   - \_ACTIVE-SCENES.json
 
 * _button configuration_
@@ -142,9 +142,9 @@ Remote controls for scenes can be added, changed and deleted via edit mode in th
 * use "Remote" : [] to define remote control ("<device>_<button>")
 * use "Channel" : {} to define channel list ("<channel_name>" : ["<device_button","<device_button"])
 
-### MAKROS
+### MACROS
 
-Macros have to defined in the file \_ACTIVE-MAKROS.json:
+Macros have to defined in the file \_ACTIVE-MACROS.json:
 
 * define macros (sets of multiple buttons)
 * use macros "dev-on" and "dev-off" to switch on / off devices

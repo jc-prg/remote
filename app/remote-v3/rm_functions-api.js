@@ -384,7 +384,7 @@ function apiMacroDecompose(macro) {
                     var command = macro_data[macro_cmd[1]][i];
                     if (command.startsWith && command.startsWith("WAIT")) {
                         var wait = command.split("-");
-                        macro_wait = 'appMsg.wait_time("'+lang("MAKRO_PLEASE_WAIT")+'", '+wait[1]+');';
+                        macro_wait = 'appMsg.wait_time("'+lang("MACRO_PLEASE_WAIT")+'", '+wait[1]+');';
                         }
                     else {
                         macro_string += macro_data[macro_cmd[1]][i] + "::";
