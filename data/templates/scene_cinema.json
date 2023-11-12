@@ -1,6 +1,6 @@
 {
     "data": {
-        "channel": {},
+        "macro-channel": {},
         "description" : "Scene for movie",
         "devices": [
             "rec2",

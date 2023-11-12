@@ -1,6 +1,11 @@
 {
     "data": {
-        "channel": {
+        "devices": [
+            "tv",
+            "rec2"
+        ],
+        "label": "Musik",
+        "macro-channel": {
             "Antenne Bayern": [
                 "macro_recradio",
                 "tv_6",
@@ -67,12 +72,20 @@
                 "tv_8"
             ]
         },
-        "description" : "Scene for music",
-        "devices": [
-            "tv",
-            "rec2"
+        "macro-scene-on": [
+            "dev-on_radio",
+            "dev-on_rec2",
+            "rec2_cable-sat",
+            "dev-off_lw",
+            "dev-off_beam"
         ],
-        "label": "Musik",
+        "macro-scene-off": [
+             "dev-off_bd-api",
+            "dev-off_rec2",
+            "dev-off_tv"
+        ],
+        "macro-scene": {
+            },
         "remote": [
             ".",
             ".",
@@ -103,5 +116,5 @@
             "macro_vol-"
         ],
     "type" : "scene"
-    }
+    ]
 }

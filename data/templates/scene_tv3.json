@@ -1,7 +1,7 @@
 {
     "info": "jc://remote/ - In this file the remote layout and channel macros for the scene are defined.",
     "data": {
-        "channel": {
+        "macro-channel": {
             "test channel [12]": [
                 "tv2_1",
                 "tv2_2"
