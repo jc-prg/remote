@@ -159,15 +159,15 @@ var language_app = {
 		"MANUAL_MACROS"	        : "<i>Edit Macros:</i><br/><br/><ul class='help'>" +
 		                          "<li>Define macros using the JSON format</li>" +
 		                          "<li>Combine buttons from any defined remote control and integers for seconds to wait</li>" +
-		                          "<li>Macro types are: <ul>" +
-		                          "<li><u>dev-on</u>: macros to switch a device on (e.g. switch on and set initial volume)</li>"+
-		                          "<li><u>dev-off</u>: macros to switch a device off</li>" +
-		                          "<li><u>macro</u>: all other macros</li>"+
-		                          "</ul></li>"+
-		                          "<li>Macro format: \"&lt;macro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
-		                          "<li>Scene-on/off macros format: \"&lt;macro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
-		                          "<li>Dev-on/off macros format: \"&lt;device&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"&lt;device&gt;_&lt;button&gt;||&lt;value&gt;\",] </li>" +
-		                          "<li>Macros can be used for scenes, not for devices: 'macro_&lt;macro&gt;', 'scene-on_&lt;scene&gt;', 'scene-off_&lt;scene&gt;', 'dev-on_&lt;device&gt;', 'dev-off_&lt;device&gt;'</li>" +
+
+		                          "<li><u>Macro type DEV-ON</u>: macros to switch a device on/off, e.g., switch on and set initial volume."+
+		                          "<br/><i>-&gt; Format:</i>  \"&lt;device&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"&lt;device&gt;_&lt;button&gt;||&lt;value&gt;\",] </li>" +
+		                          "<li><u>Macro type DEV-OFF</u>: macros to switch a device off." +
+		                          "<br/><i>-&gt; Format:</i>  \"&lt;device&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"&lt;device&gt;_&lt;button&gt;||&lt;value&gt;\",] </li>" +
+		                          "<li><u>Global macros</u>: all other macros."+
+		                          "<br/><i>-&gt; Format:</i> \"&lt;macro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
+
+		                          "<li>Macros can be used in all scenes (not in devices): 'macro_&lt;macro&gt;', 'dev-on_&lt;device&gt;', 'dev-off_&lt;device&gt;'. Note: if in the scene a macro with the same name is defined, the scene macro is used.</li>" +
 		                          "<li>Start with &quot;WAIT-xx&quot; in a macro to show a message that it's necessary to wait for xx seconds</li>" +
 		                          "<li>For devices without API (method=record) use e.g. \"&lt;button&gt;||set-&lt;value&gt;\" to set a value without sending the command. This can be useful if you work with wifi controlled outlets and a device always start in mode \"ON\".</li>" +
 		                          "</ul>",

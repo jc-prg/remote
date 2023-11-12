@@ -857,7 +857,7 @@ function rmRemote(name) {
 	        	}
 
 		this.button.width       = "90px";
-		this.basic.input_width  = "250px";
+		this.basic.input_width  = "180px";
 		
 		var scene_info    = this.data["DATA"]["scenes"][scene]["settings"];
 		var remote_info   = this.data["DATA"]["devices"];
@@ -1480,9 +1480,9 @@ function rmRemote(name) {
 		var device_macro        = {};
 		var device_macro_button = {};
 		var macros              = {};
-		var macros_scene        = this.data["DATA"]["scenes"][scene]["remote"]["macro-scene"];
+		var macros_scene        = dictCopy(this.data["DATA"]["scenes"][scene]["remote"]["macro-scene"]);
 
-		for (var key in this.data["DATA"]["macros"])  { macros[key] = this.data["DATA"]["macros"][key]; }
+		for (var key in this.data["DATA"]["macros"])  { macros[key] = dictCopy(this.data["DATA"]["macros"][key]); }
 		for (var key in macros_scene)                 { macros["macro"][key] = macros_scene[key]; }
 
 		for (key in this.data["DATA"]["devices"]) {
