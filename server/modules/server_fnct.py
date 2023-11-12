@@ -526,13 +526,16 @@ def addScene(scene, info):
 
     # add to devices = button definitions
     remote = {
-        "info": "jc://remote/ - In this file the remote layout and channel macros for the scene are defined.",
+        "info": "jc://remote/ - In this file the remote layout and channel/scene macros for the scene are defined.",
         "data": {
             "label": info["label"],
             "description": info["label"],
             "remote": [],
-            "channel": {},
             "devices": [],
+            "macro-channel": {},
+            "macro-scene-on": [],
+            "macro-scene-off": [],
+            "macro-scene": {},
         }
     }
 
@@ -550,7 +553,8 @@ def editScene(scene, info):
     edit scene data in json file
     """
     keys_active = ["label", "description", "image"]
-    keys_remotes = ["label", "remote", "channel", "devices", "display", "display-size", "type"]
+    keys_remotes = ["label", "remote", "macro-channel", "macro-scene-on", "macro-scene-off", "macro-scene",
+                    "devices", "display", "display-size", "type"]
 
     # check data format
     if not isinstance(info, dict):
@@ -567,15 +571,15 @@ def editScene(scene, info):
         for entry in info["devices"]:
             if not isinstance(entry, str):
                 return "ERROR: wrong data format - 'devices' other than strings (" + str(entry) + ")."
-    if "channel" in info:
-        if not isinstance(info["channel"], dict):
-            return "ERROR: wrong data format - 'channel' is not a dict."
-        for key in info["channel"]:
-            if not isinstance(info["channel"][key], list):
-                return "ERROR: wrong data format - 'channel' contains not a list (" + str(key) + ")."
-            for entry in info["channel"][key]:
+    if "macro-channel" in info:
+        if not isinstance(info["macro-channel"], dict):
+            return "ERROR: wrong data format - 'macro-channel' is not a dict."
+        for key in info["macro-channel"]:
+            if not isinstance(info["macro-channel"][key], list):
+                return "ERROR: wrong data format - 'macro-channel' contains not a list (" + str(key) + ")."
+            for entry in info["macro-channel"][key]:
                 if not isinstance(entry, str):
-                    return "ERROR: wrong data format - 'channel' list contains other than strings (" + str(entry) + ")."
+                    return "ERROR: wrong data format - 'macro-channel' list contains other than strings (" + str(entry) + ")."
 
     # read central config file
     active_json = RmReadData_scenes(selected=[], remotes=False)
@@ -586,10 +590,12 @@ def editScene(scene, info):
         return "ERROR: Scene " + scene + " doesn't exists (remotes)."
 
     i = 0
+    i_list = ""
     for key in keys_active:
         if key in info:
             active_json[scene]["settings"][key] = info[key]
             i += 1
+            i_list += key + ","
 
     for key in keys_remotes:
         if key in info:
@@ -598,6 +604,7 @@ def editScene(scene, info):
             elif scene in remotes:
                 remotes[scene][key] = info[key]
             i += 1
+            i_list += key + ","
 
     # write central config file
     RmWriteData_scenes(active_json)
@@ -613,7 +620,7 @@ def editScene(scene, info):
     configFiles.cache_update = True
 
     if i > 0:
-        return "OK: Edited device parameters of " + scene + " (" + str(i) + " changes)"
+        return "OK: Edited device parameters of " + scene + " <br/>(" + str(i) + " changes: " + i_list + ")"
     else:
         return "ERROR: no data key matched with keys from config-files (" + str(info.keys) + ")"
 
@@ -798,7 +805,7 @@ def editDevice(device, info):
     keys_commands = ["description", "method"]
     keys_remotes = ["description", "remote", "display", "display-size", "type"]
 
-    #    keys_remotes  = ["label","remote","channel","devices","display","display-size"]
+    #    keys_remotes  = ["label","remote","macro-channel","devices","display","display-size"]
 
     # read central config file
     active_json = RmReadData_devices(selected=[], remotes=False, config_only=False)
