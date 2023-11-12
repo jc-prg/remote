@@ -9,13 +9,22 @@
         ],
         "beam": [
             "beam_off",
-            1,
-            "beam_off",
-            2,
+            5,
             "beam_off"
         ],
         "lw": [
             "lw_off||OFF"
+        ],
+        "plug03": [
+            "lw_off",
+            "tv2_on-off||OFF",
+            "rec2_off",
+            "bd_off",
+            "beam_off",
+            3,
+            "beam_off",
+            5,
+            "plug03_off"
         ],
         "radio": [
             "tv2_on-off||OFF"
@@ -27,7 +36,7 @@
             "rec2_off"
         ],
         "tv": [
-            "tv2_on-off||OFF"
+            "tv_on-off||OFF"
         ],
         "tv3": [
             "tv2_on-off||OFF"
@@ -38,13 +47,20 @@
             "bd_on-off||ON"
         ],
         "bd-api": [
-            "bd_on"
+            "bd-api_on"
         ],
         "beam": [
             "beam_on||ON"
         ],
         "lw": [
+            "WAIT-45",
             "lw_on||ON"
+        ],
+        "plug03": [
+            "WAIT-60",
+            "plug03_on",
+            60,
+            "tv2_on-off"
         ],
         "radio": [
             "tv2_on-off||ON",
@@ -73,11 +89,20 @@
             13,
             "tv2_radiotv||TV",
             "tv2_mute||OFF"
+        ],
+        "tv3": [
+            "WAIT-15",
+            "tv2_on-off||ON",
+            13,
+            "tv2_radiotv||TV",
+            "tv2_mute||OFF"
         ]
     },
     "macro": {
         "aa": [
+            "WAIT-66",
             "bb",
+            15,
             "c",
             "d"
         ],
@@ -137,7 +162,7 @@
         ],
         "mute": [
             "rec2_mute",
-            "tv2_mute||OFF"
+            "tv_mute||OFF"
         ],
         "pc": [
             "dev-off_bd-api",
@@ -151,8 +176,17 @@
             1,
             "rec_pc"
         ],
-        "plug02-off": ["WAIT-20","lw_off","beam_off",5,"beam_off","tv2_on-off||ON","plug02_off"],
-        "plug02-on": ["WAIT-60","plug02_on","dev-on_tv2"],
+        "plug02-off": [
+            "WAIT-20",
+            "lw_off",
+            "tv2_on-off||OFF",
+            "plug02_off"
+        ],
+        "plug02-on": [
+            "WAIT-60",
+            "plug02_on",
+            "tv2_on-off||set-ON"
+        ],
         "radio": [
             "rec2_cable-sat",
             "tv2_radiotv||RADIO"
@@ -163,18 +197,22 @@
         ],
         "recradio": [
             "rec2_cable-sat",
-            "tv2_radiotv||RADIO",
-            "tv2_exit"
+            "tv_radiotv||RADIO",
+            "tv_exit"
         ],
         "rectv": [
             "rec2_cable-sat",
-            "tv2_radiotv||TV",
-            "tv2_exit"
+            "tv_radiotv||TV",
+            "tv_exit"
         ],
         "stereo": [
             "rec2_stereo"
         ],
         "tv": [
+            "rec2_cable-sat",
+            "tv2_radiotv||TV"
+        ],
+        "tv2": [
             "rec2_cable-sat",
             "tv2_radiotv||TV"
         ],
@@ -193,74 +231,6 @@
             "rec2_vol-"
         ]
     },
-    "scene-off": {
-        "cinema": [
-            "dev-off_lw",
-            "dev-off_beam",
-            "dev-off_rec2",
-            "dev-off_bd"
-        ],
-        "media": [
-            "dev-off_lw",
-            "dev-off_beam",
-            "dev-off_rec2",
-            "dev-off_bd"
-        ],
-        "music": [
-            "dev-off_bd-api",
-            "dev-off_rec2",
-            "dev-off_tv"
-        ],
-        "tv": [
-            "dev-off_lw",
-            "dev-off_beam",
-            "dev-off_rec2",
-            "dev-off_tv"
-        ],
-        "tv2": [
-            "dev-off_lw",
-            "dev-off_beam",
-            "dev-off_rec2",
-            "dev-off_tv3"
-        ]
-    },
-    "scene-on": {
-        "cinema": [
-            "dev-on_lw",
-            "dev-on_beam",
-            "dev-on_rec2",
-            "dev-off_tv",
-            "rec2_pc"
-        ],
-        "media": [
-            "dev-on_lw",
-            "dev-on_beam",
-            "dev-on_rec2",
-            "dev-off_tv",
-            "rec2_game"
-        ],
-        "music": [
-            "dev-on_radio",
-            "dev-on_rec2",
-            "rec2_cable-sat",
-            "dev-off_lw",
-            "dev-off_beam"
-        ],
-        "tv": [
-            "dev-on_lw",
-            "dev-on_beam",
-            "dev-on_tv",
-            "dev-on_rec2",
-            "rec2_cable-sat",
-            "dev-off_bd-api"
-        ],
-        "tv2": [
-            "dev-on_lw",
-            "dev-on_beam",
-            "dev-on_tv3",
-            "dev-on_rec2",
-            "rec2_cable-sat",
-            "dev-off_bd-api"
-        ]
-    }
+    "scene-off": {},
+    "scene-on": {}
 }

@@ -1,16 +1,10 @@
 {
     "data": {
-        "channel": {
+        "macro-channel": {
             "Antenne Bayern": [
                 "macro_recradio",
                 "tv_6",
                 "tv_7",
-                "tv_8"
-            ],
-            "Die Maus": [
-                "macro_recradio",
-                "tv_6",
-                "tv_5",
                 "tv_8"
             ],
             "BR-Klassik": [
@@ -36,6 +30,12 @@
                 "tv_6",
                 "tv_0",
                 "tv_2"
+            ],
+            "Die Maus": [
+                "macro_recradio",
+                "tv_6",
+                "tv_5",
+                "tv_8"
             ],
             "MDR JUMP": [
                 "macro_recradio",
@@ -67,28 +67,44 @@
                 "tv_8"
             ]
         },
-        "description" : "Scene for music",
+        "macro-scene-on": [
+            "dev-on_radio",
+            "dev-on_rec2",
+            "rec2_cable-sat",
+            "dev-off_lw",
+            "dev-off_beam"
+        ],
+        "macro-scene-off": [
+             "dev-off_bd-api",
+            "dev-off_rec2",
+            "dev-off_tv"
+        ],
+        "macro-scene": {
+            "aa": "rec_vol+"
+            },
+        "description": "Scene for music",
         "devices": [
             "tv",
             "rec2"
         ],
+        "display": {},
+        "display-size": "middle",
         "label": "Musik",
         "remote": [
-            "HEADER-IMAGE||toggle",
-            "TOGGLE||plug02_power||Strom Medientechnik||macro_plug02-on||macro_plug02-off",
+            "HEADER-IMAGE",
             ".",
             ".",
-            "scene-on",
-            "scene-off",
+            "scene-on_music",
+            "scene-off_music",
             "LINE||input device",
             "macro_radio",
             "macro_bluetooth",
             "macro_cd",
             "macro_aux",
             "LINE||radio playback",
-            "tv_prg+",
-            "tv_back",
-            "tv_prg-",
+            "tv2_prg+",
+            "tv2_back",
+            "tv2_prg-",
             "macro_stereo",
             "LINE||bluray playback",
             "bd_fbw",
@@ -104,6 +120,6 @@
             ".",
             "macro_vol-"
         ],
-    "type" : "scene"
+        "type": "scene"
     }
 }

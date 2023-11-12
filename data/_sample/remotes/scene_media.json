@@ -1,6 +1,5 @@
 {
     "data": {
-        "channel": {},
         "description": "Scene for KODI Media Center",
         "devices": [
             "rec2",
@@ -15,17 +14,34 @@
             "Subtitle": "media-center_subtitle-enabled",
             "Volume": "rec2_vol"
         },
-        "display-size": "h3w2",
         "display-detail": {
             "Audio": "media-center_current-audiostream-name",
             "Content": "media-center_current-playing",
-            "Subtitle": "media-center_subtitle-enabled",
-            "Plot": "media-center_plot||['plot']"
+            "Plot": "media-center_plot||['plot']",
+            "Subtitle": "media-center_subtitle-enabled"
         },
+        "display-size": "h3w2",
         "label": "Media Center",
+        "macro-channel": {},
+        "macro-scene": {},
+        "macro-scene-off": [
+            "dev-off_lw",
+            "dev-off_beam",
+            "dev-off_rec2",
+            "dev-off_bd"
+        ],
+        "macro-scene-on": [
+            "WAIT-45",
+            "dev-on_lw",
+            "dev-on_beam",
+            "dev-on_rec2",
+            "dev-off_tv",
+            "rec2_game"
+        ],
         "remote": [
             "HEADER-IMAGE||toggle",
             "TOGGLE||plug02_power||Strom Medientechnik||macro_plug02-on||macro_plug02-off",
+            "LINE",
             "macro_kodi",
             ".",
             "scene-on",

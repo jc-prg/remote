@@ -1,20 +1,37 @@
 {
     "data": {
-        "channel": {},
-        "description" : "Scene for Movie",
+        "description": "Scene for Movie",
         "devices": [
             "rec2",
             "beam",
             "lw"
         ],
+        "display": {},
+        "display-size": "middle",
         "label": "Kino",
+        "macro-channel": {},
+        "macro-scene": {},
+        "macro-scene-off": [
+            "dev-off_lw",
+            "dev-off_beam",
+            "dev-off_rec2",
+            "dev-off_bd"
+        ],
+        "macro-scene-on": [
+            "dev-on_lw",
+            "dev-on_beam",
+            "dev-on_rec2",
+            "dev-off_tv",
+            "rec2_pc"
+        ],
         "remote": [
             "HEADER-IMAGE||toggle",
             "TOGGLE||plug02_power||Strom Medientechnik||macro_plug02-on||macro_plug02-off",
+            "LINE",
             ".",
             ".",
-            "scene-on",
-            "scene-off",
+            "scene-on_cinema",
+            "scene-off_cinema",
             "LINE",
             "macro_bluray",
             "macro_pc",
@@ -52,6 +69,6 @@
             "bd-api_yellow",
             "bd-api_blue"
         ],
-    "type" : "scene"
+        "type": "scene"
     }
 }

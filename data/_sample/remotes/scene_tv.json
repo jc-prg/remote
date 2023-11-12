@@ -1,6 +1,16 @@
 {
     "data": {
-        "channel": {
+        "description": "Scene for TV (1)",
+        "devices": [
+            "lw",
+            "beam",
+            "rec2",
+            "tv"
+        ],
+        "display": {},
+        "display-size": "json::display-size",
+        "label": "Fernsehen",
+        "macro-channel": {
             "3sat HD": [
                 "macro_rectv",
                 "tv_1",
@@ -173,19 +183,27 @@
                 "tv_2"
             ]
         },
-        "description": "Scene for TV (1)",
-        "devices": [
-            "lw",
-            "beam",
-            "rec2",
-            "tv"
+        "macro-scene": {},
+        "macro-scene-off": [
+            "dev-off_lw",
+            "dev-off_beam",
+            "dev-off_rec2",
+            "dev-off_tv"
         ],
-        "label": "Fernsehen",
+        "macro-scene-on": [
+            "dev-on_lw",
+            "dev-on_beam",
+            "dev-on_tv",
+            "dev-on_rec2",
+            "rec2_cable-sat",
+            "dev-off_bd-api"
+        ],
         "remote": [
+            "HEADER-IMAGE",
             "macro_tv",
             "abc-xy",
-            "scene-on",
-            "scene-off",
+            "scene-on_tv",
+            "scene-off_tv",
             "LINE||channel",
             "tv_1",
             "tv_2",
