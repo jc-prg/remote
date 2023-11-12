@@ -33,7 +33,7 @@ data/_ACTIVE-DEVICES.json
 
 data/_ACTIVE-SCENES.json
 
-data/_ACTIVE-MAKROS.json
+data/_ACTIVE-MACROS.json
 
 data/devices/
 
@@ -52,3 +52,9 @@ app/cache.manifest
 *.swp
 
 server/modules/rm3stage.py
+
+server/interfaces/api_magichue.py
+
+server/interfaces/magichue/
+
+server/interfaces/test_api_magichome.py
