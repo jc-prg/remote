@@ -357,7 +357,7 @@ function rmRemoteJSON(name) {
         		json = json.replaceAll( "}", "\n}" );
         		text += json;
         		}
-        	else {
+        	else if (json != undefined) {
         		json = JSON.stringify(json);
         		json = json.replaceAll( ",", ",\n" );
         		json = json.replaceAll( "{", "{\n" );

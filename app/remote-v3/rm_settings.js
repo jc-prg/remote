@@ -255,12 +255,12 @@ function rmSettings (name) {	// IN PROGRESS
 			var button  = "";			
 			var visible = this.data["DATA"]["devices"][key]["settings"]["visible"];
 						
-			if (i > 0)			{ button += this.btn.sized(id="mv_dev_"+i,label="<b>&uarr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#device#,#"+key+"#,#-1#);",disabled=""); }
-			else				{ button += this.btn.sized(id="mv_dev_"+i,label="",             style="updown",script_apiCommandSend="",disabled="disabled"); }
-			if (i < order.length-1)	{ button += this.btn.sized(id="mv_dev_"+i,label="<b>&darr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#device#,#"+key+"#,#1#);",disabled=""); }
+			if (i > 0)              { button += this.btn.sized(id="mv_dev_"+i,label="<b>&uarr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#device#,#"+key+"#,#-1#);",disabled=""); }
+			else                    { button += this.btn.sized(id="mv_dev_"+i,label="",             style="updown",script_apiCommandSend="",disabled="disabled"); }
+			if (i < order.length-1) { button += this.btn.sized(id="mv_dev_"+i,label="<b>&darr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#device#,#"+key+"#,#1#);",disabled=""); }
 			
-			if (visible == "no")		{ set_temp += this.tab.row("<i>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</i>",button); }
-			else				{ set_temp += this.tab.row("<b>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</b>",button); }		
+			if (visible == "no")    { set_temp += this.tab.row("<i>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</i>",button); }
+			else                    { set_temp += this.tab.row("<b>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</b>",button); }
 			}
 		
 		set_temp   += this.tab.end();
@@ -274,26 +274,26 @@ function rmSettings (name) {	// IN PROGRESS
 		this.btn.height = "30px";		
 
 		set_temp  = this.tab.start();
-		set_temp += this.tab.row( "ID:",  	this.input("add_scene_id") );
-		set_temp += this.tab.row( "Label:", 	this.input("add_scene_label") );
-		set_temp += this.tab.row( "Description:", this.input("add_scene_descr") );
+		set_temp += this.tab.row( "ID:",            this.input("add_scene_id") );
+		set_temp += this.tab.row( "Label:",         this.input("add_scene_label") );
+		set_temp += this.tab.row( "Description:",   this.input("add_scene_descr") );
 		set_temp += this.tab.row( "<center>" +
-					   this.btn.sized(id="add_scene",label="Add Scene",style="","apiSceneAdd([#add_scene_id#,#add_scene_descr#,#add_scene_label#]);") +
-					   "</center>", false);
+                    this.btn.sized(id="add_scene",label="Add Scene",style="","apiSceneAdd([#add_scene_id#,#add_scene_descr#,#add_scene_label#]);") +
+                    "</center>", false);
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_add_scene","Add scene",set_temp,false); 
 
 		set_temp  = this.tab.start();
-		set_temp += this.tab.row( "ID:",  		this.input("add_device_id") );
-		set_temp += this.tab.row( "Label:", 		this.input("add_device_descr",onclick=onchange,oninput=onchange) );
-		set_temp += this.tab.row( "Interface:",  	this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"],onchange) );
-		set_temp += this.tab.row( "Device Name:",	this.input("add_device",onclick=onchange,oninput=onchange) );
+		set_temp += this.tab.row( "ID:",            this.input("add_device_id") );
+		set_temp += this.tab.row( "Label:",         this.input("add_device_descr",onclick=onchange,oninput=onchange) );
+		set_temp += this.tab.row( "Interface:",     this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"],onchange) );
+		set_temp += this.tab.row( "Device Name:",   this.input("add_device",onclick=onchange,oninput=onchange) );
 		set_temp += this.tab.line();
 		set_temp += this.tab.row( "Device-Config:",	this.input("add_device_device")+".json" );
 		set_temp += this.tab.row( "Remote-Config:",	this.input("add_device_remote")+".json" );
 		set_temp += this.tab.row( "<center>" +
-					   this.btn.sized(id="add_dev",label="Add Device",style="","apiDeviceAdd([#add_device_id#,#add_device_descr#,#add_device_api#,#add_device#,#add_device_device#,#add_device_remote#],"+onchange2+");") +
-					   "</center>", false);
+                    this.btn.sized(id="add_dev",label="Add Device",style="","apiDeviceAdd([#add_device_id#,#add_device_descr#,#add_device_api#,#add_device#,#add_device_device#,#add_device_remote#],"+onchange2+");") +
+                    "</center>", false);
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_add_device","Add device",set_temp,false); 
 
@@ -302,13 +302,14 @@ function rmSettings (name) {	// IN PROGRESS
 
 		// Edit Macros 01
 		setting   = "";
-		setting  += this.basic.container("setting_macros1","JSON macros [general]",		this.json.textarea("macro", this.data["DATA"]["macros"]["macro"], "macros"),false);
+		setting  += this.basic.container("setting_macros1","JSON macros [global]",		this.json.textarea("macro", this.data["DATA"]["macros"]["macro"], "macros"),false);
 		setting  += this.basic.container("setting_macros2","JSON macros [device ON]",	this.json.textarea("dev-on", this.data["DATA"]["macros"]["dev-on"], "macros"),false);
 		setting  += this.basic.container("setting_macros3","JSON macros [device OFF]",	this.json.textarea("dev-off", this.data["DATA"]["macros"]["dev-off"], "macros"),false);
-		setting  += this.basic.container("setting_macros4","JSON macros [scene ON]",		this.json.textarea("scene-on", this.data["DATA"]["macros"]["scene-on"], "macros"),false);
-		setting  += this.basic.container("setting_macros5","JSON macros [scene OFF]",	this.json.textarea("scene-off", this.data["DATA"]["macros"]["scene-off"], "macros"),false);
-
 		setting  += this.basic.container("setting_macros_manual","JSON macros - manual",lang("MANUAL_MACROS"),false);
+
+        setting  += "<div style=\"border:1px solid;height:1px;margin:5px;margin-top:10px;padding:0px;\"></div>";
+		setting  += this.basic.container("setting_macros4","</b><i>old: JSON macros [scene ON]</i>",   this.json.textarea("scene-on", this.data["DATA"]["macros"]["scene-on"], "macros"),false);
+		setting  += this.basic.container("setting_macros5","</b><i>old: JSON macros [scene OFF]</i>",  this.json.textarea("scene-off", this.data["DATA"]["macros"]["scene-off"], "macros"),false);
 
 		setting  += "<center><br/><br/>";
 //		setting  += this.btn.sized("apiMacroChange(['macro','scene-on','scene-off','dev-on','dev-off']);",lang("BUTTON_T_SAVE"),"");

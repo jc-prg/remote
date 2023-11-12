@@ -80,7 +80,22 @@ function app_theme_changed(theme) {
 		color_button_inactive 	= "#666666";
 		}
 	}
-	
+
+//--------------------------------
+
+var app_connection_error = true;
+function app_connection_lost(error=false) {
+    if (app_connection_error != error) {
+        if (error) {
+            // code if lost connection
+        }
+        else {
+            // code if got back connection
+        }
+    }
+    app_connection_error = error;
+}
+
 //----------------------------------
 // Theme detection and color settings
 //----------------------------------

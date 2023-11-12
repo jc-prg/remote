@@ -115,8 +115,30 @@ function apiSceneEdit(device,prefix,fields) {
 	}
 
 // edit button and display data using JSON
-function apiSceneJsonEdit(device,json_buttons,json_channel,json_devices,json_display,display_size) {
+function apiSceneJsonEdit(device,field_names) {
 
+    var fields = field_names.split(",");
+    var values = {};
+    var json   = {};
+
+    for (i=0;i<fields.length;i++) {
+        var field = fields[i];
+        var key   = field.split("::")[1];
+        var lower_case = false;
+
+        if (field == "devices") { lower_case = true; }
+        values[key] = check_if_element_or_value(field, lower_case);
+
+        if (key != "display-size") {
+            try         { json[key] = JSON.parse(values[key]); }
+            catch(e)    { appMsg.alert("<b>JSON " + field + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+            }
+        else {
+            json[key] = values[key];
+            }
+        }
+
+    /*
     buttons      = check_if_element_or_value(json_buttons,false);
     channel      = check_if_element_or_value(json_channel,false);
     devices      = check_if_element_or_value(json_devices,true);
@@ -129,13 +151,17 @@ function apiSceneJsonEdit(device,json_buttons,json_channel,json_devices,json_dis
 	try { json_display = JSON.parse(display); } catch(e) { appMsg.alert("<b>JSON Display - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 	
 	var info = {};
-	info["remote"]       = json_buttons;
-	info["channel"]      = json_channel;
-	info["devices"]      = json_devices;
-	info["display"]      = json_display;
-	info["display-size"] = display_size;
+	info["remote"]        = json_buttons;
+	info["macro-channel"] = json_channel;
+	info["devices"]       = json_devices;
+	info["display"]       = json_display;
+	info["display-size"]  = display_size;
 		
-	appFW.requestAPI("POST",["scene",device], info, apiAlertReturn);	
+	appFW.requestAPI("POST",["scene",device], info, apiAlertReturn);
+	*/
+
+	appFW.requestAPI("POST",["scene",device], json, apiAlertReturn);
+
 	}
 
 // delete scene

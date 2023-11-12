@@ -109,11 +109,13 @@ var language_app = {
 		
 		"ID"                     : "ID",
 		
-		"JSON_CHANNEL"			: "JSON channel definition",
-		"JSON_DISPLAY"			: "JSON display definition",
-		"JSON_DEVICE"			: "JSON device definition",
-		"JSON_REMOTE"			: "JSON remote definition",
-		
+		"JSON_CHANNEL"			: "JSON channel macros",
+		"JSON_DISPLAY"			: "JSON display information",
+		"JSON_DEVICE"			: "JSON required devices",
+		"JSON_REMOTE"			: "JSON remote control",
+		"JSON_SCENE_MACROS"		: "JSON scene macros",
+		"JSON_DEVICE_MACROS"	: "JSON device macros",
+
 		"LABEL"                 : "Label",
 		
 		"LOAD_TEMPLATE"         : "Load template",
@@ -122,68 +124,75 @@ var language_app = {
 		
 		"MANUAL"                : "manual",
 		
-		"MANUAL_CHANNEL"		: "<i>Edit Channels:</i><br/><br/><ul class='help'>" +
-						  "<li>Fill dict for channel definition using the JSON format: " +
-						  "<i>&quot;Channel Name&quot; : [ &quot;button&quot;, &quot;button&quot;, &quot;macro&quot;]</i></li>" +
-						  "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;macro_type&gt;_&lt;button&gt;&quot; to define buttons in channel macro; macro types are: macro, scene-on, scene-off, dev-on, dev-off</li>" +
-						  "</ul>",
-		"MANUAL_DEVICES"		: "<i>Edit Devices for Scene</i><br/><br/><ul class='help'>" +
-						  "<li>Fill array of included devices using the JSON format: [&quot;device_id&quot;,&quot;device_id&quot;]</i>.</li>" +
-						  "</ul>",
-		"MANUAL_DISPLAY"		: "<i>Edit Display Definition</i><br/><br/><ul class='help'>" +
-						  "<li>Fill dict for display definition using the JSON format: <i>&quot;Label&quot; : &quot;field_from_device&quot;</i>.</li>" +
-						  "<li>If &quot;auto_off&quot; is defined for the device (check JSON file), use &quot;auto-power-off&quot; as field to show the time till the devices automatically switches of.</li>" +
-						  "</ul>",
-		"MANUAL_REMOTE"		: "<i>Edit Device Remote Control:</i><br/><br/><ul class='help'>" +
-						  "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
-						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
-						  "<li>Add &quot;DISPLAY&quot; to add a display that show status information (details defined below).</li>" +
-						  "<li>Add &quot;SLIDER||send-&lt;command&gt;||&lt;description&gt;||&lt;min&gt;-&lt;max&gt;||&lt;parameter&gt;&quot; to add a slider input element.</li>" +
-						  "<li>Add &quot;COLOR-PICKER||send-&lt;command&gt;&quot; to add an input element to select a color.</li>" +
-						  "<li>Add &quot;.&quot; to add an empty space.</li>" +
-						  "</ul>",
-		"MANUAL_SCENE"			: "<i>Edit Scene Remote Control:</i><br/><br/><ul class='help'>" +
-						  "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
-						  "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;macro_type&gt;_&lt;button&gt;&quot; to define buttons in the remote layout; macro types are: macro, scene-on, scene-off, dev-on, dev-off</li>" +
-						  "<li>Add &quot;.&quot; to add an empty space.</li>" +
-						  "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
-						  "<li>Add &quot;HEADER-IMAGE&quot; to add an image. The image can be selected in the scene settings.</li>" +
-						  "<li>Add &quot;TOGGLE||&lt;device&gt;_&lt;value&gt;||&lt;description&gt;||&lt;command_on&gt;||&lt;command_off&gt;&quot; to add a toggle."+
-						    " This is supported for values with ON|OFF or TRUE|FALSE only." +
-						    " If the toggle shall be integrated into the header image, place it directly below the &quot;HEADER-IMAGE&quot; and use &quot;HEADER-IMAGE||toggle&quot;.</li>" +
-						  "<li>Add &quot;SLIDER||send-&lt;value&gt;||&lt;description&gt;||&lt;range-from&gt;-&lt;range-to&gt;||&lt;value&gt;&quot; to add a slider."+
-						    " This is support for devices with query mode and if a number can be send via API." +
-						  "</ul>",
-		"MANUAL_MACROS"		: "<i>Edit Macros:</i><br/><br/><ul class='help'>" +
-						  "<li>Define macros using the JSON format</li>" +
-						  "<li>Combine buttons from any defined remote control and integers for seconds to wait</li>" +
-						  "<li>Macro types are: <ul>" +
-						  	"<li><u>dev-on</u>: macros to switch a device on (e.g. switch on and set initial volume)</li>"+
-						  	"<li><u>dev-off</u>: macros to switch a device off</li>" +
-						  	"<li><u>scene-on</u>: switch all device of a scene on, set input channels and similar</li>"+
-						  	"<li><u>scene-off</u>: switch all devices of a scene off</li>"+
-						  	"<li><u>macro</u>: all other macros</li>"+
-						  "</ul></li>"+
-						  "<li>Macro format: \"&lt;macro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
-						  "<li>Scene-on/off macros format: \"&lt;macro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
-						  "<li>Dev-on/off macros format: \"&lt;device&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"&lt;device&gt;_&lt;button&gt;||&lt;value&gt;\",] </li>" +
-						  "<li>Macros can be used for scenes, not for devices: 'macro_&lt;macro&gt;', 'scene-on_&lt;scene&gt;', 'scene-off_&lt;scene&gt;', 'dev-on_&lt;device&gt;', 'dev-off_&lt;device&gt;'</li>" +
-						  "<li>Start with &quot;WAIT-xx&quot; in a macro to show a message that it's necessary to wait for xx seconds</li>" +
-						  "<li>For devices without API (method=record) use e.g. \"&lt;button&gt;||set-&lt;value&gt;\" to set a value without sending the command. This can be useful if you work with wifi controlled outlets and a device always start in mode \"ON\".</li>" +
-						  "</ul>",
+		"MANUAL_CHANNEL"        : "<i>Edit Channels:</i><br/><br/><ul class='help'>" +
+		                          "<li>Fill dict for channel definition using the JSON format: " +
+		                          "<i>&quot;Channel Name&quot; : [ &quot;button&quot;, &quot;button&quot;, &quot;macro&quot;]</i></li>" +
+		                          "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;macro_type&gt;_&lt;button&gt;&quot; to define buttons in channel macro; macro types are: macro, scene-on, scene-off, dev-on, dev-off</li>" +
+		                          "</ul>",
+		"MANUAL_DEVICES"        : "<i>Edit Devices for Scene</i><br/><br/><ul class='help'>" +
+		                          "<li>Fill array of included devices using the JSON format: [&quot;device_id&quot;,&quot;device_id&quot;]</i>.</li>" +
+		                          "</ul>",
+		"MANUAL_DISPLAY"        : "<i>Edit Display Definition</i><br/><br/><ul class='help'>" +
+		                          "<li>Fill dict for display definition using the JSON format: <i>&quot;Label&quot; : &quot;field_from_device&quot;</i>.</li>" +
+		                          "<li>If &quot;auto_off&quot; is defined for the device (check JSON file), use &quot;auto-power-off&quot; as field to show the time till the devices automatically switches of.</li>" +
+		                          "</ul>",
+		"MANUAL_REMOTE"         : "<i>Edit Device Remote Control:</i><br/><br/><ul class='help'>" +
+		                          "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
+		                          "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
+		                          "<li>Add &quot;DISPLAY&quot; to add a display that show status information (details defined below).</li>" +
+		                          "<li>Add &quot;SLIDER||send-&lt;command&gt;||&lt;description&gt;||&lt;min&gt;-&lt;max&gt;||&lt;parameter&gt;&quot; to add a slider input element.</li>" +
+		                          "<li>Add &quot;COLOR-PICKER||send-&lt;command&gt;&quot; to add an input element to select a color.</li>" +
+		                          "<li>Add &quot;.&quot; to add an empty space.</li>" +
+		                          "</ul>",
+		"MANUAL_SCENE"          : "<i>Edit Scene Remote Control:</i><br/><br/><ul class='help'>" +
+		                          "<li>Fill array of button names using the JSON format, four buttons per row.</li>" +
+		                          "<li>Use &quot;&lt;device_id&gt;_&lt;button&gt;&quot; or &quot;&lt;macro_type&gt;_&lt;button&gt;&quot; to define buttons in the remote layout; macro types are: macro, scene-on, scene-off, dev-on, dev-off</li>" +
+		                          "<li>Add &quot;.&quot; to add an empty space.</li>" +
+		                          "<li>Add &quot;LINE&quot; to add a horizontal line and &quot;LINE||description&quot; to add a line with text.</li>" +
+		                          "<li>Add &quot;HEADER-IMAGE&quot; to add an image. The image can be selected in the scene settings.</li>" +
+		                          "<li>Add &quot;TOGGLE||&lt;device&gt;_&lt;value&gt;||&lt;description&gt;||&lt;command_on&gt;||&lt;command_off&gt;&quot; to add a toggle."+
+		                          " This is supported for values with ON|OFF or TRUE|FALSE only." +
+		                          " If the toggle shall be integrated into the header image, place it directly below the &quot;HEADER-IMAGE&quot; and use &quot;HEADER-IMAGE||toggle&quot;.</li>" +
+		                          "<li>Add &quot;SLIDER||send-&lt;value&gt;||&lt;description&gt;||&lt;range-from&gt;-&lt;range-to&gt;||&lt;value&gt;&quot; to add a slider."+
+		                          " This is support for devices with query mode and if a number can be send via API." +
+		                          "</ul>",
+		"MANUAL_MACROS"	        : "<i>Edit Macros:</i><br/><br/><ul class='help'>" +
+		                          "<li>Define macros using the JSON format</li>" +
+		                          "<li>Combine buttons from any defined remote control and integers for seconds to wait</li>" +
+		                          "<li>Macro types are: <ul>" +
+		                          "<li><u>dev-on</u>: macros to switch a device on (e.g. switch on and set initial volume)</li>"+
+		                          "<li><u>dev-off</u>: macros to switch a device off</li>" +
+		                          "<li><u>macro</u>: all other macros</li>"+
+		                          "</ul></li>"+
+		                          "<li>Macro format: \"&lt;macro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
+		                          "<li>Scene-on/off macros format: \"&lt;macro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
+		                          "<li>Dev-on/off macros format: \"&lt;device&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"&lt;device&gt;_&lt;button&gt;||&lt;value&gt;\",] </li>" +
+		                          "<li>Macros can be used for scenes, not for devices: 'macro_&lt;macro&gt;', 'scene-on_&lt;scene&gt;', 'scene-off_&lt;scene&gt;', 'dev-on_&lt;device&gt;', 'dev-off_&lt;device&gt;'</li>" +
+		                          "<li>Start with &quot;WAIT-xx&quot; in a macro to show a message that it's necessary to wait for xx seconds</li>" +
+		                          "<li>For devices without API (method=record) use e.g. \"&lt;button&gt;||set-&lt;value&gt;\" to set a value without sending the command. This can be useful if you work with wifi controlled outlets and a device always start in mode \"ON\".</li>" +
+		                          "</ul>",
+		"MANUAL_MACROS_SCENE"   : "<i>Edit Macros for this scene:</i><br/><br/><ul class='help'>" +
+		                          "<li>Define macros using the JSON format. Combine buttons from any defined device, global macros, and integers for seconds to wait.</li>" +
+		                          "<li><u>Macro type SCENE ON</u>: add here all buttons / commands to switch all devices of this scene on, set input channels and similar. Use the macro as \"scene-on\" in the remote definition."+
+		                          "<br/><i>-&gt; Format:</i> [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
+		                          "<li><u>Macro type SCENE OFF</u>: add here all buttons / commands to switch all devices of a scene off. Use the macro as \"scene-off\" in the remote definition."+
+		                          "<br/><i>-&gt; Format:</i> [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
+		                          "<li><u>Other scene macros</u>: add here all buttons / commands to create another macro for this scene."+
+		                          "<br/><i>-&gt; Format:</i> {\"&lt;macro_name&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"]}</li>" +
+		                          "<li>Use the command &quot;WAIT-xx&quot; in a macro to show a message that it's necessary to wait for xx seconds</li>" +
+		                          "<li>For devices without API (method=record) use e.g. \"&lt;button&gt;||set-&lt;value&gt;\" to set a value without sending the command. This can be useful if you work with wifi controlled outlets and a device always start in mode \"ON\".</li>" +
+		                          "</ul>",
+
+		"METHOD"                : "Method",
 						  
-		"METHOD"			: "Method",
-						  
-						  //, \"scene-on_&lt;scene&lt;\"
-						  
-		"MISSING_DATA"        : "Data are missing for '{0}'.<br/>Check files '{1}' and '{2}' in data directory.",
-		"MISSING_DATA_SCENE"  : "Data are missing for '{0}'.<br/>Check file '{1}' in data directory.",
+		"MISSING_DATA"          : "Data are missing for '{0}'.<br/>Check files '{1}' and '{2}' in data directory.",
+		"MISSING_DATA_SCENE"    : "Data are missing for '{0}'.<br/>Check file '{1}' in data directory.",
 		
-		"MODE_EDIT"           : "Edit Mode",
-		"MODE_INTELLIGENT"    : "Intelligent Mode",
-		"MODE_MANUAL"         : "Manual Mode",
+		"MODE_EDIT"             : "Edit Mode",
+		"MODE_INTELLIGENT"      : "Intelligent Mode",
+		"MODE_MANUAL"           : "Manual Mode",
 		
-		"NOT_USED"            : "not used in remote control",
+		"NOT_USED"              : "not used in remote control",
 
 		"PLEASE_WAIT"         : "Please wait ... .",
 		
