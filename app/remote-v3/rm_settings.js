@@ -28,33 +28,33 @@ function rmSettings (name) {	// IN PROGRESS
 	
 	// init settings / set vars
 	this.init			        = function (data) {
-		// set data
-		this.data = data;
-		
-		// status
-		if (data)	{this.app_stat = data["STATUS"]["system"]["message"]; this.app_last = data["REQUEST"]["Button"];}
-		else		{this.app_stat = "ERROR: no connection to server!";}
+        // set data
+        this.data = data;
 
-                if (this.initial_load) { 
-			// check if test
-			if (test) 	{this.test_info = "Test Stage";}
-			else 		{this.test_info = "Prod Stage";}
+        // status
+        if (data)	{this.app_stat = data["STATUS"]["system"]["message"]; this.app_last = data["REQUEST"]["Button"];}
+        else		{this.app_stat = "ERROR: no connection to server!";}
+
+        if (this.initial_load) {
+            // check if test
+            if (test) 	{this.test_info = "Test Stage";}
+            else 		{this.test_info = "Prod Stage";}
 			
-                	this.initial_load = false;
-                	this.logging.default("Initialized new class 'rmSettings'.");
-                	}
-                else {
-                	this.logging.default("Reload data 'rmSettings'.");
-                	}
+            this.initial_load = false;
+            this.logging.default("Initialized new class 'rmSettings'.");
+            }
+        else {
+            this.logging.default("Reload data 'rmSettings'.");
+            }
 		}
 
 	// write settings page
-	this.create			        = function () {
-	
-		if (this.edit_mode && this.mode != "edit") 		{ this.create_edit();    this.mode = "edit"; }
-		else if (!this.edit_mode && this.mode != "setting")	{ this.create_setting(); this.mode = "setting"; }
-		else if (this.mode == "setting")			{ this.interface_list_update(); this.exec_time_list_update(); }
-		}
+    this.create			        = function () {
+
+        if (this.edit_mode && this.mode != "edit") 		{ this.create_edit();    this.mode = "edit"; }
+        else if (!this.edit_mode && this.mode != "setting")	{ this.create_setting(); this.mode = "setting"; }
+        else if (this.mode == "setting")			{ this.interface_list_update(); this.exec_time_list_update(); }
+        }
 
 	this.create_setting		    = function () {
 		// Set Vars
@@ -88,12 +88,13 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.row( "Client:",	 appVersion + " / " + this.test_info + " (" + rollout + ")" );
 		set_temp += this.tab.row( "Server:",	 this.data["API"]["version"] + " / " + this.data["API"]["rollout"] );
 		set_temp += this.tab.row( "Modules:",	 
-		                               "jcMsg " 		+ appMsg.appVersion +  
-						" / jcApp "		+ appFW.appVersion +
-						" / jcAppFW "		+ appFwVersion +
-						" / jcCookies "	+ appCookie.appVersion +  
-						" / jcSlider "		+ rm3slider.appVersion );
+                                    "jcMsg " 		+ appMsg.appVersion +
+                                    " / jcApp "		+ appFW.appVersion +
+                                    " / jcAppFW "		+ appFwVersion +
+                                    " / jcCookies "	+ appCookie.appVersion +
+                                    " / jcSlider "		+ rm3slider.appVersion );
 		set_temp += this.tab.row( "Sources:", "<a href='https://github.com/jc-prg/remote/' style='color:white' target='_blank'>https://github.com/jc-prg/remote/</a>");
+		set_temp += this.tab.row( "REST API:", RESTurl + "api/list/");
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_version","Versions",set_temp,true);
 
@@ -142,9 +143,9 @@ function rmSettings (name) {	// IN PROGRESS
 		setting   = "";
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row(	"<center>" +
-						this.btn.sized("set01","reload (scroll)","","appForceReload(true);") + "&nbsp;" +
-						this.btn.sized("set02","check updates","","appFW.requestAPI(#GET#,[#version#,#" + appVersion +"#], ##, appMsg.alertReturn,#wait#);") +
-						"</center>"
+                    this.btn.sized("set01","reload (scroll)","","appForceReload(true);") + "&nbsp;" +
+                    this.btn.sized("set02","check updates","","appFW.requestAPI(#GET#,[#version#,#" + appVersion +"#], ##, appMsg.alertReturn,#wait#);") +
+                    "</center>"
 					);
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_reload","Reload &amp; updates",set_temp,true);
@@ -152,20 +153,20 @@ function rmSettings (name) {	// IN PROGRESS
 		// API Calls and information
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row(	"<center>" +
-						this.btn.sized("set11","REST API : list",  "","window.open(#" + RESTurl + "api/list/#,#_blank#);") + "&nbsp;" +
-						this.btn.sized("set12","REST API : status","","window.open(#" + RESTurl + "api/status/#,#_blank#);") + "&nbsp;" +
-						this.btn.sized("set13","Swagger/UI",       "","window.open(#" + RESTurl + "api/ui/#,#_blank#);") + "&nbsp;" +
-						"</center>"
-					);
+                    this.btn.sized("set11","REST API : list",  "","window.open(#" + RESTurl + "api/list/#,#_blank#);") + "&nbsp;" +
+                    this.btn.sized("set12","REST API : status","","window.open(#" + RESTurl + "api/status/#,#_blank#);") + "&nbsp;" +
+                    this.btn.sized("set13","Swagger/UI",       "","window.open(#" + RESTurl + "api/ui/#,#_blank#);") + "&nbsp;" +
+                    "</center>"
+                    );
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_api","API calls &amp; swagger interface",set_temp,false);
 
 		// reset device values
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row(	"<center>" +
-						this.btn.sized("set21","Dev ON/OFF", "","appMsg.confirm(#" + q1 + "#, #appFW.requestAPI(##GET##,[##reset##],####,apiAlertReturn );#);") + "&nbsp;" +
-						this.btn.sized("set22","Audio Level","", "appMsg.confirm(#" + q2 + "#, #appFW.requestAPI(##GET##,[##reset-audio##],####,apiAlertReturn );# );") + "&nbsp;" +
-						"</center>"
+                    this.btn.sized("set21","Dev ON/OFF", "","appMsg.confirm(#" + q1 + "#, #appFW.requestAPI(##GET##,[##reset##],####,apiAlertReturn );#);") + "&nbsp;" +
+                    this.btn.sized("set22","Audio Level","", "appMsg.confirm(#" + q2 + "#, #appFW.requestAPI(##GET##,[##reset-audio##],####,apiAlertReturn );# );") + "&nbsp;" +
+                    "</center>"
 					);
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_reset","Reset device values",set_temp,false);
@@ -173,9 +174,9 @@ function rmSettings (name) {	// IN PROGRESS
 		// button behavior
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row(	"<center>" +
-						this.btn.sized("set31",b_show, "",this.app_name+".button_show();") + "&nbsp;" +
-						this.btn.sized("set32",b_deact,"",this.app_name+".button_deact();") + "&nbsp;" +
-						"</center>"
+                    this.btn.sized("set31",b_show, "",this.app_name+".button_show();") + "&nbsp;" +
+                    this.btn.sized("set32",b_deact,"",this.app_name+".button_deact();") + "&nbsp;" +
+                    "</center>"
 					);
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_buttons","Button behavior",set_temp,false);
@@ -201,9 +202,9 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row(	"API Speed:",		this.exec_time_list() );
 		set_temp += this.tab.row( 	"API Details:",
-						this.device_list("select_dev_status", this.app_name+".device_list_status('select_dev_status','dev_status');") +
-						"<span id='dev_status'>default</span>"
-						);		
+                    this.device_list("select_dev_status", this.app_name+".device_list_status('select_dev_status','dev_status');") +
+                    "<span id='dev_status'>default</span>"
+                    );
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_api03","Server- &amp; API-Status",set_temp,false);
 
@@ -235,12 +236,12 @@ function rmSettings (name) {	// IN PROGRESS
 			var button  = "";			
 			var visible = scenes[key]["settings"]["visible"];
 
-			if (i > 0)			{ button += this.btn.sized(id="mv_sce_"+i,label="<b>&uarr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#scene#,#"+key+"#,#-1#);",disabled=""); }
-			else				{ button += this.btn.sized(id="mv_sce_"+i,label="",             style="updown",script_apiCommandSend="",disabled="disabled"); }
+			if (i > 0)              { button += this.btn.sized(id="mv_sce_"+i,label="<b>&uarr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#scene#,#"+key+"#,#-1#);",disabled=""); }
+			else                    { button += this.btn.sized(id="mv_sce_"+i,label="",             style="updown",script_apiCommandSend="",disabled="disabled"); }
 			if (i < order.length-1)	{ button += this.btn.sized(id="mv_sce_"+i,label="<b>&darr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#scene#,#"+key+"#,#1#);",disabled=""); }
 			
-			if (visible == "no")    	{ set_temp += this.tab.row("<i>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</i>",button); }
-			else                    	{ set_temp += this.tab.row("<b>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</b>",button); }
+			if (visible == "no")    { set_temp += this.tab.row("<i>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</i>",button); }
+			else                    { set_temp += this.tab.row("<b>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</b>",button); }
 			}
 
 		set_temp   += this.tab.end();
@@ -323,12 +324,12 @@ function rmSettings (name) {	// IN PROGRESS
 	
 		replace_minus   = [" ","/","\\",":","&","#","?"];
 		
-		label		= document.getElementById("add_device_descr").value;
-		api		= document.getElementById("add_device_api").value;
-		device		= document.getElementById("add_device").value;
+		label   = document.getElementById("add_device_descr").value;
+		api     = document.getElementById("add_device_api").value;
+		device  = document.getElementById("add_device").value;
 
 		device_file	 = label.toLowerCase();
-		device_file     += "_" + device.toLowerCase();	
+		device_file += "_" + device.toLowerCase();
 		
 		for (var i=0;i<replace_minus.length;i++) { for (var j=0;j<5;j++) { device_file = device_file.replace(replace_minus[i], "-" ); } }
 
@@ -344,9 +345,9 @@ function rmSettings (name) {	// IN PROGRESS
 		var element 	= this.e_settings[nr];
 		if (label != "") {
 			var content 	= "<center><b>" + label + "</b></center>"
-					+ this.basic.edit_line()
-					+ text
-					+ "<br/>";
+                            + this.basic.edit_line()
+                            + text
+                            + "<br/>";
 			}
 		else { var content = ""; }
 
@@ -355,8 +356,8 @@ function rmSettings (name) {	// IN PROGRESS
 		
 	this.is_filled			    = function (nr) {
 		var element 	= this.e_settings[nr];
-		if (element.innerHTML != "")	{ return true; }
-		else				{ return false; }
+		if (element.innerHTML != "") { return true; }
+		else                         { return false; }
 		}
 
 	this.show			        = function () { if (this.active == false) { this.onoff(); showRemoteInBackground(0); } }
