@@ -15,7 +15,7 @@
 
     <!-- load main javascript files, dynamic load of additional files is managed at the end of this file -->
 
-    <script src="/modules/modules.js"></script>
+    <script src="/modules/modules_1.0.js"></script>
     <script src="/framework/app-fw.js"></script>
     <script src="/remote-v3/remote.js"></script>
 
@@ -77,11 +77,11 @@
     <!-- load additional css and javascript files in specific order // START -->
 
     <script>
-        loadCss("/modules/",       modules_css_latest);
+        loadCss("/modules/",       modules_css);
         loadCss("/framework/",     app_css);
         loadCss("/remote-v3/",     rm_css);
 
-        loadScripts("/modules/",   modules_js_latest);
+        loadScripts("/modules/",   modules_js);
         loadScripts("/framework/", app_js_init);
         loadScripts("/remote-v3/", rm_js_config);
         loadScripts("/remote-v3/", rm_js_init);
