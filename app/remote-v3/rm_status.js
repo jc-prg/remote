@@ -830,7 +830,7 @@ function statusShow_display(id, view) {
         elementVisible("display_"+id+"_"+view);
         }
     else {
-        console.warn("Error showing display: " + id + ":" + view);
+        console.debug("Error showing display: " + id + ":" + view);
         }
 }
 
