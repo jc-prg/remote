@@ -9,7 +9,7 @@ echo "-------------------------------------"
 echo " Create jc://remote/ configuration"
 echo "-------------------------------------"
 
-if [ ${D}user != "root" ]; then
+if [ $user != "root" ]; then
   echo
   echo "Please run as root!"
   exit 0
