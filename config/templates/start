@@ -17,6 +17,13 @@ if [ ${D}user != "root" ]; then
   exit 0
 fi
 
+if [ ! test -f "${DOCKERCOMPOSE_DIR}/docker-compose" ]; then
+  echo "Check the location of your docker-compose file in the configuration!"
+  echo "The file/path '${DOCKERCOMPOSE_DIR}/docker-compose' doesn't exist."
+  exit 0
+fi
+
+
 if [ ! ${D}config ]; then
   echo
   echo "Press key - your options:"
