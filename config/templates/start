@@ -14,12 +14,16 @@ echo "-------------------------------------"
 if [ ${D}user != "root" ]; then 
   echo
   echo "Please run as root!"
+  echo
   exit 0
 fi
 
-if [ ! test -f "${DOCKERCOMPOSE_DIR}/docker-compose" ]; then
+if test -f "${DOCKERCOMPOSE_DIR}/docker-compose"; then
+  :
+else
   echo "Check the location of your docker-compose file in the configuration!"
   echo "The file/path '${DOCKERCOMPOSE_DIR}/docker-compose' doesn't exist. "
+  echo
   exit 0
 fi
 
