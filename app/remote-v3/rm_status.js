@@ -238,7 +238,7 @@ function statusCheck_deviceActive(data) {
 			}
 		}
 		
-	// deactive macro_buttons (check scene status, deactivate all buttons from list starting with "macro")
+	// inactive macro_buttons (check scene status, deactivate all buttons from list starting with "macro")
 	if (rm3remotes.active_type == "scene" && scene_status[rm3remotes.active_name] != "ON") {
 	
 		for (var i=0; i<rm3remotes.active_buttons.length; i++) {

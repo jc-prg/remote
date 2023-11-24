@@ -2,13 +2,10 @@
 // jc://remote/
 //--------------------------------
 
-rm_js_config = [
+remote_js = [
     "config_language.js",
     "config_main.js",
     "config_stage.js",
-    ];
-
-rm_js_init = [
     "rm_functions.js",
     "rm_functions-api.js",
     "rm_status.js",
@@ -20,13 +17,10 @@ rm_js_init = [
     "rm_remotes-elements.js",
     "rm_remotes-keyboard.js",
     "rm_remotes-slider.js",
-    ];
-
-rm_js_start = [
     "rm_main.js",
     ];
 
-rm_css = [
+remote_css = [
     "style-menu.css",
     "style-remote.css",
     "style-remote-dark.css",

@@ -9,18 +9,26 @@ var reload_active  = false;
 var showImg        = true;
 var startActive    = true;
 
-var rm3slider  = new jcSlider( name="rm3sider", container="audio_slider");	// create slider
-rm3slider.init(min=0,max=100,label="loading");				// set device information
-rm3slider.setPosition(top="45px",bottom=false,left=false,right="10px");	// set position (if not default)
-rm3slider.setOnChange(apiSetVolume);						// -> setVolume (api call to set volume -> this.callOnChange( this.value ))
-rm3slider.setShowVolume(statusShow_volume);					// -> showVolume e.g. in header
+var rm3slider      = undefined;
+var rm3menu        = undefined;
+var rm3start       = undefined;
+var rm3remotes     = undefined;
+var rm3settings    = undefined;
 
-var rm3menu     = new rmMenu(     "rm3menu", ["menuItems","menuItems2"] );
-var rm3start    = new rmStart(    "rm3start" );
-var rm3remotes  = new rmRemote(   "rm3remotes" );
-var rm3settings = new rmSettings( "rm3settings" );
+function startRemote() {
+    rm3slider  = new jcSlider( name="rm3sider", container="audio_slider");              // create slider
+    rm3slider.init(min=0,max=100,label="loading");                                      // set device information
+    rm3slider.setPosition(top="45px",bottom=false,left=false,right="10px");             // set position (if not default)
+    rm3slider.setOnChange(apiSetVolume);                                                // -> setVolume (api call to set volume -> this.callOnChange( this.value ))
+    rm3slider.setShowVolume(statusShow_volume);                                         // -> showVolume e.g. in header
 
-remoteInit(first_load=true);
+    rm3menu     = new rmMenu(     "rm3menu", ["menuItems","menuItems2"] );
+    rm3start    = new rmStart(    "rm3start" );
+    rm3remotes  = new rmRemote(   "rm3remotes" );
+    rm3settings = new rmSettings( "rm3settings" );
+
+    remoteInit(first_load=true);
+    }
 
 //----------------------------------
 // initiale settings and load menus

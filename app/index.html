@@ -34,7 +34,7 @@
 
     <!-- APP specific header elements // END -->
 
-    <nav-title id="navTitle">...</nav-title>
+    <nav-title id="navTitle">Loading ...</nav-title>
     <ul>
       <li id="navi"><div onClick="javascript:appClickMenu();"  id="navi-click"><img src="img/button.png" /></div>
         <ul id='menuItems' style="visibility:hidden;"><!-- drop down menu - filled by script --></ul>
@@ -77,16 +77,21 @@
     <!-- load additional css and javascript files in specific order // START -->
 
     <script>
-        loadCss("/modules/",       modules_css);
-        loadCss("/framework/",     app_css);
-        loadCss("/remote-v3/",     rm_css);
 
         loadScripts("/modules/",   modules_js);
-        loadScripts("/framework/", app_js_init);
-        loadScripts("/remote-v3/", rm_js_config);
-        loadScripts("/remote-v3/", rm_js_init);
-        loadScripts("/framework/", app_js_start);
-        loadScripts("/remote-v3/", rm_js_start);
+        loadCss("/modules/",       modules_css);
+
+        loadScripts("/framework/", app_js);
+        loadCss("/framework/",     app_css);
+
+        loadCss("/remote-v3/",     remote_css);
+        loadScripts("/remote-v3/", remote_js);
+
+        setTimeout( function() {
+            startApp();
+            startRemote();
+        }, 500 );
+
     </script>
 
     <!-- load additional css and javascript files in specific order // END -->

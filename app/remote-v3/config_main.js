@@ -8,10 +8,11 @@ var app_setting_count = 5;
 var app_setting_style = "setting_bg";
 var app_last_load     = 0;
 var app_title         = "jc://remote/";
-var app_version       = "v2.8.3";
+var app_version       = "v2.8.4";
 var app_api_dir       = "api/";
 var app_api_status    = "list";
 var app_loading_image = "";
+var appAutoLoad       = false;
 
 //--------------------------------	
 // create menu entries
