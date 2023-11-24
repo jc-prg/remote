@@ -79,6 +79,7 @@ _Additional APIs can be added with a little effort if an API source written in P
 * power toggles in scene remotes to switch on/off a power socket for the scene
 * optimized UX for editing mode
 * moved scene macro editing to the scene remotes
+* define automatic "switch off time" for IR devices in config files
 
 ### App v2.7 / Server v2.0
 
