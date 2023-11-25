@@ -83,6 +83,31 @@ paths:
                 $ref: "#/definitions/STATUS"
 
 
+  /config-device/{device}/:
+    get:
+      operationId: modules.server_cmd.RemoteConfigDevice
+      tags:
+        - status
+      summary: request configuration data for a specific device
+      description: request configuration data for a specific device
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully requested configuration
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              DATA:
+                $ref: "#/definitions/DATA_DEVICE"
+
+
   /send_check/{device}/{button}/:
     get:
       operationId: modules.server_cmd.RemoteOnOff
@@ -934,6 +959,9 @@ definitions:
         type: string
       methods:
         type: object
+
+  DATA_DEVICE:
+    type: object
 
   DATA:
     type: object

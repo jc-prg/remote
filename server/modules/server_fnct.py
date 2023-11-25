@@ -37,7 +37,7 @@ def refreshCache():
     configFiles.update()
 
 
-def RmReadData_devicesConfig():
+def RmReadData_devicesConfig(more_details=False):
     """
     read configuration of all devices
     """
@@ -94,6 +94,11 @@ def RmReadData_devicesConfig():
             if interface_def_combined["buttons"] != "":
                 data_config[device]["buttons"] = list(interface_def_combined["buttons"].keys())
 
+                if more_details:
+                    data_config[device]["api_commands"] = {}
+                    for key in interface_def_combined["buttons"]:
+                        data_config[device]["api_commands"]["btn: " + key] = interface_def_combined["buttons"][key]
+
             data_config[device]["interface"] = {}
             data_config[device]["interface"]["method"] = interface_def_combined["method"]
             data_config[device]["interface"]["files"] = [interface + "/00_interface.json",
@@ -113,6 +118,13 @@ def RmReadData_devicesConfig():
             # check get and set definitions
             if "commands" in interface_def_combined:
                 data_config[device]["commands"]["definition"] = interface_def_combined["commands"]
+
+                if more_details:
+                    for key in interface_def_combined["commands"]:
+                        if "get" in interface_def_combined["commands"][key]:
+                            data_config[device]["api_commands"]["get: " + key] = interface_def_combined["commands"][key]["get"]
+                        if "set" in interface_def_combined["commands"][key]:
+                            data_config[device]["api_commands"]["set: " + key] = interface_def_combined["commands"][key]["set"]
 
                 for key in interface_def_combined["commands"]:
                     if "get" in interface_def_combined["commands"][key]:

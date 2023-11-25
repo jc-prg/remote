@@ -98,6 +98,8 @@ def remoteAPI_end(data, setting=[]):
         del data["DATA"]
     if "no-config" in setting and "CONFIG" in data:
         del data["CONFIG"]
+    if "no-status" in setting and "STATUS" in data:
+        del data["STATUS"]
 
     if "ERROR" in data["REQUEST"]["Return"]:
         logging.error(data["REQUEST"]["Return"])
@@ -425,12 +427,18 @@ def RemoteSendApiCmd(device, api_command):
     """
     data = remoteAPI_start(["request-only"])
 
+    status = deviceAPIs.device_status(device)["status"]
+    if "power" in status:
+        pwr_status = status["power"]
+    else:
+        pwr_status = "N/A"
+
     data["REQUEST"]["Return"] = {
         "answer": deviceAPIs.api_send_directly(device, api_command),
         "device": device,
         "command": api_command,
         "interface": deviceAPIs.device_api_string(device),
-        "status": deviceAPIs.device_status(device)["status"]["power"]
+        "status": pwr_status
     }
     data["REQUEST"]["Command"] = "RemoteSendApiCmd"
 
@@ -814,6 +822,31 @@ def RemoteAddTemplate(device, template):
     data = remoteAPI_end(data, ["no-data", "no-config"])
     return data
 
+
+def RemoteConfigDevice(device):
+    """
+    get configuration data for device
+    """
+    data = remoteAPI_start(["request-only"])
+
+    data["DATA"] = {}
+    device_config = RmReadData_devicesConfig(more_details=True)
+
+    if device in device_config:
+        api = device_config[device]["interface"]["interface_api"]
+        api_config = configFiles.read(modules.rm3config.commands + api + "/00_interface")
+
+        data["REQUEST"]["Return"] = "OK"
+        data["DATA"]["device"] = device
+        data["DATA"][device] = device_config[device]
+        data["DATA"][device]["interface_details"] = api_config
+    else:
+        data["REQUEST"]["Return"] = "ERROR"
+        data["DATA"]["device"] = device
+        data["DATA"][device] = {"error": "Device '"+device+"' not found!"}
+
+    data = remoteAPI_end(data, ["no-config", "no-status"])
+    return data
 
 def RemoteTest():
     """
