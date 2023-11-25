@@ -440,3 +440,21 @@ function apiMacroSend_return( data ) {
 	console.log("Send macro return :");
 	console.log(data);
 	}
+
+// send a command directly to an API of a device
+function apiSendToDeviceApi( device, api_command ) {
+    var send_cmd  = ["send-api", device];
+    var send_data = api_command;
+	appFW.requestAPI( "POST", send_cmd, send_data, apiSendToDeviceApi_return );
+}
+
+function apiSendToDeviceApi_return( data ) {
+    console.warn(data);
+    var response    = data["REQUEST"]["Return"];
+    var answer      = "<b>" + response["interface"] + "/" + response["device"] + " (" + response["status"] + "):</b><br/>";
+    try         { answer += JSON.stringify(response["answer"]["answer"]); }
+    catch(e)    { answer += response["answer"]; }
+    answer         += "<br/>&nbsp;<br/>-----<br/><i>";
+    answer         += "total: " + (data["REQUEST"]["load-time-app"])/1000 + "s / srv: " + Math.round(data["REQUEST"]["load-time"]*10000)/10000 + "s";
+    setTextById('api_response', answer);
+}

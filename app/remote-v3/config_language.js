@@ -21,6 +21,7 @@ var language_app = {
 		
 		"API_INTERFACE"         : "API / Interface",
 		"API_COMMANDS"          : "API commands",
+		"API_COMMANDS_TEST"     : "API commands - manual testing",
 		"API_INFORMATION"       : "API information",
 		
 		"BUTTON_ASK_DELETE"     : "Do you really want to delete the button '{0}' from '{1}'?",
@@ -230,6 +231,7 @@ var language_app = {
 
 		"SETTINGS"                     : "Settings",
 		"TEXT_INPUT"                   : "Text input",
+		"TRY_OUT"                      : "try out",
 		
 		"VERSION_AND_STATUS"           : "Version and Status Information",
 		}

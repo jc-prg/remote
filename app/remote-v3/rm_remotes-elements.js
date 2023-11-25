@@ -590,7 +590,7 @@ function rmRemoteDisplays(name) {
 
         	text  += "</div>";
 		appMsg.confirm(text,"",300);
-		statusCheck(this.data);
+		statusCheck_load();
         }
         	
         // idea ... display for media information: mute (icon), volume (bar), info (title/artist/album/episode/...)

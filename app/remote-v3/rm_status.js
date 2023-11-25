@@ -15,7 +15,7 @@ var device_media_info       = {};
 
 
 // check if device status
-function statusCheck_load() {	rm3app.requestAPI("GET",["list"], "", statusCheck, "" ); }
+function statusCheck_load() { appFW.requestAPI("GET",["list"], "", statusCheck, "" ); }
 function statusCheck(data={}) {
 
 	// if not data includes -> error
@@ -519,11 +519,19 @@ function statusCheck_powerButton(data={}) {
 	var device_list = "";
 	for (var device in devices) {
 	
-	    if (!data["CONFIG"]["devices"][device]) { continue; }
+		if (!data["CONFIG"]["devices"][device]) {
+		    console.warn("Device not defined correctly: '" + device + "' has no configuration.");
+		    continue;
+		    }
 
 	    var device_api         = data["STATUS"]["devices"][device]["api"];
 	    var device_api_status  = data["STATUS"]["interfaces"][device_api];
 	    device_list += device + " ";
+
+		if (!device_api_status) {
+		    console.warn("Device not defined correctly: '" + device + "' has no interface '" + device_api + "'");
+		    continue;
+		    }
 
 	    for (var key2 in devices[device]) {
 	    
@@ -644,7 +652,10 @@ function statusCheck_display(data={}) {
 	// set colors
 	for (var key in devices) {
 	
-		if (!data["CONFIG"]["devices"][key]) { continue; }
+		if (!data["CONFIG"]["devices"][key]) {
+		    console.warn("Device not defined correctly: '" + key + "' has no configuration.");
+		    continue;
+		    }
 	
 		// media info ...
 		var media_info         = document.getElementById("media_info");
@@ -654,7 +665,12 @@ function statusCheck_display(data={}) {
 		var device_status      = data["STATUS"]["devices"][key]; 
 		var device_api         = data["STATUS"]["devices"][key]["api"];
 		var device_api_status  = data["STATUS"]["interfaces"][device_api];
-		
+
+		if (!device_api_status) {
+		    console.warn("Device not defined correctly: '" + key + "' has no interface '" + device_api + "'");
+		    continue;
+		    }
+
 		if (device_status["power"]) { var device_status = device_status["power"].toUpperCase(); }
 		else                        { var device_status = ""; }
 		

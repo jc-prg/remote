@@ -416,6 +416,18 @@ function rmRemote(name) {
 		edit    += "<ul><li>"+JSON.stringify(device_config["commands"]["set"]).replace(/,/g, ", ")+"</li></ul>";
 		remote  += this.basic.container("remote_api02",lang("API_COMMANDS"),edit,false);
 
+
+		this.basic.input_width  = "90%";
+		edit    = "Test here your commands vor device '" + device + "':<br/>&nbsp;<br/><center>";
+		edit    += this.basic.input("api_command") + "<br/>&nbsp;<br/>"
+		edit    += this.button.edit("apiSendToDeviceApi( '" + device + "', getValueById('api_command') );", lang("TRY_OUT"),"");
+		edit    += "<br/>&nbsp;<br/>";
+		edit    += "<div class='remote-edit-cmd' id='api_response'></div>"
+		edit    += "</center><br/>&nbsp;<br/><hr/>";
+		edit    += "<ul><li>"+JSON.stringify(device_config["commands"]["get"]).replace(/,/g, ", ")+"</li></ul>";
+		edit    += "<ul><li>"+JSON.stringify(device_config["commands"]["set"]).replace(/,/g, ", ")+"</li></ul>";
+		remote  += this.basic.container("remote_api03",lang("API_COMMANDS_TEST"),edit,false);
+
 		remote  += "<br/>";
 
 		this.logging.default(device_data);
@@ -1642,7 +1654,7 @@ function rmRemote(name) {
 	// ensure, that all elements are visible and settings are hidden
 	this.show                       = function (device="" ) {
 
-		statusCheck(this.data);			// ... check if part of class ...
+		statusCheck_load();			// ... check if part of class ...
 		setTextById("buttons_all","");		// ... move to showRemote() ...
 		showRemoteInBackground(0);			// ... check if part of this class ...
 		rm3settings.hide();				// ... check if part of another class ...
