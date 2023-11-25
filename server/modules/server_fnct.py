@@ -968,15 +968,16 @@ def editMacros(macros):
     """
     macro_keys = ["macro", "dev-on", "dev-off", "scene-on", "scene-off"]
 
-    if not isinstance(macros, dict):                  return "ERROR: wrong data format - not a dict."
+    if not isinstance(macros, dict):
+        return "ERROR: wrong data format - not a dict."
     for key in macros:
-        if not isinstance(macros[key], dict):          return "ERROR: wrong data format - not a dict (" + str(
-            key) + ")."
-        if key not in macro_keys:                      return "ERROR: wrong data format - unknown key (" + str(
-            key) + ")"
+        if not isinstance(macros[key], dict):
+            return "ERROR: wrong data format - not a dict (" + str(key) + ")."
+        if key not in macro_keys:
+            return "ERROR: wrong data format - unknown key (" + str(key) + ")"
         for key2 in macros[key]:
-            if not isinstance(macros[key][key2], list): return "ERROR: wrong data format - macro is not a list (" + str(
-                key) + "/" + str(key2) + ")"
+            if not isinstance(macros[key][key2], list):
+                return "ERROR: wrong data format - macro is not a list (" + str(key) + "/" + str(key2) + ")"
             for list_key in macros[key][key2]:
                 if not (isinstance(list_key, float) or isinstance(list_key, int)) and not isinstance(list_key, str):
                     return "ERROR: wrong data format - list entry is not a number or string (" + str(key) + "/" + str(

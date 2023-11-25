@@ -270,6 +270,28 @@ class Connect(threading.Thread):
 
         self.logging.debug("ERROR RATE ... error:" + str(is_error))
 
+    def api_send_directly(self, device, command):
+        """
+        send command directly to API of the device
+        """
+        answer = "N/A"
+        power = "N/A"
+        api_dev = self.device_api_string(device)
+        method = self.api_method(device)
+        self.logging.info("__SEND DIRECTLY: " + api_dev + "/" + device + " | " + command)
+
+        if self.api[api_dev].status == "Connected":
+            answer = self.api[api_dev].query(device, command)
+            power = self.device_status(device)["status"]["power"]
+
+        return_msg = {
+            "connect": self.api[api_dev].status,
+            "power": power,
+            "answer": answer
+            }
+
+        return return_msg
+
     def api_send(self, call_api, device, button, value=""):
         """
         send command if connected
