@@ -358,6 +358,7 @@ function rmRemote(name) {
 		var device_commands   = this.data["CONFIG"]["devices"][device]["buttons"];
 		var device_config     = this.data["CONFIG"]["devices"][device];
 		var device_status     = this.data["STATUS"]["devices"][device];
+		var device_method     = device_config["interface"]["method"];
 		var device_buttons    = [];
 		
 		for (var i=0;i<device_data["remote"].length;i++) {
@@ -416,23 +417,50 @@ function rmRemote(name) {
 		edit    += "<ul><li>"+JSON.stringify(device_config["commands"]["set"]).replace(/,/g, ", ")+"</li></ul>";
 		remote  += this.basic.container("remote_api02",lang("API_COMMANDS"),edit,false);
 
-
-		this.basic.input_width  = "90%";
-		edit    = "Test here your commands vor device '" + device + "':<br/>&nbsp;<br/><center>";
-		edit    += this.basic.input("api_command") + "<br/>&nbsp;<br/>"
-		edit    += this.button.edit("apiSendToDeviceApi( '" + device + "', getValueById('api_command') );", lang("TRY_OUT"),"");
-		edit    += "<br/>&nbsp;<br/>";
-		edit    += "<div class='remote-edit-cmd' id='api_response'></div>"
-		edit    += "</center><br/>&nbsp;<br/><hr/>";
-		edit    += "<ul><li>"+JSON.stringify(device_config["commands"]["get"]).replace(/,/g, ", ")+"</li></ul>";
-		edit    += "<ul><li>"+JSON.stringify(device_config["commands"]["set"]).replace(/,/g, ", ")+"</li></ul>";
-		remote  += this.basic.container("remote_api03",lang("API_COMMANDS_TEST"),edit,false);
+        if (device_method == "query") {
+            // API Testing
+            this.basic.input_width  = "90%";
+            edit    = "Test here your commands vor device '" + device + "':<br/>&nbsp;<br/><center>";
+            edit    += "<div id='api_command_select'><select style='width:90%'><option>Loading ...</option></select></div><br/>";
+            edit    += this.basic.input("api_command") + "<br/>&nbsp;<br/>";
+            edit    += this.button.edit("apiSendToDeviceApi( '" + device + "', getValueById('api_command') );", lang("TRY_OUT"),"");
+            edit    += "<br/>&nbsp;<br/>";
+            edit    += "<div class='remote-edit-cmd' id='api_response'></div><br/>"
+            edit    += "<div id='api_description'></div><br/>";
+            edit    += "</center>";
+            remote  += this.basic.container("remote_api03",lang("API_COMMANDS_TEST"),edit,false);
+            }
 
 		remote  += "<br/>";
 
 		this.logging.default(device_data);
 		setTextById(id,remote);
+
+        apiSendToDeviceAPI_createDropDown( device, this.device_edit_api_commands );
 		}
+
+	// create drop-down with API commands
+	this.device_edit_api_commands   = function (data) {
+	    if (data["DATA"]["error"]) { return; }
+
+	    var id        = "api_command_select";
+	    var device    = data["DATA"]["device"];
+	    var commands  = data["DATA"][device]["api_commands"];
+	    var api_url   = data["DATA"][device]["interface_details"]["API-Info"];
+	    var api_name  = data["DATA"][device]["interface"]["interface_api"];
+	    var on_change = "setValueById('api_command', getValueById('api_cmd_select'));";
+
+    	this.basic              = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
+		this.basic.input_width  = "90%";
+
+        var select    = this.basic.select("api_cmd_select",lang("API_SELECT_CMD"),commands,on_change,'',sort=false, change_key_value=true);
+
+	    setTextById('api_command_select', select);
+
+	    if (api_url) {
+	        setTextById('api_description', "<a href='"+api_url+"' target='_blank' style='color:white'>API Documentation " + api_name + "</a>");
+	        }
+	    }
 
 	// create edit panel to edit JSON data
 	this.device_edit_json           = function (id, device, preview_remote="", preview_display="", preview_display_size="") {

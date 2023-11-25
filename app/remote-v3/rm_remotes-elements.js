@@ -19,7 +19,16 @@ function rmRemoteBasic(name) {
 	this.input	= function (id,value="")   { return "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"'>"; }
 
 	// select for different data 
-	this.select	= function (id,title,data,onchange="",selected_value="",sort=false) {
+	this.select	= function (id,title,data,onchange="",selected_value="",sort=false, change_key_value=false) {
+
+	            if (change_key_value) {
+	                var new_data = {};
+	                for (key in data) {
+	                    new_data[data[key]] = key;
+	                    }
+	                data = new_data;
+	                }
+
                 var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
                 item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
                 keys      = Object.keys(data);

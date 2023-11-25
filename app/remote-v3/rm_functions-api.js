@@ -458,3 +458,8 @@ function apiSendToDeviceApi_return( data ) {
     answer         += "total: " + (data["REQUEST"]["load-time-app"])/1000 + "s / srv: " + Math.round(data["REQUEST"]["load-time"]*10000)/10000 + "s";
     setTextById('api_response', answer);
 }
+
+function apiSendToDeviceAPI_createDropDown( device, callback ) {
+    var send_cmd  = ["config-device", device];
+	appFW.requestAPI( "GET", send_cmd, "", callback );
+}

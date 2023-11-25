@@ -23,6 +23,7 @@ var language_app = {
 		"API_COMMANDS"          : "API commands",
 		"API_COMMANDS_TEST"     : "API commands - manual testing",
 		"API_INFORMATION"       : "API information",
+		"API_SELECT_CMD"        : "API command or use your own ...",
 		
 		"BUTTON_ASK_DELETE"     : "Do you really want to delete the button '{0}' from '{1}'?",
 		"BUTTON_ASK_DELETE_NUMBER" : "Do you really want to delete the button number [{0}] from '{1}'?",
