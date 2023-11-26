@@ -7,7 +7,7 @@
 
 ## Usage of API Commands
 
-* use commands defined here such as the following examples:
+* use commands defined in the API documentation such as the following examples:
   * audio-muting=toggle
   * setup=home 
   * tuning=up

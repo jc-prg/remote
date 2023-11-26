@@ -7,15 +7,16 @@
 
 ## Usage of API Commands
 
-* use commands defined here such as the following examples:
+* use commands from the KODI API such as the following examples:
   * Addons.ExecuteAddon({'addonid': 'plugin.video.mediathekview'})
+  * Addons.GetAddons()
   * Input.ShowOSD()
   * GUI.ShowNotification(title='Hello World', message='Hello World!!!')
   * ...
   
 ## Additional jc://remote/ API Commands
 
-In addition to the KODI specific API commands you can use the following jc://remote/ API commands. 
+In addition to the KODI API commands you can use the following jc://remote/ API commands. 
 Those commands doesn't cover all parameters and possibilities of the KODI API but are intended 
 to make the access to important commands a bit easier.
 
@@ -41,7 +42,7 @@ to make the access to important commands a bit easier.
   * 'type'
   * 'version'
   * 'volume'
-* jc.PlayerSettings('&lt;parameter#1&gt;','&lt;parameter#1&gt;')
+* jc.PlayerSettings('&lt;parameter#1&gt;','&lt;parameter#2&gt;')
   * 'Subtitle', 'on' - _switch subtitle on_
   * 'Subtitle', 'off' - _switch subtitle off_
   * 'Subtitle', 'next' - _switch subtitle to next available_

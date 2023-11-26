@@ -72,7 +72,11 @@ There are a few templates available to be used and modified.
 
 ## Main features
 
-### App v2.8 / Server v2.1 (in-progress)
+### App v2.9 / Server v2.2 (in progress)
+
+* directly view and execute API commands for devices in edit mode
+
+### App v2.8 / Server v2.1
 
 * toggles to switch on and off devices
 * power toggles in scene remotes to switch on/off a power socket for the scene
