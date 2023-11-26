@@ -6,9 +6,6 @@ You can define remote controls for devices and create scenes that use those comm
 those devices or macros to combine several commands on a single button. 
 There are a few templates available to be used and modified.
 
-_Additional APIs can be added with a little effort if an API source written in Python is available. 
-Find additional information [how to integrate APIs here](server/interfaces/README.md)._
-
 ## Table of Content
 
 - [Currently Supported Hardware](#supported-hardware)
@@ -17,6 +14,7 @@ Find additional information [how to integrate APIs here](server/interfaces/READM
 - [Main features](#main-feature)
 - [Used sources](#used-sources)
 - [How to setup the software](#how-to-setup-the-software)
+- [Integration of additional APIs and devices](#integration-of-additional-apis-and-devices)
 - [Disclaimer](#disclaimer)
 
 
@@ -107,15 +105,13 @@ Find additional information [how to integrate APIs here](server/interfaces/READM
 
 ### App v2.4 / Server v1.8
 
-* stablized app and API connection incl. better performance
+* stabled app and API connection incl. better performance
 * integrated volume slider
 * smaller UI optimizations
 * start script including update from GitHub
 * cleaned up code
 
 ### App v2.3 / Server v1.7
-
-This is the first working release with stable API connection to devices:
 
 * control devices via API (Onkyo-API, KODI)
 * create and edit remote controls for devices (initial)
@@ -125,12 +121,9 @@ This is the first working release with stable API connection to devices:
 * light / dark theme based on device preset (Safari)
 * basic automatic tests (check data format, check server API requests, check Onky API)
 * docker environment for app and server incl. central configuration for multiple stages
+* definition of devices and scenes based on a set of JSON files
 
-The definition of devices and scenes at the moment should be done based a set of JSON files. 
-The code comes with several sample device and scene definitions that explain the possible options.
-The integration of the device APIs is done in an easy way, so that the integration of additional device API should be easy also.
-
-### App & Server 1.x
+### App & Server v1.x
 
 * remote control for devices
 * remote control for scenes incl. macros
@@ -218,6 +211,11 @@ In order to use jc://remote/ as it is, the following software must be installed:
     ```bash
     $ sudo ./start update
     ```
+
+## Integration of additional APIs and devices
+
+_Additional APIs can be added with a little effort if an API source written in Python is available. 
+Find additional information [how to integrate APIs here](server/interfaces/README.md).
 
 ## Disclaimer
 
