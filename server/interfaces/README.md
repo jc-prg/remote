@@ -22,6 +22,51 @@ The following interfaces are integrated at the moment.
   check-out the other APIs to learn more about the possibilities
 * Add the new api_*.py into the var **self.api_modules** in the file [interfaces.py](interfaces.py)
 
+## How to create the configuration files
+
+* create a directory (capital letters) for your device in the directory [/data/devices/](../../data/devices/)
+* create the file **00_default.json** in this directory that defines commands for all devices controlled by this API using the following format :
+
+```json
+{
+  "data": {
+    "description" : "",
+    "method" : "query|record",
+    "buttons" : {
+      "name": "api_command"
+      },
+    "commands" : {
+      "name": "api_command"
+      }
+  }
+}
+```
+
+* create the file **00_interface.json** in this directory that defines the connection to the devices controlled by this API (the content of the device definition might be different depending on the API, i.e., it might contain username and password):
+
+```json
+{
+  "API-Description": "&lt;URL&gt;",
+  "API-Info": "&lt;URL&gt;",
+  "API-Source": "",
+  "Devices" : {
+    "device01" : {
+      "IPAddress": "192.168.1.10",
+      "Port": "8080",
+      "Timeout": 5,
+      "Methods": ["send","query"],
+      "Description" : ""
+      },
+    "device02" : {
+      "IPAddress": "192.168.1.11",
+      "Port": "8080",
+      "Timeout": 5,
+      "Methods": ["send","query"],
+      "Description": ""
+      }
+    }
+}
+```
 
 --------
 
