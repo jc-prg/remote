@@ -9,6 +9,6 @@
 			}
 		},
 	"API-Source"      : "https://github.com/miracle2k/onkyo-eiscp",
-	"API-Info"        : "https://github.com/miracle2k/onkyo-eiscp/blob/master/eiscp-commands.yaml",
+	"API-Info"        : "https://github.com/jc-prg/remote/blob/master/server/interfaces/eiscp/README.md",
 	"API-Description" : "API for ONKYO Devices"
 }

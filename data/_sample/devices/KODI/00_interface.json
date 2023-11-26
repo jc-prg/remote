@@ -11,6 +11,6 @@
 			}
 		},
 	"API-Source"      : "https://github.com/jcsaaddupuy/python-kodijson",
-	"API-Info"        : "http://wiki.xbmc.org/index.php?title=JSON-RPC_API/v9",
+	"API-Info"        : "https://github.com/jc-prg/remote/blob/master/server/interfaces/kodi/README.md",
 	"API-Description" : "API for KODI Servers (basic functionality, under development)"
 }
