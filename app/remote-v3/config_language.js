@@ -61,9 +61,10 @@ var language_app = {
 		"BUTTON_T_VALUE"        : "add value",
 		
 		"CHANNEL_USE_JSON"      : "Please use JSON to edit the channel list.",
-		"CHANGE_ORDER"          : "Change order",
+		"CHANGE_ORDER"          : "Change order of remote controls",
 		"CHANGE_ORDER_SCENES"   : "Change order of scenes",
 		"CHANGE_ORDER_DEVICES"  : "Change order of devices",
+		"CHANGE_MODES"          : "Change modes",
 
 		"COLORPICKER_SELECT_CMD" : "Select command, to insert color picker.",
 		"COLORPICKER_N/A"       : "Color picker not supported",
@@ -102,6 +103,7 @@ var language_app = {
 		
 		"EDIT_REMOTE"            : "Edit remote",
 		"EDIT_DISPLAY"           : "Edit display",
+		"EDIT_MACROS"            : "Edit macros",
 
 		"FORMAT_INCORRECT"       : "format is not correct",
 		
@@ -202,7 +204,7 @@ var language_app = {
 		
 		"RECORD_COMMAND"               : "Record command",
 		"RECORD_DELETE_COMMANDS"       : "Record / delete commands",
-		"REMOTE_ADD"                   : "Add Remote Control",
+		"REMOTE_ADD"                   : "Add remote controls",
 		"REMOTE_CONFIG_ERROR"          : "Error in remote config file(s) '{0}': ",
 		"REMOTE_CONFIG_ERROR_UNKNOWN"  : "Unknown error in remote config file(s) '{0}'",
 		"RELOAD_TAKES_LONGER"          : "Reload takes longer than expected ...",
@@ -223,6 +225,8 @@ var language_app = {
 		"SCENE_INSERT_LABEL"           : "Please insert label for scene.",
 		"SCENE_SELECT"                 : "Please select scene.",
 
+		"SERVER_SETTINGS"              : "Server &amp; client settings",
+
 		"SLIDER"                       : "slider",
 		"SLIDER_SELECT_CMD"            : "Select command, to insert slider.",
 		"SLIDER_SELECT_PARAM"          : "Select parameter, to insert slider.",
@@ -235,6 +239,8 @@ var language_app = {
 		"TRY_OUT"                      : "try out",
 		
 		"VERSION_AND_STATUS"           : "Version and Status Information",
+
+		"WORKING_MODES"                : "Working modes",
 		}
 	}
 

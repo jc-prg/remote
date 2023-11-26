@@ -3,19 +3,6 @@
 //--------------------------------
 // class for drop down menu
 //--------------------------------
-/* INDEX:
-function rmStart(name)
-	this.init                 = function(data)
-	this.add_devices          = function(data,menuItems)
-	this.add_scenes           = function(data,menuItems)
-	this.entry_device         = function(data, id, label, style)
-	this.entry_scene          = function(data, id, label, image, style)
-	this.button               = function(id, label, style, script_apiCommandSend, disabled, image="" )
-	this.button_image         = function(label,style)
-	this.remoteToggleEditMode = function()
-	this.image                = function(file)
-*/
-//--------------------------------
 
 function rmStart(name) {
 
@@ -28,17 +15,17 @@ function rmStart(name) {
         // load data with devices (deviceConfig["devices"])
 	this.init                 = function(data) {
         
-        	if (data["DATA"]) 		{ this.data = data; }
-        	else 				{ return; }
-                
-                if (this.initial_load) { 
-                	this.logging.default("Initialized new class 'rmStart'.");
-                	this.initial_load = false;
-                	}
-                else {
-                	this.logging.default("Reload data 'rmStart'.");
-                	}
-                }
+        if (data["DATA"])   { this.data = data; }
+        else                { return; }
+
+        if (this.initial_load) {
+            this.logging.default("Initialized new class 'rmStart'.");
+            this.initial_load = false;
+            }
+        else {
+            this.logging.default("Reload data 'rmStart'.");
+            }
+        }
 
 
 	// add links to devices to drop down menu
@@ -48,7 +35,7 @@ function rmStart(name) {
 		elementHidden("frame2"); // no edit mode in start menu
 
 		// set vars
-    		var menu    = "";
+        var menu    = "";
 		rm3remotes.active_type = "start";
 
 
@@ -70,9 +57,9 @@ function rmStart(name) {
 		}
 
 		// replace old menu
-    		setTextById(menuItems,menu);
-    		setTextById("frame1","");
-    		setTextById("frame2","");
+        setTextById(menuItems,menu);
+        setTextById("frame1","");
+        setTextById("frame2","");
 		}
 
 
@@ -80,13 +67,13 @@ function rmStart(name) {
 	this.add_scenes           = function(data,menuItems) {
 
 		// set vars
-    		var menu = "";
-		rm3remotes.active_type = "start";
+        var menu = "";
+        rm3remotes.active_type = "start";
 
 		// create big buttons for scenes
-    		for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }    		
+        for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }
 		var order  = sortDict(data,"position");		
-	        for (var key in order) {
+        for (var key in order) {
 			scene  = order[key];
 			if (data[scene]["settings"]["image"]) { var image  = data[scene]["settings"]["image"]; } else { var image = ""; }
 			if (data[scene]["settings"]["label"]) { var label  = data[scene]["settings"]["label"]; } else { var label = key; }
@@ -101,8 +88,7 @@ function rmStart(name) {
         	        	menu  += this.entry_scene( data, id, label, image, size+"_edit" );
         	        	}
 	                }
-
-		// replace old menu
+    		// replace old menu
     		setTextById(menuItems,menu);
 		}
 
@@ -160,14 +146,6 @@ function rmStart(name) {
                 return [label, style];
                 }
                 
-	// show hide edit mode for remotes
-	this.remoteToggleEditMode = function() {
-		if (this.edit_mode)  { this.edit_mode = false; }
-		else                 { this.edit_mode = true; }
-		
-		this.init(this.data);
-		}	
-
 	// create image tag for icons
 	this.image                = function(file) {
 	        return "<img src='icon/"+file+"' style='height:15px;margin:0px;padding:0px;' alt='"+file+"' />";

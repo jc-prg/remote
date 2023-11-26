@@ -181,8 +181,8 @@ function statusShow_buttonActive(id, active) {
 // show buttons in different colors (depending if devices are ON or OFF)
 function statusShow_powerButton(id, status) {
 
-	if (status in colors_power)	{ color = colors_power[status]; }	// color defined in rm_config.js
-	else				{ color = ""; } 			// reset to CSS color
+	if (status in colors_power) { color = colors_power[status]; }	// color defined in rm_config.js
+	else                        { color = ""; } 			// reset to CSS color
 
 	var button = document.getElementById(id);
 	if (typeof(button) != 'undefined' && button != null) {
@@ -460,6 +460,11 @@ function statusCheck_powerButtonScene(data) {
 			statusShow_display(key, "EDIT_MODE");
 			}
 		}
+
+    if (document.getElementById('button_edit_mode')) {
+        statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
+        statusShow_powerButton('button_manual_mode', getTextById('button_manual_mode'));
+        }
 	}
 	
 	

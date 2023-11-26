@@ -1,9 +1,6 @@
 //--------------------------------
 // jc://remote/
 //--------------------------------
-// (c) Christoph Kloth
-// Build standard Remote Controls
-//--------------------------------
 
 
 function rmRemote(name) {
@@ -62,8 +59,8 @@ function rmRemote(name) {
 	// create complete remote setup (for scenes and devices)
 	this.create                     = function (type="", rm_id="") {
 	
-	        if (type == "")   { type  = this.active_type; }
-	        if (rm_id == "")  { rm_id = this.active_name; }
+        if (type == "")   { type  = this.active_type; }
+        if (rm_id == "")  { rm_id = this.active_name; }
 	        
 		if ("DATA" in this.data == false) {
 			this.logging.warn("Data not loaded yet.");
@@ -75,6 +72,10 @@ function rmRemote(name) {
 			return;
 			}
 			
+		// format frame1, frame2 for edit mode
+		document.getElementById("frame1").className = "setting_bg";
+		document.getElementById("frame2").className = "setting_bg";
+
 		// set active remote (type, id)
 		this.active_name    = rm_id;
 		this.active_type    = type;
@@ -89,12 +90,17 @@ function rmRemote(name) {
 		startActive         = false;
 		
 		var edit_mode       = "";
-		if (this.edit_mode) { edit_mode = " / EDIT"; }
-		
-		// format frame1, frame2 for edit mode
-		document.getElementById("frame1").className = "setting_bg";
-		document.getElementById("frame2").className = "setting_bg";
-		
+		if (this.edit_mode) {
+		    edit_mode = " / EDIT";
+		    elementVisible("frame1");
+		    elementVisible("frame2");
+		    }
+		else {
+		    elementHidden("frame1");
+		    elementHidden("frame2");
+		    document.getElementById("frame1").style.display = "none";
+		    }
+
 		if (type == "device") {
 		
             setNavTitle(this.data["DATA"]["devices"][rm_id]["settings"]["label"] + edit_mode);
@@ -138,7 +144,7 @@ function rmRemote(name) {
             }
 			
 		this.loaded_remote  = [type,rm_id];
-		rm3menu.menu_height();	
+		rm3menu.menu_height();
 		}
 
 	// reread data from current definition and create preview
@@ -1357,14 +1363,6 @@ function rmRemote(name) {
 
 		this.json.textarea_replace(display_json,display_new);
 		this.remote_preview( type, scene );
-		}
-
-	// show hide edit mode for remotes
-	this.remoteToggleEditMode       = function () {
-	
-		if (this.edit_mode)  { this.edit_mode = false; }
-		else                 { this.edit_mode = true; }
-        this.create();
 		}
 
 	// return drop-down with available commands

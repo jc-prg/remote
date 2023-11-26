@@ -39,8 +39,11 @@ function remoteMainMenu (cookie_erase=true) {
 	rm3settings.hide();
 	setNavTitle(appTitle);
 	showRemoteInBackground(1);
-	if (cookie_erase) { appCookie.erase('remote'); }
-	
+	if (cookie_erase) {
+	    appCookie.erase('remote');
+	    console.log("Erase cookie: " + appCookie.get('remote'));
+	    }
+
 	setTextById("menuItems","");
 	setTextById("frame1","");
 	setTextById("frame2","");
@@ -48,7 +51,7 @@ function remoteMainMenu (cookie_erase=true) {
 	setTextById("frame4","");
 	setTextById("frame5","");
 
-	remoteFirstLoad_load();	
+	remoteFirstLoad_load();
 	}
 
 
@@ -66,9 +69,9 @@ function remoteInit (first_load=true) {
 
 function remoteFirstLoad_load() {appFW.requestAPI("GET",["list"],"",remoteFirstLoad); }
 function remoteFirstLoad(data) {
-	remoteReload(data);			// initial load of data incl. remotes, settings
-	remoteStartMenu(data);			// initial load start menu
-	remoteDropDown(data);			// initial load drop down menu
+	//remoteReload(data);		// initial load of data incl. remotes, settings
+	remoteStartMenu(data);		// initial load start menu
+	remoteDropDown(data);		// initial load drop down menu
 	remoteLastFromCookie();		// get data from cookie
 	}
 
@@ -90,7 +93,9 @@ function remoteInitData(data) {
 		rm3settings.init( data );
 		rm3menu.init(     data );
 		rm3start.init(    data );
-		rm3settings.create();
+
+		if (rm3settings.active)  { rm3settings.create(); }
+		else                     { rm3remotes.create(); }
 		}
 	else {
 		console.error("remoteInitData: no data loaded!");
@@ -128,6 +133,7 @@ function remoteReload(data) {
 //--------------------------------
 
 function remoteSetSliderDevice(data) {
+
 	main_audio = data["CONFIG"]["main-audio"];
 	var values = data["CONFIG"]["devices"][main_audio]["commands"]["definition"]["vol"]["values"];
 	var min    = 0;
@@ -158,52 +164,33 @@ function remoteDropDown(data) {
 		return;
 		}
 
-	// data for links
-	if (deactivateButton)	{ deact_link = lang("MODE_INTELLIGENT"); }
-	else			{ deact_link = lang("MODE_MANUAL"); }
-	
-	// show edit mode is on
-	var edit_on = "";
-	if (rm3remotes.edit_mode) { edit_on = " [ON]"; }
-	
 	// load drop down menu
 	rm3menu.init(        data );	// load data to class
 	rm3menu.add_scenes(  data["DATA"]["scenes"] );
 	rm3menu.add_devices( data["DATA"]["devices"] );	
-	rm3menu.add_script( "rm3settings.onoff();", 				lang("SETTINGS"));
-	rm3menu.add_script( "remoteToggleEditMode();", 			lang("MODE_EDIT") + edit_on );
-	rm3menu.add_script( "rm3settings.button_deact(true);remoteInit();",	deact_link);        
+	rm3menu.add_script( "rm3settings.create('info');",  lang("INFORMATION"));
+	rm3menu.add_script( "rm3settings.create('edit');",  lang("SETTINGS"));
+
+	//rm3menu.add_script( "rm3settings.onoff();", 	    lang("SETTINGS"));
+	//rm3menu.add_script( "remoteToggleEditMode();", 		lang("MODE_EDIT") + edit_on );
+	//rm3menu.add_script( "rm3settings.button_deact(true);remoteInit();",	deact_link);
 	//rm3menu.add_script( "remoteForceReload(true);", "Force Reload");
-        }        
+    }
 
 
 //--------------------------------
 
-function remoteToggleEditMode() {
-	var settings = rm3settings.active;
+function remoteToggleEditMode(settings=false) {
 
-	if (settings) {
-		rm3remotes.remoteToggleEditMode();
-		rm3start.remoteToggleEditMode();
-		rm3settings.remoteToggleEditMode();
-		if(!startActive)	{ rm3settings.onoff(); }
-		else			{ remoteStartMenu_load(); }
-		}
-	else if (startActive) {
-		rm3remotes.remoteToggleEditMode();
-		rm3settings.remoteToggleEditMode();
-		rm3start.remoteToggleEditMode();
-		remoteStartMenu_load();
-		}
-	else {
-		rm3start.remoteToggleEditMode();
-		rm3settings.remoteToggleEditMode();
-		rm3remotes.remoteToggleEditMode();
-		}
+    if (rm3remotes.edit_mode)   { rm3remotes.edit_mode = false; }
+    else                        { rm3remotes.edit_mode = true; }
 
-	rm3menu.remoteToggleEditMode();
-	remoteDropDown_load();
+    rm3settings.edit_mode = rm3remotes.edit_mode;
+    rm3start.edit_mode    = rm3remotes.edit_mode;
+    rm3menu.edit_mode     = rm3remotes.edit_mode;
 
+    remoteStartMenu_load();
+    remoteDropDown_load();
 	}
 
 
@@ -239,7 +226,7 @@ function remoteLastFromCookie() {
 	// if cookie ...
 	if (cookie) {
 		var remote = cookie.split("::");
-		console.log("Load Cookie:");
+		console.log("Load Cookie: " + cookie);
 		console.log(remote);
 
 		// start remote if cookie is set (reopen with last remote control)
