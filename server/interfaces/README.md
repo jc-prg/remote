@@ -46,9 +46,9 @@ The following interfaces are integrated at the moment.
 
 ```json
 {
-  "API-Description": "&lt;URL&gt;",
-  "API-Info": "&lt;URL&gt;",
-  "API-Source": "",
+  "API-Description": "",
+  "API-Info": "https://put-url-here/",
+  "API-Source": "https://put-url-here/",
   "Devices" : {
     "device01" : {
       "IPAddress": "192.168.1.10",
