@@ -31,7 +31,7 @@ The following interfaces are integrated at the moment.
 {
   "data": {
     "description" : "",
-    "method" : "query|record",
+    "method" : "query",
     "buttons" : {
       "name": "api_command"
       },
