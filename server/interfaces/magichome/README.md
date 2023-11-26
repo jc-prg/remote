@@ -1,8 +1,8 @@
 # API Description: Magic-Home
 
-## Source
+## Sources
 
-* https://github.com/adamkempenich/magichome-python
+* Python sources: https://github.com/adamkempenich/magichome-python
 * Further README from the MagicHome API: [README-API.md](README-API.md)
 
 ## jc://remote/ API Commands

@@ -2,7 +2,11 @@
 
 ## Source
 
-* https://github.com/miracle2k/onkyo-eiscp/blob/master/eiscp-commands.yaml
+* Python sources: https://github.com/miracle2k/onkyo-eiscp/
+* API documentation: https://github.com/miracle2k/onkyo-eiscp/blob/master/eiscp-commands.yaml
+
+## Usage of API Commands
+
 * use commands defined here such as the following examples:
   * audio-muting=toggle
   * setup=home 
@@ -10,7 +14,7 @@
   * audio-muting={DATA} ... _if you want to send data_
   * ...
   
-## jc://remote/ API Commands
+## Additional jc://remote/ API Commands
 
 In addition to the ONKYO specific API commands you can use the following jc://remote/ API command:
 

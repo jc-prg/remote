@@ -2,7 +2,7 @@
 
 ## Source
 
-* https://github.com/fishbigger/TapoP100
+* Python sources: https://github.com/fishbigger/TapoP100
 
 ## jc://remote/ API Commands
 
