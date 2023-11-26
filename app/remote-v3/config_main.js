@@ -8,10 +8,11 @@ var app_setting_count = 5;
 var app_setting_style = "setting_bg";
 var app_last_load     = 0;
 var app_title         = "jc://remote/";
-var app_version       = "v2.7.7";
+var app_version       = "v2.9.0";
 var app_api_dir       = "api/";
 var app_api_status    = "list";
 var app_loading_image = "";
+var appAutoLoad       = false;
 
 //--------------------------------	
 // create menu entries
@@ -31,10 +32,11 @@ function app_status(data) {
 		//birdhousePrint(data=data, active_page=appActivePage, camera=app_active_cam);
 		reload = false;
 		}
-	statusCheck(data);
-	
-	rm3remotes.init(  data );
-	rm3settings.init( data );
+	if (data["DATA"]) {
+        statusCheck(data);
+        rm3remotes.init(  data );
+        rm3settings.init( data );
+        }
 	}
 	
 //--------------------------------
@@ -79,7 +81,22 @@ function app_theme_changed(theme) {
 		color_button_inactive 	= "#666666";
 		}
 	}
-	
+
+//--------------------------------
+
+var app_connection_error = true;
+function app_connection_lost(error=false) {
+    if (app_connection_error != error) {
+        if (error) {
+            // code if lost connection
+        }
+        else {
+            // code if got back connection
+        }
+    }
+    app_connection_error = error;
+}
+
 //----------------------------------
 // Theme detection and color settings
 //----------------------------------
@@ -102,7 +119,7 @@ var colors_power		= {
 
 var button_color = {};
 var button_img = {};
-var makro_def = {};
+var macro_def = {};
 var device_status = {};
 var remote_def = {};
 var remote_mix_def = {};

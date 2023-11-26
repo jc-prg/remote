@@ -1,6 +1,5 @@
 {
     "data": {
-        "channel": {},
         "description": "Scene for KODI Media Center",
         "devices": [
             "rec2",
@@ -15,20 +14,38 @@
             "Subtitle": "media-center_subtitle-enabled",
             "Volume": "rec2_vol"
         },
-        "display-size": "h3w2",
         "display-detail": {
             "Audio": "media-center_current-audiostream-name",
             "Content": "media-center_current-playing",
-            "Subtitle": "media-center_subtitle-enabled",
-            "Plot": "media-center_plot||['plot']"
+            "Plot": "media-center_plot||['plot']",
+            "Subtitle": "media-center_subtitle-enabled"
         },
+        "display-size": "h3w2",
         "label": "Media Center",
+        "macro-channel": {},
+        "macro-scene": {},
+        "macro-scene-off": [
+            "dev-off_lw",
+            "dev-off_beam",
+            "dev-off_rec2",
+            "dev-off_bd"
+        ],
+        "macro-scene-on": [
+            "WAIT-45",
+            "dev-on_lw",
+            "dev-on_beam",
+            "dev-on_rec2",
+            "dev-off_tv",
+            "rec2_game"
+        ],
         "remote": [
-            "HEADER-IMAGE",
-            "makro_kodi",
+            "HEADER-IMAGE||toggle",
+            "TOGGLE||plug02_power||Strom Medientechnik||macro_plug02-on||macro_plug02-off",
+            "LINE",
+            "macro_kodi",
             ".",
-            "scene-on_media",
-            "scene-off_media",
+            "scene-on",
+            "scene-off",
             "LINE",
             "media-center_home",
             "media-center_music",
@@ -49,15 +66,15 @@
             ".",
             "media-center_up",
             ".",
-            "rec2_vol+",
+            "macro_vol+",
             "media-center_left",
             "media-center_enter",
             "media-center_right",
-            "rec2_mute",
+            "macro_mute",
             "media-center_subtitle-on-off",
             "media-center_down",
             "media-center_back",
-            "rec2_vol-",
+            "macro_vol-",
             "LINE",
             "media-center_fbw",
             "media-center_playpause",
@@ -66,5 +83,5 @@
         ],
         "type": "scene"
     },
-    "info": "jc://remote/ - In this file the remote layout and channel makros for the scene are defined."
+    "info": "jc://remote/ - In this file the remote layout and channel macros for the scene are defined."
 }

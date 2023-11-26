@@ -57,3 +57,7 @@ function writeKeyBoard () {
    return test;
    }
 
+function dictCopy(dict) {
+    return JSON.parse(JSON.stringify(dict));
+    }
+

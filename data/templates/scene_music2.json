@@ -1,0 +1,93 @@
+{
+    "data": {
+        "macro-channel": {
+            "Antenne Bayern": [
+                "tv2_7",
+                "tv2_8"
+            ],
+            "Bayern 2": [
+                "tv2_6"
+            ],
+            "Charivari": [
+                "tv2_8",
+                "tv2_1"
+            ],
+            "DlF": [
+                "tv2_8"
+            ],
+            "DlF Kultur": [
+                "tv2_7"
+            ],
+            "JAM FM": [
+                "tv2_6"
+            ],
+            "Klassik Radio": [
+                "tv2_5"
+            ],
+            "RTL Radio": [
+                "tv2_8",
+                "tv2_0"
+            ],
+            "Radio Arabella": [
+                "tv2_8",
+                "tv2_9"
+            ],
+            "Radio Gong": [
+                "tv2_9",
+                "tv2_0"
+            ]
+        },
+        "description": "Musik & Radio",
+        "devices": [
+            "tv2",
+            "rec2",
+            "bd-api"
+        ],
+        "display": {
+            "Audio": "rec2_listening",
+            "Mute": "rec2_mute",
+            "Volume": "rec2_vol"
+        },
+        "display-size": "middle",
+        "label": "Music & Radio",
+        "remote": [
+            "HEADER-IMAGE||toggle",
+            "TOGGLE||plug02_power||Power media devices||macro_plug02-on||macro_plug02-off",
+            "LINE",
+            ".",
+            ".",
+            "scene-on",
+            "scene-off",
+            "LINE||Input",
+            "macro_radio",
+            "macro_bluetooth",
+            "macro_cd",
+            "macro_aux",
+            "LINE||Audio",
+            "DISPLAY",
+            "macro_vol-",
+            "macro_vol+",
+            ".",
+            "macro_mute",
+            "LINE||Radio",
+            "tv2_prg+",
+            "tv2_back",
+            "tv2_prg-",
+            "macro_stereo",
+            "LINE||CD/DVD",
+            "bd-api_fbw",
+            "bd-api_play",
+            "bd-api_ffw",
+            ".",
+            "bd-api_last",
+            "bd-api_pause",
+            "bd-api_next",
+            ".",
+            ".",
+            "bd-api_stop",
+            ".",
+            "."
+        ]
+    },
+    "info": "jc://remote/ - In this file the remote layout and channel macros for the scene are defined."
+}

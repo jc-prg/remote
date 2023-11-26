@@ -2,12 +2,19 @@
 #--------------------------
 
 config="config_$1"
+user=`whoami`
 
 echo
 echo "-------------------------------------"
 echo " Create jc://remote/ configuration"
-echo " (by Christoph Kloth)"
 echo "-------------------------------------"
+
+if [ $user != "root" ]; then
+  echo
+  echo "Please run as root!"
+  exit 0
+fi
+
 
 if [ ! $1 ]; then
   echo

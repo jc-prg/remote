@@ -4,18 +4,29 @@ external="${EXTERNAL_DRIVE}"
 mountpoint="${EXTERNAL_MOUNT}"
 config=${D}1
 user=`whoami`
+branch=`git rev-parse --abbrev-ref HEAD`
 
 echo
 echo "-------------------------------------"
 echo " Start jc://remote/${REMOTE_CURRENT_STAGE}/"
-echo " (by Christoph Kloth)"
 echo "-------------------------------------"
 
 if [ ${D}user != "root" ]; then 
   echo
   echo "Please run as root!"
+  echo
   exit 0
 fi
+
+if test -f "${DOCKERCOMPOSE_DIR}/docker-compose"; then
+  :
+else
+  echo "Check the location of your docker-compose file in the configuration!"
+  echo "The file/path '${DOCKERCOMPOSE_DIR}/docker-compose' doesn't exist. "
+  echo
+  exit 0
+fi
+
 
 if [ ! ${D}config ]; then
   echo
@@ -24,8 +35,8 @@ if [ ! ${D}config ]; then
   echo " 's' - start"
   echo " 'r' - restart"
   echo " 'i' - install sample configuration"
-  echo " 'u' - update (from github)"
-  echo " 'v' - update (from github) and rebuild container"
+  echo " 'u' - update from github (branch:${D}branch)"
+  echo " 'v' - update from github (branch:${D}branch) and rebuild container"
   echo " 'c' - clean docker (stopped container / dangling images)"
   echo " 'd' - clean docker (system incl. build cache)"
   count=0

@@ -22,7 +22,7 @@ function rmStart(name) {
 	this.data        = {}
 	this.app_name    = name;
 	this.edit_mode   = false;
-	this.inital_load = true;
+	this.initial_load = true;
 	this.logging     = new jcLogging(this.app_name);
 
         // load data with devices (deviceConfig["devices"])
@@ -33,7 +33,7 @@ function rmStart(name) {
                 
                 if (this.initial_load) { 
                 	this.logging.default("Initialized new class 'rmStart'.");
-                	this.inital_load = false;
+                	this.initial_load = false;
                 	}
                 else {
                 	this.logging.default("Reload data 'rmStart'.");

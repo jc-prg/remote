@@ -4,53 +4,14 @@
 // (c) Christoph Kloth
 // All complex commands to call API
 //-----------------------------
-/* INDEX:
-function apiCheckUpdates()
-function apiCheckUpdates_msg( data )
-function apiAlertReturn(data)
-function setMainAudio(device)
-function setVolume(main_audio,volume)
-function apiSetVolume(volume)
-function apiTemplateAdd_exe(device,template)
-function apiTemplateAdd(device_id, template_id)
-function apiMakroChange(data=[])
-function apiSceneAdd(data)
-function apiSceneEdit(device,prefix,fields)
-function apiSceneJsonEdit(device,json_buttons,json_channel,json_devices,json_display,display_size)
-function apiSceneDelete_exe(device)
-function apiSceneDelete(scene_id)
-function apiDeviceEdit(device,prefix,fields)
-function apiDeviceJsonEdit(device,json_buttons,json_display,display_size)
-function apiDeviceMovePosition_exe(type,device,direction)
-function apiDeviceMovePosition_get(data)
-function apiDeviceMovePosition(data)
-function apiDeviceAdd(data,onchange)
-function apiDeviceDelete_exe(device)
-function apiDeviceDelete(device_id)
-function apiRemoteChangeVisibility(type, device_id, value_id)
-function apiCommandSend(cmdButton, sync="", callback="", device="")
-function apiCommandDelete_exe(button)
-function apiCommandDelete(device_id, button_id)
-function apiCommandRecord(device_id, button_id)
-function apiButtonAdd(device_id, button_id)
-function apiButtonDelete_exe(device,button)
-function apiButtonDelete(device_id, button_id)
-function apiMakroSend( makro, device="", content="" )
-function apiMakroSend_return( data )
-*/
-//--------------------------------
 
-//================================
-// CHECK FOR UPDATES
-//================================
 
+// check if APP updates are available
 function apiCheckUpdates() {
 
 	appMsg.wait("Loading App ...", "remoteInit();" );
 	appFW.requestAPI("GET", ["version",rm3version], "", apiCheckUpdates_msg, "wait" ); 	// doesn't work asynchronuous yet ... -> "wait" as param
 	}
-
-
 function apiCheckUpdates_msg( data ) {
 
 	msg = data["REQUEST"]["Return"];
@@ -63,40 +24,35 @@ function apiCheckUpdates_msg( data ) {
 		}
 	}
 
-//--------------------------------
-
+// show return message as alert
 function apiAlertReturn(data) {
 	var reload_timeout = 2000;
 	appMsg.alertReturn(data);
+
 	remoteReload_load();
-
-	setTimeout(function(){ rm3remotes.data = dataAll; }, reload_timeout-100);
+	//setTimeout(function(){ remoteUpdate(dataAll) }, reload_timeout );
+	setTimeout(function(){ rm3remotes.data = dataAll; rm3remotes.create(); }, reload_timeout );
 	
-	if (data["REQUEST"]["Command"] == "AddTemplate")  	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, reload_timeout); }
-	if (data["REQUEST"]["Command"] == "EditDevice")   	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, reload_timeout); }
-	if (data["REQUEST"]["Command"] == "EditScene")   	{ setTimeout(function(){ rm3remotes.create( "scene",  data["REQUEST"]["Scene"] ); }, reload_timeout); }
-	if (data["REQUEST"]["Command"] == "ChangeVisibility" )	{ 
-		if (data["REQUEST"]["Device"] == "device") 	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, reload_timeout); }
-		if (data["REQUEST"]["Device"] == "scene") 	{ setTimeout(function(){ rm3remotes.create( "scene", data["REQUEST"]["Device"] ); }, reload_timeout); }
-		}
-	
-        if (data["REQUEST"]["Command"] == "DeleteDevice") 	{ setTimeout(function(){ rm3cookie.set("remote",""); rm3remotes.create( "", "" ); }, reload_timeout); }
-        if (data["REQUEST"]["Command"] == "DeleteScene") 	{ setTimeout(function(){ rm3cookie.set("remote",""); rm3remotes.create( "", "" ); }, reload_timeout); }
-
+    if (data["REQUEST"]["Command"] == "AddTemplate")  	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, reload_timeout); }
+    if (data["REQUEST"]["Command"] == "EditDevice")   	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, reload_timeout); }
+    if (data["REQUEST"]["Command"] == "EditScene")   	{ setTimeout(function(){ rm3remotes.create( "scene",  data["REQUEST"]["Scene"] ); }, reload_timeout); }
+    if (data["REQUEST"]["Command"] == "ChangeVisibility" )	{
+        if (data["REQUEST"]["Device"] == "device") 	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, reload_timeout); }
+        if (data["REQUEST"]["Device"] == "scene") 	{ setTimeout(function(){ rm3remotes.create( "scene", data["REQUEST"]["Device"] ); }, reload_timeout); }
         }
-	
-//--------------------------------
-// send add commands       
-//--------------------------------
 
-function setMainAudio(device) 		{ appFW.requestAPI( "POST", ["main-audio",device], 			"", apiAlertReturn ); }
-function setVolume(main_audio,volume)		{ appFW.requestAPI( "GET",  ["set",main_audio,"vol",volume], 	"", remoteReload_load ); }
-function apiSetVolume(volume)			{ appFW.requestAPI( "GET",  ["set",rm3slider.device,"vol",volume],	"", remoteReload_load ); }
+    if (data["REQUEST"]["Command"] == "DeleteDevice") 	{ setTimeout(function(){ rm3cookie.set("remote",""); rm3remotes.create( "", "" ); }, reload_timeout); }
+    if (data["REQUEST"]["Command"] == "DeleteScene") 	{ setTimeout(function(){ rm3cookie.set("remote",""); rm3remotes.create( "", "" ); }, reload_timeout); }
+    }
 
-//================================
-// TEMPLATES
-//================================
+// set main audio device
+function setMainAudio(device)           { appFW.requestAPI( "POST", ["main-audio",device], "", apiAlertReturn ); }
 
+// swt volume
+function setVolume(main_audio,volume)   { appFW.requestAPI( "GET",  ["set",main_audio,"send-vol",volume], "", remoteReload_load ); }
+function apiSetVolume(volume)           { appFW.requestAPI( "GET",  ["set",rm3slider.device,"send-vol",volume], "", remoteReload_load ); }
+
+// add template (load as JSON)
 function apiTemplateAdd_exe(device,template) { appFW.requestAPI("PUT",["template",device,template], "", apiAlertReturn); }
 function apiTemplateAdd(device_id, template_id) {
 
@@ -112,30 +68,20 @@ function apiTemplateAdd(device_id, template_id) {
 	appMsg.confirm(question,"apiTemplateAdd_exe('" + device + "','" + template + "'); ");
 	}
 	
-	
-//================================
-// MAKROS
-//================================
-
-function apiMakroChange(data=[]) {
+// edit macros
+function apiMacroChange(data=[]) {
 
 	send_data = {};
 	for (var i=0;i<data.length;i++) {
 		var key            = data[i];
 			try		{ send_data[key] = JSON.parse(getValueById(key)); }
-		catch(e)	{ appMsg.alert("<b>JSON Makro " + key + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+		catch(e)	{ appMsg.alert("<b>JSON Macro " + key + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 		}
 
-	appFW.requestAPI("PUT",["makro"], send_data, apiAlertReturn);
+	appFW.requestAPI("PUT",["macro"], send_data, apiAlertReturn);
 	}
 
-//================================
-// SCENES
-//================================
-
 // create new device
-//--------------------------------
-
 function apiSceneAdd(data) {
 
 	send_data		   = {};
@@ -152,9 +98,7 @@ function apiSceneAdd(data) {
 	appFW.requestAPI("PUT",["scene",send_data["id"]], send_data, apiAlertReturn);
 	}
 
-// edit device data
-//--------------------------------
-
+// edit scene header data
 function apiSceneEdit(device,prefix,fields) {
 
 	var info        = {}
@@ -171,15 +115,35 @@ function apiSceneEdit(device,prefix,fields) {
 	}
 
 // edit button and display data using JSON
-//--------------------------------
+function apiSceneJsonEdit(device,field_names) {
 
-function apiSceneJsonEdit(device,json_buttons,json_channel,json_devices,json_display,display_size) {
+    var fields = field_names.split(",");
+    var values = {};
+    var json   = {};
 
-        buttons      = check_if_element_or_value(json_buttons,false);
-        channel      = check_if_element_or_value(json_channel,false);
-        devices      = check_if_element_or_value(json_devices,true);
-        display      = check_if_element_or_value(json_display,false);
-        display_size = check_if_element_or_value(display_size,false);
+    for (i=0;i<fields.length;i++) {
+        var field = fields[i];
+        var key   = field.split("::")[1];
+        var lower_case = false;
+
+        if (field == "devices") { lower_case = true; }
+        values[key] = check_if_element_or_value(field, lower_case);
+
+        if (key != "display-size") {
+            try         { json[key] = JSON.parse(values[key]); }
+            catch(e)    { appMsg.alert("<b>JSON " + field + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+            }
+        else {
+            json[key] = values[key];
+            }
+        }
+
+    /*
+    buttons      = check_if_element_or_value(json_buttons,false);
+    channel      = check_if_element_or_value(json_channel,false);
+    devices      = check_if_element_or_value(json_devices,true);
+    display      = check_if_element_or_value(json_display,false);
+    display_size = check_if_element_or_value(display_size,false);
 
 	try { json_buttons = JSON.parse(buttons); } catch(e) { appMsg.alert("<b>JSON Buttons - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 	try { json_channel = JSON.parse(channel); } catch(e) { appMsg.alert("<b>JSON Channel - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
@@ -187,19 +151,21 @@ function apiSceneJsonEdit(device,json_buttons,json_channel,json_devices,json_dis
 	try { json_display = JSON.parse(display); } catch(e) { appMsg.alert("<b>JSON Display - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 	
 	var info = {};
-	info["remote"]       = json_buttons;
-	info["channel"]      = json_channel;
-	info["devices"]      = json_devices;
-	info["display"]      = json_display;
-	info["display-size"] = display_size;
+	info["remote"]        = json_buttons;
+	info["macro-channel"] = json_channel;
+	info["devices"]       = json_devices;
+	info["display"]       = json_display;
+	info["display-size"]  = display_size;
 		
-	appFW.requestAPI("POST",["scene",device], info, apiAlertReturn);	
+	appFW.requestAPI("POST",["scene",device], info, apiAlertReturn);
+	*/
+
+	appFW.requestAPI("POST",["scene",device], json, apiAlertReturn);
+
 	}
 
 // delete scene
-//--------------------------------
-
-function apiSceneDelete_exe(device) { appFW.requestAPI("DELETE",["scene",device], "", apiAlertReturn); remoteInit(); }      
+function apiSceneDelete_exe(device) { appFW.requestAPI("DELETE",["scene",device], "", apiAlertReturn); remoteInit(); }
 function apiSceneDelete(scene_id) {
 
 	var scene = check_if_element_or_value(scene_id,true);
@@ -208,14 +174,7 @@ function apiSceneDelete(scene_id) {
 	appMsg.confirm(lang("SCENE_ASK_DELETE",[scene]),"apiSceneDelete_exe('" + scene + "');");
 	}
 
-
-//================================
-// DEVICES
-//================================
-
 // edit device data
-//--------------------------------
-
 function apiDeviceEdit(device,prefix,fields) {
 
 	var info        = {}
@@ -232,8 +191,6 @@ function apiDeviceEdit(device,prefix,fields) {
 	}
 
 // edit button and display data using JSON
-//--------------------------------
-
 function apiDeviceJsonEdit(device,json_buttons,json_display,display_size) {
 
 	buttons      = check_if_element_or_value(json_buttons,false);
@@ -251,12 +208,9 @@ function apiDeviceJsonEdit(device,json_buttons,json_display,display_size) {
 	appFW.requestAPI("POST",["device",device], info, apiAlertReturn);	
 	}
 
-//--------------------------------
-
+// move position of device or scene in the menu
 function apiDeviceMovePosition_exe(type,device,direction) { appFW.requestAPI( "POST", ["move",type,device,direction], "", apiDeviceMovePosition_get); }
-function apiDeviceMovePosition_get(data) {
-	appFW.requestAPI("GET",["list"],"",apiDeviceMovePosition);
-	}
+function apiDeviceMovePosition_get(data) { appFW.requestAPI("GET",["list"],"",apiDeviceMovePosition); }
 function apiDeviceMovePosition(data) {
 	remoteReload_load();
 	rm3settings.mode = "";
@@ -264,10 +218,7 @@ function apiDeviceMovePosition(data) {
 	rm3settings.create();
 	}
 	
-	
 // create new device
-//--------------------------------
-
 function apiDeviceAdd(data,onchange) {
 
 	if (getValueById(data[4]) == "" || getValueById(data[5]) == "") { onchange(); }
@@ -293,9 +244,7 @@ function apiDeviceAdd(data,onchange) {
 	}
 
 // delete device
-//--------------------------------
-
-function apiDeviceDelete_exe(device) { appFW.requestAPI("DELETE",["device",device], "", apiAlertReturn); remoteInit(); }      
+function apiDeviceDelete_exe(device) { appFW.requestAPI("DELETE",["device",device], "", apiAlertReturn); remoteInit(); }
 function apiDeviceDelete(device_id) {
 
 	var device = check_if_element_or_value(device_id,true);
@@ -305,10 +254,7 @@ function apiDeviceDelete(device_id) {
 	remoteMainMenu(cookie_erase=true);
 	}
 
-//================================
 // REMOTES
-//================================
-
 function apiRemoteChangeVisibility(type, device_id, value_id) {
         device   = check_if_element_or_value(device_id,true);
         value    = getValueById(value_id,false);
@@ -320,29 +266,28 @@ function apiRemoteChangeVisibility(type, device_id, value_id) {
         
 	appFW.requestAPI("PUT",["visibility",type,device,value], "", apiAlertReturn);
 	}
-	
-//================================
-// COMMANDS
-//================================
 
-// Commands an APP senden
-//----------------------------------
-
+// send command
 function apiCommandSend(cmdButton, sync="", callback="", device="") {
-
-  
 	var ee, vv;
 	var onoff = false;
 
+	// check if macro
+	var types = ["macro", "scene-on", "scene-off", "dev-on", "dev-off"];
+	for (var i=0;i<types.length;i++) {
+        if (cmdButton.startsWith(types[i]+"_")) { return apiMacroSend(cmdButton, device); }
+        }
+    console.debug("apiCommandSend: " + cmdButton);
+
 	// split into device and button
-	if (Array.isArray(cmdButton))	{ dc = cmdButton; }
-	else				{ dc = cmdButton.split("_"); }
+	if (Array.isArray(cmdButton))   { dc = cmdButton; }
+	else                            { dc = cmdButton.split("_"); }
 
 	// check, if manual mode (with out checking the device status) or intelligent mode (with checking the device status)
-	if (deactivateButton) 	{ dc = ["send" , dc[0] , dc[1]]; }
-        else 			{ dc = ["send_check" , dc[0] , dc[1]]; }
+	if (deactivateButton)   { dc = ["send" , dc[0] , dc[1]]; }
+    else                    { dc = ["send_check" , dc[0] , dc[1]]; }
         
-        if (callback == "")	{ callback = remoteReload_load; }
+    if (callback == "")	{ callback = remoteReload_load; }
 
 	// send via app
 	if (sync == "sync") { 							// check, if still required ....
@@ -362,8 +307,6 @@ function apiCommandSend(cmdButton, sync="", callback="", device="") {
 	}
 
 // delete commands
-//--------------------------------
-
 function apiCommandDelete_exe(button) { b = button.split("_"); appFW.requestAPI("DELETE",["command",b[0],b[1]], "", apiAlertReturn); }
 function apiCommandDelete(device_id, button_id) {
 
@@ -385,8 +328,6 @@ function apiCommandDelete(device_id, button_id) {
 	}
 
 // add button to device
-//--------------------------------
-
 function apiCommandRecord(device_id, button_id) {
 
 	if (document.getElementById(device_id)) 	{ var device	= document.getElementById(device_id).value.toLowerCase(); }
@@ -405,27 +346,27 @@ function apiCommandRecord(device_id, button_id) {
 	appMsg.confirm(lang("BUTTON_RECORD",[button,device]),cmd); return; 
 	}
 
-
-//================================
-// BUTTONS
-//================================
-
 // add button to device
-//--------------------------------
-
 function apiButtonAdd(device_id, button_id) {
 
-        var i=0;
+    var i=0;
 
-	if (document.getElementById(device_id)) 	{ var device	= document.getElementById(device_id).value.toLowerCase(); }
-	else					 	{ var device	= device_id; i++; }
-	if (document.getElementById(button_id)) 	{ var button	= document.getElementById(button_id).value; 
-							  if (button != "LINE")	{ button = button.toLowerCase(); }
-							  if (button == ".")		{ button = "DOT"; }
-							}
-	else						{ var button    = button_id; i++; }	
+	if (document.getElementById(device_id)) {
+	    var device	= document.getElementById(device_id).value.toLowerCase();
+	    }
+	else {
+	    var device	= device_id; i++;
+	    }
+	if (document.getElementById(button_id)) 	{
+	    var button	= document.getElementById(button_id).value;
+		if (button != "LINE")	{ button = button.toLowerCase(); }
+		if (button == ".")		{ button = "DOT"; }
+		}
+	else {
+	    var button    = button_id; i++;
+	    }
 	
-        cmd = "appFW.requestAPI('PUT',['button','"+device+"','"+button+"'], '', appMsg.alertReturn );";
+    cmd = "appFW.requestAPI('PUT',['button','"+device+"','"+button+"'], '', appMsg.alertReturn );";
 
 	if (device == "") { appMsg.alert(lang("DEVICE_SELECT")); return; }
 	if (button == "") { appMsg.alert(lang("BUTTON_INSERT_NAME")); return; }
@@ -434,10 +375,7 @@ function apiButtonAdd(device_id, button_id) {
 	appFW.requestAPI("PUT",["button",device,button], "", apiAlertReturn);
 	}
 
-
 // delete buttons
-//--------------------------------
-
 function apiButtonDelete_exe(device,button) { appFW.requestAPI("DELETE",["button",device,button], "", apiAlertReturn); }
 function apiButtonDelete(device_id, button_id) {
 
@@ -457,27 +395,71 @@ function apiButtonDelete(device_id, button_id) {
 	appMsg.confirm(lang("BUTTON_ASK_DELETE_NUMBER",[button,device]),"apiButtonDelete_exe('"+device+"'," + button + "); ");
 	}
 
-//================================
-// MAKROS
-//================================
+// decompose macro data
+function apiMacroDecompose(macro) {
+    var types = ["macro", "scene-on", "scene-off", "scene-off", "dev-on", "dev-off"];
+    for (var a=0;a<types.length;a++) {
+        if (macro.startsWith(types[a]+"_")) {
+            var macro_cmd = macro.split("_");
+            var macro_string = "";
+            var macro_wait = "";
+            var macro_data = rm3remotes.data["DATA"]["macros"][types[a]];
 
-// separate makro into single commands and send commands
-//----------------------------------
+            if (macro_data[macro_cmd[1]]) {
+                for (var i=0; i<macro_data[macro_cmd[1]].length; i++) {
+                    var command = macro_data[macro_cmd[1]][i];
+                    if (command.startsWith && command.startsWith("WAIT")) {
+                        var wait = command.split("-");
+                        macro_wait = 'appMsg.wait_time("'+lang("MACRO_PLEASE_WAIT")+'", '+wait[1]+');';
+                        }
+                    else {
+                        macro_string += macro_data[macro_cmd[1]][i] + "::";
+                        }
+                    }
+                }
+            }
+        }
+    console.debug("apiMacroDecompose: " + macro + " -> " + macro_string + " | " + macro_wait);
+    return [ macro_string, macro_wait ];
+    }
 
-function apiMakroSend( makro, device="", content="" ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
-
-	console.log( "Send makro: " + makro );
-	dc = [ "makro", makro ];
-	appFW.requestAPI( "GET", dc, "", apiMakroSend_return );
+// separate macro into single commands and send commands
+function apiMacroSend( macro, device="", content="" ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
+    console.debug("apiMacroSend: " + macro);
+    if (!macro.includes("::")) {
+        [macro_string, macro_wait] = apiMacroDecompose(macro);
+        macro = macro_string;
+        eval(macro_wait);
+        }
+	dc = [ "macro", macro ];
+	appFW.requestAPI( "GET", dc, "", apiMacroSend_return );
 	device_media_info[device] = content;	
 	}
-	
-	
-function apiMakroSend_return( data ) {
-	console.log("Send makro return :");
+
+function apiMacroSend_return( data ) {
+	console.log("Send macro return :");
 	console.log(data);
 	}
 
-// --------------------
-// EOF
+// send a command directly to an API of a device
+function apiSendToDeviceApi( device, api_command ) {
+    var send_cmd  = ["send-api", device];
+    var send_data = api_command;
+	appFW.requestAPI( "POST", send_cmd, send_data, apiSendToDeviceApi_return );
+}
 
+function apiSendToDeviceApi_return( data ) {
+    console.warn(data);
+    var response    = data["REQUEST"]["Return"];
+    var answer      = "<b>" + response["interface"] + "/" + response["device"] + " (" + response["status"] + "):</b><br/>";
+    try         { answer += JSON.stringify(response["answer"]["answer"]); }
+    catch(e)    { answer += response["answer"]; }
+    answer         += "<br/>&nbsp;<br/>-----<br/><i>";
+    answer         += "total: " + (data["REQUEST"]["load-time-app"])/1000 + "s / srv: " + Math.round(data["REQUEST"]["load-time"]*10000)/10000 + "s";
+    setTextById('api_response', answer);
+}
+
+function apiSendToDeviceAPI_createDropDown( device, callback ) {
+    var send_cmd  = ["config-device", device];
+	appFW.requestAPI( "GET", send_cmd, "", callback );
+}

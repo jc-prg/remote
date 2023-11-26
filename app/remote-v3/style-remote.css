@@ -211,3 +211,15 @@ ul.help ul li {
 	z-index    : 120;
 	}
 	
+.remote-edit-cmd {
+    background  : #111111;
+    color       : #ffff88;
+    padding     : 6px;
+    width       : 95%;
+    height      : 200px;
+    overflow-y  : scroll;
+    text-align  : left;
+    font-size   : 11px;
+	border      : solid 1px #222222;
+	border-radius: 5px;
+}

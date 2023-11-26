@@ -1,30 +1,31 @@
 # jc://remote/
 
-Looking a remote control to control several devices I got disappointed ... and decided to develop my own web-app running on my smartphone.
-Therefore I found the **Broadlink RM 3 Mini** and sources on Github to control this IR device via API. About two years later several devices
-as my new ONKYO receiver come with their own API and I started to rework my software and to integrate the first device via API directly.
-In the meanwhile a few additional APIs are integrated ...
+With this software you can control several **home media devices** via Infrared and API with an app on your smartphone.
+It requires a small server such as a Raspberry Pi and can control the hardware listed below. 
+You can define remote controls for devices and create scenes that use those commands from 
+those devices or macros to combine several commands on a single button. 
+There are a few templates available to be used and modified.
 
 ## Table of Content
 
-- [Supported Hardware](#supported-hardware)
+- [Currently Supported Hardware](#supported-hardware)
 - [Screenshots](#screenshots)
 - [Data structure](#data-structure)
 - [Main features](#main-feature)
 - [Used sources](#used-sources)
 - [How to setup the software](#how-to-setup-the-software)
+- [Integration of additional APIs and devices](#integration-of-additional-apis-and-devices)
 - [Disclaimer](#disclaimer)
 
 
-## Supported Hardware
+## Currently Supported Hardware
 
 * Broadlink RM 3 Mini - Infrared receiver/sender
 * Several ONKYO devices with API (see section modelsets [eiscp-commands.yaml](https://github.com/miracle2k/onkyo-eiscp/blob/master/eiscp-commands.yaml))
-* Several SONY devices with API (see [compartibilty list](https://github.com/alexmohr/sonyapilib#compatibility-list))
+* Several SONY devices with API (see [compatibility list](https://github.com/alexmohr/sonyapilib#compatibility-list))
 * KODI server
-* Magic Home compartibel LED strips 
+* Magic Home compatible LED strips 
 * Tapo SmartPlugs P100
-* *Other devices easily can be integrated*
 
 ## Screenshots
 
@@ -32,6 +33,7 @@ In the meanwhile a few additional APIs are integrated ...
 
 <img src="./docs/remote_iphone_default_01.PNG" width="17%"> <img src="./docs/remote_iphone_default_02.PNG" width="17%">
 <img src="./docs/remote_iphone_default_03.PNG" width="17%"> <img src="./docs/remote_iphone_default_04.PNG" width="17%">
+<img src="./docs/remote_iphone_15.PNG" width="17%"><img src="./docs/remote_iphone_14.PNG" width="17%">
 <img src="./docs/remote_iphone_default_05.PNG" width="17%"> <img src="./docs/remote_iphone_default_06.PNG" width="17%">
 <img src="./docs/remote_iphone_default_07.PNG" width="17%"> <img src="./docs/remote_iphone_default_08.PNG" width="17%">
 <img src="./docs/remote_iphone_default_09.PNG" width="17%"> <img src="./docs/remote_iphone_default_10.PNG" width="17%">
@@ -70,12 +72,24 @@ In the meanwhile a few additional APIs are integrated ...
 
 ## Main features
 
-### App v2.7 / Server v2.0 (in-progress)
+### App v2.9 / Server v2.2 (in progress)
 
-* add remote control for LED strips compartible with MagicHome
+* directly view and execute API commands for devices in edit mode
+
+### App v2.8 / Server v2.1
+
+* toggles to switch on and off devices
+* power toggles in scene remotes to switch on/off a power socket for the scene
+* optimized UX for editing mode
+* moved scene macro editing to the scene remotes
+* define automatic "switch off time" for IR devices in config files
+
+### App v2.7 / Server v2.0
+
+* add remote control for LED strips compatible with MagicHome
 * add remote control for Tapo SmartPlugs
 * add slider and color-picker for remotes
-* stablize API connections
+* stabilize API connections
 * optimize logging and add error handling for JSON files
 
 ### App v2.6 / Server v1.9
@@ -95,15 +109,13 @@ In the meanwhile a few additional APIs are integrated ...
 
 ### App v2.4 / Server v1.8
 
-* stablized app and API connection incl. better performance
+* stabled app and API connection incl. better performance
 * integrated volume slider
 * smaller UI optimizations
 * start script including update from GitHub
 * cleaned up code
 
 ### App v2.3 / Server v1.7
-
-This is the first working release with stable API connection to devices:
 
 * control devices via API (Onkyo-API, KODI)
 * create and edit remote controls for devices (initial)
@@ -113,15 +125,12 @@ This is the first working release with stable API connection to devices:
 * light / dark theme based on device preset (Safari)
 * basic automatic tests (check data format, check server API requests, check Onky API)
 * docker environment for app and server incl. central configuration for multiple stages
+* definition of devices and scenes based on a set of JSON files
 
-The definition of devices and scenes at the moment should be done based a set of JSON files. 
-The code comes with several sample device and scene definitions that explain the possible options.
-The integration of the device APIs is done in an easy way, so that the integration of additional device API should be easy also.
-
-### App & Server 1.x
+### App & Server v1.x
 
 * remote control for devices
-* remote control for scenes incl. makros
+* remote control for scenes incl. macros
 * control devices via IR sender/receiver (Broadlink RM3 Mini)
 
 ## Used sources
@@ -156,51 +165,63 @@ In order to use jc://remote/ as it is, the following software must be installed:
 
 1. Clone this repository and the modules
 
-```bash
-$ git clone https://github.com/jc-prg/remote.git
-$ git submodule update --init
-$ cd remote
-```
+    ```bash
+    $ git clone https://github.com/jc-prg/remote.git
+    $ git submodule update --init
+    $ cd remote
+    ```
 
 2. Change settings: [sample.config_prod](./config/sample.config_prod)
 
-```bash
-$ cd config
-$ cp sample.config_prod config_prod
-$ ./create prod
-$ cd ..
-```
+    ```bash
+    $ cd config
+    $ cp sample.config_prod config_prod
+    $ nano config_prod                      # modify configuration for your needs
+    $ ./create prod
+    $ cd ..
+    ```
 
 3. Copy sample remote controls
 
-```bash
-$ cd data/_sample
-$ ./install-config
-$ cd ../..
-```
+    ```bash
+    $ cd data/_sample
+    $ ./install-config
+    $ cd ../..
+    ```
 
 4. Build and start via docker-compose ..
 
-```bash
-$ docker-compose build
-$ ./start start
-```
+    ```bash
+    $ docker-compose build
+    $ sudo ./start start
+    ```
 
-5. Open in browser, e.g. http://localhost:81/
+5. Open in browser depending on your settings, e.g., http://localhost:81/
 
-6. Install via autostart - add the following line to /etc/rc.local
+6. To start automatically add the following line to your /etc/rc.local
 
-```bash
-/<your_path_to_remote>/start start
-```
+    ```bash
+    /<your_path_to_remote>/start start
+    ```
 
 7. Update from Github (works, if configuration file has not changed)
 
-```bash
-$ ./start update
-```
+    ```bash
+    $ sudo ./start update
+    ```
+
+8. Additional options are available in the start script
+
+    ```bash
+    $ sudo ./start update
+    ```
+
+## Integration of additional APIs and devices
+
+Additional APIs can be added with a little effort if an API source written in Python is available. 
+Find additional information [how to integrate APIs here](server/interfaces/README.md).
 
 ## Disclaimer
 
-Feel free to try and to improve ... and stay tuned.
+This is a private crafting project. Feel free to try out and improve ... and stay tuned.
 

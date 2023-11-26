@@ -13,12 +13,13 @@ import socket
 import csv
 import struct
 import datetime
+import logging
 
 
 class MagicHomeApi:
     """Representation of a MagicHome device."""
 
-    def __init__(self, device_ip, device_type, keep_alive=True):
+    def __init__(self, device_ip, device_type, keep_alive=True, timeout=3):
         """"Initialize a device."""
         self.device_ip = device_ip
         self.device_type = device_type
@@ -26,7 +27,9 @@ class MagicHomeApi:
         self.latest_connection = datetime.datetime.now()
         self.keep_alive = keep_alive
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.settimeout(3)
+        self.s.settimeout(timeout)
+        
+        
         try:
             print("Establishing connection with the device.")
             self.s.connect((self.device_ip, self.API_PORT))
@@ -34,7 +37,7 @@ class MagicHomeApi:
             print("Caught exception socket.error : %s" % exc)
             if self.s:
                 self.s.close()
-
+                
     def turn_on(self):
         """Turn a device on."""
         self.send_bytes(0x71, 0x23, 0x0F, 0xA3) if self.device_type < 4 else self.send_bytes(0xCC, 0x23, 0x33)
@@ -47,10 +50,11 @@ class MagicHomeApi:
         """Get the current status of a device."""
         if self.device_type == 2:
             self.send_bytes(0x81, 0x8A, 0x8B, 0x96)
-            return self.s.recv(15)
+            result = self.s.recv(15)
         else:
             self.send_bytes(0x81, 0x8A, 0x8B, 0x96)
-            return self.s.recv(14)
+            result = self.s.recv(14)
+        return result
 
     def update_device(self, r=0, g=0, b=0, white1=None, white2=None):
         """Updates a device based upon what we're sending to it.
@@ -110,6 +114,7 @@ class MagicHomeApi:
             # Incompatible device received
             print("Incompatible device type received...")
 
+
     def check_number_range(self, number):
         """Check if the given number is in the allowed range."""
         if number < 0:
@@ -149,9 +154,23 @@ class MagicHomeApi:
         """
         check_connection_time = (datetime.datetime.now() -
                                  self.latest_connection).total_seconds()
+                                                                  
+#        if not self.keep_alive:
+#           try:
+#             self.s.connect((self.device_ip, self.API_PORT))
+#             message_length = len(bytes)
+#             self.s.send(struct.pack("B"*message_length, *bytes))
+#             if self.s:
+#               self.s.close
+#           except socket.error as exc:
+#             logging.error("Caught exception socket.error : %s" % exc)
+#             if self.s:
+#               self.s.close
+#               
+#        else:                                 
         try:
             if check_connection_time >= 290:
-                print("Connection timed out, reestablishing.")
+                logging.error("Connection timed out, reestablishing.")
                 self.s.connect((self.device_ip, self.API_PORT))
             message_length = len(bytes)
             self.s.send(struct.pack("B"*message_length, *bytes))
@@ -159,6 +178,6 @@ class MagicHomeApi:
             if self.keep_alive is False and self.s:
                 self.s.close
         except socket.error as exc:
-            print("Caught exception socket.error : %s" % exc)
+            logging.error("Caught exception socket.error : %s" % exc)
             if self.s:
                 self.s.close()

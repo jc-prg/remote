@@ -1,7 +1,7 @@
 {
-    "info": "jc://remote/ - In this file the remote layout and channel makros for the scene are defined.",
+    "info": "jc://remote/ - In this file the remote layout and channel macros for the scene are defined.",
     "data": {
-        "channel": {},
+        "macro-channel": {},
         "description" : "Scene for KODI Media Center",
         "devices": [
             "rec2",
@@ -17,10 +17,10 @@
         "display-size": "middle",
         "label": "Media Center",
         "remote": [
-            "makro_kodi",
+            "macro_kodi",
             ".",
-            "scene-on_media",
-            "scene-off_media",
+            "scene-on",
+            "scene-off",
             "LINE",
             "media-center_home",
             "media-center_music",

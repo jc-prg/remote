@@ -1,178 +1,5 @@
 {
     "data": {
-        "channel": {
-            "3sat HD": [
-                "makro_rectv",
-                "tv_1",
-                "tv_3"
-            ],
-            "ARD HD": [
-                "makro_rectv",
-                "tv_1"
-            ],
-            "ARD-alpha HD": [
-                "makro_rectv",
-                "tv_3",
-                "tv_6"
-            ],
-            "BR HD": [
-                "makro_rectv",
-                "tv_2",
-                "tv_9"
-            ],
-            "Disney Channel HD": [
-                "makro_rectv",
-                "tv_2",
-                "tv_3"
-            ],
-            "KiKA HD": [
-                "makro_rectv",
-                "tv_1",
-                "tv_5"
-            ],
-            "MDR HD": [
-                "makro_rectv",
-                "tv_2",
-                "tv_5"
-            ],
-            "NDR HD": [
-                "makro_rectv",
-                "tv_2",
-                "tv_8"
-            ],
-            "NITRO HD": [
-                "makro_rectv",
-                "tv_1",
-                "tv_6"
-            ],
-            "ONE HD": [
-                "makro_rectv",
-                "tv_1",
-                "tv_1"
-            ],
-            "ProSieben HD": [
-                "makro_rectv",
-                "tv_7"
-            ],
-            "ProSieben MAXX HD": [
-                "makro_rectv",
-                "tv_6"
-            ],
-            "RTL HD": [
-                "makro_rectv",
-                "tv_4"
-            ],
-            "RTL ZWEI HD": [
-                "makro_rectv",
-                "tv_1",
-                "tv_0"
-            ],
-            "RTLplus": [
-                "makro_rectv",
-                "tv_1",
-                "tv_9"
-            ],
-            "SR HD": [
-                "makro_rectv",
-                "tv_2",
-                "tv_6"
-            ],
-            "SWR BW HD": [
-                "makro_rectv",
-                "tv_2",
-                "tv_0"
-            ],
-            "Sat.1 GOLD": [
-                "makro_rectv",
-                "tv_1",
-                "tv_7"
-            ],
-            "Sat.1 HD": [
-                "makro_rectv",
-                "tv_5"
-            ],
-            "ServusTV HD": [
-                "makro_rectv",
-                "tv_2",
-                "tv_4"
-            ],
-            "Super RTL HD": [
-                "makro_rectv",
-                "tv_2",
-                "tv_1"
-            ],
-            "TLC HD": [
-                "makro_rectv",
-                "tv_1",
-                "tv_8"
-            ],
-            "Tagesschau24 HD": [
-                "makro_rectv",
-                "tv_3",
-                "tv_5"
-            ],
-            "VOX HD": [
-                "makro_rectv",
-                "tv_9"
-            ],
-            "WDR HD": [
-                "makro_rectv",
-                "tv_2",
-                "tv_7"
-            ],
-            "WELT HD": [
-                "makro_rectv",
-                "tv_3",
-                "tv_4"
-            ],
-            "ZDF HD": [
-                "makro_rectv",
-                "tv_2"
-            ],
-            "ZDFinfo HD": [
-                "makro_rectv",
-                "tv_2",
-                "tv_6"
-            ],
-            "ZDFneo HD": [
-                "makro_rectv",
-                "tv_1",
-                "tv_2"
-            ],
-            "arte HD": [
-                "makro_rectv",
-                "tv_3"
-            ],
-            "hr HD": [
-                "makro_rectv",
-                "tv_3",
-                "tv_0"
-            ],
-            "kabel eins Doku": [
-                "makro_rectv",
-                "tv_3",
-                "tv_2"
-            ],
-            "kabel eins HD": [
-                "makro_rectv",
-                "tv_8"
-            ],
-            "n-tv HD": [
-                "makro_rectv",
-                "tv_3",
-                "tv_3"
-            ],
-            "phoenix HD": [
-                "makro_rectv",
-                "tv_1",
-                "tv_4"
-            ],
-            "sixx HD": [
-                "makro_rectv",
-                "tv_2",
-                "tv_2"
-            ]
-        },
         "description": "Scene for TV (1)",
         "devices": [
             "lw",
@@ -180,9 +7,200 @@
             "rec2",
             "tv"
         ],
+        "display": {},
+        "display-size": "json::display-size",
         "label": "Fernsehen",
+        "macro-channel": {
+            "3sat HD": [
+                "macro_rectv",
+                "tv_1",
+                "tv_3"
+            ],
+            "ARD HD": [
+                "macro_rectv",
+                "tv_1"
+            ],
+            "ARD-alpha HD": [
+                "macro_rectv",
+                "tv_3",
+                "tv_6"
+            ],
+            "BR HD": [
+                "macro_rectv",
+                "tv_2",
+                "tv_9"
+            ],
+            "Disney Channel HD": [
+                "macro_rectv",
+                "tv_2",
+                "tv_3"
+            ],
+            "KiKA HD": [
+                "macro_rectv",
+                "tv_1",
+                "tv_5"
+            ],
+            "MDR HD": [
+                "macro_rectv",
+                "tv_2",
+                "tv_5"
+            ],
+            "NDR HD": [
+                "macro_rectv",
+                "tv_2",
+                "tv_8"
+            ],
+            "NITRO HD": [
+                "macro_rectv",
+                "tv_1",
+                "tv_6"
+            ],
+            "ONE HD": [
+                "macro_rectv",
+                "tv_1",
+                "tv_1"
+            ],
+            "ProSieben HD": [
+                "macro_rectv",
+                "tv_7"
+            ],
+            "ProSieben MAXX HD": [
+                "macro_rectv",
+                "tv_6"
+            ],
+            "RTL HD": [
+                "macro_rectv",
+                "tv_4"
+            ],
+            "RTL ZWEI HD": [
+                "macro_rectv",
+                "tv_1",
+                "tv_0"
+            ],
+            "RTLplus": [
+                "macro_rectv",
+                "tv_1",
+                "tv_9"
+            ],
+            "SR HD": [
+                "macro_rectv",
+                "tv_2",
+                "tv_6"
+            ],
+            "SWR BW HD": [
+                "macro_rectv",
+                "tv_2",
+                "tv_0"
+            ],
+            "Sat.1 GOLD": [
+                "macro_rectv",
+                "tv_1",
+                "tv_7"
+            ],
+            "Sat.1 HD": [
+                "macro_rectv",
+                "tv_5"
+            ],
+            "ServusTV HD": [
+                "macro_rectv",
+                "tv_2",
+                "tv_4"
+            ],
+            "Super RTL HD": [
+                "macro_rectv",
+                "tv_2",
+                "tv_1"
+            ],
+            "TLC HD": [
+                "macro_rectv",
+                "tv_1",
+                "tv_8"
+            ],
+            "Tagesschau24 HD": [
+                "macro_rectv",
+                "tv_3",
+                "tv_5"
+            ],
+            "VOX HD": [
+                "macro_rectv",
+                "tv_9"
+            ],
+            "WDR HD": [
+                "macro_rectv",
+                "tv_2",
+                "tv_7"
+            ],
+            "WELT HD": [
+                "macro_rectv",
+                "tv_3",
+                "tv_4"
+            ],
+            "ZDF HD": [
+                "macro_rectv",
+                "tv_2"
+            ],
+            "ZDFinfo HD": [
+                "macro_rectv",
+                "tv_2",
+                "tv_6"
+            ],
+            "ZDFneo HD": [
+                "macro_rectv",
+                "tv_1",
+                "tv_2"
+            ],
+            "arte HD": [
+                "macro_rectv",
+                "tv_3"
+            ],
+            "hr HD": [
+                "macro_rectv",
+                "tv_3",
+                "tv_0"
+            ],
+            "kabel eins Doku": [
+                "macro_rectv",
+                "tv_3",
+                "tv_2"
+            ],
+            "kabel eins HD": [
+                "macro_rectv",
+                "tv_8"
+            ],
+            "n-tv HD": [
+                "macro_rectv",
+                "tv_3",
+                "tv_3"
+            ],
+            "phoenix HD": [
+                "macro_rectv",
+                "tv_1",
+                "tv_4"
+            ],
+            "sixx HD": [
+                "macro_rectv",
+                "tv_2",
+                "tv_2"
+            ]
+        },
+        "macro-scene": {},
+        "macro-scene-off": [
+            "dev-off_lw",
+            "dev-off_beam",
+            "dev-off_rec2",
+            "dev-off_tv"
+        ],
+        "macro-scene-on": [
+            "dev-on_lw",
+            "dev-on_beam",
+            "dev-on_tv",
+            "dev-on_rec2",
+            "rec2_cable-sat",
+            "dev-off_bd-api"
+        ],
         "remote": [
-            "makro_tv",
+            "HEADER-IMAGE",
+            "macro_tv",
             "abc-xy",
             "scene-on_tv",
             "scene-off_tv",
@@ -190,15 +208,15 @@
             "tv_1",
             "tv_2",
             "tv_3",
-            "makro_vol+",
+            "macro_vol+",
             "tv_4",
             "tv_5",
             "tv_6",
-            "makro_mute",
+            "macro_mute",
             "tv_7",
             "tv_8",
             "tv_9",
-            "makro_vol-",
+            "macro_vol-",
             "tv_back",
             "tv_0",
             "tv_info",

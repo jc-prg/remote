@@ -83,6 +83,31 @@ paths:
                 $ref: "#/definitions/STATUS"
 
 
+  /config-device/{device}/:
+    get:
+      operationId: modules.server_cmd.RemoteConfigDevice
+      tags:
+        - status
+      summary: request configuration data for a specific device
+      description: request configuration data for a specific device
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully requested configuration
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              DATA:
+                $ref: "#/definitions/DATA_DEVICE"
+
+
   /send_check/{device}/{button}/:
     get:
       operationId: modules.server_cmd.RemoteOnOff
@@ -106,12 +131,10 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
-                $ref: "#/definitions/STATUS"
+                $ref: "#/definitions/STATUS_SYSTEM"
 
   /send/{device}/{button}/:
     get:
@@ -136,12 +159,10 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
-                $ref: "#/definitions/STATUS"
+                $ref: "#/definitions/STATUS_SYSTEM"
 
   /send-data/{device}/{button}/{text}/:
     get:
@@ -170,12 +191,40 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
-                $ref: "#/definitions/STATUS"
+                $ref: "#/definitions/STATUS_SYSTEM"
+
+  /send-api/{device}/:
+    post:
+      operationId: modules.server_cmd.RemoteSendApiCmd
+      tags:
+        - send
+      summary: send API command for a specific command
+      description: send API command for a specific command and return answer given by the device
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: api_command
+          in: body
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Successfully send IR command
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS_SYSTEM"
+
 
   /set/{device}/{command}/{value}/:
     get:
@@ -211,59 +260,55 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
 
-  /makro/{makro}/:
+  /macro/{macro}/:
     get:
-      operationId: modules.server_cmd.RemoteMakro
+      operationId: modules.server_cmd.RemoteMacro
       tags:
         - send
       summary: send marko
-      description: the makro commands are send
+      description: the macro commands are send
       parameters:
-        - name: makro
+        - name: macro
           in: path
           type: string
           required: true
       responses:
         200:
-          description: Successfully send makro commands
+          description: Successfully send macro commands
           schema:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
-                $ref: "#/definitions/STATUS"
+                $ref: "#/definitions/STATUS_SYSTEM"
 
 
-  /makro/:
+  /macro/:
     put:
-      operationId: modules.server_cmd.RemoteMakroChange
+      operationId: modules.server_cmd.RemoteMacroChange
       tags:
         - send
       summary: edit marko
-      description: change markose
+      description: change marcos
       parameters:
-        - name: makros
+        - name: macros
           in: body
-          description: makros, dev-on/off, scene-on/off definition
+          description: macros, dev-on/off, scene-on/off definition
           schema:
             type: object     
       responses:
         200:
-          description: Successfully send makro commands
+          description: Successfully send macro commands
           schema:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
-                $ref: "#/definitions/STATUS"
+                $ref: "#/definitions/STATUS_SYSTEM"
 
 
 #------------------------ EDIT FUNCTIONS ------------------------
@@ -446,12 +491,10 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
-                $ref: "#/definitions/STATUS"               
+                $ref: "#/definitions/STATUS_SYSTEM"
     post:
       operationId: modules.server_cmd.RemoteEditScene
       tags:
@@ -475,12 +518,10 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
-                $ref: "#/definitions/STATUS"
+                $ref: "#/definitions/STATUS_SYSTEM"
     put:
       operationId: modules.server_cmd.RemoteAddScene
       tags:
@@ -504,12 +545,10 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
-                $ref: "#/definitions/STATUS"
+                $ref: "#/definitions/STATUS_SYSTEM"
                 
 #------------------------------------------------------
 
@@ -532,12 +571,10 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
-                $ref: "#/definitions/STATUS"               
+                $ref: "#/definitions/STATUS_SYSTEM"
     post:
       operationId: modules.server_cmd.RemoteEditDevice
       tags:
@@ -561,12 +598,10 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
-                $ref: "#/definitions/STATUS"
+                $ref: "#/definitions/STATUS_SYSTEM"
     put:
       operationId: modules.server_cmd.RemoteAddDevice
       tags:
@@ -590,12 +625,10 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
-                $ref: "#/definitions/STATUS"
+                $ref: "#/definitions/STATUS_SYSTEM"
                 
 #------------------------------------------------------
 
@@ -659,7 +692,7 @@ paths:
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
-                $ref: "#/definitions/STATUS"
+                $ref: "#/definitions/STATUS_SYSTEM"
 
   /main-audio/{device}/:
     post:
@@ -840,25 +873,20 @@ definitions:
     properties:
       devices:
         type: object
-        properties:
-          "<device-id>":
-            type: object
-            properties:
-              "<device-specific-key-value-pairs>":
-                type: string
       interfaces:
         type: object
-        properties:
-          "<api-interface>":
-            type: string
-      last_button:
-        type: string
+      scenes:
+        type: object
       request_time:
         type: object
-      scenes:
-        type: array
-        items:
-          type: string
+      system:
+        type: object
+      config_errors:
+        type: object
+
+  STATUS_SYSTEM:
+    type: object
+    properties:
       system:
         type: object
 
@@ -932,6 +960,9 @@ definitions:
       methods:
         type: object
 
+  DATA_DEVICE:
+    type: object
+
   DATA:
     type: object
     properties:
@@ -999,10 +1030,10 @@ definitions:
                     type: array
                     items:
                       type: string
-      makros:
+      macros:
         type: object
         properties:
-          "<makro-name>":
+          "<macro-name>":
             type: object
             properties:
               "dev-on":
@@ -1019,7 +1050,7 @@ definitions:
                     type: array
                     items:
                       type: string
-              "makro":
+              "macro":
                 type: object
                 properties:
                   "<button-name>":

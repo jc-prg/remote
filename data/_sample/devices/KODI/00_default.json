@@ -4,6 +4,9 @@
 	"method" : "query",
 	"buttons" : {
 		"addons": "GUI.ActivateWindow({'window':'addonbrowser'})",
+		"addon_AmazonVOD": "Addons.ExecuteAddon({'addonid': 'plugin.video.amazon-test'})",
+		"addon_Joyn": "Addons.ExecuteAddon({'addonid': 'plugin.video.joyn'})",
+		"addon_Mediathek": "Addons.ExecuteAddon({'addonid': 'plugin.video.mediathekview'})",
 		"back": "Input.Back()",
 		"context": "Input.ContextMenu()",
 		"display": "Input.ShowOSD()",
@@ -46,7 +49,7 @@
 		"vol-": "jc.DecreaseVolume(5)",
 		"weather": "GUI.ActivateWindow({'window':'weather'})"
 		},
-        "commands": {
+	"commands": {
 		"mute"  : { 
 			"get": "jc.PlayerMetadata('muted')",
 			"type": "enum",
@@ -78,10 +81,10 @@
 		"audiostreams": { "get" : "jc.PlayerMetadata('audiostreams')" },
 		"current-audiostream": { "get" : "jc.PlayerMetadata('currentaudiostream')" },
 		"current-audiostream-name": { "get" : "jc.PlayerMetadata('currentaudiostream','name')" },
-		"send-text" : { "set" : "Input.SendText(text='{DATA}',done=False)" },
-		"send-text-enter" : { "set" : "Input.SendText(text='{DATA}',done=True)" }
-		},
-        "queries"     : {},
+		"text" : { "set" : "Input.SendText(text='{DATA}',done=False)" },
+		"text-enter" : { "set" : "Input.SendText(text='{DATA}',done=True)" }
+	},
+	"queries"     : {},
 	"send-data" : {}
 
    }

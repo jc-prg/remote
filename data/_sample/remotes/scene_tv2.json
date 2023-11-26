@@ -1,0 +1,175 @@
+{
+    "data": {
+        "description": "Scene for TV (2)",
+        "devices": [
+            "rec2",
+            "tv2",
+            "beam",
+            "lw"
+        ],
+        "display": {},
+        "display-size": "middle",
+        "label": "Fernsehen",
+        "macro-channel": {
+            "3sat": [
+                "tv2_3",
+                "tv2_1"
+            ],
+            "ARD": [
+                "tv2_1"
+            ],
+            "ARD alpha": [
+                "tv2_1",
+                "tv2_9"
+            ],
+            "BR HD": [
+                "tv2_2",
+                "tv2_4"
+            ],
+            "KiKa": [
+                "tv2_3",
+                "tv2_2"
+            ],
+            "NITRO": [
+                "tv2_1",
+                "tv2_4"
+            ],
+            "ONE HD": [
+                "tv2_1",
+                "tv2_8"
+            ],
+            "ProSieben": [
+                "tv2_7"
+            ],
+            "ProSieben MAXX": [
+                "tv2_6"
+            ],
+            "RTL": [
+                "tv2_5"
+            ],
+            "RTL II": [
+                "tv2_1",
+                "tv2_0"
+            ],
+            "RTLup": [
+                "tv2_1",
+                "tv2_5"
+            ],
+            "SIXX": [
+                "tv2_1",
+                "tv2_3"
+            ],
+            "SR Fernsehen": [
+                "tv2_2",
+                "tv2_0"
+            ],
+            "SWR HD": [
+                "tv2_2",
+                "tv2_2"
+            ],
+            "Sat.1": [
+                "tv2_4"
+            ],
+            "Sat.1 Gold": [
+                "tv2_1",
+                "tv2_1"
+            ],
+            "Super RTL": [
+                "tv2_3",
+                "tv2_7"
+            ],
+            "VOX": [
+                "tv2_9"
+            ],
+            "WELT": [
+                "tv2_1",
+                "tv2_6"
+            ],
+            "ZDF": [
+                "tv2_2"
+            ],
+            "ZDFinfo": [
+                "tv2_3",
+                "tv2_3"
+            ],
+            "arte": [
+                "tv2_3"
+            ],
+            "kabel eins": [
+                "tv2_8"
+            ],
+            "kabel eins Doku": [
+                "tv2_1",
+                "tv2_2"
+            ],
+            "tagesschau 24 HD": [
+                "tv2_1",
+                "tv2_7"
+            ],
+            "zdf_neo": [
+                "tv2_3",
+                "tv2_4"
+            ]
+        },
+        "macro-scene": {},
+        "macro-scene-off": [
+            "dev-off_lw",
+            "dev-off_beam",
+            "dev-off_rec2",
+            "dev-off_tv3"
+        ],
+        "macro-scene-on": [
+            "dev-on_lw",
+            "dev-on_beam",
+            "dev-on_tv3",
+            "dev-on_rec2",
+            "rec2_cable-sat",
+            "dev-off_bd-api"
+        ],
+        "remote": [
+            "HEADER-IMAGE||toggle",
+            "TOGGLE||plug02_power||Strom Medientechnik||macro_plug02-on||macro_plug02-off",
+            "macro_tv",
+            ".",
+            "scene-on_tv2",
+            "scene-off_tv2",
+            "LINE||channel",
+            "tv2_1",
+            "tv2_2",
+            "tv2_3",
+            "macro_vol+",
+            "tv2_4",
+            "tv2_5",
+            "tv2_6",
+            "macro_mute",
+            "tv2_7",
+            "tv2_8",
+            "tv2_9",
+            "macro_vol-",
+            "tv2_back",
+            "tv2_0",
+            "tv2_info",
+            ".",
+            "LINE||navigation",
+            ".",
+            "tv2_prg+",
+            ".",
+            "tv2_menu",
+            "tv2_left",
+            "tv2_enter",
+            "tv2_right",
+            "tv2_guide",
+            ".",
+            "tv2_prg-",
+            ".",
+            "tv2_exit",
+            "LINE",
+            "tv2_red",
+            "tv2_green",
+            "tv2_yellow",
+            "tv2_blue"
+        ],
+        "type": "scene"
+    },
+    "info": "jc://remote/ - In this file the remote layout and channel macros for the scene are defined."
+}

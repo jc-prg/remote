@@ -4,35 +4,6 @@
 // (c) Christoph Kloth
 // settings page & functions
 //--------------------------------
-/* INDEX:
-function rmSettings (name)
-	this.init			= function (data)
-	this.create			= function ()
-	this.create_setting		= function ()
-	this.create_edit		= function ()
-	this.create_edit_FileNames	= function ()
-	this.write			= function (nr,label="",text="")
-	this.is_filled			= function (nr)
-	this.show			= function ()
-	this.hide			= function ()
-	this.onoff			= function ()
-        this.device_list_container	= function ()
-	this.device_list		= function (id,onchange="")
-	this.interface_list		= function ()
-	this.interface_list_update	= function ()
-	this.exec_time_list		= function ()
-	this.exec_time_list_update	= function ()
-	this.button_list		= function (id,filter="")
-	this.button_list_change	= function (id_filter, id_list, id_list_container)
-	this.device_list_status	= function (id_filter, id_list_container)
-	this.button_show		= function ()
-	this.button_deact		= function (menu_entry=false)
-	this.button_stage		= function ()
-	this.input			= function (id,onclick="",oninput="")
-	this.select			= function (id,title,data,onchange="")
-	this.remoteToggleEditMode	= function ()
-*/
-//--------------------------------
 
 
 function rmSettings (name) {	// IN PROGRESS
@@ -56,39 +27,36 @@ function rmSettings (name) {	// IN PROGRESS
 	this.json         = new rmRemoteJSON(name+".json");			// rm_remotes-elements.js
 	
 	// init settings / set vars
-	this.init			= function (data) {
-		// set data
-		this.data = data;
-		
-		// status
-		if (data)	{this.app_stat = data["STATUS"]["system"]["message"]; this.app_last = data["REQUEST"]["Button"];}
-		else		{this.app_stat = "ERROR: no connection to server!";}
+	this.init			        = function (data) {
+        // set data
+        this.data = data;
 
-                if (this.initial_load) { 
-			// check if test
-			if (test) 	{this.test_info = "Test Stage";}
-			else 		{this.test_info = "Prod Stage";}
+        // status
+        if (data)	{this.app_stat = data["STATUS"]["system"]["message"]; this.app_last = data["REQUEST"]["Button"];}
+        else		{this.app_stat = "ERROR: no connection to server!";}
+
+        if (this.initial_load) {
+            // check if test
+            if (test) 	{this.test_info = "Test Stage";}
+            else 		{this.test_info = "Prod Stage";}
 			
-                	this.inital_load = false;
-                	this.logging.default("Initialized new class 'rmSettings'.");
-                	}
-                else {
-                	this.logging.default("Reload data 'rmSettings'.");
-                	}
+            this.initial_load = false;
+            this.logging.default("Initialized new class 'rmSettings'.");
+            }
+        else {
+            this.logging.default("Reload data 'rmSettings'.");
+            }
 		}
-
-	//------------------------------
 
 	// write settings page
-	this.create			= function () {
-	
-		if (this.edit_mode && this.mode != "edit") 		{ this.create_edit();    this.mode = "edit"; }
-		else if (!this.edit_mode && this.mode != "setting")	{ this.create_setting(); this.mode = "setting"; }
-		else if (this.mode == "setting")			{ this.interface_list_update(); this.exec_time_list_update(); }
-		}
+    this.create			        = function () {
 
+        if (this.edit_mode && this.mode != "edit") 		{ this.create_edit();    this.mode = "edit"; }
+        else if (!this.edit_mode && this.mode != "setting")	{ this.create_setting(); this.mode = "setting"; }
+        else if (this.mode == "setting")			{ this.interface_list_update(); this.exec_time_list_update(); }
+        }
 
-	this.create_setting		= function () {
+	this.create_setting		    = function () {
 		// Set Vars
 		var setting    = "";
 		var set_temp   = "";
@@ -120,12 +88,13 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.row( "Client:",	 appVersion + " / " + this.test_info + " (" + rollout + ")" );
 		set_temp += this.tab.row( "Server:",	 this.data["API"]["version"] + " / " + this.data["API"]["rollout"] );
 		set_temp += this.tab.row( "Modules:",	 
-		                               "jcMsg " 		+ appMsg.appVersion +  
-						" / jcApp "		+ appFW.appVersion +
-						" / jcAppFW "		+ appFwVersion +
-						" / jcCookies "	+ appCookie.appVersion +  
-						" / jcSlider "		+ rm3slider.appVersion );
+                                    "jcMsg " 		+ appMsg.appVersion +
+                                    " / jcApp "		+ appFW.appVersion +
+                                    " / jcAppFW "		+ appFwVersion +
+                                    " / jcCookies "	+ appCookie.appVersion +
+                                    " / jcSlider "		+ rm3slider.appVersion );
 		set_temp += this.tab.row( "Sources:", "<a href='https://github.com/jc-prg/remote/' style='color:white' target='_blank'>https://github.com/jc-prg/remote/</a>");
+		set_temp += this.tab.row( "REST API:", RESTurl + "api/list/");
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_version","Versions",set_temp,true);
 
@@ -170,13 +139,13 @@ function rmSettings (name) {	// IN PROGRESS
 		this.btn.height = "30px";
 		this.btn.width  = "120px";
 
-		// Relaod & Updates
+		// Reload & Updates
 		setting   = "";
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row(	"<center>" +
-						this.btn.sized("set01","reload (scroll)","","appForceReload(true);") + "&nbsp;" +
-						this.btn.sized("set02","check updates","","appFW.requestAPI(#GET#,[#version#,#" + appVersion +"#], ##, appMsg.alertReturn,#wait#);") +
-						"</center>"
+                    this.btn.sized("set01","reload (scroll)","","appForceReload(true);") + "&nbsp;" +
+                    this.btn.sized("set02","check updates","","appFW.requestAPI(#GET#,[#version#,#" + appVersion +"#], ##, appMsg.alertReturn,#wait#);") +
+                    "</center>"
 					);
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_reload","Reload &amp; updates",set_temp,true);
@@ -184,20 +153,20 @@ function rmSettings (name) {	// IN PROGRESS
 		// API Calls and information
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row(	"<center>" +
-						this.btn.sized("set11","REST API : list",  "","window.open(#" + RESTurl + "api/list/#,#_blank#);") + "&nbsp;" +
-						this.btn.sized("set12","REST API : status","","window.open(#" + RESTurl + "api/status/#,#_blank#);") + "&nbsp;" +
-						this.btn.sized("set13","Swagger/UI",       "","window.open(#" + RESTurl + "api/ui/#,#_blank#);") + "&nbsp;" +
-						"</center>"
-					);
+                    this.btn.sized("set11","REST API : list",  "","window.open(#" + RESTurl + "api/list/#,#_blank#);") + "&nbsp;" +
+                    this.btn.sized("set12","REST API : status","","window.open(#" + RESTurl + "api/status/#,#_blank#);") + "&nbsp;" +
+                    this.btn.sized("set13","Swagger/UI",       "","window.open(#" + RESTurl + "api/ui/#,#_blank#);") + "&nbsp;" +
+                    "</center>"
+                    );
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_api","API calls &amp; swagger interface",set_temp,false);
 
 		// reset device values
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row(	"<center>" +
-						this.btn.sized("set21","Dev ON/OFF", "","appMsg.confirm(#" + q1 + "#, #appFW.requestAPI(##GET##,[##reset##],####,apiAlertReturn );#);") + "&nbsp;" +
-						this.btn.sized("set22","Audio Level","", "appMsg.confirm(#" + q2 + "#, #appFW.requestAPI(##GET##,[##reset-audio##],####,apiAlertReturn );# );") + "&nbsp;" +
-						"</center>"
+                    this.btn.sized("set21","Dev ON/OFF", "","appMsg.confirm(#" + q1 + "#, #appFW.requestAPI(##GET##,[##reset##],####,apiAlertReturn );#);") + "&nbsp;" +
+                    this.btn.sized("set22","Audio Level","", "appMsg.confirm(#" + q2 + "#, #appFW.requestAPI(##GET##,[##reset-audio##],####,apiAlertReturn );# );") + "&nbsp;" +
+                    "</center>"
 					);
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_reset","Reset device values",set_temp,false);
@@ -205,9 +174,9 @@ function rmSettings (name) {	// IN PROGRESS
 		// button behavior
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row(	"<center>" +
-						this.btn.sized("set31",b_show, "",this.app_name+".button_show();") + "&nbsp;" +
-						this.btn.sized("set32",b_deact,"",this.app_name+".button_deact();") + "&nbsp;" +
-						"</center>"
+                    this.btn.sized("set31",b_show, "",this.app_name+".button_show();") + "&nbsp;" +
+                    this.btn.sized("set32",b_deact,"",this.app_name+".button_deact();") + "&nbsp;" +
+                    "</center>"
 					);
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_buttons","Button behavior",set_temp,false);
@@ -221,7 +190,7 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row( buttons );
 		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_colorcodes","Button color codes",set_temp,false);
+		setting  += this.basic.container("setting_color_codes","Button color codes",set_temp,false);
 
 		this.write(1,"Server &amp; Client Settings",setting);
 
@@ -233,9 +202,9 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row(	"API Speed:",		this.exec_time_list() );
 		set_temp += this.tab.row( 	"API Details:",
-						this.device_list("select_dev_status", this.app_name+".device_list_status('select_dev_status','dev_status');") +
-						"<span id='dev_status'>default</span>"
-						);		
+                    this.device_list("select_dev_status", this.app_name+".device_list_status('select_dev_status','dev_status');") +
+                    "<span id='dev_status'>default</span>"
+                    );
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_api03","Server- &amp; API-Status",set_temp,false);
 
@@ -243,9 +212,7 @@ function rmSettings (name) {	// IN PROGRESS
 		this.write(3);
 		}
 
-	//------------------------------
-
-	this.create_edit		= function () {
+	this.create_edit		    = function () {
 	
 		var onchange  = this.app_name + ".create_edit_FileNames()";
 		var onchange2 = this.app_name + ".create_edit_FileNames";
@@ -269,12 +236,12 @@ function rmSettings (name) {	// IN PROGRESS
 			var button  = "";			
 			var visible = scenes[key]["settings"]["visible"];
 
-			if (i > 0)			{ button += this.btn.sized(id="mv_sce_"+i,label="<b>&uarr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#scene#,#"+key+"#,#-1#);",disabled=""); }
-			else				{ button += this.btn.sized(id="mv_sce_"+i,label="",             style="updown",script_apiCommandSend="",disabled="disabled"); }
+			if (i > 0)              { button += this.btn.sized(id="mv_sce_"+i,label="<b>&uarr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#scene#,#"+key+"#,#-1#);",disabled=""); }
+			else                    { button += this.btn.sized(id="mv_sce_"+i,label="",             style="updown",script_apiCommandSend="",disabled="disabled"); }
 			if (i < order.length-1)	{ button += this.btn.sized(id="mv_sce_"+i,label="<b>&darr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#scene#,#"+key+"#,#1#);",disabled=""); }
 			
-			if (visible == "no")    	{ set_temp += this.tab.row("<i>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</i>",button); }
-			else                    	{ set_temp += this.tab.row("<b>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</b>",button); }
+			if (visible == "no")    { set_temp += this.tab.row("<i>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</i>",button); }
+			else                    { set_temp += this.tab.row("<b>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</b>",button); }
 			}
 
 		set_temp   += this.tab.end();
@@ -289,12 +256,12 @@ function rmSettings (name) {	// IN PROGRESS
 			var button  = "";			
 			var visible = this.data["DATA"]["devices"][key]["settings"]["visible"];
 						
-			if (i > 0)			{ button += this.btn.sized(id="mv_dev_"+i,label="<b>&uarr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#device#,#"+key+"#,#-1#);",disabled=""); }
-			else				{ button += this.btn.sized(id="mv_dev_"+i,label="",             style="updown",script_apiCommandSend="",disabled="disabled"); }
-			if (i < order.length-1)	{ button += this.btn.sized(id="mv_dev_"+i,label="<b>&darr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#device#,#"+key+"#,#1#);",disabled=""); }
+			if (i > 0)              { button += this.btn.sized(id="mv_dev_"+i,label="<b>&uarr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#device#,#"+key+"#,#-1#);",disabled=""); }
+			else                    { button += this.btn.sized(id="mv_dev_"+i,label="",             style="updown",script_apiCommandSend="",disabled="disabled"); }
+			if (i < order.length-1) { button += this.btn.sized(id="mv_dev_"+i,label="<b>&darr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#device#,#"+key+"#,#1#);",disabled=""); }
 			
-			if (visible == "no")		{ set_temp += this.tab.row("<i>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</i>",button); }
-			else				{ set_temp += this.tab.row("<b>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</b>",button); }		
+			if (visible == "no")    { set_temp += this.tab.row("<i>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</i>",button); }
+			else                    { set_temp += this.tab.row("<b>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</b>",button); }
 			}
 		
 		set_temp   += this.tab.end();
@@ -308,61 +275,61 @@ function rmSettings (name) {	// IN PROGRESS
 		this.btn.height = "30px";		
 
 		set_temp  = this.tab.start();
-		set_temp += this.tab.row( "ID:",  	this.input("add_scene_id") );
-		set_temp += this.tab.row( "Label:", 	this.input("add_scene_label") );
-		set_temp += this.tab.row( "Description:", this.input("add_scene_descr") );
+		set_temp += this.tab.row( "ID:",            this.input("add_scene_id") );
+		set_temp += this.tab.row( "Label:",         this.input("add_scene_label") );
+		set_temp += this.tab.row( "Description:",   this.input("add_scene_descr") );
 		set_temp += this.tab.row( "<center>" +
-					   this.btn.sized(id="add_scene",label="Add Scene",style="","apiSceneAdd([#add_scene_id#,#add_scene_descr#,#add_scene_label#]);") +
-					   "</center>", false);
+                    this.btn.sized(id="add_scene",label="Add Scene",style="","apiSceneAdd([#add_scene_id#,#add_scene_descr#,#add_scene_label#]);") +
+                    "</center>", false);
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_add_scene","Add scene",set_temp,false); 
 
 		set_temp  = this.tab.start();
-		set_temp += this.tab.row( "ID:",  		this.input("add_device_id") );
-		set_temp += this.tab.row( "Label:", 		this.input("add_device_descr",onclick=onchange,oninput=onchange) );
-		set_temp += this.tab.row( "Interface:",  	this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"],onchange) );
-		set_temp += this.tab.row( "Device Name:",	this.input("add_device",onclick=onchange,oninput=onchange) );
+		set_temp += this.tab.row( "ID:",            this.input("add_device_id") );
+		set_temp += this.tab.row( "Label:",         this.input("add_device_descr",onclick=onchange,oninput=onchange) );
+		set_temp += this.tab.row( "Interface:",     this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"],onchange) );
+		set_temp += this.tab.row( "Device Name:",   this.input("add_device",onclick=onchange,oninput=onchange) );
 		set_temp += this.tab.line();
 		set_temp += this.tab.row( "Device-Config:",	this.input("add_device_device")+".json" );
 		set_temp += this.tab.row( "Remote-Config:",	this.input("add_device_remote")+".json" );
 		set_temp += this.tab.row( "<center>" +
-					   this.btn.sized(id="add_dev",label="Add Device",style="","apiDeviceAdd([#add_device_id#,#add_device_descr#,#add_device_api#,#add_device#,#add_device_device#,#add_device_remote#],"+onchange2+");") +
-					   "</center>", false);
+                    this.btn.sized(id="add_dev",label="Add Device",style="","apiDeviceAdd([#add_device_id#,#add_device_descr#,#add_device_api#,#add_device#,#add_device_device#,#add_device_remote#],"+onchange2+");") +
+                    "</center>", false);
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_add_device","Add device",set_temp,false); 
 
 		this.write(0,lang("REMOTE_ADD"),setting);					
 
 
-		// Edit Makros 01		
+		// Edit Macros 01
 		setting   = "";
-		setting  += this.basic.container("setting_makros1","JSON makros [general]",		this.json.textarea("makro", this.data["DATA"]["makros"]["makro"], "makros"),false); 
-		setting  += this.basic.container("setting_makros2","JSON makros [device ON]",	this.json.textarea("dev-on", this.data["DATA"]["makros"]["dev-on"], "makros"),false); 
-		setting  += this.basic.container("setting_makros3","JSON makros [device OFF]",	this.json.textarea("dev-off", this.data["DATA"]["makros"]["dev-off"], "makros"),false); 
-		setting  += this.basic.container("setting_makros4","JSON makros [scene ON]",		this.json.textarea("scene-on", this.data["DATA"]["makros"]["scene-on"], "makros"),false); 
-		setting  += this.basic.container("setting_makros5","JSON makros [scene OFF]",	this.json.textarea("scene-off", this.data["DATA"]["makros"]["scene-off"], "makros"),false); 
+		setting  += this.basic.container("setting_macros1","JSON macros [global]",		this.json.textarea("macro", this.data["DATA"]["macros"]["macro"], "macros"),false);
+		setting  += this.basic.container("setting_macros2","JSON macros [device ON]",	this.json.textarea("dev-on", this.data["DATA"]["macros"]["dev-on"], "macros"),false);
+		setting  += this.basic.container("setting_macros3","JSON macros [device OFF]",	this.json.textarea("dev-off", this.data["DATA"]["macros"]["dev-off"], "macros"),false);
+		setting  += this.basic.container("setting_macros_manual","JSON macros - manual",lang("MANUAL_MACROS"),false);
 
-		setting  += this.basic.container("setting_makros_manual","JSON makros - manual",lang("MANUAL_MAKROS"),false); 
+        setting  += "<div style=\"border:1px solid;height:1px;margin:5px;margin-top:10px;padding:0px;\"></div>";
+		setting  += this.basic.container("setting_macros4","</b><i>old: JSON macros [scene ON]</i>",   this.json.textarea("scene-on", this.data["DATA"]["macros"]["scene-on"], "macros"),false);
+		setting  += this.basic.container("setting_macros5","</b><i>old: JSON macros [scene OFF]</i>",  this.json.textarea("scene-off", this.data["DATA"]["macros"]["scene-off"], "macros"),false);
 
 		setting  += "<center><br/><br/>";
-//		setting  += this.btn.sized("apiMakroChange(['makro','scene-on','scene-off','dev-on','dev-off']);",lang("BUTTON_T_SAVE"),"");
-		setting  += this.btn.sized(id="add_scene",label=lang("BUTTON_T_SAVE"),style="","apiMakroChange([#makro#,#scene-on#,#scene-off#,#dev-on#,#dev-off#]);","");
+//		setting  += this.btn.sized("apiMacroChange(['macro','scene-on','scene-off','dev-on','dev-off']);",lang("BUTTON_T_SAVE"),"");
+		setting  += this.btn.sized(id="add_scene",label=lang("BUTTON_T_SAVE"),style="","apiMacroChange([#macro#,#scene-on#,#scene-off#,#dev-on#,#dev-off#]);","");
 		setting  += "</center>";
 
-		this.write(2,"Change Makros",setting);
+		this.write(2,"Change Macros",setting);
 		}
-
 
 	this.create_edit_FileNames	= function () {
 	
 		replace_minus   = [" ","/","\\",":","&","#","?"];
 		
-		label		= document.getElementById("add_device_descr").value;
-		api		= document.getElementById("add_device_api").value;
-		device		= document.getElementById("add_device").value;
+		label   = document.getElementById("add_device_descr").value;
+		api     = document.getElementById("add_device_api").value;
+		device  = document.getElementById("add_device").value;
 
 		device_file	 = label.toLowerCase();
-		device_file     += "_" + device.toLowerCase();	
+		device_file += "_" + device.toLowerCase();
 		
 		for (var i=0;i<replace_minus.length;i++) { for (var j=0;j<5;j++) { device_file = device_file.replace(replace_minus[i], "-" ); } }
 
@@ -372,34 +339,31 @@ function rmSettings (name) {	// IN PROGRESS
 		document.getElementById("add_device_remote").value = remote_file;
 		}
 
-	//------------------------------
-
 	// write settings category
-	this.write			= function (nr,label="",text="") {
+	this.write			        = function (nr,label="",text="") {
 
 		var element 	= this.e_settings[nr];
 		if (label != "") {
 			var content 	= "<center><b>" + label + "</b></center>"
-					+ this.basic.edit_line()
-					+ text
-					+ "<br/>";
+                            + this.basic.edit_line()
+                            + text
+                            + "<br/>";
 			}
 		else { var content = ""; }
 
 		setTextById(element,content);
 		}
 		
-	this.is_filled			= function (nr) {
+	this.is_filled			    = function (nr) {
 		var element 	= this.e_settings[nr];
-		if (element.innerHTML != "")	{ return true; }
-		else				{ return false; }
+		if (element.innerHTML != "") { return true; }
+		else                         { return false; }
 		}
 
-	//------------------------------
-	this.show			= function () { if (this.active == false) { this.onoff(); showRemoteInBackground(0); } }
-	this.hide			= function () { if (this.active == true ) { this.onoff(); } }
+	this.show			        = function () { if (this.active == false) { this.onoff(); showRemoteInBackground(0); } }
+	this.hide			        = function () { if (this.active == true ) { this.onoff(); } }
 
-	this.onoff			= function () {
+	this.onoff			        = function () {
 
 		if (this.active)	{ 
 			setNavTitle(this.header_title);
@@ -429,70 +393,72 @@ function rmSettings (name) {	// IN PROGRESS
 		else if (show_settings)				{ elementHidden("frame1");  elementHidden("frame2"); elementHidden("frame3"); }
 		}
 
-	//------------------------------
-        
-        
-        // show devices in containers
-        this.device_list_container	= function () {
-        	var text = "";
-        	var list = {}
-        	for (var key in this.data["STATUS"]["devices"]) {
-        		var def_info = this.data["STATUS"]["devices"][key];
-        		var api_dev  = def_info["api"].split("_");
-        		if (! list[api_dev[0]]) { list[api_dev[0]] = {}; }
-        		if (! list[api_dev[0]][def_info["api"]]) { list[api_dev[0]][def_info["api"]] = {}; }
-        		list[api_dev[0]][def_info["api"]][key] = def_info;
-        		}
-        	for (var key in list) { if (key != "") {        		
-        		var details = ""; //JSON.stringify(list[key]);
-			details += "<i>API-Status:</i>";
-       		details += "<ul>";
-        		for (var key2 in list[key]) {
-       			var values  = this.data["STATUS"]["interfaces"][key2];
-       			var api_dev = key2.split("_");
-       			details += "<li><i>"+api_dev[1]+"</i>: <text id='api_status_"+key2+"'>"+values+"</text></li>";
-				}
-			// last-query, exec-time ... if available
-       		details += "</ul>";
-			details += "<i>Devices:</i>";
-       		details += "<ul>";
-        		for (var key2 in list[key]) {
-        			//details += "<b>"+key2+"</b><br>";
-        			for (var key3 in list[key][key2]) {
-        				var values = JSON.stringify(list[key][key2][key3]);
-        				values = values.replace( /,/g, ",<br/>");
-        				values = values.replace( /:/g, ": ");
+    // show devices in containers
+    this.device_list_container	= function () {
+        var text = "";
+        var list = {}
+        for (var key in this.data["STATUS"]["devices"]) {
+            var def_info = this.data["STATUS"]["devices"][key];
+            var api_dev  = def_info["api"].split("_");
+            if (! list[api_dev[0]]) { list[api_dev[0]] = {}; }
+            if (! list[api_dev[0]][def_info["api"]]) { list[api_dev[0]][def_info["api"]] = {}; }
+            list[api_dev[0]][def_info["api"]][key] = def_info;
+            }
+        for (var key in list) { if (key != "") {
+            var details = ""; //JSON.stringify(list[key]);
+        details += "<i>API-Status:</i>";
+        details += "<ul>";
+            for (var key2 in list[key]) {
+            var values  = this.data["STATUS"]["interfaces"][key2];
+            var api_dev = key2.split("_");
+            details += "<li><i>"+api_dev[1]+"</i>: <text id='api_status_"+key2+"'>"+values+"</text></li>";
+            }
+        // last-query, exec-time ... if available
+        details += "</ul>";
+        details += "<i>Devices:</i>";
+        details += "<ul>";
+            for (var key2 in list[key]) {
+                //details += "<b>"+key2+"</b><br>";
+                for (var key3 in list[key][key2]) {
+                    var values = JSON.stringify(list[key][key2][key3]);
+                    values = values.replace( /,/g, ",<br/>");
+                    values = values.replace( /:/g, ": ");
 
-					var command_on    = "appFW.requestAPI('GET',['set','"+key3+"','power','ON'], '', '', '' );setTextById('CHANGE_STATUS_"+key3+"','ON');"; //rm3settings.onoff();remoteInit();";
-					var command_off   = "appFW.requestAPI('GET',['set','"+key3+"','power','OFF'], '', '', '' );setTextById('CHANGE_STATUS_"+key3+"','OFF');"; //rm3settings.onoff();remoteInit();";
-					var power_status  = list[key][key2][key3]["power"]; //.toUpperCase();
-					
-					var label         = this.data["DATA"]["devices"][key3]["settings"]["label"];
-					var visibility    = this.data["DATA"]["devices"][key3]["settings"]["visible"];
+                var command_on    = "appFW.requestAPI('GET',['set','"+key3+"','power','ON'], '', '', '' );setTextById('CHANGE_STATUS_"+key3+"','ON');"; //rm3settings.onoff();remoteInit();";
+                var command_off   = "appFW.requestAPI('GET',['set','"+key3+"','power','OFF'], '', '', '' );setTextById('CHANGE_STATUS_"+key3+"','OFF');"; //rm3settings.onoff();remoteInit();";
+                var power_status  = list[key][key2][key3]["power"]; //.toUpperCase();
 
-					if (this.data["CONFIG"]["devices"][key3]) {
-						var method        = this.data["CONFIG"]["devices"][key3]["interface"]["method"];
-						var hidden        = "";
-					
-						if (method == "record" && power_status == "ON")	{ power_status = "<u id=\"CHANGE_STATUS_"+key3+"\"><status onclick=\""+command_off+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>"; }
-						if (method == "record" && power_status == "OFF")	{ power_status = "<u id=\"CHANGE_STATUS_"+key3+"\"><status onclick=\""+command_on+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>"; }
-						if (visibility != "yes")				{ hidden = "*"; }
-        				
-        					details += "<li><b>["+key3+"]</b> <i>"+label+":</i> " + power_status + hidden + "</li>";
-        					}
-        				else {
-						var error        = this.data["STATUS"]["config_errors"]["devices"][key3];
-        					details += "<li><b>["+key3+"]</b> <i>"+label+":</i> <font color='" + color_api_error + "'>ERROR in configuration file</font></li>";
-        					}
-	        			}
-        			}
-        		details += "</ul>";
-        		text += this.basic.container("details_"+key,"Interface: "+key+" </b><text id='api_status_"+key+"'> &nbsp;...</text>",details,false);
-        		} }
-        	return text;
-        	}
+                var label         = this.data["DATA"]["devices"][key3]["settings"]["label"];
+                var visibility    = this.data["DATA"]["devices"][key3]["settings"]["visible"];
 
-	this.device_list		= function (id,onchange="") {
+                if (this.data["CONFIG"]["devices"][key3]) {
+                    var method        = this.data["CONFIG"]["devices"][key3]["interface"]["method"];
+                    var hidden        = "";
+                    var idle          = "<small id=\"device_auto_off_"+key3+"\"></small>"
+
+                    if (method == "record" && power_status == "ON")  {
+                        power_status = "<u id=\"CHANGE_STATUS_"+key3+"\"><status onclick=\""+command_off+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
+                        }
+                    else if (method == "record" && power_status == "OFF") {
+                        power_status = "<u id=\"CHANGE_STATUS_"+key3+"\"><status onclick=\""+command_on+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
+                        }
+                    if (visibility != "yes") { hidden = "*"; }
+
+                    details += "<li><b>["+key3+"]</b> <i>"+label+":</i> " + power_status + hidden + "</li>" + idle;
+                    }
+                else {
+                    var error        = this.data["STATUS"]["config_errors"]["devices"][key3];
+                        details += "<li><b>["+key3+"]</b> <i>"+label+":</i> <font color='" + color_api_error + "'>ERROR in configuration file</font></li>";
+                        }
+                    }
+                }
+            details += "</ul>";
+            text += this.basic.container("details_"+key,"Interface: "+key+" </b><text id='api_status_"+key+"'> &nbsp;...</text>",details,false);
+            } }
+        return text;
+        }
+
+	this.device_list		    = function (id,onchange="") {
 		var list = {};
 		for (var key in this.data["DATA"]["devices"]){
 			list[key] = this.data["DATA"]["devices"][key]["settings"]["label"];
@@ -500,7 +466,7 @@ function rmSettings (name) {	// IN PROGRESS
 		return this.select(id,"device",list,onchange);
 		}
 
-	this.interface_list		= function () {
+	this.interface_list		    = function () {
 		var text = "<div id='setting_interface_list'>";
 		for (var key in this.data["STATUS"]["interfaces"]) {
 			text += key + ":<br><div id='api_status_"+key+"'>";
@@ -516,7 +482,7 @@ function rmSettings (name) {	// IN PROGRESS
 		setTextById('setting_interface_list', this.interface_list());
 		}
 
-	this.exec_time_list		= function () {
+	this.exec_time_list		    = function () {
 		var text = "<div id='setting_exec_time_list'>";
 		for (var key in this.data["STATUS"]["request_time"]) {
 			text += key + ": " + (Math.round(this.data["STATUS"]["request_time"][key]*1000)/1000) + "s<br/>";
@@ -529,7 +495,7 @@ function rmSettings (name) {	// IN PROGRESS
 		setTextById('setting_exec_time_list', this.exec_time_list());
 		}
 
-	this.button_list		= function (id,filter="") {
+	this.button_list		    = function (id,filter="") {
 		var list = {};
 		if (filter != "" && filter in this.data["DATA"]["devices"]) {
 			for (var key in this.data["DATA"]["devices"][filter]["buttons"]){
@@ -539,25 +505,25 @@ function rmSettings (name) {	// IN PROGRESS
 		return this.select(id,"button",list);
 		}
 
-	this.button_list_change	= function (id_filter, id_list, id_list_container) {
+	this.button_list_change	    = function (id_filter, id_list, id_list_container) {
 	        var filter_list = document.getElementById(id_filter);
 	        var filter      = filter_list.options[filter_list.selectedIndex].value;
 	        var list        = this.button_list( id_list, filter );
 	        setTextById( id_list_container, list );
         	}
 
-	this.device_list_status	= function (id_filter, id_list_container) {
-		var status = "<br/>";
-	        var filter_list = document.getElementById(id_filter);
-	        var filter      = filter_list.options[filter_list.selectedIndex].value;
+	this.device_list_status	    = function (id_filter, id_list_container) {
+		var status      = "<br/>";
+        var filter_list = document.getElementById(id_filter);
+        var filter      = filter_list.options[filter_list.selectedIndex].value;
 		for (var key in this.data["DATA"]["devices"][filter]["status"]) {
 			if (key == "power") {
 				command_on    = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','ON'], '', '', '' );rm3settings.onoff();remoteInit();";
 				command_off   = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','OFF'], '', '', '' );rm3settings.onoff();remoteInit();";
 				status_value  = this.data["DATA"]["devices"][filter]["status"][key];
-				if (status_value == "ON")	{ command_link = "<div onclick=\""+command_off+"\" style=\"cursor:pointer\">"+key+": <u>ON</u></div>"; }
+				if (status_value == "ON")	    { command_link = "<div onclick=\""+command_off+"\" style=\"cursor:pointer\">"+key+": <u>ON</u></div>"; }
 				else if (status_value == "OFF")	{ command_link = "<div onclick=\""+command_on +"\" style=\"cursor:pointer\">"+key+": <u>OFF</u></div>"; }
-				else				{ command_link = key + ": " + status_value + "</br>"; }
+				else				            { command_link = key + ": " + status_value + "</br>"; }
 				status += command_link;
 				}
 			else if (key != "presets") {
@@ -567,12 +533,8 @@ function rmSettings (name) {	// IN PROGRESS
 	        setTextById( id_list_container, status );
 		}
 
-
-	//------------------------------
-
 	// show button code in header if pressed button
-
-	this.button_show		= function () {
+	this.button_show		    = function () {
 		if (showButton)	{ showButton = false; }
 		else			{ showButton = true; }
 		this.create();
@@ -580,7 +542,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	// deactivate buttons if device / scene is switched off
-	this.button_deact		= function (menu_entry=false) {
+	this.button_deact		    = function (menu_entry=false) {
 		if (deactivateButton) 	{ 
 			deactivateButton = false;
 			this.manual_mode = false;
@@ -599,7 +561,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	// switch server connection between test and prod stage
-	this.button_stage		= function () {
+	this.button_stage		    = function () {
 		if (connect2stage == "Test")	{ connect2stage = "Prod"; appFW.appUrl = RESTurl_prod; }
 		else				{ connect2stage = "Test"; appFW.appUrl = RESTurl_test; }
 
@@ -608,8 +570,7 @@ function rmSettings (name) {	// IN PROGRESS
 		this.show();		// recreate settings page
 		}
 
-	//------------------------------	
-	this.input			= function (id,onclick="",oninput="") { 
+	this.input			        = function (id,onclick="",oninput="") {
 		
 		text = "<input id=\"" + id + "\" oninput=\""+oninput+"\" style='width:" + this.input_width + ";margin:1px;'>"; 
 		if (onclick != "") {
@@ -618,9 +579,8 @@ function rmSettings (name) {	// IN PROGRESS
 			
 		return text;
 		}
-		
 
-	this.select			= function (id,title,data,onchange="") {
+	this.select			        = function (id,title,data,onchange="") {
 		var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
 		item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
 		for (var key in data) {
