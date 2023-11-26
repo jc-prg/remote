@@ -4,6 +4,9 @@
 	"method" : "query",
 	"buttons" : {
 		"addons": "GUI.ActivateWindow({'window':'addonbrowser'})",
+		"addon_AmazonVOD": "Addons.ExecuteAddon({'addonid': 'plugin.video.amazon-test'})",
+		"addon_Joyn": "Addons.ExecuteAddon({'addonid': 'plugin.video.joyn'})",
+		"addon_Mediathek": "Addons.ExecuteAddon({'addonid': 'plugin.video.mediathekview'})",
 		"back": "Input.Back()",
 		"context": "Input.ContextMenu()",
 		"display": "Input.ShowOSD()",
