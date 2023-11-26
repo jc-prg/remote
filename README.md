@@ -214,7 +214,7 @@ In order to use jc://remote/ as it is, the following software must be installed:
 
 ## Integration of additional APIs and devices
 
-_Additional APIs can be added with a little effort if an API source written in Python is available. 
+Additional APIs can be added with a little effort if an API source written in Python is available. 
 Find additional information [how to integrate APIs here](server/interfaces/README.md).
 
 ## Disclaimer
