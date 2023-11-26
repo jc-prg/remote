@@ -6,7 +6,8 @@ You can define remote controls for devices and create scenes that use those comm
 those devices or macros to combine several commands on a single button. 
 There are a few templates available to be used and modified.
 
-_Additional APIs can be added with a little effort if an API source written in Python is available._
+_Additional APIs can be added with a little effort if an API source written in Python is available. 
+Find additional information [how to integrate APIs here](server/interfaces/README.md)._
 
 ## Table of Content
 
