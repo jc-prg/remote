@@ -2,7 +2,7 @@
 # -----------------------------------
 # (c) Christoph Kloth
 # -----------------------------------
-
+import json
 import time
 import logging
 import modules.rm3stage
@@ -140,7 +140,7 @@ def RemoteReload():
     """
     logging.warning("Request cache reload and device reconnect.")
 
-     refreshCache()
+    refreshCache()
     time.sleep(1)
 
     data = remoteAPI_start(["request-only"])
@@ -842,6 +842,24 @@ def RemoteConfigDevice(device):
         data["DATA"]["device"] = device
         data["DATA"][device] = device_config[device]
         data["DATA"][device]["interface_details"] = api_config
+
+    elif device == "all":
+        data["REQUEST"]["Return"] = "OK"
+        data["DATA"]["device"] = "all"
+        data["DATA"]["devices"] = device_config
+
+        for key in device_config:
+            api = device_config[key]["interface"]["interface_api"]
+            api_method = device_config[key]["interface"]["method"]
+            api_config = configFiles.read(modules.rm3config.commands + api + "/00_interface")
+
+            if api_method == "record":
+                data["DATA"]["devices"][key]["api_commands"] = {}
+
+            if "ERROR" not in str(api_config):
+                data["DATA"]["devices"][key]["interface_details"] = str(api_config)
+                # PROBLEM if not converted to string!
+
     else:
         data["REQUEST"]["Return"] = "ERROR"
         data["DATA"]["device"] = device
@@ -849,6 +867,55 @@ def RemoteConfigDevice(device):
 
     data = remoteAPI_end(data, ["no-config", "no-status"])
     return data
+
+
+def RemoteConfigInterface(interface):
+    """
+    get configuration data for device
+    """
+    data = remoteAPI_start(["request-only"])
+
+    data["DATA"] = {}
+
+    interfaces = []
+    device_config = RmReadData_devicesConfig(more_details=True)
+    for key in device_config:
+        api = device_config[key]["interface"]["interface_api"]
+        if api not in interfaces:
+            interfaces.append(api)
+
+    if interface == "all":
+        data["REQUEST"]["Return"] = "OK"
+        data["DATA"]["interface"] = "all"
+        data["DATA"]["interfaces"] = {}
+        for api in interfaces:
+            api_config = configFiles.read(modules.rm3config.commands + api + "/00_interface")
+            #data["DATA"]["interfaces"][api] = str(api_config)
+            for key1 in api_config["Devices"]:
+                for key2 in api_config["Devices"][key1]:
+                    if key2 == "MACAddress":
+                        api_config["Devices"][key1][key2] = str(api_config["Devices"][key1][key2])
+
+            data["DATA"]["interfaces"][api] = api_config
+
+    elif interface in interfaces:
+        data["REQUEST"]["Return"] = "OK"
+        data["DATA"]["interface"] = interface
+        api_config = configFiles.read(modules.rm3config.commands + interface + "/00_interface")
+        for key1 in api_config["Devices"]:
+            for key2 in api_config["Devices"][key1]:
+                if key2 == "MACAddress":
+                    api_config["Devices"][key1][key2] = str(api_config["Devices"][key1][key2])
+        data["DATA"][interface] = api_config
+
+    else:
+        data["REQUEST"]["Return"] = "ERROR"
+        data["DATA"]["interface"] = interface
+        data["DATA"][interface] = {"error": "Interface '"+interface+"' not found!"}
+
+    data = remoteAPI_end(data, ["no-config", "no-status"])
+    return data
+
 
 def RemoteTest():
     """
