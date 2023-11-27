@@ -234,7 +234,7 @@ class ConfigCache(threading.Thread):
         if selected_device != "" and selected_device in status and "status" in status[selected_device]:
             status = status[selected_device]["status"]
 
-        return status
+        return status.copy()
 
     def write_status(self, status, source=""):
         """
