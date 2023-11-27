@@ -446,7 +446,7 @@ function rmRemote(name) {
 		this.logging.default(device_data);
 		setTextById(id,remote);
 
-        apiSendToDeviceAPI_createDropDown( device, this.device_edit_api_commands );
+        apiGetConfig_createDropDown( device, this.device_edit_api_commands );
 		}
 
 	// create drop-down with API commands

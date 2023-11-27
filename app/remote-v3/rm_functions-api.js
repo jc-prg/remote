@@ -482,7 +482,12 @@ function apiSendToDeviceApi_return( data ) {
     setTextById('api_response', answer);
 }
 
-function apiSendToDeviceAPI_createDropDown( device, callback ) {
-    var send_cmd  = ["config-device", device];
+function apiGetConfig_createDropDown( device, callback ) {
+    var send_cmd  = ["config", "device", device];
+	appFW.requestAPI( "GET", send_cmd, "", callback );
+}
+
+function apiGetConfig_showInterfaceData( callback ) {
+    var send_cmd = ["config", "interface", "all"];
 	appFW.requestAPI( "GET", send_cmd, "", callback );
 }

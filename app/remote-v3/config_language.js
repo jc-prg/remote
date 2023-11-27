@@ -104,6 +104,7 @@ var language_app = {
 		"EDIT_REMOTE"            : "Edit remote",
 		"EDIT_DISPLAY"           : "Edit display",
 		"EDIT_MACROS"            : "Edit macros",
+		"EDIT_INTERFACES"        : "Edit interfaces",
 
 		"FORMAT_INCORRECT"       : "format is not correct",
 		

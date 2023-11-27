@@ -99,12 +99,14 @@ function rmSettings (name) {	// IN PROGRESS
 		this.write(0,lang("SERVER_SETTINGS"), this.module_main_settings());
 		this.write(1,lang("REMOTE_ADD"), this.module_add_remotes());
 		this.write(2,lang("CHANGE_ORDER"), this.module_order_remotes());
-		this.write(3,lang("EDIT_MACROS"), this.module_edit_macros());
-		this.write(4);
+		this.write(3,lang("EDIT_MACROS"), this.module_macros_edit());
+		this.write(4,lang("EDIT_INTERFACES"), this.module_interface_edit());
 
         statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
         statusShow_powerButton('button_manual_mode', getTextById('button_manual_mode'));
         statusShow_powerButton('button_show_code', getTextById('button_show_code'));
+
+        apiGetConfig_showInterfaceData(this.module_interface_edit_info);
 		}
 
 	// visualize modules
@@ -202,7 +204,7 @@ function rmSettings (name) {	// IN PROGRESS
 
 	this.module_interface_info  = function () {
 		var setting = "";
-		setting  += this.device_list_container();
+		setting  += this.device_list_container("status");
 
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row(	"API Speed:",		this.exec_time_list() );
@@ -215,6 +217,41 @@ function rmSettings (name) {	// IN PROGRESS
 
 		return setting;
     	}
+
+    this.module_interface_edit  = function () {
+		var setting = "";
+		setting  += this.device_list_container("edit");
+		return setting;
+    }
+
+    this.module_interface_edit_info = function (data) {
+
+        var interfaces = data["DATA"]["interfaces"];
+    	this.tab       = new rmRemoteTable(name+".tab");
+
+        for (var key in interfaces) {
+            var id = "interface_edit_"+key;
+            var interface = interfaces[key];
+            var setting = "";
+
+            setting += "<b>" + interface["API-Description"] + "</b><br/>&nbsp;<br/>";
+            setting += "API-Info: ";
+            setting += "<a href='"+interface["API-Info"]+"' style='color:white' target='_blank'>Overview</a>, ";
+            setting += "<a href='"+interface["API-Source"]+"' style='color:white' target='_blank'>Source</a>";
+            setting += "<hr/>";
+
+            setting += this.tab.start();
+            for (var dev in interface["Devices"]) {
+                var information = "";
+                for (var vars in interface["Devices"][dev]) {
+                    information += vars + "=" + JSON.stringify(interface["Devices"][dev][vars]) + "<br/>";
+                    }
+                setting += this.tab.row("<i>"+dev+":</i>", information);
+            }
+            setting += this.tab.end();
+            setTextById(id, setting);
+            }
+    }
 
 	this.module_main_settings   = function () {
 		// Edit Server Settings
@@ -281,7 +318,7 @@ function rmSettings (name) {	// IN PROGRESS
 		return setting;
 	}
 
-	this.module_edit_macros     = function () {
+	this.module_macros_edit     = function () {
 	    this.btn.width = "100px";
 
 		setting   = "";
@@ -471,7 +508,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
     // show devices in containers
-	this.edit_filenames	= function () {
+	this.edit_filenames	        = function () {
 
 		replace_minus   = [" ","/","\\",":","&","#","?"];
 
@@ -490,29 +527,31 @@ function rmSettings (name) {	// IN PROGRESS
 		document.getElementById("add_device_remote").value = remote_file;
 		}
 
-    this.device_list_container	= function () {
+    this.device_list_container	= function (type="status") {
         var text = "";
         var list = {}
         for (var key in this.data["STATUS"]["devices"]) {
             var def_info = this.data["STATUS"]["devices"][key];
             var api_dev  = def_info["api"].split("_");
-            if (! list[api_dev[0]]) { list[api_dev[0]] = {}; }
-            if (! list[api_dev[0]][def_info["api"]]) { list[api_dev[0]][def_info["api"]] = {}; }
+            if (! list[api_dev[0]])                     { list[api_dev[0]] = {}; }
+            if (! list[api_dev[0]][def_info["api"]])    { list[api_dev[0]][def_info["api"]] = {}; }
             list[api_dev[0]][def_info["api"]][key] = def_info;
             }
-        for (var key in list) { if (key != "") {
+
+        if (type == "status") {
+            for (var key in list) { if (key != "") {
             var details = ""; //JSON.stringify(list[key]);
-        details += "<i>API-Status:</i>";
-        details += "<ul>";
+            details += "<i>API-Status:</i>";
+            details += "<ul>";
             for (var key2 in list[key]) {
-            var values  = this.data["STATUS"]["interfaces"][key2];
-            var api_dev = key2.split("_");
-            details += "<li><i>"+api_dev[1]+"</i>: <text id='api_status_"+key2+"'>"+values+"</text></li>";
-            }
-        // last-query, exec-time ... if available
-        details += "</ul>";
-        details += "<i>Devices:</i>";
-        details += "<ul>";
+                var values  = this.data["STATUS"]["interfaces"][key2];
+                var api_dev = key2.split("_");
+                details += "<li><i>"+api_dev[1]+"</i>: <text id='api_status_"+key2+"'>"+values+"</text></li>";
+                }
+            // last-query, exec-time ... if available
+            details += "</ul>";
+            details += "<i>Devices:</i>";
+            details += "<ul>";
             for (var key2 in list[key]) {
                 //details += "<b>"+key2+"</b><br>";
                 for (var key3 in list[key][key2]) {
@@ -551,6 +590,14 @@ function rmSettings (name) {	// IN PROGRESS
             details += "</ul>";
             text += this.basic.container("details_"+key,"Interface: "+key+" </b><text id='api_status_"+key+"'> &nbsp;...</text>",details,false);
             } }
+            }
+        else if (type == "edit") {
+            for (var key in list) { if (key != "") {
+                details = "<div id='interface_edit_"+key+"' style='width:100%;min-height:50px;'></div>"
+                text += this.basic.container("details_"+key,"Interface: "+key+" </b><text id='api_status_"+key+"'> &nbsp;...</text>",details,false);
+            } }
+            }
+
         return text;
         }
 
