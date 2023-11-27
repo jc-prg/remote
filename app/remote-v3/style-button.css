@@ -213,3 +213,21 @@ button {
 .button.bgcyan.device_off   { background-color: cyan;	opacity: 0.4; }
 .button.black.device_off    { background-color: black;	opacity: 0.4; }
 
+/* show button code when pressed */
+
+.button_show {
+    position      : fixed;
+    right         : 20px;
+    top           : 50px;
+
+    height        : 20px;
+    min-width         : 100px;
+    border        : 1px solid gray;
+    background-color    : lightyellow;
+    opacity       : 80%;
+    border-radius : 3px;
+    text-align    : center;
+    vertical-align: middle;
+    padding       : 4px;
+    padding-top   : 8px;
+}

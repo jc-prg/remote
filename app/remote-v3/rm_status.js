@@ -464,6 +464,7 @@ function statusCheck_powerButtonScene(data) {
     if (document.getElementById('button_edit_mode')) {
         statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
         statusShow_powerButton('button_manual_mode', getTextById('button_manual_mode'));
+        statusShow_powerButton('button_show_code', getTextById('button_show_code'));
         }
 	}
 	

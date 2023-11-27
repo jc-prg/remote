@@ -213,7 +213,6 @@ function apiDeviceMovePosition_exe(type,device,direction) { appFW.requestAPI( "P
 function apiDeviceMovePosition_get(data) { appFW.requestAPI("GET",["list"],"",apiDeviceMovePosition); }
 function apiDeviceMovePosition(data) {
 	remoteReload_load();
-	rm3settings.mode = "";
 	rm3settings.data = data;
 	rm3settings.create();
 	}
@@ -271,6 +270,7 @@ function apiRemoteChangeVisibility(type, device_id, value_id) {
 function apiCommandSend(cmdButton, sync="", callback="", device="") {
 	var ee, vv;
 	var onoff = false;
+	var button_show = "<div class='button_show'>&nbsp;"+cmdButton+"&nbsp;</div>";
 
 	// check if macro
 	var types = ["macro", "scene-on", "scene-off", "dev-on", "dev-off"];
@@ -294,12 +294,12 @@ function apiCommandSend(cmdButton, sync="", callback="", device="") {
   		console.warn("use of apiCommandSend with sync -> try to reduce or eliminate");
   		
 		appFW.requestAPI("GET",dc,"",callback,"wait");		// send command and reload data when done
-		if (showButton) {setTextById("audio4", cmdButton);}
+		if (showButton) {setTextById("audio4", button_show);}
 		}
 
 	else {
 		appFW.requestAPI("GET",dc,"",callback);		// send command and reload data when done
-		if (showButton) {setTextById("audio4", cmdButton);}
+		if (showButton) {setTextById("audio4", button_show);}
 		}
 		
 	// device content info (scenes)
