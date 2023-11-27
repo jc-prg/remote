@@ -62,7 +62,7 @@ class ConfigCache(threading.Thread):
         threading.Thread.__init__(self)
         self.name = name
         self.stopProcess = False
-        self.wait = 1
+        self.wait = 0.5
         self.cache = {}
         self.cache_time = time.time()  # initial time for timebased update
         self.cache_last_action = time.time()  # initial time for timestamp of last action
@@ -104,20 +104,7 @@ class ConfigCache(threading.Thread):
 
             # Reread values from config files
             if self.cache_update:
-
-                i = 0
-                for key in self.cache:
-                    if key != "_api":
-                        key_path = key.replace("**", "/")
-                        self.cache[key] = rm3json.read(key_path)
-                        i += 1
-
-                self.logging.info("Reread " + str(i) + " config files into the cache (" + self.name + "," +
-                                  str(self.cache_interval) + "s)")
-                self.logging.debug(str(self.cache))
-
-                self.cache_time = time.time()
-                self.cache_update = False
+                self.reread_cache()
 
             # wait a few seconds
             else:
@@ -151,8 +138,8 @@ class ConfigCache(threading.Thread):
         """
         set var to enforce update
         """
-
-        self.cache_update = True
+        # self.cache_update = True
+        self.reread_cache()
         self.logging.info("Enforce cache update (" + self.name + ") " + str(self.cache_update))
 
     def read(self, config_file, from_file=False):
@@ -160,14 +147,32 @@ class ConfigCache(threading.Thread):
         read config from cache if not empty and not to old
         else read from file
         """
-
         config_file_key = config_file.replace("/", "**")
-        self.logging.debug("readConfig: " + config_file)
-        if config_file not in self.cache or from_file:
+        self.logging.info("readConfig: " + config_file)
+        if config_file_key not in self.cache or from_file:
             self.cache[config_file_key] = rm3json.read(config_file)
-            self.logging.debug("... from file.")
+            self.logging.info("... from file (from_file=" + str(from_file) + ").")
 
-        return self.cache[config_file_key]
+        return self.cache[config_file_key].copy()
+
+    def reread_cache(self):
+        """
+        reread all files into the cache
+        """
+        self.logging.debug("Reread config files ...")
+        i = 0
+        for key in self.cache:
+            if key != "_api":
+                key_path = key.replace("**", "/")
+                self.cache[key] = rm3json.read(key_path)
+                self.logging.info("... " + key_path)
+                i += 1
+
+        self.logging.debug("Reread " + str(i) + " config files into the cache (" + self.name + "," \
+                           + str(self.cache_interval) + "s)")
+
+        self.cache_time = time.time()
+        self.cache_update = False
 
     def write(self, config_file, value, source=""):
         """

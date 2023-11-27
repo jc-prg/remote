@@ -771,7 +771,7 @@ def RemoteAddScene(scene, info):
     data["REQUEST"]["Return"] = addScene(scene, info)
     data["REQUEST"]["Scene"] = scene
     data["REQUEST"]["Parameter"] = info
-    data["REQUEST"]["Command"] = "AddDevice"
+    data["REQUEST"]["Command"] = "AddScene"
 
     refreshCache()
     data = remoteAPI_end(data, ["no-data", "no-config"])
