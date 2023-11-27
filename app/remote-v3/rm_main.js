@@ -51,13 +51,14 @@ function remoteMainMenu (cookie_erase=true) {
 	setTextById("frame4","");
 	setTextById("frame5","");
 
+	rm3remotes.active_name = "";
 	remoteFirstLoad_load();
 	}
 
 
 function remoteInit (first_load=true) {
 
-	remoteMainMenu (cookie_erase=false);
+	remoteMainMenu(cookie_erase=false);
 	if (first_load) {
 		showRemoteInBackground(1);			// show start screen
 		setTextById("frame4","<center>Loading data ...</center>");
@@ -65,37 +66,31 @@ function remoteInit (first_load=true) {
 		}
 	}
 	
-//----------------------------------
 
 function remoteFirstLoad_load() {appFW.requestAPI("GET",["list"],"",remoteFirstLoad); }
 function remoteFirstLoad(data) {
+    dataAll = data;
 	//remoteReload(data);		// initial load of data incl. remotes, settings
 	remoteStartMenu(data);		// initial load start menu
 	remoteDropDown(data);		// initial load drop down menu
 	remoteLastFromCookie();		// get data from cookie
 	}
 
-//----------------------------------
-
-function remoteUpdate(data) {
-        rm3remotes.data = data["DATA"]["devices"]; //["DeviceConfig"];
-        rm3remotes.create();
-        }
-        
-//----------------------------------
 
 function remoteInitData_load() { appFW.requestAPI("GET",["list"],"",remoteInitData); }
 function remoteInitData(data) {
 
 	if (data["DATA"]) {
+	    dataAll = data;
+
 		// init and reload data 
 		rm3remotes.init(  data );
 		rm3settings.init( data );
 		rm3menu.init(     data );
 		rm3start.init(    data );
 
-		if (rm3settings.active)  { rm3settings.create(); }
-		else                     { rm3remotes.create(); }
+		if (rm3settings.active)                 { rm3settings.create(); }
+		else if (rm3remotes.active_name != "")  { rm3remotes.create(); }
 		}
 	else {
 		console.error("remoteInitData: no data loaded!");
@@ -114,9 +109,6 @@ function remoteReload(data) {
 		console.error("remoteReload: data not loaded.");
 		return;
 		}
-
-	// check if still used in a fct. -> to be removed
-	dataAll = data;
 
     // remoteForceReload_checkIfReady(data); // check if reloaded
 	remoteInitData(data);               // init and reload data
@@ -206,6 +198,10 @@ function remoteStartMenu(data) {
 		
 	startActive = true;
 
+    // no edit mode in start menu
+    elementHidden("frame1");
+    elementHidden("frame2");
+
 	// load buttons on start page
 	rm3start.init(        data);	// load data to class
 	rm3start.add_scenes(  data["DATA"]["scenes"],  "frame3" );
@@ -224,7 +220,7 @@ function remoteLastFromCookie() {
 	var cookie   = appCookie.get("remote");
 
 	// if cookie ...
-	if (cookie) {
+	if (cookie && cookie != "") {
 		var remote = cookie.split("::");
 		console.log("Load Cookie: " + cookie);
 		console.log(remote);

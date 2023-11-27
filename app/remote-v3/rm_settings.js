@@ -178,6 +178,10 @@ function rmSettings (name) {	// IN PROGRESS
 		for (var key in colors_power) {
 			buttons += "<button class='button' style='background-color:"+colors_power[key]+";width:22%;'>"+key+"</button>";
 			}
+		button_style = "width:30%;max-width:none;height:40px;";
+		buttons += "<button class='button notfound' style='"+button_style+"' disabled>command not found</button>";
+        buttons += "<button class='button notfound' style='"+button_style+"'>edit mode: cmd not found</button>";
+		buttons += "<button class='button small_edit' style='"+button_style+"'>edit mode: invisible</button>";
 
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row( "<center>" + buttons + "</center>" );

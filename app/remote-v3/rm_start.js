@@ -31,16 +31,16 @@ function rmStart(name) {
 	// add links to devices to drop down menu
 	this.add_devices          = function(data,menuItems) {
 	
-		elementHidden("frame1"); // no edit mode in start menu
-		elementHidden("frame2"); // no edit mode in start menu
-
 		// set vars
         var menu    = "";
 		rm3remotes.active_type = "start";
 
+        // no edit mode in start menu
+        elementHidden("frame1");
+        elementHidden("frame2");
 
 		// create small buttons for devices
-    		for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }    		
+        for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }
 		var order  = sortDict(data,"position");
 		for (var key in order) {
 			device = order[key];
@@ -69,6 +69,10 @@ function rmStart(name) {
 		// set vars
         var menu = "";
         rm3remotes.active_type = "start";
+
+        // no edit mode in start menu
+        elementHidden("frame1");
+        elementHidden("frame2");
 
 		// create big buttons for scenes
         for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }

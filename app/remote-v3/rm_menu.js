@@ -25,7 +25,8 @@ function rmMenu(name, menu) {
                 this.logging.default("Initialized new class 'rmMenu'.");
                 this.initial_load = false;
                 }
-            else {	this.logging.default("Reload data 'rmMenu'.");
+            else {
+                this.logging.default("Reload data 'rmMenu'.");
                 }
 
         this.writeMenu("");
@@ -48,7 +49,7 @@ function rmMenu(name, menu) {
     document.getElementById("menuItems").style.maxHeight  = height + "px";
     document.getElementById("menuItems2").style.maxHeight = height + "px";
     this.menu_height();
-            }
+    }
 
     this.click_menu          = function() {
             height       = (window.innerHeight - 70);
@@ -73,17 +74,17 @@ function rmMenu(name, menu) {
 	this.add_devices          = function(data) {
 
 		// return if no data
-    		if (!data) { return; }
+        if (!data) { return; }
 
 		// set vars
-    		var menu   = this.readMenu();
-    		if (this.data["STATUS"])	{ var error  = this.data["STATUS"]["config_errors"]["devices"]; }
-    		else				{ var error = {}; }
-    		
-    		for (var key in data) { if (data[key]["settings"]["position"]) { data[key]["position"] = data[key]["settings"]["position"]; }}
-		var order  = sortDict(data,"position");
-    		var i      = 0;
-		for (var j=0;j<order.length;j++) {
+        var menu   = this.readMenu();
+        if (this.data["STATUS"])    { var error  = this.data["STATUS"]["config_errors"]["devices"]; }
+        else                        { var error = {}; }
+
+        for (var key in data) { if (data[key]["settings"]["position"]) { data[key]["position"] = data[key]["settings"]["position"]; }}
+        var order  = sortDict(data,"position");
+        var i      = 0;
+        for (var j=0;j<order.length;j++) {
 			device = order[j];
 			if (device != "default") {
 
@@ -97,13 +98,14 @@ function rmMenu(name, menu) {
 					}			        
 				}
         		}
-    		this.writeMenu(menu + "<li><hr/></li>");
+
+        this.writeMenu(menu + "<li><hr/></li>");
 		}
 		
 	// add links to scenes to drop down menu
 	this.add_scenes           = function(data) {
 
-		// return if no data
+        // return if no data
         if (data) {} else { return; }
 
         var menu   = this.readMenu();
@@ -111,26 +113,26 @@ function rmMenu(name, menu) {
         else                        { var error = {}; }
 
         for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }
-		var order  = sortDict(data,"position");
+        var order  = sortDict(data,"position");
 
-		for (var j=0;j<order.length;j++) {
-			scene = order[j];
-			if (data[scene]["settings"]["label"]) {
-				if (scene in error) {
-				        if (data[scene]["settings"]["visible"] != "no")	{
-				            menu  += this.entry_scene( scene, "<div class=#entry_error#>! " + data[scene]["settings"]["label"] + "</div>" );
-				            console.warn("addScenes: "+scene);
-				            console.warn(error[scene]);
-				            }
-				        else if (this.edit_mode) {
-				            menu  += this.entry_scene( scene, "<div class=#entry_error#>.(" + data[scene]["settings"]["label"] + ").</div>" );
-				            }
-					}
-				else {
-				        if (data[scene]["settings"]["visible"] != "no")	{ menu  += this.entry_scene( scene, data[scene]["settings"]["label"] ); }
-				        else if (this.edit_mode)				{ menu  += this.entry_scene( scene, "<div class=#hidden_entry_edit#>.(" + data[scene]["settings"]["label"] + ").</div>" ); }
-					}
-				}
+        for (var j=0;j<order.length;j++) {
+            scene = order[j];
+            if (data[scene]["settings"]["label"]) {
+                if (scene in error) {
+                        if (data[scene]["settings"]["visible"] != "no")	{
+                            menu  += this.entry_scene( scene, "<div class=#entry_error#>! " + data[scene]["settings"]["label"] + "</div>" );
+                            console.warn("addScenes: "+scene);
+                            console.warn(error[scene]);
+                            }
+                        else if (this.edit_mode) {
+                            menu  += this.entry_scene( scene, "<div class=#entry_error#>.(" + data[scene]["settings"]["label"] + ").</div>" );
+                            }
+                    }
+                else {
+                        if (data[scene]["settings"]["visible"] != "no")	{ menu  += this.entry_scene( scene, data[scene]["settings"]["label"] ); }
+                        else if (this.edit_mode)				{ menu  += this.entry_scene( scene, "<div class=#hidden_entry_edit#>.(" + data[scene]["settings"]["label"] + ").</div>" ); }
+                    }
+                }
             }
 
         this.writeMenu(menu + "<li><hr/></li>");
@@ -142,7 +144,7 @@ function rmMenu(name, menu) {
         var menu = this.readMenu();
         menu += this.entry_script(script,label);
         this.writeMenu(menu);
-		}
+        }
 
 	// add links to scenes to drop down menu
 	this.add_link             = function(link,label) {

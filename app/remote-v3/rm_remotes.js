@@ -61,6 +61,10 @@ function rmRemote(name) {
 	
         if (type == "")   { type  = this.active_type; }
         if (rm_id == "")  { rm_id = this.active_name; }
+        if (rm_id == "")  {
+			this.logging.warn("No Remote Id given ...");
+            return;
+            }
 	        
 		if ("DATA" in this.data == false) {
 			this.logging.warn("Data not loaded yet.");
@@ -893,7 +897,7 @@ function rmRemote(name) {
 
 	// edit scene
 	this.scene_edit                 = function (id, scene) {
-	
+
 		if (this.edit_mode)     { elementVisible(id); }
 		else                    { elementHidden(id,"scene_edit"); return; }
 	        
@@ -930,7 +934,7 @@ function rmRemote(name) {
 		          );
 		edit   += this.tab.end();
 		remote += this.basic.container("scene_main","Scene settings",edit,true);
-		
+
 		// file information
 		edit    = this.tab.start();
 		edit   += this.tab.row("Remote:&nbsp;&nbsp;",  this.data["DATA"]["scenes"][scene]["config"]["remote"]+".json" );
@@ -948,7 +952,7 @@ function rmRemote(name) {
 
 	// create edit panel to edit JSON data
 	this.scene_edit_json            = function (id, scene, preview_remote="", preview_channel="", preview_display="", preview_display_size="") {
-	
+
         if (this.edit_mode) { elementVisible(id); }
         else                { elementHidden(id,"scene_edit_json"); return; }
 
@@ -1001,14 +1005,18 @@ function rmRemote(name) {
 		        }
 		    else {
 		        json_edit_values[field] = this.json.get_value(json_preview_values[field], scene_remote[field]);
+		        // Error detected .... !
 		        preview = true;
 		        }
 		    }
+
+		if (json_edit_values["display"] == undefined)         { json_edit_values["display"] = {}; }
 		if (json_edit_values["display-size"] == undefined)    { json_edit_values["display-size"] = "middle"; }
 		if (json_edit_values["macro-scene-on"] == undefined)  { json_edit_values["macro-scene-on"] = []; }
 		if (json_edit_values["macro-scene-off"] == undefined) { json_edit_values["macro-scene-off"] = []; }
 		if (json_edit_values["macro-scene"] == undefined)     { json_edit_values["macro-scene"] = {}; }
 		if (json_edit_values["macro-scene"] == "")            { json_edit_values["macro-scene"] = {}; }
+		if (json_edit_values["macro-channel"] == undefined)   { json_edit_values["macro-channel"] = {}; }
 
 		// header
 		this.button.width = "100px";
@@ -1060,6 +1068,7 @@ function rmRemote(name) {
 			          this.button.edit("","","disabled")
 			          );
 			}
+
 		edit   += this.tab.row(
 		          //!this.basic.select("scene_display_size","display size", display_sizes, "", remote_display_size),
 		          this.basic.select("json::display-size","display size", display_sizes, "", json_edit_values["display-size"]),
@@ -1081,13 +1090,14 @@ function rmRemote(name) {
 		          );
 		edit   += this.tab.line();
 		edit   += this.tab.row(
-		          //!this.basic.select_array("scene_display_delete","display value", Object.keys(remote_display),"",""),
 		          this.basic.select_array("scene_display_delete","display value", Object.keys(json_edit_values["display"]),"",""),
 		          this.button.edit(display_del_cmd,lang("BUTTON_T_DEL_VALUE"))
 		          );
+
 		edit   += this.tab.end();
 		remote += this.basic.container("display_size",lang("EDIT_DISPLAY"),edit,false);
-				
+
+
 		// load template
 		this.button.width = "100px";
 		edit    = this.tab.start();
@@ -1431,8 +1441,7 @@ function rmRemote(name) {
 	this.template_list              = function (type="") {
         	var templates = {};
         	for (key in this.data["DATA"]["templates"]) {
-        		if (type == "")							{ templates[key] = this.data["DATA"]["templates"][key]["description"]; }
-        		else if (!this.data["DATA"]["templates"][key]["type"])		{ templates[key] = this.data["DATA"]["templates"][key]["description"]; }
+        		if (type == "")                                                 { templates[key] = this.data["DATA"]["templates"][key]["description"]; }
         		else if (this.data["DATA"]["templates"][key]["type"] == type)	{ templates[key] = this.data["DATA"]["templates"][key]["description"]; }
         		}
         	return templates;

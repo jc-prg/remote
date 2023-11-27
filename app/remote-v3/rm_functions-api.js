@@ -26,23 +26,30 @@ function apiCheckUpdates_msg( data ) {
 
 // show return message as alert
 function apiAlertReturn(data) {
-	var reload_timeout = 2000;
-	appMsg.alertReturn(data);
 
-	remoteReload_load();
-	//setTimeout(function(){ remoteUpdate(dataAll) }, reload_timeout );
-	setTimeout(function(){ rm3remotes.data = dataAll; rm3remotes.create(); }, reload_timeout );
-	
-    if (data["REQUEST"]["Command"] == "AddTemplate")  	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, reload_timeout); }
-    if (data["REQUEST"]["Command"] == "EditDevice")   	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, reload_timeout); }
-    if (data["REQUEST"]["Command"] == "EditScene")   	{ setTimeout(function(){ rm3remotes.create( "scene",  data["REQUEST"]["Scene"] ); }, reload_timeout); }
-    if (data["REQUEST"]["Command"] == "ChangeVisibility" )	{
-        if (data["REQUEST"]["Device"] == "device") 	{ setTimeout(function(){ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }, reload_timeout); }
-        if (data["REQUEST"]["Device"] == "scene") 	{ setTimeout(function(){ rm3remotes.create( "scene", data["REQUEST"]["Device"] ); }, reload_timeout); }
-        }
+    setTimeout(function() {
+        if (data["REQUEST"]["Command"] == "DeleteDevice") 	{ appCookie.erase("remote"); rm3remotes.active_name = ""; }
+        if (data["REQUEST"]["Command"] == "DeleteScene") 	{ appCookie.erase("remote"); rm3remotes.active_name = ""; }
+        remoteReload_load();
+        }, 1000);
 
-    if (data["REQUEST"]["Command"] == "DeleteDevice") 	{ setTimeout(function(){ rm3cookie.set("remote",""); rm3remotes.create( "", "" ); }, reload_timeout); }
-    if (data["REQUEST"]["Command"] == "DeleteScene") 	{ setTimeout(function(){ rm3cookie.set("remote",""); rm3remotes.create( "", "" ); }, reload_timeout); }
+    setTimeout(function() {
+        if (data["REQUEST"]["Command"] == "AddTemplate")  	    { rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
+        else if (data["REQUEST"]["Command"] == "AddDevice")   	{ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
+        else if (data["REQUEST"]["Command"] == "EditDevice")   	{ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
+        else if (data["REQUEST"]["Command"] == "AddScene")   	{ rm3remotes.create( "scene",  data["REQUEST"]["Scene"] ); }
+        else if (data["REQUEST"]["Command"] == "EditScene")   	{ rm3remotes.create( "scene",  data["REQUEST"]["Scene"] ); }
+        else if (data["REQUEST"]["Command"] == "ChangeVisibility" )	{
+            if (data["REQUEST"]["Device"] == "device")          { rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
+            if (data["REQUEST"]["Device"] == "scene")           { rm3remotes.create( "scene", data["REQUEST"]["Device"] ); }
+            }
+        else if (data["REQUEST"]["Command"] == "DeleteDevice") 	{ remoteMainMenu(); }
+        else if (data["REQUEST"]["Command"] == "DeleteScene") 	{ remoteMainMenu(); }
+        else                                                    {}
+
+	    appMsg.alertReturn(data);
+
+        }, 2000);
     }
 
 // set main audio device
@@ -84,16 +91,16 @@ function apiMacroChange(data=[]) {
 // create new device
 function apiSceneAdd(data) {
 
-	send_data		   = {};
-	send_data["id"]            = getValueById(data[0]);
-	send_data["label"]         = getValueById(data[1]);
-	send_data["description"]   = getValueById(data[2]);
+	send_data                   = {};
+	send_data["id"]             = getValueById(data[0]);
+	send_data["label"]          = getValueById(data[1]);
+	send_data["description"]    = getValueById(data[2]);
 	
-	console.error(send_data);
-        
-	if (dataAll["DATA"]["devices"][send_data["id"]])	{ appMsg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
-	else if (send_data["id"] == "")			{ appMsg.alert(lang("SCENE_INSERT_ID")); return; }
-	else if (send_data["label"] == "")			{ appMsg.alert(lang("SCENE_INSERT_LABEL")); return; }
+	console.debug("apiSceneAdd: " + JSON.stringify(send_data));
+
+    if (dataAll["DATA"]["scenes"][send_data["id"]])     { appMsg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
+    else if (send_data["id"] == "")                     { appMsg.alert(lang("SCENE_INSERT_ID")); return; }
+    else if (send_data["label"] == "")                  { appMsg.alert(lang("SCENE_INSERT_LABEL")); return; }
 
 	appFW.requestAPI("PUT",["scene",send_data["id"]], send_data, apiAlertReturn);
 	}
@@ -165,13 +172,23 @@ function apiSceneJsonEdit(device,field_names) {
 	}
 
 // delete scene
-function apiSceneDelete_exe(device) { appFW.requestAPI("DELETE",["scene",device], "", apiAlertReturn); remoteInit(); }
+function apiSceneDelete_exe(device) {
+    appFW.requestAPI("DELETE",["scene",device], "", apiAlertReturn);
+    rm3remotes.active_name = "";
+    appCookie.erase("remote");
+    }
+
 function apiSceneDelete(scene_id) {
 
 	var scene = check_if_element_or_value(scene_id,true);
 	if (scene == "") { appMsg.alert(lang("SCENE_SELECT")); return; }
 
-	appMsg.confirm(lang("SCENE_ASK_DELETE",[scene]),"apiSceneDelete_exe('" + scene + "');");
+	if (!dataAll["DATA"]["scenes"][scene_id]) {
+	    appMsg.alert("Scene '"+scene_id+"' doesn't exist.");
+	    }
+	else {
+        appMsg.confirm(lang("SCENE_ASK_DELETE",[scene]),"apiSceneDelete_exe('" + scene + "');");
+        }
 	}
 
 // edit device data
@@ -243,7 +260,13 @@ function apiDeviceAdd(data,onchange) {
 	}
 
 // delete device
-function apiDeviceDelete_exe(device) { appFW.requestAPI("DELETE",["device",device], "", apiAlertReturn); remoteInit(); }
+function apiDeviceDelete_exe(device) {
+    appFW.requestAPI("DELETE",["device",device], "", apiAlertReturn);
+    rm3remotes.active_name = "";
+    appCookie.erase("remote");
+    remoteInit(); // check if required !!!!!!!!!!!!!!!
+    }
+
 function apiDeviceDelete(device_id) {
 
 	var device = check_if_element_or_value(device_id,true);

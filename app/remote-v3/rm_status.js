@@ -525,6 +525,7 @@ function statusCheck_powerButton(data={}) {
 	var device_list = "";
 	for (var device in devices) {
 	
+	    if (device == "default") { continue; }
 		if (!data["CONFIG"]["devices"][device]) {
 		    console.warn("Device not defined correctly: '" + device + "' has no configuration.");
 		    continue;
@@ -657,7 +658,8 @@ function statusCheck_display(data={}) {
 
 	// set colors
 	for (var key in devices) {
-	
+
+	    if (key == "default") { continue; }
 		if (!data["CONFIG"]["devices"][key]) {
 		    console.warn("Device not defined correctly: '" + key + "' has no configuration.");
 		    continue;
