@@ -459,7 +459,7 @@ def RmReadData(selected=[]):
                 configFiles.cache_update = True
 
     # if update required
-    if configFiles.cache_update or "_api" not in configFiles.cache:
+    if configFiles.cache_update_cmd or "_api" not in configFiles.cache:
 
         data["devices"] = RmReadData_devices(selected, True, False)
         data["macros"] = RmReadData_macros(selected)
@@ -474,7 +474,7 @@ def RmReadData(selected=[]):
 
         # mark update as done
         logging.info("Update config data in cache (" + str(configFiles.cache_update) + ")")
-        configFiles.cache_update = False
+        configFiles.cache_update_cmd = False
 
     # if no update required read from cache
     else:

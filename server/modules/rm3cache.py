@@ -69,6 +69,7 @@ class ConfigCache(threading.Thread):
         self.cache_interval = rm3config.refresh_config_cache  # update interval in seconds (reread files)
         self.cache_sleep = rm3config.refresh_config_sleep  # sleeping mode after x seconds
         self.cache_update = False  # foster manual update of files
+        self.cache_update_cmd = False
         self.cache_update_api = None
         self.configMethods = {}
         self.api_init = {"API": {
@@ -148,10 +149,10 @@ class ConfigCache(threading.Thread):
         else read from file
         """
         config_file_key = config_file.replace("/", "**")
-        self.logging.info("readConfig: " + config_file)
+        self.logging.debug("readConfig: " + config_file)
         if config_file_key not in self.cache or from_file:
             self.cache[config_file_key] = rm3json.read(config_file)
-            self.logging.info("... from file (from_file=" + str(from_file) + ").")
+            self.logging.debug("... from file (from_file=" + str(from_file) + ").")
 
         return self.cache[config_file_key].copy()
 
@@ -160,15 +161,16 @@ class ConfigCache(threading.Thread):
         reread all files into the cache
         """
         self.logging.debug("Reread config files ...")
+        self.cache_update_cmd = True
         i = 0
         for key in self.cache:
             if key != "_api":
                 key_path = key.replace("**", "/")
                 self.cache[key] = rm3json.read(key_path)
-                self.logging.info("... " + key_path)
+                self.logging.debug("... " + key_path)
                 i += 1
 
-        self.logging.debug("Reread " + str(i) + " config files into the cache (" + self.name + "," \
+        self.logging.info("Reread " + str(i) + " config files into the cache (" + self.name + "," \
                            + str(self.cache_interval) + "s)")
 
         self.cache_time = time.time()
