@@ -64,7 +64,7 @@ var language_app = {
 		"CHANGE_ORDER"          : "Change order of remote controls",
 		"CHANGE_ORDER_SCENES"   : "Change order of scenes",
 		"CHANGE_ORDER_DEVICES"  : "Change order of devices",
-		"CHANGE_MODES"          : "Change modes",
+		"CHANGE_MODES"          : "Change working modes",
 
 		"COLORPICKER_SELECT_CMD" : "Select command, to insert color picker.",
 		"COLORPICKER_N/A"       : "Color picker not supported",
