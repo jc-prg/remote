@@ -140,13 +140,15 @@ def RemoteReload():
     """
     logging.warning("Request cache reload and device reconnect.")
 
+     refreshCache()
+    time.sleep(1)
+
     data = remoteAPI_start(["request-only"])
     data["REQUEST"]["Return"] = "OK: Configuration reloaded"
     data["REQUEST"]["Command"] = "Reload"
 
     deviceAPIs.api_reconnect()
     devicesGetStatus(data, readAPI=True)
-    refreshCache()
 
     data = remoteAPI_end(data, ["no-data"])
     return data

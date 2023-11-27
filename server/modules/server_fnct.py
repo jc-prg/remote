@@ -1266,21 +1266,24 @@ def setMainAudioDevice(device):
     """
     set device as main audio device
     """
-
     return_msg = ""
     status = configFiles.read_status()
 
     if device in status:
         for key in status:
             if key == device:
-                status[key]["main-audio"] = "yes"
+                status[key]["settings"]["main-audio"] = "yes"
             else:
-                status[key]["main-audio"] = "no"
-        return_msg = "OK: Set " + device + " as main-audio device."
+                status[key]["settings"]["main-audio"] = "no"
+        configFiles.write_status(status, "resetAudio")
+
+        if "main-audio" in status2[device]["settings"] and status2[device]["settings"]["main-audio"] == "yes":
+            return_msg = "OK: Set " + device + " as main-audio device."
+        else:
+            return_msg = "ERROR: Could not set " + device + " as main-audio device."
     else:
         return_msg = "ERROR: device not defined."
 
-    configFiles.write_status(status, "resetAudio")
     return return_msg
 
 
