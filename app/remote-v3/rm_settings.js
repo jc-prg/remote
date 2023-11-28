@@ -465,7 +465,7 @@ function rmSettings (name) {	// IN PROGRESS
 
 		var element 	= this.e_settings[nr];
 		if (label != "") {
-			var content 	= "<center><b>" + label + "</b></center>"
+			var content 	= "<font style='font-variant: small-caps;'><center><b>" + label + "</b></center></font>"
                             + this.basic.edit_line()
                             + text
                             + "<br/>";

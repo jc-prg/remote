@@ -381,7 +381,7 @@ function rmRemote(name) {
 		this.button.width       = "90px";
 
 		var remote = "";
-		remote  += "<center><b>"+lang("EDIT_REMOTE")+" &quot;"+device_data["settings"]["label"]+"&quot;</b> ["+device+"]</center>";
+		remote  += "<center style='font-variant: small-caps;'><b>"+lang("EDIT_REMOTE")+" &quot;"+device_data["settings"]["label"]+"&quot;</b> ["+device+"]</center>";
 		remote += this.basic.edit_line();
 
 		// Main Settings
@@ -500,7 +500,7 @@ function rmRemote(name) {
 		
 		// Start remote control edit section
 		var remote = "";
-		remote += "<center><b>Edit remote &quot;"+device_info["label"]+"&quot;</b> ["+device+"]</center>";
+		remote += "<center style='font-variant: small-caps;'><b>Edit remote &quot;"+device_info["label"]+"&quot;</b> ["+device+"]</center>";
 		remote += this.basic.edit_line();
 			
 		// Add elements
@@ -913,7 +913,7 @@ function rmRemote(name) {
 		var remote_info   = this.data["DATA"]["devices"];
 		var remote        = "";
 
-		remote  += "<center><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
+		remote  += "<center style='font-variant: small-caps;'><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
 		remote  += this.basic.edit_line();
 
 		// main settings for the scene
@@ -1021,7 +1021,7 @@ function rmRemote(name) {
 		// header
 		this.button.width = "100px";
 		var remote = "";
-		remote    += "<center><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
+		remote    += "<center style='font-variant: small-caps;'><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
 		remote    += this.basic.edit_line();
 		
 		// add elements
