@@ -871,7 +871,7 @@ def RemoteConfigDevice(device):
 
 def RemoteConfigInterface(interface):
     """
-    get configuration data for device
+    get configuration data for interface
     """
     data = remoteAPI_start(["request-only"])
 
@@ -913,6 +913,54 @@ def RemoteConfigInterface(interface):
         data["DATA"]["interface"] = interface
         data["DATA"][interface] = {"error": "Interface '"+interface+"' not found!"}
 
+    data = remoteAPI_end(data, ["no-config", "no-status"])
+    return data
+
+
+def RemoteConfigInterfaceEdit(interface, config):
+    """
+    save configuration data for interface
+    """
+    data = remoteAPI_start(["request-only"])
+
+    data["DATA"] = {}
+    interfaces = []
+    device_config = RmReadData_devicesConfig(more_details=True)
+    for key in device_config:
+        api = device_config[key]["interface"]["interface_api"]
+        if api not in interfaces:
+            interfaces.append(api)
+
+    if interface == "all":
+        data["REQUEST"]["Return"] = "ERROR: Parameter '"+interface+"' not supported!"
+        data["DATA"]["interface"] = "all"
+
+    elif "_" in interface and interface.split("_")[0] in interfaces:
+        api, dev = interface.split("_")
+        data["REQUEST"]["Return"] = "OK"
+        data["DATA"]["interface"] = interface
+        config_org = configFiles.read(modules.rm3config.commands + api + "/00_interface")
+        config_org["Devices"][dev] = config
+        try:
+            configFiles.write(modules.rm3config.commands + api + "/00_interface", config_org)
+        except Exception as e:
+            data["REQUEST"]["Return"] = "ERROR: Could not save configuration for '" + interface + "': " + str(e)
+            data["DATA"]["interface"] = "all"
+
+    elif interface in interfaces:
+        data["REQUEST"]["Return"] = "OK"
+        data["DATA"]["interface"] = interface
+        try:
+            configFiles.write(modules.rm3config.commands + interface + "/00_interface-test", data)
+        except Exception as e:
+            data["REQUEST"]["Return"] = "ERROR: Could not save configuration for '" + interface + "': " + str(e)
+            data["DATA"]["interface"] = "all"
+
+    else:
+        data["REQUEST"]["Return"] = "ERROR: Interface '"+interface+"' not found!"
+        data["DATA"]["interface"] = interface
+
+    refreshCache()
     data = remoteAPI_end(data, ["no-config", "no-status"])
     return data
 

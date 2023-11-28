@@ -130,6 +130,33 @@ paths:
                 $ref: "#/definitions/REQUEST"
               DATA:
                 $ref: "#/definitions/DATA_DEVICE"
+    post:
+      operationId: modules.server_cmd.RemoteConfigInterfaceEdit
+      tags:
+        - list
+      summary: change configuration of a specific interface
+      description: change configuration of a specific interface
+      parameters:
+        - name: interface
+          in: path
+          type: string
+          required: true
+        - name: config
+          in: body
+          schema:
+            type: object
+          required: true
+      responses:
+        200:
+          description: Successfully saved configuration
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              DATA:
+                $ref: "#/definitions/DATA_DEVICE"
 
   /send_check/{device}/{button}/:
     get:
@@ -234,7 +261,8 @@ paths:
         - name: api_command
           in: body
           schema:
-            type: string
+            type:
+              object
           required: true
       responses:
         200:
