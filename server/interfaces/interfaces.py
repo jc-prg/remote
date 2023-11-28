@@ -530,7 +530,7 @@ class Connect(threading.Thread):
             device_code = active[device]["config"]["device"]
             device_api = active[device]["config"]["interface_api"]
             device_config = self.configFiles.read(rm3config.commands + device_api + "/" + device_code)
-            return device_config
+            return device_config.copy()
         else:
             return {"ERROR": "Device configuration doesn't exist."}
 
@@ -575,8 +575,6 @@ class Connect(threading.Thread):
         """
         translate device and button to command for the specific device
         """
-        buttons_default = {"data": {}}
-        value_list = ["buttons", "queries", "commands", "values", "send-data"]
         active = self.configFiles.read_status()
         api = dev_api.split("_")[0]
 

@@ -141,7 +141,7 @@ def RmReadData_devicesConfig(more_details=False):
 
             for key in data_config[device]["commands"]["definition"]:
                 if "str" not in str(type(data_config[device]["commands"]["definition"][key])):
-                    pass
+                    #pass
                     # tbc. where config is used and if it might be good to remove "get" and "set" section for some purposes
                     # for some reason the data are reflected into the configFiles.cache?!
 
