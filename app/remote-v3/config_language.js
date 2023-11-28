@@ -102,6 +102,7 @@ var language_app = {
 		"DISPLAY_NOT_ADDED"      : "No display added yet. Changes below will have no effect.",
 		
 		"EDIT_REMOTE"            : "Edit remote",
+		"EDIT_REMOTES"           : "Edit remotes",
 		"EDIT_DISPLAY"           : "Edit display",
 		"EDIT_MACROS"            : "Edit macros",
 		"EDIT_INTERFACES"        : "Edit interfaces",

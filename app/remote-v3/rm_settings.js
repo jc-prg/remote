@@ -19,7 +19,8 @@ function rmSettings (name) {	// IN PROGRESS
 	this.edit_mode    = false;
 	this.manual_mode  = false;
 	this.mode         = "";
-	
+	this.line         = "<div style=\"border:1px solid;height:1px;margin:5px;margin-top:10px;padding:0px;\"></div>";
+
 	this.logging      = new jcLogging(this.app_name);
 	this.btn          = new rmRemoteButtons(name);			// rm_remotes-elements.js
 	this.basic        = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
@@ -97,10 +98,10 @@ function rmSettings (name) {	// IN PROGRESS
 	this.create_edit		    = function () {
 
 		this.write(0,lang("SERVER_SETTINGS"), this.module_main_settings());
-		this.write(1,lang("REMOTE_ADD"), this.module_add_remotes());
-		this.write(2,lang("CHANGE_ORDER"), this.module_order_remotes());
-		this.write(3,lang("EDIT_MACROS"), this.module_macros_edit());
-		this.write(4,lang("EDIT_INTERFACES"), this.module_interface_edit());
+		this.write(1,lang("EDIT_REMOTES"), this.module_add_remotes() + this.module_title() + this.module_order_remotes());
+		this.write(2,lang("EDIT_MACROS"), this.module_macros_edit());
+		this.write(3,lang("EDIT_INTERFACES"), this.module_interface_edit());
+		this.write(4);
 
         statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
         statusShow_powerButton('button_manual_mode', getTextById('button_manual_mode'));
@@ -110,6 +111,16 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	// visualize modules
+	this.module_title           = function (title="") {
+	    var setting = "<br/>";
+	    if (title != "") {
+            setting += this.line;
+            setting += "<center><b>" + title + "</b></center>";
+            }
+	    setting += this.line;
+	    return setting;
+	    }
+
     this.module_error_log       = function () {
         var setting = "";
         setting    += "<div id='error_log'></div>";
@@ -346,7 +357,7 @@ function rmSettings (name) {	// IN PROGRESS
 		setting  += this.basic.container("setting_macros3","JSON macros [device OFF]",	this.json.textarea("dev-off", this.data["DATA"]["macros"]["dev-off"], "macros"),false);
 		setting  += this.basic.container("setting_macros_manual","JSON macros - manual",lang("MANUAL_MACROS"),false);
 
-        setting  += "<div style=\"border:1px solid;height:1px;margin:5px;margin-top:10px;padding:0px;\"></div>";
+        setting  += this.line;
 		setting  += this.basic.container("setting_macros4","</b><i>old: JSON macros [scene ON]</i>",   this.json.textarea("scene-on",  this.data["DATA"]["macros"]["scene-on"], "macros"),false);
 		setting  += this.basic.container("setting_macros5","</b><i>old: JSON macros [scene OFF]</i>",  this.json.textarea("scene-off", this.data["DATA"]["macros"]["scene-off"], "macros"),false);
 
