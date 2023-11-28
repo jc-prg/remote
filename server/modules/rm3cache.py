@@ -182,7 +182,7 @@ class ConfigCache(threading.Thread):
         """
         config_file_key = config_file.replace("/", "**")
         rm3json.write(config_file, value, "cache.write " + source)
-        self.cache[config_file_key] = value
+        self.cache[config_file_key] = value.copy()
 
     def translate_device(self, device):
         """
@@ -251,4 +251,4 @@ class ConfigCache(threading.Thread):
 
         active_devices_key = rm3config.active_devices.replace("/", "**")
         self.write(rm3config.active_devices, status_temp, "cache.write_status " + source)
-        self.cache[active_devices_key] = status_temp
+        self.cache[active_devices_key] = status_temp.copy()

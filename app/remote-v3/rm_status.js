@@ -343,22 +343,36 @@ function statusCheck_apiConnection(data) {
 	// check api status
 	var api_summary    = {};
 	var config_errors  = data["STATUS"]["config_errors"]["devices"];
-	var config_devices = data["STATUS"]["devices"]; 
+	var config_devices = data["STATUS"]["devices"];
+
+	var success_no     = {};
+	var error_no       = {};
 	
 	for (var key in data["STATUS"]["interfaces"]) {
 		var api_dev = key.split("_");
-		if (!api_summary[api_dev[0]]) { api_summary[api_dev[0]] = ""; }
-		if (data["STATUS"]["interfaces"][key] == "Connected" && api_summary[api_dev[0]] != "ERROR") 	{ api_summary[api_dev[0]] = "OK"; } 
-		else													{ api_summary[api_dev[0]] = "ERROR"; } 
+		var api     = api_dev[0];
+
+		if (!api_summary[api])   { api_summary[api] = ""; }
+        if (!error_no[api])      { error_no[api] = 0; }
+        if (!success_no[api])    { success_no[api] = 0; }
+
+		if (data["STATUS"]["interfaces"][key] == "Connected") { success_no[api] += 1; }
+		else                                                  { error_no[api] += 1; }
+
+        if (error_no[api] > 0 && success_no[api] == 0)        { api_summary[api] = "ERROR"; }
+        else if (error_no[api] > 0 && success_no[api] > 0)    { api_summary[api] = "OK + ERROR"; }
+        else                                                  { api_summary[api] = "OK"; }
+
 		for (key2 in config_devices) {
 			if (config_errors[key2] && config_errors[key2] != {} && config_devices[key2]["api"] == key)	{ api_summary[api_dev[0]] = "ERROR"; } 
 			}
 		}
-		
+
 	for (var key in api_summary) {
 	    if (document.getElementById("api_status_" + key)) {
-            if (api_summary[key] == "OK")   { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_connect + "'>" + api_summary[key] + "</font>"); }
-            else                            { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_error + "'>" + api_summary[key] + "</font>"); }
+            if (api_summary[key] == "OK")         { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_connect + "'>" + api_summary[key] + "</font>"); }
+            else if (api_summary[key] == "ERROR") { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_error + "'>" + api_summary[key] + "</font>"); }
+            else                                  { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='yellow'>" + api_summary[key] + "</font>"); }
             }
 		}
 	

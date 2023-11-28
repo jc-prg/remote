@@ -243,6 +243,7 @@ function rmSettings (name) {	// IN PROGRESS
             setting += this.tab.start();
             for (var dev in interface["Devices"]) {
                 var information = "";
+                information += "CONNECT=<text id='api_status_"+key+"_"+dev+"'></text><br/>";
                 for (var vars in interface["Devices"][dev]) {
                     information += vars + "=" + JSON.stringify(interface["Devices"][dev][vars]) + "<br/>";
                     }
