@@ -2,7 +2,6 @@
 	"Devices"    : {
 		"SONY-BDP-S4500" : {
 			"IPAddress"   : "192.168.1.12",
-			"MacAddress"  : "",
 			"Timeout"     : 5,
 			"Methods"     : ["send","query"],
 			"Description" : "Sony BD-Player"

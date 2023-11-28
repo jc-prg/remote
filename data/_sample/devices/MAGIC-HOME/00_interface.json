@@ -5,9 +5,7 @@
 			"DeviceType"  : 1,
 			"Timeout"     : 5,
 			"Methods"     : ["send","query"],
-			"Description" : "Magic Home LED",
-			"Commands"    : {},
-			"Queries"     : {}
+			"Description" : "Magic Home LED"
 			}
 		},
 	"API-Source"      : "https://github.com/adamkempenich/magichome-python",

@@ -2,7 +2,6 @@
 	"Devices" : {
 		"ONKYP-TXNR686" : {
 			"IPAddress"   : "192.168.1.32",
-			"MacAddress"  : "",
 			"Timeout"     : 5,
 			"Methods"     : ["send","query"],
 			"Description" : "ONKY AV-Receiver"

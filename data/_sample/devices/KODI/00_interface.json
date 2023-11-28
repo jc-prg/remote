@@ -5,9 +5,7 @@
 			"Port"        : "8080",
 			"Timeout"     : 5,
 			"Methods"     : ["send","query"],
-			"Description" : "Media Center",
-			"Commands"    : {},
-			"Queries"     : {}
+			"Description" : "Media Center"
 			}
 		},
 	"API-Source"      : "https://github.com/jcsaaddupuy/python-kodijson",
