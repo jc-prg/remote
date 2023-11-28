@@ -47,6 +47,13 @@ class ApiControl:
         self.power_status = "STARTING"
         self.brightness = 1
 
+        self.api_config_default = {
+            "Description": "",
+            "DeviceType": 1,
+            "IPAddress": "",
+            "Methods": ["send", "query"],
+            "Timeout": 0
+        }
         self.api_config = device_config
         self.api_device = device
 

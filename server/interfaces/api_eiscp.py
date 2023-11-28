@@ -35,6 +35,12 @@ class ApiControl:
         self.last_action = 0
         self.last_action_cmd = ""
 
+        self.api_config_default = {
+            "Description": "",
+            "IPAddress": "",
+            "Methods": ["send", "query"],
+            "Timeout": 0
+        }
         self.api_device = device
         self.api_timeout = 5
         self.api_config = device_config

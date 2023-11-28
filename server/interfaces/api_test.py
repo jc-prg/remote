@@ -38,6 +38,14 @@ class ApiControl:
         self.last_action = 0
         self.last_action_cmd = ""
 
+        self.api_config_default = {
+            "Description": "",
+            "IPAddress": "",
+            "MACAddress": "",
+            "Methods": ["send", "record", "query"],
+            "Port": "",
+            "Timeout": 0
+        }
         self.api_config = device_config
 
         self.logging = logging.getLogger("api.TEST")

@@ -44,6 +44,14 @@ class ApiControl:
         self.last_action = 0
         self.last_action_cmd = ""
 
+        self.api_config_default = {
+            "Description": "",
+            "IPAddress": "",
+            "MACAddress": "",
+            "Methods": ["send", "record"],
+            "Port": "",
+            "Timeout": 0
+        }
         self.api_config = device_config
         self.api_config["Port"] = int(self.api_config["Port"])
         self.api_config["MACAddress"] = netaddr.EUI(self.api_config["MACAddress"])
