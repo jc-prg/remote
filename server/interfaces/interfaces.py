@@ -326,7 +326,6 @@ class Connect(threading.Thread):
                 if self.log_commands:
                     self.logging.info("...... SEND-DATA " + api_dev + " / " + button +
                                       " ('" + str(value) + "'/" + method + ")")
-                if self.log_commands:
                     self.logging.info("...... " + str(button_code))
 
             else:
@@ -340,7 +339,6 @@ class Connect(threading.Thread):
                 if self.log_commands:
                     self.logging.info("...... SEND " + api_dev + " / " + button +
                                       " ('" + str(value) + "'/" + method + ")")
-                if self.log_commands:
                     self.logging.info("...... " + str(button_code))
 
             # send if not error
@@ -419,13 +417,12 @@ class Connect(threading.Thread):
         """
         query an information from device via API
         """
-
         return_msg = ""
         button_code = ""
         api_dev = self.device_api_string(device)
         # self.check_errors(call_api, device)  #### -> leads to an error for some APIs
 
-        self.logging.debug("__QUERY: " + api_dev + " (" + device +"," + button +";" + self.api[api_dev].status + ")")
+        self.logging.debug("__QUERY: " + api_dev + " (" + device + "," + button + ";" + self.api[api_dev].status + ")")
 
         if api_dev in self.api and self.api[api_dev].status == "Connected":
 
@@ -444,6 +441,8 @@ class Connect(threading.Thread):
                 return_msg = "ERROR: API not available (" + str(api_dev) + ")"
 
             if self.log_commands:
+                self.logging.info("...... QUERY " + api_dev + " / " + button +
+                                  " ('" + button_code + ")")
                 self.logging.info("...... " + str(return_msg))
 
         else:
@@ -590,15 +589,23 @@ class Connect(threading.Thread):
 
         if device in active:
             device_code = active[device]["config"]["device"]
+            device_file = rm3config.commands + api + "/" + device_code
             buttons_device = self.device_configuration(device)
-
-            if self.log_commands:
-                self.logging.info("...... button-file: " + api + "/" + device_code + ".json")
-
-            if rm3json.if_exist(rm3config.commands + api + "/00_default"):
-                buttons_default = self.configFiles.read(rm3config.commands + api + "/00_default")
+            if rm3json.if_exist(device_file):
                 if self.log_commands:
-                    self.logging.info("...... button-default-file: " + api + "/00_default.json")
+                    self.logging.info("...... button-file: " + device_file + ".json")
+                    self.logging.info("...... " + str(buttons_device))
+            else:
+                return "ERROR: device configuration isn't correct: " + device_file + " / " + str(buttons_device)
+
+            device_default = rm3config.commands + api + "/00_default"
+            if rm3json.if_exist(device_default):
+                buttons_default = self.configFiles.read(device_default)
+                if self.log_commands:
+                    self.logging.info("...... button-default-file: " + device_default + ".json")
+                    self.logging.info("...... " + str(buttons_default))
+            else:
+                return "ERROR: not default configuration defined: " + device_default
 
             # check for errors or return button code
             if "ERROR" in buttons_device or "ERROR" in active:
@@ -612,16 +619,19 @@ class Connect(threading.Thread):
                     and type_new in buttons_default["data"]["commands"][button]:
                 return buttons_default["data"]["commands"][button][type_new]
 
-            elif button in buttons_device["data"][button_query]:
+            # -> check if still required for some device configurations ->
+            elif button_query in buttons_device["data"] and button in buttons_device["data"][button_query]:
                 return buttons_device["data"][button_query][button]
 
-            elif button in buttons_default["data"][button_query]:
+            elif button_query in buttons_default["data"] and button in buttons_default["data"][button_query]:
                 return buttons_default["data"][button_query][button]
 
             else:
-                return "ERROR get_command: button not defined (" + device + "_" + button + ")"
+                return ("ERROR get_command: button not defined (" + dev_api + "," + button_query +
+                        ": " + device + "_" + button + ")")
+
         else:
-            return "ERROR get_command: device not found (" + device + ")"
+            return "ERROR get_command: device not found (" + dev_api + ": " + device + ")"
 
     def command_create(self, dev_api, device, button, value):
         """

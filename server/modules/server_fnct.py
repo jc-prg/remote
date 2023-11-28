@@ -117,7 +117,7 @@ def RmReadData_devicesConfig(more_details=False):
 
             # check get and set definitions
             if "commands" in interface_def_combined:
-                data_config[device]["commands"]["definition"] = interface_def_combined["commands"]
+                data_config[device]["commands"]["definition"] = interface_def_combined["commands"].copy()
 
                 if more_details:
                     for key in interface_def_combined["commands"]:
@@ -141,18 +141,22 @@ def RmReadData_devicesConfig(more_details=False):
 
             for key in data_config[device]["commands"]["definition"]:
                 if "str" not in str(type(data_config[device]["commands"]["definition"][key])):
+                    pass
+                    # tbc. where config is used and if it might be good to remove "get" and "set" section for some purposes
+                    # for some reason the data are reflected into the configFiles.cache?!
+
                     data_config[device]["commands"]["definition"][key]["cmd"] = []
 
                     if "get" in data_config[device]["commands"]["definition"][key]:
                         data_config[device]["commands"]["definition"][key]["cmd"].append("get")
-                        del data_config[device]["commands"]["definition"][key]["get"]
+                    #    del data_config[device]["commands"]["definition"][key]["get"]
                     if "set" in data_config[device]["commands"]["definition"][key]:
                         data_config[device]["commands"]["definition"][key]["cmd"].append("set")
-                        del data_config[device]["commands"]["definition"][key]["set"]
+                    #    del data_config[device]["commands"]["definition"][key]["set"]
 
             data_config[device]["url"] = interface_def_combined["url"]
 
-    return data_config
+    return data_config.copy()
 
 
 def RmReadData_devices(selected=[], remotes=True, config_only=False):
