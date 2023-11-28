@@ -47,7 +47,7 @@ def read(file, data_dir=True):
         }
         return d
 
-    return d
+    return d.copy()
 
 
 def delete(file):
