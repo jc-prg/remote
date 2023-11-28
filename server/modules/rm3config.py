@@ -4,7 +4,7 @@ import time
 # ---------------------------------
 
 APIname = "jc://remote/"
-APIversion = "v2.2.0"
+APIversion = "v2.2.1"
 APPversion = "v2.9.2"
 APPsupport = [APPversion,
               "v2.9.0", "v2.9.1"

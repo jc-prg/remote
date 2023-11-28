@@ -31,39 +31,59 @@ There are a few templates available to be used and modified.
 
 ### Default theme on iPhone XS
 
-<img src="./docs/remote_iphone_default_01.PNG" width="17%"> <img src="./docs/remote_iphone_default_02.PNG" width="17%">
-<img src="./docs/remote_iphone_default_03.PNG" width="17%"> <img src="./docs/remote_iphone_default_04.PNG" width="17%">
-<img src="./docs/remote_iphone_15.PNG" width="17%"><img src="./docs/remote_iphone_14.PNG" width="17%">
-<img src="./docs/remote_iphone_default_05.PNG" width="17%"> <img src="./docs/remote_iphone_default_06.PNG" width="17%">
-<img src="./docs/remote_iphone_default_07.PNG" width="17%"> <img src="./docs/remote_iphone_default_08.PNG" width="17%">
-<img src="./docs/remote_iphone_default_09.PNG" width="17%"> <img src="./docs/remote_iphone_default_10.PNG" width="17%">
-<img src="./docs/remote_iphone_default_11.PNG" width="17%"> <img src="./docs/remote_iphone_default_12.PNG" width="17%">
-<img src="./docs/remote_iphone_default_13.PNG" width="17%">
+<img src="./docs/remote_iphone_default_01.PNG" width="17%"> 
+<img src="./docs/remote_iphone_default_02.PNG" width="17%">
+<img src="./docs/remote_iphone_default_03.PNG" width="17%"> 
+<img src="./docs/remote_iphone_default_04.PNG" width="17%">
+<img src="./docs/remote_iphone_15.PNG" width="17%">
+<img src="./docs/remote_iphone_14.PNG" width="17%">
+<img src="./docs/remote_iphone_default_05.PNG" width="17%"> 
+<img src="./docs/remote_iphone_default_06.PNG" width="17%">
+<img src="./docs/remote_iphone_default_07.PNG" width="17%"> 
+<img src="./docs/remote_iphone_default_08.PNG" width="17%">
+<img src="./docs/remote_iphone_default_09.PNG" width="17%"> 
+<img src="./docs/remote_iphone_default_10.PNG" width="17%">
+<img src="./docs/remote_iphone_default_11.PNG" width="17%"> 
 
 ### Default theme in the browser
 
-<img src="./docs/remote_browser_01.png" width="48%"> <img src="./docs/remote_browser_03.png" width="48%">
+<img src="./docs/remote_browser_01.png" width="48%"> 
+<img src="./docs/remote_browser_03.png" width="48%">
 
 ### Dark theme on iPhone XS
 
-<img src="./docs/remote_iphone_01.PNG" width="17%"> <img src="./docs/remote_iphone_02.PNG" width="17%">
-<img src="./docs/remote_iphone_03.PNG" width="17%"> <img src="./docs/remote_iphone_04.PNG" width="17%">
-<img src="./docs/remote_iphone_05.PNG" width="17%"> <img src="./docs/remote_iphone_06.PNG" width="17%">
-<img src="./docs/remote_iphone_07.PNG" width="17%"> <img src="./docs/remote_iphone_08.PNG" width="17%">
-<img src="./docs/remote_iphone_09.PNG" width="17%"> <img src="./docs/remote_iphone_10.PNG" width="17%">
-<img src="./docs/remote_iphone_11.PNG" width="17%"> <img src="./docs/remote_iphone_12.PNG" width="17%"> <img src="./docs/remote_iphone_13.PNG" width="17%">
+<img src="./docs/remote_iphone_01.PNG" width="17%"> 
+<img src="./docs/remote_iphone_11.PNG" width="17%"> 
+<img src="./docs/remote_iphone_02.PNG" width="17%">
+<img src="./docs/remote_iphone_03.PNG" width="17%"> 
+<img src="./docs/remote_iphone_05.PNG" width="17%"> 
+<img src="./docs/remote_iphone_04.PNG" width="17%">
+<img src="./docs/remote_iphone_07.PNG" width="17%">
+<img src="./docs/remote_iphone_06.PNG" width="17%">
+<img src="./docs/remote_iphone_09.PNG" width="17%"> 
+<img src="./docs/remote_iphone_08.PNG" width="17%">
+
+### Information and Settings on iPhone XS
+
+<img src="./docs/remote_iphone_16.PNG" width="17%">
+<img src="./docs/remote_iphone_17.PNG" width="17%">
+<img src="./docs/remote_iphone_18.PNG" width="17%">
 
 ### Edit mode on iPhone XS
 
-<img src="./docs/remote_edit_iphone_01.PNG" width="17%"> <img src="./docs/remote_edit_iphone_02.PNG" width="17%">
-<img src="./docs/remote_edit_iphone_03.PNG" width="17%"> <img src="./docs/remote_edit_iphone_04.PNG" width="17%">
-<img src="./docs/remote_edit_iphone_05.PNG" width="17%"> <img src="./docs/remote_edit_iphone_06.PNG" width="17%">
-<img src="./docs/remote_edit_iphone_07.PNG" width="17%"> <img src="./docs/remote_edit_iphone_08.PNG" width="17%">
+<img src="./docs/remote_edit_iphone_01.PNG" width="17%"> 
+<img src="./docs/remote_edit_iphone_02.PNG" width="17%">
+<img src="./docs/remote_edit_iphone_03.PNG" width="17%"> 
+<img src="./docs/remote_edit_iphone_04.PNG" width="17%">
+<img src="./docs/remote_edit_iphone_05.PNG" width="17%"> 
+<img src="./docs/remote_edit_iphone_06.PNG" width="17%">
+<img src="./docs/remote_edit_iphone_07.PNG" width="17%"> 
 
 
 ### Edit mode in the browser
 
-<img src="./docs/remote_browser_edit_01.png" width="48%"> <img src="./docs/remote_browser_edit_02.png" width="48%">
+<img src="./docs/remote_browser_edit_01.png" width="48%"> 
+<img src="./docs/remote_browser_edit_02.png" width="48%">
 <img src="./docs/remote_browser_edit_03.png" width="48%">
 
 ## Data structure
@@ -75,6 +95,7 @@ There are a few templates available to be used and modified.
 ### App v2.9 / Server v2.2 (in progress)
 
 * directly view and execute API commands for devices in edit mode
+* edit interface configuration via app
 
 ### App v2.8 / Server v2.1
 
