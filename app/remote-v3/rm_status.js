@@ -372,15 +372,16 @@ function statusCheck_apiConnection(data) {
 	    if (document.getElementById("api_status_" + key)) {
             if (api_summary[key] == "OK")         { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_connect + "'>" + api_summary[key] + "</font>"); }
             else if (api_summary[key] == "ERROR") { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_error + "'>" + api_summary[key] + "</font>"); }
-            else                                  { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='yellow'>" + api_summary[key] + "</font>"); }
+            else                                  { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_warning + "'>" + api_summary[key] + "</font>"); }
             }
 		}
 	
 	for (var key in data["STATUS"]["interfaces"]) {
 	    if (document.getElementById("api_status_" + key)) {
             var status = data["STATUS"]["interfaces"][key];
-            if (status == "Connected")  { setTextById("api_status_" + key, "<font color='" + color_api_connect + "'>" + status + "</font>"); }
-            else                        { setTextById("api_status_" + key, "<font color='" + color_api_error + "'>" + status + "</font>"); }
+            if (status == "Connected")   { setTextById("api_status_" + key, "<font color='" + color_api_connect + "'>" + status + "</font>"); }
+            else if (status == "Start")  { setTextById("api_status_" + key, "<font color='" + color_api_warning + "'>" + status + "</font>"); }
+            else                         { setTextById("api_status_" + key, "<font color='" + color_api_error + "'>" + status + "</font>"); }
             }
 		}			
 	}

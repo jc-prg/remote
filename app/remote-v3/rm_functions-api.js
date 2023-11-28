@@ -81,8 +81,8 @@ function apiMacroChange(data=[]) {
 	send_data = {};
 	for (var i=0;i<data.length;i++) {
 		var key            = data[i];
-			try		{ send_data[key] = JSON.parse(getValueById(key)); }
-		catch(e)	{ appMsg.alert("<b>JSON Macro " + key + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+        try		{ send_data[key] = JSON.parse(getValueById(key)); }
+        catch(e)	{ appMsg.alert("<b>JSON Macro " + key + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 		}
 
 	appFW.requestAPI("PUT",["macro"], send_data, apiAlertReturn);
@@ -482,6 +482,7 @@ function apiSendToDeviceApi_return( data ) {
     setTextById('api_response', answer);
 }
 
+// get and edit specific configuration files
 function apiGetConfig_createDropDown( device, callback ) {
     var send_cmd  = ["config", "device", device];
 	appFW.requestAPI( "GET", send_cmd, "", callback );
@@ -490,4 +491,14 @@ function apiGetConfig_createDropDown( device, callback ) {
 function apiGetConfig_showInterfaceData( callback ) {
     var send_cmd = ["config", "interface", "all"];
 	appFW.requestAPI( "GET", send_cmd, "", callback );
+}
+
+function apiSetConfig_InterfaceData( device, config ) {
+    var config_data = {};
+    var send_cmd    = ["config", "interface", device];
+
+    try         { config_data = JSON.parse(getValueById( config )); }
+    catch(e)    { appMsg.alert("<b>JSON Config " + device + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+
+	appFW.requestAPI( "POST", send_cmd, config_data, apiAlertReturn );
 }

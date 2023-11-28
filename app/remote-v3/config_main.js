@@ -102,16 +102,17 @@ function app_connection_lost(error=false) {
 //----------------------------------
 // color definitions: https://www.w3schools.com/cssref/css_colors.asp
 
-var colors			= [ "red", "green", "darkgreen", "blue", "darkblue" ];
-var colors_dev			= [];
-var color_api_connect		= "lightgreen";
-var color_api_error		= "#FF6666";
+var colors                  = [ "red", "green", "darkgreen", "blue", "darkblue" ];
+var colors_dev              = [];
+var color_api_connect       = "lightgreen";
+var color_api_warning       = "yellow";
+var color_api_error         = "#FF6666";
 var color_button_inactive 	= "#666666";
-var colors_power		= { 
-				"ON"		: "darkgreen",
-				"OFF"		: "darkred",
-				"OTHER"	: "darkcyan",
-				"ERROR"	: "blueviolet",
+var colors_power            = {
+				"ON"        : "darkgreen",
+				"OFF"       : "darkred",
+				"OTHER"	    : "darkcyan",
+				"ERROR"	    : "blueviolet",
 				}
 
 // Standard-Definition für RemoteControl

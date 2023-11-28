@@ -224,35 +224,53 @@ function rmSettings (name) {	// IN PROGRESS
 		return setting;
     }
 
+    this.module_interface_edit_load = function (api_id) {
+        //alert("test: " + api_id);
+        console.warn("!");
+        return;
+        }
+
     this.module_interface_edit_info = function (data) {
 
         var interfaces = data["DATA"]["interfaces"];
     	this.tab       = new rmRemoteTable(name+".tab");
+    	this.btn       = new rmRemoteButtons(name);			// rm_remotes-elements.js
 
         for (var key in interfaces) {
-            var id = "interface_edit_"+key;
+            var id        = "interface_edit_"+key;
             var interface = interfaces[key];
-            var setting = "";
+            var setting   = "";
 
-            setting += "<b>" + interface["API-Description"] + "</b><br/>&nbsp;<br/>";
-            setting += "API-Info: ";
-            setting += "<a href='"+interface["API-Info"]+"' style='color:white' target='_blank'>Overview</a>, ";
-            setting += "<a href='"+interface["API-Source"]+"' style='color:white' target='_blank'>Source</a>";
-            setting += "<hr/>";
-
+            setting += "<br/><center><b>" + interface["API-Description"] + "</b></center><br/>";
             setting += this.tab.start();
             for (var dev in interface["Devices"]) {
+
+                var edit_json  = JSON.stringify(interface["Devices"][dev]);
+                edit_json      = edit_json.replaceAll("{", "{\n");
+                edit_json      = edit_json.replaceAll("}", "\n}\n");
+                edit_json      = edit_json.replaceAll(",", ",\n");
+
                 var information = "";
-                information += "CONNECT=<text id='api_status_"+key+"_"+dev+"'></text><br/>";
-                for (var vars in interface["Devices"][dev]) {
-                    information += vars + "=" + JSON.stringify(interface["Devices"][dev][vars]) + "<br/>";
-                    }
-                setting += this.tab.row("<i>"+dev+":</i>", information);
+                information += "<div id='api_status_data_"+key+"_"+dev+"' style='display:block'>";
+                information += "<textarea id=\"api_status_edit_"+key+"_"+dev+"\" style=\"width:95%;height:150px;\" disabled>" + edit_json + "</textarea>";
+                information += "</div>";
+
+                var save_link = "apiSetConfig_InterfaceData( \""+key+"_"+dev+"\", \"api_status_edit_"+key+"_"+dev+"\" );"
+                var edit_link = "document.getElementById(\"api_status_edit_"+key+"_"+dev+"\").removeAttribute(\"disabled\")";
+                var api_link  = "window.open(\""+interface["API-Info"]+"\")";
+                var buttons   = this.btn.sized("edit_"+dev, "API-Info", "", api_link);
+                buttons      += this.btn.sized("edit_"+dev, lang("EDIT"), "", edit_link) + this.btn.sized("save_"+dev, lang("SAVE"), "", save_link);
+
+                setting += this.tab.row("<hr/>");
+                setting += this.tab.row("<i><b>"+dev+":</b></i>&nbsp;","<text id='api_status_"+key+"_"+dev+"'></text><br/>");
+                setting += this.tab.row("<hr/>");
+                setting += this.tab.row(information);
+                setting += this.tab.row("<div style='width:100%;text-align:center;'>" + buttons + "</div>");
             }
             setting += this.tab.end();
             setTextById(id, setting);
             }
-    }
+        }
 
 	this.module_main_settings   = function () {
 		// Edit Server Settings

@@ -105,6 +105,7 @@ var language_app = {
 		"EDIT_DISPLAY"           : "Edit display",
 		"EDIT_MACROS"            : "Edit macros",
 		"EDIT_INTERFACES"        : "Edit interfaces",
+		"EDIT_INTERFACE"         : "Edit interface configuration for {0}",
 
 		"FORMAT_INCORRECT"       : "format is not correct",
 		
@@ -213,6 +214,7 @@ var language_app = {
 		"RESET_SWITCH_OFF"             : "Reset Devices:<br/>switch off all devices before.",
 		"RESET_VOLUME_TO_ZERO"         : "Reset Audio Settings:<br/>set the volume of all audio devices to mininum (0) before.",
 
+        "SAVE"                         : "Save",
 		"SEND_DATA"                    : "Send data",
 		"SELECT_DEV_MACRO"             : "select device or macro",
 		"SELECT_DEV_FIRST"             : "select device first",
