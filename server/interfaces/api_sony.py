@@ -72,7 +72,6 @@ class ApiControl:
         self.count_success = 0
 
         api_ip = self.api_config["IPAddress"]
-        api_mac = self.api_config["MacAddress"]
         api_name = self.api_device
         api_config = rm3stage.data_dir + "/" + rm3config.devices + self.api_name + "/" + self.api_device + ".json"
 
