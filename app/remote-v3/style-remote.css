@@ -1,3 +1,7 @@
+body {
+    background-color: black;
+}
+
 /* AUDIO INFO */
 
 #audio1 {
@@ -95,7 +99,13 @@ ul.help ul li {
    height		: 40px;
    z-index		: 61;
    }
-   
+
+
+.remote_edit_headline {
+    font-size   : 16px;
+    font-variant: small-caps;
+}
+
 #remote_edit {
    margin		: 4px;
    width		: 90%;
