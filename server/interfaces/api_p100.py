@@ -298,7 +298,7 @@ class APIaddOn():
                 "description": "turn smart plug on"
             },
             "jc.turn_off()": {
-                "description": "turn smart plug of"
+                "description": "turn smart plug off"
             },
             "jc.get_metadata(parameter)": {
                 "description": "get metadata from device",
