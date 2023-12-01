@@ -18,5 +18,14 @@
 
 In addition to the ONKYO specific API commands you can use the following jc://remote/ API command:
 
-* jc.metadata('net-info') - _Get media info if playing via bluetooth from another device_
-  
+```json
+{
+  "jc.get_available_commands()": {
+      "info": "get a list of all available commands"
+  },
+  "jc.get_metadata(parameter)": {
+      "description": "get consolidated metadata from device",
+      "parameter": ["net-info"]
+  }
+}
+```  

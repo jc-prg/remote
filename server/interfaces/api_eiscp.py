@@ -255,6 +255,8 @@ class APIaddOn():
     """
     def __init__(self, api):
 
+        self.status = None
+        self.not_connected = None
         self.addon = "jc://addon/onkyo/"
         self.api = api
         self.volume = 0
@@ -264,6 +266,31 @@ class APIaddOn():
 
         self.logging = logging.getLogger("api.ONKYO")
         self.logging.setLevel = rm3stage.log_set2level
+
+        self.available_commands = {
+            "jc.get_available_commands()": {
+                "info": "get a list of all available commands"
+            },
+            "jc.get_metadata(parameter)": {
+                "description": "get consolidated metadata from device",
+                "parameter": ["net-info"]
+            }
+        }
+
+    def get_available_commands(self):
+        """returns a list of all commands defined for this API"""
+        return ["result", self.available_commands]
+
+    def get_metadata(self, parameter):
+        """
+        get consolidated metadata from devices
+        """
+        if self.status == "Connected":
+            return self.metadata(parameter)
+        else:
+            return ["error", "API " + self.api.api_name + " not connected."]
+
+    # -------------------------------------------
 
     def metadata(self, tags=""):
         """

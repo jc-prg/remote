@@ -8,8 +8,32 @@
 
 The TAPO P100 API commands can't be used directly. Use the following jc://remote/ API commands instead:
 
-* jc.get_info() - _Get complete data set from device_
-* jc.get_info('&lt;parameter&gt;') - _Get device information, execute without parameter to get them all_
+```json
+{
+  "jc.get_available_commands()": {
+      "info": "get a list of all available commands"
+  },
+  "jc.turn_on()": {
+      "description": "turn smart plug on"
+  },
+  "jc.turn_off()": {
+      "description": "turn smart plug of"
+  },
+  "jc.get_metadata(parameter)": {
+      "description": "get metadata from device",
+      "parameters": ['avatar', 'device_id', 'device_on', 'fw_ver', 'has_set_location_info', 'hw_ver', 'ip',
+                     'lang', 'latitude', 'longitude', 'location', 'mac', 'model', 'on_time', 'overheated',
+                     'power' 'region', 'signal_level', 'time_diff', 'type', 'default_status', 'nickname',
+                     'oemid', 'rssi', 'specs', 'ssid', 'state']
+  },
+  "jc.test()": {
+      "description": "switch on/off test sequence"
+  }
+}
+```
+
+Details for jc.get_metadata():
+
   * 'avatar' - _Get info for selected avatar_
   * 'device_id' - _Get device ID_
   * 'device_on' - _Get power status_
@@ -30,15 +54,3 @@ The TAPO P100 API commands can't be used directly. Use the following jc://remote
   * 'signal_level' - _Get WIFI signal level_
   * 'time_diff' - _Get time difference in minutes_
   * 'type' - _Get device type_\
-    .
-  * 'default_status' - _unknown_
-  * 'nickname' - _unknown_
-  * 'oemid' - _unknown_
-  * 'rssi' - _unknown_
-  * 'specs' - _unknown_
-  * 'ssid' - _unknown_
-  * 'state' - _unknown_
-  
-* jc.test() - _Test power socket_
-* jc.turn_on() - _Turn power socket on_
-* jc.turn_off() - _Turn power socket off_

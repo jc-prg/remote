@@ -200,7 +200,7 @@ class ApiControl:
                     if len(command_param) > 1:
                         result_param = eval("result['result']" + command_param[1])
                     else:
-                        result_param = str(result['result'])
+                        result_param = result['result']
 
             except Exception as e:
                 self.working = False
@@ -290,6 +290,32 @@ class APIaddOn():
         self.logging = logging.getLogger("api.P100")
         self.logging.setLevel = rm3stage.log_set2level
 
+        self.available_commands = {
+            "jc.get_available_commands()": {
+                "info": "get a list of all available commands"
+            },
+            "jc.turn_on()": {
+                "description": "turn smart plug on"
+            },
+            "jc.turn_off()": {
+                "description": "turn smart plug of"
+            },
+            "jc.get_metadata(parameter)": {
+                "description": "get metadata from device",
+                "parameters": ['avatar', 'device_id', 'device_on', 'fw_ver', 'has_set_location_info', 'hw_ver', 'ip',
+                               'lang', 'latitude', 'longitude', 'location', 'mac', 'model', 'on_time', 'overheated',
+                               'power' 'region', 'signal_level', 'time_diff', 'type', 'default_status', 'nickname',
+                               'oemid', 'rssi', 'specs', 'ssid', 'state']
+            },
+            "jc.test()": {
+                "description": "switch on/off test sequence"
+            }
+        }
+
+    def get_available_commands(self):
+        """returns a list of all commands defined for this API"""
+        return {"result": self.available_commands}
+
     def turn_on(self):
         """
         turn on and set metadata
@@ -378,6 +404,9 @@ class APIaddOn():
             info_result = self.not_connected
 
         return info_result
+
+    def get_metadata(self, parameter=""):
+        return self.get_info(parameter)
 
     def test(self):
 

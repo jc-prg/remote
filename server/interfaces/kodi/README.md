@@ -10,8 +10,12 @@
 * use commands from the KODI API such as the following examples:
   * Addons.ExecuteAddon({'addonid': 'plugin.video.mediathekview'})
   * Addons.GetAddons()
-  * Input.ShowOSD()
+  * GUI.ActivateWindow({'window':'pictures'})
   * GUI.ShowNotification(title='Hello World', message='Hello World!!!')
+  * Input.Info()
+  * Input.Left()
+  * Input.Select()
+  * Input.ShowOSD()
   * ...
   
 ## Additional jc://remote/ API Commands
@@ -20,37 +24,46 @@ In addition to the KODI API commands you can use the following jc://remote/ API 
 Those commands doesn't cover all parameters and possibilities of the KODI API but are intended 
 to make the access to important commands a bit easier.
 
-* jc.DecreaseVolume(&lt;value&gt;) - _decrease volume by &lt;value&gt; on a scale from 0 to 100_
-* jc.IncreaseVolume(&lt;value&gt;) - _increase volume by &lt;value&gt; on a scale from 0 to 100_
-* jc.KodiVersion() - _get KODI version from connected server_
-* jc.PlayerControl('&lt;parameter&gt;') - _basic commands to control playback_
-  * 'Play'
-  * 'PlayPause'
-  * 'Stop'
-* jc.PlayerMetadata('&lt;parameter&gt;')  - _get information from player_
-  * 'addon-list'
-  * 'currentsubtitle'
-  * 'genre'
-  * 'info'
-  * 'item-position'
-  * 'muted'
-  * 'playing'
-  * 'playlist-position'
-  * 'plot'
-  * 'subtitles'
-  * 'subtitleenabled'
-  * 'type'
-  * 'version'
-  * 'volume'
-* jc.PlayerSettings('&lt;parameter#1&gt;','&lt;parameter#2&gt;')
-  * 'Subtitle', 'on' - _switch subtitle on_
-  * 'Subtitle', 'off' - _switch subtitle off_
-  * 'Subtitle', 'next' - _switch subtitle to next available_
-  * 'Subtitle', 'previous' - _switch subtitle to previous available_
-  * 'Subtitle', 'on-off' - _switch subtitle on and off_
-  * 'Speed','backward' - _play backward, press more often to change speed_
-  * 'Speed','forward' - _play forward, press more often to change speed_
-  * 'Audiostream','previous' - _change audio stream: previous available_
-  * 'Audiostream','next' - _change audio stream: next available_
-* jc.PowerStatus() - _get power status from connected server_
-* jc.ToggleMute() - _set mute on or off_
+```json
+{
+  "jc.get_addons(parameter)": {
+      "description": "get a list off installed KODI addons",
+      "parameter": ["list", "properties"]
+  },
+  "jc.get_available_commands()": {
+      "info": "get a list of all available commands"
+  },
+  "jc.get_metadata(category, parameter)": {
+      "description": "get metadata from server, playback, etc.",
+      "categories": ["title", "album", "artist", "plot", "mpaa", "genre", "episode", "season",
+                   "showtitle", "studio", "duration", "runtime", "version", "muted", "volume",
+                   "language", "name", "live", "speed", "percentage", "position", "playlistid", "subtitles",
+                   "currentsubtitle", "audiostreams", "currentaudiostream", "subtitleenabled", "size",
+                   "type", "addons", "addon-list", "power", "player", "playlist", "playlist-position",
+                   "playing", "item", "info", "item-position", "name"]
+  },
+  "jc.set_player(category, parameter)": {
+      "description": "player control",
+      "parameters": {
+          "Playback": ["Play", "Stop", "PlayPause"],
+          "Subtitle": ['previous', 'next', 'on', 'off'],
+          "AudioStream": ['previous', 'next'],
+          "Speed": ["default", "forward", "backward", -32, -16, -8, -4, -2, -1, 0, 1, 2, 4, 8, 16, 32]
+      }
+  },
+  "jc.set_volume(category, parameter)": {
+      "description": "control volume settings",
+      "parameters" : {
+          "up": "integer: 1..100",
+          "down": "integer: 1..100",
+          "value": "integer: 1..100",
+          "mute": "boolean: True|False"
+      }
+  },
+  "jc.set_addons(addon, command)": {
+      "description": "not implemented yet",
+      "addon": "'addonid' of addon to be controlled (use jc.get_metadata('addons') to see available addons)'",
+      "command": ["start", "execute"]
+  }
+}
+```
