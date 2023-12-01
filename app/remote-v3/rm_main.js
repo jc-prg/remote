@@ -16,7 +16,7 @@ var rm3remotes     = undefined;
 var rm3settings    = undefined;
 
 function startRemote() {
-    rm3slider  = new jcSlider( name="rm3slider", container="audio_slider");              // create slider
+    rm3slider  = new jcSlider( name="rm3slider", container="audio_slider");             // create slider
     rm3slider.init(min=0,max=100,label="loading");                                      // set device information
     rm3slider.setPosition(top="45px",bottom=false,left=false,right="10px");             // set position (if not default)
     rm3slider.setOnChange(apiSetVolume);                                                // -> setVolume (api call to set volume -> this.callOnChange( this.value ))

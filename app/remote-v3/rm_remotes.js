@@ -381,7 +381,7 @@ function rmRemote(name) {
 		this.button.width       = "90px";
 
 		var remote = "";
-		remote  += "<center style='font-variant: small-caps;'><b>"+lang("EDIT_REMOTE")+" &quot;"+device_data["settings"]["label"]+"&quot;</b> ["+device+"]</center>";
+		remote  += "<center class='remote_edit_headline'><b>"+lang("EDIT_REMOTE")+" &quot;"+device_data["settings"]["label"]+"&quot;</b> ["+device+"]</center>";
 		remote += this.basic.edit_line();
 
 		// Main Settings
@@ -430,10 +430,12 @@ function rmRemote(name) {
         if (device_method == "query") {
             // API Testing
             this.basic.input_width  = "90%";
+            this.button.height  = "40px;";
             edit    = "Test here your commands vor device '" + device + "':<br/>&nbsp;<br/><center>";
             edit    += "<div id='api_command_select'><select style='width:90%'><option>Loading ...</option></select></div><br/>";
             edit    += this.basic.input("api_command") + "<br/>&nbsp;<br/>";
-            edit    += this.button.edit("apiSendToDeviceApi( '" + device + "', getValueById('api_command') );", lang("TRY_OUT"),"");
+            edit    += this.button.edit("apiSendToDeviceApi( '" + device + "', getValueById('api_command') );", lang("TRY_OUT"),"") + "&nbsp;";
+            edit    += this.button.edit("apiSendToDeviceApi( '" + device + "', 'jc.get_available_commands()' );", lang("GET_AVAILABLE_COMMANDS"),"");
             edit    += "<br/>&nbsp;<br/>";
             edit    += "<div class='remote-edit-cmd' id='api_response'></div><br/>"
             edit    += "<div id='api_description'></div><br/>";
@@ -500,7 +502,7 @@ function rmRemote(name) {
 		
 		// Start remote control edit section
 		var remote = "";
-		remote += "<center style='font-variant: small-caps;'><b>Edit remote &quot;"+device_info["label"]+"&quot;</b> ["+device+"]</center>";
+		remote += "<center class='remote_edit_headline'><b>Edit remote &quot;"+device_info["label"]+"&quot;</b> ["+device+"]</center>";
 		remote += this.basic.edit_line();
 			
 		// Add elements
@@ -913,7 +915,7 @@ function rmRemote(name) {
 		var remote_info   = this.data["DATA"]["devices"];
 		var remote        = "";
 
-		remote  += "<center style='font-variant: small-caps;'><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
+		remote  += "<center class='remote_edit_headline'><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
 		remote  += this.basic.edit_line();
 
 		// main settings for the scene
@@ -1021,7 +1023,7 @@ function rmRemote(name) {
 		// header
 		this.button.width = "100px";
 		var remote = "";
-		remote    += "<center style='font-variant: small-caps;'><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
+		remote    += "<center class='remote_edit_headline'><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
 		remote    += this.basic.edit_line();
 		
 		// add elements
