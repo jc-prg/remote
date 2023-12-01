@@ -111,6 +111,7 @@ var language_app = {
 		"FORMAT_INCORRECT"       : "format is not correct",
 		
 		"GET_DATA"               : "Get data",
+		"GET_AVAILABLE_COMMANDS" : "List commands",
 				
 		"HEADER_IMAGE_EXISTS"    : "There is already a HEADER-IMAGE in this remote control.",
 		

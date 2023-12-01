@@ -22,6 +22,7 @@ remote_js = [
 
 remote_css = [
     "style-menu.css",
+    "style-json.css",
     "style-remote.css",
     "style-remote-dark.css",
     "style-button.css",

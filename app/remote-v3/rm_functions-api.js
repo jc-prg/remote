@@ -475,8 +475,7 @@ function apiSendToDeviceApi_return( data ) {
     console.warn(data);
     var response    = data["REQUEST"]["Return"];
     var answer      = "<b>" + response["interface"] + "/" + response["device"] + " (" + response["status"] + "):</b><br/>";
-    try         { answer += JSON.stringify(response["answer"]["answer"]); }
-    catch(e)    { answer += response["answer"]; }
+    answer         += "<pre>" + syntaxHighlightJSON(response["answer"]["answer"]) + "</pre>";
     answer         += "<br/>&nbsp;<br/>-----<br/><i>";
     answer         += "total: " + (data["REQUEST"]["load-time-app"])/1000 + "s / srv: " + Math.round(data["REQUEST"]["load-time"]*10000)/10000 + "s";
     setTextById('api_response', answer);
