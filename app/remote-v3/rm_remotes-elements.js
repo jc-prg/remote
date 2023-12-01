@@ -548,7 +548,7 @@ function rmRemoteDisplays(name) {
         
 		var display_data = [];
       		var text  = "Device Information: "+device +"<hr/>";
-      		text  += "<div style='width:100%;height:200px;overflow-y:scroll;'>";
+      		text  += "<div style='width:100%;height:400px;overflow-y:scroll;'>";
 		
 		if (type != "devices") { 
 
@@ -598,7 +598,7 @@ function rmRemoteDisplays(name) {
         	text  += this.tab_row("end");
 
         	text  += "</div>";
-		appMsg.confirm(text,"",300);
+		appMsg.confirm(text,"",500);
 		statusCheck_load();
         }
         	
