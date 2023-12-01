@@ -17,7 +17,7 @@ The TAPO P100 API commands can't be used directly. Use the following jc://remote
       "description": "turn smart plug on"
   },
   "jc.turn_off()": {
-      "description": "turn smart plug of"
+      "description": "turn smart plug off"
   },
   "jc.get_metadata(parameter)": {
       "description": "get metadata from device",
