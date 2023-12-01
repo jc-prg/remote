@@ -795,7 +795,14 @@ function statusCheck_display(data={}) {
 			for (var i=0; i<display.length; i++) {
 				var value_key   = display[i];
 				var element2    = document.getElementById("display_full_" + key + "_" + value_key);
+				//var status      = device_status[value_key];
 				var status      = device_status[value_key];
+				if (typeof(status) == "string") {
+				    status          = status.replaceAll("'", "\"");
+				    status          = status.replaceAll("True", "true");
+				    status          = status.replaceAll("False", "false");
+				    }
+				status          = syntaxHighlightJSON(status);
 
 				if (status && value_key == "power") {
 					if (connected != "connected")                                       { status = "<b style='color:red;'>Connection Error:</b><br/>"+connected; }
