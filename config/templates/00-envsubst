@@ -2,8 +2,8 @@
 #--------------------------
 # project specific substitution commands
 
-rm -rf ../docker-compose.yml
-envsubst < "templates/docker-compose.yml" > "../docker-compose.yml"
+#rm -rf ../docker-compose.yml
+#envsubst < "templates/docker-compose.yml" > "../docker-compose.yml"
 
 #rm -rf ../start
 #envsubst < "templates/start" > "../start"

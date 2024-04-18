@@ -23,8 +23,6 @@ app/img/remote.jpg
 
 *.save
 
-/docker-compose.yml
-
 *.png~
 
 data/_ACTIVE-DEVICES.json
@@ -56,3 +54,5 @@ server/interfaces/api_magichue.py
 server/interfaces/magichue/
 
 server/interfaces/test_api_magichome.py
+
+/.env
