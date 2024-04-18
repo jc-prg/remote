@@ -5,9 +5,9 @@
 rm -rf ../docker-compose.yml
 envsubst < "templates/docker-compose.yml" > "../docker-compose.yml"
 
-rm -rf ../start
-envsubst < "templates/start" > "../start"
-chmod 755 ../start
+#rm -rf ../start
+#envsubst < "templates/start" > "../start"
+#chmod 755 ../start
 
 rm -rf ../app/config_stage.js
 envsubst < "templates/config_stage.js" > "../app/remote-v3/config_stage.js"

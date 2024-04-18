@@ -1,0 +1,163 @@
+#!/bin/bash
+
+source .env
+
+external="$EXTERNAL_DRIVE"
+mountpoint="$EXTERNAL_MOUNT"
+config=$1
+user=`whoami`
+branch=`git rev-parse --abbrev-ref HEAD`
+
+echo
+echo "-------------------------------------"
+echo " Start jc://remote/$REMOTE_CURRENT_STAGE/"
+echo "-------------------------------------"
+
+if [ $user != "root" ]; then
+  echo
+  echo "Please run as root!"
+  echo
+  exit 0
+fi
+
+if test -f "$DOCKERCOMPOSE_DIR/docker-compose"; then
+  :
+else
+  echo "Check the location of your docker-compose file in the configuration!"
+  echo "The file/path '$DOCKERCOMPOSE_DIR/docker-compose' doesn't exist. "
+  echo
+  exit 0
+fi
+
+
+if [ ! $config ]; then
+  echo
+  echo "Press key - your options:"
+  echo " 'q' - exit"
+  echo " 's' - start"
+  echo " 'r' - restart"
+  echo " 'i' - install sample configuration"
+  echo " 'u' - update from github (branch:$branch)"
+  echo " 'v' - update from github (branch:$branch) and rebuild container"
+  echo " 'c' - clean docker (stopped container / dangling images)"
+  echo " 'd' - clean docker (system incl. build cache)"
+  count=0
+  while : ; do
+    read -n 1 k <&1
+    if [[ $k = q ]] ; then
+       printf "\n... quitting the program.\n"
+       exit 0
+    elif [[ $k = s ]] ; then
+       config="start"
+       printf "\n... starting (via docker-compose).\n"
+       break
+    elif [[ $k = r ]] ; then
+       config="restart"
+       printf "\n... restarting.\n"
+       break
+    elif [[ $k = u ]] ; then
+       config="update"
+       printf "\n... update from Github.\n"
+       break
+    elif [[ $k = i ]] ; then
+       config="install"
+       printf "\n... install sample configuration.\n"
+       break
+    elif [[ $k = v ]] ; then
+       config="rebuild"
+       printf "\n... update from Github and rebuild docker container.\n"
+       break
+    elif [[ $k = c ]] ; then
+       config="prune"
+       printf "\n... cleanup docker containers and images.\n"
+       break
+    elif [[ $k = d ]] ; then
+       config="prune2"
+       printf "\n... cleanup docker system.\n"
+       break
+    else
+       ((count=$count+1))
+       printf "\nIterate for $count times\n"
+       echo "Press 'q' to exit"
+    fi
+  done
+fi
+
+if [ $config == "start" ]; then
+    $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml up -d
+
+elif [ $config == "restart" ]; then
+    $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml restart
+
+elif [ $config == "install" ]; then
+    cd data/_sample
+    ./install-config
+    cd ../..
+
+elif [ $config == "update" ]; then
+
+    echo "Change dir"
+    cd $REMOTE_DIR
+
+    echo "Stop docker"
+    $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml stop
+
+    echo "Update REMOTE from repository"
+    git stash
+    git pull
+
+    echo "Update MODULES from repository"
+    git submodule update --init --recursive
+
+    echo "Create new configuration"
+    cd $REMOTE_DIR
+    cd config/
+    ./create $REMOTE_CURRENT_STAGE
+    cd ..
+
+    echo "Restart docker"
+    $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml up -d
+
+elif [ $config == "rebuild" ]; then
+
+    echo "Change dir"
+    cd $REMOTE_DIR
+
+    echo "Stop docker"
+    $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml stop
+
+    echo "Update REMOTE from repository"
+    git stash
+    git pull
+
+    echo "Update MODULES from repository"
+    git submodule update --init --recursive
+
+    echo "Create new configuration"
+    cd $REMOTE_DIR
+    cd config/
+    ./create $REMOTE_CURRENT_STAGE
+    cd ..
+
+    echo "Rebuild docker container"
+    $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml rebuild
+
+    echo "Restart docker"
+    $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml up -d
+
+elif [ $config == "prune" ]; then
+
+   docker image prune
+   docker container prune
+
+elif [ $config == "prune2" ]; then
+
+   docker system prune
+
+else
+    echo "not found."
+fi
+
+echo
+echo "Done."
+
