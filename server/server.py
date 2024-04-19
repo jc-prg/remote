@@ -6,11 +6,11 @@ import sys
 import logging
 import modules.rm3config as remote
 
-from modules.server_fnct import *
 from modules.server_cmd import *
 
 import traceback
 import connexion
+
 from flask_cors import CORS
 
 

@@ -8,7 +8,8 @@ import modules.rm3config as rm3config
 class QueueApiCalls(threading.Thread):
     """
     class to create a queue to send commands (or a chain of commands) to the devices
-    -> see server_fnct.py: a queue for send commands and another queue for query commands, as query commands take some time
+    -> see server_cmd.py / rm3data.py: a queue for send commands and another queue for query commands,
+       as query commands take some time
     """
 
     def __init__(self, name, query_send, device_apis, config):

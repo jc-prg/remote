@@ -969,4 +969,535 @@ class RemotesEdit:
 
         return message
 
+    def device_status_get(self, device, key):
+        """
+        get status of device
+
+        Args:
+            device (str): device id
+            key (str): status key
+        Returns:
+            Any: status information device->key
+        """
+        status = self.config.read_status()
+
+        if device not in status:
+            self.logging.error("Get status - Device not defined: " + device + " (" + key + ")")
+            return 0
+
+        if device in status and key in status[device]["status"]:
+            self.logging.debug("Get status: " + key + " = " + str(status[device]["status"][key]))
+            return status[device]["status"][key]
+
+        else:
+            self.logging.error("Get status: " + key + "/" + device)
+            return 0
+
+    def device_status_set(self, device, key, value):
+        """
+        change status and write to file
+
+        Args:
+            device (str): device id
+            key (str): status key
+            value (Any): value to be set
+        Returns:
+            Any: status information device->key
+        """
+
+        status = self.config.read_status()
+
+        # set status
+        if key == "":
+            key = "power"
+
+        if device in status:
+            logging.debug("device_status_set(): " + key + "=" + str(value))
+            status[device]["status"][key] = value
+            self.config.write_status(status, "device_status_set()")
+
+        else:
+            logging.warning("device_status_set(): device does not exist (" + device + ")")
+            return "ERROR device_status_set(): device does not exist (" + device + ")"
+
+        return "TBC: device_status_set(): " + device + "/" + key + "/" + str(value)
+
+    def device_status_reset(self):
+        """
+        set status for all devices to OFF
+
+        Returns:
+            str: success or error message
+        """
+        status = self.config.read_status()
+
+        # reset if device is not able to return status and interface is defined
+        for key in status:
+            if status[key]["config"]["interface_api"] != "":
+                device_code = self.config.translate_device(key)
+                device = self.config.read(rm3config.commands + status[key]["config"]["interface_api"] + "/" +
+                                          device_code)
+                logging.info("device_status_reset(): " + device_code + "/" + status[key]["config"]["interface_api"])
+
+                if device["data"]["method"] != "query":
+                    status[key]["status"]["power"] = "OFF"
+
+        self.config.write_status(status, "device_status_reset()")
+        return "TBC: Reset POWER to OFF for devices without API"
+
+    def device_status_audio_reset(self):
+        """
+        set status for all devices to OFF
+
+        Returns:
+            str: success or error message
+        """
+        status = self.config.read_status()
+
+        # reset if device is not able to return status and interface is defined
+        for key in status:
+            if status[key]["config"]["interface_api"] != "":
+                device_code = self.config.translate_device(key)
+                device = self.config.read(rm3config.commands + status[key]["config"]["interface_api"] + "/" +
+                                          device_code)
+                logging.info("Reset device_status_reset_audio(): " + device_code + "/" +
+                             status[key]["config"]["interface_api"])
+
+                if device["data"]["method"] != "query":
+                    if "vol" in status[key]["status"]: status[key]["status"]["vol"] = 0
+                    if "mute" in status[key]["status"]: status[key]["status"]["mute"] = "OFF"
+
+        self.config.write_status(status, "device_status_reset_audio()")
+        return "TBC: Reset AUDIO to 0 for devices without API"
+
+    def device_main_audio_set(self, device):
+        """
+        set device as main audio device
+
+        Args:
+            device (str): device id
+        Returns:
+            str: success or error message
+        """
+        return_msg = ""
+        status = self.config.read_status()
+
+        if device in status:
+            for key in status:
+                if key == device:
+                    status[key]["settings"]["main-audio"] = "yes"
+                else:
+                    status[key]["settings"]["main-audio"] = "no"
+            self.config.write_status(status, "device_status_audio_reset()")
+
+            if "main-audio" in status[device]["settings"] and status[device]["settings"]["main-audio"] == "yes":
+                return_msg = "OK: Set " + device + " as main-audio device."
+            else:
+                return_msg = "ERROR: Could not set " + device + " as main-audio device."
+        else:
+            return_msg = "ERROR: device not defined."
+
+        return return_msg
+
+    def button_add(self, device, button):
+        """
+        add new button to remote layout
+
+        Args:
+            device (str): device id
+            button (str): button id
+        Returns:
+            str: success or error message
+        """
+        config = self.config.read_status()
+        interface = config[device]["config"]["interface_api"]
+        device_code = config[device]["config"]["device"]
+        device_remote = config[device]["config"]["remote"]
+        data = self.config.read(rm3config.remotes + device_remote)
+
+        if "data" in data:
+            if button != "DOT" and button != "LINE" and button in data["data"]["remote"]:
+                return "WARNING: Button '" + device + "_" + button + "' already exists."
+            else:
+                if button == "DOT":
+                    button = "."
+                data["data"]["remote"].append(button)
+                self.config.write(rm3config.remotes + device_remote, data)
+                return "OK: Button '" + device + "_" + button + "' added."
+        else:
+            return "ERROR: Device '" + device + "' does not exists."
+
+        # ---------------------------------------
+
+    def button_add_command(self, device, button, command):
+        """
+        add new command to button or change existing
+
+        Args:
+            device (str): device id
+            button (str): button id
+            command (str): command to be connected with the button
+        Returns:
+            str: success or error message
+        """
+        config = self.config.read_status()
+        interface = config[device]["config"]["interface_api"]
+        device_code = config[device]["config"]["device"]
+        device_remote = config[device]["config"]["remote"]
+        data = self.config.read(rm3config.commands + interface + "/" + device_code)
+
+        if "data" in data:
+            if button in data["data"]["buttons"].keys():
+                return "WARNING: Button '" + device + "_" + button + "' already exists."
+            else:
+                command = str(command)
+                command = command.replace("b'", "")
+                command = command.replace("'", "")
+                data["data"]["buttons"][button] = command
+                self.config.write(rm3config.commands + interface + "/" + device_code, data)
+                return "OK: Button '" + device + "_" + button + "' recorded and saved: " + str(command)
+        else:
+            return "ERROR: Device '" + device + "' does not exists."
+
+    def button_delete_command(self, device, button):
+        """
+        delete command (not button) from json config file
+
+        Args:
+            device (str): device id
+            button (str): button id
+        Returns:
+            str: success or error message
+        """
+        config = self.config.read_status()
+        interface = config[device]["config"]["interface_api"]
+        device_code = config[device]["config"]["device"]
+        data = self.config.read(rm3config.commands + interface + "/" + device_code)
+
+        if data["data"]:
+            if button in data["data"]["buttons"].keys():
+
+                data["data"]["buttons"].pop(button, None)
+                self.config.write(rm3config.commands + interface + "/" + device_code, data)
+                return "OK: Command '" + device + "_" + button + "' deleted."
+            else:
+                return "ERROR: Command '" + device + "_" + button + "' does not exist."
+        else:
+            return "ERROR: Device '" + device + "' does not exist."
+
+    def button_delete(self, device, button_number):
+        """
+        delete button (not command) from json config file
+
+        Args:
+            device (str): device id
+            button_number (int): position of button in device remote
+        Returns:
+            str: success or error message
+        """
+        buttonNumber = int(button_number)
+        config = self.config.read_status()
+        interface = config[device]["config"]["interface_api"]
+        device_code = config[device]["config"]["device"]
+        device_remote = config[device]["config"]["remote"]
+        data = self.config.read(rm3config.remotes + device_remote)
+
+        if data["data"] and data["data"]["remote"]:
+            if 0 <= buttonNumber < len(data["data"]["remote"]):
+                data["data"]["remote"].pop(buttonNumber)
+                self.config.write(rm3config.remotes + device_remote, data)
+                return "OK: Button '" + device + " [" + str(buttonNumber) + "] deleted."
+            else:
+                return "ERROR: Button '" + device + " [" + str(buttonNumber) + "] does not exist."
+        else:
+            return "ERROR: Device '" + device + "' does not exist."
+
+    def button_get_value(self, device, button):
+        """
+        Get Status from device for a specific button or display value
+
+        Args:
+            device (str): device id
+            button (str): button id
+        Returns:
+            str: success or error message
+        """
+        power_buttons = ["on", "on-off", "off"]
+        if button in power_buttons:
+            button = "power"
+
+        method = self.config.cache["_api"]["devices"][device]["method"]
+        interface = self.config.cache["_api"]["devices"][device]["config"]["interface_api"]
+
+        self.logging.debug("button_get_value(): ...m:" + method + " ...d:" + device + " ...b:" + button)
+        if method == "record":
+            self.device_status_get(device, button)
+        elif method == "query":
+            return self.apis.api_query(interface, device, button)
+        else:
+            return "ERROR: Wrong method (" + method + ")"
+
+        return "OK"
+
+    def button_set_value(self, device, button, state):
+        """
+        Set Status of device for a specific button or display value (method = "record")
+        used via callback from queueSend also
+
+        Args:
+            device (str): device id
+            button (str): button id
+            state (Any): value to be set
+        Returns:
+            str: success or error message
+        """
+
+        power_buttons = ["on", "on-off", "off"]
+        vol_buttons = ["vol+", "vol-"]
+        method = self.config.cache["_api"]["devices"][device]["method"]
+
+        self.logging.debug("button_set_value(): ...m:" + method + " ...d:" + device + " ...b:" + button + " ...s:" + str(state))
+
+        if method == "record":
+
+            if button in power_buttons:
+                button = "power"
+            if button in vol_buttons:
+                button = "vol"
+            if button == "on":
+                state = "ON"
+            if button == "off":
+                state = "OFF"
+
+            msg = self.device_status_set(device, button, state)
+            self.config.cache_time = 0
+
+            if "ERROR" in msg:
+                return msg
+            else:
+                return "OK"
+
+        else:
+            self.logging.warning("button_set_value(): Wrong method (" + method + "," + device + "," + button + ")")
+            return "ERROR: Wrong method (" + method + ")"
+
+    def remote_move(self, remote_type, device, direction):
+        """
+        move device or scene button, direction => -x steps backward / x steps forward
+
+        Args:
+            remote_type (str): type of remote ('device' or 'scene')
+            device (str): device or scene id
+            direction (int): direction / steps to move the remote
+        Returns:
+            str: success or error message
+        """
+        if remote_type == "device":
+            status = self.config.read_status()
+        elif remote_type == "scene":
+            status = self.data.scenes_read(selected=[], remotes=False)  # configFiles.read(modules.active_scenes)
+        else:
+            return "ERROR: type " + remote_type + " is unknown."
+
+        # normalize position (required, if remotes have been deleted)
+        order = {}
+        order_keys = []
+        for key in status:
+            pos = status[key]["settings"]["position"]
+            if pos < 10:
+                pos = "00" + str(pos)
+            elif pos < 100:
+                pos = "0" + str(pos)
+            else:
+                pos = str(pos)
+            order[pos] = key
+            order_keys.append(pos)
+
+        order_keys.sort()
+        i = 1
+        for key in order_keys:
+            status[order[key]]["settings"]["position"] = i
+            i += 1
+
+        # start move
+        position = True
+        direction = int(direction)
+        return_msg = ""
+
+        # check if device is defined
+        if device not in status:
+            return "ERROR: " + remote_type + " not defined."
+
+        # check if position is defined and add, if not existing
+        for key in status:
+            if "position" not in status[key]["settings"]:
+                position = False
+
+        i = 1
+        if not position:
+            for key in status:
+                status[key]["settings"]["position"] = i
+                i += 1
+            if remote_type == "device":
+                self.config.write_status(status)
+            elif remote_type == "scene":
+                self.data.scenes_write(status)  # configFiles.write(modules.active_scenes,status)
+
+            return_msg = "WARN: Position wasn't existing. Has been set, please move again."
+
+        # get position and move into direction
+        else:
+            i = 1
+            for key in status: i += 1
+
+            if 0 < status[device]["settings"]["position"] + direction < i:
+                old_position = status[device]["settings"]["position"]
+                new_position = status[device]["settings"]["position"] + direction
+
+                for key in status:
+                    if status[key]["settings"]["position"] == new_position:
+                        status[key]["settings"]["position"] = old_position
+
+                status[device]["settings"]["position"] = new_position
+                return_msg = "OK. Moved " + device + " from " + str(old_position) + " to " + str(new_position) + "."
+
+            else:
+                return_msg = "WARNING: Out of range."
+
+        if remote_type == "device":
+            self.config.write_status(status)
+        elif remote_type == "scene":
+            self.data.scenes_write(status)  # configFiles.write(modules.active_scenes,status)
+
+        self.config.cache_update = True
+        return return_msg
+
+    def remote_visibility(self, remote_type, device, visibility):
+        """
+        change visibility in device configuration (yes/no)
+
+        Args:
+            remote_type (str): type of remote ('device' or 'scene')
+            device (str): device or scene id
+            visibility (str): visibility of remote ('yes' or 'no')
+        Returns:
+            str: success or error message
+        """
+        if remote_type == "remote":
+            data = self.config.read_status()
+            if device not in data:
+                return "Remote control '" + device + "' does not exists."
+
+            elif visibility == "yes" or visibility == "no":
+                data[device]["settings"]["visible"] = visibility
+                self.config.write_status(data, "remote_visibility()")
+                return "OK: Change visibility for '" + device + "': " + visibility
+
+            else:
+                return "ERROR: Visibility value '" + visibility + "' does not exists."
+
+        elif remote_type == "scene":
+            data = self.data.scenes_read(selected=[], remotes=False)  # configFiles.read(modules.active_scenes)
+            if device not in data.keys():
+                return "Scene '" + device + "' does not exists."
+
+            elif visibility == "yes" or visibility == "no":
+                data[device]["settings"]["visible"] = visibility
+                self.data.scenes_write(data)
+                self.config.cache_update = True
+                return "OK: Change visibility for '" + device + "': " + visibility
+
+            else:
+                return "ERROR: Visibility value '" + visibility + "' does not exists."
+
+        else:
+            return "ERROR: changeVisibility - Type doesn't exist (" + remote_type + ")."
+
+    def remote_add_template(self, device, template):
+        """
+        add / overwrite remote layout definition by template
+
+        Args:
+            device (str): device or scene id
+            template (str): template id
+        Returns:
+            str: success or error message
+        """
+        templates = self.config.read(rm3config.templates + template)
+        config = self.config.read_status()
+        interface = config[device]["config"]["interface_api"]
+        device_code = config[device]["config"]["device"]
+        device_remote = config[device]["config"]["remote"]
+        data = self.config.read(rm3config.remotes + device_remote)
+
+        # check if error
+        if "data" not in data.keys():
+            return "ERROR: Device '" + device + "' does not exists."
+
+        # add layout from template
+        elif template in templates and data["data"] == []:
+
+            if "data" in templates:
+                data["data"]["remote"] = templates["data"]["remote"]
+            else:
+                data["data"]["remote"] = templates[template]["remote"]
+            self.config.write(rm3config.remotes + device_remote, data)
+            return "OK: Template '" + template + "' added to '" + device + "'."
+
+        # overwrite layout from template
+        elif template in templates and data["data"] != []:
+
+            if "data" in templates:
+                data["data"]["remote"] = templates["data"]["remote"]
+            else:
+                data["data"]["remote"] = templates[template]["remote"]
+
+            self.config.write(rm3config.remotes + device_remote, data)
+            return "OK: Remote definition of '" + device + "' overwritten by template '" + template + "'."
+
+        # template doesn't exist
+        else:
+            return "ERROR: Template '" + template + "' does't exists."
+
+    def remote_edit_macros(self, macros):
+        """
+        check if format is correct and save macros
+
+        Args:
+            macros (dict): macro information
+        Returns:
+            str: success or error message
+        """
+        macro_keys = ["macro", "dev-on", "dev-off", "scene-on", "scene-off"]
+
+        if not isinstance(macros, dict):
+            return "ERROR: wrong data format - not a dict."
+
+        for key in macros:
+            if not isinstance(macros[key], dict):
+                return "ERROR: wrong data format - not a dict (" + str(key) + ")."
+            if key not in macro_keys:
+                return "ERROR: wrong data format - unknown key (" + str(key) + ")"
+            for key2 in macros[key]:
+                if not isinstance(macros[key][key2], list):
+                    return "ERROR: wrong data format - macro is not a list (" + str(key) + "/" + str(key2) + ")"
+                for list_key in macros[key][key2]:
+                    if not (isinstance(list_key, float) or isinstance(list_key, int)) and not isinstance(list_key, str):
+                        return "ERROR: wrong data format - list entry is not a number or string (" + str(
+                            key) + "/" + str(
+                            key2) + "/" + str(list_key) + ")"
+
+        macro_file = self.data.macros_read()
+        for key in macros:
+            macro_file[key] = macros[key]
+        self.data.macros_write(macro_file)
+
+        return "OK, saved macro file."
+
+
+
+
+
+
+
 

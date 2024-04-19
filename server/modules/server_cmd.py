@@ -1,23 +1,47 @@
-# API commands defined in swagger.yml
-# -----------------------------------
-# (c) Christoph Kloth
-# -----------------------------------
 import time
 import logging
-import modules.rm3config
-from modules.server_fnct import *
+
+import modules.rm3cache as rm3cache
+import modules.rm3data as rm3data
+import modules.rm3json
+import modules.rm3queue as rm3queue
+import modules.rm3config as rm3config
+import interfaces
 
 # ---------------------------
 
 Status = "Starting"
 
-if modules.rm3config.test:
-    Stage = "Test Stage"
+configInterfaces = rm3cache.ConfigInterfaces("configInterfaces")
+configFiles = rm3cache.ConfigCache("ConfigFiles")
+
+if configFiles.check_config() == "ERROR":
+    exit()
 else:
-    Stage = "Prod Stage"
+    configFiles.start()
+    configInterfaces.start()
+
+deviceAPIs = interfaces.Connect(configFiles)
+deviceAPIs.start()
+
+queueSend = rm3queue.QueueApiCalls("queueSend", "send", deviceAPIs, configFiles)
+queueSend.start()
+
+queueQuery = rm3queue.QueueApiCalls("queueQuery", "query", deviceAPIs, configFiles)
+queueQuery.start()
+
+remotesData = rm3data.RemotesData(configFiles, configInterfaces, deviceAPIs, queueQuery)
+remotesEdit = rm3data.RemotesEdit(remotesData, configFiles, configInterfaces, deviceAPIs, queueQuery)
 
 
 # ---------------------------
+
+
+def refreshCache():
+    """
+    Reset vars to enforce a refresh of all cached data
+    """
+    configFiles.update()
 
 
 def remoteAPI_start(setting=[]):
@@ -34,9 +58,9 @@ def remoteAPI_start(setting=[]):
         data["DATA"] = remotesData.complete_read()
 
         data["CONFIG"] = {}
-        data["CONFIG"]["button_images"] = configFiles.read(modules.rm3config.icons_dir + "/index")
-        data["CONFIG"]["button_colors"] = configFiles.read(modules.rm3config.buttons + "button_colors")
-        data["CONFIG"]["scene_images"] = configFiles.read(modules.rm3config.scene_img_dir + "/index")
+        data["CONFIG"]["button_images"] = configFiles.read(rm3config.icons_dir + "/index")
+        data["CONFIG"]["button_colors"] = configFiles.read(rm3config.buttons + "button_colors")
+        data["CONFIG"]["scene_images"] = configFiles.read(rm3config.scene_img_dir + "/index")
         data["CONFIG"]["devices"] = remotesData.devices_read_config()
         data["CONFIG"]["interfaces"] = deviceAPIs.available
         data["CONFIG"]["methods"] = deviceAPIs.methods
@@ -79,9 +103,9 @@ def remoteAPI_end(data, setting=[]):
     data["REQUEST"]["load-time"] = (time.time() - data["REQUEST"]["start-time"])
     data["STATUS"]["system"] = {
         "message": Status,
-        "server_start": modules.rm3config.start_time,
-        "server_start_duration": modules.rm3config.start_duration,
-        "server_running": time.time() - modules.rm3config.start_time
+        "server_start": rm3config.start_time,
+        "server_start_duration": rm3config.start_duration,
+        "server_running": time.time() - rm3config.start_time
     }
 
     # --------------------------------
@@ -160,15 +184,15 @@ def RemoteCheckUpdate(APPversion):
     d = {}
     data = remoteAPI_start(["request-only"])
 
-    if APPversion == modules.rm3config.APPversion:
+    if APPversion == rm3config.APPversion:
         d["ReturnCode"] = "800"
-        d["ReturnMsg"] = "OK: " + modules.rm3config.error_message("800")
-    elif APPversion in modules.rm3config.APPsupport:
+        d["ReturnMsg"] = "OK: " + rm3config.error_message("800")
+    elif APPversion in rm3config.APPsupport:
         d["ReturnCode"] = "801"
-        d["ReturnMsg"] = "WARN: " + modules.rm3config.error_message("801")
+        d["ReturnMsg"] = "WARN: " + rm3config.error_message("801")
     else:
         d["ReturnCode"] = "802"
-        d["ReturnMsg"] = "WARN: " + modules.rm3config.error_message("802")
+        d["ReturnMsg"] = "WARN: " + rm3config.error_message("802")
 
     data["REQUEST"]["Return"] = d["ReturnMsg"]
     data["REQUEST"]["ReturnCode"] = d["ReturnCode"]
@@ -215,7 +239,7 @@ def Remote(device, button):
     if "ERROR" in data["REQUEST"]["Return"]:
         logging.error(data["REQUEST"]["Return"])
 
-    data["DeviceStatus"] = getStatus(device, "power")  # to be removed
+    data["DeviceStatus"] = remotesEdit.device_status_get(device, "power")  # to be removed
     data["ReturnMsg"] = data["REQUEST"]["Return"]  # to be removed
 
     data = remoteAPI_end(data, ["no-data"])
@@ -241,7 +265,7 @@ def RemoteSendText(device, button, text):
     if "ERROR" in data["REQUEST"]["Return"]:
         logging.error(data["REQUEST"]["Return"])
 
-    data["DeviceStatus"] = getStatus(device, "power")  # to be removed
+    data["DeviceStatus"] = remotesEdit.device_status_get(device, "power")  # to be removed
     data["ReturnMsg"] = data["REQUEST"]["Return"]  # to be removed
 
     data = remoteAPI_end(data, ["no-data", "no-config"])
@@ -266,7 +290,7 @@ def RemoteSet(device, command, value):
         remotesData.get_device_status(data, read_api=True)
 
     elif method == "record":
-        data["REQUEST"]["Return"] = setStatus(device, command, value)
+        data["REQUEST"]["Return"] = remotesEdit.device_status_set(device, command, value)
         remotesData.get_device_status(data, read_api=True)
 
     refreshCache()
@@ -414,7 +438,7 @@ def RemoteMacroChange(macros):
     Change Macros and save to _ACTIVE-MACROS.json
     """
     data = remoteAPI_start(["request-only"])
-    data["REQUEST"]["Return"] = editMacros(macros)
+    data["REQUEST"]["Return"] = remotesEdit.remote_edit_macros(macros)
     data["REQUEST"]["Command"] = "ChangeMacros"
     data = remoteAPI_end(data, ["no-config", "no-data"])
 
@@ -478,8 +502,8 @@ def RemoteOnOff(device, button):
             value = button
 
         # get status
-        current_status = getStatus(device, value)
-        device_status = getStatus(device, "power")
+        current_status = remotesEdit.device_status_get(device, value)
+        device_status = remotesEdit.device_status_get(device, "power")
 
         # buttons power / ON / OFF
         if value == "power":
@@ -585,7 +609,7 @@ def RemoteReset():
     set status of all devices to OFF and return JSON msg
     """
     data = remoteAPI_start(["request-only"])
-    data["REQUEST"]["Return"] = resetStatus()
+    data["REQUEST"]["Return"] = remotesEdit.device_status_reset()
     data["REQUEST"]["Command"] = "Reset"
 
     refreshCache()
@@ -598,7 +622,7 @@ def RemoteResetAudio():
     set status of all devices to OFF and return JSON msg
     """
     data = remoteAPI_start(["request-only"])
-    data["REQUEST"]["Return"] = resetAudio()
+    data["REQUEST"]["Return"] = remotesEdit.device_status_audio_reset()
     data["REQUEST"]["Command"] = "ResetAudio"
 
     refreshCache()
@@ -611,7 +635,7 @@ def RemoteChangeMainAudio(device):
     set device as main audio device (and reset other)
     """
     data = remoteAPI_start(["request-only"])
-    data["REQUEST"]["Return"] = setMainAudioDevice(device)
+    data["REQUEST"]["Return"] = remotesEdit.device_main_audio_set(device)
     data["REQUEST"]["Command"] = "ChangeMainAudio"
 
     refreshCache()
@@ -624,7 +648,7 @@ def RemoteMove(type, device, direction):
     Move position of device in start menu and drop down menu
     """
     data = remoteAPI_start(["request-only"])
-    data["REQUEST"]["Return"] = moveDeviceScene(type, device, direction)
+    data["REQUEST"]["Return"] = remotesEdit.remote_move(type, device, direction)
     data["REQUEST"]["Command"] = "RemoteMove"
 
     refreshCache()
@@ -638,7 +662,7 @@ def RemoteAddButton(device, button):
     """
     data = remoteAPI_start(["request-only"])
 
-    data["REQUEST"]["Return"] = addButton(device, button)
+    data["REQUEST"]["Return"] = remotesEdit.button_add(device, button)
     data["REQUEST"]["Device"] = device
     data["REQUEST"]["Button"] = button
     data["REQUEST"]["Command"] = "AddButton"
@@ -659,7 +683,7 @@ def RemoteRecordCommand(device, button):
     EncodedCommand = deviceAPIs.api_record(interface, device, button)
 
     if "ERROR" not in str(EncodedCommand):
-        data["REQUEST"]["Return"] = addCommand2Button(device, button, EncodedCommand)
+        data["REQUEST"]["Return"] = remotesEdit.button_add_command(device, button, EncodedCommand)
     else:
         data["REQUEST"]["Return"] = str(EncodedCommand)
 
@@ -677,7 +701,7 @@ def RemoteDeleteCommand(device, button):
     Delete button from layout file
     """
     data = remoteAPI_start(["request-only"])
-    data["REQUEST"]["Return"] = deleteCmd(device, button)
+    data["REQUEST"]["Return"] = remotesEdit.button_delete_command(device, button)
     data["REQUEST"]["Device"] = device
     data["REQUEST"]["Parameter"] = button
     data["REQUEST"]["Command"] = "DeleteCommand"
@@ -692,7 +716,7 @@ def RemoteDeleteButton(device, button_number):
     Delete button from layout file
     """
     data = remoteAPI_start(["request-only"])
-    data["REQUEST"]["Return"] = deleteButton(device, button_number)
+    data["REQUEST"]["Return"] = remotesEdit.button_delete(device, button_number)
     data["REQUEST"]["Device"] = device
     data["REQUEST"]["Parameter"] = button_number
     data["REQUEST"]["Command"] = "DeleteButton"
@@ -707,7 +731,7 @@ def RemoteChangeVisibility(type, device, value):
     change visibility of device in config file
     """
     data = remoteAPI_start(["request-only"])
-    data["REQUEST"]["Return"] = changeVisibility(type, device, value)
+    data["REQUEST"]["Return"] = remotesEdit.remote_visibility(type, device, value)
     data["REQUEST"]["Device"] = device
     data["REQUEST"]["Parameter"] = value
     data["REQUEST"]["Command"] = "ChangeVisibility"
@@ -813,7 +837,7 @@ def RemoteAddTemplate(device, template):
     add / overwrite remote template
     """
     data = remoteAPI_start(["request-only"])
-    data["REQUEST"]["Return"] = addTemplate(device, template)
+    data["REQUEST"]["Return"] = remotesEdit.remote_add_template(device, template)
     data["REQUEST"]["Device"] = device
     data["REQUEST"]["Parameter"] = template
     data["REQUEST"]["Command"] = "AddTemplate"
@@ -834,7 +858,7 @@ def RemoteConfigDevice(device):
 
     if device in device_config:
         api = device_config[device]["interface"]["interface_api"]
-        api_config = configFiles.read(modules.rm3config.commands + api + "/00_interface")
+        api_config = configFiles.read(rm3config.commands + api + "/00_interface")
 
         data["REQUEST"]["Return"] = "OK"
         data["DATA"]["device"] = device
@@ -849,7 +873,7 @@ def RemoteConfigDevice(device):
         for key in device_config:
             api = device_config[key]["interface"]["interface_api"]
             api_method = device_config[key]["interface"]["method"]
-            api_config = configFiles.read(modules.rm3config.commands + api + "/00_interface")
+            api_config = configFiles.read(rm3config.commands + api + "/00_interface")
 
             if api_method == "record":
                 data["DATA"]["devices"][key]["api_commands"] = {}
@@ -888,7 +912,7 @@ def RemoteConfigInterface(interface):
         data["DATA"]["interface"] = "all"
         data["DATA"]["interfaces"] = {}
         for api in interfaces:
-            api_config = configFiles.read(modules.rm3config.commands + api + "/00_interface")
+            api_config = configFiles.read(rm3config.commands + api + "/00_interface")
             #data["DATA"]["interfaces"][api] = str(api_config)
             for key1 in api_config["Devices"]:
                 for key2 in api_config["Devices"][key1]:
@@ -900,7 +924,7 @@ def RemoteConfigInterface(interface):
     elif interface in interfaces:
         data["REQUEST"]["Return"] = "OK"
         data["DATA"]["interface"] = interface
-        api_config = configFiles.read(modules.rm3config.commands + interface + "/00_interface")
+        api_config = configFiles.read(rm3config.commands + interface + "/00_interface")
         for key1 in api_config["Devices"]:
             for key2 in api_config["Devices"][key1]:
                 if key2 == "MACAddress":
@@ -939,10 +963,10 @@ def RemoteConfigInterfaceEdit(interface, config):
         api, dev = interface.split("_")
         data["REQUEST"]["Return"] = "OK"
         data["DATA"]["interface"] = interface
-        config_org = configFiles.read(modules.rm3config.commands + api + "/00_interface")
+        config_org = configFiles.read(rm3config.commands + api + "/00_interface")
         config_org["Devices"][dev] = config
         try:
-            configFiles.write(modules.rm3config.commands + api + "/00_interface", config_org)
+            configFiles.write(rm3config.commands + api + "/00_interface", config_org)
         except Exception as e:
             data["REQUEST"]["Return"] = "ERROR: Could not save configuration for '" + interface + "': " + str(e)
             data["DATA"]["interface"] = "all"
@@ -951,7 +975,7 @@ def RemoteConfigInterfaceEdit(interface, config):
         data["REQUEST"]["Return"] = "OK"
         data["DATA"]["interface"] = interface
         try:
-            configFiles.write(modules.rm3config.commands + interface + "/00_interface-test", data)
+            configFiles.write(rm3config.commands + interface + "/00_interface-test", data)
         except Exception as e:
             data["REQUEST"]["Return"] = "ERROR: Could not save configuration for '" + interface + "': " + str(e)
             data["DATA"]["interface"] = "all"
