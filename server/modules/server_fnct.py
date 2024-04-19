@@ -470,7 +470,7 @@ def RmReadData(selected=[]):
         data["templates"] = RmReadData_templates(selected)["templates"]
         data["template_list"] = RmReadData_templates(selected)["template_list"]
 
-        logging.warning("++++++++> "+str(data["scenes"]["music"].keys()))
+        logging.debug("++++++++> "+str(data["scenes"]["music"].keys()))
 
         # save data in cache
         configFiles.cache["_api"] = data

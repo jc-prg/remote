@@ -70,6 +70,9 @@ class Connect(threading.Thread):
             api = active_devices[device]["config"]["interface_api"]
             dev = active_devices[device]["config"]["interface_dev"]
 
+            if api == "":
+                continue
+
             if api + "_" + dev not in self.api_device_list:
                 self.api_device_list[api+"_"+dev] = []
                 self.api_device_settings[api+"_"+dev] = {}
@@ -129,8 +132,8 @@ class Connect(threading.Thread):
         """
         check IP connection and try reconnect if IP connection exists and status is not "Connected"
         """
-        self.logging.info("..................... CHECK CONNECTION (" + str(self.checking_interval) +
-                          "s) .....................")
+        self.logging.info(".................... CHECK CONNECTION (" + str(self.checking_interval) +
+                          "s) ....................")
 
         # check API status
         for key in self.api:
@@ -153,8 +156,8 @@ class Connect(threading.Thread):
         """
         check when the last command was send and if an auto-off has to be reflected in the system status
         """
-        self.logging.info("..................... CHECK ACTIVITY (" + str(self.checking_interval) +
-                          "s) .....................")
+        self.logging.info(".................... CHECK ACTIVITY (" + str(self.checking_interval) +
+                          "s) ....................")
 
         for key in self.api:
             device_list = self.api_device_list[key]

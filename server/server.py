@@ -2,22 +2,33 @@
 
 import time
 import os
+import sys
 import logging
 import modules.rm3config as remote
 
 from modules.server_fnct import *
 from modules.server_cmd import *
 
+import traceback
 import connexion
 from flask_cors import CORS
 
+
+def on_exception(exc_type, value, trace_back):
+    """
+    grab all exceptions and write them to the logfile (if active)
+    """
+    tb_str = ''.join(traceback.format_exception(exc_type, value, trace_back))
+    log.error("EXCEPTION:\n\n" + tb_str + "\n")
+
+
+sys.excepthook = on_exception
 
 if __name__ == "__main__":
 
     log = logging.getLogger("werkzeug")
     log.info("Initializing WebServer ..." + remote.time_since_start())
 
-    # create the application instance
     log.info("... specification directory is " + remote.rest_api_dir + " ...")
     app = connexion.App(__name__, specification_dir=remote.rest_api_dir)
     CORS(app.app)

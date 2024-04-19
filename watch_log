@@ -16,11 +16,11 @@ CYAN='\x1b[96m'
 WHITE='\x1b[97m'
 NC='\x1b[0m' # No Color
 
-TEXT_GREEN='\(INFO\|OK\)'
+TEXT_GREEN='\(INFO\|OK\|TRUE\)'
 TEXT_YELLOW='\(WARNING\)'
-TEXT_RED='\(ERROR\|CRITICAL\|FAILED\)'
-TEXT_MAGENTA='\(---\|-->\|GO!\|FORCE SHUTDOWN OF BIRDHOUSE SERVER \.\.\.\|Starting \.\.\.\)'
-TEXT_CYAN='\(cam[0-9]\|\/dev\/video[0-9]\|\/dev\/media[0-9]\|\/dev\/video[0-9][0-9]\|\/dev\/picam\|mic[0-9]\|sensor[0-9]\)'
+TEXT_RED='\(ERROR\|CRITICAL\|FAILED\|FALSE\|EXCEPTION\:\)'
+TEXT_MAGENTA='\(---\|-->\|\.\.\.\.\|CHECK ACTIVITY\|CHECK CONNECTION\|1st CONNECT OF INTERFACES\|jc\:\/\/remote\/\)'
+TEXT_CYAN='\(EXEC\|\_\_BUTTON\|\_\_SEND\)'
 TEXT_DEBUG='\(DEBUG\)'
 
 
