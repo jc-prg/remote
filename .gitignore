@@ -1,15 +1,12 @@
+/.env
 
-server/interfaces/broadlink/__pycache__/
+*.swp
+
+*.save
+
+*.png~
 
 *.pyc
-
-server/server_org.py
-
-log/server.log
-
-config/config_test
-
-config/config_prod
 
 app/_sicher/
 
@@ -21,9 +18,21 @@ app/img/iphone_rm3.jpg
 
 app/img/remote.jpg
 
-*.save
+app/remote-v3/config_stage.js
 
-*.png~
+app/app-fw/
+
+app/img/
+
+app/cache.manifest
+
+config/config_test
+
+config/config_prod
+
+config/modules/
+
+config/app-framework/
 
 data/_ACTIVE-DEVICES.json
 
@@ -35,17 +44,7 @@ data/devices/
 
 data/remotes/
 
-app/app-fw/
-
-app/img/
-
-config/app-framework/
-
-config/modules/
-
-app/cache.manifest
-
-*.swp
+log/server.log
 
 server/modules/rm3stage.py
 
@@ -55,4 +54,6 @@ server/interfaces/magichue/
 
 server/interfaces/test_api_magichome.py
 
-/.env
+server/interfaces/broadlink/__pycache__/
+
+server/server_org.py
