@@ -566,7 +566,7 @@ def RemoteOnOff(device, button):
     data["REQUEST"]["Button"] = button
     data["REQUEST"]["Command"] = "OnOff"
 
-    logging.info("... add to queue [" + str(api_dev) + "," + str(device) + "," + str(button) + "," + str(status) + "]")
+    logging.debug("... add to queue [" + str(api_dev) + "," + str(device) + "," + str(button) + "," + str(status) + "]")
 
     if dont_send:
         data["REQUEST"]["Return"] = "Dont send " + device + "/" + button + " as values not valid (" + str(
