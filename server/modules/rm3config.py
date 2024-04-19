@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 # ---------------------------------
 
 APIname = "jc://remote/"
-APIversion = "v2.2.1"
+APIversion = "v2.2.2"
 APPversion = "v2.9.2"
 APPsupport = [APPversion,
               "v2.9.0", "v2.9.1"
