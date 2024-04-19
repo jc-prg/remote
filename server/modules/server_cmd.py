@@ -31,13 +31,13 @@ def remoteAPI_start(setting=[]):
     data = configFiles.api_init.copy()
 
     if "status-only" not in setting and "request-only" not in setting:
-        data["DATA"] = RmReadData()
+        data["DATA"] = remoteData.complete_read()
 
         data["CONFIG"] = {}
         data["CONFIG"]["button_images"] = configFiles.read(modules.rm3config.icons_dir + "/index")
         data["CONFIG"]["button_colors"] = configFiles.read(modules.rm3config.buttons + "button_colors")
         data["CONFIG"]["scene_images"] = configFiles.read(modules.rm3config.scene_img_dir + "/index")
-        data["CONFIG"]["devices"] = RmReadData_devicesConfig()
+        data["CONFIG"]["devices"] = remoteData.devices_read_config()
         data["CONFIG"]["interfaces"] = deviceAPIs.available
         data["CONFIG"]["methods"] = deviceAPIs.methods
 
@@ -60,12 +60,12 @@ def remoteAPI_start(setting=[]):
 
     data["STATUS"] = {}
     if "request-only" not in setting:
-        data["STATUS"]["devices"] = RmReadData_deviceStatus()
-        data["STATUS"]["scenes"] = RmReadData_sceneStatus()
+        data["STATUS"]["devices"] = remoteData.devices_status()
+        data["STATUS"]["scenes"] = remoteData.scenes_status()
         data["STATUS"]["interfaces"] = deviceAPIs.api_get_status()
         data["STATUS"]["system"] = {}  # to be filled in remoteAPI_end()
         data["STATUS"]["request_time"] = queueSend.average_exec
-        data["STATUS"]["config_errors"] = RmReadData_errors
+        data["STATUS"]["config_errors"] = remoteData.errors
 
     return data.copy()
 
@@ -146,7 +146,7 @@ def RemoteReload():
     data["REQUEST"]["Command"] = "Reload"
 
     deviceAPIs.api_reconnect()
-    devicesGetStatus(data, readAPI=True)
+    remoteData.get_device_status(data, read_api=True)
 
     data = remoteAPI_end(data, ["no-data"])
     return data
@@ -263,11 +263,11 @@ def RemoteSet(device, command, value):
     if method == "query":
         # data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,command,value)
         data["REQUEST"]["Return"] = queueSend.add2queue([[interface, device, command, value]])
-        devicesGetStatus(data, readAPI=True)
+        remoteData.get_device_status(data, read_api=True)
 
     elif method == "record":
         data["REQUEST"]["Return"] = setStatus(device, command, value)
-        devicesGetStatus(data, readAPI=True)
+        remoteData.get_device_status(data, read_api=True)
 
     refreshCache()
     data = remoteAPI_end(data, ["no-data"])
@@ -830,7 +830,7 @@ def RemoteConfigDevice(device):
     data = remoteAPI_start(["request-only"])
 
     data["DATA"] = {}
-    device_config = RmReadData_devicesConfig(more_details=True)
+    device_config = remoteData.devices_read_config(more_details=True)
 
     if device in device_config:
         api = device_config[device]["interface"]["interface_api"]
@@ -876,7 +876,8 @@ def RemoteConfigInterface(interface):
     data["DATA"] = {}
 
     interfaces = []
-    device_config = RmReadData_devicesConfig(more_details=True)
+    device_config = remoteData.devices_read_config(more_details=True)
+
     for key in device_config:
         api = device_config[key]["interface"]["interface_api"]
         if api not in interfaces:
@@ -923,7 +924,8 @@ def RemoteConfigInterfaceEdit(interface, config):
 
     data["DATA"] = {}
     interfaces = []
-    device_config = RmReadData_devicesConfig(more_details=True)
+    device_config = remoteData.devices_read_config(more_details=True)
+
     for key in device_config:
         api = device_config[key]["interface"]["interface_api"]
         if api not in interfaces:
@@ -969,7 +971,7 @@ def RemoteTest():
     """
 
     data = remoteAPI_start()
-    data["TEST"] = RmReadData("")
+    data["TEST"] = remoteData.complete_read()
     data["REQUEST"]["Return"] = "OK: Test - show complete data structure"
     data["REQUEST"]["Command"] = "Test"
     data = remoteAPI_end(data, ["no-data"])

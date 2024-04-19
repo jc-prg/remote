@@ -20,7 +20,7 @@ class ConfigInterfaces(threading.Thread):
         self.cache_time = time.time()  # initial time for time based update
         self.cache_interval = rm3config.refresh_device_status  # update interval in seconds (reread files)
 
-        self.logging = logging.getLogger("cache.INT")
+        self.logging = logging.getLogger("cache.INI")
         self.logging.setLevel = rm3config.log_set2level
 
     def run(self):

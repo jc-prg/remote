@@ -11,7 +11,7 @@ class QueueApiCalls(threading.Thread):
     -> see server_fnct.py: a queue for send commands and another queue for query commands, as query commands take some time
     """
 
-    def __init__(self, name, query_send, device_apis):
+    def __init__(self, name, query_send, device_apis, config):
         """
         create queue, set name
         """
@@ -25,7 +25,7 @@ class QueueApiCalls(threading.Thread):
         self.device_apis = device_apis
         self.device_reload = []
         self.last_button = "<none>"
-        self.config = ""
+        self.config = config
         self.query_send = query_send
         self.reload = False
         self.exec_times = {}

@@ -122,7 +122,6 @@ else:
 start_time = time.time()
 start_duration = 0
 initial_stage = ""
-log_set2level = logging.INFO
 DEBUG = False
 
 refresh_config_sleep = 5 * 60
@@ -160,7 +159,7 @@ app_configuration = """
 
 var test            = """ + str(test).lower() + """;
 var log_level       = '""" + log_level.lower() + """"';
-var server_port     = '""" + str(server_port) + """"';
+var server_port     = """ + str(server_port) + """;
 var rollout         = '""" + rollout + """"';
 LANG                = '""" + app_language + """';
 
@@ -170,6 +169,14 @@ if (rollout === "test")	{ test = true; }
 f = open(app_config_file, "w")
 f.write(app_configuration)
 f.close()
+
+log_set2level = logging.INFO
+log_threads = {
+    "DEBUG": [],
+    "INFO": [],
+    "WARNING": [],
+    "ERROR": []
+}
 
 # ---------------------------------
 
