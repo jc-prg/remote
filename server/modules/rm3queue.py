@@ -190,6 +190,6 @@ class QueueApiCalls(threading.Thread):
         self.average_exec[device] = total / len(self.exec_times[device])
         average_diff = self.average_exec[device] - average_start
 
-        self.logging.info("...... EXEC TIME '" + device + "' average: " + str(
+        self.logging.info("__EXEC TIME: '" + device + "' average: " + str(
             round(self.average_exec[device], average_round)) + " / last " + str(
             round(duration, average_round)) + " / change " + str(round(average_diff, average_round)))
