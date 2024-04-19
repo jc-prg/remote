@@ -96,6 +96,7 @@ There are a few templates available to be used and modified.
 
 * directly view and execute API commands for devices in edit mode
 * edit interface configuration via app
+* simplify server configuration
 
 ### App v2.8 / Server v2.1
 
@@ -195,14 +196,11 @@ In order to use jc://remote/ as it is, the following software must be installed:
 2. Change settings: [sample.config_prod](./config/sample.config_prod)
 
     ```bash
-    $ cd config
-    $ cp sample.config_prod config_prod
-    $ nano config_prod                      # modify configuration for your needs
-    $ ./create prod
-    $ cd ..
+    $ cp sample.env .env
+    $ nano .env              # modify configuration for your needs
     ```
 
-3. Copy sample remote controls
+3. Install sample remote controls
 
     ```bash
     $ cd data/_sample
