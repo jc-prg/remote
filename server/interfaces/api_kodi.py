@@ -3,11 +3,11 @@
 # https://kodi.wiki/view/JSON-RPC_API/v10#Application.Property.Name
 # -----------------------------------
 
-import logging, time
+import logging
+import time
 import modules.rm3json as rm3json
 import modules.rm3config as rm3config
 import modules.rm3ping as rm3ping
-import modules.rm3stage as rm3stage
 
 from interfaces.kodi import Kodi
 
@@ -46,7 +46,7 @@ class ApiControl:
         self.api_url = "http://" + str(self.api_config["IPAddress"]) + ":" + str(self.api_config["Port"]) + "/jsonrpc"
 
         self.logging = logging.getLogger("api.KODI")
-        self.logging.setLevel = rm3stage.log_set2level
+        self.logging.setLevel = rm3config.log_set2level
         self.logging.info(
             "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
 
@@ -238,7 +238,7 @@ class APIaddOn:
         self.cache_wait = 2  # time in seconds how much time should be between two api metadata requests
 
         self.logging = logging.getLogger("api.KODI")
-        self.logging.setLevel = rm3stage.log_set2level
+        self.logging.setLevel = rm3config.log_set2level
 
         self.available_commands = {
             "jc.get_addons(parameter)": {

@@ -1,17 +1,17 @@
 #----------------------------------------
 # Docker Remote RM
 #----------------------------------------
-# ${THIS_IS_THE_PROJECT_TEMPLATE}
-#----------------------------------------
 
 version: '3'
 services:
 
-  ${REMOTE_DOCKER_SERVER}:
+  remote_server:
     build: ${REMOTE_DOCKERIMAGE_SERVER}
     container_name: ${REMOTE_DOCKER_SERVER}
     volumes:
-      - ${REMOTE_DIR_SERVER}:/usr/src/app/server
+      - ${REMOTE_DIR}:${REMOTE_DIR}
+      - ${REMOTE_DIR}:/usr/src/app
+#      - ${REMOTE_DIR_SERVER}:/usr/src/app/server
       - ${REMOTE_DIR_DATA}:${REMOTE_DIR_DATA}
       - ${REMOTE_DIR_ICONS}:${REMOTE_DIR_ICONS}
       - ${REMOTE_DIR_ICON_INDEX}:${REMOTE_DIR_ICON_INDEX}
@@ -19,9 +19,7 @@ services:
     ports:
       - ${REMOTE_SERVER_PORT}:${REMOTE_SERVER_PORT}
 
-
-
-  ${REMOTE_DOCKER_CLIENT}:
+  remote_client:
     image: ${REMOTE_DOCKERIMAGE_CLIENT}
     container_name: ${REMOTE_DOCKER_CLIENT}
     ports:
@@ -32,7 +30,7 @@ services:
       - ${REMOTE_DIR_SCENES}:/var/www/html/rm3/scenes
       - ./config/apache2/www-rm3.conf:/etc/apache2/sites-enabled/www-rm3.conf
     depends_on:
-      - ${REMOTE_DOCKER_SERVER}
+      - remote_server
 
 
 #----------------------------------------

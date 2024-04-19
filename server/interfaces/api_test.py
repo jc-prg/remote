@@ -4,10 +4,10 @@
 # (c) Christoph Kloth
 # -----------------------------------
 
-import logging, time
+import logging
+import time
 import modules.rm3json as rm3json
 import modules.rm3config as rm3config
-import modules.rm3stage as rm3stage
 
 # import sampleAPI as sample
 
@@ -49,7 +49,7 @@ class ApiControl:
         self.api_config = device_config
 
         self.logging = logging.getLogger("api.TEST")
-        self.logging.setLevel = rm3stage.log_set2level
+        self.logging.setLevel = rm3config.log_set2level
         self.logging.info(
             "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
 

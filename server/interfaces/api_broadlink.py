@@ -1,9 +1,10 @@
-import logging, time
-import codecs, json, netaddr
+import logging
+import time
+import codecs
+import netaddr
 import modules.rm3json as rm3json
 import modules.rm3config as rm3config
 import modules.rm3ping as rm3ping
-import modules.rm3stage as rm3stage
 
 import interfaces.broadlink.broadlink as broadlink
 
@@ -58,7 +59,7 @@ class ApiControl:
         self.api_config["Timeout"] = int(self.api_config["Timeout"])
 
         self.logging = logging.getLogger("api.RM3")
-        self.logging.setLevel = rm3stage.log_set2level
+        self.logging.setLevel = rm3config.log_set2level
         self.logging.info(
             "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
 

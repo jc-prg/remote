@@ -3,7 +3,6 @@ import logging, time, threading, datetime
 import modules.rm3json as rm3json
 import modules.rm3config as rm3config
 import modules.rm3ping as rm3ping
-import modules.rm3stage as rm3stage
 
 
 class Connect(threading.Thread):
@@ -45,9 +44,9 @@ class Connect(threading.Thread):
         }
 
         self.logging = logging.getLogger("api")
-        self.logging.setLevel = rm3stage.log_set2level
+        self.logging.setLevel = rm3config.log_set2level
 
-        if rm3stage.log_apidata == "NO":
+        if rm3config.log_apidata == "NO":
             self.log_commands = False
         else:
             self.log_commands = True
@@ -298,6 +297,7 @@ class Connect(threading.Thread):
         """
         api_dev = self.device_api_string(device)
         method = self.api_method(device)
+        return_msg = ""
         self.api_errors(device)
         self.logging.info("__SEND: " + api_dev + " / " + device + "_" + button + ":" + str(value) +
                           " (" + self.api[api_dev].status + ")")

@@ -1,9 +1,9 @@
-import logging, time
+import logging
+import time
 import threading
 
 import modules.rm3config as rm3config
 import modules.rm3json as rm3json
-import modules.rm3stage as rm3stage
 
 
 class ConfigInterfaces(threading.Thread):
@@ -21,7 +21,7 @@ class ConfigInterfaces(threading.Thread):
         self.cache_interval = rm3config.refresh_device_status  # update interval in seconds (reread files)
 
         self.logging = logging.getLogger("cache.INT")
-        self.logging.setLevel = rm3stage.log_set2level
+        self.logging.setLevel = rm3config.log_set2level
 
     def run(self):
         """
@@ -76,11 +76,11 @@ class ConfigCache(threading.Thread):
             "name": rm3config.APIname,
             "version": rm3config.APIversion,
             "stage": rm3config.initial_stage,
-            "rollout": rm3stage.rollout
+            "rollout": rm3config.rollout
         }}
 
         self.logging = logging.getLogger("cache.CONF")
-        self.logging.setLevel = rm3stage.log_set2level
+        self.logging.setLevel = rm3config.log_set2level
 
     def run(self):
         """
@@ -132,7 +132,7 @@ class ConfigCache(threading.Thread):
         if error_msg != {}:
             self.logging.error("Error while reading MAIN CONFIG FILES:")
             for key in error_msg:
-                self.logging.error(" - " + rm3stage.data_dir + "/" + key + ".json: " + str(error_msg[key]))
+                self.logging.error(" - " + rm3config.data_dir + "/" + key + ".json: " + str(error_msg[key]))
             return "ERROR"
 
     def update(self):

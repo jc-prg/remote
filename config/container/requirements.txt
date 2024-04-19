@@ -1,12 +1,12 @@
 netaddr
 configparser
 broadlink
-flask
+flask==2.2.2
 flask-restful
 flask-httpauth
 flask-cors
+connexion[swagger-ui]==2.14.1
 pyaes
-connexion[swagger-ui]
 netifaces
 kodi-json
 sonyapilib
@@ -14,3 +14,4 @@ Crypto
 pycryptodome
 pkcs7
 pythonping
+python-dotenv

@@ -1,8 +1,8 @@
-import logging, time, datetime, threading
-
-import modules
+import logging
+import time
+import datetime
+import threading
 import modules.rm3config as rm3config
-import modules.rm3stage as rm3stage
 
 
 class QueueApiCalls(threading.Thread):
@@ -32,7 +32,7 @@ class QueueApiCalls(threading.Thread):
         self.average_exec = {}
 
         self.logging = logging.getLogger("queue")
-        self.logging.setLevel = rm3stage.log_set2level
+        self.logging.setLevel = rm3config.log_set2level
 
     def run(self):
         """

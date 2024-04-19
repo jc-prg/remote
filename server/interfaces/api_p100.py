@@ -4,11 +4,11 @@
 # (c) Christoph Kloth
 # -----------------------------------
 
-import logging, time
+import logging
+import time
 import modules.rm3json as rm3json
 import modules.rm3config as rm3config
 import modules.rm3ping as rm3ping
-import modules.rm3stage as rm3stage
 
 import interfaces.p100.PyP100 as device
 
@@ -54,7 +54,7 @@ class ApiControl:
         self.api_device = device
 
         self.logging = logging.getLogger("api.P100")
-        self.logging.setLevel = rm3stage.log_set2level
+        self.logging.setLevel = rm3config.log_set2level
         self.logging.info(
             "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
 
@@ -288,7 +288,7 @@ class APIaddOn():
         self.cache_wait = 1
 
         self.logging = logging.getLogger("api.P100")
-        self.logging.setLevel = rm3stage.log_set2level
+        self.logging.setLevel = rm3config.log_set2level
 
         self.available_commands = {
             "jc.get_available_commands()": {

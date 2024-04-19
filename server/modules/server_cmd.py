@@ -2,10 +2,8 @@
 # -----------------------------------
 # (c) Christoph Kloth
 # -----------------------------------
-import json
 import time
 import logging
-import modules.rm3stage
 import modules.rm3config
 from modules.server_fnct import *
 
@@ -13,7 +11,7 @@ from modules.server_fnct import *
 
 Status = "Starting"
 
-if modules.rm3stage.test:
+if modules.rm3config.test:
     Stage = "Test Stage"
 else:
     Stage = "Prod Stage"
@@ -36,9 +34,9 @@ def remoteAPI_start(setting=[]):
         data["DATA"] = RmReadData()
 
         data["CONFIG"] = {}
-        data["CONFIG"]["button_images"] = configFiles.read(modules.rm3stage.icons_dir + "/index")
+        data["CONFIG"]["button_images"] = configFiles.read(modules.rm3config.icons_dir + "/index")
         data["CONFIG"]["button_colors"] = configFiles.read(modules.rm3config.buttons + "button_colors")
-        data["CONFIG"]["scene_images"] = configFiles.read(modules.rm3stage.scene_img_dir + "/index")
+        data["CONFIG"]["scene_images"] = configFiles.read(modules.rm3config.scene_img_dir + "/index")
         data["CONFIG"]["devices"] = RmReadData_devicesConfig()
         data["CONFIG"]["interfaces"] = deviceAPIs.available
         data["CONFIG"]["methods"] = deviceAPIs.methods
@@ -164,13 +162,13 @@ def RemoteCheckUpdate(APPversion):
 
     if APPversion == modules.rm3config.APPversion:
         d["ReturnCode"] = "800"
-        d["ReturnMsg"] = "OK: " + modules.rm3config.ErrorMsg("800")
+        d["ReturnMsg"] = "OK: " + modules.rm3config.error_message("800")
     elif APPversion in modules.rm3config.APPsupport:
         d["ReturnCode"] = "801"
-        d["ReturnMsg"] = "WARN: " + modules.rm3config.ErrorMsg("801")
+        d["ReturnMsg"] = "WARN: " + modules.rm3config.error_message("801")
     else:
         d["ReturnCode"] = "802"
-        d["ReturnMsg"] = "WARN: " + modules.rm3config.ErrorMsg("802")
+        d["ReturnMsg"] = "WARN: " + modules.rm3config.error_message("802")
 
     data["REQUEST"]["Return"] = d["ReturnMsg"]
     data["REQUEST"]["ReturnCode"] = d["ReturnCode"]

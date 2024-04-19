@@ -4,9 +4,10 @@
 # (c) Christoph Kloth
 # -----------------------------------
 
-import logging, time, os
+import logging
+import time
+import os
 import modules.rm3json as rm3json
-import modules.rm3stage as rm3stage
 import modules.rm3config as rm3config
 import modules.rm3ping as rm3ping
 
@@ -49,11 +50,11 @@ class ApiControl:
         self.api_device = device
 
         self.logging = logging.getLogger("api.SONY")
-        self.logging.setLevel = rm3stage.log_set2level
+        self.logging.setLevel = rm3config.log_set2level
         self.logging.info(
             "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
 
-        if rm3stage.log_apiext == "NO":
+        if rm3config.log_apiext == "NO":
             log = logging.getLogger("sonyapilib.device")
             log.setLevel(logging.CRITICAL)
 
@@ -73,7 +74,7 @@ class ApiControl:
 
         api_ip = self.api_config["IPAddress"]
         api_name = self.api_device
-        api_config = rm3stage.data_dir + "/" + rm3config.devices + self.api_name + "/" + self.api_device + ".json"
+        api_config = rm3config.data_dir + "/" + rm3config.devices + self.api_name + "/" + self.api_device + ".json"
 
         try:
             self.api = sony.sonyDevice(api_ip, api_name, api_config)

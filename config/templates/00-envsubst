@@ -12,6 +12,6 @@
 rm -rf ../app/config_stage.js
 envsubst < "templates/config_stage.js" > "../app/remote-v3/config_stage.js"
 
-rm -rf ../server/modules/config_stage.py
-envsubst < "templates/rm3stage.py" > "../server/modules/rm3stage.py"
+#rm -rf ../server/modules/config_stage.py
+#envsubst < "templates/rm3stage.py" > "../server/modules/rm3stage.py"
 
