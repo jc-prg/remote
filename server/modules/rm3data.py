@@ -3,7 +3,7 @@ import modules.rm3config as rm3config
 import modules.rm3json as rm3json
 
 
-class RemoteData:
+class RemotesData:
     """
     class to read and write configuration and status data for devices, scenes, remotes
     """
@@ -23,7 +23,7 @@ class RemoteData:
 
         self.logging = logging.getLogger("rm-data")
         self.logging.setLevel = rm3config.log_set2level
-        self.logging.info("Loading RemoteData")
+        self.logging.info("Loading RemotesData")
 
     def complete_read(self, selected=None):
         """
@@ -542,3 +542,431 @@ class RemoteData:
         self.interfaces.cache_update_api = False
 
         return data
+
+
+class RemotesEdit:
+    """
+    Class to edit remote configuration for scenes and devices
+    """
+
+    def __init__(self, data, config, interfaces, apis, queue):
+        """
+        Constructor of this class
+
+        Args:
+            config (modules.ConfigCache): config file handler
+        """
+        self.config = config
+        self.interfaces = interfaces
+        self.queue = queue
+        self.apis = apis
+        self.data = data
+        self.errors = {}
+
+        self.logging = logging.getLogger("rm-edit")
+        self.logging.setLevel = rm3config.log_set2level
+        self.logging.info("Loading RemotesEdit")
+
+    def scene_add(self, scene, info):
+        """
+        add new scene in active_jsons and create scene remote layout
+
+        Args:
+            scene (str): scene id
+            info (dict): further information
+        Return:
+            str: success or error message
+        """
+        active_json = self.data.scenes_read(selected=[], remotes=False)  # configFiles.read(modules.active_scenes)
+
+        if scene in active_json:
+            return "WARNING: Scene " + scene + " already exists (active)."
+        if rm3json.if_exist(rm3config.remotes + "scene_" + scene):
+            return "WARNING: Scene " + scene + " already exists (remotes)."
+
+        self.logging.info("remotesEdit.scene_add(): add " + scene)
+
+        # set last position
+        active_json_position = 0
+        for key in active_json:
+            if active_json[key]["settings"]["position"] > active_json_position:
+                active_json_position = active_json[key]["settings"]["position"]
+        active_json_position += 1
+
+        # add to _active.json
+        active_json[scene] = {
+            "config": {
+                "remote": "scene_" + scene
+            },
+            "settings": {
+                "description": info["description"],
+                "label": info["label"],
+                "position": active_json_position,
+                "visible": "yes"
+            },
+            "status": {},
+            "type": "scene"
+        }
+
+        try:
+            self.data.scenes_write(active_json)
+
+        except Exception as e:
+            return "ERROR: " + str(e)
+
+        # add to devices = button definitions
+        remote = {
+            "info": "jc://remote/ - In this file the remote layout and channel/scene macros for the scene are defined.",
+            "data": {
+                "label": info["label"],
+                "description": info["label"],
+                "remote": [],
+                "devices": [],
+                "macro-channel": {},
+                "macro-scene-on": [],
+                "macro-scene-off": [],
+                "macro-scene": {},
+            }
+        }
+
+        try:
+            self.config.write(rm3config.remotes + "scene_" + scene, remote)
+        except Exception as e:
+            return "ERROR: " + str(e)
+
+        self.config.cache_update = True
+        return "OK: Scene " + scene + " added."
+
+    def scene_edit(self, scene, info):
+        """
+        edit scene data in json file
+
+        Args:
+            scene (str): scene id
+            info (dict): further information
+        Return:
+            str: success or error message
+        """
+        keys_active = ["label", "description", "image"]
+        keys_remotes = ["label", "remote", "macro-channel", "macro-scene-on", "macro-scene-off", "macro-scene",
+                        "devices", "display", "display-size", "type"]
+
+        # check data format
+        if not isinstance(info, dict):
+            return "ERROR: wrong data format - not a dict."
+        if "remote" in info:
+            if not isinstance(info["remote"], list):
+                return "ERROR: wrong data format - 'remote' is not a list."
+            for entry in info["remote"]:
+                if not isinstance(entry, str):
+                    return "ERROR: wrong data format - 'remote' other than strings (" + str(entry) + ")."
+        if "devices" in info:
+            if not isinstance(info["devices"], list):
+                return "ERROR: wrong data format - 'devices' is not a list."
+            for entry in info["devices"]:
+                if not isinstance(entry, str):
+                    return "ERROR: wrong data format - 'devices' other than strings (" + str(entry) + ")."
+        if "macro-channel" in info:
+            if not isinstance(info["macro-channel"], dict):
+                return "ERROR: wrong data format - 'macro-channel' is not a dict."
+            for key in info["macro-channel"]:
+                if not isinstance(info["macro-channel"][key], list):
+                    return "ERROR: wrong data format - 'macro-channel' contains not a list (" + str(key) + ")."
+                for entry in info["macro-channel"][key]:
+                    if not isinstance(entry, str):
+                        return "ERROR: wrong data format - 'macro-channel' list contains other than strings (" + str(
+                            entry) + ")."
+
+        # read central config file
+        active_json = self.data.scenes_read(selected=[], remotes=False)
+
+        # read remote layout definitions
+        remotes = self.config.read(rm3config.remotes + "scene_" + scene)
+        if "ERROR" in remotes:
+            return "ERROR: Scene " + scene + " doesn't exists (remotes)."
+
+        i = 0
+        i_list = ""
+        for key in keys_active:
+            if key in info:
+                active_json[scene]["settings"][key] = info[key]
+                i += 1
+                i_list += key + ","
+
+        for key in keys_remotes:
+            if key in info:
+                if "data" in remotes:
+                    remotes["data"][key] = info[key]
+                elif scene in remotes:
+                    remotes[scene][key] = info[key]
+                i += 1
+                i_list += key + ","
+
+        # write central config file
+        self.data.scenes_write(active_json)
+
+        # write remote layout definition
+        try:
+            self.config.write(rm3config.remotes + "scene_" + scene, remotes)
+        except Exception as e:
+            return "ERROR: could not write changes (remotes) - " + str(e)
+
+        self.config.cache_update = True
+
+        if i > 0:
+            return "OK: Edited device parameters of " + scene + " <br/>(" + str(i) + " changes: " + i_list + ")"
+        else:
+            return "ERROR: no data key matched with keys from config-files (" + str(info.keys) + ")"
+
+    def scene_delete(self, scene):
+        """
+        delete scene from json config file and scene device related files
+
+        Args:
+            scene (str): scene id
+        Return:
+            str: success or error message
+        """
+        active_json = self.data.scenes_read(selected=[], remotes=False)
+
+        if "ERROR" in active_json:
+            return "ERROR: Could not read ACTIVE_JSON (active)."
+        if scene not in active_json:
+            return "ERROR: Scene " + scene + " doesn't exists (active)."
+        if not rm3json.if_exist(rm3config.remotes + "scene_" + scene):
+            return "ERROR: Scene " + scene + " doesn't exists (remotes)."
+
+        del active_json[scene]
+        self.data.scenes_write(active_json)
+
+        try:
+            rm3json.delete(rm3config.remotes + "scene_" + scene)
+            self.config.cache_update = True
+            if not rm3json.if_exist(rm3config.remotes + "scene_" + scene):
+                return "OK: Scene '" + scene + "' deleted."
+            else:
+                return "ERROR: Could not delete scene '" + scene + "'"
+        except Exception as e:
+            return "ERROR: Could not delete scene '" + scene + "': " + str(e)
+
+    def device_add(self, device, info):
+        """
+        add new device to config file and create command/remote files
+
+        Args:
+            device (str): device id
+            info (dict): further device information
+        Returns:
+            str: success or error information
+        """
+        self.logging.debug(str(info))
+        interface, interface_dev = info["api"].split("_")
+
+        # Check if exists
+        active_json = self.config.read_status()
+
+        if device in active_json:
+            return "WARNING: Device " + device + " already exists (active)."
+        if rm3json.if_exist(rm3config.commands + interface + "/" + info["config_device"]):
+            return "WARNING: Device " + device + " already exists (devices)."
+        if rm3json.if_exist(rm3config.remotes + info["config_remote"]):
+            return "WARNING: Device " + device + " already exists (remotes)."
+
+        self.logging.info("remotesEdit.device_add(): add " + device)
+
+        # set position
+        active_json_position = 0
+        for key in active_json:
+            if active_json[key]["settings"]["position"] > active_json_position:
+                active_json_position = active_json[key]["settings"]["position"]
+        active_json_position += 1
+
+        # add to _active.json
+        active_json[device] = {
+            "config": {
+                "device": info["config_device"],
+                "remote": info["config_remote"],
+                "interface_api": interface,
+                "interface_dev": "default"
+            },
+            "settings": {
+                "description": info["label"] + ": " + info["device"],
+                "label": info["label"],
+                "image": device,
+                "main-audio": "no",
+                "position": active_json_position,
+                "visible": "yes"
+            },
+            "status": {"power": "OFF"},
+            "type": "device"
+        }
+
+        try:
+            self.config.write_status(active_json, "addDevice")
+        except Exception as e:
+            return "ERROR: " + str(e)
+
+        # add to devices = button definitions
+        buttons = {
+            "info": "jc://remote/ - In this file the commands and buttons are defined.",
+            "data": {
+                "description": info["label"] + ": " + info["device"],
+                "buttons": {},
+                "commands": {}
+            }
+        }
+        try:
+            self.config.write(rm3config.commands + interface + "/" + info["config_device"], buttons)
+        except Exception as e:
+            return "ERROR: " + str(e)
+
+        # add to remotes = button layout
+        remote = {
+            "info": "jc://remote/ - In this file the remote layout and a display layout is defined.",
+            "data": {
+                "description": info["label"] + ": " + info["device"],
+                "remote": [],
+                "display": {}
+            }
+        }
+        try:
+            self.config.write(rm3config.remotes + info["config_remote"], remote)
+        except Exception as e:
+            return "ERROR: " + str(e)
+
+        return "OK: Device " + device + " added."
+
+    def device_edit(self, device, info):
+        """
+        edit device data in json file
+
+        Args:
+            device (str): device id
+            info (dict): further device information
+        Returns:
+            str: success or error information
+        """
+
+        keys_active = ["label", "image", "description", "main-audio", "interface"]
+        keys_commands = ["description", "method"]
+        keys_remotes = ["description", "remote", "display", "display-size", "type"]
+
+        #    keys_remotes  = ["label","remote","macro-channel","devices","display","display-size"]
+
+        # read central config file
+        active_json = self.data.devices_read(selected=[], remotes=False)
+        self.logging.debug(active_json)
+
+        interface = active_json[device]["config"]["interface_api"]
+        device_code = active_json[device]["config"]["device"]
+        device_remote = active_json[device]["config"]["remote"]
+
+        # read command definition
+        commands = self.config.read(rm3config.commands + interface + "/" + device_code)
+        if "ERROR" in commands:
+            return "ERROR: Device " + device + " doesn't exists (commands)."
+
+        # read remote layout definitions
+        remotes = self.config.read(rm3config.remotes + device_remote)
+        if "ERROR" in remotes:
+            return "ERROR: Device " + device + " doesn't exists (remotes)."
+
+        i = 0
+        for key in keys_active:
+            if key in info:
+                active_json[device]["settings"][key] = info[key]
+                i += 1
+
+        for key in keys_commands:
+            if key in info:
+                commands["data"][key] = info[key]
+                i += 1
+
+        for key in keys_remotes:
+            if key in info:
+                remotes["data"][key] = info[key]
+                i += 1
+
+        # write central config file
+        try:
+            self.data.devices_write(active_json)
+        except Exception as e:
+            return "ERROR: could not write changes (active) - " + str(e)
+
+        # write command definition
+        try:
+            self.config.write(rm3config.commands + interface + "/" + device_code, commands)
+        except Exception as e:
+            return "ERROR: could not write changes (commands) - " + str(e)
+
+        # write remote layout definition
+        try:
+            self.config.write(rm3config.remotes + device_remote, remotes)
+        except Exception as e:
+            return "ERROR: could not write changes (remotes) - " + str(e)
+
+        if i > 0:
+            return "OK: Edited device parameters of " + device + " (" + str(i) + " changes)"
+        else:
+            return "ERROR: no data key matched with keys from config-files (" + str(info.keys) + ")"
+
+    def device_delete(self, device):
+        """
+        delete device from json config file and delete device related files
+
+        Args:
+            device (str): device id
+        Returns:
+            str: success or error information
+        """
+        devices = {}
+        active_json = self.config.read_status()
+        interface = active_json[device]["config"]["interface_api"]
+        device_code = active_json[device]["config"]["device"]
+        device_remote = active_json[device]["config"]["remote"]
+        file_device_remote = rm3config.remotes + device_remote
+        file_interface_remote = rm3config.commands + interface + "/" + device_code
+
+        if "ERROR" in active_json:
+            return "ERROR: Could not read ACTIVE_JSON (active)."
+        if device not in active_json:
+            return "ERROR: Device " + device + " doesn't exists (active)."
+        if not rm3json.if_exist(rm3config.commands + interface + "/" + device_code):
+            return "ERROR: Device " + device + " doesn't exists (commands)."
+        if not rm3json.if_exist(rm3config.remotes + device_remote):
+            return "ERROR: Device " + device + " doesn't exists (remotes)."
+
+        interface = active_json[device]["config"]["interface_api"]  # funtioniert nicht so richtig ...
+
+        for entry in active_json:
+            if entry != device:
+                devices[entry] = active_json[entry]
+
+        active_json = devices
+        self.config.write_status(active_json, "deleteDevice")
+
+        try:
+            rm3json.delete(file_device_remote)
+            rm3json.delete(file_interface_remote)
+
+            if not rm3json.if_exist(file_device_remote) and not rm3json.if_exist(file_interface_remote):
+                message = "OK: Device '" + device + "' deleted."
+            else:
+                message = "ERROR: Could not delete device '" + device + "'"
+
+        except Exception as e:
+            message = "ERROR: Could not delete device '" + device + "': " + str(e)
+
+        if "OK" in message:
+            try:
+                file_interface_remote = file_interface_remote.replace("/", "**")
+                file_device_remote = file_device_remote.replace("/", "**")
+                del self.config.cache[file_interface_remote]
+                del self.config.cache[file_device_remote]
+
+            except Exception as e:
+                message += "; ERROR: " + str(e)
+
+        return message
+
+

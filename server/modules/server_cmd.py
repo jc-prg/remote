@@ -24,20 +24,20 @@ def remoteAPI_start(setting=[]):
     """
     create data structure for API response and read relevant data from config files
     """
-    global Status, LastAPICall, RmReadData_errors
+    global Status, LastAPICall
 
     # set time for last action -> re-read API information only if clients connected
     configFiles.cache_last_action = time.time()
     data = configFiles.api_init.copy()
 
     if "status-only" not in setting and "request-only" not in setting:
-        data["DATA"] = remoteData.complete_read()
+        data["DATA"] = remotesData.complete_read()
 
         data["CONFIG"] = {}
         data["CONFIG"]["button_images"] = configFiles.read(modules.rm3config.icons_dir + "/index")
         data["CONFIG"]["button_colors"] = configFiles.read(modules.rm3config.buttons + "button_colors")
         data["CONFIG"]["scene_images"] = configFiles.read(modules.rm3config.scene_img_dir + "/index")
-        data["CONFIG"]["devices"] = remoteData.devices_read_config()
+        data["CONFIG"]["devices"] = remotesData.devices_read_config()
         data["CONFIG"]["interfaces"] = deviceAPIs.available
         data["CONFIG"]["methods"] = deviceAPIs.methods
 
@@ -60,12 +60,12 @@ def remoteAPI_start(setting=[]):
 
     data["STATUS"] = {}
     if "request-only" not in setting:
-        data["STATUS"]["devices"] = remoteData.devices_status()
-        data["STATUS"]["scenes"] = remoteData.scenes_status()
+        data["STATUS"]["devices"] = remotesData.devices_status()
+        data["STATUS"]["scenes"] = remotesData.scenes_status()
         data["STATUS"]["interfaces"] = deviceAPIs.api_get_status()
         data["STATUS"]["system"] = {}  # to be filled in remoteAPI_end()
         data["STATUS"]["request_time"] = queueSend.average_exec
-        data["STATUS"]["config_errors"] = remoteData.errors
+        data["STATUS"]["config_errors"] = remotesData.errors
 
     return data.copy()
 
@@ -146,7 +146,7 @@ def RemoteReload():
     data["REQUEST"]["Command"] = "Reload"
 
     deviceAPIs.api_reconnect()
-    remoteData.get_device_status(data, read_api=True)
+    remotesData.get_device_status(data, read_api=True)
 
     data = remoteAPI_end(data, ["no-data"])
     return data
@@ -263,11 +263,11 @@ def RemoteSet(device, command, value):
     if method == "query":
         # data["REQUEST"]["Return"] = deviceAPIs.send(interface,device,command,value)
         data["REQUEST"]["Return"] = queueSend.add2queue([[interface, device, command, value]])
-        remoteData.get_device_status(data, read_api=True)
+        remotesData.get_device_status(data, read_api=True)
 
     elif method == "record":
         data["REQUEST"]["Return"] = setStatus(device, command, value)
-        remoteData.get_device_status(data, read_api=True)
+        remotesData.get_device_status(data, read_api=True)
 
     refreshCache()
     data = remoteAPI_end(data, ["no-data"])
@@ -722,7 +722,7 @@ def RemoteAddDevice(device, device_data):
     add device in config file and create config files for remote and command
     """
     data = remoteAPI_start(["request-only"])
-    data["REQUEST"]["Return"] = addDevice(device, device_data)
+    data["REQUEST"]["Return"] = remotesEdit.device_add(device, device_data)
     data["REQUEST"]["Device"] = device
     data["REQUEST"]["Parameter"] = device_data
     data["REQUEST"]["Command"] = "AddDevice"
@@ -739,7 +739,7 @@ def RemoteEditDevice(device, info):
     logging.info(str(info))
 
     data = remoteAPI_start(["request-only"])
-    data["REQUEST"]["Return"] = editDevice(device, info)
+    data["REQUEST"]["Return"] = remotesEdit.device_edit(device, info)
     data["REQUEST"]["Device"] = device
     data["REQUEST"]["Command"] = "EditDevice"
 
@@ -754,7 +754,7 @@ def RemoteDeleteDevice(device):
     """
 
     data = remoteAPI_start(["request-only"])
-    data["REQUEST"]["Return"] = deleteDevice(device)
+    data["REQUEST"]["Return"] = remotesEdit.device_delete(device)
     data["REQUEST"]["Device"] = device
     data["REQUEST"]["Command"] = "DeleteDevice"
 
@@ -768,7 +768,7 @@ def RemoteAddScene(scene, info):
     add device in config file and create config files for remote and command
     """
     data = remoteAPI_start(["request-only"])
-    data["REQUEST"]["Return"] = addScene(scene, info)
+    data["REQUEST"]["Return"] = remotesEdit.scene_add(scene, info)
     data["REQUEST"]["Scene"] = scene
     data["REQUEST"]["Parameter"] = info
     data["REQUEST"]["Command"] = "AddScene"
@@ -785,7 +785,7 @@ def RemoteEditScene(scene, info):
     logging.info(str(info))
 
     data = remoteAPI_start(["request-only"])
-    data["REQUEST"]["Return"] = editScene(scene, info)
+    data["REQUEST"]["Return"] = remotesEdit.scene_edit(scene, info)
     data["REQUEST"]["Scene"] = scene
     data["REQUEST"]["Command"] = "EditScene"
 
@@ -799,7 +799,7 @@ def RemoteDeleteScene(scene):
     delete device from config file and delete device related files
     """
     data = remoteAPI_start(["request-only"])
-    data["REQUEST"]["Return"] = deleteScene(scene)
+    data["REQUEST"]["Return"] = remotesEdit.scene_delete(scene)
     data["REQUEST"]["Scene"] = scene
     data["REQUEST"]["Command"] = "DeleteScene"
 
@@ -830,7 +830,7 @@ def RemoteConfigDevice(device):
     data = remoteAPI_start(["request-only"])
 
     data["DATA"] = {}
-    device_config = remoteData.devices_read_config(more_details=True)
+    device_config = remotesData.devices_read_config(more_details=True)
 
     if device in device_config:
         api = device_config[device]["interface"]["interface_api"]
@@ -876,7 +876,7 @@ def RemoteConfigInterface(interface):
     data["DATA"] = {}
 
     interfaces = []
-    device_config = remoteData.devices_read_config(more_details=True)
+    device_config = remotesData.devices_read_config(more_details=True)
 
     for key in device_config:
         api = device_config[key]["interface"]["interface_api"]
@@ -924,7 +924,7 @@ def RemoteConfigInterfaceEdit(interface, config):
 
     data["DATA"] = {}
     interfaces = []
-    device_config = remoteData.devices_read_config(more_details=True)
+    device_config = remotesData.devices_read_config(more_details=True)
 
     for key in device_config:
         api = device_config[key]["interface"]["interface_api"]
@@ -971,7 +971,7 @@ def RemoteTest():
     """
 
     data = remoteAPI_start()
-    data["TEST"] = remoteData.complete_read()
+    data["TEST"] = remotesData.complete_read()
     data["REQUEST"]["Return"] = "OK: Test - show complete data structure"
     data["REQUEST"]["Command"] = "Test"
     data = remoteAPI_end(data, ["no-data"])
