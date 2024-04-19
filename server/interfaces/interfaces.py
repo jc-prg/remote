@@ -132,48 +132,75 @@ class Connect(threading.Thread):
         """
         check IP connection and try reconnect if IP connection exists and status is not "Connected"
         """
-        self.logging.info(".................... CHECK CONNECTION (" + str(self.checking_interval) +
-                          "s) ....................")
+        self.logging.debug(".................... CHECK CONNECTION (" + str(self.checking_interval) +
+                           "s) ....................")
+
+        connected = []
+        not_connected = []
+        start_time = time.time()
 
         # check API status
         for key in self.api:
             if "IPAddress" in self.api[key].api_config:
                 connect = rm3ping.ping(self.api[key].api_config["IPAddress"])
-                self.logging.info(" * " + key + " : " + str(self.api_device_list[key]))
-                self.logging.info("   -> IP: " + self.api[key].api_config["IPAddress"] + " / connect = " +
+                self.logging.debug(" * " + key + " : " + str(self.api_device_list[key]))
+                self.logging.debug("   -> IP: " + self.api[key].api_config["IPAddress"] + " / connect = " +
                                   str(connect).upper())
 
                 if not connect:
                     connect = rm3ping.ping(self.api[key].api_config["IPAddress"])
                     if not connect:
                         self.api[key].status = self.api[key].not_connected + " ... PING"
-                        self.logging.info("   -> " + self.api[key].status)
+                        self.logging.debug("   -> " + self.api[key].status)
 
                 if connect:
+                    connected.append(key.replace("_default", ""))
                     self.api_reconnect(key)
+                else:
+                    not_connected.append(key.replace("_default", ""))
+
+        self.logging.info("Checked device connections (duration=" + str(round(time.time() - start_time, 1)) +
+                          "s / interval=" + str(self.checking_interval) + "s) ...")
+        if len(connected) > 0:
+            self.logging.info("-> CONNECTION OK: " + ", ".join(connected))
+        if len(not_connected) > 0:
+            self.logging.info("-> NO CONNECTION: " + ", ".join(not_connected))
 
     def check_activity(self):
         """
         check when the last command was send and if an auto-off has to be reflected in the system status
         """
-        self.logging.info(".................... CHECK ACTIVITY (" + str(self.checking_interval) +
-                          "s) ....................")
+        self.logging.debug(".................... CHECK ACTIVITY (" + str(self.checking_interval) +
+                           "s) ....................")
+
+        active = []
+        inactive = []
+        auto_off = []
 
         for key in self.api:
             device_list = self.api_device_list[key]
-            self.logging.info(" * " + key + " : " + str(device_list))
+            self.logging.debug(" * " + key + " : " + str(device_list))
             if self.api[key].last_action > 0:
-                self.logging.info("   -> " + str(round((time.time() - self.api[key].last_action)*10)/10) +
-                                  "s  (" + self.api[key].last_action_cmd + ")")
+                self.logging.debug("   -> " + str(round((time.time() - self.api[key].last_action)*10)/10) +
+                                   "s  (" + self.api[key].last_action_cmd + ")")
+                active.append(key.replace("_default", "") +
+                              " (" + str(round((time.time() - self.api[key].last_action)*10)/10) + "s)")
             else:
-                self.logging.info("   -> INACTIVE since server start")
+                self.logging.debug("   -> INACTIVE since server start")
+                inactive.append(key.replace("_default", ""))
 
             for device in device_list:
                 auto_power_off = self.device_auto_power_off(device)
                 if auto_power_off != -1:
-                    self.logging.info("   -> " + device + " - auto-off: " + str(auto_power_off))
+                    self.logging.debug("   -> " + device + " - auto-off: " + str(auto_power_off))
                     if auto_power_off["switch_off"]:
                         self.device_save_status(device, button="power", status="OFF")
+
+        self.logging.info("Checked device activity (interval=" + str(self.checking_interval) + "s) ...")
+        if len(active) > 0:
+            self.logging.info("-> ACTIVITY: " + ", ".join(active))
+        if len(inactive) > 0:
+            self.logging.info("-> INACTIVE: " + ", ".join(inactive))
 
     def api_reconnect(self, interface=""):
         """
