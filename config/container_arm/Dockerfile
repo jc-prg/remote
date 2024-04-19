@@ -1,7 +1,9 @@
-FROM ubuntu:20.04
+FROM debian:11
 
 RUN apt-get -y update
-RUN apt-get install -y python3 python3-pip
+#RUN apt-get -y upgrade
+RUN apt-get install -y python3-full
+RUN apt-get install -y python3-pip
 RUN apt-get install -y iputils-ping curl
 
 WORKDIR /usr/src/app
@@ -18,10 +20,11 @@ RUN echo ${PATH}
 COPY ./requirements.txt ./requirements.txt
 
 RUN apt-get install -y libffi-dev libssl-dev
-RUN python3 -m pip install --upgrade pip
+#RUN python3 -m pip install --upgrade pip
 
-RUN rustc --version
-RUN python3 -m pip install --no-cache-dir -r requirements.txt
+#RUN rustc --version
+#RUN python3 -m pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 RUN rustup self uninstall -y
 RUN apt-get remove -y libffi-dev libssl-dev
@@ -29,4 +32,3 @@ RUN apt-get remove -y libffi-dev libssl-dev
 COPY . .
 
 CMD [ "python3", "./server/server.py" ]
-
