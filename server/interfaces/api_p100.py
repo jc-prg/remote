@@ -6,6 +6,7 @@ import interfaces.p100.PyP100 as tapo_device
 
 
 shorten_info_to = rm3config.shorten_info_to
+rm3config.api_modules.append("TAPO-P100")
 
 
 class ApiControl(RemoteApiClass):

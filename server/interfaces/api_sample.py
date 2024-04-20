@@ -10,6 +10,7 @@ from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 # -------------------------------------------------
 
 shorten_info_to = rm3config.shorten_info_to
+rm3config.api_modules.append("SAMPLE")
 
 
 class ApiControl(RemoteApiClass):

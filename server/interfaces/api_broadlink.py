@@ -9,6 +9,7 @@ import interfaces.broadlink.broadlink as broadlink
 
 
 shorten_info_to = rm3config.shorten_info_to
+rm3config.api_modules.append("BROADLINK")
 
 # commands to check on startup if IR devices runs (e.g. screen down and up)
 check_on_startup = False

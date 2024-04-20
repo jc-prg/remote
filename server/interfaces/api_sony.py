@@ -7,6 +7,7 @@ import interfaces.sonyapi.sony as sony
 
 
 shorten_info_to = rm3config.shorten_info_to
+rm3config.api_modules.append("SONY")
 
 
 # -------------------------------------------------

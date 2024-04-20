@@ -193,7 +193,7 @@ In order to use jc://remote/ as it is, the following software must be installed:
     $ cd remote
     ```
 
-2. Change settings: [sample.config_prod](./config/sample.config_prod)
+2. Change settings: [sample.env](./sample.env)
 
     ```bash
     $ cp sample.env .env

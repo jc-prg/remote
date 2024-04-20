@@ -13,6 +13,7 @@ from modules.rm3classes import RemoteApiClass
 # import sampleAPI as sample
 
 shorten_info_to = rm3config.shorten_info_to
+rm3config.api_modules.append("TEST")
 
 
 # -------------------------------------------------

@@ -166,6 +166,7 @@ print(" * Starting client on port: " + str(client_port) + "   (http://<url>:" + 
 start_time = time.time()
 start_duration = 0
 initial_stage = ""
+api_modules = []
 DEBUG = False
 
 refresh_config_sleep = 5 * 60
@@ -180,6 +181,7 @@ shorten_info_to = 50
 rest_api_dir = os.path.join(os.path.dirname(__file__))
 rest_api = os.path.join("rm3api.yml")
 
+directory_main = os.path.abspath(__file__)
 interfaces = "interfaces/"  # interface definition
 devices = "devices/"  # devices, overview in "_active.json"
 commands = "devices/"  # device definition (queries and commands)
@@ -192,6 +194,7 @@ active = "_active"  # overview file name
 active_devices = "_ACTIVE-DEVICES"
 active_scenes = "_ACTIVE-SCENES"
 active_macros = "_ACTIVE-MACROS"
+active_apis = "_ACTIVE-APIS"
 
 app_config_file = os.path.join(os.path.dirname(__file__), "..", "..", "app", "remote-v3", "config_stage.js")
 app_configuration = """
@@ -220,8 +223,6 @@ log_threads = {
     "WARNING": [],
     "ERROR": []
 }
-
-# ---------------------------------
 
 error_messages = {
     "200": "OK",

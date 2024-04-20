@@ -54,7 +54,6 @@ class Connect(RemoteThreadingClass):
         """
         Initialize APIs and loop to check connection status
         """
-
         self.logging.info("Starting " + self.name)
 
         try:
@@ -87,8 +86,8 @@ class Connect(RemoteThreadingClass):
                 elif "Devices" in api_config and "default" in api_config["Devices"]:
                     dev_config = api_config["Devices"]["default"]
                 else:
-                    self.logging.warning(
-                        "Error in config-file - device not defined / no default device: " + rm3config.commands + api + "/00_interface.json")
+                    self.logging.warning("Error in config-file - device not defined / no default device: " +
+                                         rm3config.commands + api + "/00_interface.json")
 
             if dev_config != {}:
                 api_dev = api + "_" + dev
@@ -117,6 +116,8 @@ class Connect(RemoteThreadingClass):
             self.available[key] = self.api[key].api_description + " [" + dev_key + "]"
 
         time.sleep(5)
+        self.config.identify_interfaces()
+
         while not self.stopProcess:
             if self.checking_last + self.checking_interval < time.time():
                 self.checking_last = time.time()
@@ -144,7 +145,7 @@ class Connect(RemoteThreadingClass):
                 connect = rm3ping.ping(self.api[key].api_config["IPAddress"])
                 self.logging.debug(" * " + key + " : " + str(self.api_device_list[key]))
                 self.logging.debug("   -> IP: " + self.api[key].api_config["IPAddress"] + " / connect = " +
-                                  str(connect).upper())
+                                   str(connect).upper())
 
                 if not connect:
                     connect = rm3ping.ping(self.api[key].api_config["IPAddress"])

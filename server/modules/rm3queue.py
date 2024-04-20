@@ -15,11 +15,11 @@ class QueueApiCalls(RemoteThreadingClass):
         create queue, set name
         """
         RemoteThreadingClass.__init__(self, "queue", name)
+
         self.last_query_time = None
         self.last_query = None
         self.queue = []
         self.name = name
-        self.stopProcess = False
         self.wait = 0.01
         self.device_apis = device_apis
         self.device_reload = []
@@ -37,7 +37,7 @@ class QueueApiCalls(RemoteThreadingClass):
 
         self.logging.info("Starting " + self.name)
         count = 0
-        while not self.stopProcess:
+        while self._running:
 
             if len(self.queue) > 0:
                 command = self.queue.pop(0)
@@ -155,11 +155,6 @@ class QueueApiCalls(RemoteThreadingClass):
                 self.queue.append(command)       # add command array to queue
 
         return "OK: Added command(s) to the queue '" + self.name + "': " + str(commands)
-
-    def stop(self):
-        """stop thread"""
-
-        self.stopProcess = True
 
     def execution_time(self, device, start_time, end_time):
         """

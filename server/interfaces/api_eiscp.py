@@ -7,6 +7,7 @@ import interfaces.eiscp as eiscp
 
 
 shorten_info_to = rm3config.shorten_info_to
+rm3config.api_modules.append("EISCP-ONKYO")
 
 
 class ApiControl(RemoteApiClass):

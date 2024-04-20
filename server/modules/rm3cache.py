@@ -1,8 +1,9 @@
 import time
-import threading
+import os
 import modules.rm3config as rm3config
 import modules.rm3json as rm3json
 from modules.rm3classes import RemoteThreadingClass
+from pathlib import Path
 
 
 class ConfigInterfaces(RemoteThreadingClass):
@@ -13,7 +14,6 @@ class ConfigInterfaces(RemoteThreadingClass):
     def __init__(self, name):
         RemoteThreadingClass.__init__(self, "cache.INI", name)
         self.name = name
-        self.stopProcess = False
         self.wait = 1
         self.cache_update_api = False
         self.cache_time = time.time()  # initial time for time based update
@@ -24,7 +24,7 @@ class ConfigInterfaces(RemoteThreadingClass):
         Start thread
         """
         self.logging.info("Starting " + self.name)
-        while not self.stopProcess:
+        while self._running:
 
             if time.time() - self.cache_time >= self.cache_interval:
                 # Reread values from interfaces with next request -> RemoteReload in server_cmd.py
@@ -42,7 +42,7 @@ class ConfigInterfaces(RemoteThreadingClass):
         """
         Stop thread
         """
-        self.stopProcess = False
+        self._running = False
 
 
 class ConfigCache(RemoteThreadingClass):
@@ -55,7 +55,7 @@ class ConfigCache(RemoteThreadingClass):
         create class, set name
         """
         RemoteThreadingClass.__init__(self, "cache.CONF", name)
-        self.stopProcess = False
+
         self.wait = 0.5
         self.cache = {}
         self.cache_time = time.time()  # initial time for time based update
@@ -77,9 +77,8 @@ class ConfigCache(RemoteThreadingClass):
         """
         loop running in the background
         """
-
         self.logging.info("Starting " + self.name)
-        while not self.stopProcess:
+        while self._running:
 
             # No update when in sleeping mode (no API request since a "cache_sleep")
             if time.time() - self.cache_last_action >= self.cache_sleep:
@@ -108,7 +107,6 @@ class ConfigCache(RemoteThreadingClass):
         """
         read and check main config_files
         """
-
         error_msg = {}
         check = self.read(rm3config.active_devices)
         if "ERROR" in check:
@@ -119,6 +117,10 @@ class ConfigCache(RemoteThreadingClass):
         check = self.read(rm3config.active_macros)
         if "ERROR" in check:
             error_msg[rm3config.active_macros] = check["ERROR_MSG"]
+        check = self.read(rm3config.active_apis)
+        if "ERROR" in check:
+            self.logging.warning("Error while reading MAIN CONFIG FILES:")
+            self.logging.warning(" - " + rm3config.data_dir + "/" + rm3config.active_apis + ".json: " + check["ERROR"])
 
         if error_msg != {}:
             self.logging.error("Error while reading MAIN CONFIG FILES:")
@@ -162,7 +164,7 @@ class ConfigCache(RemoteThreadingClass):
                 i += 1
 
         self.logging.info("Reread " + str(i) + " config files into the cache (" + self.name + "," \
-                           + str(self.cache_interval) + "s)")
+                          + str(self.cache_interval) + "s)")
 
         self.cache_time = time.time()
         self.cache_update = False
@@ -179,18 +181,66 @@ class ConfigCache(RemoteThreadingClass):
         """
         get device name as file name
         """
-
         status = self.read(rm3config.active_devices)
         if device in status:
             return status[device]["config"]["device"]
         else:
             return ""
 
+    def identify_interfaces(self):
+        """
+        Identify existing interfaces
+        """
+        directories = []
+        interface_dir = os.path.join(rm3config.data_dir, rm3config.devices)
+        interface_sub_dirs = [str(p) for p in Path(str(interface_dir)).rglob('*') if p.is_dir()]
+        for key in interface_sub_dirs:
+            directories.append(key.replace(str(interface_dir), ""))
+
+        self.logging.info("Interfaces from interfaces: " + str(rm3config.api_modules))
+        self.logging.info("Interfaces from directory:  " + str(directories))
+
+        if os.path.exists(os.path.join(rm3config.data_dir, rm3config.active_apis)):
+            interface_config = self.read(rm3config.active_apis)
+
+        else:
+            interface_config = {}
+            for key in directories:
+                interface_config_dir = os.path.join(rm3config.commands, key, "00_interface")
+                interface_config[key] = {
+                    "active": True,
+                    "file": str(interface_config_dir) + ".json",
+                    "config": {},
+                    "devices": 0
+                    }
+                if os.path.exists(os.path.join(rm3config.data_dir, interface_config_dir + ".json")):
+                    interface_config_detail = self.read(interface_config_dir)
+                    interface_config[key]["config"] = interface_config_detail["Devices"]
+                    interface_config[key]["description"] = interface_config_detail["API-Description"]
+                    interface_config[key]["devices"] = len(interface_config_detail["Devices"])
+                    for dev_key in interface_config[key]["config"]:
+                        if "MACAddress" in interface_config[key]["config"][dev_key]:
+                            del interface_config[key]["config"][dev_key]["MACAddress"]
+
+            for key in rm3config.api_modules:
+                if key not in interface_config:
+                    interface_config[key] = {
+                        "active":   False,
+                        "file":     rm3config.commands + key + "/00_interface.json",
+                        "error":    "Non CONFIG found!"
+                    }
+
+            for key in interface_config:
+                if key not in rm3config.api_modules:
+                    interface_config[key]["active"] = False
+                    interface_config[key]["error"] = "No API found!"
+
+            self.write(rm3config.active_apis, interface_config)
+
     def get_method(self, device):
         """
         get method for device
         """
-
         status = self.read(rm3config.active_devices)
         interface = status[device]["config"]["interface_api"]
         device = status[device]["config"]["device"]
