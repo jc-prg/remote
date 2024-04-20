@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: "1.8.0"
+  version: "2.3.0"
   title: "jc://remote/"
   description: API to control remote control devices
   
@@ -13,15 +13,16 @@ basePath: /api
 
 
 paths:
+
 #------------------------ TEST ------------------------
 
-  /test/:
+  /test2/:
     get:
-      operationId: modules.server_cmd.test_cmd
+      operationId: __main__.remoteAPI.test
       tags:
         - maintain
-      summary: list status data
-      description: list status data
+      summary: test api functionality
+      description: test api functionality
       responses:
         200:
           description: Successfully status data
@@ -42,7 +43,7 @@ paths:
 
   /list/:
     get:
-      operationId: modules.server_cmd.RemoteList
+      operationId: __main__.remoteAPI.get_config
       tags:
         - list
       summary: list status and remote definition data
@@ -65,7 +66,7 @@ paths:
 
   /status/:
     get:
-      operationId: modules.server_cmd.RemoteStatus
+      operationId: __main__.remoteAPI.status
       tags:
         - status
       summary: list status data
@@ -82,10 +83,9 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
 
-
   /config/device/{device}/:
     get:
-      operationId: modules.server_cmd.RemoteConfigDevice
+      operationId: __main__.remoteAPI.get_config_device
       tags:
         - list
       summary: request configuration data for a specific device
@@ -109,7 +109,7 @@ paths:
 
   /config/interface/{interface}/:
     get:
-      operationId: modules.server_cmd.RemoteConfigInterface
+      operationId: __main__.remoteAPI.get_config_interface
       tags:
         - list
       summary: request configuration data for a specific interface
@@ -131,7 +131,7 @@ paths:
               DATA:
                 $ref: "#/definitions/DATA_DEVICE"
     post:
-      operationId: modules.server_cmd.RemoteConfigInterfaceEdit
+      operationId: __main__.remoteAPI.edit_config_interface
       tags:
         - list
       summary: change configuration of a specific interface
@@ -160,7 +160,7 @@ paths:
 
   /send_check/{device}/{button}/:
     get:
-      operationId: modules.server_cmd.RemoteOnOff
+      operationId: __main__.remoteAPI.send_button_on_off
       tags:
         - send
       summary: send IR command including a check, if device is on
@@ -188,7 +188,7 @@ paths:
 
   /send/{device}/{button}/:
     get:
-      operationId: modules.server_cmd.Remote
+      operationId: __main__.remoteAPI.send_button
       tags:
         - send
       summary: send command and execute via queue
@@ -216,7 +216,7 @@ paths:
 
   /send-data/{device}/{button}/{text}/:
     get:
-      operationId: modules.server_cmd.RemoteSendText
+      operationId: __main__.remoteAPI.send_text
       tags:
         - send
       summary: send text and execute via queue
@@ -248,17 +248,17 @@ paths:
 
   /send-api/{device}/:
     post:
-      operationId: modules.server_cmd.RemoteSendApiCmd
+      operationId: __main__.remoteAPI.send_api
       tags:
         - send
-      summary: send API command for a specific command
-      description: send API command for a specific command and return answer given by the device
+      summary: send API request for a specific command
+      description: send API request for a specific command and return answer given by the device
       parameters:
         - name: device
           in: path
           type: string
           required: true
-        - name: api_command
+        - name: command
           in: body
           schema:
             type:
@@ -266,7 +266,7 @@ paths:
           required: true
       responses:
         200:
-          description: Successfully send IR command
+          description: Successfully send API request
           schema:
             properties:
               API:
@@ -276,10 +276,9 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS_SYSTEM"
 
-
   /set/{device}/{command}/{value}/:
     get:
-      operationId: modules.server_cmd.RemoteSet
+      operationId: __main__.remoteAPI.send_api_value
       tags:
         - send
       summary: send command and value via queue
@@ -313,7 +312,7 @@ paths:
 
   /macro/{macro}/:
     get:
-      operationId: modules.server_cmd.RemoteMacro
+      operationId: __main__.remoteAPI.send_macro_buttons
       tags:
         - send
       summary: send marko
@@ -336,11 +335,13 @@ paths:
                 $ref: "#/definitions/STATUS_SYSTEM"
 
 
+#------------------------ EDIT FUNCTIONS ------------------------
+
   /macro/:
     put:
-      operationId: modules.server_cmd.RemoteMacroChange
+      operationId: __main__.remoteAPI.edit_remote_macros
       tags:
-        - send
+        - edit
       summary: edit marko
       description: change marcos
       parameters:
@@ -348,7 +349,7 @@ paths:
           in: body
           description: macros, dev-on/off, scene-on/off definition
           schema:
-            type: object     
+            type: object
       responses:
         200:
           description: Successfully send macro commands
@@ -361,12 +362,9 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS_SYSTEM"
 
-
-#------------------------ EDIT FUNCTIONS ------------------------
-
   /button/{device}/{button}/:
     put:
-      operationId: modules.server_cmd.RemoteAddButton
+      operationId: __main__.remoteAPI.edit_button_add
       tags:
         - edit
       summary: add button
@@ -394,9 +392,10 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
                 
+
   /button/{device}/{button_number}/:
     delete:
-      operationId: modules.server_cmd.RemoteDeleteButton
+      operationId: __main__.remoteAPI.edit_button_delete
       tags:
         - edit
       summary: delete button
@@ -424,17 +423,16 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
                 
-#------------------------------------------------------
 
-  /move/{type}/{device}/{direction}/:
+  /move/{remote_type}/{device}/{direction}/:
     post:
-      operationId: modules.server_cmd.RemoteMove
+      operationId: __main__.remoteAPI.edit_remote_move
       tags:
         - edit
       summary: move device or scene in menu
       description: move device or scene in menu
       parameters:
-        - name: type
+        - name: remote_type
           in: path
           type: string
           enum: ["device","scene"]
@@ -461,11 +459,10 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
                 
-#------------------------------------------------------
 
   /command/{device}/{button}/:
     post:
-      operationId: modules.server_cmd.RemoteRecordCommand
+      operationId: __main__.remoteAPI.edit_button_record
       tags:
         - edit
       summary: record command for button
@@ -493,7 +490,7 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
     delete:
-      operationId: modules.server_cmd.RemoteDeleteCommand
+      operationId: __main__.remoteAPI.edit_button_reset
       tags:
         - edit
       summary: delete command for button
@@ -521,11 +518,9 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
 
-#------------------------------------------------------
-
   /scene/{scene}/:
     delete:
-      operationId: modules.server_cmd.RemoteDeleteScene
+      operationId: __main__.remoteAPI.edit_scene_delete
       tags:
         - edit
       summary: delete scene
@@ -547,7 +542,7 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS_SYSTEM"
     post:
-      operationId: modules.server_cmd.RemoteEditScene
+      operationId: __main__.remoteAPI.edit_scene
       tags:
         - edit
       summary: edit scene data
@@ -574,7 +569,7 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS_SYSTEM"
     put:
-      operationId: modules.server_cmd.RemoteAddScene
+      operationId: __main__.remoteAPI.edit_scene_add
       tags:
         - edit
       summary: add scene
@@ -601,11 +596,10 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS_SYSTEM"
                 
-#------------------------------------------------------
 
   /device/{device}/:
     delete:
-      operationId: modules.server_cmd.RemoteDeleteDevice
+      operationId: __main__.remoteAPI.edit_device_delete
       tags:
         - edit
       summary: delete device
@@ -627,7 +621,7 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS_SYSTEM"
     post:
-      operationId: modules.server_cmd.RemoteEditDevice
+      operationId: __main__.remoteAPI.edit_device
       tags:
         - edit
       summary: edit device data
@@ -654,7 +648,7 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS_SYSTEM"
     put:
-      operationId: modules.server_cmd.RemoteAddDevice
+      operationId: __main__.remoteAPI.edit_device_add
       tags:
         - edit
       summary: add device
@@ -681,11 +675,10 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS_SYSTEM"
                 
-#------------------------------------------------------
 
   /template/{device}/{template}/:
     put:
-      operationId: modules.server_cmd.RemoteAddTemplate
+      operationId: __main__.remoteAPI.edit_remote_template
       tags:
         - edit
       summary: add template to device
@@ -713,15 +706,16 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
                 
-  /visibility/{type}/{device}/{value}/:
+
+  /visibility/{remote_type}/{device}/{value}/:
     put:
-      operationId: modules.server_cmd.RemoteChangeVisibility
+      operationId: __main__.remoteAPI.edit_remote_visibility
       tags:
         - edit
       summary: add template to device
       description: add template to device
       parameters:
-        - name: type
+        - name: remote_type
           in: path
           type: string
           required: true
@@ -747,7 +741,7 @@ paths:
 
   /main-audio/{device}/:
     post:
-      operationId: modules.server_cmd.RemoteChangeMainAudio
+      operationId: __main__.remoteAPI.set_main_audio
       tags:
         - edit
       summary: change main audio device
@@ -773,7 +767,7 @@ paths:
 
   /version/{APPversion}/:
     get:
-      operationId: modules.server_cmd.RemoteCheckUpdate
+      operationId: __main__.remoteAPI.check_update
       tags:
         - maintain
       summary: check if APP-version is supported
@@ -797,30 +791,10 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
                                 
+
   /reload/:
     get:
-      operationId: modules.server_cmd.RemoteReload
-      tags:
-        - maintain
-      summary: reload data from config files
-      description: reload data from config files
-      responses:
-        200:
-          description: Successfully done reset
-          schema:
-            properties:
-              API:
-                $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
-              REQUEST:
-                $ref: "#/definitions/REQUEST"
-              STATUS:
-                $ref: "#/definitions/STATUS"
-
-  /test/:
-    get:
-      operationId: modules.server_cmd.RemoteTest
+      operationId: __main__.remoteAPI.reload
       tags:
         - maintain
       summary: reload data from config files
@@ -841,7 +815,7 @@ paths:
 
   /reset/:
     get:
-      operationId: modules.server_cmd.RemoteReset
+      operationId: __main__.remoteAPI.status_devices_reset
       tags:
         - maintain
       summary: reset all configuration status values
@@ -862,7 +836,7 @@ paths:
 
   /reset-audio/:
     get:
-      operationId: modules.server_cmd.RemoteResetAudio
+      operationId: __main__.remoteAPI.status_audio_reset
       tags:
         - maintain
       summary: reset all volume values
@@ -882,6 +856,7 @@ paths:
                 $ref: "#/definitions/STATUS"
                 
                 
+
 #------------------------ DATA MODEL DEFINITIONS ------------------------
 
 definitions:

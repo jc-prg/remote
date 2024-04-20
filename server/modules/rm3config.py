@@ -46,6 +46,7 @@ def time_since_start():
 # ---------------------------
 
 start_time = time.time()
+server_status = "Starting"
 
 try:
     path = os.path.join(os.path.dirname(__file__), "../../.env")
@@ -118,7 +119,6 @@ else:
 
 # ---------------------------------
 
-
 start_time = time.time()
 start_duration = 0
 initial_stage = ""
@@ -134,7 +134,8 @@ config_status = "status.json"
 shorten_info_to = 50
 
 rest_api_dir = os.path.join(os.path.dirname(__file__))
-rest_api = os.path.join("swagger.yml")
+#rest_api = os.path.join("swagger.yml")
+rest_api = os.path.join("rm3api.yml")
 
 interfaces = "interfaces/"  # interface definition
 devices = "devices/"  # devices, overview in "_active.json"

@@ -13,7 +13,10 @@ class RemotesData:
         Constructor of this class
 
         Args:
-            config (modules.ConfigCache): config file handler
+            config (server.modules.rm3cache.ConfigCache): config file handler
+            interfaces (server.modules.rm3cache.ConfigInterfaces): handler for config interfaces
+            apis (server.interfaces.Connect): handler for device APIS
+            queue (server.modules.rm3queue.QueueApiCalls): handler for query queue
         """
         self.config = config
         self.interfaces = interfaces
@@ -554,7 +557,11 @@ class RemotesEdit:
         Constructor of this class
 
         Args:
-            config (modules.ConfigCache): config file handler
+            data (RemotesData): handler for remote data
+            config (server.modules.rm3cache.ConfigCache): config file handler
+            interfaces (server.modules.rm3cache.ConfigInterfaces): handler for config interfaces
+            apis (server.interfaces.Connect): handler for device APIS
+            queue (server.modules.rm3queue.QueueApiCalls): handler for query queue
         """
         self.config = config
         self.interfaces = interfaces
