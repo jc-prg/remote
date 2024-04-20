@@ -114,7 +114,7 @@ class ApiControl:
         self.last_action_cmd = "QUERY: " + device + "/" + command
 
         if self.log_command:
-            self.logging.info("_QUERY: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+            self.logging.info("__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
 
         # ---- change for your api ----
         #       if self.status == "Connected":
@@ -139,7 +139,7 @@ class ApiControl:
         self.last_action_cmd = "RECORD: " + device + "/" + command
 
         if self.log_command:
-            self.logging.info("_RECORD: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+            self.logging.info("__RECORD " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
 
         # ---- change for your api ----
         #       if self.status == "Connected":

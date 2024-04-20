@@ -166,7 +166,7 @@ class ApiControl:
 
         if self.status == "Connected":
             if self.log_command:
-                self.logging.info("_RECORD: " + device + "/" + command[:shorten_info_to] +
+                self.logging.info("__RECORD " + device + "/" + command[:shorten_info_to] +
                                   " ... (" + self.api_name + ")")
 
             code = device + "_" + command

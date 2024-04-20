@@ -81,7 +81,7 @@ class ApiControl:
         Send command to API
         """
         if self.log_command: self.logging.info(
-            "_QUERY: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+            "__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
         return "OK: send test-" + device + "-" + command
 
     def query(self, device, command):
@@ -89,7 +89,7 @@ class ApiControl:
         Send command to API and wait for answer
         """
         if self.log_command: self.logging.info(
-            "_QUERY: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+            "__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
         return "WARN: Not supported by this API"
 
     def record(self, device, command):
@@ -97,7 +97,7 @@ class ApiControl:
         Record command, especially build for IR devices
         """
         if self.log_command: self.logging.info(
-            "_RECORD: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+            "__RECORD " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
         return "OK: record test-" + device + "-" + command
 
     def test(self):
