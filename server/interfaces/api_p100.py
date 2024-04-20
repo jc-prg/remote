@@ -68,12 +68,6 @@ class ApiControl(RemoteApiClass):
             time.sleep(0.2)
         return
 
-    def power_status(self):
-        """
-        request power status
-        """
-        return self.get_info("power")
-
     def send(self, device, command):
         """
         Send command to API

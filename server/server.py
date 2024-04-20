@@ -39,7 +39,6 @@ eval("log_srv."+rm3config.log_level.lower()+"('---------------------------------
 if __name__ == "__main__":
 
     # Create threads and other classes
-
     rm3config.server_status = "Initializing"
 
     configFiles = rm3cache.ConfigCache("ConfigFiles")
@@ -62,9 +61,8 @@ if __name__ == "__main__":
 
     remoteAPI = rm3api.RemoteAPI(remotesData, remotesEdit, configFiles, deviceAPIs, queueQuery, queueSend)
 
-    rm3config.server_status = "Started"
-
     # Create REST API
+    rm3config.server_status = "Running"
 
     log_srv.info("Initializing REST API ..." + rm3config.time_since_start())
     log_srv.info("... specification directory is " + rm3config.rest_api_dir + " ...")
