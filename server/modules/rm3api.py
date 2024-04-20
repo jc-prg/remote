@@ -693,7 +693,7 @@ class RemoteAPI(RemoteDefaultClass):
         Return:
             dict: API response
         """
-        data = self._start()
+        data = self._start(["request-only"])
         interface = self.config.cache["_api"]["devices"][device]["config"]["interface_api"]
         method = self.apis.api_method(device)
 
@@ -738,7 +738,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["DeviceStatus"] = self.edit.device_status_get(device, "power")  # to be removed
         data["ReturnMsg"] = data["REQUEST"]["Return"]  # to be removed
 
-        data = self._end(data, ["no-data"])
+        data = self._end(data, ["no-data", "no-config"])
         return data
 
     def send_button_on_off(self, device, button):
