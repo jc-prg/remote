@@ -354,9 +354,9 @@ class Connect(threading.Thread):
                     self.logging.error(button_code)
 
                 if self.log_commands:
-                    self.logging.info("...... SEND-DATA " + api_dev + " / " + button +
+                    self.logging.info("__SEND-DATA " + api_dev + " / " + button +
                                       " ('" + str(value) + "'/" + method + ")")
-                    self.logging.info("...... " + str(button_code))
+                    self.logging.debug("            " + str(button_code))
 
             else:
                 if method == "record":
@@ -367,9 +367,9 @@ class Connect(threading.Thread):
                     button_code = self.command_create(call_api, device, button, value)
 
                 if self.log_commands:
-                    self.logging.info("...... SEND " + api_dev + " / " + button +
+                    self.logging.info("__SEND " + api_dev + " / " + button +
                                       " ('" + str(value) + "'/" + method + ")")
-                    self.logging.info("...... " + str(button_code))
+                    self.logging.debug("       " + str(button_code))
 
             # send if not error
             if api_dev in self.api and "ERROR" not in button_code:
@@ -419,7 +419,7 @@ class Connect(threading.Thread):
         api_dev = self.device_api_string(device)
         self.api_errors(call_api, device)
 
-        self.logging.debug("__RECORD: " + api_dev + " (" + self.api[api_dev].status + ")")
+        self.logging.debug("__RECORD " + api_dev + " (" + self.api[api_dev].status + ")")
 
         if self.api[api_dev].status == "Connected":
             if api_dev in self.api:
@@ -428,7 +428,7 @@ class Connect(threading.Thread):
                 return_msg = "ERROR: API not available (" + api_dev + ")"
 
             if self.log_commands:
-                self.logging.info("...... " + str(return_msg))
+                self.logging.debug("...... " + str(return_msg))
 
         else:
             return_msg = self.api[api_dev].status
@@ -452,7 +452,7 @@ class Connect(threading.Thread):
         api_dev = self.device_api_string(device)
         # self.check_errors(call_api, device)  #### -> leads to an error for some APIs
 
-        self.logging.debug("__QUERY: " + api_dev + " (" + device + "," + button + ";" + self.api[api_dev].status + ")")
+        self.logging.debug("__QUERY " + api_dev + " (" + device + "," + button + ";" + self.api[api_dev].status + ")")
 
         if api_dev in self.api and self.api[api_dev].status == "Connected":
 
@@ -471,9 +471,8 @@ class Connect(threading.Thread):
                 return_msg = "ERROR: API not available (" + str(api_dev) + ")"
 
             if self.log_commands:
-                self.logging.info("...... QUERY " + api_dev + " / " + button +
-                                  " ('" + button_code + ")")
-                self.logging.info("...... " + str(return_msg))
+                self.logging.debug("__QUERY " + api_dev + " / " + button + " ('" + button_code + ")")
+                self.logging.debug("        " + str(return_msg))
 
         else:
             return_msg = self.api[api_dev].status
@@ -621,8 +620,8 @@ class Connect(threading.Thread):
             buttons_device = self.device_configuration(device)
             if rm3json.if_exist(device_file):
                 if self.log_commands:
-                    self.logging.info("...... button-file: " + device_file + ".json")
-                    self.logging.info("...... " + str(buttons_device))
+                    self.logging.debug("...... button-file: " + device_file + ".json")
+                    self.logging.debug("...... " + str(buttons_device))
             else:
                 return "ERROR: device configuration isn't correct: " + device_file + " / " + str(buttons_device)
 
@@ -630,8 +629,8 @@ class Connect(threading.Thread):
             if rm3json.if_exist(device_default):
                 buttons_default = self.configFiles.read(device_default)
                 if self.log_commands:
-                    self.logging.info("...... button-default-file: " + device_default + ".json")
-                    self.logging.info("...... " + str(buttons_default))
+                    self.logging.debug("...... button-default-file: " + device_default + ".json")
+                    self.logging.debug("...... " + str(buttons_default))
             else:
                 return "ERROR: not default configuration defined: " + device_default
 

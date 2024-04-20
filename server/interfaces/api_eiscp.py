@@ -157,8 +157,9 @@ class ApiControl:
         self.logging.debug(command)
 
         if self.status == "Connected":
-            if self.log_command: self.logging.info(
-                "_QUERY: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+            if self.log_command:
+                self.logging.info("__QUERY " + device + "/" + command[:shorten_info_to] +
+                                  " ... (" + self.api_name + ")")
 
             if "jc." in command:
 

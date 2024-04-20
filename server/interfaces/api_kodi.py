@@ -151,7 +151,7 @@ class ApiControl:
 
         if self.status == "Connected":
             if self.log_command: self.logging.info(
-                "_QUERY: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+                "__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
 
             try:
                 command = "self.api." + command_param[0]
