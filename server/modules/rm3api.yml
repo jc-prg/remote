@@ -763,7 +763,7 @@ paths:
 
 #------------------------ SUPPORT FUNCTIONS ------------------------
 
-  /version/{APPversion}/:
+  /version/{app_version}/:
     get:
       operationId: __main__.remoteAPI.check_update
       tags:
@@ -771,7 +771,7 @@ paths:
       summary: check if APP-version is supported
       description: check if APP-version is supported
       parameters:
-        - name: APPversion
+        - name: app_version
           in: path
           type: string
           required: true
@@ -1113,5 +1113,3 @@ definitions:
         type: array
         items:
           type: string
-
-
