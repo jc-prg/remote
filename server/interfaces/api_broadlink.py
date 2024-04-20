@@ -4,15 +4,10 @@ import netaddr
 import modules.rm3json as rm3json
 import modules.rm3config as rm3config
 import modules.rm3ping as rm3ping
-from modules.rm3classes import RemoteDefaultClass
+from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 import interfaces.broadlink.broadlink as broadlink
 
 
-# -------------------------------------------------
-# API-class
-# -------------------------------------------------
-
-# Shorten Button Code for logging.info
 shorten_info_to = rm3config.shorten_info_to
 
 # commands to check on startup if IR devices runs (e.g. screen down and up)
@@ -23,7 +18,7 @@ check_on_startup_commands = [
 ]
 
 
-class ApiControl(RemoteDefaultClass):
+class ApiControl(RemoteApiClass):
     """
     Integration of BROADLINK API to be use by jc://remote/
     """
@@ -33,39 +28,12 @@ class ApiControl(RemoteDefaultClass):
         Initialize API / check connect to device
         """
         self.api_description = "API for Infrared Broadlink RM3"
-        RemoteDefaultClass.__init__(self, "api.RM3", self.api_description)
+        RemoteApiClass.__init__(self, "api.RM3", api_name, "record",
+                                self.api_description, device, device_config, log_command)
 
-        if device_config is None:
-            device_config = {}
-        self.api = None
-        self.api_name = api_name
-        self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
-        self.status = "Start"
-        self.method = "record"
-        self.working = False
-        self.count_error = 0
-        self.count_success = 0
-        self.log_command = log_command
-        self.last_action = 0
-        self.last_action_cmd = ""
-
-        self.api_config_default = {
-            "Description": "",
-            "IPAddress": "",
-            "MACAddress": "",
-            "Methods": ["send", "record"],
-            "Port": "",
-            "Timeout": 0
-        }
-        self.api_config = device_config
         self.api_config["Port"] = int(self.api_config["Port"])
         self.api_config["MACAddress"] = netaddr.EUI(self.api_config["MACAddress"])
         self.api_config["Timeout"] = int(self.api_config["Timeout"])
-
-        self.logging.info(
-            "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
-
-        # self.connect()
 
     def connect(self):
         """

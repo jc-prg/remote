@@ -9,8 +9,8 @@ import time
 import modules.rm3json as rm3json
 import modules.rm3config as rm3config
 import modules.rm3ping as rm3ping
-from modules.rm3classes import RemoteDefaultClass
-import interfaces.magichome.magichome as device
+from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
+import interfaces.magichome.magichome as mh_device
 
 # ######## to be solved:
 #  Error during requesting data: [Errno 9] Bad file descriptor
@@ -22,7 +22,7 @@ import interfaces.magichome.magichome as device
 shorten_info_to = rm3config.shorten_info_to
 
 
-class ApiControl(RemoteDefaultClass):
+class ApiControl(RemoteApiClass):
     """
     Integration of Magic Home API to be use by jc://remote/
     """
@@ -32,36 +32,11 @@ class ApiControl(RemoteDefaultClass):
         Initialize API / check connect to device
         """
         self.api_description = "API for LED via Magic Home"
-        RemoteDefaultClass.__init__(self, "api.MAGIC", self.api_description)
-
-        if device_config is None:
-            device_config = {}
-        self.api_name = api_name
-        self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
-        self.status = "Start"
-        self.method = "query"
-        self.working = False
-        self.count_error = 0
-        self.count_success = 0
-        self.log_command = log_command
-        self.last_action = 0
-        self.last_action_cmd = ""
+        RemoteApiClass.__init__(self, "api.MAGIC", api_name, "query",
+                                self.api_description, device, device_config, log_command)
 
         self.power_status = "STARTING"
         self.brightness = 1
-
-        self.api_config_default = {
-            "Description": "",
-            "DeviceType": 1,
-            "IPAddress": "",
-            "Methods": ["send", "query"],
-            "Timeout": 0
-        }
-        self.api_config = device_config
-        self.api_device = device
-
-        self.logging.info(
-            "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
 
     def connect(self):
         """
@@ -83,7 +58,7 @@ class ApiControl(RemoteDefaultClass):
         api_timeout = self.api_config["Timeout"]
 
         try:
-            self.api = device.MagicHomeApi(api_ip, api_device_type, False, api_timeout)
+            self.api = mh_device.MagicHomeApi(api_ip, api_device_type, False, api_timeout)
 
         except Exception as e:
             self.status = self.not_connected + " ... CONNECT " + str(e)

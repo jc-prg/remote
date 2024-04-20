@@ -1,14 +1,14 @@
 import time
 import modules.rm3config as rm3config
 import modules.rm3ping as rm3ping
-from modules.rm3classes import RemoteDefaultClass
-import interfaces.p100.PyP100 as device
+from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
+import interfaces.p100.PyP100 as tapo_device
 
 
 shorten_info_to = rm3config.shorten_info_to
 
 
-class ApiControl(RemoteDefaultClass):
+class ApiControl(RemoteApiClass):
     """
     Integration of PyP100 API to be use by jc://remote/
     """
@@ -18,42 +18,13 @@ class ApiControl(RemoteDefaultClass):
         Initialize API / check connect to device
         """
         self.api_description = "API for Tapo-Link P100"
-        RemoteDefaultClass.__init__(self, "api.P100", self.api_description)
-
-        if device_config is None:
-            device_config = {}
-        self.api_name = api_name
-        self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
-        self.status = "Start"
-        self.method = "query"
-        self.working = False
-        self.count_error = 0
-        self.count_success = 0
-        self.log_command = log_command
-        self.last_action = 0
-        self.last_action_cmd = ""
-
-        self.api_config_default = {
-            "Description": "",
-            "IPAddress": "",
-            "Methods": ["send", "query"],
-            "TapePwd": "",
-            "TapeUser": "",
-            "Timeout": 0
-        }
-        self.api_config = device_config
-        self.api_device = device
-
-        self.logging.info(
-            "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
-
-        # self.connect()
+        RemoteApiClass.__init__(self, "api.P100", api_name, "query",
+                                self.api_description, device, device_config, log_command)
 
     def connect(self):
         """
         Connect / check connection
         """
-
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
             self.status = self.not_connected + " ... PING"
@@ -69,7 +40,7 @@ class ApiControl(RemoteDefaultClass):
         api_pwd = self.api_config["TapoPwd"]
 
         try:
-            self.api = device.P100(api_ip, api_user, api_pwd)
+            self.api = tapo_device.P100(api_ip, api_user, api_pwd)
             self.api.handshake()
             self.api.login()
         except Exception as e:
@@ -114,7 +85,7 @@ class ApiControl(RemoteDefaultClass):
 
         if self.status == "Connected":
             if self.log_command: self.logging.info(
-                "_SEND: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+                "__SEND " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
 
             try:
                 command = "self.api." + command
@@ -125,7 +96,7 @@ class ApiControl(RemoteDefaultClass):
                     self.working = False
                     return "ERROR " + self.api_name + " - " + result["error"]["message"]
 
-                if not "result" in result:
+                if "result" not in result:
                     self.working = False
                     return "ERROR " + self.api_name + " - unexpected result format."
 

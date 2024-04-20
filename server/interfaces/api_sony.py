@@ -2,8 +2,9 @@ import logging
 import time
 import modules.rm3config as rm3config
 import modules.rm3ping as rm3ping
-from modules.rm3classes import RemoteDefaultClass
+from modules.rm3classes import RemoteApiClass
 import interfaces.sonyapi.sony as sony
+
 
 shorten_info_to = rm3config.shorten_info_to
 
@@ -12,39 +13,17 @@ shorten_info_to = rm3config.shorten_info_to
 # API-class
 # -------------------------------------------------
 
-class ApiControl(RemoteDefaultClass):
+class ApiControl(RemoteApiClass):
     """
     Integration of sample API to be use by jc://remote/
     """
-    def __init__(self, api_name, device="", device_config={}, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False):
         """
-        Initialize API / check connect to device
+        API Class constructor
         """
         self.api_description = "API for SONY Devices (SonyAPILib)"
-        RemoteDefaultClass.__init__(self, "api.SONY", self.api_description)
-
-        self.api_name = api_name
-        self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
-        self.status = "Start"
-        self.method = "query"
-        self.working = False
-        self.count_error = 0
-        self.count_success = 0
-        self.log_command = log_command
-        self.last_action = 0
-        self.last_action_cmd = ""
-
-        self.api_config_default = {
-            "Description": "",
-            "IPAddress": "",
-            "Methods": ["send", "query"],
-            "Timeout": 0
-        }
-        self.api_config = device_config
-        self.api_device = device
-
-        self.logging.info(
-            "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
+        RemoteApiClass.__init__(self, "api.SONY", api_name, "query",
+                                self.api_description, device, device_config, log_command)
 
         if rm3config.log_api_ext == "NO":
             log = logging.getLogger("sonyapilib.device")

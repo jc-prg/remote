@@ -2,13 +2,13 @@ import time
 import modules.rm3json as rm3json
 import modules.rm3config as rm3config
 import modules.rm3ping as rm3ping
-from modules.rm3classes import RemoteDefaultClass
+from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 from interfaces.kodi import Kodi
 
 shorten_info_to = rm3config.shorten_info_to
 
 
-class ApiControl(RemoteDefaultClass):
+class ApiControl(RemoteApiClass):
     """
     Integration of KODI API to be used by jc://remote/
     based on https://kodi.wiki/view/JSON-RPC_API/v10#Application.Property.Name
@@ -19,33 +19,10 @@ class ApiControl(RemoteDefaultClass):
         Initialize API / check connect to device
         """
         self.api_description = "API for KODI Servers"
-        RemoteDefaultClass.__init__(self, "api.KODI", self.api_description)
+        RemoteApiClass.__init__(self, "api.KODI", api_name, "query",
+                                self.api_description, device, device_config, log_command)
 
-        if device_config is None:
-            device_config = {}
-        self.api_name = api_name
-        self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
-        self.status = "Start"
-        self.method = "query"
-        self.working = False
-        self.count_error = 0
-        self.count_success = 0
-        self.log_command = log_command
-        self.last_action = 0
-        self.last_action_cmd = ""
-
-        self.api_config_default = {
-            "Description": "",
-            "IPAddress": "",
-            "Methods": ["send", "query"],
-            "Port": "",
-            "Timeout": 0
-        }
-        self.api_config = device_config
         self.api_url = "http://" + str(self.api_config["IPAddress"]) + ":" + str(self.api_config["Port"]) + "/jsonrpc"
-
-        self.logging.info(
-            "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
 
     def connect(self):
         """

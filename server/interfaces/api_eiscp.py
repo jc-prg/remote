@@ -2,14 +2,14 @@ import time
 import modules.rm3json as rm3json
 import modules.rm3config as rm3config
 import modules.rm3ping as rm3ping
-from modules.rm3classes import RemoteDefaultClass
+from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 import interfaces.eiscp as eiscp
 
 
 shorten_info_to = rm3config.shorten_info_to
 
 
-class ApiControl(RemoteDefaultClass):
+class ApiControl(RemoteApiClass):
     """
     Integration of sample API to be use by jc://remote/
     """
@@ -19,36 +19,11 @@ class ApiControl(RemoteDefaultClass):
         Initialize API / check connect to device
         """
         self.api_description = "API for ONKYO Devices"
-        RemoteDefaultClass.__init__(self, "api.ONKYO", self.api_description)
+        RemoteApiClass.__init__(self, "api.ONKYO", api_name, "query",
+                                self.api_description, device, device_config, log_command)
 
-        if device_config is None:
-            device_config = {}
-        self.api_name = api_name
-        self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
-        self.status = "Start"
-        self.method = "query"
-        self.working = False
-        self.count_error = 0
-        self.count_success = 0
-        self.log_command = log_command
-        self.last_action = 0
-        self.last_action_cmd = ""
-
-        self.api_config_default = {
-            "Description": "",
-            "IPAddress": "",
-            "Methods": ["send", "query"],
-            "Timeout": 0
-        }
-        self.api_device = device
         self.api_timeout = 5
-        self.api_config = device_config
         self.api_ip = self.api_config["IPAddress"]
-
-        self.logging.info(
-            "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
-
-        # self.connect()
 
     def reconnect(self):
         self.api.command_socket = None

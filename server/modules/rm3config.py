@@ -134,7 +134,7 @@ try:
     log_to_file = get_env('REMOTE_LOG_TO_FILE')  # shall logging done into a logfile: YES, NO
     log_filename = get_env('REMOTE_LOG_FILENAME')  # path to logfile (if YES)
     log_webserver = get_env('REMOTE_LOG_WEBSERVER')  # shall webserver logging be done with default level: YES, NO
-    log_api_data = get_env('REMOTE_LOG_API_DATA')  # shall data from API request be logged: YES, NO
+    log_api_data = get_env('REMOTE_LOG_API_QUERY')  # shall data from API request be logged: YES, NO
     log_api_ext = get_env('REMOTE_LOG_API_EXTERNAL')  # shall external API data be logged: YES, NO
     log_set2level = eval("logging." + log_level)
 
