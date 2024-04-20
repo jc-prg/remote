@@ -26,7 +26,6 @@ class RemoteAPI:
         self.queue = queue
         self.queue_send = queue_send
         self.edit = edit
-        #self.interfaces = interfaces
         self.errors = {}
 
         self.logging = logging.getLogger("rm-api")
@@ -754,6 +753,7 @@ class RemoteAPI:
             dict: API response
         """
         status = ""
+        current_status = ""
         types = {}
         presets = {}
         dont_send = False
@@ -825,9 +825,9 @@ class RemoteAPI:
                             dont_send = True
 
                     else:
-                        self.logging.warning(
-                            "RemoteOnOff - Unknown command definition: " + device + "_" + button + ":" + value + " (" + d_type + "/" + str(
-                                d_values) + ")")
+                        self.logging.warning("RemoteOnOff - Unknown command definition: " +
+                                             device + "_" + button + ":" + value +
+                                             " (" + d_type + "/" + str(d_values) + ")")
 
                 else:
                     self.logging.debug("RemoteOnOff - Device is off: " + device)
@@ -987,7 +987,6 @@ class RemoteAPI:
                     continue
 
                 interface = data["CONFIG"]["devices"][device]["interface"]["interface_api"]  # get interface / API
-                method = data["CONFIG"]["devices"][device]["interface"]["method"]
 
                 # check if future state defined
                 if "||" in button_status:
@@ -1086,7 +1085,7 @@ class RemoteAPI:
         data = self._start(["status-only"])
         data["REQUEST"]["Return"] = "OK: Returned status data."
         data["REQUEST"]["Command"] = "Status"
-        data = self._end(data)  #, ["no-config"])
+        data = self._end(data)
         return data
 
     def status_audio_reset(self):
