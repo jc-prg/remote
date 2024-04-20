@@ -16,7 +16,7 @@ paths:
 
 #------------------------ TEST ------------------------
 
-  /test2/:
+  /test/:
     get:
       operationId: __main__.remoteAPI.test
       tags:
@@ -36,8 +36,6 @@ paths:
                 $ref: "#/definitions/REQUEST"
               STATUS:
                 $ref: "#/definitions/STATUS"
-              TEST:
-                type: object
 
 #------------------------ LIST SERVER STATUS ------------------------
 
