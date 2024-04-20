@@ -46,7 +46,7 @@ class Connect(threading.Thread):
         self.logging = logging.getLogger("api")
         self.logging.setLevel = rm3config.log_set2level
 
-        if rm3config.log_apidata == "NO":
+        if rm3config.log_api_data == "NO":
             self.log_commands = False
         else:
             self.log_commands = True

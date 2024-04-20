@@ -54,7 +54,7 @@ class ApiControl:
         self.logging.info(
             "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
 
-        if rm3config.log_apiext == "NO":
+        if rm3config.log_api_ext == "NO":
             log = logging.getLogger("sonyapilib.device")
             log.setLevel(logging.CRITICAL)
 

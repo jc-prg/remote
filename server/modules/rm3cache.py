@@ -73,8 +73,8 @@ class ConfigCache(threading.Thread):
         self.cache_update_api = None
         self.configMethods = {}
         self.api_init = {"API": {
-            "name": rm3config.APIname,
-            "version": rm3config.APIversion,
+            "name": rm3config.API_name,
+            "version": rm3config.API_version,
             "stage": rm3config.initial_stage,
             "rollout": rm3config.rollout
         }}

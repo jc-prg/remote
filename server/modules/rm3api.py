@@ -162,10 +162,10 @@ class RemoteAPI:
         d = {}
         data = self._start(["request-only"])
 
-        if app_version == rm3config.APPversion:
+        if app_version == rm3config.APP_version:
             d["ReturnCode"] = "800"
             d["ReturnMsg"] = "OK: " + rm3config.error_message("800")
-        elif app_version in rm3config.APPsupport:
+        elif app_version in rm3config.APP_support:
             d["ReturnCode"] = "801"
             d["ReturnMsg"] = "WARN: " + rm3config.error_message("801")
         else:

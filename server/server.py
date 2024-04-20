@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import time
-import os
 import sys
 import logging
 import traceback
