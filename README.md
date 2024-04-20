@@ -92,11 +92,11 @@ There are a few templates available to be used and modified.
 
 ## Main features
 
-### App v2.9 / Server v2.2 (in progress)
+### App v2.9 / Server v2.3 (in progress)
 
 * directly view and execute API commands for devices in edit mode
 * edit interface configuration via app
-* simplify server configuration
+* simplify server configuration (.env), code refactoring, improve logging
 
 ### App v2.8 / Server v2.1
 
