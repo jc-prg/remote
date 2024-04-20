@@ -1,8 +1,6 @@
 import modules.rm3config as rm3config
 import json
 import codecs
-import os
-import logging
 import time
 from os import path
 import os
@@ -10,9 +8,7 @@ import os
 jsonPath = rm3config.data_dir + "/"
 jsonAppDir = path.dirname(path.abspath(__file__))
 jsonSettingsPath = ""
-
-json_logging = logging.getLogger("json")
-json_logging.setLevel = rm3config.log_set2level
+json_logging = rm3config.set_logging("json")
 
 
 def init():

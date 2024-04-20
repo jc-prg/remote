@@ -1,27 +1,23 @@
-import logging
 import time
 import threading
-
 import modules.rm3config as rm3config
 import modules.rm3json as rm3json
+from modules.rm3classes import RemoteThreadingClass
 
 
-class ConfigInterfaces(threading.Thread):
+class ConfigInterfaces(RemoteThreadingClass):
     """
     Triggering update requests from interfaces (when request from APP is done)
     """
 
     def __init__(self, name):
-        threading.Thread.__init__(self)
+        RemoteThreadingClass.__init__(self, "cache.INI", name)
         self.name = name
         self.stopProcess = False
         self.wait = 1
         self.cache_update_api = False
         self.cache_time = time.time()  # initial time for time based update
         self.cache_interval = rm3config.refresh_device_status  # update interval in seconds (reread files)
-
-        self.logging = logging.getLogger("cache.INI")
-        self.logging.setLevel = rm3config.log_set2level
 
     def run(self):
         """
@@ -49,7 +45,7 @@ class ConfigInterfaces(threading.Thread):
         self.stopProcess = False
 
 
-class ConfigCache(threading.Thread):
+class ConfigCache(RemoteThreadingClass):
     """
     class to read and write configurations using a cache
     """
@@ -58,13 +54,11 @@ class ConfigCache(threading.Thread):
         """
         create class, set name
         """
-
-        threading.Thread.__init__(self)
-        self.name = name
+        RemoteThreadingClass.__init__(self, "cache.CONF", name)
         self.stopProcess = False
         self.wait = 0.5
         self.cache = {}
-        self.cache_time = time.time()  # initial time for timebased update
+        self.cache_time = time.time()  # initial time for time based update
         self.cache_last_action = time.time()  # initial time for timestamp of last action
         self.cache_interval = rm3config.refresh_config_cache  # update interval in seconds (reread files)
         self.cache_sleep = rm3config.refresh_config_sleep  # sleeping mode after x seconds
@@ -78,9 +72,6 @@ class ConfigCache(threading.Thread):
             "stage": rm3config.initial_stage,
             "rollout": rm3config.rollout
         }}
-
-        self.logging = logging.getLogger("cache.CONF")
-        self.logging.setLevel = rm3config.log_set2level
 
     def run(self):
         """

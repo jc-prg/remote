@@ -1,13 +1,7 @@
-# -----------------------------------
-# Sample API integration for jc://remote/
-# -----------------------------------
-# (c) Christoph Kloth
-# -----------------------------------
-
-import logging
 import time
 import modules.rm3json as rm3json
 import modules.rm3config as rm3config
+from modules.rm3classes import RemoteDefaultClass
 
 # import sampleAPI as sample
 
@@ -18,16 +12,17 @@ import modules.rm3config as rm3config
 shorten_info_to = rm3config.shorten_info_to
 
 
-class ApiControl:
+class ApiControl(RemoteDefaultClass):
     """
-    Integration of sample API to be use by jc://remote/
+    Integration of sample API to be used by jc://remote/
     """
 
     def __init__(self, api_name, device="", device_config={}, log_command=False):
         """Initialize API / check connect to device"""
+        self.api_description = "Sample API Description"
+        RemoteDefaultClass.__init__(self, "api.SAMPLE", self.api_description)
 
         self.api_name = api_name
-        self.api_description = "Sample API Description"
         self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
         self.status = "Start"
         self.method = "query"
@@ -49,8 +44,6 @@ class ApiControl:
         self.api_config = device_config
         self.api_device = device
 
-        self.logging = logging.getLogger("api.SAMPLE")
-        self.logging.setLevel = rm3config.log_set2level
         self.logging.info(
             "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
 

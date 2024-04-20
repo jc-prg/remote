@@ -1,9 +1,10 @@
 import logging
 import modules.rm3config as rm3config
 import modules.rm3json as rm3json
+from modules.rm3classes import RemoteDefaultClass
 
 
-class RemotesData:
+class RemotesData(RemoteDefaultClass):
     """
     class to read and write configuration and status data for devices, scenes, remotes
     """
@@ -18,15 +19,14 @@ class RemotesData:
             apis (server.interfaces.Connect): handler for device APIS
             queue (server.modules.rm3queue.QueueApiCalls): handler for query queue
         """
+        RemoteDefaultClass.__init__(self, "rm-data", "RemoteData")
+        self.logging.info("Loading " + self.name)
+
         self.config = config
         self.interfaces = interfaces
         self.queue = queue
         self.apis = apis
         self.errors = {}
-
-        self.logging = logging.getLogger("rm-data")
-        self.logging.setLevel = rm3config.log_set2level
-        self.logging.info("Loading RemotesData")
 
     def complete_read(self, selected=None):
         """
@@ -548,7 +548,7 @@ class RemotesData:
         return data
 
 
-class RemotesEdit:
+class RemotesEdit(RemoteDefaultClass):
     """
     Class to edit remote configuration for scenes and devices
     """
@@ -564,16 +564,15 @@ class RemotesEdit:
             apis (server.interfaces.Connect): handler for device APIS
             queue (server.modules.rm3queue.QueueApiCalls): handler for query queue
         """
+        RemoteDefaultClass.__init__(self, "rm-edit", "RemoteEdit")
+        self.logging.info("Loading " + self.name)
+
         self.config = config
         self.interfaces = interfaces
         self.queue = queue
         self.apis = apis
         self.data = data
         self.errors = {}
-
-        self.logging = logging.getLogger("rm-edit")
-        self.logging.setLevel = rm3config.log_set2level
-        self.logging.info("Loading RemotesEdit")
 
     def scene_add(self, scene, info):
         """

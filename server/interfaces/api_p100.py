@@ -1,37 +1,28 @@
-# -----------------------------------
-# API integration for jc://remote/ PyP100
-# -----------------------------------
-# (c) Christoph Kloth
-# -----------------------------------
-
-import logging
 import time
-import modules.rm3json as rm3json
 import modules.rm3config as rm3config
 import modules.rm3ping as rm3ping
-
+from modules.rm3classes import RemoteDefaultClass
 import interfaces.p100.PyP100 as device
 
-# -------------------------------------------------
-# API-class
-# -------------------------------------------------
 
 shorten_info_to = rm3config.shorten_info_to
 
 
-# -------------------------------------------------
-
-class ApiControl:
+class ApiControl(RemoteDefaultClass):
     """
     Integration of PyP100 API to be use by jc://remote/
     """
 
-    def __init__(self, api_name, device="", device_config={}, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False):
         """
         Initialize API / check connect to device
         """
-        self.api_name = api_name
         self.api_description = "API for Tapo-Link P100"
+        RemoteDefaultClass.__init__(self, "api.P100", self.api_description)
+
+        if device_config is None:
+            device_config = {}
+        self.api_name = api_name
         self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
         self.status = "Start"
         self.method = "query"
@@ -53,8 +44,6 @@ class ApiControl:
         self.api_config = device_config
         self.api_device = device
 
-        self.logging = logging.getLogger("api.P100")
-        self.logging.setLevel = rm3config.log_set2level
         self.logging.info(
             "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
 
@@ -260,16 +249,14 @@ class ApiControl:
         return "OK"
 
 
-# -------------------------------------------------
-# additional functions -> define self.api.jc.*
-# -------------------------------------------------
-
-class APIaddOn():
+class APIaddOn(RemoteDefaultClass):
     """
     individual commands for API
     """
 
     def __init__(self, api, logger):
+        self.api_description = "API-Addon for Tapo-Link P100"
+        RemoteDefaultClass.__init__(self, "api.P100", self.api_description)
 
         self.addon = "jc://addon/p100/"
         self.api = api
@@ -286,9 +273,6 @@ class APIaddOn():
         self.last_request_time = time.time()
         self.last_request_data = {}
         self.cache_wait = 1
-
-        self.logging = logging.getLogger("api.P100")
-        self.logging.setLevel = rm3config.log_set2level
 
         self.available_commands = {
             "jc.get_available_commands()": {

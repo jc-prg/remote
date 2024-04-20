@@ -1,9 +1,9 @@
-import logging
 import time
 import modules.rm3config as rm3config
+from modules.rm3classes import RemoteDefaultClass
 
 
-class RemoteAPI:
+class RemoteAPI(RemoteDefaultClass):
     """
     Class with API commands
     """
@@ -20,6 +20,9 @@ class RemoteAPI:
             queue (server.modules.rm3queue.QueueApiCalls): handler for query queue
             queue_send (server.modules.rm3queue.QueueApiCalls): handler for send queue
         """
+        RemoteDefaultClass.__init__(self, "rm-api", "RemoteAPI")
+        self.logging.info("Loading " + self.name)
+
         self.config = config
         self.data = data
         self.apis = apis
@@ -27,10 +30,6 @@ class RemoteAPI:
         self.queue_send = queue_send
         self.edit = edit
         self.errors = {}
-
-        self.logging = logging.getLogger("rm-api")
-        self.logging.setLevel = rm3config.log_set2level
-        self.logging.info("Loading RemoteAPI")
 
     def _start(self, setting=None):
         """

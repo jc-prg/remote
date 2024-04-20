@@ -2,6 +2,7 @@ import time
 import os
 import logging
 from dotenv import load_dotenv
+from logging.handlers import RotatingFileHandler
 
 # ---------------------------------
 
@@ -11,6 +12,20 @@ APP_version = "v2.9.2"
 APP_support = [APP_version,
                "v2.9.0", "v2.9.1"
                ]  # other supported versions
+
+# ---------------------------
+
+test = False
+start_time = time.time()
+server_status = "Starting"
+
+rollout = server_port = client_port = data_dir = icons_dir = scene_img_dir = app_language = None
+
+log_level = log_to_file = log_webserver = log_api_data = log_api_ext = log_set2level = None
+log_level_module = {"INFO": [], "DEBUG": [], "WARNING": [], "ERROR": []}
+log_filename = '/log/server.log'
+log_loggers = {}
+log_logger_list = []
 
 # ---------------------------
 
@@ -42,14 +57,61 @@ def time_since_start():
     return "  (" + str(time_info) + "s)"
 
 
+def set_logging(set_name, set_log_level=None):
+    """
+    set logger and ensure it exists only once
+
+    Args:
+        set_name (str): logger name
+        set_log_level (int): log level to be set
+    """
+    global log_loggers, log_logger_list, log_to_file, log_filename
+    init_time = time.time()
+
+    if log_loggers.get(set_name) or set_name in log_logger_list:
+        # print("... logger already exists: " + name)
+        return log_loggers.get(set_name)
+
+    else:
+        log_logger_list.append(set_name)
+
+        if set_log_level is None:
+            set_log_level = log_set2level
+
+        if log_to_file:
+            logger = logging.getLogger(set_name + str(init_time))
+            logger.setLevel(set_log_level)
+        else:
+            logger = logging.getLogger(set_name)
+            logger.setLevel(set_log_level)
+
+        if log_to_file == "YES" and os.access(log_filename, os.W_OK):
+            log_format_string = '%(asctime)s | %(levelname)-8s ' + set_name.ljust(10) + ' | %(message)s'
+            log_format = logging.Formatter(fmt=log_format_string,
+                                           datefmt='%m/%d %H:%M:%S')
+            handler = RotatingFileHandler(filename=log_filename, mode='a',
+                                          maxBytes=int(2.5 * 1024 * 1024),
+                                          backupCount=2, encoding=None, delay=False)
+            handler.setFormatter(log_format)
+            logger.addHandler(handler)
+
+        else:
+            log_format_string = '%(asctime)s | %(levelname)-8s %(name)-10s | %(message)s'
+            logging.basicConfig(format=log_format_string,
+                                datefmt='%m/%d %H:%M:%S',
+                                level=log_level)
+
+        logger.debug("Init logger '" + set_name + "', into_file=" + str(log_to_file))
+
+        if log_to_file and not os.access(log_filename, os.W_OK):
+            logger.warning("Could not write to log file " + log_filename)
+
+        log_loggers[set_name] = logger
+        return logger
+
+
 # ---------------------------
 
-test = False
-start_time = time.time()
-server_status = "Starting"
-
-rollout = server_port = client_port = data_dir = icons_dir = scene_img_dir = app_language = None
-log_level = log_to_file = log_filename = log_webserver = log_api_data = log_api_ext = log_set2level = None
 
 try:
     path = os.path.join(os.path.dirname(__file__), "../../.env")
@@ -76,6 +138,11 @@ try:
     log_api_ext = get_env('REMOTE_LOG_API_EXTERNAL')  # shall external API data be logged: YES, NO
     log_set2level = eval("logging." + log_level)
 
+    for key in log_level_module:
+        value = get_env('REMOTE_LOGGING_' + key)
+        if value is not None:
+            log_level_module[key] = value.split(",")
+
     if rollout == "test":
         test = True
 
@@ -93,28 +160,6 @@ print(start_string)
 print("----------------------------------------------------------------")
 print(" * Starting server on port: " + str(server_port) + " (http://<url>:" + str(server_port) + "/api/list/)")
 print(" * Starting client on port: " + str(client_port) + "   (http://<url>:" + str(client_port) + "/)")
-
-if log_to_file == "NO":
-    logging.basicConfig(level=log_set2level,  # DEBUG, INFO, WARNING, ERROR, CRITICAL
-                        format='%(levelname)-8s %(name)-10s | %(message)s')
-
-else:
-    if not log_filename:
-        log_filename = '/log/server.log'
-    print("-> logging into file: " + log_filename + "\n")
-    logging.basicConfig(filename=log_filename,
-                        filemode='a',
-                        format='%(asctime)s | %(levelname)-8s %(name)-10s | %(message)s',
-                        datefmt='%d.%m.%y %H:%M:%S',
-                        level=log_set2level)
-
-    eval("logging." + log_level.lower() + "('---------------------------------------------------------------')")
-    eval("logging." + log_level.lower() + "('" + start_string + "')")
-    eval("logging." + log_level.lower() + "('---------------------------------------------------------------')")
-    eval("logging." + log_level.lower() + "(' * Client: http://<url>:" + str(client_port) + "/)')")
-    eval("logging." + log_level.lower() + "(' * Server: http://<url>:" + str(server_port) + "/api/list/)')")
-    eval("logging." + log_level.lower() + "(' * SwaggerUI: http://<url>:" + str(server_port) + "/api/ui/)')")
-    eval("logging." + log_level.lower() + "('---------------------------------------------------------------')")
 
 # ---------------------------------
 
@@ -199,3 +244,4 @@ error_messages = {
     "801": "Update available: " + APP_version + ".",
     "802": "Update required: " + APP_version + ". Delete your browser cache, please."
 }
+

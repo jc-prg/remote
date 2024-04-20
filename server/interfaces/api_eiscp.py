@@ -1,29 +1,29 @@
-import logging, time
+import time
 import modules.rm3json as rm3json
 import modules.rm3config as rm3config
 import modules.rm3ping as rm3ping
-
+from modules.rm3classes import RemoteDefaultClass
 import interfaces.eiscp as eiscp
 
-# -------------------------------------------------
-# API-class
-# -------------------------------------------------
 
 shorten_info_to = rm3config.shorten_info_to
 
 
-class ApiControl:
+class ApiControl(RemoteDefaultClass):
     """
     Integration of sample API to be use by jc://remote/
     """
 
-    def __init__(self, api_name, device="", device_config={}, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False):
         """
         Initialize API / check connect to device
         """
-
-        self.api_name = api_name
         self.api_description = "API for ONKYO Devices"
+        RemoteDefaultClass.__init__(self, "api.ONKYO", self.api_description)
+
+        if device_config is None:
+            device_config = {}
+        self.api_name = api_name
         self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
         self.status = "Start"
         self.method = "query"
@@ -45,8 +45,6 @@ class ApiControl:
         self.api_config = device_config
         self.api_ip = self.api_config["IPAddress"]
 
-        self.logging = logging.getLogger("api.ONKYO")
-        self.logging.setLevel = rm3config.log_set2level
         self.logging.info(
             "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
 
@@ -245,15 +243,13 @@ class ApiControl:
         return "OK"
 
 
-# -------------------------------------------------
-# additional functions -> define self.api.jc.*
-# -------------------------------------------------
-
-class APIaddOn():
+class APIaddOn(RemoteDefaultClass):
     """
     additional functions that combine values
     """
     def __init__(self, api):
+        self.api_description = "API-Addon for ONKYO Devices"
+        RemoteDefaultClass.__init__(self, "api.ONKYO", self.api_description)
 
         self.status = None
         self.not_connected = None
@@ -263,9 +259,6 @@ class APIaddOn():
         self.cache_metadata = {}  # cache metadata to reduce api requests
         self.cache_time = time.time()  # init cache time
         self.cache_wait = 2  # time in seconds how much time should be between two api metadata requests
-
-        self.logging = logging.getLogger("api.ONKYO")
-        self.logging.setLevel = rm3config.log_set2level
 
         self.available_commands = {
             "jc.get_available_commands()": {

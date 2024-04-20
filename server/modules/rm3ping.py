@@ -1,5 +1,8 @@
-import logging
 import pythonping
+import modules.rm3config as rm3config
+
+
+ping_logger = rm3config.set_logging("ping")
 
 
 def ping(host):
@@ -9,12 +12,12 @@ def ping(host):
     """
 
     response_list = pythonping.ping(host, size=40, count=1)
-    logging.debug("PING "+host+": "+str(response_list).split("\n")[0])
+    ping_logger.debug("PING "+host+": "+str(response_list).split("\n")[0])
     
     if "Reply from "+host in str(response_list): return True 
     
     response_list = pythonping.ping(host, size=40, count=1)
-    logging.debug("PING "+host+": "+str(response_list).split("\n")[0])
+    ping_logger.debug("PING "+host+": "+str(response_list).split("\n")[0])
 
     if "Reply from "+host in str(response_list):
         return True

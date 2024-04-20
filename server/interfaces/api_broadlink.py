@@ -1,12 +1,12 @@
-import logging
 import time
 import codecs
 import netaddr
 import modules.rm3json as rm3json
 import modules.rm3config as rm3config
 import modules.rm3ping as rm3ping
-
+from modules.rm3classes import RemoteDefaultClass
 import interfaces.broadlink.broadlink as broadlink
+
 
 # -------------------------------------------------
 # API-class
@@ -23,18 +23,22 @@ check_on_startup_commands = [
 ]
 
 
-class ApiControl:
+class ApiControl(RemoteDefaultClass):
     """
     Integration of BROADLINK API to be use by jc://remote/
     """
 
-    def __init__(self, api_name, device="", device_config={}, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False):
         """
         Initialize API / check connect to device
         """
+        self.api_description = "API for Infrared Broadlink RM3"
+        RemoteDefaultClass.__init__(self, "api.RM3", self.api_description)
+
+        if device_config is None:
+            device_config = {}
         self.api = None
         self.api_name = api_name
-        self.api_description = "API for Infrared Broadlink RM3"
         self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
         self.status = "Start"
         self.method = "record"
@@ -58,8 +62,6 @@ class ApiControl:
         self.api_config["MACAddress"] = netaddr.EUI(self.api_config["MACAddress"])
         self.api_config["Timeout"] = int(self.api_config["Timeout"])
 
-        self.logging = logging.getLogger("api.RM3")
-        self.logging.setLevel = rm3config.log_set2level
         self.logging.info(
             "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
 

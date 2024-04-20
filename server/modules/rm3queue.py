@@ -1,11 +1,9 @@
-import logging
 import time
 import datetime
-import threading
-import modules.rm3config as rm3config
+from modules.rm3classes import RemoteThreadingClass
 
 
-class QueueApiCalls(threading.Thread):
+class QueueApiCalls(RemoteThreadingClass):
     """
     class to create a queue to send commands (or a chain of commands) to the devices
     -> see server_cmd.py / rm3data.py: a queue for send commands and another queue for query commands,
@@ -16,7 +14,7 @@ class QueueApiCalls(threading.Thread):
         """
         create queue, set name
         """
-        threading.Thread.__init__(self)
+        RemoteThreadingClass.__init__(self, "queue", name)
         self.last_query_time = None
         self.last_query = None
         self.queue = []
@@ -31,9 +29,6 @@ class QueueApiCalls(threading.Thread):
         self.reload = False
         self.exec_times = {}
         self.average_exec = {}
-
-        self.logging = logging.getLogger("queue")
-        self.logging.setLevel = rm3config.log_set2level
 
     def run(self):
         """

@@ -1,20 +1,22 @@
-import logging, time, threading, datetime
+import time
+import datetime
 
 import modules.rm3json as rm3json
 import modules.rm3config as rm3config
 import modules.rm3ping as rm3ping
+from modules.rm3classes import RemoteThreadingClass
 
 
-class Connect(threading.Thread):
+class Connect(RemoteThreadingClass):
     """
     class to control all interfaces including a continuous check if interfaces still available
     """
 
-    def __init__(self, configFiles):
+    def __init__(self, config):
         """
         Initialize Interfaces
         """
-        threading.Thread.__init__(self)
+        RemoteThreadingClass.__init__(self, "api", "DeviceInterfaces")
 
         self.api = {}
         self.api_device_list = {}
@@ -25,7 +27,7 @@ class Connect(threading.Thread):
         self.wait = 15  # seconds to check connection
         self.checking_interval = rm3config.refresh_device_connection
         self.checking_last = 0
-        self.configFiles = configFiles
+        self.config = config
         self.check_error = time.time()
         self.last_message = ""
         self.methods = {
@@ -43,9 +45,6 @@ class Connect(threading.Thread):
             "EISCP-ONKYO": "api_eiscp"
         }
 
-        self.logging = logging.getLogger("api")
-        self.logging.setLevel = rm3config.log_set2level
-
         if rm3config.log_api_data == "NO":
             self.log_commands = False
         else:
@@ -59,7 +58,7 @@ class Connect(threading.Thread):
         self.logging.info("Starting " + self.name)
 
         try:
-            active_devices = self.configFiles.read_status()
+            active_devices = self.config.read_status()
         except Exception as e:
             self.logging.error("Error while requesting information from " + rm3config.active_devices + ".json: " + str(e))
             return
@@ -82,7 +81,7 @@ class Connect(threading.Thread):
 
             dev_config = {}
             if rm3json.if_exist(rm3config.commands + api + "/00_interface"):
-                api_config = self.configFiles.read(rm3config.commands + api + "/00_interface")
+                api_config = self.config.read(rm3config.commands + api + "/00_interface")
                 if "Devices" in api_config and dev in api_config["Devices"]:
                     dev_config = api_config["Devices"][dev]
                 elif "Devices" in api_config and "default" in api_config["Devices"]:
@@ -499,7 +498,7 @@ class Connect(threading.Thread):
         """
         save status of button to active.json
         """
-        active = self.configFiles.read_status()
+        active = self.config.read_status()
 
         if button == "on" or button == "off" or button == "on-off":
             param = "power"
@@ -524,7 +523,7 @@ class Connect(threading.Thread):
         else:
             return_msg = "ERROR record_status: device not found"
 
-        self.configFiles.write_status(active, "save_status " + device + "/" + button)
+        self.config.write_status(active, "save_status " + device + "/" + button)
         return return_msg
 
     def device_api_string(self, device):
@@ -532,7 +531,7 @@ class Connect(threading.Thread):
         return short api_dev
         """
         try:
-            active_devices = self.configFiles.read_status()
+            active_devices = self.config.read_status()
             api = active_devices[device]["config"]["interface_api"]
             dev = active_devices[device]["config"]["interface_dev"]
             return api + "_" + dev
@@ -544,7 +543,7 @@ class Connect(threading.Thread):
         """
         get status for a specific device
         """
-        active_devices = self.configFiles.read_status()
+        active_devices = self.config.read_status()
         if device in active_devices:
             return active_devices[device]
         else:
@@ -554,11 +553,11 @@ class Connect(threading.Thread):
         """
         return configuration file of a device
         """
-        active = self.configFiles.read_status()
+        active = self.config.read_status()
         if device in active:
             device_code = active[device]["config"]["device"]
             device_api = active[device]["config"]["interface_api"]
-            device_config = self.configFiles.read(rm3config.commands + device_api + "/" + device_code)
+            device_config = self.config.read(rm3config.commands + device_api + "/" + device_code)
             return device_config.copy()
         else:
             return {"ERROR": "Device configuration doesn't exist."}
@@ -604,7 +603,7 @@ class Connect(threading.Thread):
         """
         translate device and button to command for the specific device
         """
-        active = self.configFiles.read_status()
+        active = self.config.read_status()
         api = dev_api.split("_")[0]
 
         if button_query == "queries":
@@ -627,7 +626,7 @@ class Connect(threading.Thread):
 
             device_default = rm3config.commands + api + "/00_default"
             if rm3json.if_exist(device_default):
-                buttons_default = self.configFiles.read(device_default)
+                buttons_default = self.config.read(device_default)
                 if self.log_commands:
                     self.logging.debug("...... button-default-file: " + device_default + ".json")
                     self.logging.debug("...... " + str(buttons_default))
@@ -666,7 +665,7 @@ class Connect(threading.Thread):
         """
 
         # read data -> to be moved to cache?!
-        active = self.configFiles.read_status()
+        active = self.config.read_status()
         api = dev_api.split("_")[0]
 
         if device in active:
@@ -675,7 +674,7 @@ class Connect(threading.Thread):
 
             # add button definitions from default.json if exist
             if rm3json.if_exist(rm3config.commands + api + "/00_default"):
-                buttons_default = self.configFiles.read(rm3config.commands + api + "/00_default")
+                buttons_default = self.config.read(rm3config.commands + api + "/00_default")
 
                 key_list = ["buttons", "queries", "commands", "values", "send-data"]
                 for key in key_list:

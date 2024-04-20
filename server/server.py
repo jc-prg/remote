@@ -23,8 +23,17 @@ def on_exception(exc_type, value, trace_back):
     log.error("EXCEPTION:\n\n" + tb_str + "\n")
 
 
+log_srv = rm3config.set_logging("server")
 log = logging.getLogger("werkzeug")
 sys.excepthook = on_exception
+
+eval("log_srv."+rm3config.log_level.lower()+"('---------------------------------------------------------------')")
+eval("log_srv."+rm3config.log_level.lower()+"('" + rm3config.start_string + "')")
+eval("log_srv."+rm3config.log_level.lower()+"('---------------------------------------------------------------')")
+eval("log_srv."+rm3config.log_level.lower()+"(' * Client: http://<url>:"+str(rm3config.client_port)+"/)')")
+eval("log_srv."+rm3config.log_level.lower()+"(' * Server: http://<url>:"+str(rm3config.server_port)+"/api/list/)')")
+eval("log_srv."+rm3config.log_level.lower()+"(' * SwaggerUI: http://<url>:"+str(rm3config.server_port)+"/api/ui/)')")
+eval("log_srv."+rm3config.log_level.lower()+"('---------------------------------------------------------------')")
 
 
 if __name__ == "__main__":
@@ -57,16 +66,16 @@ if __name__ == "__main__":
 
     # Create REST API
 
-    log.info("Initializing REST API ..." + rm3config.time_since_start())
-    log.info("... specification directory is " + rm3config.rest_api_dir + " ...")
+    log_srv.info("Initializing REST API ..." + rm3config.time_since_start())
+    log_srv.info("... specification directory is " + rm3config.rest_api_dir + " ...")
     app = connexion.App(__name__, specification_dir=rm3config.rest_api_dir)
     CORS(app.app)
 
     # Cead the swagger.yml file to configure the endpoints
-    log.info("... loading API specification from '" + rm3config.rest_api + "' ..." + rm3config.time_since_start())
+    log_srv.info("... loading API specification from '" + rm3config.rest_api + "' ..." + rm3config.time_since_start())
     app.add_api(rm3config.rest_api)
 
-    log.info("... starting web-server on port " + str(rm3config.server_port) + " ..." + rm3config.time_since_start())
+    log_srv.info("... starting web-server on port " + str(rm3config.server_port) + " ..." + rm3config.time_since_start())
     rm3config.start_duration = time.time() - rm3config.start_time
 
     if rm3config.log_webserver == "NO":

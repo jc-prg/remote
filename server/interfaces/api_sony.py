@@ -1,16 +1,8 @@
-# -----------------------------------
-# Sony API integration for jc://remote/
-# -----------------------------------
-# (c) Christoph Kloth
-# -----------------------------------
-
 import logging
 import time
-import os
-import modules.rm3json as rm3json
 import modules.rm3config as rm3config
 import modules.rm3ping as rm3ping
-
+from modules.rm3classes import RemoteDefaultClass
 import interfaces.sonyapi.sony as sony
 
 shorten_info_to = rm3config.shorten_info_to
@@ -20,7 +12,7 @@ shorten_info_to = rm3config.shorten_info_to
 # API-class
 # -------------------------------------------------
 
-class ApiControl:
+class ApiControl(RemoteDefaultClass):
     """
     Integration of sample API to be use by jc://remote/
     """
@@ -28,8 +20,10 @@ class ApiControl:
         """
         Initialize API / check connect to device
         """
-        self.api_name = api_name
         self.api_description = "API for SONY Devices (SonyAPILib)"
+        RemoteDefaultClass.__init__(self, "api.SONY", self.api_description)
+
+        self.api_name = api_name
         self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
         self.status = "Start"
         self.method = "query"
@@ -49,8 +43,6 @@ class ApiControl:
         self.api_config = device_config
         self.api_device = device
 
-        self.logging = logging.getLogger("api.SONY")
-        self.logging.setLevel = rm3config.log_set2level
         self.logging.info(
             "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
 
