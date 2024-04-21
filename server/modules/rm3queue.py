@@ -14,7 +14,7 @@ class QueueApiCalls(RemoteThreadingClass):
         """
         create queue, set name
         """
-        RemoteThreadingClass.__init__(self, "queue", name)
+        RemoteThreadingClass.__init__(self, "Q."+query_send, name)
 
         self.last_query_time = None
         self.last_query = None

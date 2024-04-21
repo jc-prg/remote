@@ -42,24 +42,23 @@ if __name__ == "__main__":
     rm3config.server_status = "Initializing"
 
     configFiles = rm3cache.ConfigCache("ConfigFiles")
+    configInterfaces = rm3cache.ConfigInterfaces("configInterfaces")
+
     if configFiles.check_config() == "ERROR":
         exit()
-    configFiles.start()
-    configInterfaces = rm3cache.ConfigInterfaces("configInterfaces")
-    configInterfaces.start()
 
     deviceAPIs = interfaces.Connect(configFiles)
-    deviceAPIs.start()
-
     queueSend = rm3queue.QueueApiCalls("queueSend", "send", deviceAPIs, configFiles)
-    queueSend.start()
     queueQuery = rm3queue.QueueApiCalls("queueQuery", "query", deviceAPIs, configFiles)
-    queueQuery.start()
-
     remotesData = rm3data.RemotesData(configFiles, configInterfaces, deviceAPIs, queueQuery)
     remotesEdit = rm3data.RemotesEdit(remotesData, configFiles, configInterfaces, deviceAPIs, queueQuery)
-
     remoteAPI = rm3api.RemoteAPI(remotesData, remotesEdit, configFiles, deviceAPIs, queueQuery, queueSend)
+
+    configFiles.start()
+    configInterfaces.start()
+    queueSend.start()
+    queueQuery.start()
+    deviceAPIs.start()
 
     # Create REST API
     rm3config.server_status = "Running"

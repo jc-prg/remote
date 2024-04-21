@@ -26,6 +26,7 @@ class Connect(RemoteThreadingClass):
         self.checking_interval = rm3config.refresh_device_connection
         self.checking_last = 0
         self.config = config
+        self.edit = None
         self.check_error = time.time()
         self.last_message = ""
         self.methods = {
@@ -116,7 +117,7 @@ class Connect(RemoteThreadingClass):
             self.available[key] = self.api[key].api_description + " [" + dev_key + "]"
 
         time.sleep(5)
-        self.config.identify_interfaces()
+        self.config.interfaces_identify()
 
         while self._running:
             if self.checking_last + self.checking_interval < time.time():
@@ -228,6 +229,11 @@ class Connect(RemoteThreadingClass):
     def api_method(self, device=""):
         """
         return method of interface
+
+        Args:
+            device (str): device id
+        Returns:
+            str|dict: interface status or error message
         """
 
         api_dev = self.device_api_string(device)
@@ -239,6 +245,12 @@ class Connect(RemoteThreadingClass):
     def api_get_status(self, interface="", device=""):
         """
         return status of all devices or a selected device
+
+        Args:
+            interface (str): interface id
+            device (str): device id
+        Returns:
+            str|dict: interface status or error message
         """
 
         status_all_interfaces = {}
@@ -250,7 +262,10 @@ class Connect(RemoteThreadingClass):
             status_all_interfaces[key] = self.api[key].status
 
         if interface == "":
-            return status_all_interfaces
+            interface_config = {"connect": status_all_interfaces, "active": {}}
+            for key in self.config.interface_configuration:
+                interface_config["active"][key] = self.config.interface_configuration[key]["active"]
+            return interface_config
         elif api_dev in self.api:
             return self.api[api_dev].status
         else:

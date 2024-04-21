@@ -188,7 +188,17 @@ class ConfigCache(RemoteThreadingClass):
         else:
             return ""
 
-    def identify_interfaces(self):
+    def get_method(self, device):
+        """
+        get method for device
+        """
+        status = self.read(rm3config.active_devices)
+        interface = status[device]["config"]["interface_api"]
+        device = status[device]["config"]["device"]
+        definition = self.read(rm3config.devices + interface + "/" + device)
+        return definition["data"]["method"]
+
+    def interfaces_identify(self):
         """
         Identify existing interfaces
 
@@ -201,8 +211,8 @@ class ConfigCache(RemoteThreadingClass):
         for key in interface_sub_dirs:
             directories.append(key.replace(str(interface_dir), ""))
 
-        self.logging.info("Interfaces from interfaces: " + str(rm3config.api_modules))
-        self.logging.info("Interfaces from directory:  " + str(directories))
+        self.logging.debug("Interfaces from interfaces: " + str(rm3config.api_modules))
+        self.logging.debug("Interfaces from directory:  " + str(directories))
 
         self.logging.warning(os.path.join(rm3config.data_dir, rm3config.active_apis))
 
@@ -245,15 +255,32 @@ class ConfigCache(RemoteThreadingClass):
         self.interface_configuration = interface_config.copy()
         return interface_config.copy()
 
-    def get_method(self, device):
+    def interface_active(self, interface, active):
         """
-        get method for device
+        set activity of an interface
+
+        Args:
+            interface (str): interface id
+            active (bool): interface active or not
+        Returns:
+            str: 'OK' or 'ERROR'
         """
-        status = self.read(rm3config.active_devices)
-        interface = status[device]["config"]["interface_api"]
-        device = status[device]["config"]["device"]
-        definition = self.read(rm3config.devices + interface + "/" + device)
-        return definition["data"]["method"]
+        interface_config = self.read(rm3config.active_apis)
+        self.logging.debug(interface_config[interface])
+
+        if interface in interface_config:
+            if active == "False":
+                interface_config[interface]["active"] = False
+            elif active == "True":
+                interface_config[interface]["active"] = True
+            self.logging.debug("Changed activity for '" + interface + "' to " + str(active) + ".")
+        else:
+            self.logging.error("Interface '" + interface + "' not available in '" + rm3config.active_apis + ".json'.")
+            return "ERROR"
+
+        self.write(rm3config.active_apis, interface_config)
+        self.interface_configuration = interface_config.copy()
+        return "OK"
 
     def read_status(self, selected_device=""):
         """

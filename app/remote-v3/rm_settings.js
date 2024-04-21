@@ -588,7 +588,7 @@ function rmSettings (name) {	// IN PROGRESS
             details += "<i>API-Status:</i>";
             details += "<ul>";
             for (var key2 in list[key]) {
-                var values  = this.data["STATUS"]["interfaces"][key2];
+                var values  = this.data["STATUS"]["interfaces"]["connect"][key2];
                 var api_dev = key2.split("_");
                 details += "<li><i>"+api_dev[1]+"</i>: <text id='api_status_"+key2+"'>"+values+"</text></li>";
                 }
@@ -655,11 +655,11 @@ function rmSettings (name) {	// IN PROGRESS
 
 	this.interface_list		    = function () {
 		var text = "<div id='setting_interface_list'>";
-		for (var key in this.data["STATUS"]["interfaces"]) {
+		for (var key in this.data["STATUS"]["interfaces"]["connect"]) {
 			text += key + ":<br><div id='api_status_"+key+"'>";
-			if (this.data["STATUS"]["interfaces"][key] == "Connected")	{ text += "<font color='"+color_api_connect+"'>"; }
+			if (this.data["STATUS"]["interfaces"]["connect"][key] == "Connected")	{ text += "<font color='"+color_api_connect+"'>"; }
 			else								{ text += "<font color='"+color_api_error+"'>"; }
-			text += this.data["STATUS"]["interfaces"][key] + "</font></div>";
+			text += this.data["STATUS"]["interfaces"]["connect"][key] + "</font></div>";
 			}
 		text += "</div>";
 		return text;

@@ -80,7 +80,7 @@ function statusCheck_sliderToggle(data) {
 	for (var device in devices) {
 	    if (!data["CONFIG"]["devices"][device]) { continue; }
 	    var device_api         = data["STATUS"]["devices"][device]["api"];
-	    var device_api_status  = data["STATUS"]["interfaces"][device_api];
+	    var device_api_status  = data["STATUS"]["interfaces"]["connect"][device_api];
 
         for (key in devices[device]) {
             // toggle
@@ -263,7 +263,7 @@ function statusCheck_deviceActive(data) {
 		if (devices_config[device] && devices_config[device]["buttons"] && devices_status[device] && devices_status[device]["power"]) {
 
 			var api        = devices_config[device]["interface"]["api"];
-			var api_status = data["STATUS"]["interfaces"][api]; 
+			var api_status = data["STATUS"]["interfaces"]["connect"][api];
 			
 			var power_on = true; 
 			if (devices_status[device]["power"].toUpperCase() != "ON") { power_on = false; }
@@ -349,7 +349,7 @@ function statusCheck_apiConnection(data) {
 	var success_no     = {};
 	var error_no       = {};
 	
-	for (var key in data["STATUS"]["interfaces"]) {
+	for (var key in data["STATUS"]["interfaces"]["connect"]) {
 		var api_dev = key.split("_");
 		var api     = api_dev[0];
 
@@ -357,8 +357,8 @@ function statusCheck_apiConnection(data) {
         if (!error_no[api])      { error_no[api] = 0; }
         if (!success_no[api])    { success_no[api] = 0; }
 
-		if (data["STATUS"]["interfaces"][key] == "Connected") { success_no[api] += 1; }
-		else                                                  { error_no[api] += 1; }
+		if (data["STATUS"]["interfaces"]["connect"][key] == "Connected") { success_no[api] += 1; }
+		else                                                             { error_no[api] += 1; }
 
         if (error_no[api] > 0 && success_no[api] == 0)        { api_summary[api] = "ERROR"; }
         else if (error_no[api] > 0 && success_no[api] > 0)    { api_summary[api] = "OK + ERROR"; }
@@ -377,9 +377,9 @@ function statusCheck_apiConnection(data) {
             }
 		}
 	
-	for (var key in data["STATUS"]["interfaces"]) {
+	for (var key in data["STATUS"]["interfaces"]["connect"]) {
 	    if (document.getElementById("api_status_" + key)) {
-            var status = data["STATUS"]["interfaces"][key];
+            var status = data["STATUS"]["interfaces"]["connect"][key];
             if (status == "Connected")   { setTextById("api_status_" + key, "<font color='" + color_api_connect + "'>" + status + "</font>"); }
             else if (status == "Start")  { setTextById("api_status_" + key, "<font color='" + color_api_warning + "'>" + status + "</font>"); }
             else                         { setTextById("api_status_" + key, "<font color='" + color_api_error + "'>" + status + "</font>"); }
@@ -404,7 +404,7 @@ function statusCheck_sceneDevices(data) {
 		for (var i=0;i<required.length;i++) {
 
 	        var device_api         = data["STATUS"]["devices"][required[i]]["api"];
-	        var device_api_status  = data["STATUS"]["interfaces"][device_api];
+	        var device_api_status  = data["STATUS"]["interfaces"]["connect"][device_api];
 	        log_data[key]         += required[i];
 
             if (devices[required[i]]["status"]["power"]) {
@@ -497,7 +497,7 @@ function statusCheck_audioMute(data) {
 	var devices_config      = data["CONFIG"]["devices"];
 	var main_audio          = data["CONFIG"]["main-audio"];
     var device_api          = data["STATUS"]["devices"][main_audio]["api"];
-    var device_api_status   = data["STATUS"]["interfaces"][device_api];
+    var device_api_status   = data["STATUS"]["interfaces"]["connect"][device_api];
 
 	// check audio status and show mut status in navigation bar
 	var power = devices[main_audio]["power"].toUpperCase();
@@ -548,7 +548,7 @@ function statusCheck_powerButton(data={}) {
 		    }
 
 	    var device_api         = data["STATUS"]["devices"][device]["api"];
-	    var device_api_status  = data["STATUS"]["interfaces"][device_api];
+	    var device_api_status  = data["STATUS"]["interfaces"]["connect"][device_api];
 	    device_list += device + " ";
 
 		if (!device_api_status) {
@@ -664,6 +664,8 @@ function statusCheck_powerButton(data={}) {
 // check system health
 function statusCheck_health(data={}) {
 
+    if (!data || !data["STATUS"]) { return; }
+
     var system_health      = data["STATUS"]["system_health"];
     var modules = [];
     var threads = [];
@@ -711,7 +713,7 @@ function statusCheck_display(data={}) {
     	var device_config      = data["CONFIG"]["devices"][key];
 		var device_status      = data["STATUS"]["devices"][key]; 
 		var device_api         = data["STATUS"]["devices"][key]["api"];
-		var device_api_status  = data["STATUS"]["interfaces"][device_api];
+		var device_api_status  = data["STATUS"]["interfaces"]["connect"][device_api];
 
 		if (!device_api_status) {
 		    console.warn("Device not defined correctly: '" + key + "' has no interface '" + device_api + "'");

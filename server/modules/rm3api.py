@@ -637,6 +637,20 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._end(data, ["no-config", "no-status"])
         return data
 
+    def edit_interface_active(self, interface, active):
+        """
+        change status if interface is active
+        """
+        data = self._start(["request-only"])
+        data["REQUEST"]["Return"] = self.config.interface_active(interface, active)
+        data["REQUEST"]["Interface"] = interface
+        data["REQUEST"]["Parameter"] = active
+        data["REQUEST"]["Command"] = "ChangeInterfaceActive"
+
+        self._refresh()
+        data = self._end(data, ["no-data", "no-config"])
+        return data
+
     def reload(self):
         """
         reload interfaces and reload config data in cache
