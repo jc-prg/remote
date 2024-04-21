@@ -105,6 +105,7 @@ function app_connection_lost(error=false) {
 var colors                  = [ "red", "green", "darkgreen", "blue", "darkblue" ];
 var colors_dev              = [];
 var color_api_connect       = "lightgreen";
+var color_api_no_connect    = "";
 var color_api_warning       = "yellow";
 var color_api_error         = "#FF6666";
 var color_button_inactive 	= "#666666";

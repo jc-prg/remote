@@ -352,6 +352,7 @@ function statusCheck_apiConnection(data) {
 	for (var key in data["STATUS"]["interfaces"]["connect"]) {
 		var api_dev = key.split("_");
 		var api     = api_dev[0];
+		var active  = data["STATUS"]["interfaces"]["active"][api];
 
 		if (!api_summary[api])   { api_summary[api] = ""; }
         if (!error_no[api])      { error_no[api] = 0; }
@@ -360,7 +361,8 @@ function statusCheck_apiConnection(data) {
 		if (data["STATUS"]["interfaces"]["connect"][key] == "Connected") { success_no[api] += 1; }
 		else                                                             { error_no[api] += 1; }
 
-        if (error_no[api] > 0 && success_no[api] == 0)        { api_summary[api] = "ERROR"; }
+        if (active == false)                                  { api_summary[api] = "OFF"; }
+        else if (error_no[api] > 0 && success_no[api] == 0)   { api_summary[api] = "ERROR"; }
         else if (error_no[api] > 0 && success_no[api] > 0)    { api_summary[api] = "OK + ERROR"; }
         else                                                  { api_summary[api] = "OK"; }
 
@@ -373,6 +375,7 @@ function statusCheck_apiConnection(data) {
 	    if (document.getElementById("api_status_" + key)) {
             if (api_summary[key] == "OK")         { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_connect + "'>" + api_summary[key] + "</font>"); }
             else if (api_summary[key] == "ERROR") { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_error + "'>" + api_summary[key] + "</font>"); }
+            else if (api_summary[key] == "OFF")   { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_no_connect + "'>" + api_summary[key] + "</font>"); }
             else                                  { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_warning + "'>" + api_summary[key] + "</font>"); }
             }
 		}
@@ -385,6 +388,19 @@ function statusCheck_apiConnection(data) {
             else                         { setTextById("api_status_" + key, "<font color='" + color_api_error + "'>" + status + "</font>"); }
             }
 		}			
+
+	for (var key in data["STATUS"]["interfaces"]["active"]) {
+	    if (document.getElementById("interface_status_" + key)) {
+	        var message = "";
+	        var click_value = "";
+            var status = data["STATUS"]["interfaces"]["active"][key];
+            if (status == true)        { click_value = "False"; message = "<font color='" + color_api_connect + "'>ACTIVE</font>"; }
+            else if (status == false)  { click_value = "True";  message = "<font color='" + color_api_no_connect + "'>OFF</font>"; }
+            else                       { click_value = "False"; message = "<font color='" + color_api_error + "'>ERROR</font>"; }
+            message = "<u style='cursor:pointer;' onclick='apiInterfaceOnOff(\"" + key + "\", \""+click_value+"\");'>" + message + "</u>";
+            setTextById("interface_status_" + key, message);
+            }
+		}
 	}
 
 

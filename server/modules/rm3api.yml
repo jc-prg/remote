@@ -396,7 +396,7 @@ paths:
                 $ref: "#/definitions/REQUEST"
 
   /interface/{interface}/{active}/:
-    get:
+    put:
       operationId: __main__.remoteAPI.edit_interface_active
       tags:
         - edit

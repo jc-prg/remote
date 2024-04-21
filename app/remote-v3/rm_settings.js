@@ -585,8 +585,14 @@ function rmSettings (name) {	// IN PROGRESS
         if (type == "status") {
             for (var key in list) { if (key != "") {
             var details = ""; //JSON.stringify(list[key]);
-            details += "<i>API-Status:</i>";
+            details += "<i>API-Module:</i>";
             details += "<ul>";
+            details += "<li><b>" + key + ": <text id='interface_status_" + key + "'></text></b></li>";
+            /*
+            details += "</ul>";
+            details += "<i>API-Connections:</i>";
+            details += "<ul>";
+            */
             for (var key2 in list[key]) {
                 var values  = this.data["STATUS"]["interfaces"]["connect"][key2];
                 var api_dev = key2.split("_");
