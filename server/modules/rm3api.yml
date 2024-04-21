@@ -448,8 +448,6 @@ paths:
                 $ref: "#/definitions/API"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
-              STATUS:
-                $ref: "#/definitions/STATUS"
 
   /move/{remote_type}/{device}/{direction}/:
     post:

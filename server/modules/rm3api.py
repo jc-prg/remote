@@ -648,7 +648,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Command"] = "ChangeInterfaceActive"
 
         self._refresh()
-        data = self._end(data, ["no-data", "no-config"])
+        data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
     def reload(self):
