@@ -14,10 +14,10 @@ class ConfigInterfaces(RemoteThreadingClass):
     def __init__(self, name):
         RemoteThreadingClass.__init__(self, "cache.INI", name)
         self.name = name
-        self.wait = 1
         self.cache_update_api = False
         self.cache_time = time.time()  # initial time for time based update
         self.cache_interval = rm3config.refresh_device_status  # update interval in seconds (reread files)
+        self.thread_priority(3)
 
     def run(self):
         """
@@ -33,8 +33,7 @@ class ConfigInterfaces(RemoteThreadingClass):
                 self.logging.debug("Reread device information via interface with next request (" + self.name + ", " +
                                    str(self.cache_interval) + "s)")
 
-            # wait a few seconds
-            time.sleep(self.wait)
+            self.thread_wait()
 
         self.logging.info("Exiting " + self.name)
 
@@ -56,7 +55,6 @@ class ConfigCache(RemoteThreadingClass):
         """
         RemoteThreadingClass.__init__(self, "cache.CONF", name)
 
-        self.wait = 0.5
         self.cache = {}
         self.cache_time = time.time()  # initial time for time based update
         self.cache_last_action = time.time()  # initial time for timestamp of last action
@@ -72,6 +70,7 @@ class ConfigCache(RemoteThreadingClass):
             "stage": rm3config.initial_stage,
             "rollout": rm3config.rollout
         }}
+        self.thread_priority(1)
 
     def run(self):
         """
@@ -97,9 +96,7 @@ class ConfigCache(RemoteThreadingClass):
             if self.cache_update:
                 self.reread_cache()
 
-            # wait a few seconds
-            else:
-                time.sleep(self.wait)
+            self.thread_wait()
 
         self.logging.info("Exiting " + self.name)
 

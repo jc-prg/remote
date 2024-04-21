@@ -23,8 +23,6 @@ class Connect(RemoteThreadingClass):
         self.api_device_settings = {}
         self.available = {}
         self.name = "deviceInterfaces"
-        self.stopProcess = False
-        self.wait = 15  # seconds to check connection
         self.checking_interval = rm3config.refresh_device_connection
         self.checking_last = 0
         self.config = config
@@ -49,6 +47,8 @@ class Connect(RemoteThreadingClass):
             self.log_commands = False
         else:
             self.log_commands = True
+
+        self.thread_priority(2)
 
     def run(self):
         """
@@ -118,13 +118,13 @@ class Connect(RemoteThreadingClass):
         time.sleep(5)
         self.config.identify_interfaces()
 
-        while not self.stopProcess:
+        while self._running:
             if self.checking_last + self.checking_interval < time.time():
                 self.checking_last = time.time()
                 self.check_connection()
                 self.check_activity()
             else:
-                time.sleep(1)
+                self.thread_wait()
 
         self.logging.info("Exiting " + self.name)
 

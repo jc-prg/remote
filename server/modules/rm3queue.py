@@ -20,7 +20,6 @@ class QueueApiCalls(RemoteThreadingClass):
         self.last_query = None
         self.queue = []
         self.name = name
-        self.wait = 0.01
         self.device_apis = device_apis
         self.device_reload = []
         self.last_button = "<none>"
@@ -29,6 +28,8 @@ class QueueApiCalls(RemoteThreadingClass):
         self.reload = False
         self.exec_times = {}
         self.average_exec = {}
+
+        self.thread_priority(1)
 
     def run(self):
         """
@@ -42,18 +43,16 @@ class QueueApiCalls(RemoteThreadingClass):
             if len(self.queue) > 0:
                 command = self.queue.pop(0)
                 self.execute(command)
-                # self.logging.info("."+command[1]+command[2])
+                count = 0
 
             else:
-                time.sleep(self.wait)
+                self.thread_wait()
 
                 # send life sign from time to time
-                if count * self.wait > 360:
-                    tt = time.time()
-                    self.logging.info("Queue running " + str(tt))
+                if count > 360:
+                    self.logging.info("Queue still running.")
                     count = 0
-
-            count += 1
+                count += 1
 
         self.logging.info("Exiting " + self.name)
 

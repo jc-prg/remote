@@ -78,6 +78,13 @@ class RemoteAPI(RemoteDefaultClass):
             data["STATUS"]["system"] = {}  # to be filled in self._end()
             data["STATUS"]["request_time"] = self.queue.average_exec
             data["STATUS"]["config_errors"] = self.data.errors
+            data["STATUS"]["system_health"] = {}
+
+            for key in rm3config.server_health:
+                if rm3config.server_health[key] == "stopped" or rm3config.server_health[key] == "registered":
+                    data["STATUS"]["system_health"][key] = rm3config.server_health[key]
+                else:
+                    data["STATUS"]["system_health"][key] = round(time.time() - rm3config.server_health[key], 2)
 
         return data.copy()
 

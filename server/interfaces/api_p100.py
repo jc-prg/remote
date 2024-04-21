@@ -2,7 +2,7 @@ import time
 import modules.rm3config as rm3config
 import modules.rm3ping as rm3ping
 from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
-import interfaces.p100.PyP100 as tapo_device
+import interfaces.p100.PyP100 as PyP100
 
 
 shorten_info_to = rm3config.shorten_info_to
@@ -21,6 +21,9 @@ class ApiControl(RemoteApiClass):
         self.api_description = "API for Tapo-Link P100"
         RemoteApiClass.__init__(self, "api.P100", api_name, "query",
                                 self.api_description, device, device_config, log_command)
+
+        self.config_add_key("TapoUser", "")
+        self.config_add_key("TapoPwd", "")
 
     def connect(self):
         """
@@ -41,7 +44,7 @@ class ApiControl(RemoteApiClass):
         api_pwd = self.api_config["TapoPwd"]
 
         try:
-            self.api = tapo_device.P100(api_ip, api_user, api_pwd)
+            self.api = PyP100.P100(api_ip, api_user, api_pwd)
             self.api.handshake()
             self.api.login()
         except Exception as e:

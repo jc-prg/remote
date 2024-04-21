@@ -134,6 +134,7 @@ function rmSettings (name) {	// IN PROGRESS
         var main_audio         = this.data["CONFIG"]["main-audio"];  // get main audio device from file
 		var main_device_config = this.data["CONFIG"]["devices"][main_audio];
 		var main_device        = this.data["DATA"]["devices"][main_audio];
+		var system_health      = this.data["STATUS"]["system_health"];
 		var audio_max		   = 100;
 
 		if (main_device_config["commands"]["definition"]
@@ -209,6 +210,27 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.row( 	"Audio:",	audio2 + "<br/>" + audio1 );
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_other","Other",set_temp,false);
+
+
+        var modules = [];
+        var threads = [];
+
+        for (const [key, value] of Object.entries(system_health)) {
+
+            if (value == "registered")      { modules.push(key); }
+            else if (value == "stopped")    { threads.push(key + " (stopped)"); }
+            else                            {
+                var message = key + " (" + value + "s)";
+                if (value > 15) { threads.push("<font color='red'>" + message + "</font>"); }
+                else            { threads.push("<font color='lightgreen'>" + message + "</font>"); }
+                }
+        }
+
+		set_temp  = this.tab.start();
+		set_temp += this.tab.row( 	"Threads:&nbsp;", threads.join(", ") );
+		set_temp += this.tab.row( 	"Modules:&nbsp;", modules.join(", ") );
+		set_temp += this.tab.end();
+		setting  += this.basic.container("setting_health","Server Health",set_temp,false);
 
 	    return setting;
 		}

@@ -18,6 +18,7 @@ APP_support = [APP_version,
 test = False
 start_time = time.time()
 server_status = "Starting"
+server_health = {}
 
 rollout = server_port = client_port = data_dir = icons_dir = scene_img_dir = app_language = None
 
@@ -174,8 +175,6 @@ refresh_config_cache = 60
 refresh_device_status = 10
 refresh_device_connection = 60
 
-config_server = "server.json"
-config_status = "status.json"
 shorten_info_to = 50
 
 rest_api_dir = os.path.join(os.path.dirname(__file__))
@@ -201,7 +200,7 @@ app_configuration = """
 //--------------------------------
 // Configure stage details
 //---------------------------------
-// Please edit not here, but the orignial configuration file. This files is created using a template.
+// Please don't edit here. Use the '.env' file instead.
 
 var test            = """ + str(test).lower() + """;
 var log_level       = '""" + log_level.lower() + """"';

@@ -32,6 +32,9 @@ class ApiControl(RemoteApiClass):
         RemoteApiClass.__init__(self, "api.RM3", api_name, "record",
                                 self.api_description, device, device_config, log_command)
 
+        self.config_add_key("MACAddress", "")
+        self.config_set_methods(["send", "record"])
+
         self.api_config["Port"] = int(self.api_config["Port"])
         self.api_config["MACAddress"] = netaddr.EUI(self.api_config["MACAddress"])
         self.api_config["Timeout"] = int(self.api_config["Timeout"])
