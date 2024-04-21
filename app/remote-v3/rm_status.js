@@ -33,7 +33,8 @@ function statusCheck(data={}) {
 	statusCheck_powerButtonScene(data);
 	statusCheck_audioMute(data);
 	statusCheck_apiConnection(data);
-	statusCheck_deviceIdle(data)
+	statusCheck_deviceIdle(data);
+    statusCheck_health(data);
 
     var duration = Date.now() - start;
 	console.log("statusCheck: Updated all status elements ("+duration+"ms)");
@@ -660,7 +661,30 @@ function statusCheck_powerButton(data={}) {
     console.debug("statusCheck_powerButton: "+device_list)
 	}
 
-	
+// check system health
+function statusCheck_health(data={}) {
+
+    var system_health      = data["STATUS"]["system_health"];
+    var modules = [];
+    var threads = [];
+
+    for (const [key, value] of Object.entries(system_health)) {
+
+        if (value == "registered")      { modules.push(key); }
+        else if (value == "stopped")    { threads.push(key + " (stopped)"); }
+        else                            {
+            var message = key + " (" + value + "s)";
+            if (value >= 20)            { threads.push("<font color='red'>" + message + "</font>"); }
+            else if (value >= 10)       { threads.push("<font color='yellow'>" + message + "</font>"); }
+            else                        { threads.push("<font color='lightgreen'>" + message + "</font>"); }
+            }
+    }
+    health_msg = threads.join(", ");
+    if (document.getElementById("system_health")) {
+        document.getElementById("system_health").innerHTML = health_msg;
+        }
+}
+
 // check status information of device -> insert into display
 function statusCheck_display(data={}) {
 
@@ -879,4 +903,5 @@ function statusShow_display(id, view) {
         console.debug("Error showing display: " + id + ":" + view);
         }
 }
+
 

@@ -158,11 +158,11 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.row( "Client:",	 appVersion + " / " + this.test_info + " (" + rollout + ")" );
 		set_temp += this.tab.row( "Server:",	 this.data["API"]["version"] + " / " + this.data["API"]["rollout"] );
 		set_temp += this.tab.row( "Modules:",
-                                    "jcMsg " 		+ appMsg.appVersion +
-                                    " / jcApp "		+ appFW.appVersion +
-                                    " / jcAppFW "		+ appFwVersion +
-                                    " / jcCookies "	+ appCookie.appVersion +
-                                    " / jcSlider "		+ rm3slider.appVersion );
+                                    "jcMsg "        + appMsg.appVersion +
+                                    " / jcApp "     + appFW.appVersion +
+                                    " / jcAppFW "   + appFwVersion +
+                                    " / jcCookies " + appCookie.appVersion +
+                                    " / jcSlider "  + rm3slider.appVersion );
 		set_temp += this.tab.row( "Sources:", "<a href='https://github.com/jc-prg/remote/' style='color:white' target='_blank'>https://github.com/jc-prg/remote/</a>");
 		set_temp += this.tab.row( "REST API:", RESTurl + "api/list/");
 		set_temp += this.tab.end();
@@ -213,21 +213,13 @@ function rmSettings (name) {	// IN PROGRESS
 
 
         var modules = [];
-        var threads = [];
-
         for (const [key, value] of Object.entries(system_health)) {
-
             if (value == "registered")      { modules.push(key); }
-            else if (value == "stopped")    { threads.push(key + " (stopped)"); }
-            else                            {
-                var message = key + " (" + value + "s)";
-                if (value > 15) { threads.push("<font color='red'>" + message + "</font>"); }
-                else            { threads.push("<font color='lightgreen'>" + message + "</font>"); }
-                }
         }
+        statusCheck_health(this.data);
 
 		set_temp  = this.tab.start();
-		set_temp += this.tab.row( 	"Threads:&nbsp;", threads.join(", ") );
+		set_temp += this.tab.row( 	"Threads:&nbsp;", "<div id='system_health'></div>" );
 		set_temp += this.tab.row( 	"Modules:&nbsp;", modules.join(", ") );
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_health","Server Health",set_temp,false);
