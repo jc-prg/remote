@@ -30,12 +30,8 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
-              STATUS:
-                $ref: "#/definitions/STATUS"
 
 #------------------------ LIST SERVER STATUS ------------------------
 
@@ -181,8 +177,6 @@ paths:
                 $ref: "#/definitions/API"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
-              STATUS:
-                $ref: "#/definitions/STATUS_SYSTEM"
 
   /send/{device}/{button}/:
     get:
@@ -209,8 +203,6 @@ paths:
                 $ref: "#/definitions/API"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
-              STATUS:
-                $ref: "#/definitions/STATUS_SYSTEM"
 
   /send-data/{device}/{button}/{text}/:
     get:
@@ -271,8 +263,6 @@ paths:
                 $ref: "#/definitions/API"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
-              STATUS:
-                $ref: "#/definitions/STATUS_SYSTEM"
 
   /set/{device}/{command}/{value}/:
     get:
@@ -301,12 +291,8 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
-              STATUS:
-                $ref: "#/definitions/STATUS"
 
   /macro/{macro}/:
     get:
@@ -329,8 +315,6 @@ paths:
                 $ref: "#/definitions/API"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
-              STATUS:
-                $ref: "#/definitions/STATUS_SYSTEM"
 
 
 #------------------------ EDIT FUNCTIONS ------------------------
@@ -357,8 +341,6 @@ paths:
                 $ref: "#/definitions/API"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
-              STATUS:
-                $ref: "#/definitions/STATUS_SYSTEM"
 
   /button/{device}/{button}/:
     put:
@@ -383,13 +365,9 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
-              STATUS:
-                $ref: "#/definitions/STATUS"
-                
+
 
   /button/{device}/{button_number}/:
     delete:
@@ -414,13 +392,8 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
-              STATUS:
-                $ref: "#/definitions/STATUS"
-                
 
   /interface/{interface}/{active}/:
     get:
@@ -477,13 +450,9 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
-              STATUS:
-                $ref: "#/definitions/STATUS"
-                
+
 
   /command/{device}/{button}/:
     post:
@@ -508,8 +477,6 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
@@ -536,8 +503,6 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
@@ -724,8 +689,6 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
@@ -761,8 +724,6 @@ paths:
                 $ref: "#/definitions/API"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
-              STATUS:
-                $ref: "#/definitions/STATUS_SYSTEM"
 
   /main-audio/{device}/:
     post:
@@ -785,8 +746,6 @@ paths:
                 $ref: "#/definitions/API"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
-              STATUS:
-                $ref: "#/definitions/STATUS"
 
 #------------------------ SUPPORT FUNCTIONS ------------------------
 
@@ -809,13 +768,10 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
                 $ref: "#/definitions/STATUS"
-                                
 
   /reload/:
     get:
@@ -831,8 +787,6 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
@@ -852,8 +806,6 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:
@@ -873,8 +825,6 @@ paths:
             properties:
               API:
                 $ref: "#/definitions/API"
-              CONFIG:
-                $ref: "#/definitions/CONFIG"
               REQUEST:
                 $ref: "#/definitions/REQUEST"
               STATUS:

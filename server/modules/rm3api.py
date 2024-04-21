@@ -202,7 +202,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Command"] = "AddButton"
 
         self._refresh()
-        data = self._end(data, ["no-data", "no-config"])
+        data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
     def edit_button_delete(self, device, button_number):
@@ -222,7 +222,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Command"] = "DeleteButton"
 
         self._refresh()
-        data = self._end(data, ["no-data", "no-config"])
+        data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
     def edit_button_record(self, device, button):
@@ -420,8 +420,7 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start(["request-only"])
         data["REQUEST"]["Return"] = self.edit.remote_edit_macros(macros)
         data["REQUEST"]["Command"] = "ChangeMacros"
-        data = self._end(data, ["no-config", "no-data"])
-
+        data = self._end(data, ["no-config", "no-data", "no-status"])
         return data
 
     def edit_remote_move(self, remote_type, device, direction):
@@ -440,7 +439,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Command"] = "RemoteMove"
 
         self._refresh()
-        data = self._end(data, ["no-data", "no-config"])
+        data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
     def edit_remote_visibility(self, remote_type, device, value):
@@ -461,7 +460,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Command"] = "ChangeVisibility"
 
         self._refresh()
-        data = self._end(data, ["no-data", "no-config"])
+        data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
     def edit_scene(self, scene, info):
@@ -700,7 +699,7 @@ class RemoteAPI(RemoteDefaultClass):
         }
         data["REQUEST"]["Command"] = "RemoteSendApiCmd"
 
-        data = self._end(data, ["no-data", "no-config"])
+        data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
     def send_api_value(self, device, command, value):
@@ -732,7 +731,7 @@ class RemoteAPI(RemoteDefaultClass):
             self.data.get_device_status(data, read_api=True)
 
         self._refresh()
-        data = self._end(data, ["no-data"])
+        data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
     def send_button(self, device, button):
@@ -759,7 +758,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["DeviceStatus"] = self.edit.device_status_get(device, "power")  # to be removed
         data["ReturnMsg"] = data["REQUEST"]["Return"]  # to be removed
 
-        data = self._end(data, ["no-data", "no-config"])
+        data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
     def send_button_on_off(self, device, button):
@@ -905,7 +904,7 @@ class RemoteAPI(RemoteDefaultClass):
 
         self._refresh()
         data["DATA"] = {}
-        data = self._end(data, ["no-data", "no-config"])
+        data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
     def send_macro_buttons(self, macro):
@@ -1043,7 +1042,7 @@ class RemoteAPI(RemoteDefaultClass):
         if return_msg != "":
             data["REQUEST"]["Return"] = return_msg
         data["DATA"] = {}
-        data = self._end(data, ["no-config", "no-data"])
+        data = self._end(data, ["no-config", "no-data", "no-status"])
         return data
 
     def send_text(self, device, button, text):
@@ -1092,7 +1091,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Command"] = "ChangeMainAudio"
 
         self._refresh()
-        data = self._end(data, ["no-data", "no-config"])
+        data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
     def status(self):
@@ -1146,7 +1145,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Return"] = "OK"
         data["REQUEST"]["Command"] = "Test"
 
-        self.logging.error("!!!!!!!!!!!!!! TEST CALL !!!!!!!!!!!!!")
+        self.logging.info("!!!!!!!!!!!!!! TEST CALL !!!!!!!!!!!!!")
 
-        data = self._end(data, ["no-data"])
+        data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
