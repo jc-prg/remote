@@ -18,22 +18,12 @@ class Connect(RemoteThreadingClass):
         """
         RemoteThreadingClass.__init__(self, "api", "DeviceInterfaces")
 
+        self.config = config
+        self.name = "deviceInterfaces"
+
         self.api = {}
         self.api_device_list = {}
         self.api_device_settings = {}
-        self.available = {}
-        self.name = "deviceInterfaces"
-        self.checking_interval = rm3config.refresh_device_connection
-        self.checking_last = 0
-        self.config = config
-        self.edit = None
-        self.check_error = time.time()
-        self.last_message = ""
-        self.methods = {
-            "send": "Send command via API (send)",
-            "record": "Record per device (record)",
-            "query": "Request per API (query)"
-        }
         self.api_modules = {
             "KODI": "api_kodi",
             "SONY": "api_sony",
@@ -43,6 +33,18 @@ class Connect(RemoteThreadingClass):
             "BROADLINK": "api_broadlink",
             "EISCP-ONKYO": "api_eiscp"
         }
+        self.methods = {
+            "send": "Send command via API (send)",
+            "record": "Record per device (record)",
+            "query": "Request per API (query)"
+        }
+        self.available = {}
+
+        self.checking_interval = rm3config.refresh_device_connection
+        self.checking_last = 0
+        self.check_error = time.time()
+        self.check_directly = False
+        self.last_message = ""
 
         if rm3config.log_api_data == "NO":
             self.log_commands = False
@@ -120,8 +122,9 @@ class Connect(RemoteThreadingClass):
         self.config.interfaces_identify()
 
         while self._running:
-            if self.checking_last + self.checking_interval < time.time():
+            if self.checking_last + self.checking_interval < time.time() or self.check_directly:
                 self.checking_last = time.time()
+                self.check_directly = False
                 self.check_connection()
                 self.check_activity()
             else:
@@ -140,11 +143,22 @@ class Connect(RemoteThreadingClass):
         not_connected = []
         start_time = time.time()
 
+        self.logging.warning(str(self.config.interface_configuration))
+
         # check API status
         for key in self.api:
-            if "IPAddress" in self.api[key].api_config:
+            [api, dev] = key.split("_")
+            if api in self.config.interface_configuration and "active" in self.config.interface_configuration[api]:
+                active = self.config.interface_configuration[api]["active"]
+            else:
+                active = True
+
+            if not active:
+                self.api[key].status = "OFF (" + api + ")"
+
+            elif "IPAddress" in self.api[key].api_config:
                 connect = rm3ping.ping(self.api[key].api_config["IPAddress"])
-                self.logging.debug(" * " + key + " : " + str(self.api_device_list[key]))
+                self.logging.debug(" * " + key + ": " + str(self.api_device_list[key]))
                 self.logging.debug("   -> IP: " + self.api[key].api_config["IPAddress"] + " / connect = " +
                                    str(connect).upper())
 

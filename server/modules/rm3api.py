@@ -641,12 +641,15 @@ class RemoteAPI(RemoteDefaultClass):
         change status if interface is active
         """
         data = self._start(["request-only"])
-        data["REQUEST"]["Return"] = self.config.interface_active(interface, active)
+
         data["REQUEST"]["Interface"] = interface
         data["REQUEST"]["Parameter"] = active
         data["REQUEST"]["Command"] = "ChangeInterfaceActive"
+        data["REQUEST"]["Return"] = self.config.interface_active(interface, active)
 
+        self.apis.check_directly = True
         self._refresh()
+
         data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
