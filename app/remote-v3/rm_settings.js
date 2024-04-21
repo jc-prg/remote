@@ -163,8 +163,8 @@ function rmSettings (name) {	// IN PROGRESS
                                     " / jcAppFW "   + appFwVersion +
                                     " / jcCookies " + appCookie.appVersion +
                                     " / jcSlider "  + rm3slider.appVersion );
-		set_temp += this.tab.row( "Sources:", "<a href='https://github.com/jc-prg/remote/' style='color:white' target='_blank'>https://github.com/jc-prg/remote/</a>");
-		set_temp += this.tab.row( "REST API:", RESTurl + "api/list/");
+		set_temp += this.tab.row( "Sources:",  "<a href='https://github.com/jc-prg/remote/' style='color:white' target='_blank'>https://github.com/jc-prg/remote/</a>");
+		set_temp += this.tab.row( "REST API:", "<a href='"+ RESTurl + "api/list/' style='color:white' target='_blank'>" + RESTurl + "api/list/</a>");
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_version","Versions",set_temp,true);
 

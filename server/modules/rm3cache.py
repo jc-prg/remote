@@ -52,6 +52,9 @@ class ConfigCache(RemoteThreadingClass):
     def __init__(self, name):
         """
         create class, set name
+
+        Returns:
+            name (str): class name
         """
         RemoteThreadingClass.__init__(self, "cache.CONF", name)
 
@@ -70,6 +73,7 @@ class ConfigCache(RemoteThreadingClass):
             "stage": rm3config.initial_stage,
             "rollout": rm3config.rollout
         }}
+        self.interface_configuration = {}
         self.thread_priority(1)
 
     def run(self):
@@ -187,6 +191,9 @@ class ConfigCache(RemoteThreadingClass):
     def identify_interfaces(self):
         """
         Identify existing interfaces
+
+        Returns:
+            dict: interface configuration
         """
         directories = []
         interface_dir = os.path.join(rm3config.data_dir, rm3config.devices)
@@ -197,42 +204,46 @@ class ConfigCache(RemoteThreadingClass):
         self.logging.info("Interfaces from interfaces: " + str(rm3config.api_modules))
         self.logging.info("Interfaces from directory:  " + str(directories))
 
-        if os.path.exists(os.path.join(rm3config.data_dir, rm3config.active_apis)):
-            interface_config = self.read(rm3config.active_apis)
+        self.logging.warning(os.path.join(rm3config.data_dir, rm3config.active_apis))
 
+        if os.path.exists(os.path.join(rm3config.data_dir, rm3config.active_apis + ".json")):
+            interface_config = self.read(rm3config.active_apis)
         else:
             interface_config = {}
-            for key in directories:
-                interface_config_dir = os.path.join(rm3config.commands, key, "00_interface")
+
+        for key in directories:
+            interface_config_dir = os.path.join(rm3config.commands, key, "00_interface")
+            if key not in interface_config:
                 interface_config[key] = {
                     "active": True,
                     "file": str(interface_config_dir) + ".json",
                     "config": {},
                     "devices": 0
-                    }
-                if os.path.exists(os.path.join(rm3config.data_dir, interface_config_dir + ".json")):
-                    interface_config_detail = self.read(interface_config_dir)
-                    interface_config[key]["config"] = interface_config_detail["Devices"]
-                    interface_config[key]["description"] = interface_config_detail["API-Description"]
-                    interface_config[key]["devices"] = len(interface_config_detail["Devices"])
-                    for dev_key in interface_config[key]["config"]:
-                        if "MACAddress" in interface_config[key]["config"][dev_key]:
-                            del interface_config[key]["config"][dev_key]["MACAddress"]
+                }
+            if os.path.exists(os.path.join(rm3config.data_dir, interface_config_dir + ".json")):
+                interface_config_detail = self.read(interface_config_dir).copy()
+                interface_config[key]["config"] = interface_config_detail["Devices"]
+                interface_config[key]["devices"] = len(interface_config_detail["Devices"])
+                interface_config[key]["description"] = interface_config_detail["API-Description"]
+            else:
+                interface_config[key]["error"] = "Config file not found!"
+                interface_config[key]["active"] = False
 
-            for key in rm3config.api_modules:
-                if key not in interface_config:
-                    interface_config[key] = {
-                        "active":   False,
-                        "file":     rm3config.commands + key + "/00_interface.json",
-                        "error":    "Non CONFIG found!"
-                    }
+        for key in rm3config.api_modules:
+            if key not in interface_config:
+                interface_config[key] = {
+                    "active":   False,
+                    "file":     rm3config.commands + key + "/00_interface.json",
+                    "error":    "Config file for connected API not found!"
+                }
+        for key in interface_config:
+            if key not in rm3config.api_modules:
+                interface_config[key]["active"] = False
+                interface_config[key]["error"] = "API not found!"
 
-            for key in interface_config:
-                if key not in rm3config.api_modules:
-                    interface_config[key]["active"] = False
-                    interface_config[key]["error"] = "No API found!"
-
-            self.write(rm3config.active_apis, interface_config)
+        self.write(rm3config.active_apis, interface_config)
+        self.interface_configuration = interface_config.copy()
+        return interface_config.copy()
 
     def get_method(self, device):
         """

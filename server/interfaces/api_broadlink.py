@@ -35,10 +35,6 @@ class ApiControl(RemoteApiClass):
         self.config_add_key("MACAddress", "")
         self.config_set_methods(["send", "record"])
 
-        self.api_config["Port"] = int(self.api_config["Port"])
-        self.api_config["MACAddress"] = netaddr.EUI(self.api_config["MACAddress"])
-        self.api_config["Timeout"] = int(self.api_config["Timeout"])
-
     def connect(self):
         """
         Connect / check connection
@@ -54,8 +50,9 @@ class ApiControl(RemoteApiClass):
         self.count_success = 0
 
         try:
-            self.api = broadlink.rm((self.api_config["IPAddress"], self.api_config["Port"]),
-                                    self.api_config["MACAddress"])
+            self.logging.debug("Configuration: " + str(self.api_config))
+            self.api = broadlink.rm((self.api_config["IPAddress"], int(self.api_config["Port"])),
+                                    netaddr.EUI(self.api_config["MACAddress"]))
             if self.api.auth():
                 self.status = "Connected"
             else:

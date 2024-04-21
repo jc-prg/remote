@@ -203,9 +203,9 @@ app_configuration = """
 // Please don't edit here. Use the '.env' file instead.
 
 var test            = """ + str(test).lower() + """;
-var log_level       = '""" + log_level.lower() + """"';
+var log_level       = '""" + log_level.lower() + """';
 var server_port     = """ + str(server_port) + """;
-var rollout         = '""" + rollout + """"';
+var rollout         = '""" + rollout + """';
 LANG                = '""" + app_language + """';
 
 if (rollout === "test")	{ test = true; }
