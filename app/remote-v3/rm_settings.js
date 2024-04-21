@@ -216,7 +216,7 @@ function rmSettings (name) {	// IN PROGRESS
         for (const [key, value] of Object.entries(system_health)) {
             if (value == "registered")      { modules.push(key); }
         }
-        statusCheck_health(this.data);
+        setTimeout(function(){ statusCheck_health(this.data); }, 500 );
 
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row( 	"Threads:&nbsp;", "<div id='system_health'></div>" );
