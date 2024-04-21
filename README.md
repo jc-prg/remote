@@ -96,6 +96,7 @@ There are a few templates available to be used and modified.
 
 * directly view and execute API commands for devices in edit mode
 * edit interface configuration via app
+* activate and deactivate interfaces
 * simplify server configuration (.env), code refactoring, improve logging
 
 ### App v2.8 / Server v2.1
