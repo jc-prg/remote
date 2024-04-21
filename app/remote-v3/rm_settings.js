@@ -202,16 +202,7 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_color_codes","Button color codes",set_temp,true);
 
-		// status
-		set_temp  = this.tab.start();
-		set_temp += this.tab.row( 	"Server:", 	this.app_stat );
-		set_temp += this.tab.row( 	"Cookie:",	cookie );
-		set_temp += this.tab.row( 	"Button:",	this.app_last );
-		set_temp += this.tab.row( 	"Audio:",	audio2 + "<br/>" + audio1 );
-		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_other","Other",set_temp,false);
-
-
+        // server health
         var modules = [];
         for (const [key, value] of Object.entries(system_health)) {
             if (value == "registered")      { modules.push(key); }
@@ -222,7 +213,16 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.row( 	"Threads:&nbsp;", "<div id='system_health'></div>" );
 		set_temp += this.tab.row( 	"Modules:&nbsp;", modules.join(", ") );
 		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_health","Server Health",set_temp,false);
+		setting  += this.basic.container("setting_health","Server Health",set_temp,true);
+
+		// status
+		set_temp  = this.tab.start();
+		set_temp += this.tab.row( 	"Server:", 	this.app_stat );
+		set_temp += this.tab.row( 	"Cookie:",	cookie );
+		set_temp += this.tab.row( 	"Button:",	this.app_last );
+		set_temp += this.tab.row( 	"Audio:",	audio2 + "<br/>" + audio1 );
+		set_temp += this.tab.end();
+		setting  += this.basic.container("setting_other","Other",set_temp,false);
 
 	    return setting;
 		}
