@@ -191,10 +191,15 @@ function apiSceneDelete(scene_id) {
         }
 	}
 
-// switch interfaces on or off
+// switch interfaces and API devices On or Off
 function apiInterfaceOnOff(interface, value) {
 
     appFW.requestAPI("PUT",["interface", interface, value], "", "");
+    }
+
+function apiApiDeviceOnOff(interface, api_device, value) {
+
+    appFW.requestAPI("PUT",["api_device", interface, api_device, value], "", "");
     }
 
 // edit device data

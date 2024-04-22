@@ -16,10 +16,9 @@ class Connect(RemoteThreadingClass):
         """
         Initialize Interfaces
         """
-        RemoteThreadingClass.__init__(self, "api", "DeviceInterfaces")
+        RemoteThreadingClass.__init__(self, "api", "API Device Controller")
 
         self.config = config
-        self.name = "deviceInterfaces"
 
         self.api = {}
         self.api_device_list = {}
@@ -33,6 +32,12 @@ class Connect(RemoteThreadingClass):
             "BROADLINK": "api_broadlink",
             "EISCP-ONKYO": "api_eiscp"
         }
+        self.api_configuration = {
+            "API-Description": "",
+            "API-Info": "",
+            "API-Source": "",
+            "API-Devices": {}
+            }
         self.methods = {
             "send": "Send command via API (send)",
             "record": "Record per device (record)",
@@ -84,10 +89,10 @@ class Connect(RemoteThreadingClass):
             dev_config = {}
             if rm3json.if_exist(rm3config.commands + api + "/00_interface"):
                 api_config = self.config.read(rm3config.commands + api + "/00_interface")
-                if "Devices" in api_config and dev in api_config["Devices"]:
-                    dev_config = api_config["Devices"][dev]
-                elif "Devices" in api_config and "default" in api_config["Devices"]:
-                    dev_config = api_config["Devices"]["default"]
+                if "API-Devices" in api_config and dev in api_config["API-Devices"]:
+                    dev_config = api_config["API-Devices"][dev]
+                elif "API-Devices" in api_config and "default" in api_config["API-Devices"]:
+                    dev_config = api_config["API-Devices"]["default"]
                 else:
                     self.logging.warning("Error in config-file - device not defined / no default device: " +
                                          rm3config.commands + api + "/00_interface.json")
@@ -138,12 +143,11 @@ class Connect(RemoteThreadingClass):
         """
         self.logging.debug(".................... CHECK CONNECTION (" + str(self.checking_interval) +
                            "s) ....................")
+        self.logging.debug("Check Interface configuration: " + str(self.config.interface_configuration))
 
         connected = []
         not_connected = []
         start_time = time.time()
-
-        self.logging.warning(str(self.config.interface_configuration))
 
         # check API status
         for key in self.api:

@@ -1,5 +1,5 @@
 {
-	"Devices"    : {
+	"API-Devices"    : {
 		"default" : {
 			"IPAddress"   : "127.0.0.1",
 			"MacAddress"  : "",

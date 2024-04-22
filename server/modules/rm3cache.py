@@ -213,11 +213,13 @@ class ConfigCache(RemoteThreadingClass):
 
         self.logging.debug("Interfaces from interfaces: " + str(rm3config.api_modules))
         self.logging.debug("Interfaces from directory:  " + str(directories))
-
-        self.logging.warning(os.path.join(rm3config.data_dir, rm3config.active_apis))
+        self.logging.debug("API Config file: " + str(os.path.join(rm3config.data_dir, rm3config.active_apis)))
 
         if os.path.exists(os.path.join(rm3config.data_dir, rm3config.active_apis + ".json")):
             interface_config = self.read(rm3config.active_apis)
+            for key in interface_config:
+                if "error" in interface_config[key]:
+                    del interface_config[key]["error"]
         else:
             interface_config = {}
 
@@ -225,16 +227,22 @@ class ConfigCache(RemoteThreadingClass):
             interface_config_dir = os.path.join(rm3config.commands, key, "00_interface")
             if key not in interface_config:
                 interface_config[key] = {
-                    "active": True,
-                    "file": str(interface_config_dir) + ".json",
-                    "config": {},
-                    "devices": 0
+                    "active":           True,
+                    "config_file":      str(interface_config_dir) + ".json",
+                    "config_info":      "Don't edit config here!",
+                    "devices":          {},
+                    "devices_active":   {},
+                    "devices_count":    0
                 }
             if os.path.exists(os.path.join(rm3config.data_dir, interface_config_dir + ".json")):
                 interface_config_detail = self.read(interface_config_dir).copy()
-                interface_config[key]["config"] = interface_config_detail["Devices"]
-                interface_config[key]["devices"] = len(interface_config_detail["Devices"])
+                interface_config[key]["devices"] = interface_config_detail["API-Devices"]
+                interface_config[key]["devices_count"] = len(interface_config_detail["API-Devices"])
+                interface_config[key]["devices_active"] = {}
                 interface_config[key]["description"] = interface_config_detail["API-Description"]
+                for dev_key in interface_config[key]["devices"]:
+                    if dev_key not in interface_config[key]["devices_active"]:
+                        interface_config[key]["devices_active"][dev_key] = True
             else:
                 interface_config[key]["error"] = "Config file not found!"
                 interface_config[key]["active"] = False
@@ -242,14 +250,24 @@ class ConfigCache(RemoteThreadingClass):
         for key in rm3config.api_modules:
             if key not in interface_config:
                 interface_config[key] = {
-                    "active":   False,
-                    "file":     rm3config.commands + key + "/00_interface.json",
-                    "error":    "Config file for connected API not found!"
+                    "active":           False,
+                    "config_file":      rm3config.commands + key + "/00_interface.json",
+                    "config_info":      "Create config file to use this API.",
+                    "devices":          {},
+                    "devices_active":   {},
+                    "devices_count":    0,
+                    "error":            "Config file for connected API not found!"
                 }
+        delete_apis = []
         for key in interface_config:
-            if key not in rm3config.api_modules:
+            if key not in rm3config.api_modules and key not in directories:
+                delete_apis.append(key)
+            elif key not in rm3config.api_modules:
                 interface_config[key]["active"] = False
-                interface_config[key]["error"] = "API not found!"
+                interface_config[key]["error"] = "API '" + key + "' not found!"
+
+        for key in delete_apis:
+            del interface_config[key]
 
         self.write(rm3config.active_apis, interface_config)
         self.interface_configuration = interface_config.copy()
@@ -266,14 +284,47 @@ class ConfigCache(RemoteThreadingClass):
             str: 'OK' or 'ERROR'
         """
         interface_config = self.read(rm3config.active_apis)
-        self.logging.debug(interface_config[interface])
 
         if interface in interface_config:
+            self.logging.debug(interface_config[interface])
             if active == "False":
                 interface_config[interface]["active"] = False
             elif active == "True":
                 interface_config[interface]["active"] = True
             self.logging.debug("Changed activity for '" + interface + "' to " + str(active) + ".")
+        else:
+            self.logging.error("Interface '" + interface + "' not available in '" + rm3config.active_apis + ".json'.")
+            return "ERROR"
+
+        self.write(rm3config.active_apis, interface_config)
+        self.interface_configuration = interface_config.copy()
+        return "OK"
+
+    def interface_device_active(self, interface, api_device, active):
+        """
+        set activity of an interface
+
+        Args:
+            interface (str): interface id
+            api_device (str): API-device id
+            active (bool): interface active or not
+        Returns:
+            str: 'OK' or 'ERROR'
+        """
+        interface_config = self.read(rm3config.active_apis)
+
+        if interface in interface_config:
+            self.logging.debug(interface_config[interface])
+            if api_device in interface_config[interface]["devices_active"]:
+                if active == "False":
+                    interface_config[interface]["devices_active"][api_device] = False
+                elif active == "True":
+                    interface_config[interface]["devices_active"][api_device] = True
+                self.logging.debug("Changed activity for '" + interface + "' to " + str(active) + ".")
+            else:
+                self.logging.error("Interface '" + interface + "' has no API device '" + api_device +
+                                   "' in '" + rm3config.active_apis + ".json'.")
+                return "ERROR"
         else:
             self.logging.error("Interface '" + interface + "' not available in '" + rm3config.active_apis + ".json'.")
             return "ERROR"

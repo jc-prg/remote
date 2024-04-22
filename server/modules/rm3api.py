@@ -50,6 +50,7 @@ class RemoteAPI(RemoteDefaultClass):
             data["CONFIG"]["button_colors"] = self.config.read(rm3config.buttons + "button_colors")
             data["CONFIG"]["scene_images"] = self.config.read(rm3config.scene_img_dir + "/index")
             data["CONFIG"]["devices"] = self.data.devices_read_config()
+            data["CONFIG"]["devices_api"] = self.data.devices_read_interfaces()
             data["CONFIG"]["interfaces"] = self.apis.available
             data["CONFIG"]["methods"] = self.apis.methods
 
@@ -304,7 +305,7 @@ class RemoteAPI(RemoteDefaultClass):
             data["REQUEST"]["Return"] = "OK"
             data["DATA"]["interface"] = interface
             config_org = self.config.read(rm3config.commands + api + "/00_interface")
-            config_org["Devices"][dev] = config
+            config_org["API-Devices"][dev] = config
             try:
                 self.config.write(rm3config.commands + api + "/00_interface", config_org)
             except Exception as e:
@@ -611,10 +612,10 @@ class RemoteAPI(RemoteDefaultClass):
             for api in interfaces:
                 api_config = self.config.read(rm3config.commands + api + "/00_interface")
                 # data["DATA"]["interfaces"][api] = str(api_config)
-                for key1 in api_config["Devices"]:
-                    for key2 in api_config["Devices"][key1]:
+                for key1 in api_config["API-Devices"]:
+                    for key2 in api_config["API-Devices"][key1]:
                         if key2 == "MACAddress":
-                            api_config["Devices"][key1][key2] = str(api_config["Devices"][key1][key2])
+                            api_config["API-Devices"][key1][key2] = str(api_config["API-Devices"][key1][key2])
 
                 data["DATA"]["interfaces"][api] = api_config
 
@@ -622,10 +623,10 @@ class RemoteAPI(RemoteDefaultClass):
             data["REQUEST"]["Return"] = "OK"
             data["DATA"]["interface"] = interface
             api_config = self.config.read(rm3config.commands + interface + "/00_interface")
-            for key1 in api_config["Devices"]:
-                for key2 in api_config["Devices"][key1]:
+            for key1 in api_config["API-Devices"]:
+                for key2 in api_config["API-Devices"][key1]:
                     if key2 == "MACAddress":
-                        api_config["Devices"][key1][key2] = str(api_config["Devices"][key1][key2])
+                        api_config["API-Devices"][key1][key2] = str(api_config["API-Devices"][key1][key2])
             data["DATA"][interface] = api_config
 
         else:
@@ -634,23 +635,6 @@ class RemoteAPI(RemoteDefaultClass):
             data["DATA"][interface] = {"error": "Interface '" + interface + "' not found!"}
 
         data = self._end(data, ["no-config", "no-status"])
-        return data
-
-    def edit_interface_active(self, interface, active):
-        """
-        change status if interface is active
-        """
-        data = self._start(["request-only"])
-
-        data["REQUEST"]["Interface"] = interface
-        data["REQUEST"]["Parameter"] = active
-        data["REQUEST"]["Command"] = "ChangeInterfaceActive"
-        data["REQUEST"]["Return"] = self.config.interface_active(interface, active)
-
-        self.apis.check_directly = True
-        self._refresh()
-
-        data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
     def reload(self):
@@ -1094,6 +1078,53 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Command"] = "ChangeMainAudio"
 
         self._refresh()
+        data = self._end(data, ["no-data", "no-config", "no-status"])
+        return data
+
+    def set_status_interface(self, interface, active):
+        """
+        change status if interface is active
+
+        Args:
+            interface (str): interface id
+            active (str): 'True' or 'False'
+        Returns:
+             dict: API response
+        """
+        data = self._start(["request-only"])
+
+        data["REQUEST"]["Interface"] = interface
+        data["REQUEST"]["Parameter"] = active
+        data["REQUEST"]["Command"] = "Change interface status"
+        data["REQUEST"]["Return"] = self.config.interface_active(interface, active)
+
+        self.apis.check_directly = True
+        self._refresh()
+
+        data = self._end(data, ["no-data", "no-config", "no-status"])
+        return data
+
+    def set_status_api_device(self, interface, api_device, active):
+        """
+        change status if API device is active
+
+        Args:
+            interface (str): interface id
+            api_device (str): API device id
+            active (str): 'True' or 'False'
+        Returns:
+             dict: API response
+        """
+        data = self._start(["request-only"])
+
+        data["REQUEST"]["Interface"] = interface
+        data["REQUEST"]["Parameter"] = active
+        data["REQUEST"]["Command"] = "Change API device status"
+        data["REQUEST"]["Return"] = self.config.interface_device_active(interface, api_device, active)
+
+        self.apis.check_directly = True
+        self._refresh()
+
         data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 

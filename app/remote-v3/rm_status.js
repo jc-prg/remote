@@ -387,8 +387,36 @@ function statusCheck_apiConnection(data) {
             else if (status == "Start")             { setTextById("api_status_" + key, "<font color='" + color_api_warning + "'>" + status + "</font>"); }
             else if (status.indexOf("OFF") > -1)    { setTextById("api_status_" + key, "<font color='" + color_api_no_connect + "'>OFF</font>"); }
             else                                    { setTextById("api_status_" + key, "<font color='" + color_api_error + "'>" + status + "</font>"); }
+
+            if (status == "Connected")              { setTextById("api_status_short_" + key, "<font color='" + color_api_connect + "'>OK</font>"); }
+            else if (status == "Start")             { setTextById("api_status_short_" + key, "<font color='" + color_api_warning + "'>START</font>"); }
+            else if (status.indexOf("OFF") > -1)    { setTextById("api_status_short_" + key, "<font color='" + color_api_no_connect + "'>OFF</font>"); }
+            else                                    { setTextById("api_status_short_" + key, "<font color='" + color_api_error + "'>ERROR</font>"); }
             }
 		}			
+
+    // set toggle values for interfaces
+	for (var key in data["STATUS"]["interfaces"]["active"]) {
+	    var slider = document.getElementById("toggle__" + key + "_input");
+	    if (slider) {
+            var status = data["STATUS"]["interfaces"]["active"][key];
+            if (status == true) {
+                slider.value = 1;
+                slider.className = "rm-slider device_on";
+                slider.disabled = false;
+                }
+            else if (status == false) {
+                slider.value = 0;
+                slider.className = "rm-slider device_off";
+                slider.disabled = false;
+                }
+            else {
+                slider.className = "rm-slider device_undef";
+                slider.disabled = true;
+                }
+            }
+
+        }
 
 	for (var key in data["STATUS"]["interfaces"]["active"]) {
 	    if (document.getElementById("interface_status_" + key)) {

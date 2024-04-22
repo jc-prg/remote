@@ -397,7 +397,7 @@ paths:
 
   /interface/{interface}/{active}/:
     put:
-      operationId: __main__.remoteAPI.edit_interface_active
+      operationId: __main__.remoteAPI.set_status_interface
       tags:
         - edit
       summary: change active status of interface
@@ -414,7 +414,38 @@ paths:
           required: true
       responses:
         200:
-          description: Successfully added button
+          description: Successfully changed status
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+  /api_device/{interface}/{api_device}/{active}/:
+    get:
+      operationId: __main__.remoteAPI.set_status_api_device
+      tags:
+        - edit
+      summary: change active status of an api-device
+      description: change active status of api-device
+      parameters:
+        - name: interface
+          in: path
+          type: string
+          required: true
+        - name: api_device
+          in: path
+          type: string
+          required: true
+        - name: active
+          enum: ["True", "False"]
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully changed status
           schema:
             properties:
               API:

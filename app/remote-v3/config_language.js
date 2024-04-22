@@ -116,7 +116,9 @@ var language_app = {
 		"HEADER_IMAGE_EXISTS"    : "There is already a HEADER-IMAGE in this remote control.",
 		
 		"ID"                     : "ID",
-		
+		"INTERFACES"             : "Interfaces",
+		"INTERFACE_STATUS"       : "Interface Status",
+
 		"JSON_CHANNEL"			: "JSON channel macros",
 		"JSON_DISPLAY"			: "JSON display information",
 		"JSON_DEVICE"			: "JSON required devices",
@@ -217,10 +219,7 @@ var language_app = {
 		"RESET_VOLUME_TO_ZERO"         : "Reset Audio Settings:<br/>set the volume of all audio devices to mininum (0) before.",
 
         "SAVE"                         : "Save",
-		"SEND_DATA"                    : "Send data",
-		"SELECT_DEV_MACRO"             : "select device or macro",
-		"SELECT_DEV_FIRST"             : "select device first",
-		
+
 		"SCENE_CONFIG_ERROR"           : "Error in scene config file(s) '{0}': ",
 		"SCENE_CONFIG_ERROR_UNKNOWN"   : "Unknown error in scene config file(s) '{0}'",
 
@@ -230,7 +229,13 @@ var language_app = {
 		"SCENE_INSERT_LABEL"           : "Please insert label for scene.",
 		"SCENE_SELECT"                 : "Please select scene.",
 
+		"SEND_DATA"                    : "Send data",
+		"SELECT_DEV_MACRO"             : "select device or macro",
+		"SELECT_DEV_FIRST"             : "select device first",
 		"SERVER_SETTINGS"              : "Server &amp; client settings",
+		"SETTINGS"                     : "Settings",
+		"SETTINGS_REMOTE"              : "Settings REMOTE",
+		"SETTINGS_API"                 : "Settings API",
 
 		"SLIDER"                       : "slider",
 		"SLIDER_SELECT_CMD"            : "Select command, to insert slider.",
@@ -239,7 +244,6 @@ var language_app = {
 		"SLIDER_INSERT_MINMAX"         : "Insert minimum and maximum value (min-max), to insert slider.",
 		"SLIDER_N/A"                   : "Slider not supported",
 
-		"SETTINGS"                     : "Settings",
 		"TEXT_INPUT"                   : "Text input",
 		"TRY_OUT"                      : "try out",
 		

@@ -67,12 +67,20 @@ function rmSlider(name) {
 		if (disabled)               { input_disabled = "disabled"; }
 		else                        { input_disabled = ""; }
 
-        var setCmdOn             = "if (document.getElementById('toggle_"+device+"_"+value_key+"_value').value==1) ";
-        setCmdOn                += "{ apiCommandSend('"+command_on+"','','','toggle'); }";
-        setCmdOn                += " else ";
-        setCmdOn                += "{ apiCommandSend('"+command_off+"','','','toggle'); } ";
+        if (command_on.indexOf("(") > -1 || command_on.indexOf("javascript:") > -1 || command_on.indexOf("javascript:") > -1)
+                { var command_on_JS = command_on.replace("javascript:", ""); }
+        else    { var command_on_JS = "apiCommandSend('"+command_on+"','','','toggle');"; }
 
-        var setCmdOnClick        = "if(this.value==0) { "+setValueCmd_set+" } ";
+        if (command_off.indexOf("(") > -1 || command_off.indexOf("javascript:") > -1 || command_off.indexOf("javascript:") > -1)
+                { var command_off_JS = command_off.replace("javascript:", ""); }
+        else    { var command_off_JS = "apiCommandSend('"+command_off+"','','','toggle');"; }
+
+        var setCmdOn             = "if (document.getElementById('toggle_"+device+"_"+value_key+"_value').value==1) ";
+        setCmdOn                += "{ " + command_on_JS + " }";
+        setCmdOn                += " else ";
+        setCmdOn                += "{ " + command_off_JS + " } ";
+
+        var setCmdOnClick        = "if (this.value==0) { "+setValueCmd_set+" } ";
         setCmdOnClick           += "else { "+setValueCmd_set+" };document.getElementById('toggle_"+device+"_"+value_key+"_value').value=this.value;"+setCmdOn;
 
 //        setCmdOnClick           += "alert(this.value+'|'+document.getElementById('toggle_"+device+"_"+value_key+"_value').value+'|'+document.getElementById('toggle_"+device+"_"+value_key+"_last_value').value);";

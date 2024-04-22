@@ -13,6 +13,14 @@ The following interfaces are integrated at the moment.
 * [TAPO P100](p100/README.md) / [api_p100.py](api_p100.py)
 * [SONY API](sonyapi/README.md) / [api_sony.py](api_sony.py)
 
+## Definitions
+
+* **Remote** - Remote control for a single device
+* **Scene** - Remote control to control a set of devices
+* **Device** - End device to be control such as receiver, bluray player, smart sockets, light bulbs
+* **API** - Interface to control one or more API Devices
+* **API-Device** - Device that controls the end devices which can be the end devices itself or hub devices the control several end devices (like the [BROADLINK](broadlink/README.md) device)
+
 ## How to integrate new interfaces
 
 * Find Python sources for the device API you want to integrate
@@ -49,7 +57,7 @@ The following interfaces are integrated at the moment.
   "API-Description": "",
   "API-Info": "https://put-url-here/",
   "API-Source": "https://put-url-here/",
-  "Devices" : {
+  "API-Devices" : {
     "device01" : {
       "IPAddress": "192.168.1.10",
       "Port": "8080",

@@ -53,7 +53,7 @@ The file 00_interface.json defines the connect to a specific device:
 
 ```json
 {
-  "Devices" : {
+  "API-Devices" : {
     "living_room" : {                        # 1st interface using this API 
         "IPAddress"   : "192.168.1.20",      # parameters depend on API
         "Port"        : 80,

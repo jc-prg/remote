@@ -95,7 +95,7 @@ function rmRemoteBasic(name) {
 			}
 		
 		ct  += "<div id='"+id+"_header' class='remote_group_header' "+onclick+">[<span id='"+id+"_link'>"+link+"</span>]&nbsp;&nbsp;<b>"+title+"</b></div>";	
-		ct  += "<div id='"+id+"_status' style='display:none;'>"+open+"</div>";	
+		ct  += "<div id='"+id+"_status' style='display:none;'>"+open+"</div>";
 		ct  += "<div id='"+id+"_body'   class='remote_group' style='"+display+"'>";	
 		ct  += text;	
 		ct  += "</div>";	

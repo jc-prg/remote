@@ -1,5 +1,5 @@
 {
-	"Devices" : {
+	"API-Devices" : {
 		"plug01" : {
 			"IPAddress"   : "192.168.1.53",
 			"TapoUser"    : "your@email.com",

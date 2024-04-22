@@ -201,6 +201,28 @@ class RemotesData(RemoteDefaultClass):
 
         return data_config.copy()
 
+    def devices_read_interfaces(self):
+        """
+        create a list with interfaces and connected devices
+
+        Returns:
+            dict: devices per interfaces (<interface>:<api-device> = [list, of, device-ids])
+        """
+        devices = self.devices_read_config()
+        devices_per_interface = {}
+        for key in devices:
+            if "interface" in devices[key] and "api" in devices[key]["interface"]:
+                api_dev = devices[key]["interface"]["api"]
+                if "_" in api_dev:
+                    [api, dev] = api_dev.split("_")
+                    if api not in devices_per_interface:
+                        devices_per_interface[api] = {}
+                    if dev not in devices_per_interface[api]:
+                        devices_per_interface[api][dev] = []
+                    devices_per_interface[api][dev].append(key)
+
+        return devices_per_interface
+
     def devices_read(self, selected=None, remotes=True):
         """
         read data for devices and combine with remote definition -> base for CONFIG and STATUS also
