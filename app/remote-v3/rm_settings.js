@@ -113,7 +113,6 @@ function rmSettings (name) {	// IN PROGRESS
     this.create_edit_api        = function () {
 
         this.api_settings_reset();
-		this.api_settings_append(1, lang("INTERFACE_STATUS"), this.module_interface_info());
         this.module_interface_edit();
 
         apiGetConfig_showInterfaceData(this.module_interface_edit_info);
@@ -284,7 +283,7 @@ function rmSettings (name) {	// IN PROGRESS
                 text += "   <div style='width:60px;float:right;'>"
                 text +=     this.toggle.toggleHTML("active_"+key, "", "", command_on, command_off, init);
                 text += "   </div>";
-                text += "   <div style='padding:5px;float:left;'><b>Interface: "+key+" </b></div>"; //<text id='api_status_"+key+"'> &nbsp;...</text><br/>";
+                text += "   <div style='padding:5px;float:left;'><b>API: "+key+" </b>&nbsp;<text id='api_status_icon_"+key+"' style='font-size:18px;'></text></div>"; //<text id='api_status_"+key+"'> &nbsp;...</text><br/>";
                 text += "</div>";
                 text += "<div id='interface_edit_"+key+"' style='width:100%;min-height:50px;float:left;'></div>";
 
@@ -304,14 +303,61 @@ function rmSettings (name) {	// IN PROGRESS
     	this.tab       = new rmRemoteTable(name+".tab");
     	this.btn       = new rmRemoteButtons(name);			// rm_remotes-elements.js
         this.basic     = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
+    	this.list      = function (interface, data) {
+            var text = "";
+            var devices_per_interface = dataAll["CONFIG"]["devices_api"];
+
+            //for (var interface in devices_per_interface) {
+            var details = "<div style='width:100%;height:9px;'></div>";
+
+            for (var api_device in devices_per_interface[interface]) {
+                details += "<i>API Device: " + api_device + "</i>&nbsp;&nbsp;";
+                var connect  = dataAll["STATUS"]["interfaces"]["connect"][interface + "_" + api_device];
+
+                //details += "<text id='api_status_short_"+interface+"_"+api_device+"'></text>";
+                details += "<ul>";
+                for (var i=0;i<devices_per_interface[interface][api_device].length;i++) {
+                    var device          = devices_per_interface[interface][api_device][i];
+                    var device_settings = dataAll["DATA"]["devices"][device];
+                    var method          = dataAll["CONFIG"]["devices"][device]["interface"]["method"];
+                    var power_status    = dataAll["STATUS"]["devices"][device]["power"];
+                    var label           = device_settings["settings"]["label"];
+                    var visibility      = device_settings["settings"]["visible"];
+                    var hidden          = "";
+                    var idle            = "<small id=\"device_auto_off_"+device+"\"></small>";
+                    var command_on    = "appFW.requestAPI('GET',['set','"+device+"','power','ON'], '', '', '' ); setTextById('CHANGE_STATUS_"+device+"','ON');"; //rm3settings.onoff();remoteInit();";
+                    var command_off   = "appFW.requestAPI('GET',['set','"+device+"','power','OFF'], '', '', '' );setTextById('CHANGE_STATUS_"+device+"','OFF');"; //rm3settings.onoff();remoteInit();";
+
+                    if (visibility != "yes") { hidden = "*"; }
+                    if (method == "record" && power_status == "ON")  {
+                        power_status = "<u id=\"CHANGE_STATUS_"+device+"\"><status onclick=\""+command_off+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
+                        }
+                    else if (method == "record" && power_status == "OFF") {
+                        power_status = "<u id=\"CHANGE_STATUS_"+device+"\"><status onclick=\""+command_on+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
+                        }
+
+                    details += "<li><b>["+device+"]</b> <i>"+label+":</i> " + power_status + hidden + "</li>" + idle;
+                    }
+                details += "</ul>";
+                }
+            details += "<br/>";
+                //text += this.basic.container("details_"+interface,"Interface: "+interface+" </b><text id='api_status_"+interface+"'> &nbsp;...</text>",details,false);
+                //}
+            return details;
+            }
     	this.btn.width = "66px";
 
         for (var key in interfaces) {
             var id        = "interface_edit_"+key;
             var interface = interfaces[key];
             var setting   = "";
-
             setting += "<hr style='border:solid lightgray 1px;'/>";
+
+
+            var container_title = "</b>Connected devices";
+            var overview = list(key, data);
+            setting += this.basic.container("details_"+key+"_overview", container_title, overview, false);
+
             for (var dev in interface["API-Devices"]) {
 
                 var edit_json  = JSON.stringify(interface["API-Devices"][dev]);
@@ -340,7 +386,7 @@ function rmSettings (name) {	// IN PROGRESS
                 temp    += this.tab.row("<div style='width:100%;text-align:center;'>" + buttons + "</div>");
                 temp    += this.tab.end();
 
-                var container_title = "</b>Device: "+dev+"&nbsp;&nbsp;&nbsp;&nbsp;";
+                var container_title = "</b>API-Device: "+dev+"&nbsp;&nbsp;<text id='api_status_icon_"+key+"_"+dev+"' style='font-size:16px;'></text>";
                 //container_title    += "<text id='api_status_short_"+key+"_"+dev+"'></text>";
 
                 setting += this.basic.container("details_"+key+"_"+dev, container_title, temp, false);
@@ -706,7 +752,7 @@ function rmSettings (name) {	// IN PROGRESS
             }
 
         return text;
-        }
+        } // check if to be deleted
 
 	this.device_list		    = function (id,onchange="") {
 		var list = {};

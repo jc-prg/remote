@@ -5,6 +5,7 @@
 var rm3background  = "remote-v3/img/remote2.png";
 var rm3scene_dir   = "/scenes/";
 
+var app_data       = {};
 var reload_active  = false;
 var showImg        = true;
 var startActive    = true;
@@ -109,6 +110,8 @@ function remoteReload(data) {
 		console.error("remoteReload: data not loaded.");
 		return;
 		}
+
+    app_data = data;
 
     // remoteForceReload_checkIfReady(data); // check if reloaded
 	remoteInitData(data);               // init and reload data

@@ -379,7 +379,19 @@ function statusCheck_apiConnection(data) {
             else                                  { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_warning + "'>" + api_summary[key] + "</font>"); }
             }
 		}
-	
+
+	for (var key in api_summary) {
+	    if (document.getElementById("api_status_icon_" + key)) {
+	        var message = "<font style='font-size:18px;' color='";
+            if (api_summary[key] == "OK")         { message += color_api_connect +      "'>" + sign_ok; }
+            else if (api_summary[key] == "ERROR") { message += color_api_error +        "'>" + sign_error; }
+            else if (api_summary[key] == "OFF")   { message += color_api_no_connect +   "'>" + ""; }
+            else                                  { message += color_api_warning +      "'>" + sign_ok + " " + sign_error; }
+
+            setTextById("api_status_icon_" + key, "</font> " + message);
+            }
+		}
+
 	for (var key in data["STATUS"]["interfaces"]["connect"]) {
 	    if (document.getElementById("api_status_" + key)) {
             var status = data["STATUS"]["interfaces"]["connect"][key];
@@ -392,6 +404,11 @@ function statusCheck_apiConnection(data) {
             else if (status == "Start")             { setTextById("api_status_short_" + key, "<font color='" + color_api_warning + "'>START</font>"); }
             else if (status.indexOf("OFF") > -1)    { setTextById("api_status_short_" + key, "<font color='" + color_api_no_connect + "'>OFF</font>"); }
             else                                    { setTextById("api_status_short_" + key, "<font color='" + color_api_error + "'>ERROR</font>"); }
+
+            if (status == "Connected")              { setTextById("api_status_icon_" + key, "<font color='" + color_api_connect +    "'>" + sign_ok + "</font>"); }
+            else if (status == "Start")             { setTextById("api_status_icon_" + key, "<font color='" + color_api_warning +    "'>" + sign_start + "</font>"); }
+            else if (status.indexOf("OFF") > -1)    { setTextById("api_status_icon_" + key, "<font color='" + color_api_no_connect + "'>" + sign_off + "</font>"); }
+            else                                    { setTextById("api_status_icon_" + key, "<font color='" + color_api_error +      "'>" + sign_error + "</font>"); }
             }
 		}			
 
