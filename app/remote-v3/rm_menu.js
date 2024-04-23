@@ -8,12 +8,13 @@ var rmMenu_visibleWidth = 875;
 
 function rmMenu(name, menu) {
 
-	this.menuItems   = menu;
-	this.app_name    = name;
-	this.data        = {};
-	this.edit_mode   = false;
-	this.initial_load = true;
-	this.logging     = new jcLogging(this.app_name);
+	this.menuItems     = menu;
+	this.app_name      = name;
+	this.data          = {};
+	this.edit_mode     = false;
+	this.initial_load  = true;
+	this.logging       = new jcLogging(this.app_name);
+	this.hide_settings = "rm3settings.hide_settings();";
 
     // load data with devices (deviceConfig["devices"])
     this.init                 = function(data) {
@@ -59,8 +60,8 @@ function rmMenu(name, menu) {
         if (width < rmMenu_visibleWidth) {
             if (menuDropDown.style.visibility == "hidden")   { menuDropDown.style.visibility = "visible"; }
             else                                             { menuDropDown.style.visibility = "hidden"; }
-                }
-        else                                                     { menuDropDown.style.visibility = "hidden"; }
+            }
+        else                                                 { menuDropDown.style.visibility = "hidden"; }
     }
 
     this.menu_height	     = function() {
@@ -89,12 +90,20 @@ function rmMenu(name, menu) {
 			if (device != "default") {
 
 				if (device in error) { 
-					if (data[device]["settings"]["visible"] != "no")	{ menu  += this.entry_device( device, "<div class=#entry_error#>! " + data[device]["settings"]["label"] + "</div>" ); }
-					else if (this.edit_mode)				{ menu  += this.entry_device( device, "<div class=#entry_error#>.(" + data[device]["settings"]["label"] + ").</div>" ); }
+					if (data[device]["settings"]["visible"] != "no") {
+					    menu  += this.entry_device( device, "<div class=#entry_error#>! " + data[device]["settings"]["label"] + "</div>" );
+					    }
+					else if (this.edit_mode) {
+					    menu  += this.entry_device( device, "<div class=#entry_error#>.(" + data[device]["settings"]["label"] + ").</div>" );
+					    }
 					}
 				else {
-					if (data[device]["settings"]["visible"] != "no")	{ menu  += this.entry_device( device, data[device]["settings"]["label"] ); }
-					else if (this.edit_mode)				{ menu  += this.entry_device( device, "<div class=#hidden_entry_edit#>.(" + data[device]["settings"]["label"] + ").</div>" ); }
+					if (data[device]["settings"]["visible"] != "no") {
+					    menu  += this.entry_device( device, data[device]["settings"]["label"] );
+					    }
+					else if (this.edit_mode) {
+					    menu  += this.entry_device( device, "<div class=#hidden_entry_edit#>.(" + data[device]["settings"]["label"] + ").</div>" );
+					    }
 					}			        
 				}
         		}
@@ -129,8 +138,12 @@ function rmMenu(name, menu) {
                             }
                     }
                 else {
-                        if (data[scene]["settings"]["visible"] != "no")	{ menu  += this.entry_scene( scene, data[scene]["settings"]["label"] ); }
-                        else if (this.edit_mode)				{ menu  += this.entry_scene( scene, "<div class=#hidden_entry_edit#>.(" + data[scene]["settings"]["label"] + ").</div>" ); }
+                        if (data[scene]["settings"]["visible"] != "no")	{
+                            menu  += this.entry_scene( scene, data[scene]["settings"]["label"] );
+                            }
+                        else if (this.edit_mode) {
+                            menu  += this.entry_scene( scene, "<div class=#hidden_entry_edit#>.(" + data[scene]["settings"]["label"] + ").</div>" );
+                            }
                     }
                 }
             }

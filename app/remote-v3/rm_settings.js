@@ -68,8 +68,8 @@ function rmSettings (name) {	// IN PROGRESS
             this.create_show();
             }
         else if (selected_mode == "edit_interfaces") {
-            this.create_edit_interfaces();
-            this.create_show();
+            this.create_edit_api();
+            this.create_show_api();
             }
         else {
             setNavTitle("&raquo; " + lang('INFORMATION') + " &laquo");
@@ -82,6 +82,9 @@ function rmSettings (name) {	// IN PROGRESS
 
     this.create_show            = function () {
 
+        elementVisible("setting_frames");
+        elementHidden("api_frames");
+
         show_settings = true;
         show_remotes  = false;
         this.active   = true;
@@ -91,22 +94,27 @@ function rmSettings (name) {	// IN PROGRESS
         for (var i=0; i<this.e_settings.length; i++) { elementVisible(this.e_settings[i],show_settings); }
         }
 
+    this.create_show_api        = function () {
+
+        this.create_show();
+        elementHidden("setting_frames");
+        elementVisible("api_frames");
+        }
+
 	this.create_information     = function () {
 
 		this.write(0,lang("VERSION_AND_STATUS"), this.module_system_info());
-		//this.write(1,lang("INTERFACES"), this.module_interface_info());
 		this.write(1);
 		this.write(2);
 		this.write(3);
 		this.write(4);
 		}
 
-    this.create_edit_interfaces = function () {
-		this.write(0,lang("INTERFACE_STATUS"), this.module_interface_info());
-		this.write(1,lang("EDIT_INTERFACES"), this.module_interface_edit());
-		this.write(2);
-		this.write(3);
-		this.write(4);
+    this.create_edit_api        = function () {
+
+        this.api_settings_reset();
+		this.api_settings_append(1, lang("INTERFACE_STATUS"), this.module_interface_info());
+        this.module_interface_edit();
 
         apiGetConfig_showInterfaceData(this.module_interface_edit_info);
         }
@@ -261,10 +269,28 @@ function rmSettings (name) {	// IN PROGRESS
     	}
 
     this.module_interface_edit  = function () {
-		var setting = "";
-		setting  += this.device_list_container("edit");
-		return setting;
-    }
+
+		var count = 1;
+        var devices_per_interface = this.data["CONFIG"]["devices_api"];
+
+        for (var key in devices_per_interface) {
+            if (key != "") {
+                count += 1;
+                var text = "";
+                var command_on  = 'javascript:apiInterfaceOnOff(\''+key+'\', \'True\')';
+                var command_off = 'javascript:apiInterfaceOnOff(\''+key+'\', \'False\')';
+                var init = "";
+                text += "<div style='width:100%;float:left;max-height:30px;'>";
+                text += "   <div style='width:60px;float:right;'>"
+                text +=     this.toggle.toggleHTML("active_"+key, "", "", command_on, command_off, init);
+                text += "   </div>";
+                text += "   <div style='padding:5px;float:left;'><b>Interface: "+key+" </b></div>"; //<text id='api_status_"+key+"'> &nbsp;...</text><br/>";
+                text += "</div>";
+                text += "<div id='interface_edit_"+key+"' style='width:100%;min-height:50px;float:left;'></div>";
+
+                this.api_settings_append(count, "", text);
+            }   }
+        }
 
     this.module_interface_edit_load = function (api_id) {
         //alert("test: " + api_id);
@@ -321,7 +347,6 @@ function rmSettings (name) {	// IN PROGRESS
             }
             //setting += this.tab.end();
             setting += "<br/>";
-            setting += "<hr style='border:solid lightgray 1px;'/>";
             setTextById(id, setting);
             }
         }
@@ -518,6 +543,26 @@ function rmSettings (name) {	// IN PROGRESS
 
 		setTextById(element,content);
 		}
+
+    this.api_settings_reset   = function ()  {
+        setTextById("api_frames", "");
+        }
+
+	this.api_settings_append  = function (nr, label="", text="") {
+	    var frame_content = getTextById("api_frames");
+
+		if (label != "") {
+			text 	= "<font class='remote_edit_headline'><center><b>" + label + "</b></center></font>"
+                    + this.basic.edit_line()
+                    + text
+                    + "<br/>";
+			}
+
+	    var device_frame = "<div id='device_frame" + nr + "' class='setting_bg' style='display:block;'>";
+        device_frame += text;
+	    device_frame += "</div>";
+	    setTextById("api_frames", frame_content + device_frame);
+    	}
 		
 	this.is_filled			    = function (nr) {
 		var element 	= this.e_settings[nr];
@@ -544,6 +589,9 @@ function rmSettings (name) {	// IN PROGRESS
 
 		if (this.edit_mode)          { elementVisible("frame1"); elementVisible("frame2"); } //elementVisible("frame3"); }
 		else                         { elementHidden("frame1");  elementHidden("frame2");  } //elementHidden("frame3"); }
+
+        elementVisible("setting_frames");
+        elementHidden("api_frames");
 	    }
 
 	this.onoff			        = function () {
@@ -602,7 +650,6 @@ function rmSettings (name) {	// IN PROGRESS
 
     this.device_list_container	= function (type="status") {
         var text = "";
-        var list = {}
         var devices_per_interface = this.data["CONFIG"]["devices_api"];
 
         if (type == "status") {
