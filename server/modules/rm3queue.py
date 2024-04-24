@@ -176,7 +176,8 @@ class QueueApiCalls(RemoteThreadingClass):
             self.exec_times[device].append(duration)
 
         total = 0
-        for d in self.exec_times[device]: total += d
+        for d in self.exec_times[device]:
+            total += d
         self.average_exec[device] = total / len(self.exec_times[device])
         average_diff = self.average_exec[device] - average_start
 

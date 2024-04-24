@@ -154,7 +154,12 @@ class Connect(RemoteThreadingClass):
             [api, dev] = key.split("_")
             if api in self.config.interface_configuration and "active" in self.config.interface_configuration[api]:
                 active = self.config.interface_configuration[api]["active"]
+                if active and dev in self.config.interface_configuration[api]["devices_active"]:
+                    active = self.config.interface_configuration[api]["devices_active"][dev]
+                else:
+                    self.logging.warning("API-Device not yet in config file: " + key)
             else:
+                self.logging.warning("API not yet in config file: " + api)
                 active = True
 
             if not active:

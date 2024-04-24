@@ -348,20 +348,23 @@ function statusCheck_apiConnection(data) {
 
 	var success_no     = {};
 	var error_no       = {};
-	
+	var off_no         = {};
+
 	for (var key in data["STATUS"]["interfaces"]["connect"]) {
-		var api_dev = key.split("_");
-		var api     = api_dev[0];
-		var active  = data["STATUS"]["interfaces"]["active"][api];
+		var [api, dev] = key.split("_");
+		var status_api = data["STATUS"]["interfaces"]["active"][api];
+		var status_dev = data["STATUS"]["interfaces"]["connect"][key];
 
 		if (!api_summary[api])   { api_summary[api] = ""; }
         if (!error_no[api])      { error_no[api] = 0; }
         if (!success_no[api])    { success_no[api] = 0; }
+        if (!off_no[api])        { off_no[api] = 0; }
 
-		if (data["STATUS"]["interfaces"]["connect"][key] == "Connected") { success_no[api] += 1; }
-		else                                                             { error_no[api] += 1; }
+		if (status_dev == "Connected")            { success_no[api] += 1; }
+		else if (status_dev.indexOf("OFF") > -1)  { off_no[api]     += 1; }
+		else                                      { error_no[api]   += 1; }
 
-        if (active == false)                                  { api_summary[api] = "OFF"; }
+        if (status_api == false)                              { api_summary[api] = "OFF"; }
         else if (error_no[api] > 0 && success_no[api] == 0)   { api_summary[api] = "ERROR"; }
         else if (error_no[api] > 0 && success_no[api] > 0)    { api_summary[api] = "OK + ERROR"; }
         else                                                  { api_summary[api] = "OK"; }
@@ -409,6 +412,28 @@ function statusCheck_apiConnection(data) {
             else if (status == "Start")             { setTextById("api_status_icon_" + key, "<font color='" + color_api_warning +    "'>" + sign_start + "</font>"); }
             else if (status.indexOf("OFF") > -1)    { setTextById("api_status_icon_" + key, "<font color='" + color_api_no_connect + "'>" + sign_off + "</font>"); }
             else                                    { setTextById("api_status_icon_" + key, "<font color='" + color_api_error +      "'>" + sign_error + "</font>"); }
+            }
+
+        if (document.getElementById("onoff_"+key.toLowerCase())) {
+            var button = document.getElementById("onoff_"+key.toLowerCase());
+            var [api, dev] = key.split("_");
+
+            var connect_status_api  = data["STATUS"]["interfaces"]["active"][api];
+            var connect_status      = data["STATUS"]["interfaces"]["connect"][key];
+            var value = "";
+
+            //if (api == "TEST") { alert(api+":"+connect_status_api); }
+
+            if (connect_status_api == false)                { value = "N/A"; }
+            else if (connect_status.indexOf("OFF") > -1)    { value = "OFF"; }
+            else if (connect_status.indexOf("ERROR") > -1)  { value = "ERROR"; }
+            else                                            { value = "ON"; }
+            button.innerHTML = value;
+
+            if (value == "ON")          { button.style.backgroundColor = colors_power["ON"];     button.disabled = false; }
+            else if (value == "OFF")    { button.style.backgroundColor = colors_power["OFF"];    button.disabled = false; }
+            else if (value == "ERROR")  { button.style.backgroundColor = colors_power["ERROR"];  button.disabled = false; }
+            else if (value == "N/A")    { button.style.backgroundColor = "";                     button.disabled = true; }
             }
 		}			
 

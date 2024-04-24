@@ -114,6 +114,7 @@ function rmSettings (name) {	// IN PROGRESS
 
         this.api_settings_reset();
         this.module_interface_edit();
+        this.api_settings_append(1, "", this.module_interface_info());
 
         apiGetConfig_showInterfaceData(this.module_interface_edit_info);
         }
@@ -252,17 +253,24 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	this.module_interface_info  = function () {
-		var setting = "";
-		setting  += this.device_list_container("status");
+		var setting = "<b>&nbsp;API details for devices</b><text style='font-size:25px;'>&nbsp;</text>";
+		setting    += "<hr style='border:1px lightgray solid;' />";
+		setting    += "<div style='padding:5px;padding-bottom:6px;'>";
+		//setting  += this.device_list_container("status");
 
 		set_temp  = this.tab.start();
-		set_temp += this.tab.row(	"API Speed:",		this.exec_time_list() );
-		set_temp += this.tab.row( 	"API Details:",
+		set_temp += this.tab.row("Speed:&nbsp;&nbsp;", this.exec_time_list() );
+		set_temp += this.tab.end();
+		set_temp += "</div><div style='padding:5px;'>";
+		set_temp += this.tab.start();
+		set_temp += this.tab.row("Details:&nbsp;&nbsp;",
                     this.device_list("select_dev_status", this.app_name+".device_list_status('select_dev_status','dev_status');") +
-                    "<span id='dev_status'>default</span>"
+                    "<br/><span id='dev_status'>&nbsp;</span>"
                     );
 		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_api03","Server- &amp; API-Status",set_temp,false);
+		setting  += set_temp;
+		setting  += "</div>";
+		//setting  += this.basic.container("setting_api03","Server- &amp; API-Status",set_temp,false);
 
 		return setting;
     	}
@@ -375,10 +383,20 @@ function rmSettings (name) {	// IN PROGRESS
                 var api_link  = "window.open(\""+interface["API-Info"]+"\")";
                 var buttons   = "";
 
-                buttons      += this.btn.sized("onoff_"+dev, "ON/OFF", "", api_link);
-                buttons      += this.btn.sized("edit_"+dev, lang("EDIT"), "", edit_link)
-                buttons      += this.btn.sized("save_"+dev, lang("SAVE"), "", save_link);
-                buttons      += this.btn.sized("info_"+dev, "API-Info", "", api_link);
+                var connect_status_api = dataAll["STATUS"]["interfaces"]["active"][key];
+                var connect_status = dataAll["STATUS"]["interfaces"]["connect"][key+"_"+dev];
+                var on_off_status = "";
+                if (connect_status_api == false)                { on_off_status = "N/A"; }
+                else if (connect_status.indexOf("OFF") > -1)    { on_off_status = "OFF"; }
+                else if (connect_status.indexOf("ERROR") > -1)  { on_off_status = "ERROR"; }
+                else                                            { on_off_status = "ON"; }
+
+                var on_off_link   = "apiApiDeviceOnOff_button(\""+key+"\", \""+dev+"\", this);"; //\"onoff_"+key+"_"+dev+"\");";
+
+                buttons      += this.btn.sized("onoff_"+key+"_"+dev, on_off_status, "", on_off_link);
+                buttons      += this.btn.sized("edit_"+key+"_"+dev,  lang("EDIT"), "", edit_link)
+                buttons      += this.btn.sized("save_"+key+"_"+dev,  lang("SAVE"), "", save_link);
+                buttons      += this.btn.sized("info_"+key+"_"+dev,  "API-Info", "", api_link);
 
                 var temp = this.tab.start();
                 temp    += this.tab.row("Status: <text id='api_status_"+key+"_"+dev+"'></text>");
@@ -781,8 +799,8 @@ function rmSettings (name) {	// IN PROGRESS
 
 	this.exec_time_list		    = function () {
 		var text = "<div id='setting_exec_time_list'>";
-		for (var key in this.data["STATUS"]["request_time"]) {
-			text += key + ": " + (Math.round(this.data["STATUS"]["request_time"][key]*1000)/1000) + "s<br/>";
+		for (var key in dataAll["STATUS"]["request_time"]) {
+			text += key + ": " + (Math.round(dataAll["STATUS"]["request_time"][key]*1000)/1000) + "s<br/>";
 			}
 		text += "</div>";
 		return text;
@@ -815,20 +833,21 @@ function rmSettings (name) {	// IN PROGRESS
         var filter_list = document.getElementById(id_filter);
         var filter      = filter_list.options[filter_list.selectedIndex].value;
 		for (var key in this.data["DATA"]["devices"][filter]["status"]) {
+		    var key_print = "<font color='cyan'>" + key + "</font>";
 			if (key == "power") {
 				command_on    = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','ON'], '', '', '' );rm3settings.onoff();remoteInit();";
 				command_off   = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','OFF'], '', '', '' );rm3settings.onoff();remoteInit();";
 				status_value  = this.data["DATA"]["devices"][filter]["status"][key];
-				if (status_value == "ON")	    { command_link = "<div onclick=\""+command_off+"\" style=\"cursor:pointer\">"+key+": <u>ON</u></div>"; }
-				else if (status_value == "OFF")	{ command_link = "<div onclick=\""+command_on +"\" style=\"cursor:pointer\">"+key+": <u>OFF</u></div>"; }
-				else				            { command_link = key + ": " + status_value + "</br>"; }
+				if (status_value == "ON")	    { command_link = "<div onclick=\""+command_off+"\" style=\"cursor:pointer\">"+key_print+": <u>ON</u></div>"; }
+				else if (status_value == "OFF")	{ command_link = "<div onclick=\""+command_on +"\" style=\"cursor:pointer\">"+key_print+": <u>OFF</u></div>"; }
+				else				            { command_link = key_print + ": " + status_value + "</br>"; }
 				status += command_link;
 				}
 			else if (key != "presets") {
-				status += key + ": " + this.data["DATA"]["devices"][filter]["status"][key] + "<br/>";
+				status += key_print + ": " + this.data["DATA"]["devices"][filter]["status"][key] + "<br/>";
 				}
 			}
-	        setTextById( id_list_container, status );
+	        setTextById( id_list_container, status + "<br/>" );
 		}
 
 	// show button code in header if pressed button

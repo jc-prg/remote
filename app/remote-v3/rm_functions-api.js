@@ -196,10 +196,25 @@ function apiInterfaceOnOff(interface, value) {
 
     appFW.requestAPI("PUT",["interface", interface, value], "", "");
     }
-
 function apiApiDeviceOnOff(interface, api_device, value) {
 
     appFW.requestAPI("PUT",["api_device", interface, api_device, value], "", "");
+    }
+function apiApiDeviceOnOff_button(interface, api_device, button) {
+
+    var value  = button.innerHTML;
+    if (value == "ON") {
+        apiApiDeviceOnOff(interface, api_device, "False");
+        button.innerHTML = "OFF";
+        }
+    else if (value == "OFF") {
+        apiApiDeviceOnOff(interface, api_device, "True");
+        button.innerHTML = "ON";
+        }
+    else if (value == "ERROR") {
+        apiApiDeviceOnOff(interface, api_device, "False");
+        button.innerHTML = "OFF";
+        }
     }
 
 // edit device data

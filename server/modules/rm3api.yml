@@ -423,7 +423,7 @@ paths:
                 $ref: "#/definitions/REQUEST"
 
   /api_device/{interface}/{api_device}/{active}/:
-    get:
+    put:
       operationId: __main__.remoteAPI.set_status_api_device
       tags:
         - edit
