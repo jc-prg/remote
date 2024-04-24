@@ -350,6 +350,13 @@ function statusCheck_apiConnection(data) {
 	var error_no       = {};
 	var off_no         = {};
 
+    // update breakdown from API over API Device to Connected devices
+    for (var api in data["STATUS"]["interfaces"]["active"]) {
+        var text = rm3settings.module_interface_edit_list(api, data);
+        setTextById("details_"+api+"_overview_body", text);
+        }
+
+    // summarize connection status for API based on API Devices
 	for (var key in data["STATUS"]["interfaces"]["connect"]) {
 		var [api, dev] = key.split("_");
 		var status_api = data["STATUS"]["interfaces"]["active"][api];
@@ -374,6 +381,7 @@ function statusCheck_apiConnection(data) {
 			}
 		}
 
+    /*
 	for (var key in api_summary) {
 	    if (document.getElementById("api_status_" + key)) {
             if (api_summary[key] == "OK")         { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_connect + "'>" + api_summary[key] + "</font>"); }
@@ -382,7 +390,9 @@ function statusCheck_apiConnection(data) {
             else                                  { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_warning + "'>" + api_summary[key] + "</font>"); }
             }
 		}
+    */
 
+    // update API status in settings
 	for (var key in api_summary) {
 	    if (document.getElementById("api_status_icon_" + key)) {
 	        var message = "<font style='font-size:18px;' color='";
@@ -395,6 +405,7 @@ function statusCheck_apiConnection(data) {
             }
 		}
 
+    // update API status in settings
 	for (var key in data["STATUS"]["interfaces"]["connect"]) {
 	    if (document.getElementById("api_status_" + key)) {
             var status = data["STATUS"]["interfaces"]["connect"][key];

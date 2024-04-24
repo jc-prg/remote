@@ -305,6 +305,51 @@ function rmSettings (name) {	// IN PROGRESS
         return;
         }
 
+
+    this.module_interface_edit_list = function (interface, data) {
+            var text = "";
+            var devices_per_interface = data["CONFIG"]["devices_api"];
+
+            //for (var interface in devices_per_interface) {
+            var details = "<div style='width:100%;height:9px;'></div>";
+
+            for (var api_device in devices_per_interface[interface]) {
+                details += "<i>API Device: " + api_device + "</i>&nbsp;&nbsp;";
+                var connect  = data["STATUS"]["interfaces"]["connect"][interface + "_" + api_device];
+
+                //details += "<text id='api_status_short_"+interface+"_"+api_device+"'></text>";
+                details += "<ul>";
+                for (var i=0;i<devices_per_interface[interface][api_device].length;i++) {
+                    var device          = devices_per_interface[interface][api_device][i];
+                    var device_settings = data["DATA"]["devices"][device];
+                    var method          = data["CONFIG"]["devices"][device]["interface"]["method"];
+                    var power_status    = data["STATUS"]["devices"][device]["power"];
+                    var label           = device_settings["settings"]["label"];
+                    var visibility      = device_settings["settings"]["visible"];
+                    var hidden          = "";
+                    var idle            = "<small id=\"device_auto_off_"+device+"\"></small>";
+                    var command_on    = "appFW.requestAPI('GET',['set','"+device+"','power','ON'], '', '', '' ); setTextById('CHANGE_STATUS_"+device+"','ON');"; //rm3settings.onoff();remoteInit();";
+                    var command_off   = "appFW.requestAPI('GET',['set','"+device+"','power','OFF'], '', '', '' );setTextById('CHANGE_STATUS_"+device+"','OFF');"; //rm3settings.onoff();remoteInit();";
+
+                    if (visibility != "yes") { hidden = "*"; }
+                    if (method == "record" && power_status == "ON")  {
+                        power_status = "<u id=\"CHANGE_STATUS_"+device+"\"><status onclick=\""+command_off+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
+                        }
+                    else if (method == "record" && power_status == "OFF") {
+                        power_status = "<u id=\"CHANGE_STATUS_"+device+"\"><status onclick=\""+command_on+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
+                        }
+
+                    details += "<li><b>["+device+"]</b> <i>"+label+":</i> " + power_status + hidden + "</li>" + idle;
+                    }
+                details += "</ul>";
+                }
+            details += "<br/>";
+                //text += this.basic.container("details_"+interface,"Interface: "+interface+" </b><text id='api_status_"+interface+"'> &nbsp;...</text>",details,false);
+                //}
+            return details;
+            }
+
+
     this.module_interface_edit_info = function (data) {
 
         var interfaces = data["DATA"]["interfaces"];
@@ -363,7 +408,8 @@ function rmSettings (name) {	// IN PROGRESS
 
 
             var container_title = "</b>Connected devices";
-            var overview = list(key, data);
+            var overview = this.list(key, data);
+            //var overview = rm3settings.module_interface_edit_list(key, data);
             setting += this.basic.container("details_"+key+"_overview", container_title, overview, false);
 
             for (var dev in interface["API-Devices"]) {
@@ -609,6 +655,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
     this.api_settings_reset   = function ()  {
+
         setTextById("api_frames", "");
         }
 
