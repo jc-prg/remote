@@ -420,8 +420,12 @@ function rmSettings (name) {	// IN PROGRESS
                 var api_link  = "window.open(\""+interface["API-Info"]+"\")";
                 var buttons   = "";
 
+                console.error(key + "_" + dev)
                 var connect_status_api = dataAll["STATUS"]["interfaces"]["active"][key];
                 var connect_status = dataAll["STATUS"]["interfaces"]["connect"][key+"_"+dev];
+
+                if (!connect_status) { continue; }
+
                 var on_off_status = "";
                 if (connect_status_api == false)                { on_off_status = "N/A"; }
                 else if (connect_status.indexOf("OFF") > -1)    { on_off_status = "OFF"; }
