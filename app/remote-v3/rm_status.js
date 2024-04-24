@@ -25,6 +25,7 @@ function statusCheck(data={}) {
 		return;
 		}
 	var start = Date.now();
+	dataAll = data;
 
 	statusCheck_display(data);
 	statusCheck_deviceActive(data);
