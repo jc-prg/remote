@@ -135,7 +135,6 @@ function rmSettings (name) {	// IN PROGRESS
         apiGetConfig_showInterfaceData(this.module_interface_edit_info);
 		}
 
-	// visualize modules
 	this.module_title           = function (title="") {
 	    var setting = "<br/>";
 	    if (title != "") {
@@ -343,7 +342,6 @@ function rmSettings (name) {	// IN PROGRESS
             details += "<br/>";
             return details;
             }
-
 
     this.module_interface_edit_info = function (data) {
 
@@ -749,66 +747,6 @@ function rmSettings (name) {	// IN PROGRESS
 		document.getElementById("add_device_device").value = device_file;
 		document.getElementById("add_device_remote").value = remote_file;
 		}
-
-    this.device_list_container	= function (type="status") {
-        var text = "";
-        var devices_per_interface = this.data["CONFIG"]["devices_api"];
-
-        if (type == "status") {
-            for (var interface in devices_per_interface) {
-                var details = "<div style='width:100%;height:9px;'></div>";
-
-                for (var api_device in devices_per_interface[interface]) {
-                    details += "<i>API &quot;" + api_device + "&quot;</i>&nbsp;&nbsp;...&nbsp;&nbsp;";
-                    var connect  = this.data["STATUS"]["interfaces"]["connect"][interface + "_" + api_device];
-
-                    details += "<text id='api_status_short_"+interface+"_"+api_device+"'></text>";
-                    details += "<ul>";
-                    for (var i=0;i<devices_per_interface[interface][api_device].length;i++) {
-                        var device          = devices_per_interface[interface][api_device][i];
-                        var device_settings = this.data["DATA"]["devices"][device];
-                        var method          = this.data["CONFIG"]["devices"][device]["interface"]["method"];
-                        var power_status    = this.data["STATUS"]["devices"][device]["power"];
-                        var label           = device_settings["settings"]["label"];
-                        var visibility      = device_settings["settings"]["visible"];
-                        var hidden          = "";
-                        var idle            = "<small id=\"device_auto_off_"+device+"\"></small>";
-                        var command_on    = "appFW.requestAPI('GET',['set','"+device+"','power','ON'], '', '', '' ); setTextById('CHANGE_STATUS_"+device+"','ON');"; //rm3settings.onoff();remoteInit();";
-                        var command_off   = "appFW.requestAPI('GET',['set','"+device+"','power','OFF'], '', '', '' );setTextById('CHANGE_STATUS_"+device+"','OFF');"; //rm3settings.onoff();remoteInit();";
-
-                        if (visibility != "yes") { hidden = "*"; }
-                        if (method == "record" && power_status == "ON")  {
-                            power_status = "<u id=\"CHANGE_STATUS_"+device+"\"><status onclick=\""+command_off+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
-                            }
-                        else if (method == "record" && power_status == "OFF") {
-                            power_status = "<u id=\"CHANGE_STATUS_"+device+"\"><status onclick=\""+command_on+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
-                            }
-
-                        details += "<li><b>["+device+"]</b> <i>"+label+":</i> " + power_status + hidden + "</li>" + idle;
-                        }
-                    details += "</ul>";
-                    }
-                details += "<br/>";
-                text += this.basic.container("details_"+interface,"Interface: "+interface+" </b><text id='api_status_"+interface+"'> &nbsp;...</text>",details,false);
-                }
-            }
-        else if (type == "edit") {
-            for (var key in devices_per_interface) { if (key != "") {
-                var command_on  = 'javascript:apiInterfaceOnOff(\''+key+'\', \'True\')';
-                var command_off = 'javascript:apiInterfaceOnOff(\''+key+'\', \'False\')';
-                var init = "";
-                text += "<div style='width:100%;float:left;max-height:30px;'>";
-                text += "   <div style='width:60px;float:right;'>"
-                text +=     this.toggle.toggleHTML("active_"+key, "", "", command_on, command_off, init);
-                text += "   </div>";
-                text += "   <div style='padding:5px;float:left;'><b>Interface: "+key+" </b></div>"; //<text id='api_status_"+key+"'> &nbsp;...</text><br/>";
-                text += "</div>";
-                text += "<div id='interface_edit_"+key+"' style='width:100%;min-height:50px;float:left;'></div>";
-            } }
-            }
-
-        return text;
-        } // check if to be deleted
 
 	this.device_list		    = function (id,onchange="") {
 		var list = {};
