@@ -238,8 +238,9 @@ class ConfigCache(RemoteThreadingClass):
                 interface_config_detail = self.read(interface_config_dir).copy()
                 interface_config[key]["devices"] = interface_config_detail["API-Devices"]
                 interface_config[key]["devices_count"] = len(interface_config_detail["API-Devices"])
-                interface_config[key]["devices_active"] = {}
                 interface_config[key]["description"] = interface_config_detail["API-Description"]
+                if "devices_active" not in interface_config[key]:
+                    interface_config[key]["devices_active"] = {}
                 for dev_key in interface_config[key]["devices"]:
                     if dev_key not in interface_config[key]["devices_active"]:
                         interface_config[key]["devices_active"][dev_key] = True

@@ -77,7 +77,7 @@ class RemoteAPI(RemoteDefaultClass):
             data["STATUS"]["scenes"] = self.data.scenes_status()
             data["STATUS"]["interfaces"] = self.apis.api_get_status()
             data["STATUS"]["system"] = {}  # to be filled in self._end()
-            data["STATUS"]["request_time"] = self.queue.average_exec
+            data["STATUS"]["request_time"] = self.queue_send.average_exec
             data["STATUS"]["config_errors"] = self.data.errors
             data["STATUS"]["system_health"] = {}
 

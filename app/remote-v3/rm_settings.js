@@ -775,8 +775,9 @@ function rmSettings (name) {	// IN PROGRESS
 
 	this.exec_time_list		    = function () {
 		var text = "<div id='setting_exec_time_list'>";
-		for (var key in dataAll["STATUS"]["request_time"]) {
-			text += key + ": " + (Math.round(dataAll["STATUS"]["request_time"][key]*1000)/1000) + "s<br/>";
+		for (var key in this.data["STATUS"]["request_time"]) {
+		    var print_key = "<font color='cyan'>" + key + "</font>";
+			text += print_key + ": " + (Math.round(dataAll["STATUS"]["request_time"][key]*1000)/1000) + "s<br/>";
 			}
 		text += "</div>";
 		return text;
