@@ -305,19 +305,16 @@ function rmSettings (name) {	// IN PROGRESS
         return;
         }
 
-
     this.module_interface_edit_list = function (interface, data) {
             var text = "";
             var devices_per_interface = data["CONFIG"]["devices_api"];
 
-            //for (var interface in devices_per_interface) {
             var details = "<div style='width:100%;height:9px;'></div>";
 
             for (var api_device in devices_per_interface[interface]) {
                 details += "<i>API Device: " + api_device + "</i>&nbsp;&nbsp;";
                 var connect  = data["STATUS"]["interfaces"]["connect"][interface + "_" + api_device];
 
-                //details += "<text id='api_status_short_"+interface+"_"+api_device+"'></text>";
                 details += "<ul>";
                 for (var i=0;i<devices_per_interface[interface][api_device].length;i++) {
                     var device          = devices_per_interface[interface][api_device][i];
@@ -344,8 +341,6 @@ function rmSettings (name) {	// IN PROGRESS
                 details += "</ul>";
                 }
             details += "<br/>";
-                //text += this.basic.container("details_"+interface,"Interface: "+interface+" </b><text id='api_status_"+interface+"'> &nbsp;...</text>",details,false);
-                //}
             return details;
             }
 
@@ -406,10 +401,8 @@ function rmSettings (name) {	// IN PROGRESS
             var setting   = "";
             setting += "<hr style='border:solid lightgray 1px;'/>";
 
-
             var container_title = "</b>Connected devices";
             var overview = this.list(key, data);
-            //var overview = rm3settings.module_interface_edit_list(key, data);
             setting += this.basic.container("details_"+key+"_overview", container_title, overview, false);
 
             for (var dev in interface["API-Devices"]) {
@@ -451,11 +444,9 @@ function rmSettings (name) {	// IN PROGRESS
                 temp    += this.tab.end();
 
                 var container_title = "</b>API-Device: "+dev+"&nbsp;&nbsp;<text id='api_status_icon_"+key+"_"+dev+"' style='font-size:16px;'></text>";
-                //container_title    += "<text id='api_status_short_"+key+"_"+dev+"'></text>";
 
                 setting += this.basic.container("details_"+key+"_"+dev, container_title, temp, false);
             }
-            //setting += this.tab.end();
             setting += "<br/>";
             setTextById(id, setting);
             }
