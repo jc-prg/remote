@@ -447,7 +447,8 @@ function rmSettings (name) {	// IN PROGRESS
                 var temp = this.tab.start();
                 temp    += this.tab.row("ID: ",    use_color(key+"_"+dev, "VALUE"));
                 if (interface["API-Devices"][dev]["PowerDevice"] && interface["API-Devices"][dev]["PowerDevice"] != "") {
-                    temp    += this.tab.row("Power: ", use_color(interface["API-Devices"][dev]["PowerDevice"], "VALUE"));
+                    temp    += this.tab.row("Power: ", use_color(interface["API-Devices"][dev]["PowerDevice"] +
+                                                       "<text id='power_status_"+key+"_"+dev+"'></text>", "VALUE"));
                     }
                 temp    += this.tab.row("Status:", "<text id='api_status_"+key+"_"+dev+"'></text>");
                 temp    += this.tab.row(information);

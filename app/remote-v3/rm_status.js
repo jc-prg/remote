@@ -351,11 +351,49 @@ function statusCheck_apiConnection(data) {
 	var error_no       = {};
 	var off_no         = {};
 
-    // update breakdown from API over API Device to Connected devices
-    for (var api in data["STATUS"]["interfaces"]["active"]) {
-        var text = rm3settings.module_interface_edit_list(api, data);
-        setTextById("details_"+api+"_overview_body", text);
-        }
+
+	for (var api in data["STATUS"]["connections"]) {
+
+        // update breakdown from API over API Device to Connected devices
+        if (document.getElementById("details_"+api+"_overview_body")) {
+            var text = rm3settings.module_interface_edit_list(api, data);
+            setTextById("details_"+api+"_overview_body", text);
+            }
+
+        // set toggle values for apis
+	    var slider = document.getElementById("toggle__" + api + "_input");
+	    if (slider) {
+            var status = data["STATUS"]["connections"][api]["active"];
+            if (status == true) {
+                slider.value = 1;
+                slider.className = "rm-slider device_on";
+                slider.disabled = false;
+                }
+            else if (status == false) {
+                slider.value = 0;
+                slider.className = "rm-slider device_off";
+                slider.disabled = false;
+                }
+            else {
+                slider.className = "rm-slider device_undef";
+                slider.disabled = true;
+                }
+            }
+
+	    for (var api_device in data["STATUS"]["connections"][api]["api_devices"]) {
+
+            // power status API-Device details in API settings - depending power device
+	        var key = api + "_" + api_device;
+	        var element = document.getElementById("power_status_"+key);
+	        if (element && data["STATUS"]["connections"][api]["api_devices"][api_device]["power"] != "") {
+                console.debug("Set power status: " + api + "_" + api_device + " - " + data["STATUS"]["connections"][api]["api_devices"][api_device]["power_device"]);
+                var status = data["STATUS"]["connections"][api]["api_devices"][api_device]["power"]
+	            setTextById("power_status_"+key, "&nbsp;(" + status + ")");
+	            }
+	        }
+	    }
+
+    // ******************************* !!! refactoring of following lines to be done
 
     // summarize connection status for API based on API Devices
 	for (var key in data["STATUS"]["interfaces"]["connect"]) {
@@ -381,17 +419,6 @@ function statusCheck_apiConnection(data) {
 			if (config_errors && config_errors[key2] && config_errors[key2] != {} && config_devices[key2]["api"] == key)	{ api_summary[api_dev[0]] = "ERROR"; }
 			}
 		}
-
-    /*
-	for (var key in api_summary) {
-	    if (document.getElementById("api_status_" + key)) {
-            if (api_summary[key] == "OK")         { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_connect + "'>" + api_summary[key] + "</font>"); }
-            else if (api_summary[key] == "ERROR") { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_error + "'>" + api_summary[key] + "</font>"); }
-            else if (api_summary[key] == "OFF")   { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_no_connect + "'>" + api_summary[key] + "</font>"); }
-            else                                  { setTextById("api_status_" + key, " &nbsp;...&nbsp; <font color='" + color_api_warning + "'>" + api_summary[key] + "</font>"); }
-            }
-		}
-    */
 
     // update API status in settings
 	for (var key in api_summary) {
@@ -449,41 +476,6 @@ function statusCheck_apiConnection(data) {
             }
 		}			
 
-    // set toggle values for interfaces
-	for (var key in data["STATUS"]["interfaces"]["active"]) {
-	    var slider = document.getElementById("toggle__" + key + "_input");
-	    if (slider) {
-            var status = data["STATUS"]["interfaces"]["active"][key];
-            if (status == true) {
-                slider.value = 1;
-                slider.className = "rm-slider device_on";
-                slider.disabled = false;
-                }
-            else if (status == false) {
-                slider.value = 0;
-                slider.className = "rm-slider device_off";
-                slider.disabled = false;
-                }
-            else {
-                slider.className = "rm-slider device_undef";
-                slider.disabled = true;
-                }
-            }
-
-        }
-
-	for (var key in data["STATUS"]["interfaces"]["active"]) {
-	    if (document.getElementById("interface_status_" + key)) {
-	        var message = "";
-	        var click_value = "";
-            var status = data["STATUS"]["interfaces"]["active"][key];
-            if (status == true)        { click_value = "False"; message = "<font color='" + color_api_connect + "'>ACTIVE</font>"; }
-            else if (status == false)  { click_value = "True";  message = "<font color='" + color_api_no_connect + "'>OFF</font>"; }
-            else                       { click_value = "False"; message = "<font color='" + color_api_error + "'>ERROR</font>"; }
-            message = "<u style='cursor:pointer;' onclick='apiInterfaceOnOff(\"" + key + "\", \""+click_value+"\");'>" + message + "</u>";
-            setTextById("interface_status_" + key, message);
-            }
-		}
 	}
 
 

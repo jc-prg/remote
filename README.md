@@ -86,9 +86,9 @@ src="./docs/remote_browser_edit_03.png" width="48%">
 * directly view and execute API commands for devices in edit mode
 * edit interface configuration via app
 * activate and deactivate interfaces
-* simplify server configuration (.env), code refactoring, improve logging
+* simplify server configuration (.env), code and REST api refactoring, improve logging
 
-**Note:** The data structure changed a bit. Recreate the _00_interface.json_ files by coping them from the 
+**Note:** The data structure changed: recreate the _00_interface.json_ files by coping them from the 
 folder [_sample/devices](data/_sample/devices) to the productive folders.
 
 ### App v2.8 / Server v2.1
@@ -186,7 +186,7 @@ In order to use jc://remote/ as it is, the following software must be installed:
     $ cd remote
     ```
 
-2. Change settings: [sample.env](./sample.env)
+2. Create configuration: [sample.env](./sample.env)
 
     ```bash
     $ cp sample.env .env
