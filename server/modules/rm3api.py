@@ -31,9 +31,98 @@ class RemoteAPI(RemoteDefaultClass):
         self.edit = edit
         self.errors = {}
 
+    def _api_CONFIG(self):
+        """
+        collect configuration information
+
+        Returns:
+            dict: information for "CONFIG" section
+        """
+        templates = self.data.templates_read()
+        apis = self.data.devices_read_api_structure()
+        macros = self.data.macros_read()
+
+        config = {
+            "apis": {
+                "list":                 list(apis.keys()),
+                "list_devices":         list(self.apis.available.keys()),
+                "structure":            apis
+                },
+            "devices":                  self.data.devices_read_config(),
+            "elements": {
+                "button_images":        self.config.read(rm3config.icons_dir + "/index"),
+                "button_colors":        self.config.read(rm3config.buttons + "button_colors"),
+                "scene_images":         self.config.read(rm3config.scene_img_dir + "/index")
+                },
+            "macros": {
+                "device-on":            macros["dev-on"],
+                "device-off":           macros["dev-off"],
+                "global":               macros["macro"]
+            },
+            "main-audio":               "NONE",
+            "methods":                  self.apis.methods,
+            "scenes":                   self.data.scenes_read(None, True),
+            "templates": {
+                "definition":           templates["templates"],
+                "list":                 templates["template_list"]
+                }
+            }
+        for device in config["devices"]:
+            if ("main-audio" in config["devices"][device]["settings"] and
+                    config["devices"][device]["settings"]["main-audio"] == "yes"):
+                config["main-audio"] = device
+                break
+        return config.copy()
+
+    def _api_DATA(self):
+        """
+        return initial "DATA" section
+
+        Returns:
+            dict: information for "DATA" section
+        """
+        data = self.data.complete_read()
+        return data
+
+    def _api_STATUS(self):
+        """
+        collect status information for system, interfaces and devices
+
+        Returns:
+            dict: information for "STATUS" section
+        """
+        status = {
+            "config_errors":    self.data.errors,
+            "connections":      self.data.api_devices_connections(),
+            "devices":          self.data.devices_status(),
+            "scenes":           self.data.scenes_status(),
+            "interfaces":       self.apis.api_get_status(),
+            "request_time":     self.queue_send.average_exec,
+            "system": {
+                "message":                  rm3config.server_status,
+                "server_start":             rm3config.start_time,
+                "server_start_duration":    rm3config.start_duration,
+                "server_running":           time.time() - rm3config.start_time
+                },
+            "system_health": {}  # to be filled in self._end()
+            }
+
+        for key in rm3config.server_health:
+            if rm3config.server_health[key] == "stopped" or rm3config.server_health[key] == "registered":
+                status["system_health"][key] = rm3config.server_health[key]
+            else:
+                status["system_health"][key] = round(time.time() - rm3config.server_health[key], 2)
+
+        return status
+
     def _start(self, setting=None):
         """
         create data structure for API response and read relevant data from config files
+
+        Args:
+            setting (list): values can be "status-only", "request-only" or empty
+        Returns:
+            dict: CONFIG and STATUS element for API response
         """
         # set time for last action -> re-read API information only if clients connected
         if setting is None:
@@ -42,50 +131,20 @@ class RemoteAPI(RemoteDefaultClass):
         self.config.cache_last_action = time.time()
         data = self.config.api_init.copy()
 
-        if "status-only" not in setting and "request-only" not in setting:
-            data["DATA"] = self.data.complete_read()
-
-            data["CONFIG"] = {}
-            data["CONFIG"]["button_images"] = self.config.read(rm3config.icons_dir + "/index")
-            data["CONFIG"]["button_colors"] = self.config.read(rm3config.buttons + "button_colors")
-            data["CONFIG"]["scene_images"] = self.config.read(rm3config.scene_img_dir + "/index")
-            data["CONFIG"]["devices"] = self.data.devices_read_config()
-            data["CONFIG"]["devices_api"] = self.data.devices_read_interfaces()
-            data["CONFIG"]["interfaces"] = self.apis.available
-            data["CONFIG"]["methods"] = self.apis.methods
-
-            for device in data["DATA"]["devices"]:
-                data["CONFIG"]["main-audio"] = "NONE"
-                if "main-audio" in data["DATA"]["devices"][device]["settings"] and \
-                        data["DATA"]["devices"][device]["settings"]["main-audio"] == "yes":
-                    data["CONFIG"]["main-audio"] = device
-                    break
-        else:
-            if "DATA" in data:
-                del data["DATA"]
-
-        if "request-only" in setting:
-            self.logging.info("----------- !!! " + str(data))
-
-        data["REQUEST"] = {}
-        data["REQUEST"]["start-time"] = time.time()
-        data["REQUEST"]["Button"] = self.queue.last_button
-
-        data["STATUS"] = {}
         if "request-only" not in setting:
-            data["STATUS"]["devices"] = self.data.devices_status()
-            data["STATUS"]["scenes"] = self.data.scenes_status()
-            data["STATUS"]["interfaces"] = self.apis.api_get_status()
-            data["STATUS"]["system"] = {}  # to be filled in self._end()
-            data["STATUS"]["request_time"] = self.queue_send.average_exec
-            data["STATUS"]["config_errors"] = self.data.errors
-            data["STATUS"]["system_health"] = {}
+            data["STATUS"] = self._api_STATUS()
 
-            for key in rm3config.server_health:
-                if rm3config.server_health[key] == "stopped" or rm3config.server_health[key] == "registered":
-                    data["STATUS"]["system_health"][key] = rm3config.server_health[key]
-                else:
-                    data["STATUS"]["system_health"][key] = round(time.time() - rm3config.server_health[key], 2)
+        if "status-only" not in setting and "request-only" not in setting:
+            data["DATA"] = {}  # self._api_DATA()
+            data["CONFIG"] = self._api_CONFIG()
+
+        if "status-only" in setting or "request-only" in setting:
+            del data["DATA"]
+
+        data["REQUEST"] = {
+            "start-time":   time.time(),
+            "Button":       self.queue.last_button
+            }
 
         return data.copy()
 
@@ -97,20 +156,9 @@ class RemoteAPI(RemoteDefaultClass):
             setting = []
 
         data["REQUEST"]["load-time"] = (time.time() - data["REQUEST"]["start-time"])
-        data["STATUS"]["system"] = {
-            "message": rm3config.server_status,
-            "server_start": rm3config.start_time,
-            "server_start_duration": rm3config.start_duration,
-            "server_running": time.time() - rm3config.start_time
-        }
-
-        # --------------------------------
 
         if "CONFIG" in data:
             data["CONFIG"]["reload_status"] = self.queue.reload
-            data["CONFIG"]["reload_config"] = self.config.cache_update
-
-        # --------------------------------
 
         if "no-data" in setting and "DATA" in data:
             del data["DATA"]
@@ -654,7 +702,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Command"] = "Reload"
 
         self.apis.api_reconnect()
-        self.data.get_device_status(data, read_api=True)
+        self.data.devices_get_status(data, read_api=True)
 
         data = self._end(data, ["no-data"])
         return data
@@ -711,11 +759,11 @@ class RemoteAPI(RemoteDefaultClass):
         if method == "query":
             # data["REQUEST"]["Return"] = self.apis.send(interface,device,command,value)
             data["REQUEST"]["Return"] = self.queue_send.add2queue([[interface, device, command, value]])
-            self.data.get_device_status(data, read_api=True)
+            self.data.devices_get_status(data, read_api=True)
 
         elif method == "record":
             data["REQUEST"]["Return"] = self.edit.device_status_set(device, command, value)
-            self.data.get_device_status(data, read_api=True)
+            self.data.devices_get_status(data, read_api=True)
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config", "no-status"])

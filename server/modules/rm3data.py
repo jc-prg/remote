@@ -67,15 +67,72 @@ class RemotesData(RemoteDefaultClass):
         # Update API data based on cache value
         if self.interfaces.cache_update_api:
             self.logging.info("Update config data from api.")
-            data["devices"] = self.get_device_status(data["devices"], read_api=True)
+            data["devices"] = self.devices_get_status(data["devices"], read_api=True)
 
         else:
-            data["devices"] = self.get_device_status(data["devices"], read_api=False)
+            data["devices"] = self.devices_get_status(data["devices"], read_api=False)
 
         # Update status data
         self.config.cache["_api"] = data
 
         return data.copy()
+
+    def api_devices_connections(self):
+        """
+        read all status information
+
+        Returns:
+            dict: collection of all status information
+        """
+        status_devices = self.config.read(rm3config.active_devices)
+        status_apis = self.config.read(rm3config.active_apis)
+        status_apis_connect = {}
+        status_devices_power = {}
+        for key in self.apis.api:
+            status_apis_connect[key] = self.apis.api[key].status
+
+        connection = {}
+        for api in status_apis:
+            connection[api] = {"active": status_apis[api]["active"], "api_devices": {}}
+            for api_device in status_apis[api]["devices"]:
+                api_device_infos = {"devices": {}, "power": "", "connect": ""}
+                if api+"_"+api_device in status_apis_connect:
+                    api_device_infos["connect"] = status_apis_connect[api+"_"+api_device]
+                if api_device in status_apis[api]["devices_active"]:
+                    api_device_infos["active"] = status_apis[api]["devices_active"][api_device]
+                else:
+                    api_device_infos["active"] = True
+                if "PowerDevice" in status_apis[api]["devices"][api_device]:
+                    api_device_infos["power_device"] = status_apis[api]["devices"][api_device]["PowerDevice"]
+                else:
+                    api_device_infos["power_device"] = ""
+                if "MultiDevice" in status_apis[api]["devices"][api_device]:
+                    api_device_infos["multi_device"] = status_apis[api]["devices"][api_device]["MultiDevice"]
+                else:
+                    api_device_infos["multi_device"] = ""
+                connection[api]["api_devices"][api_device] = api_device_infos
+
+        for device in status_devices:
+            dev_api = status_devices[device]["config"]["interface_api"]
+            dev_api_device = status_devices[device]["config"]["interface_dev"]
+            if dev_api in connection and dev_api_device in connection[dev_api]["api_devices"]:
+                connection[dev_api]["api_devices"][dev_api_device]["devices"][device] = status_devices[device]["status"]
+                key_device = dev_api + "_" + dev_api_device + "_" + device
+                key_api_device = dev_api + "_" + dev_api_device
+                if "power" in status_devices[device]["status"]:
+                    status_devices_power[key_device] = status_devices[device]["status"]["power"]
+                    if "multi_device" in connection[dev_api]["api_devices"][dev_api_device] \
+                            and connection[dev_api]["api_devices"][dev_api_device]["multi_device"] is False:
+                        status_devices_power[key_api_device] = status_devices[device]["status"]["power"]
+
+        for api in connection:
+            for api_device in connection[api]["api_devices"]:
+                power_device = connection[api]["api_devices"][api_device]["power_device"]
+                if power_device != "" and power_device in status_devices_power:
+                    connection[api]["api_devices"][api_device]["power"] = status_devices_power[power_device]
+
+        connection["_all"] = status_devices_power
+        return connection.copy()
 
     def devices_read_config(self, more_details=False):
         """
@@ -88,6 +145,7 @@ class RemotesData(RemoteDefaultClass):
         """
         config_keys = ["buttons", "commands", "url", "method"]
         data = self.config.read_status()
+        devices = self.devices_read()
         data_config = {}
 
         # read data for active devices
@@ -142,6 +200,9 @@ class RemotesData(RemoteDefaultClass):
                         data_config[device]["api_commands"] = {}
                         for key in interface_def_combined["buttons"]:
                             data_config[device]["api_commands"]["btn: " + key] = interface_def_combined["buttons"][key]
+
+                data_config[device]["settings"] = devices[device]["settings"]
+                data_config[device]["remote"] = devices[device]["remote"]
 
                 data_config[device]["interface"] = {}
                 data_config[device]["interface"]["method"] = interface_def_combined["method"]
@@ -201,7 +262,7 @@ class RemotesData(RemoteDefaultClass):
 
         return data_config.copy()
 
-    def devices_read_interfaces(self):
+    def devices_read_api_structure(self):
         """
         create a list with interfaces and connected devices
 
@@ -221,7 +282,7 @@ class RemotesData(RemoteDefaultClass):
                         devices_per_interface[api][dev] = []
                     devices_per_interface[api][dev].append(key)
 
-        return devices_per_interface
+        return devices_per_interface.copy()
 
     def devices_read(self, selected=None, remotes=True):
         """
@@ -365,6 +426,70 @@ class RemotesData(RemoteDefaultClass):
         else:
             self.config.write_status(data, "remoteData.devices_write()")
 
+    def devices_get_status(self, data, read_api):
+        """
+        read status data from config file (method=record) and/or device APIs (method=query)
+        data -> data["DATA"]["devices"]
+
+        Args:
+            data (dict): config data
+            read_api (bool): read from api (or get from config data)
+        Return:
+            dict: device status data
+        """
+        devices = self.devices_read(None, True)
+        config = self.devices_read_config()
+
+        # set reload status
+        if read_api:
+            self.queue.add2queue(["START_OF_RELOAD"])
+            self.queue.add2queue([0.5])
+            self.logging.info("RELOAD data from devices")
+
+        # read status of all devices
+        for device in devices:
+
+            if device == "default":
+                continue
+
+            if "status" not in devices[device]:
+                devices[device]["status"] = {}
+
+            if (device in data and device in config and "interface" in config[device]
+                    and "method" in config[device]["interface"]):
+
+                interface = config[device]["interface"]["interface_api"]
+                api_dev = (config[device]["interface"]["interface_api"] + "_" +
+                           config[device]["interface"]["interface_dev"])
+                method = config[device]["interface"]["method"]
+
+                # get status values from config files, if connected
+                if api_dev in self.apis.api and self.apis.api[api_dev].status == "Connected":
+
+                    # preset values
+                    if method != "query":
+                        for value in config[device]["commands"]["definition"]:
+                            if value not in devices[device]["status"]:
+                                devices[device]["status"][value] = ""
+
+                    # get values from config file
+                    for value in devices[device]["status"]:
+                        data[device]["status"][value] = devices[device]["status"][value]
+
+                    # request update for devices with API query
+                    if method == "query" and read_api:
+                        self.queue.add2queue([0.1])
+                        self.queue.add2queue([[interface, device, config[device]["commands"]["get"], ""]])
+
+        # set reload status
+        if read_api:
+            self.queue.add2queue(["END_OF_RELOAD"])
+
+        # mark API update as done
+        self.interfaces.cache_update_api = False
+
+        return data
+
     def scenes_read(self, selected=None, remotes=True):
         """
         read config data for scenes and combine with remote definition
@@ -502,70 +627,6 @@ class RemotesData(RemoteDefaultClass):
                             data["template_list"][template] = data["templates"][template]["description"]
                         else:
                             data["template_list"][template] = template_key
-
-        return data
-
-    def get_device_status(self, data, read_api):
-        """
-        read status data from config file (method=record) and/or device APIs (method=query)
-        data -> data["DATA"]["devices"]
-
-        Args:
-            data (dict): config data
-            read_api (bool): read from api (or get from config data)
-        Return:
-            dict: device status data
-        """
-        devices = self.devices_read(None, True)
-        config = self.devices_read_config()
-
-        # set reload status
-        if read_api:
-            self.queue.add2queue(["START_OF_RELOAD"])
-            self.queue.add2queue([0.5])
-            self.logging.info("RELOAD data from devices")
-
-        # read status of all devices
-        for device in devices:
-
-            if device == "default":
-                continue
-
-            if "status" not in devices[device]:
-                devices[device]["status"] = {}
-
-            if (device in data and device in config and "interface" in config[device]
-                    and "method" in config[device]["interface"]):
-
-                interface = config[device]["interface"]["interface_api"]
-                api_dev = (config[device]["interface"]["interface_api"] + "_" +
-                           config[device]["interface"]["interface_dev"])
-                method = config[device]["interface"]["method"]
-
-                # get status values from config files, if connected
-                if api_dev in self.apis.api and self.apis.api[api_dev].status == "Connected":
-
-                    # preset values
-                    if method != "query":
-                        for value in config[device]["commands"]["definition"]:
-                            if value not in devices[device]["status"]:
-                                devices[device]["status"][value] = ""
-
-                    # get values from config file
-                    for value in devices[device]["status"]:
-                        data[device]["status"][value] = devices[device]["status"][value]
-
-                    # request update for devices with API query
-                    if method == "query" and read_api:
-                        self.queue.add2queue([0.1])
-                        self.queue.add2queue([[interface, device, config[device]["commands"]["get"], ""]])
-
-        # set reload status
-        if read_api:
-            self.queue.add2queue(["END_OF_RELOAD"])
-
-        # mark API update as done
-        self.interfaces.cache_update_api = False
 
         return data
 

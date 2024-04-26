@@ -290,8 +290,8 @@ function rmRemoteButtons(name) {
 	this.image           = function (label,style) {
 
 		// set vars
-        	var button_color = this.data["CONFIG"]["button_colors"];  // definition of button color
-		var button_img2  = this.data["CONFIG"]["button_images"];  // definition of images for buttons (without path and ".png")
+        var button_color = this.data["CONFIG"]["elements"]["button_colors"];  // definition of button color
+		var button_img2  = this.data["CONFIG"]["elements"]["button_images"];  // definition of images for buttons (without path and ".png")
 
 		// if image available set image
 		var button_img   = [];
@@ -426,8 +426,9 @@ function rmRemoteDisplays(name) {
 	//--------------------------------
 	// show display with information
 	this.default		= function (id, device, type="devices", style="", display_data={}) {
-		var remote_data	= this.data["DATA"][type][device]["remote"];
-		var status_data	= this.data["DATA"][type][device]["status"];
+		var remote_data	= this.data["CONFIG"][type][device]["remote"];
+		var status_data	= this.data["STATUS"][type][device];
+		if (type != "devices") { status_data = {}; }
 		
 		if (type == "devices") {
 			var status_data_new	= this.data["STATUS"]["devices"][device];
@@ -439,7 +440,7 @@ function rmRemoteDisplays(name) {
 			var connected = "unknown";
 			}
 		
-		if (!this.data["DATA"][type]) {
+		if (!this.data["CONFIG"][type]) {
 			this.logging.error(this.app_name+".display() - type not supported ("+type+")");
 			return;
 			}
@@ -552,20 +553,21 @@ function rmRemoteDisplays(name) {
 		
 		if (type != "devices") { 
 
-			if (!this.data["DATA"][type][device]["remote"]["display-detail"]) {
+			if (!this.data["CONFIG"][type][device]["remote"]["display-detail"]) {
 			
 				this.logging.warn(this.app_name+".display_alert() not implemented for this type and device ("+type+"/"+device+")");
-				this.logging.warn(this.data["DATA"][type][device]);
+				this.logging.warn(this.data["CONFIG"][type][device]);
 				return;
 				}
 			else {
-				display_data = Object.keys(this.data["DATA"][type][device]["remote"]["display-detail"]);
+				display_data = Object.keys(this.data["CONFIG"][type][device]["remote"]["display-detail"]);
 				this.logging.warn(display_data);
 				}
 			}
 			
 		else {
-			var power = this.data["DATA"][type][device]["status"];
+			var power = this.data["STATUS"][type][device];
+			if (type != "devices") { power = {}; }
 			var queries = this.data["CONFIG"]["devices"][device]["commands"]["definition"];
 			if (this.data["CONFIG"]["devices"][device] && queries)	{ display_data = Object.keys(queries); }
 			else								{ display_data = ["ERROR","No display defined"]; } 
@@ -608,7 +610,7 @@ function rmRemoteDisplays(name) {
 	this.mediainfo		= function (id, device, style="") {
                 	
         var display      = "";
-		var status_data  = this.data["DATA"]["devices"][device]["status"];
+		var status_data  = this.data["STATUS"]["devices"][device];
         	
         return display;
         }

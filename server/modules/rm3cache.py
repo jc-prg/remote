@@ -67,12 +67,18 @@ class ConfigCache(RemoteThreadingClass):
         self.cache_update_cmd = False
         self.cache_update_api = None
         self.configMethods = {}
-        self.api_init = {"API": {
-            "name": rm3config.API_name,
-            "version": rm3config.API_version,
-            "stage": rm3config.initial_stage,
-            "rollout": rm3config.rollout
-        }}
+        self.api_init = {
+            "API": {
+                "name": rm3config.API_name,
+                "version": rm3config.API_version,
+                "stage": rm3config.initial_stage,
+                "rollout": rm3config.rollout
+                },
+            "CONFIG": {},
+            "DATA": {},
+            "REQUEST": {},
+            "STATUS": {}
+            }
         self.interface_configuration = {}
         self.thread_priority(1)
 

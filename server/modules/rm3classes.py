@@ -60,9 +60,12 @@ class RemoteApiClass(RemoteDefaultClass):
         self.api_config_default = {
             "Description": "",
             "IPAddress": "",
-            "Methods": ["send", "query"],
+            "Methods": ["send", "query", "record"],
+            "MultiDevice": False,
             "Port": "",
-            "Timeout": 0
+            "PowerDevice": "",
+            "Timeout": 5,
+            "USBConnect": ""
         }
 
         self.method = method

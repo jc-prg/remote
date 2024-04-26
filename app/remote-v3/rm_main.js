@@ -81,7 +81,7 @@ function remoteFirstLoad(data) {
 function remoteInitData_load() { appFW.requestAPI("GET",["list"],"",remoteInitData); }
 function remoteInitData(data) {
 
-	if (data["DATA"]) {
+	if (data["CONFIG"]) {
 	    dataAll = data;
 
 		// init and reload data 
@@ -106,7 +106,7 @@ function remoteInitData(data) {
 function remoteReload_load() { appFW.requestAPI("GET",["list"],"",remoteReload); }
 function remoteReload(data) {
 
-	if (!data["DATA"]) {
+	if (!data["CONFIG"]) {
 		console.error("remoteReload: data not loaded.");
 		return;
 		}
@@ -143,7 +143,7 @@ function remoteSetSliderDevice(data) {
 		max    = 100;
 		console.error("Min and max values not defined, set to 0..100!");
 		}
-	label      	= data["DATA"]["devices"][main_audio]["settings"]["label"];
+	label      	= data["CONFIG"]["devices"][main_audio]["settings"]["label"];
 	
 	rm3slider.init(min,max,label+" ("+main_audio+")");
 	rm3slider.device = main_audio;
@@ -154,15 +154,15 @@ function remoteSetSliderDevice(data) {
 function remoteDropDown_load() { appFW.requestAPI( "GET", ["list"], "", remoteDropDown ); }
 function remoteDropDown(data) {
 
-	if (!data["DATA"]) {
+	if (!data["CONFIG"]) {
 		console.error("remoteDropDown: data not loaded.");
 		return;
 		}
 
 	// load drop down menu
 	rm3menu.init(        data );	// load data to class
-	rm3menu.add_scenes(  data["DATA"]["scenes"] );
-	rm3menu.add_devices( data["DATA"]["devices"] );	
+	rm3menu.add_scenes(  data["CONFIG"]["scenes"] );
+	rm3menu.add_devices( data["CONFIG"]["devices"] );
 	rm3menu.add_script( "rm3settings.create('info');",              lang("INFORMATION"));
 	rm3menu.add_script( "rm3settings.create('edit');",              lang("SETTINGS_REMOTE"));
 	rm3menu.add_script( "rm3settings.create('edit_interfaces');",   lang("SETTINGS_API"));
@@ -195,7 +195,7 @@ function remoteToggleEditMode(settings=false) {
 function remoteStartMenu_load() { appFW.requestAPI( "GET", ["list"], "", remoteStartMenu ); }
 function remoteStartMenu(data) {
 
-	if (!data["DATA"]) {
+	if (!data["CONFIG"]) {
 		console.error("remoteStartMenu: data not loaded.");
 		return;
 		}
@@ -208,8 +208,8 @@ function remoteStartMenu(data) {
 
 	// load buttons on start page
 	rm3start.init(        data);	// load data to class
-	rm3start.add_scenes(  data["DATA"]["scenes"],  "frame3" );
-	rm3start.add_devices( data["DATA"]["devices"], "frame4" );
+	rm3start.add_scenes(  data["CONFIG"]["scenes"],  "frame3" );
+	rm3start.add_devices( data["CONFIG"]["devices"], "frame4" );
 	
 	// check status and change button color
 	statusCheck(data);

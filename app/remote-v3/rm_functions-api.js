@@ -66,9 +66,9 @@ function apiTemplateAdd(device_id, template_id) {
         device   = check_if_element_or_value(device_id,false);
         template = check_if_element_or_value(template_id,false);
         
-	if (!dataAll["DATA"]["devices"][device]) 	{ appMsg.alert(lang("DEVICE_DONT_EXISTS")); return; }
-	else if (device == "")	 			{ appMsg.alert(lang("DEVICE_INSERT_NAME")); return; }
-	else if (template == "") 			{ appMsg.alert(lang("DEVICE_SELECT_TEMPLATE")); 	return;	}
+	if (!dataAll["CONFIG"]["devices"][device])  { appMsg.alert(lang("DEVICE_DONT_EXISTS"));     return; }
+	else if (device == "")                      { appMsg.alert(lang("DEVICE_INSERT_NAME"));     return; }
+	else if (template == "")                    { appMsg.alert(lang("DEVICE_SELECT_TEMPLATE")); return;	}
 
 	//appFW.requestAPI("PUT",["template",device,template], "", apiAlertReturn);
 	question = "Do you really want overwrite buttons of '" + device + "' with template '" + template + "'?";
@@ -98,7 +98,7 @@ function apiSceneAdd(data) {
 	
 	console.debug("apiSceneAdd: " + JSON.stringify(send_data));
 
-    if (dataAll["DATA"]["scenes"][send_data["id"]])     { appMsg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
+    if (dataAll["CONFIG"]["scenes"][send_data["id"]])     { appMsg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
     else if (send_data["id"] == "")                     { appMsg.alert(lang("SCENE_INSERT_ID")); return; }
     else if (send_data["label"] == "")                  { appMsg.alert(lang("SCENE_INSERT_LABEL")); return; }
 
@@ -183,7 +183,7 @@ function apiSceneDelete(scene_id) {
 	var scene = check_if_element_or_value(scene_id,true);
 	if (scene == "") { appMsg.alert(lang("SCENE_SELECT")); return; }
 
-	if (!dataAll["DATA"]["scenes"][scene_id]) {
+	if (!dataAll["CONFIG"]["scenes"][scene_id]) {
 	    appMsg.alert("Scene '"+scene_id+"' doesn't exist.");
 	    }
 	else {
@@ -275,12 +275,11 @@ function apiDeviceAdd(data,onchange) {
 	
 	console.error(send_data);
         
-//	if (dataAll["DATA"]["devices"][send_data["id"]]){ appMsg.alert("Device '" + device + "' already exists!"); return; }
-	if (dataAll["DATA"]["devices"][send_data["id"]]){ appMsg.alert(lang("DEVICE_EXISTS",[send_data["id"]])); return; }
-	else if (send_data["id"] == "")		{ appMsg.alert(lang("DEVICE_INSERT_ID")); return; }
-	else if (send_data["label"] == "")		{ appMsg.alert(lang("DEVICE_INSERT_LABEL")); return; }
-	else if (send_data["api"] == "") 		{ appMsg.alert(lang("DEVICE_SELECT_API")); return; }
-	else if (send_data["device"] == "") 		{ appMsg.alert(lang("DEVICE_INSERT_NAME")); return;	}
+	if (dataAll["CONFIG"]["devices"][send_data["id"]])  { appMsg.alert(lang("DEVICE_EXISTS",[send_data["id"]])); return; }
+	else if (send_data["id"] == "")                     { appMsg.alert(lang("DEVICE_INSERT_ID")); return; }
+	else if (send_data["label"] == "")                  { appMsg.alert(lang("DEVICE_INSERT_LABEL")); return; }
+	else if (send_data["api"] == "")                    { appMsg.alert(lang("DEVICE_SELECT_API")); return; }
+	else if (send_data["device"] == "")                 { appMsg.alert(lang("DEVICE_INSERT_NAME")); return;	}
 
 	appFW.requestAPI("PUT",["device",send_data["id"]], send_data, apiAlertReturn);
 	}
@@ -446,13 +445,13 @@ function apiButtonDelete(device_id, button_id) {
 
 // decompose macro data
 function apiMacroDecompose(macro) {
-    var types = ["macro", "scene-on", "scene-off", "scene-off", "dev-on", "dev-off"];
+    var types = ["macro", "dev-on", "dev-off"];
     for (var a=0;a<types.length;a++) {
         if (macro.startsWith(types[a]+"_")) {
             var macro_cmd = macro.split("_");
             var macro_string = "";
             var macro_wait = "";
-            var macro_data = rm3remotes.data["DATA"]["macros"][types[a]];
+            var macro_data = rm3remotes.data["CONFIG"]["macros"][types[a]];
 
             if (macro_data[macro_cmd[1]]) {
                 for (var i=0; i<macro_data[macro_cmd[1]].length; i++) {

@@ -15,7 +15,7 @@ function rmStart(name) {
         // load data with devices (deviceConfig["devices"])
 	this.init                 = function(data) {
         
-        if (data["DATA"])   { this.data = data; }
+        if (data["CONFIG"]) { this.data = data; }
         else                { return; }
 
         if (this.initial_load) {
@@ -122,7 +122,7 @@ function rmStart(name) {
 		bgimage = "";
 		if (image != "") { 
 		
-			var scene_images  = this.data["CONFIG"]["scene_images"];
+			var scene_images  = this.data["CONFIG"]["elements"]["scene_images"];
 			if (scene_images[image]) {
 				image = scene_images[image][0];
 				}
@@ -139,8 +139,8 @@ function rmStart(name) {
 	this.button_image         = function(label,style) {
 
                 // set vars
-                var button_color = this.data["CONFIG"]["button_colors"];  // definition of button color
-                var button_img2  = this.data["CONFIG"]["button_images"];  // definition of images for buttons (without path and ".png")
+                var button_color = this.data["CONFIG"]["elements"]["button_colors"];  // definition of button color
+                var button_img2  = this.data["CONFIG"]["elements"]["button_images"];  // definition of images for buttons (without path and ".png")
                 var button_img   = [];
                 for (var key in button_img2) { button_img[key] = this.image(button_img2[key]); }
 

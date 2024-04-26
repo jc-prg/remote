@@ -155,27 +155,30 @@ function rmSettings (name) {	// IN PROGRESS
 	this.module_system_info     = function () {
 
 		var setting            = "";
+		var cookie             = appCookie.get("remote");
         var main_audio         = this.data["CONFIG"]["main-audio"];  // get main audio device from file
 		var main_device_config = this.data["CONFIG"]["devices"][main_audio];
-		var main_device        = this.data["DATA"]["devices"][main_audio];
+		var main_device        = this.data["CONFIG"]["devices"][main_audio];
 		var system_health      = this.data["STATUS"]["system_health"];
 		var audio_max		   = 100;
 
-		if (main_device_config["commands"]["definition"]
-		    && main_device_config["commands"]["definition"]["vol"]
-		    && main_device_config["commands"]["definition"]["vol"]["values"]
-		    && main_device_config["commands"]["definition"]["vol"]["values"]["max"]
-		    ) {
-			audio_max  = main_device_config["commands"]["definition"]["vol"]["values"]["max"];
-			}
-		else {
-			audio_max  = 100;
-			this.logging.error("Max values not defined, set 100!");
-			}
-		var audio1     = "Power: "  + main_device["status"]["power"] + " / "
-		               + "Volume: " + main_device["status"]["vol"] + " (" + audio_max + ")";
-		var audio2     = main_device["settings"]["label"];
-		var cookie     = appCookie.get("remote");
+        if (main_device && main_device_config) {
+            if (main_device_config["commands"]["definition"]
+                && main_device_config["commands"]["definition"]["vol"]
+                && main_device_config["commands"]["definition"]["vol"]["values"]
+                && main_device_config["commands"]["definition"]["vol"]["values"]["max"]
+                ) {
+                audio_max  = main_device_config["commands"]["definition"]["vol"]["values"]["max"];
+                }
+            else {
+                audio_max  = 100;
+                this.logging.error("Max values not defined, set 100!");
+                }
+            var audio1     = "Power: "  + main_device["status"]["power"] + " / "
+                           + "Volume: " + main_device["status"]["vol"] + " (" + audio_max + ")";
+            var audio2     = main_device["settings"]["label"];
+            }
+
 
 		// version information
 		set_temp  = this.tab.start();
@@ -244,7 +247,12 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.row( 	"Server:", 	this.app_stat );
 		set_temp += this.tab.row( 	"Cookie:",	cookie );
 		set_temp += this.tab.row( 	"Button:",	this.app_last );
-		set_temp += this.tab.row( 	"Audio:",	audio2 + "<br/>" + audio1 );
+        if (main_device && main_device_config) {
+    		set_temp += this.tab.row( 	"Audio:",	audio2 + "<br/>" + audio1 );
+    		}
+    	else {
+    		set_temp += this.tab.row( 	"Audio:",	"<i>No main audio device defined yet.</i>" );
+    	    }
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_other","Other",set_temp,false);
 
@@ -255,7 +263,6 @@ function rmSettings (name) {	// IN PROGRESS
 		var setting = "<b>&nbsp;API details for devices</b><text style='font-size:25px;'>&nbsp;</text>";
 		setting    += "<hr style='border:1px lightgray solid;' />";
 		setting    += "<div style='padding:5px;padding-bottom:6px;'>";
-		//setting  += this.device_list_container("status");
 
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row("Speed:&nbsp;&nbsp;", this.exec_time_list() );
@@ -263,13 +270,11 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += "</div><div style='padding:5px;'>";
 		set_temp += this.tab.start();
 		set_temp += this.tab.row("Details:&nbsp;&nbsp;",
-                    this.device_list("select_dev_status", this.app_name+".device_list_status('select_dev_status','dev_status');") +
-                    "<br/><span id='dev_status'>&nbsp;</span>"
-                    );
+                    this.device_list("select_dev_status", this.app_name+".device_list_status('select_dev_status','dev_status');"));
+        set_temp += this.tab.row("<span id='dev_status'>&nbsp;</span>");
 		set_temp += this.tab.end();
 		setting  += set_temp;
 		setting  += "</div>";
-		//setting  += this.basic.container("setting_api03","Server- &amp; API-Status",set_temp,false);
 
 		return setting;
     	}
@@ -277,7 +282,7 @@ function rmSettings (name) {	// IN PROGRESS
     this.module_interface_edit  = function () {
 
 		var count = 1;
-        var devices_per_interface = this.data["CONFIG"]["devices_api"];
+        var devices_per_interface = this.data["CONFIG"]["apis"]["structure"];
 
         for (var key in devices_per_interface) {
             if (key != "") {
@@ -306,7 +311,7 @@ function rmSettings (name) {	// IN PROGRESS
 
     this.module_interface_edit_list = function (interface, data) {
             var text = "";
-            var devices_per_interface = data["CONFIG"]["devices_api"];
+            var devices_per_interface = data["CONFIG"]["apis"]["structure"];
 
             var details = "<div style='width:100%;height:9px;'></div>";
 
@@ -317,9 +322,9 @@ function rmSettings (name) {	// IN PROGRESS
                 details += "<ul>";
                 for (var i=0;i<devices_per_interface[interface][api_device].length;i++) {
                     var device          = devices_per_interface[interface][api_device][i];
-                    var device_settings = data["DATA"]["devices"][device];
-                    var method          = data["CONFIG"]["devices"][device]["interface"]["method"];
+                    var device_settings = data["CONFIG"]["devices"][device];
                     var power_status    = data["STATUS"]["devices"][device]["power"];
+                    var method          = device_settings["interface"]["method"];
                     var label           = device_settings["settings"]["label"];
                     var visibility      = device_settings["settings"]["visible"];
                     var hidden          = "";
@@ -351,7 +356,7 @@ function rmSettings (name) {	// IN PROGRESS
         this.basic     = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
     	this.list      = function (interface, data) {
             var text = "";
-            var devices_per_interface = dataAll["CONFIG"]["devices_api"];
+            var devices_per_interface = dataAll["CONFIG"]["apis"]["structure"];
 
             //for (var interface in devices_per_interface) {
             var details = "<div style='width:100%;height:9px;'></div>";
@@ -364,7 +369,7 @@ function rmSettings (name) {	// IN PROGRESS
                 details += "<ul>";
                 for (var i=0;i<devices_per_interface[interface][api_device].length;i++) {
                     var device          = devices_per_interface[interface][api_device][i];
-                    var device_settings = dataAll["DATA"]["devices"][device];
+                    var device_settings = dataAll["CONFIG"]["devices"][device];
                     var method          = dataAll["CONFIG"]["devices"][device]["interface"]["method"];
                     var power_status    = dataAll["STATUS"]["devices"][device]["power"];
                     var label           = device_settings["settings"]["label"];
@@ -420,7 +425,7 @@ function rmSettings (name) {	// IN PROGRESS
                 var api_link  = "window.open(\""+interface["API-Info"]+"\")";
                 var buttons   = "";
 
-                console.error(key + "_" + dev)
+                console.log("module_interface_edit_list: " + key + "_" + dev)
                 var connect_status_api = dataAll["STATUS"]["interfaces"]["active"][key];
                 var connect_status = dataAll["STATUS"]["interfaces"]["connect"][key+"_"+dev];
 
@@ -440,7 +445,11 @@ function rmSettings (name) {	// IN PROGRESS
                 buttons      += this.btn.sized("info_"+key+"_"+dev,  "API-Info", "", api_link);
 
                 var temp = this.tab.start();
-                temp    += this.tab.row("Status: <text id='api_status_"+key+"_"+dev+"'></text>");
+                temp    += this.tab.row("ID: ",    use_color(key+"_"+dev, "VALUE"));
+                if (interface["API-Devices"][dev]["PowerDevice"] && interface["API-Devices"][dev]["PowerDevice"] != "") {
+                    temp    += this.tab.row("Power: ", use_color(interface["API-Devices"][dev]["PowerDevice"], "VALUE"));
+                    }
+                temp    += this.tab.row("Status:", "<text id='api_status_"+key+"_"+dev+"'></text>");
                 temp    += this.tab.row(information);
                 temp    += this.tab.row("<div style='width:100%;text-align:center;'>" + buttons + "</div>");
                 temp    += this.tab.end();
@@ -523,14 +532,10 @@ function rmSettings (name) {	// IN PROGRESS
 	    this.btn.width = "100px";
 
 		setting   = "";
-		setting  += this.basic.container("setting_macros1","JSON macros [global]",		this.json.textarea("macro",   this.data["DATA"]["macros"]["macro"], "macros"),false);
-		setting  += this.basic.container("setting_macros2","JSON macros [device ON]",	this.json.textarea("dev-on",  this.data["DATA"]["macros"]["dev-on"], "macros"),false);
-		setting  += this.basic.container("setting_macros3","JSON macros [device OFF]",	this.json.textarea("dev-off", this.data["DATA"]["macros"]["dev-off"], "macros"),false);
+		setting  += this.basic.container("setting_macros1","JSON macros [global]",		this.json.textarea("macro",   this.data["CONFIG"]["macros"]["global"], "macros"),false);
+		setting  += this.basic.container("setting_macros2","JSON macros [device ON]",	this.json.textarea("dev-on",  this.data["CONFIG"]["macros"]["device-on"], "macros"),false);
+		setting  += this.basic.container("setting_macros3","JSON macros [device OFF]",	this.json.textarea("dev-off", this.data["CONFIG"]["macros"]["device-off"], "macros"),false);
 		setting  += this.basic.container("setting_macros_manual","JSON macros - manual",lang("MANUAL_MACROS"),false);
-
-        setting  += this.line;
-		setting  += this.basic.container("setting_macros4","</b><i>old: JSON macros [scene ON]</i>",   this.json.textarea("scene-on",  this.data["DATA"]["macros"]["scene-on"], "macros"),false);
-		setting  += this.basic.container("setting_macros5","</b><i>old: JSON macros [scene OFF]</i>",  this.json.textarea("scene-off", this.data["DATA"]["macros"]["scene-off"], "macros"),false);
 
 		setting  += "<div style='width:100%;align:center;'><center><br/>";
 //		setting  += this.btn.sized("apiMacroChange(['macro','scene-on','scene-off','dev-on','dev-off']);",lang("BUTTON_T_SAVE"),"");
@@ -542,8 +547,8 @@ function rmSettings (name) {	// IN PROGRESS
 	this.module_order_remotes   = function () {
 
         var setting = "";
-		var devices  = this.data["DATA"]["devices"];
-		var scenes   = this.data["DATA"]["scenes"];
+		var devices  = this.data["CONFIG"]["devices"];
+		var scenes   = this.data["CONFIG"]["scenes"];
 
 		this.btn.width  = "30px";
 		this.btn.height = "30px";
@@ -578,14 +583,14 @@ function rmSettings (name) {	// IN PROGRESS
 		for (var i=0;i<order.length;i++) {
 			var key     = order[i];
 			var button  = "";
-			var visible = this.data["DATA"]["devices"][key]["settings"]["visible"];
+			var visible = this.data["CONFIG"]["devices"][key]["settings"]["visible"];
 
 			if (i > 0)              { button += this.btn.sized(id="mv_dev_"+i,label="<b>&uarr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#device#,#"+key+"#,#-1#);",disabled=""); }
 			else                    { button += this.btn.sized(id="mv_dev_"+i,label="",             style="updown",script_apiCommandSend="",disabled="disabled"); }
 			if (i < order.length-1) { button += this.btn.sized(id="mv_dev_"+i,label="<b>&darr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#device#,#"+key+"#,#1#);",disabled=""); }
 
-			if (visible == "no")    { set_temp += this.tab.row("<i>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</i>",button); }
-			else                    { set_temp += this.tab.row("<b>" + this.data["DATA"]["devices"][key]["position"] + ". " + this.data["DATA"]["devices"][key]["settings"]["label"] + "</b>",button); }
+			if (visible == "no")    { set_temp += this.tab.row("<i>" + devices[key]["settings"]["position"] + ". " + devices[key]["settings"]["label"] + "</i>",button); }
+			else                    { set_temp += this.tab.row("<b>" + devices[key]["settings"]["position"] + ". " + devices[key]["settings"]["label"] + "</b>",button); }
 			}
 
 		set_temp   += this.tab.end();
@@ -754,8 +759,8 @@ function rmSettings (name) {	// IN PROGRESS
 
 	this.device_list		    = function (id,onchange="") {
 		var list = {};
-		for (var key in this.data["DATA"]["devices"]){
-			list[key] = this.data["DATA"]["devices"][key]["settings"]["label"];
+		for (var key in this.data["CONFIG"]["devices"]){
+			list[key] = this.data["CONFIG"]["devices"][key]["settings"]["label"];
 			}
 		return this.select(id,"device",list,onchange);
 		}
@@ -780,8 +785,7 @@ function rmSettings (name) {	// IN PROGRESS
 	this.exec_time_list		    = function () {
 		var text = "<div id='setting_exec_time_list'>";
 		for (var key in this.data["STATUS"]["request_time"]) {
-		    var print_key = "<font color='cyan'>" + key + "</font>";
-			text += print_key + ": " + (Math.round(dataAll["STATUS"]["request_time"][key]*1000)/1000) + "s<br/>";
+			text += key + ": " + use_color((Math.round(dataAll["STATUS"]["request_time"][key]*1000)/1000) + "s<br/>", "VALUE");
 			}
 		text += "</div>";
 		return text;
@@ -794,8 +798,8 @@ function rmSettings (name) {	// IN PROGRESS
 
 	this.button_list		    = function (id,filter="") {
 		var list = {};
-		if (filter != "" && filter in this.data["DATA"]["devices"]) {
-			for (var key in this.data["DATA"]["devices"][filter]["buttons"]){
+		if (filter != "" && filter in this.data["CONFIG"]["devices"]) {
+			for (var key in this.data["CONFIG"]["devices"][filter]["buttons"]){
 				list[filter+"_"+key] = key;
 				}
 			}
@@ -813,19 +817,24 @@ function rmSettings (name) {	// IN PROGRESS
 		var status      = "<br/>";
         var filter_list = document.getElementById(id_filter);
         var filter      = filter_list.options[filter_list.selectedIndex].value;
-		for (var key in this.data["DATA"]["devices"][filter]["status"]) {
-		    var key_print = "<font color='cyan'>" + key + "</font>";
+		for (var key in this.data["STATUS"]["devices"][filter]) {
 			if (key == "power") {
 				command_on    = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','ON'], '', '', '' );rm3settings.onoff();remoteInit();";
 				command_off   = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','OFF'], '', '', '' );rm3settings.onoff();remoteInit();";
-				status_value  = this.data["DATA"]["devices"][filter]["status"][key];
-				if (status_value == "ON")	    { command_link = "<div onclick=\""+command_off+"\" style=\"cursor:pointer\">"+key_print+": <u>ON</u></div>"; }
-				else if (status_value == "OFF")	{ command_link = "<div onclick=\""+command_on +"\" style=\"cursor:pointer\">"+key_print+": <u>OFF</u></div>"; }
-				else				            { command_link = key_print + ": " + status_value + "</br>"; }
+				status_value  = this.data["CONFIG"]["devices"][filter]["status"][key];
+				if (status_value == "ON"){
+				    command_link = "<div onclick=\""+command_off+"\" style=\"cursor:pointer\">" + key + ": <u>" + use_color("ON", "ON") + "</u></div>";
+				    }
+				else if (status_value == "OFF")	{
+				    command_link = "<div onclick=\""+command_on +"\" style=\"cursor:pointer\">" + key + ": <u>" + use_color("OFF", "OFF") + "</u></div>";
+				    }
+				else {
+				    command_link = key + ": " + use_color(status_value, "VALUE") + "</br>";
+				    }
 				status += command_link;
 				}
 			else if (key != "presets") {
-				status += key_print + ": " + this.data["DATA"]["devices"][filter]["status"][key] + "<br/>";
+				status += key + ": " + use_color(this.data["STATUS"]["devices"][filter][key], "VALUE") + "<br/>";
 				}
 			}
 	        setTextById( id_list_container, status + "<br/>" );

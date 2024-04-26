@@ -19,7 +19,7 @@ function statusCheck_load() { appFW.requestAPI("GET",["list"], "", statusCheck, 
 function statusCheck(data={}) {
 
 	// if not data includes -> error
-	if (!data["DATA"] || !data["STATUS"]) {
+	if (!data["CONFIG"] || !data["STATUS"]) {
 		console.error("statusCheck: data not loaded.");
 		statusShowApiStatus("red", showButtonTime);
 		return;
@@ -198,7 +198,7 @@ function statusCheck_deviceActive(data) {
 
 	if (deactivateButton)	{ return; }
 
-	if (!data["DATA"]) {
+	if (!data["CONFIG"]) {
 		console.error("statusCheck_deviceActive: data not loaded.");
 		statusShowApiStatus("red", showButtonTime);
 		return;
@@ -211,11 +211,11 @@ function statusCheck_deviceActive(data) {
 	var scene_status   = {};
 	
 	// get scene status from devices status and definition (see statusCheck) -> move to rm_remote.js
-	for (var key in data["DATA"]["scenes"]) {
-		if (data["DATA"]["scenes"][key]["remote"] && data["DATA"]["scenes"][key]["remote"]["devices"]) {
+	for (var key in data["CONFIG"]["scenes"]) {
+		if (data["CONFIG"]["scenes"][key]["remote"] && data["CONFIG"]["scenes"][key]["remote"]["devices"]) {
 
-			var required = data["DATA"]["scenes"][key]["remote"]["devices"];
-			var all_dev  = Object.keys(data["DATA"]["devices"]);
+			var required = data["CONFIG"]["scenes"][key]["remote"]["devices"];
+			var all_dev  = Object.keys(data["CONFIG"]["devices"]);
 			var dev_on   = 0;
 		
 			for (var i=0;i<all_dev.length;i++)  { 
@@ -235,7 +235,7 @@ function statusCheck_deviceActive(data) {
 			}
 		else {
 			console.warn("ERROR statusCheck_deviceActive: "+key);
-			console.warn(data["DATA"]["scenes"][key]);
+			console.warn(data["CONFIG"]["scenes"][key]);
 			required = [];
 			}
 		}
@@ -256,7 +256,7 @@ function statusCheck_deviceActive(data) {
 		}
 
 	// check device status - if OFF change color of buttons to gray
-	var buttons_color  = data["CONFIG"]["button_colors"];
+	var buttons_color  = data["CONFIG"]["elements"]["button_colors"];
 	var buttons_power  = {"on":1, "off":1, "on-off":1};
 
 	for (var device in devices_status) { 
@@ -308,18 +308,18 @@ function statusCheck_deviceActive(data) {
 // check how long device was idle (relevant for auto power off)
 function statusCheck_deviceIdle(data) {
 
-	if (!data["DATA"]) {
+	if (!data["CONFIG"]) {
 		console.error("statusCheck_deviceActive: data not loaded.");
 		statusShowApiStatus("red", showButtonTime);
 		return;
 		}
 
-	var devices = data["DATA"]["devices"];
-	for (var device in devices) {
-	    var last_send = devices[device]["status"]["api-last-send-tc"];
-	    var auto_power_off = devices[device]["status"]["auto-power-off"];
-	    var power_status = devices[device]["status"]["power"];
-	    var current_time = Math.round(new Date().getTime() / 1000);
+	for (var device in data["STATUS"]["devices"]) {
+	    var device_status   = data["STATUS"]["devices"][device];
+	    var last_send       = device_status["api-last-send-tc"];
+	    var auto_power_off  = device_status["auto-power-off"];
+	    var power_status    = device_status["power"];
+	    var current_time    = Math.round(new Date().getTime() / 1000);
 
 	    if (document.getElementById("display_"+device+"_auto-power-off")) {
 	        setTextById("display_"+device+"_auto-power-off", power_status);
@@ -378,7 +378,7 @@ function statusCheck_apiConnection(data) {
         else                                                  { api_summary[api] = "OK"; }
 
 		for (key2 in config_devices) {
-			if (config_errors[key2] && config_errors[key2] != {} && config_devices[key2]["api"] == key)	{ api_summary[api_dev[0]] = "ERROR"; } 
+			if (config_errors && config_errors[key2] && config_errors[key2] != {} && config_devices[key2]["api"] == key)	{ api_summary[api_dev[0]] = "ERROR"; }
 			}
 		}
 
@@ -490,24 +490,26 @@ function statusCheck_apiConnection(data) {
 // check power status of devices required for a scene
 function statusCheck_sceneDevices(data) {
 
-	var scene_status = {};
-	var log_data = {};
-	var devices = data["DATA"]["devices"]
+	var scene_status        = {};
+	var log_data            = {};
+	var devices             = data["CONFIG"]["devices"];
+	var devices_status      = data["STATUS"]["devices"];
 
 	for (var key in data["STATUS"]["scenes"]) {
-		var dev_on         = 0;
-		var dev_error      = 0;
-		var required       = data["STATUS"]["scenes"][key];
-		log_data[key]  = "";
+
+		var dev_on          = 0;
+		var dev_error       = 0;
+		var required        = data["STATUS"]["scenes"][key];
+		log_data[key]       = "";
 
 		for (var i=0;i<required.length;i++) {
 
-	        var device_api         = data["STATUS"]["devices"][required[i]]["api"];
+	        var device_api         = devices_status[required[i]]["api"];
 	        var device_api_status  = data["STATUS"]["interfaces"]["connect"][device_api];
 	        log_data[key]         += required[i];
 
-            if (devices[required[i]]["status"]["power"]) {
-                device_status[required[i]]  = devices[required[i]]["status"]["power"].toUpperCase();
+            if (devices_status[required[i]]["power"]) {
+                device_status[required[i]]  = devices_status[required[i]]["power"].toUpperCase();
                 log_data[key] += "="+device_status[required[i]]+"  ";
                 }
             else {
@@ -595,6 +597,9 @@ function statusCheck_audioMute(data) {
 	var devices             = data["STATUS"]["devices"];
 	var devices_config      = data["CONFIG"]["devices"];
 	var main_audio          = data["CONFIG"]["main-audio"];
+
+	if (!data["STATUS"]["devices"][main_audio]) { return; }
+
     var device_api          = data["STATUS"]["devices"][main_audio]["api"];
     var device_api_status   = data["STATUS"]["interfaces"]["connect"][device_api];
 
@@ -790,8 +795,8 @@ function statusCheck_health(data={}) {
 function statusCheck_display(data={}) {
 
 	// check status for displays
-	var devices     = data["DATA"]["devices"];
-	var scenes      = data["DATA"]["scenes"];
+	var devices     = data["CONFIG"]["devices"];
+	var scenes      = data["CONFIG"]["scenes"];
 	var vol_color   = "white";
 	var vol_color2  = "yellow";
 	var novol_color = "darkgray";

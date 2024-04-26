@@ -61,3 +61,9 @@ function dictCopy(dict) {
     return JSON.parse(JSON.stringify(dict));
     }
 
+//--------------------------------------
+
+function use_color (value, color="VALUE") {
+    if (!function_colors[color]) { return value; }
+    return "<font color='" + function_colors[color] + "'>" + value + "</font>";
+    }
