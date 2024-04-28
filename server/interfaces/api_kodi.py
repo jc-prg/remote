@@ -15,13 +15,13 @@ class ApiControl(RemoteApiClass):
     based on https://kodi.wiki/view/JSON-RPC_API/v10#Application.Property.Name
     """
 
-    def __init__(self, api_name, device="", device_config=None, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """
         Initialize API / check connect to device
         """
         self.api_description = "API for KODI Servers"
         RemoteApiClass.__init__(self, "api.KODI", api_name, "query",
-                                self.api_description, device, device_config, log_command)
+                                self.api_description, device, device_config, log_command, config)
 
         self.api_url = "http://" + str(self.api_config["IPAddress"]) + ":" + str(self.api_config["Port"]) + "/jsonrpc"
 

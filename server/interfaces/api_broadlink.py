@@ -24,13 +24,13 @@ class ApiControl(RemoteApiClass):
     Integration of BROADLINK API to be use by jc://remote/
     """
 
-    def __init__(self, api_name, device="", device_config=None, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """
         Initialize API / check connect to device
         """
         self.api_description = "API for Infrared Broadlink RM3"
         RemoteApiClass.__init__(self, "api.RM3", api_name, "record",
-                                self.api_description, device, device_config, log_command)
+                                self.api_description, device, device_config, log_command, config)
 
         self.config_add_key("MACAddress", "")
         self.config_set_methods(["send", "record"])

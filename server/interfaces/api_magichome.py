@@ -28,13 +28,13 @@ class ApiControl(RemoteApiClass):
     Integration of Magic Home API to be use by jc://remote/
     """
 
-    def __init__(self, api_name, device="", device_config=None, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """
         Initialize API / check connect to device
         """
         self.api_description = "API for LED via Magic Home"
         RemoteApiClass.__init__(self, "api.MAGIC", api_name, "query",
-                                self.api_description, device, device_config, log_command)
+                                self.api_description, device, device_config, log_command, config)
 
         self.power_status = "STARTING"
         self.brightness = 1

@@ -18,13 +18,13 @@ class ApiControl(RemoteApiClass):
     """
     Integration of sample API to be use by jc://remote/
     """
-    def __init__(self, api_name, device="", device_config=None, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """
         API Class constructor
         """
         self.api_description = "API for SONY Devices (SonyAPILib)"
         RemoteApiClass.__init__(self, "api.SONY", api_name, "query",
-                                self.api_description, device, device_config, log_command)
+                                self.api_description, device, device_config, log_command, config)
 
         if rm3config.log_api_ext == "NO":
             log = logging.getLogger("sonyapilib.device")

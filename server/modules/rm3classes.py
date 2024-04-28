@@ -41,7 +41,8 @@ class RemoteApiClass(RemoteDefaultClass):
     Class for APIs in jc://remote
     """
 
-    def __init__(self, class_id, api_name, method, description, device="", device_config=None, log_command=False):
+    def __init__(self, class_id, api_name, method, description, device="", device_config=None,
+                 log_command=False, config=None):
         """
         Class constructor
         """
@@ -51,6 +52,8 @@ class RemoteApiClass(RemoteDefaultClass):
             device_config = {}
         if "IPAddress" not in device_config:
             device_config["IPAddress"] = "N/A"
+
+        self.config = config
 
         self.api = None
         self.api_name = api_name

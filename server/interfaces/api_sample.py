@@ -18,11 +18,14 @@ class ApiControl(RemoteApiClass):
     Integration of sample API to be used by jc://remote/
     """
 
-    def __init__(self, api_name, device="", device_config={}, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """Initialize API / check connect to device"""
+        if device_config is None:
+            device_config = {}
+
         self.api_description = "Sample API Description"
         RemoteApiClass.__init__(self, "api.SAMPLE", api_name, "query",
-                                self.api_description, device, device_config, log_command)
+                                self.api_description, device, device_config, log_command, config)
 
     def connect(self):
         """Connect / check connection"""
