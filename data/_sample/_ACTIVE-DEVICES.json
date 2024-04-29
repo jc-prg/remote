@@ -256,6 +256,23 @@
             "main-audio": "no"
         }
     },
+    "plug10": {
+        "config": {
+            "device": "default",
+            "interface_api": "ZIGBEE2MQTT",
+            "interface_dev": "plug10",
+            "remote": "plug_zigbee"
+        },
+        "settings": {
+            "description": "ZigBee Plug",
+            "image": "plug",
+            "label": "ZigBee Plug 10",
+            "main-audio": "no",
+            "position": 20,
+            "visible": "yes"
+        },
+        "status": {
+        },
     "rec": {
         "config": {
             "device": "receiver_onkyo-txnr686",
