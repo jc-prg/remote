@@ -91,7 +91,7 @@ class ApiControl(RemoteApiClass):
         self.logging.debug("power_status:" + msg)
         return msg
 
-    def send(self, device, command):
+    def send(self, device, device_id, command):
         """Send command to API"""
 
         self.wait_if_working()
@@ -118,7 +118,7 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return "OK"
 
-    def query(self, device, command):
+    def query(self, device, device_id, command):
         """
         Send command to API and wait for answer
         """
@@ -126,7 +126,7 @@ class ApiControl(RemoteApiClass):
         self.logging.debug(msg)
         return msg
 
-    def record(self, device, command):
+    def record(self, device, device_id, command):
         """
         Record command, especially build for IR devices
         """

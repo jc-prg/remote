@@ -56,7 +56,7 @@ class ApiControl(RemoteApiClass):
         """
         return "N/A"
 
-    def send(self, device, command):
+    def send(self, device, device_id, command):
         """
         Send command to API
         """
@@ -64,7 +64,7 @@ class ApiControl(RemoteApiClass):
             "__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
         return "OK: send test-" + device + "-" + command
 
-    def query(self, device, command):
+    def query(self, device, device_id, command):
         """
         Send command to API and wait for answer
         """
@@ -72,7 +72,7 @@ class ApiControl(RemoteApiClass):
             "__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
         return "WARN: Not supported by this API"
 
-    def record(self, device, command):
+    def record(self, device, device_id, command):
         """
         Record command, especially build for IR devices
         """

@@ -14,7 +14,10 @@ class Connect(RemoteThreadingClass):
 
     def __init__(self, config):
         """
-        Initialize Interfaces
+        Constructor to initialize interfaces
+
+        Args:
+            config (modules.pm3cache.ConfigCache): config handler
         """
         RemoteThreadingClass.__init__(self, "api", "API Device Controller")
 
@@ -30,7 +33,8 @@ class Connect(RemoteThreadingClass):
             "MAGIC-HOME": "api_magichome",
             "TAPO-P100": "api_p100",
             "BROADLINK": "api_broadlink",
-            "EISCP-ONKYO": "api_eiscp"
+            "EISCP-ONKYO": "api_eiscp",
+            "ZIGBEE2MQTT": "api_zigbee"
         }
         self.api_configuration = {
             "API-Description": "",
@@ -99,25 +103,30 @@ class Connect(RemoteThreadingClass):
 
             if dev_config != {}:
                 api_dev = api + "_" + dev
+                self.logging.debug("- try to import API connector '" + self.api_modules[api] +
+                                   "' for API '" + api_dev + "' ...")
 
                 if api in self.api_modules and api_dev not in self.api:
                     cmd_import = "import interfaces." + self.api_modules[api]
                     cmd_connect = "interfaces." + self.api_modules[
-                        api] + ".ApiControl(api,dev,dev_config,self.log_commands)"
+                        api] + ".ApiControl(api,dev,dev_config,self.log_commands,config=self.config)"
                     try:
                         exec(compile(cmd_import, "string", "exec"))
                         self.api[api_dev] = eval(cmd_connect)
+                        self.logging.debug("- OK")
+
                     except ModuleNotFoundError:
-                        self.logging.error("Could not connect API: Module '" + self.api_modules[
-                            api] + ".py' not found (" + api_dev + ")")
+                        self.logging.error("Could not connect API: Module '" +
+                                           self.api_modules[api] + ".py' not found (" + api_dev + ")")
+                        self.logging.error("... if exist, check if all required modules are installed, " +
+                                           "that are to be imported in this module.")
                     except Exception as e:
                         self.logging.error("Could not connect API: " + str(e) + " (" + api_dev + ")")
                     except:
                         self.logging.error("Could not connect API: Unknown reason (" + api_dev + ")")
 
             else:
-                self.logging.error(
-                    "Could not connect to " + api + " - Error in config file (" + rm3config.commands + api + "/00_interface.json)")
+                self.logging.error("Could not connect to " + api + " - Error in config file (" + rm3config.commands + api + "/00_interface.json)")
 
         for key in self.api:
             dev_key = key.split("_")[1]
@@ -127,6 +136,7 @@ class Connect(RemoteThreadingClass):
         self.config.interfaces_identify()
 
         while self._running:
+
             if self.checking_last + self.checking_interval < time.time() or self.check_directly:
                 self.checking_last = time.time()
                 self.check_directly = False
@@ -156,13 +166,17 @@ class Connect(RemoteThreadingClass):
                 active = self.config.interface_configuration[api]["active"]
                 if active and dev in self.config.interface_configuration[api]["devices_active"]:
                     active = self.config.interface_configuration[api]["devices_active"][dev]
+                elif not active:
+                    self.logging.info("API-Device is disabled: " + key + " (" + str(active) + ")")
                 else:
-                    self.logging.warning("API-Device not yet in config file: " + key)
+                    self.logging.warning("API-Device not yet in config file: " + key + " (" + str(active) + ")")
+                    self.logging.debug("-> WARNING " + api + ": " + str(self.config.interface_configuration[api]))
             else:
                 self.logging.warning("API not yet in config file: " + api)
                 active = True
 
             if not active:
+                self.logging.debug("Interface '" + key + "' is disabled.")
                 self.api[key].status = "OFF (" + api + ")"
 
             elif "IPAddress" in self.api[key].api_config:
@@ -344,11 +358,12 @@ class Connect(RemoteThreadingClass):
         answer = "N/A"
         power = "N/A"
         api_dev = self.device_api_string(device)
+        device_id = self.device_id_get(device)
         method = self.api_method(device)
         self.logging.info("__SEND DIRECTLY: " + api_dev + "/" + device + " | " + command)
 
         if self.api[api_dev].status == "Connected":
-            answer = self.api[api_dev].query(device, command)
+            answer = self.api[api_dev].query(device, device_id, command)
             power = self.device_status(device)["status"]["power"]
 
         return_msg = {
@@ -364,6 +379,7 @@ class Connect(RemoteThreadingClass):
         send command if connected
         """
         api_dev = self.device_api_string(device)
+        device_id = self.device_id_get(device)
         method = self.api_method(device)
         return_msg = ""
         self.api_errors(device)
@@ -375,6 +391,7 @@ class Connect(RemoteThreadingClass):
             self.device_save_status(device, button=button, status=value)
 
         elif self.api[api_dev].status == "Connected":
+
             if button.startswith("send-"):
 
                 button = button.split("-")[1]
@@ -411,7 +428,7 @@ class Connect(RemoteThreadingClass):
 
             # send if not error
             if api_dev in self.api and "ERROR" not in button_code:
-                return_msg = self.api[api_dev].send(device, button_code)
+                return_msg = self.api[api_dev].send(device, device_id, button_code)
             elif "ERROR" in button_code:
                 return_msg = "ERROR: could not read/create command from button code (send/" + \
                              device + "/" + button + "); " + button_code
@@ -455,13 +472,14 @@ class Connect(RemoteThreadingClass):
 
         return_msg = ""
         api_dev = self.device_api_string(device)
+        device_id = self.device_id_get(device)
         self.api_errors(call_api, device)
 
         self.logging.debug("__RECORD " + api_dev + " (" + self.api[api_dev].status + ")")
 
         if self.api[api_dev].status == "Connected":
             if api_dev in self.api:
-                return_msg = self.api[api_dev].record(device, button)
+                return_msg = self.api[api_dev].record(device, button, device_id)
             else:
                 return_msg = "ERROR: API not available (" + api_dev + ")"
 
@@ -488,6 +506,7 @@ class Connect(RemoteThreadingClass):
         return_msg = ""
         button_code = ""
         api_dev = self.device_api_string(device)
+        device_id = self.device_id_get(device)
         # self.check_errors(call_api, device)  #### -> leads to an error for some APIs
 
         self.logging.debug("__QUERY " + api_dev + " (" + device + "," + button + ";" + self.api[api_dev].status + ")")
@@ -504,7 +523,7 @@ class Connect(RemoteThreadingClass):
                 return_msg = "ERROR: could not read/create command from button code (query/" + device + "/" + button + \
                              "); " + button_code
             elif api_dev in self.api:
-                return_msg = self.api[api_dev].query(device, button_code)
+                return_msg = self.api[api_dev].query(device, device_id, button_code)
             else:
                 return_msg = "ERROR: API not available (" + str(api_dev) + ")"
 
@@ -638,6 +657,22 @@ class Connect(RemoteThreadingClass):
             self.logging.warning("Configuration file for device '" + device + "' isn't correct.")
             return -1
 
+    def device_id_get(self, device):
+        """
+        identify unique device ID if define in device configuration
+
+        Args:
+            device (str): internal device ID
+        Returns:
+            str: external device ID, if defined; otherwise absolute internal ID <API>_<API-Device>_<device>
+        """
+        active = self.config.read_status()
+        if device in active and "device_id" in active[device]["config"]:
+            d_id = active[device]["config"]["device_id"]
+        else:
+            d_id = active[device]["config"]["interface_api"]+"_" + active[device]["config"]["interface_api"]+"_"+device
+        return d_id
+
     def command_get(self, dev_api, button_query, device, button):
         """
         translate device and button to command for the specific device
@@ -654,6 +689,10 @@ class Connect(RemoteThreadingClass):
 
         if device in active:
             device_code = active[device]["config"]["device"]
+            if "device_id" in active[device]["config"]:
+                device_id = active[device]["config"]["device_id"]
+            else:
+                device_id = "N/A"
             device_file = rm3config.commands + api + "/" + device_code
             buttons_device = self.device_configuration(device)
             if rm3json.if_exist(device_file):

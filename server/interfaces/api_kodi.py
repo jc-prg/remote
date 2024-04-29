@@ -72,7 +72,7 @@ class ApiControl(RemoteApiClass):
          """
         return self.jc.PlayerMetadata("power")
 
-    def send(self, device, command):
+    def send(self, device, device_id, command):
         """
         Send command to API
         """
@@ -109,7 +109,7 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return "OK"
 
-    def query(self, device, command):
+    def query(self, device, device_id, command):
         """
         Send command to API and wait for answer
         """
@@ -162,7 +162,7 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return result_param
 
-    def record(self, device, command):
+    def record(self, device, device_id, command):
         """
         Record command, especially build for IR devices
         """
