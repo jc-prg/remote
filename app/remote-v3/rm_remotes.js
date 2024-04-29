@@ -186,7 +186,7 @@ function rmRemote(name) {
 				}
 			remote += "</div>";
 			setTextById(id,remote);
-			appMsg.alert(lang("MISSING_DATA",[device, device_config["config"]["remote"]+".json",
+			appMsg.alert(lang("MISSING_DATA",[device, device_config["interface"]["remote"]+".json",
 			                                          device_config["config"]["device"]+".json"]));
 			return;
 			}
@@ -417,10 +417,10 @@ function rmRemote(name) {
 		remote  += this.basic.container("remote_main","Main settings",edit,true);
 
 		// API Information
-		edit     = "<p><b>"+lang("API_INTERFACE")+":</b><br/>"+		device_config["interface"]["api"].replace("_", " / ");
+		edit     = "<p><b>"+lang("API_INTERFACE")+":</b><br/>"+		    device_config["interface"]["api"].replace("_", " / ");
 		edit    += "<p><b>"+lang("CONFIG_INTERFACE")+":</b><br/>"+   	JSON.stringify(device_config["interface"]["files"]).replace( /,/g, ", ");
-		edit    += "<p><b>"+lang("CONFIG_REMOTE")+":</b><br/>"+ 		device_config["config"]["remote"]+".json";
-		edit    += "<p><b>"+lang("METHOD")+":</b><br/>"+		        device_config["interface"]["method"]; //device_data["config"]["remote"]+".json" );
+		edit    += "<p><b>"+lang("CONFIG_REMOTE")+":</b><br/>"+ 		device_config["interface"]["remote"]+".json";
+		edit    += "<p><b>"+lang("METHOD")+":</b><br/>"+		        device_config["interface"]["method"]; //device_data["interface"]["remote"]+".json" );
 		remote  += this.basic.container("remote_api01",lang("API_INFORMATION"),edit,false);
 
 		// API details
