@@ -1,0 +1,9 @@
+{
+	"data": {
+        "buttons" : {},
+        "commands" : {},
+		"description" : "API for ZigBee Devices",
+		"method" : "query"
+	},
+	"info": "jc://remote/ - In this files the API-specific commands and buttons are defined."
+}
