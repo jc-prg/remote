@@ -59,6 +59,7 @@ if __name__ == "__main__":
     queueSend.start()
     queueQuery.start()
     deviceAPIs.start()
+    remotesData.start()   # !!! create threading class
 
     # Create REST API
     rm3config.server_status = "Running"

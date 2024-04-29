@@ -1,10 +1,11 @@
+import time
 import logging
 import modules.rm3config as rm3config
 import modules.rm3json as rm3json
-from modules.rm3classes import RemoteDefaultClass
+from modules.rm3classes import RemoteDefaultClass, RemoteThreadingClass
 
 
-class RemotesData(RemoteDefaultClass):
+class RemotesData(RemoteThreadingClass):
     """
     class to read and write configuration and status data for devices, scenes, remotes
     """
@@ -19,7 +20,8 @@ class RemotesData(RemoteDefaultClass):
             apis (server.interfaces.Connect): handler for device APIS
             queue (server.modules.rm3queue.QueueApiCalls): handler for query queue
         """
-        RemoteDefaultClass.__init__(self, "rm-data", "RemoteData")
+        RemoteThreadingClass.__init__(self, "rm-data", "RemoteData")
+
         self.logging.info("Loading " + self.name)
 
         self.config = config
@@ -27,6 +29,22 @@ class RemotesData(RemoteDefaultClass):
         self.queue = queue
         self.apis = apis
         self.errors = {}
+        self.thread_priority(5)
+
+    def run(self):
+        """
+        thread
+        """
+        self.logging.info("Starting RemoteData Thread ...")
+
+        while self._running:
+
+            self.thread_wait()
+            start = time.time()
+            self.devices_get_status({}, True)
+            self.logging.debug("Waiting time = " + str(self.thread_waiting_time()) + "s")
+
+        self.logging.info("Exiting " + self.name)
 
     def complete_read(self, selected=None):
         """
@@ -460,7 +478,7 @@ class RemotesData(RemoteDefaultClass):
             if "status" not in devices[device]:
                 devices[device]["status"] = {}
 
-            if (device in data and device in config and "interface" in config[device]
+            if (device in config and "interface" in config[device]
                     and "method" in config[device]["interface"]):
 
                 interface = config[device]["interface"]["interface_api"]
@@ -477,12 +495,9 @@ class RemotesData(RemoteDefaultClass):
                             if value not in devices[device]["status"]:
                                 devices[device]["status"][value] = ""
 
-                    # get values from config file
-                    for value in devices[device]["status"]:
-                        data[device]["status"][value] = devices[device]["status"][value]
-
                     # request update for devices with API query
                     if method == "query" and read_api:
+
                         self.queue.add2queue([0.1])
                         self.queue.add2queue([[interface, device, config[device]["commands"]["get"], ""]])
 
@@ -492,8 +507,6 @@ class RemotesData(RemoteDefaultClass):
 
         # mark API update as done
         self.interfaces.cache_update_api = False
-
-        return data
 
     def scenes_read(self, selected=None, remotes=True):
         """

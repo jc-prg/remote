@@ -1,0 +1,378 @@
+import time
+import json
+import modules.rm3json as rm3json
+import modules.rm3config as rm3config
+import modules.rm3ping as rm3ping
+from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
+import paho.mqtt.client as mqtt
+
+# -------------------------------------------------
+# API-class
+# -------------------------------------------------
+"""
+collection for implementation
+
+client.subscribe()  -> subscript messages i want to receive
+                    -> for some commands a message will return immediately (e.g. ../bridge/devices/)
+client.publish()    -> send a command, if subscribe a message will return
+
+https://www.emqx.com/en/blog/how-to-use-mqtt-in-python
+https://www.zigbee2mqtt.io/guide/usage/mqtt_topics_and_messages.html
+"""
+
+shorten_info_to = rm3config.shorten_info_to
+rm3config.api_modules.append("ZIGBEE2MQTT")
+
+
+class ApiControl(RemoteApiClass):
+    """
+    Integration of sample API to be used by jc://remote/
+    """
+
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
+        """Initialize API / check connect to device"""
+        if device_config is None:
+            device_config = {}
+
+        self.api_description = "API Zigbee2MQTT"
+        RemoteApiClass.__init__(self, "api.zigbee", api_name, "query",
+                                self.api_description, device, device_config, log_command, config)
+
+        self.config_add_key("USBDongle", "")
+        self.config_add_key("MqttUser", "")
+        self.config_add_key("MqttPassword", "")
+
+        self.mqtt_client = None
+        self.mqtt_msg_start = "zigbee2mqtt/"
+        self.mqtt_devices = {}
+        self.mqtt_bridge = {}
+        self.mqtt_devices_status = {}
+        self.mqtt_subscribed = []
+        self.mqtt_msg_received = {}
+        self.connect_config = {
+            "FIRST_RECONNECT_DELAY": 1,
+            "RECONNECT_RATE": 2,
+            "MAX_RECONNECT_COUNT": 12,
+            "MAX_RECONNECT_DELAY": 60
+            }
+
+    def _on_connect(self, client, userdata, flags, rc, properties):
+        """
+        async reaction on connection
+        """
+        self.logging.debug("on_connect: flags= " + str(flags) + "; userdata=" + str(userdata) + "; rc=" + str(rc))
+        if rc == 0:
+            self.logging.info("Connected " + self.api_name + ".")
+            self.status = "Connected"
+        else:
+            self.logging.error("Could not connect to ZigBee broker (" + self.api_config["IPAddress"] +
+                               "), return code: " + str(rc))
+            self.status = "ERROR: Could not connect, return code=" + str(rc)
+
+    def _on_connect_fail(self, client_id):
+        """
+        async reaction API connect failed
+        """
+        self.logging.error("Could not connect to " + self.api_name + "!")
+        self.status = "ERROR connect failed."
+
+    def _on_logging(self, client, userdata, level, buff):
+        """
+        async reaction API logging
+        """
+        self.logging.debug("MQTT Client logging ("+str(level)+"): " + str(buff))
+
+    def _on_disconnect(self, client, userdata, rc):
+        """
+        async API reaction on disconnection
+        """
+        self.logging.info("Disconnected with result code: %s", rc)
+        reconnect_count, reconnect_delay = 0, self.connect_config["FIRST_RECONNECT_DELAY"]
+        while reconnect_count < self.connect_config["MAX_RECONNECT_COUNT"]:
+            self.logging.info("Reconnecting in %d seconds...", reconnect_delay)
+            time.sleep(reconnect_delay)
+
+            try:
+                #client.reconnect()
+                self.mqtt_client.reconnect()
+                self.logging.info("Reconnected successfully!")
+                self.status = "Connected"
+                return
+            except Exception as err:
+                self.status = str(err) + ". Reconnect failed. Retrying..."
+                self.logging.error("%s. Reconnect failed. Retrying...", err)
+
+            reconnect_delay *= self.connect_config["RECONNECT_RATE"]
+            reconnect_delay = min(reconnect_delay, self.connect_config["MAX_RECONNECT_DELAY"])
+            reconnect_count += 1
+        self.status = "Reconnect failed after " + str(reconnect_count) + ". Exiting..."
+        self.logging.info("Reconnect failed after %s attempts. Exiting...", reconnect_count)
+
+    def _on_message(self, client, userdata, message):
+        """
+        async reaction API request
+        """
+        return_data = str(message.payload.decode("utf-8"))
+        self.logging.debug("Message received: " + message.topic + " : " + str(return_data))
+        self.mqtt_msg_received[message.topic+return_data] = True
+        self.logging.debug("                : '"+message.topic+return_data+"'")
+        self.execute_results(message.topic, json.loads(return_data))
+
+    def connect(self):
+        """Connect / check connection"""
+        self.logging.debug("Connecting " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
+        self.status = "Starting ..."
+        self.count_error = 0
+        self.count_success = 0
+
+        connect = rm3ping.ping(self.api_config["IPAddress"])
+        if not connect:
+            self.status = self.not_connected + " ... PING"
+            self.logging.warning(self.status)
+            return self.status
+
+        try:
+            self.mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+
+            self.mqtt_client.on_connect = self._on_connect
+            self.mqtt_client.on_message = self._on_message
+            self.mqtt_client.on_log = self._on_logging
+            self.mqtt_client.on_disconnect = self._on_disconnect
+            self.mqtt_client.on_connect_fail = self._on_connect_fail
+
+            if self.api_config["MqttUser"] != "" and self.api_config["MqttPassword"] != "":
+                self.logging.debug("-> use username '" + self.api_config["MqttUser"] + "' and password")
+                self.mqtt_client.username_pw_set(self.api_config["MqttUser"], self.api_config["MqttPassword"])
+
+            self.logging.debug("-> mqtt://" + str(self.api_config["IPAddress"]) + ":" + str(self.api_config["Port"]))
+            rc = self.mqtt_client.connect(self.api_config["IPAddress"], self.api_config["Port"])
+
+            if rc == 0:
+                self.status = "Connected"
+                self.mqtt_client.loop_start()
+                self.execute_request("bridge/devices")
+                self.execute_request("bridge/info")
+            else:
+                self.mqtt_client = None
+                raise "Could not send connect command correctly: " + str(rc)
+
+        except Exception as e:
+            self.status = "ERROR "+self.api_name+" - connect: " + str(e)
+            self.logging.error(self.status)
+            if "[Errno 111]" in self.status:
+                self.logging.error("-> Check if IPAddress and Port are OK (mqtt://" + str(self.api_config["IPAddress"])
+                                   + ":" + str(self.api_config["Port"]))
+            return self.status
+
+        self.test()
+        return self.status
+
+    def disconnect(self):
+        """
+        disconnect API
+        """
+        self.mqtt_client.loop_stop()
+        self.mqtt_client.disconnect()
+
+    def execute_results(self, topic, data):
+        """
+        execute commands based on received messages
+        """
+        for device_id in self.mqtt_devices:
+            if topic == self.mqtt_msg_start + device_id:
+                self.mqtt_devices_status[device_id] = data
+                self.logging.debug("-> " + device_id + " : " + str(data))
+
+        if "bridge/info" in topic and data != {} and data is not None:
+            self.mqtt_bridge = data
+            self.config.write(rm3config.commands + self.api_name + "/11_bridge", data)
+
+        if "bridge/devices" in topic and data != {} and data is not None:
+            self.logging.debug("Identified " + str(len(data)) + " ZigBee devices, subscribe and request information.")
+            for device in data:
+                device_id = device["friendly_name"]
+                self.mqtt_devices[device_id] = device
+                self.mqtt_client.subscribe(self.mqtt_msg_start + device_id)
+                self.mqtt_client.publish(self.mqtt_msg_start + device_id + "/get")
+            self.config.write(rm3config.commands + self.api_name + "/10_devices", self.mqtt_devices)
+
+    def execute_request(self, topic, data=None):
+        """
+        publish / subscribe command
+        """
+        if data is None:
+            data = {}
+        data = json.dumps(data)
+        self.logging.debug(data)
+        topic = self.mqtt_msg_start + topic
+
+        self.mqtt_client.subscribe(topic)
+        if data is None:
+            rc = self.mqtt_client.publish(topic)
+        else:
+            rc = self.mqtt_client.publish(topic, data, 1)
+
+    def wait_if_working(self):
+        """Some devices run into problems, if send several requests at the same time"""
+        while self.working:
+            self.logging.debug(".")
+            time.sleep(0.2)
+        return
+
+    def send(self, device, device_id, command):
+        """
+        Send command to API
+
+        Args:
+            device (str): internal device id
+            device_id (str): external device id given by the vendor
+            command (str): command to be executed (see README.md in the API specific subfolder)
+        Returns:
+             Any
+        """
+        result = None
+        self.wait_if_working()
+        self.working = True
+        self.last_action = time.time()
+        self.last_action_cmd = "SEND: " + device + "/" + command
+
+        if self.log_command:
+            self.logging.info("__SEND: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+
+        if self.status == "Connected":
+
+            command_key = command.split("=")[0]
+            command_value = command[len(command_key)+1:].replace("'", "\"")
+            self.logging.debug("__SEND: " + str(device_id) + " !!! " + command_key + " -> " + command_value)
+
+            if command_key == "set":
+                self.execute_request(device_id + "/set", json.loads(command_value))
+                result = "OK"
+            else:
+                result = "ERROR: unknown command (" + command + ")"
+        else:
+            result = "ERROR: API not connected"
+
+
+        # ----
+        # something like ...
+        # self.execute_request(device + "/set", command)
+        # ----
+        # command defined in device specific json files
+        # buttons : {
+        #     "on": '{"state": "ON"}',
+        #     "off": '{"state": "OFF"}',
+        #     "toggle": '{"state": "TOGGLE"}'
+        # }
+
+        # ---- change for your api ----
+        #       if self.status == "Connected":
+        #         try:
+        #           result  = self.api.command(xxx)
+        #         except Exception as e:
+        #           self.working = True
+        #           return "ERROR "+self.api_name+" - send: " + str(e)
+        #       else:
+        #         self.working = True
+        #         return "ERROR "+self.api_name+": Not connected"
+
+        self.working = False
+        return result
+
+    def query(self, device, device_id, command):
+        """
+        Send command to API and wait for answer or if asynchronous communication take last cached answer
+
+        Args:
+            device (str): internal device id
+            device_id (str): external device id given by the vendor
+            command (str): command to be executed (see README.md in the API specific subfolder)
+        Returns:
+             Any
+        """
+
+        result = None
+        self.wait_if_working()
+        self.working = True
+        self.last_action = time.time()
+        self.last_action_cmd = "QUERY: " + device + "/" + command
+
+        if self.log_command:
+            self.logging.info("__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+
+        if self.status == "Connected":
+
+            command_key = command.split("=")[0]
+            command_value = command[len(command_key)+1:].replace("'", "\"")
+            self.logging.debug("__QUERY: " + str(device_id) + " !!! " + command_key + " -> " + command_value)
+
+            if command_key == "get":
+                result = "N/A"
+                unit = ""
+                if device_id in self.mqtt_devices_status and command_value in self.mqtt_devices_status[device_id]:
+                    result = self.mqtt_devices_status[device_id][command_value]
+                    if device_id in self.mqtt_devices and "definition" in self.mqtt_devices[device_id] \
+                            and "exposes" in self.mqtt_devices[device_id]["definition"]:
+                        expose_entries = self.mqtt_devices[device_id]["definition"]["exposes"]
+                        for expose_entry in expose_entries:
+                            if ("name" in expose_entry and "unit" in expose_entry and
+                                    expose_entry["name"] == command_value):
+                                unit = expose_entry["unit"]
+
+                    if unit != "":
+                        result = str(result) + " " + str(unit)
+
+        # ----
+        # if requested values, something like ...
+        # result = self.mqtt_devices_status
+        #
+        # otherwise execute something and wait for the result; use timeout
+
+        # ---- change for your api ----
+        #       if self.status == "Connected":
+        #         try:
+        #           result  = self.api.command(xxx)
+        #         except Exception as e:
+        #           self.working = True
+        #           return "ERROR "+self.api_name+" - query: " + str(e)
+        #       else:
+        #         self.working = True
+        #         return "ERROR "+self.api_name+": Not connected"
+
+        self.working = False
+        return result
+
+    def record(self, device, device_id, command):
+        """Record command, especially build for IR devices"""
+        self.logging.error("Record not implemented for this API.")
+        return "ERROR: Record not implemented for this API."
+
+    def test(self):
+        """Test device by sending a couple of commands"""
+
+        self.wait_if_working()
+        self.working = True
+
+        if self.log_command:
+            self.logging.info("_TEST ... (" + self.api_name + ")")
+
+        # ---- change for your api ----
+        #       if self.status == "Connected":
+        #         try:
+        #           result  = self.api.command(xxx)
+        #         except Exception as e:
+        #           self.working = True
+        #           return "ERROR "+self.api_name+" - test: " + str(e)
+        #       else:
+        #         self.working = True
+        #         return "ERROR "+self.api_name+": Not connected"
+
+        self.logging.info("Testing API ...")
+
+        #self.execute_request("0x70b3d52b6004fd1f/set", {"state": "TOGGLE"})
+        #time.sleep(1)
+        #self.execute_request("0x70b3d52b6004fd1f/set", {"state": "TOGGLE"})
+
+        self.working = False
+        return "OK"
+

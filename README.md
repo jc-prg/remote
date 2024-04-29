@@ -1,4 +1,4 @@
-# jc://remote/
+s# jc://remote/
 
 With this software you can control several **home media devices** via Infrared and API with an app on your smartphone.
 It requires a small server such as a Raspberry Pi and can control the hardware listed below. 
@@ -26,6 +26,7 @@ There are a few templates available to be used and modified.
 * KODI server
 * Magic Home compatible LED strips 
 * Tapo SmartPlugs P100
+* ZigBee2MQTT API _... started to implement first ZigBee devices_
 
 ## Screenshots
 
@@ -87,6 +88,7 @@ src="./docs/remote_browser_edit_03.png" width="48%">
 * edit interface configuration via app
 * activate and deactivate interfaces
 * simplify server configuration (.env), code and REST api refactoring, improve logging
+* started implementation of ZigBee2MQTT
 
 **Note:** The data structure changed: recreate the _00_interface.json_ files by coping them from the 
 folder [_sample/devices](data/_sample/devices) to the productive folders.

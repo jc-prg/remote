@@ -158,3 +158,9 @@ class RemoteThreadingClass(threading.Thread, RemoteDefaultClass):
             self._thread_priority = len(self._thread_waiting_times) - 1
         else:
             self._thread_priority = 3
+
+    def thread_waiting_time(self):
+        """
+        return current waiting time
+        """
+        return self._thread_waiting_times[self._thread_priority]

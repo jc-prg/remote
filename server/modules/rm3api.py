@@ -74,16 +74,6 @@ class RemoteAPI(RemoteDefaultClass):
                 break
         return config.copy()
 
-    def _api_DATA(self):
-        """
-        return initial "DATA" section
-
-        Returns:
-            dict: information for "DATA" section
-        """
-        data = self.data.complete_read()
-        return data
-
     def _api_STATUS(self):
         """
         collect status information for system, interfaces and devices
@@ -135,7 +125,7 @@ class RemoteAPI(RemoteDefaultClass):
             data["STATUS"] = self._api_STATUS()
 
         if "status-only" not in setting and "request-only" not in setting:
-            data["DATA"] = {}  # self._api_DATA()
+            data["DATA"] = {}
             data["CONFIG"] = self._api_CONFIG()
 
         if "status-only" in setting or "request-only" in setting:
@@ -697,12 +687,12 @@ class RemoteAPI(RemoteDefaultClass):
         self._refresh()
         time.sleep(1)
 
-        data = self._start(["request-only"])
+        data = self._start()
         data["REQUEST"]["Return"] = "OK: Configuration reloaded"
         data["REQUEST"]["Command"] = "Reload"
 
         self.apis.api_reconnect()
-        self.data.devices_get_status(data, read_api=True)
+        self.data.devices_get_status(data["STATUS"]["devices"], read_api=True)
 
         data = self._end(data, ["no-data"])
         return data

@@ -240,7 +240,8 @@ class ConfigCache(RemoteThreadingClass):
                     "devices_active":   {},
                     "devices_count":    0
                 }
-            if os.path.exists(os.path.join(rm3config.data_dir, interface_config_dir + ".json")):
+            config_file = os.path.join(rm3config.data_dir, interface_config_dir + ".json")
+            if os.path.exists(config_file):
                 interface_config_detail = self.read(interface_config_dir).copy()
                 interface_config[key]["devices"] = interface_config_detail["API-Devices"]
                 interface_config[key]["devices_count"] = len(interface_config_detail["API-Devices"])
@@ -251,6 +252,7 @@ class ConfigCache(RemoteThreadingClass):
                     if dev_key not in interface_config[key]["devices_active"]:
                         interface_config[key]["devices_active"][dev_key] = True
             else:
+                self.logging.error("Config file not found: " + str(config_file))
                 interface_config[key]["error"] = "Config file not found!"
                 interface_config[key]["active"] = False
 
