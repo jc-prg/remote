@@ -167,6 +167,10 @@ class RemotesData(RemoteDefaultClass):
 
             if "ERROR" in interface_def_device or "ERROR" in interface_def_default:
                 self.logging.error("Error while reading configuration for device (" + device_key + ")")
+                if "ERROR" in interface_def_device:
+                    self.logging.error("... " + str(interface_def_device["ERROR"]))
+                if "ERROR" in interface_def_default:
+                    self.logging.error("... " + str(interface_def_default["ERROR"]))
 
             else:
                 interface_def_device = interface_def_device["data"]
@@ -214,6 +218,7 @@ class RemotesData(RemoteDefaultClass):
                 data_config[device]["interface"]["interface_api"] = data[device]["config"]["interface_api"]
                 data_config[device]["interface"]["interface_dev"] = data[device]["config"]["interface_dev"]
                 data_config[device]["interface"]["device"] = device_key
+                data_config[device]["interface"]["remote"] = data[device]["config"]["remote"]
 
                 data_config[device]["commands"] = {}
                 data_config[device]["commands"]["definition"] = {}
