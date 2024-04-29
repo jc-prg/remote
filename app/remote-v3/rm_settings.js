@@ -158,7 +158,7 @@ function rmSettings (name) {	// IN PROGRESS
 		var cookie             = appCookie.get("remote");
         var main_audio         = this.data["CONFIG"]["main-audio"];  // get main audio device from file
 		var main_device_config = this.data["CONFIG"]["devices"][main_audio];
-		var main_device        = this.data["CONFIG"]["devices"][main_audio];
+		var main_device        = this.data["STATUS"]["devices"][main_audio];
 		var system_health      = this.data["STATUS"]["system_health"];
 		var audio_max		   = 100;
 
@@ -174,9 +174,9 @@ function rmSettings (name) {	// IN PROGRESS
                 audio_max  = 100;
                 this.logging.error("Max values not defined, set 100!");
                 }
-            var audio1     = "Power: "  + main_device["status"]["power"] + " / "
-                           + "Volume: " + main_device["status"]["vol"] + " (" + audio_max + ")";
-            var audio2     = main_device["settings"]["label"];
+            var audio1     = "Power: "  + main_device["power"] + " / "
+                           + "Volume: " + main_device["vol"] + " (" + audio_max + ")";
+            var audio2     = main_device_config["settings"]["label"];
             }
 
 
