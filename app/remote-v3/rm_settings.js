@@ -78,6 +78,7 @@ function rmSettings (name) {	// IN PROGRESS
             this.exec_time_list_update();
             this.create_show();
             }
+        scrollTop();
         }
 
     this.create_show            = function () {

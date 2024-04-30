@@ -123,6 +123,7 @@ function rmRemote(name) {
 
 			// show
             this.show(rm_id);
+            scrollTop();
             }
 		else if (type == "scene") {
 
@@ -142,6 +143,7 @@ function rmRemote(name) {
 
             // show
             this.show();
+            scrollTop();
             }
         else {
             startActive = true;
