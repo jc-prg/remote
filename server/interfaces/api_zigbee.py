@@ -82,7 +82,7 @@ class ApiControl(RemoteApiClass):
         """
         self.logging.debug("MQTT Client logging ("+str(level)+"): " + str(buff))
 
-    def _on_disconnect(self, client, userdata, rc):
+    def _on_disconnect(self, client, userdata, flags, properties, rc):
         """
         async API reaction on disconnection
         """
@@ -93,19 +93,19 @@ class ApiControl(RemoteApiClass):
             time.sleep(reconnect_delay)
 
             try:
-                #client.reconnect()
                 self.mqtt_client.reconnect()
                 self.logging.info("Reconnected successfully!")
                 self.status = "Connected"
                 return
             except Exception as err:
-                self.status = str(err) + ". Reconnect failed. Retrying..."
-                self.logging.error("%s. Reconnect failed. Retrying...", err)
+                self.status = "WARNING: " + str(err) + ". Reconnect failed. Retrying..."
+                self.logging.warning("%s. Reconnect failed. Retrying...", err)
 
             reconnect_delay *= self.connect_config["RECONNECT_RATE"]
             reconnect_delay = min(reconnect_delay, self.connect_config["MAX_RECONNECT_DELAY"])
             reconnect_count += 1
-        self.status = "Reconnect failed after " + str(reconnect_count) + ". Exiting..."
+
+        self.status = "ERROR: Reconnect failed after " + str(reconnect_count) + ". Exiting..."
         self.logging.info("Reconnect failed after %s attempts. Exiting...", reconnect_count)
 
     def _on_message(self, client, userdata, message):

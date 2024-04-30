@@ -349,7 +349,8 @@ class Connect(RemoteThreadingClass):
         else:
             self.api[api_dev].count_success += 1
 
-        self.logging.debug("ERROR RATE ... error:" + str(is_error))
+        if self.api[api_dev].count_error > 0:
+            self.logging.debug("ERROR RATE ... error: " + str(is_error) +  " / " + str(self.api[api_dev].count_error))
 
     def api_send_directly(self, device, command):
         """
