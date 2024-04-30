@@ -204,9 +204,11 @@ var language_app = {
 		
 		"NOT_USED"              : "not used in remote control",
 
-		"PLEASE_WAIT"         : "Please wait ... .",
+		"PLEASE_WAIT"                  : "Please wait ... .",
 		
-		"PREVIEW"             : "Preview",
+		"PREVIEW"                      : "Preview",
+
+		"QUICK_ACCESS"                 : "Quick Access",
 		
 		"RECORD_COMMAND"               : "Record command",
 		"RECORD_DELETE_COMMANDS"       : "Record / delete commands",
@@ -234,8 +236,9 @@ var language_app = {
 		"SELECT_DEV_FIRST"             : "select device first",
 		"SERVER_SETTINGS"              : "Server &amp; client settings",
 		"SETTINGS"                     : "Settings",
-		"SETTINGS_REMOTE"              : "Settings REMOTE",
-		"SETTINGS_API"                 : "Settings API",
+		"SETTINGS_GENERAL"             : "General settings",
+		"SETTINGS_REMOTE"              : "Remote Control Settings",
+		"SETTINGS_API"                 : "API Settings",
 
 		"SLIDER"                       : "slider",
 		"SLIDER_SELECT_CMD"            : "Select command, to insert slider.",

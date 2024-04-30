@@ -114,6 +114,15 @@ button {
     box-shadow         : 0 0px 0px 0 rgba(0,0,0,0.24), 0 0px 0px 0 rgba(0,0,0,0.19);
 }
 
+.button_setting_index {
+    width       :  46%;
+    height      :  140px;
+    margin      :   5px;
+    float       : left;
+    padding     : 10px;
+    background  : #3333AA;
+}
+
 .header_image_toggle_container {
     height      : 40px;
     width       : 100%;

@@ -121,10 +121,11 @@ var function_colors         = {
                 "VALUE"     : "#66FFFF"
                 }
 
-var sign_ok     = "&#10003;";       // &#9745;
-var sign_error  = "&#10008;";       // &#9746;
-var sign_off    = "&nbsp;<small>OFF</small>"; // "&#9744;";
-var sign_start  = "&#10138;";
+var sign_ok       = "&#10003;";       // &#9745;
+var sign_error    = "&#10008;";       // &#9746;
+var sign_off      = "&nbsp;<small>OFF</small>"; // "&#9744;";
+var sign_disabled = "&nbsp;<small>DISABLED</small>"; // "&#9744;";
+var sign_start    = "&#10138;";
 
 // Standard-Definition für RemoteControl
 //----------------------------------

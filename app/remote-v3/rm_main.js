@@ -163,14 +163,7 @@ function remoteDropDown(data) {
 	rm3menu.init(        data );	// load data to class
 	rm3menu.add_scenes(  data["CONFIG"]["scenes"] );
 	rm3menu.add_devices( data["CONFIG"]["devices"] );
-	rm3menu.add_script( "rm3settings.create('info');",              lang("INFORMATION"));
-	rm3menu.add_script( "rm3settings.create('edit');",              lang("SETTINGS_REMOTE"));
-	rm3menu.add_script( "rm3settings.create('edit_interfaces');",   lang("SETTINGS_API"));
-
-	//rm3menu.add_script( "rm3settings.onoff();", 	    lang("SETTINGS"));
-	//rm3menu.add_script( "remoteToggleEditMode();", 		lang("MODE_EDIT") + edit_on );
-	//rm3menu.add_script( "rm3settings.button_deact(true);remoteInit();",	deact_link);
-	//rm3menu.add_script( "remoteForceReload(true);", "Force Reload");
+	rm3menu.add_script( "rm3settings.create('index');", lang("SETTINGS"));
     }
 
 

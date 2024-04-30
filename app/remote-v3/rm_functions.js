@@ -24,8 +24,10 @@ function setNavTitle (title) {
         setTextById("navTitle", "<div onClick=\"javascript:remoteMainMenu();\" id='header_title'>"+title.replace(/#/g,"\"")+"</div>");
         }
 
-function image(file) {
-        return "<img src='icon/"+file+"' style='max-height:18px;max-width:24px;margin:0px;padding:0px;' alt='"+file+"' />";
+function image(file, big=false) {
+        if (big)    { var style = "max-height:54px;max-width:72px;"; }
+        else        { var style = "max-height:18px;max-width:24px;"; }
+        return "<img src='icon/"+file+"' style='" + style + "margin:0px;padding:0px;' alt='"+file+"' />";
         }
 
 function writeKeyBoard () {

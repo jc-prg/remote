@@ -55,25 +55,47 @@ function rmSettings (name) {	// IN PROGRESS
 
         this.header_title = getTextById("header_title");
 
-        if (selected_mode != "") {
-            this.mode = selected_mode;
-            }
-        else if (this.mode != "") {
-            selected_mode = this.mode;
-            }
+        if (selected_mode != "")   { this.mode = selected_mode; }
+        else if (this.mode != "")  { selected_mode = this.mode; }
 
-        if (selected_mode == "edit") {
-            setNavTitle("&raquo; " + lang('SETTINGS') + " &laquo");
-            this.create_edit();
-            this.create_show();
+        setNavTitle("&raquo; " + lang('SETTINGS') + " &laquo");
+        if (selected_mode == "index") {
+            this.settings_ext_reset();
+            this.settings_ext_append(1, lang("SETTINGS"), this.module_index());
+            this.settings_ext_append(2, lang("QUICK_ACCESS"), this.module_index_quick(true, true));
+            this.create_show_ext();
+            }
+        else if (selected_mode == "general") {
+            this.settings_ext_reset();
+            this.settings_ext_append(1,lang("SETTINGS_GENERAL"), this.module_main_settings());
+            this.create_show_ext();
+            }
+        else if (selected_mode == "edit") {
+            this.settings_ext_reset();
+            this.settings_ext_append(2,lang("MODE_EDIT"), this.module_index_quick(true, false));
+	    	this.settings_ext_append(1,lang("EDIT_REMOTES"), this.module_add_remotes() + this.module_title() + this.module_order_remotes());
+    		this.settings_ext_append(2,lang("EDIT_MACROS"), this.module_macros_edit());
+            this.create_show_ext();
+
+            statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
+            statusShow_powerButton('button_manual_mode', getTextById('button_manual_mode'));
+            statusShow_powerButton('button_show_code', getTextById('button_show_code'));
+            apiGetConfig_showInterfaceData(this.module_interface_edit_info);
             }
         else if (selected_mode == "edit_interfaces") {
-            this.create_edit_api();
-            this.create_show_api();
+            this.settings_ext_reset();
+            this.module_interface_edit();
+            this.settings_ext_append(1, "", this.module_interface_info());
+            apiGetConfig_showInterfaceData(this.module_interface_edit_info);
+            this.create_show_ext();
             }
         else {
             setNavTitle("&raquo; " + lang('INFORMATION') + " &laquo");
-            this.create_information();
+            this.write(0,lang("VERSION_AND_STATUS"), this.module_system_info());
+            this.write(1);
+            this.write(2);
+            this.write(3);
+            this.write(4);
             this.interface_list_update();
             this.exec_time_list_update();
             this.create_show();
@@ -95,46 +117,53 @@ function rmSettings (name) {	// IN PROGRESS
         for (var i=0; i<this.e_settings.length; i++) { elementVisible(this.e_settings[i],show_settings); }
         }
 
-    this.create_show_api        = function () {
+    this.create_show_ext        = function () {
 
         this.create_show();
         elementHidden("setting_frames");
         elementVisible("api_frames");
         }
 
-	this.create_information     = function () {
+	this.module_index           = function () {
+	    var html        = "&nbsp;<br/>";
+	    var button_img  = this.data["CONFIG"]["elements"]["button_images"];
+	    var setting_modules = {
+	        "INFORMATION":      ["info",        "rm3settings.create('info');"],
+	        "SETTINGS_GENERAL": ["settings2",   "rm3settings.create('general');"],
+	        "SETTINGS_REMOTE":  ["remote",      "rm3settings.create('edit');"],
+	        "SETTINGS_API":     ["plug",        "rm3settings.create('edit_interfaces');"]
+	        }
+	    for(var key in setting_modules) {
+	        var img   = image(button_img[setting_modules[key][0]], big=true);
+	        var text  = lang(key);
+	        html += "<button class='button_setting_index' onclick=\""+setting_modules[key][1]+"\">" + img + "<br/>&nbsp;<br/>" + text + "</button>";
+	        }
 
-		this.write(0,lang("VERSION_AND_STATUS"), this.module_system_info());
-		this.write(1);
-		this.write(2);
-		this.write(3);
-		this.write(4);
-		}
+	    html += "<div style='width:100%;height:18px;float:left;'></div>";
+		return html;
+	    }
 
-    this.create_edit_api        = function () {
+	this.module_index_quick     = function (edit=true, intelligent=false) {
+	    var html        = "&nbsp;<br/>";
 
-        this.api_settings_reset();
-        this.module_interface_edit();
-        this.api_settings_append(1, "", this.module_interface_info());
 
-        apiGetConfig_showInterfaceData(this.module_interface_edit_info);
-        }
+		html   += this.tab.start();
+		if (edit) {
+            var button_value_edit_mode   = "OFF";
+            if (rm3remotes.edit_mode)    { button_value_edit_mode = "ON"; }
+            var link_edit_mode           = "remoteToggleEditMode(true); if (getTextById(\"button_edit_mode\")==\"OFF\") { setTextById(\"button_edit_mode\",\"ON\"); } else { setTextById(\"button_edit_mode\",\"OFF\"); }";
+		    html   += this.tab.row( "&nbsp;&nbsp;Edit mode:",         "<button onclick='"+link_edit_mode+"' id='button_edit_mode' style='width:70px;'>"+button_value_edit_mode+"</button>" );
+		    }
+		if (intelligent) {
+            var button_value_manual_mode = "ON";
+            if (deactivateButton)        { button_value_manual_mode = "OFF"; }
+            var link_manual_mode         = this.app_name+".button_deact(true); if (getTextById(\"button_manual_mode\")==\"OFF\") { setTextById(\"button_manual_mode\", \"ON\"); } else { setTextById(\"button_manual_mode\", \"OFF\"); }";
+    		html   += this.tab.row( "&nbsp;&nbsp;Intelligent mode:",  "<button onclick='"+link_manual_mode+"' id='button_manual_mode' style='width:70px;'>"+button_value_manual_mode+"</button>" );
+    		}
+		html   += this.tab.end();
 
-	this.create_edit		    = function () {
-
-		this.write(0,lang("SERVER_SETTINGS"), this.module_main_settings());
-		this.write(1,lang("EDIT_REMOTES"), this.module_add_remotes() + this.module_title() + this.module_order_remotes());
-		this.write(2,lang("EDIT_MACROS"), this.module_macros_edit());
-		//this.write(3,lang("EDIT_INTERFACES"), this.module_interface_edit());
-		this.write(3);
-		this.write(4);
-
-        statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
-        statusShow_powerButton('button_manual_mode', getTextById('button_manual_mode'));
-        statusShow_powerButton('button_show_code', getTextById('button_show_code'));
-
-        apiGetConfig_showInterfaceData(this.module_interface_edit_info);
-		}
+		return html;
+	    }
 
 	this.module_title           = function (title="") {
 	    var setting = "<br/>";
@@ -300,7 +329,7 @@ function rmSettings (name) {	// IN PROGRESS
                 text += "</div>";
                 text += "<div id='interface_edit_"+key+"' style='width:100%;min-height:50px;float:left;'></div>";
 
-                this.api_settings_append(count, "", text);
+                this.settings_ext_append(count, "", text);
             }   }
         }
 
@@ -654,12 +683,12 @@ function rmSettings (name) {	// IN PROGRESS
 		setTextById(element,content);
 		}
 
-    this.api_settings_reset   = function ()  {
+    this.settings_ext_reset   = function ()  {
 
         setTextById("api_frames", "");
         }
 
-	this.api_settings_append  = function (nr, label="", text="") {
+	this.settings_ext_append  = function (nr, label="", text="") {
 	    var frame_content = getTextById("api_frames");
 
 		if (label != "") {
