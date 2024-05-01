@@ -296,8 +296,15 @@ class RemotesData(RemoteThreadingClass):
         Returns:
             dict: devices per interfaces (<interface>:<api-device> = [list, of, device-ids])
         """
+        status_devices = self.config.read(rm3config.active_apis)
         devices = self.devices_read_config()
         devices_per_interface = {}
+
+        for api in status_devices:
+            devices_per_interface[api] = {}
+            for api_device in status_devices[api]["devices"]:
+                devices_per_interface[api][api_device] = []
+
         for key in devices:
             if "interface" in devices[key] and "api" in devices[key]["interface"]:
                 api_dev = devices[key]["interface"]["api"]
