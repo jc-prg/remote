@@ -27,6 +27,7 @@ function statusCheck(data={}) {
 	var start = Date.now();
 	dataAll = data;
 
+    statusCheck_modes();
 	statusCheck_display(data);
 	statusCheck_deviceActive(data);
 	statusCheck_powerButton(data);
@@ -41,6 +42,24 @@ function statusCheck(data={}) {
 	console.log("statusCheck: Updated all status elements ("+duration+"ms)");
 	}
 
+// check status edit mode, intelligent mode & CO
+function statusCheck_modes() {
+    if (document.getElementById("toggle__edit_input")) {
+        slider = document.getElementById("toggle__edit_input");
+        if (rm3remotes.edit_mode)   { slider.value = 1; slider.className = "rm-slider device_active"; }
+        else                        { slider.value = 0; slider.className = "rm-slider device_disabled"; }
+        }
+    if (document.getElementById("toggle__intelligent_input")) {
+        slider = document.getElementById("toggle__intelligent_input");
+        if (!deactivateButton)   { slider.value = 1; slider.className = "rm-slider device_active"; }
+        else                     { slider.value = 0; slider.className = "rm-slider device_disabled"; }
+        }
+    if (document.getElementById("toggle__buttonshow_input")) {
+        slider = document.getElementById("toggle__buttonshow_input");
+        if (showButton)         { slider.value = 1; slider.className = "rm-slider device_active"; }
+        else                    { slider.value = 0; slider.className = "rm-slider device_disabled"; }
+        }
+    }
 
 // check and display current volume -> partly removed, final check open if still required
 function statusShow_volume_old( volume, maximum, vol_color, novol_color="" ) {
@@ -574,9 +593,9 @@ function statusCheck_powerButtonScene(data) {
 		}
 
     if (document.getElementById('button_edit_mode')) {
-        statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
+        statusShow_powerButton('button_edit_mode',   getTextById('button_edit_mode'));
         statusShow_powerButton('button_manual_mode', getTextById('button_manual_mode'));
-        statusShow_powerButton('button_show_code', getTextById('button_show_code'));
+        statusShow_powerButton('button_show_code',   getTextById('button_show_code'));
         }
 	}
 	

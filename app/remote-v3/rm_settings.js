@@ -104,6 +104,7 @@ function rmSettings (name) {	// IN PROGRESS
             this.create_show_ext();
             this.create_show_log();
             }
+        statusCheck_modes();
         scrollTop();
         }
 
@@ -153,11 +154,12 @@ function rmSettings (name) {	// IN PROGRESS
 	        html += "<button class='button_setting_index_small' onclick=\""+setting_modules_back["SETTINGS"][1]+"\">" + img_small + "</button>";
 	    }
 	    for(var key in setting_modules) {
-            if (key == selected) { continue; }
+	        var css_class = "";
+            if (key == selected) { css_class = " selected"; }
 	        var img_big   = image(button_img[setting_modules[key][0]], big=true);
 	        var img_small = image(button_img[setting_modules[key][0]], big=false);
 	        var text  = lang(key);
-	        if (small) { html += "<button class='button_setting_index_small' onclick=\""+setting_modules[key][1]+"\">" + img_small + "</button>"; }
+	        if (small) { html += "<button class='button_setting_index_small"+css_class+"' onclick=\""+setting_modules[key][1]+"\">" + img_small + "</button>"; }
 	        else       { html += "<button class='button_setting_index' onclick=\""+setting_modules[key][1]+"\">" + img_big + "<br/>&nbsp;<br/>" + text + "</button>"; }
 	        }
 
@@ -165,23 +167,50 @@ function rmSettings (name) {	// IN PROGRESS
 		return html;
 	    }
 
-	this.module_index_quick     = function (edit=true, intelligent=false) {
+	this.module_index_quick     = function (edit=true, intelligent=false, button_code=false) {
 	    var html        = "&nbsp;<br/>";
 
 
 		html   += this.tab.start();
 		if (edit) {
-            var button_value_edit_mode   = "OFF";
-            if (rm3remotes.edit_mode)    { button_value_edit_mode = "ON"; }
-            var link_edit_mode           = "remoteToggleEditMode(true); if (getTextById(\"button_edit_mode\")==\"OFF\") { setTextById(\"button_edit_mode\",\"ON\"); } else { setTextById(\"button_edit_mode\",\"OFF\"); }";
-		    html   += this.tab.row( "&nbsp;&nbsp;Edit mode:",         "<button onclick='"+link_edit_mode+"' id='button_edit_mode' style='width:70px;'>"+button_value_edit_mode+"</button>" );
+		    var command_on  = "remoteToggleEditMode(true);";
+		    var command_off = "remoteToggleEditMode(false);";
+		    var init        = 0;
+		    if (rm3remotes.edit_mode) { init = 1; }
+
+            html += "<div style='width:95%;float:left;max-height:30px;padding:5px;padding-left:10px;'>";
+            html += "   <div style='padding:5px;float:left;'>Edit mode:</div>";
+            html += "   <div style='width:60px;float:right;'>"
+		    html +=     this.toggle.toggleHTML("mode_edit", "", "", command_on, command_off, init);
+            html += "   </div>";
+            html += "</div>";
 		    }
 		if (intelligent) {
-            var button_value_manual_mode = "ON";
-            if (deactivateButton)        { button_value_manual_mode = "OFF"; }
-            var link_manual_mode         = this.app_name+".button_deact(true); if (getTextById(\"button_manual_mode\")==\"OFF\") { setTextById(\"button_manual_mode\", \"ON\"); } else { setTextById(\"button_manual_mode\", \"OFF\"); }";
-    		html   += this.tab.row( "&nbsp;&nbsp;Intelligent mode:",  "<button onclick='"+link_manual_mode+"' id='button_manual_mode' style='width:70px;'>"+button_value_manual_mode+"</button>" );
-    		}
+		    var command_on  = this.app_name+".button_deact(true)";
+		    var command_off = this.app_name+".button_deact(false)";
+		    var init        = 1;
+		    if (this.manual_mode) { init = 0; }
+
+            html += "<div style='width:95%;float:left;max-height:30px;padding:5px;padding-left:10px;'>";
+            html += "   <div style='padding:5px;float:left;'>Intelligent mode:</div>";
+            html += "   <div style='width:60px;float:right;'>";
+		    html +=     this.toggle.toggleHTML("mode_intelligent", "", "", command_on, command_off, init);
+            html += "   </div>";
+            html += "</div>";
+		    }
+		if (button_code) {
+		    var command_on  = this.app_name+".button_show(true)";
+		    var command_off = this.app_name+".button_show(false)";
+		    var init        = 0;
+		    if (showButton) { init = 1; }
+
+            html += "<div style='width:95%;float:left;max-height:30px;padding:5px;padding-left:10px;'>";
+            html += "   <div style='padding:5px;float:left;'>Show button code:</div>";
+            html += "   <div style='width:60px;float:right;'>";
+		    html +=     this.toggle.toggleHTML("mode_buttonshow", "", "", command_on, command_off, init);
+            html += "   </div>";
+            html += "</div>";
+		    }
 		html   += this.tab.end();
 
 		return html;
@@ -368,43 +397,43 @@ function rmSettings (name) {	// IN PROGRESS
         }
 
     this.module_interface_edit_list = function (interface, data) {
-            var text = "";
-            var devices_per_interface = data["CONFIG"]["apis"]["structure"];
+        var text = "";
+        var devices_per_interface = data["CONFIG"]["apis"]["structure"];
 
-            var details = "<div style='width:100%;height:9px;'></div>";
+        var details = "<div style='width:100%;height:9px;'></div>";
 
-            for (var api_device in devices_per_interface[interface]) {
-                details += "<i>API Device: " + api_device + "</i>&nbsp;&nbsp;";
-                var connect  = data["STATUS"]["interfaces"]["connect"][interface + "_" + api_device];
+        for (var api_device in devices_per_interface[interface]) {
+            details += "<i>API Device: " + api_device + "</i>&nbsp;&nbsp;";
+            var connect  = data["STATUS"]["interfaces"]["connect"][interface + "_" + api_device];
 
-                details += "<ul>";
-                for (var i=0;i<devices_per_interface[interface][api_device].length;i++) {
-                    var device          = devices_per_interface[interface][api_device][i];
-                    var device_settings = data["CONFIG"]["devices"][device];
-                    var power_status    = data["STATUS"]["devices"][device]["power"];
-                    var method          = device_settings["interface"]["method"];
-                    var label           = device_settings["settings"]["label"];
-                    var visibility      = device_settings["settings"]["visible"];
-                    var hidden          = "";
-                    var idle            = "<small id=\"device_auto_off_"+device+"\"></small>";
-                    var command_on    = "appFW.requestAPI('GET',['set','"+device+"','power','ON'], '', '', '' ); setTextById('CHANGE_STATUS_"+device+"','ON');"; //rm3settings.onoff();remoteInit();";
-                    var command_off   = "appFW.requestAPI('GET',['set','"+device+"','power','OFF'], '', '', '' );setTextById('CHANGE_STATUS_"+device+"','OFF');"; //rm3settings.onoff();remoteInit();";
+            details += "<ul>";
+            for (var i=0;i<devices_per_interface[interface][api_device].length;i++) {
+                var device          = devices_per_interface[interface][api_device][i];
+                var device_settings = data["CONFIG"]["devices"][device];
+                var power_status    = data["STATUS"]["devices"][device]["power"];
+                var method          = device_settings["interface"]["method"];
+                var label           = device_settings["settings"]["label"];
+                var visibility      = device_settings["settings"]["visible"];
+                var hidden          = "";
+                var idle            = "<small id=\"device_auto_off_"+device+"\"></small>";
+                var command_on    = "appFW.requestAPI('GET',['set','"+device+"','power','ON'], '', '', '' ); setTextById('CHANGE_STATUS_"+device+"','ON');"; //rm3settings.onoff();remoteInit();";
+                var command_off   = "appFW.requestAPI('GET',['set','"+device+"','power','OFF'], '', '', '' );setTextById('CHANGE_STATUS_"+device+"','OFF');"; //rm3settings.onoff();remoteInit();";
 
-                    if (visibility != "yes") { hidden = "*"; }
-                    if (method == "record" && power_status == "ON")  {
-                        power_status = "<u id=\"CHANGE_STATUS_"+device+"\"><status onclick=\""+command_off+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
-                        }
-                    else if (method == "record" && power_status == "OFF") {
-                        power_status = "<u id=\"CHANGE_STATUS_"+device+"\"><status onclick=\""+command_on+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
-                        }
-
-                    details += "<li><b>["+device+"]</b> <i>"+label+":</i> " + power_status + hidden + "</li>" + idle;
+                if (visibility != "yes") { hidden = "*"; }
+                if (method == "record" && power_status == "ON")  {
+                    power_status = "<u id=\"CHANGE_STATUS_"+device+"\"><status onclick=\""+command_off+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
                     }
-                details += "</ul>";
+                else if (method == "record" && power_status == "OFF") {
+                    power_status = "<u id=\"CHANGE_STATUS_"+device+"\"><status onclick=\""+command_on+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
+                    }
+
+                details += "<li><b>["+device+"]</b> <i>"+label+":</i> " + power_status + hidden + "</li>" + idle;
                 }
-            details += "<br/>";
-            return details;
+            details += "</ul>";
             }
+        details += "<br/>";
+        return details;
+        }
 
     this.module_interface_edit_info = function (data) {
 
@@ -556,6 +585,8 @@ function rmSettings (name) {	// IN PROGRESS
 		var button_value_manual_mode = "ON";
 		var button_show_code = "OFF";
 
+        set_temp = this.module_index_quick(true, true, true);
+/*
 		if (deactivateButton)       { button_value_manual_mode = "OFF"; }
 		if (rm3remotes.edit_mode)   { button_value_edit_mode = "ON"; }
 		if (showButton)             { button_show_code = "ON"; }
@@ -569,7 +600,7 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp   += this.tab.row( "Intelligent mode:",  "<button onclick='"+link_manual_mode+"' id='button_manual_mode' style='width:70px;'>"+button_value_manual_mode+"</button>" );
 		set_temp   += this.tab.row( "Show button code:",  "<button onclick='"+link_show_code+"' id='button_show_code' style='width:70px;'>"+button_show_code+"</button>" );
 		set_temp   += this.tab.end();
-
+*/
 		setting  += this.basic.container("setting_version",lang("CHANGE_MODES"),set_temp,true);
 
 		set_temp  = this.tab.start();
@@ -919,9 +950,14 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
 	// show button code in header if pressed button
-	this.button_show		    = function () {
-		if (showButton)	{ showButton = false; }
-		else			{ showButton = true; }
+	this.button_show		    = function (show="") {
+	    if (show == "") {
+            if (showButton)	{ showButton = false; }
+            else			{ showButton = true; }
+            }
+        else {
+            showButton = show;
+            }
 		}
 
 	// deactivate buttons if device / scene is switched off

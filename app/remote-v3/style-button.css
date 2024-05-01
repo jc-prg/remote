@@ -125,13 +125,16 @@ button {
 }
 
 .button_setting_index_small {
-    width       :  23%;
+    width       :  18%;
     height      :  40px;
     margin      :   1%;
     float       : left;
     padding     : 1px;
     background  : #333399;
     border      : solid 2px #5555AA;
+}
+.button_setting_index_small.selected {
+    border      : solid 2px #8888AA;
 }
 
 .header_image_toggle_container {

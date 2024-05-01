@@ -169,10 +169,13 @@ function remoteDropDown(data) {
 
 //--------------------------------
 
-function remoteToggleEditMode(settings=false) {
+function remoteToggleEditMode(settings="") {
 
-    if (rm3remotes.edit_mode)   { rm3remotes.edit_mode = false; }
-    else                        { rm3remotes.edit_mode = true; }
+    if (settings == "") {
+        if (rm3remotes.edit_mode)   { rm3remotes.edit_mode = false; }
+        else                        { rm3remotes.edit_mode = true; }
+        }
+    else                            { rm3remotes.edit_mode = settings; }
 
     rm3settings.edit_mode = rm3remotes.edit_mode;
     rm3start.edit_mode    = rm3remotes.edit_mode;
@@ -181,7 +184,6 @@ function remoteToggleEditMode(settings=false) {
     remoteStartMenu_load();
     remoteDropDown_load();
 	}
-
 
 //--------------------------------
 
