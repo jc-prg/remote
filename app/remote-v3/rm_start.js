@@ -47,14 +47,14 @@ function rmStart(name) {
 			if (device != "default") {
 				if (data[device]["settings"]["visible"] == "yes") {
 					var id     = "device_"+device;
-        				menu  += this.entry_device( data, id, device, "small" );
-					}
-			        else if (this.edit_mode && data[device]["settings"]["visible"] == "no") { 
-					var id     = "device_"+device;
-			        	menu  += this.entry_device( data, id, device, "small_edit" );
-			        	}
-			        }
-		}
+                    menu  += this.entry_device( data, id, device, "small" );
+                    }
+                else if (this.edit_mode && data[device]["settings"]["visible"] == "no") {
+                var id     = "device_"+device;
+                    menu  += this.entry_device( data, id, device, "small_edit" );
+                    }
+			    }
+		    }
 
 		// replace old menu
         setTextById(menuItems,menu);
@@ -133,7 +133,7 @@ function rmStart(name) {
 		else {
 			return "<button id='" + id + "' class='button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + " >" + label + "</button>";
 			}
-                }
+        }
 
         // check if image exists for button
 	this.button_image         = function(label,style) {
@@ -145,14 +145,14 @@ function rmStart(name) {
                 for (var key in button_img2) { button_img[key] = this.image(button_img2[key]); }
 
                 // check label
-                if (button_color && label in button_color)	{ style = style + " bg" + label + " "; }
-                if (label in button_img && showImg ) 	{ label = button_img[label]; }
+                if (button_color && label in button_color)  { style = style + " bg" + label + " "; }
+                if (label in button_img && showImg )        { label = button_img[label]; }
                 return [label, style];
                 }
                 
 	// create image tag for icons
 	this.image                = function(file) {
-	        return "<img src='icon/"+file+"' style='height:15px;margin:0px;padding:0px;' alt='"+file+"' />";
+	        return "<img src='icon/"+file+"' style='height:20px;margin:0px;padding:0px;' alt='"+file+"' />";
 	        }
 	}
 

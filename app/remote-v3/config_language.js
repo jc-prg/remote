@@ -107,6 +107,7 @@ var language_app = {
 		"EDIT_MACROS"            : "Edit macros",
 		"EDIT_INTERFACES"        : "Edit interfaces",
 		"EDIT_INTERFACE"         : "Edit interface configuration for {0}",
+		"EXTERNAL_ID"            : "External ID",
 
 		"FORMAT_INCORRECT"       : "format is not correct",
 		
@@ -116,6 +117,7 @@ var language_app = {
 		"HEADER_IMAGE_EXISTS"    : "There is already a HEADER-IMAGE in this remote control.",
 		
 		"ID"                     : "ID",
+		"IMAGE"                  : "Image",
 		"INTERFACES"             : "Interfaces",
 		"INTERFACE_STATUS"       : "Interface Status",
 

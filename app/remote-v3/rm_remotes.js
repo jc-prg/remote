@@ -392,17 +392,22 @@ function rmRemote(name) {
 		remote += this.basic.edit_line();
 
 		// Main Settings
-		var edit = "";
+		var edit   = "";
+		var images = this.data["CONFIG"]["elements"]["button_images"];
+        var icon   = "<img src='icon/"+images[device_config["settings"]["image"]]+"' style='width:30px;'>";
+		icon       = "<button class='button device_off small'><div id='device_edit_button_image'>"+icon+"</div></button>";
 		edit    += this.tab.start();
-		edit    += this.tab.row( lang("ID")+":",                device );
-		edit    += this.tab.row( "External ID:",                this.basic.input("edit_device_id",	device_config["settings"]["device_id"]) );
-		edit    += this.tab.row( lang("LABEL")+":",             this.basic.input("edit_label",	device_config["settings"]["label"]) );
-		edit    += this.tab.row( lang("DESCRIPTION")+":&nbsp;", this.basic.input("edit_description", device_config["settings"]["description"]) );
-		edit    += this.tab.line();	
+		edit    += this.tab.row( icon,                            lang("ID") + ":<br/><b>" + device + "</b>" );
+		edit    += this.tab.row( lang("EXTERNAL_ID")+":",         this.basic.input("edit_device_id",	device_config["settings"]["device_id"]) );
+		edit    += this.tab.row( lang("LABEL")+":",               this.basic.input("edit_label",	device_config["settings"]["label"]) );
+		edit    += this.tab.row( lang("DESCRIPTION")+":&nbsp;",   this.basic.input("edit_description", device_config["settings"]["description"]) );
+		edit    += this.tab.row( lang("IMAGE"),                   this.button_image_select("edit_image",  device_config["settings"]["image"]) );
+
+		edit    += this.tab.line();
 		edit    += this.tab.row("<center>"+
 				"<input id='remote_visibility' value='"+remote_visible+"' style='display:none;'>"+
 				this.button.edit("apiRemoteChangeVisibility('remote','"+device+"','remote_visibility');",lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
-				this.button.edit("apiDeviceEdit('"+device+"','edit','description,label,interface,method,device_id');",lang("BUTTON_T_SAVE")) + "&nbsp;" +
+				this.button.edit("apiDeviceEdit('"+device+"','edit','description,label,interface,method,device_id,image');",lang("BUTTON_T_SAVE")) + "&nbsp;" +
 				this.button.edit("apiDeviceDelete_exe('"+device+"');","delete") + "</center>"
 				);		
 		edit    += this.tab.line();
@@ -421,7 +426,8 @@ function rmRemote(name) {
 
 		// API Information
 		edit     = "<p><b>"+lang("API_INTERFACE")+":</b><br/>"+		    device_config["interface"]["api"].replace("_", " / ");
-		edit    += "<p><b>"+lang("CONFIG_INTERFACE")+":</b><br/>"+   	JSON.stringify(device_config["interface"]["files"]).replace( /,/g, ", ");
+		//edit    += "<p><b>"+lang("CONFIG_INTERFACE")+":</b><br/>"+   	JSON.stringify(device_config["interface"]["files"]).replace( /,/g, ", ");
+		edit    += "<p><b>"+lang("CONFIG_INTERFACE")+":</b><br/>"+ 		device_config["interface"]["device"]+".json";
 		edit    += "<p><b>"+lang("CONFIG_REMOTE")+":</b><br/>"+ 		device_config["interface"]["remote"]+".json";
 		edit    += "<p><b>"+lang("METHOD")+":</b><br/>"+		        device_config["interface"]["method"]; //device_data["interface"]["remote"]+".json" );
 		remote  += this.basic.container("remote_api01",lang("API_INFORMATION"),edit,false);
@@ -1432,7 +1438,29 @@ function rmRemote(name) {
             setTextById("scene_edit_header_image", image_html);
             }
         }
-                        
+
+	// return drop-down with scene images
+	this.button_image_select        = function (id,selected="") {
+		var list     = {};
+		var images   = this.data["CONFIG"]["elements"]["button_images"];
+
+		for (var key in images) {
+			list[key] = key;
+			}
+
+		return this.basic.select(id,"button-image",list,"rm3remotes.button_image_preview('"+id+"');",selected);
+		}
+
+	// header-image preview
+	this.button_image_preview       = function (id) {
+	    var images     = this.data["CONFIG"]["elements"]["button_images"];
+        var selected   = getValueById("edit_image");
+        if (images[selected]) {
+            var image_html = "<img src='icon/"+images[selected]+"' style='width:30px;'>";
+            setTextById("device_edit_button_image", image_html);
+            }
+        }
+
 	// return list of buttons for a device
 	this.button_list                = function (device) {
 		if (this.data["CONFIG"]["devices"][device]) 	{ return this.data["CONFIG"]["devices"]["buttons"]; }

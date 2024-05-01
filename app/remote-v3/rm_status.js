@@ -417,7 +417,7 @@ function statusCheck_apiConnection(data) {
         else                                                  { api_summary[api] = "OK"; }
 
 		for (key2 in config_devices) {
-			if (config_errors && config_errors[key2] && config_errors[key2] != {} && config_devices[key2]["api"] == key)	{ api_summary[api_dev[0]] = "ERROR"; }
+			if (config_errors && config_errors[key2] && config_errors[key2] != {} && config_devices[key2]["api"] == key)	{ api_summary[api] = "ERROR"; }
 			}
 		}
 
