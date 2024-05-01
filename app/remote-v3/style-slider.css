@@ -175,36 +175,28 @@
 	border              : 2px solid #00cc00;
 }
 
-.rm-slider.device_off::-webkit-slider-runnable-track    { background: #332222; }
-.rm-slider.device_off::-webkit-slider-thumb             { background : darkred;  border : 2px solid #cc0000; }
-.rm-slider.device_off::-moz-range-thumb                 { background : darkred;  border : 2px solid #cc0000; }
+.rm-slider.device_off::-webkit-slider-runnable-track      { background: #332222; }
+.rm-slider.device_off::-webkit-slider-thumb               { background : darkred;  border : 2px solid #cc0000; }
+.rm-slider.device_off::-moz-range-thumb                   { background : darkred;  border : 2px solid #cc0000; }
 
-.rm-slider.device_on::-webkit-slider-runnable-track     { background: #332222; }
-.rm-slider.device_on::-webkit-slider-thumb              { background : green;  border : 2px solid #00cc00; }
-.rm-slider.device_on::-moz-range-thumb                  { background : green;  border : 2px solid #00cc00; }
-/*
-.rm-slider.device_active::-webkit-slider-runnable-track       { background: #332222; }
-.rm-slider.device_active::-moz-range-thumb                    { background : #3333AA;  border : 2px solid #5555AA; }
-.rm-slider.device_active::-webkit-slider-thumb                { background : #3333AA;  border : 2px solid #5555AA; }
-*/
-.rm-slider.device_disabled::-webkit-slider-runnable-track       { background: #332222; }
-.rm-slider.device_disabled::-moz-range-thumb                    { background : #3333AA;  border : 2px solid #5555AA; }
-.rm-slider.device_disabled::-webkit-slider-thumb                { background : #3333AA;  border : 2px solid #5555AA; }
-/*
-.rm-slider.device_disabled::-webkit-slider-runnable-track     { background: #332222; }
-.rm-slider.device_disabled::-webkit-slider-thumb              { background : #111188;  border : 2px solid #3333AA; }
-.rm-slider.device_disabled::-moz-range-thumb                  { background : #111188;  border : 2px solid #3333AA; }
-*/
-.rm-slider.device_active::-webkit-slider-runnable-track { background: #332222; }
-.rm-slider.device_active::-webkit-slider-thumb          { background : #6666DD;  border : 2px solid #8888FF; }
-.rm-slider.device_active::-moz-range-thumb              { background : #6666DD;  border : 2px solid #8888FF; }
+.rm-slider.device_on::-webkit-slider-runnable-track       { background: #332222; }
+.rm-slider.device_on::-webkit-slider-thumb                { background : green;  border : 2px solid #00cc00; }
+.rm-slider.device_on::-moz-range-thumb                    { background : green;  border : 2px solid #00cc00; }
 
-.rm-slider.device_undef::-webkit-slider-runnable-track  { background: #332222; }
-.rm-slider.device_undef::-webkit-slider-thumb           { background : gray;  border : 2px solid #cccccc; }
-.rm-slider.device_undef::-moz-range-thumb               { background : gray;  border : 2px solid #cccccc; }
+.rm-slider.device_disabled::-webkit-slider-runnable-track { background: #332222; }
+.rm-slider.device_disabled::-moz-range-thumb              { background : #3333AA;  border : 2px solid #5555AA; }
+.rm-slider.device_disabled::-webkit-slider-thumb          { background : #3333AA;  border : 2px solid #5555AA; }
 
-.rm-slider.device_set::-webkit-slider-runnable-track  { background: #332222; }
-.rm-slider.device_set::-webkit-slider-thumb           { background : darkcyan;  border : 2px solid cyan; }
-.rm-slider.device_set::-moz-range-thumb               { background : darkcyan;  border : 2px solid cyan; }
+.rm-slider.device_active::-webkit-slider-runnable-track   { background: #332222; }
+.rm-slider.device_active::-webkit-slider-thumb            { background : #6666DD;  border : 2px solid #8888FF; }
+.rm-slider.device_active::-moz-range-thumb                { background : #6666DD;  border : 2px solid #8888FF; }
+
+.rm-slider.device_undef::-webkit-slider-runnable-track    { background: #332222; }
+.rm-slider.device_undef::-webkit-slider-thumb             { background : gray;  border : 2px solid #cccccc; }
+.rm-slider.device_undef::-moz-range-thumb                 { background : gray;  border : 2px solid #cccccc; }
+
+.rm-slider.device_set::-webkit-slider-runnable-track      { background: #332222; }
+.rm-slider.device_set::-webkit-slider-thumb               { background : darkcyan;  border : 2px solid cyan; }
+.rm-slider.device_set::-moz-range-thumb                   { background : darkcyan;  border : 2px solid cyan; }
 
 /* EOF */
