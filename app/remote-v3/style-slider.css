@@ -204,7 +204,7 @@
 .rm-slider.device_undef::-moz-range-thumb               { background : gray;  border : 2px solid #cccccc; }
 
 .rm-slider.device_set::-webkit-slider-runnable-track  { background: #332222; }
-.rm-slider.device_set::-webkit-slider-thumb           { background : darkmagenta;  border : 2px solid magenta; }
-.rm-slider.device_set::-moz-range-thumb               { background : darkmagenta;  border : 2px solid magenta; }
+.rm-slider.device_set::-webkit-slider-thumb           { background : darkcyan;  border : 2px solid cyan; }
+.rm-slider.device_set::-moz-range-thumb               { background : darkcyan;  border : 2px solid cyan; }
 
 /* EOF */
