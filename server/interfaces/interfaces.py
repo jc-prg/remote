@@ -674,6 +674,38 @@ class Connect(RemoteThreadingClass):
             d_id = active[device]["config"]["interface_api"]+"_" + active[device]["config"]["interface_api"]+"_"+device
         return d_id
 
+    def devices_available(self, interface):
+        """
+        get all available devices of this interface, if supported
+
+        Args:
+            interface (str): interface id
+        Returns:
+            dict: available devices with following parameters: id, name, supported, disabled, description
+        """
+        try:
+            if interface in self.api:
+                result = self.api[interface].devices_available()
+                return result
+        except Exception as e:
+            self.logging.debug("ERROR getting available devices: " + str(e))
+        return {}
+
+    def device_listen(self, interface, active):
+        """
+        activate / disable listen mode new ZigBee devices
+
+        Args:
+            interface (str): interface id
+            active (bool): True to activate, False to disable
+        """
+        try:
+            if interface in self.api:
+                return self.api[interface].devices_available()
+        except Exception as e:
+            self.logging.debug("ERROR getting available devices: " + str(e))
+        return {}
+
     def command_get(self, dev_api, button_query, device, button):
         """
         translate device and button to command for the specific device

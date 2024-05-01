@@ -224,6 +224,10 @@ class RemotesData(RemoteThreadingClass):
                             data_config[device]["api_commands"]["btn: " + key] = interface_def_combined["buttons"][key]
 
                 data_config[device]["settings"] = devices[device]["settings"]
+                if "device_id" in data[device]["config"]:
+                    data_config[device]["settings"]["device_id"] = data[device]["config"]["device_id"]
+                else:
+                    data_config[device]["settings"]["device_id"] = ""
                 data_config[device]["remote"] = devices[device]["remote"]
 
                 data_config[device]["interface"] = {}
@@ -306,6 +310,24 @@ class RemotesData(RemoteThreadingClass):
                     devices_per_interface[api][dev].append(key)
 
         return devices_per_interface.copy()
+
+    def devices_read_api_new_devices(self):
+        """
+        create a list of devices detected by API Devices
+
+        Returns:
+            dict: devices detected by API Devices
+        """
+        devices = self.devices_read_config()
+        devices_per_interface = {}
+        for key in devices:
+            if "interface" in devices[key] and "api" in devices[key]["interface"]:
+                api_dev = devices[key]["interface"]["api"]
+                detect = self.apis.devices_available(api_dev)
+                if detect != {}:
+                    devices_per_interface[api_dev] = detect
+
+        return devices_per_interface
 
     def devices_read(self, selected=None, remotes=True):
         """
@@ -893,6 +915,7 @@ class RemotesEdit(RemoteDefaultClass):
         active_json[device] = {
             "config": {
                 "device": info["config_device"],
+                "device_id": info["id_ext"],
                 "remote": info["config_remote"],
                 "interface_api": interface,
                 "interface_dev": "default"
@@ -956,6 +979,7 @@ class RemotesEdit(RemoteDefaultClass):
         """
 
         keys_active = ["label", "image", "description", "main-audio", "interface"]
+        keys_config = ["device_id"]
         keys_commands = ["description", "method"]
         keys_remotes = ["description", "remote", "display", "display-size", "type"]
 
@@ -983,6 +1007,11 @@ class RemotesEdit(RemoteDefaultClass):
         for key in keys_active:
             if key in info:
                 active_json[device]["settings"][key] = info[key]
+                i += 1
+
+        for key in keys_config:
+            if key in info:
+                active_json[device]["config"][key] = info[key]
                 i += 1
 
         for key in keys_commands:

@@ -6,27 +6,17 @@ import modules.rm3ping as rm3ping
 from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 import paho.mqtt.client as mqtt
 
-# -------------------------------------------------
-# API-class
-# -------------------------------------------------
-"""
-collection for implementation
-
-client.subscribe()  -> subscript messages i want to receive
-                    -> for some commands a message will return immediately (e.g. ../bridge/devices/)
-client.publish()    -> send a command, if subscribe a message will return
-
-https://www.emqx.com/en/blog/how-to-use-mqtt-in-python
-https://www.zigbee2mqtt.io/guide/usage/mqtt_topics_and_messages.html
-"""
-
 shorten_info_to = rm3config.shorten_info_to
 rm3config.api_modules.append("ZIGBEE2MQTT")
 
 
 class ApiControl(RemoteApiClass):
     """
-    Integration of sample API to be used by jc://remote/
+    Integration of ZigBee2MQTT API
+
+    Further information can be found here:
+    https://www.emqx.com/en/blog/how-to-use-mqtt-in-python
+    https://www.zigbee2mqtt.io/guide/usage/mqtt_topics_and_messages.html
     """
 
     def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
@@ -49,6 +39,8 @@ class ApiControl(RemoteApiClass):
         self.mqtt_devices_status = {}
         self.mqtt_subscribed = []
         self.mqtt_msg_received = {}
+        self.mqtt_friendly_name = {}
+        self.mqtt_device_id = {}
         self.connect_config = {
             "FIRST_RECONNECT_DELAY": 1,
             "RECONNECT_RATE": 2,
@@ -194,6 +186,8 @@ class ApiControl(RemoteApiClass):
                 self.mqtt_devices[device_id] = device
                 self.mqtt_client.subscribe(self.mqtt_msg_start + device_id)
                 self.mqtt_client.publish(self.mqtt_msg_start + device_id + "/get")
+                self.mqtt_device_id[device_id] = device["ieee_address"]
+                self.mqtt_friendly_name[device["ieee_address"]] = device_id
             self.config.write(rm3config.commands + self.api_name + "/10_devices", self.mqtt_devices)
 
     def execute_request(self, topic, data=None):
@@ -211,6 +205,40 @@ class ApiControl(RemoteApiClass):
             rc = self.mqtt_client.publish(topic)
         else:
             rc = self.mqtt_client.publish(topic, data, 1)
+
+    def devices_available(self):
+        """
+        get all available devices
+
+        Returns:
+            dict: available devices with following parameters: id, name, supported, disabled, description
+        """
+        available = {}
+        for key_x in self.mqtt_devices:
+            device_infos = self.mqtt_devices[key_x].copy()
+            key = device_infos["friendly_name"]
+            available[key] = {
+                "name":        device_infos["friendly_name"],
+                "id":          device_infos["ieee_address"],
+                "disabled":    device_infos["disabled"],
+                "type":        device_infos["type"]
+            }
+            available[key]["description"] = ""
+            if "manufacturer" in device_infos:
+                available[key]["description"] += device_infos["manufacturer"] + " "
+            if "model_id" in device_infos:
+                available[key]["description"] += device_infos["model_id"] + " "
+
+        return available
+
+    def devices_listen(self, active):
+        """
+        activate / disable listen mode new ZigBee devices
+
+        Args:
+            active (bool): True to activate, False to disable
+        """
+        self.execute_request("bridge/request/permit_join", {"value": active})
 
     def wait_if_working(self):
         """Some devices run into problems, if send several requests at the same time"""
@@ -297,6 +325,14 @@ class ApiControl(RemoteApiClass):
         self.last_action = time.time()
         self.last_action_cmd = "QUERY: " + device + "/" + command
 
+        if device_id in self.mqtt_friendly_name:
+            friendly_name = self.mqtt_friendly_name[device_id]
+        elif device_id in self.mqtt_device_id:
+            friendly_name = device_id
+        else:
+            self.logging.error("ERROR: No data for device '" + device_id + "' available.")
+            return "N/A"
+
         if self.log_command:
             self.logging.info("__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
 
@@ -309,11 +345,11 @@ class ApiControl(RemoteApiClass):
             if command_key == "get":
                 result = "N/A"
                 unit = ""
-                if device_id in self.mqtt_devices_status and command_value in self.mqtt_devices_status[device_id]:
-                    result = self.mqtt_devices_status[device_id][command_value]
-                    if device_id in self.mqtt_devices and "definition" in self.mqtt_devices[device_id] \
-                            and "exposes" in self.mqtt_devices[device_id]["definition"]:
-                        expose_entries = self.mqtt_devices[device_id]["definition"]["exposes"]
+                if friendly_name in self.mqtt_devices_status and command_value in self.mqtt_devices_status[friendly_name]:
+                    result = self.mqtt_devices_status[friendly_name][command_value]
+                    if friendly_name in self.mqtt_devices and "definition" in self.mqtt_devices[friendly_name] \
+                            and "exposes" in self.mqtt_devices[friendly_name]["definition"]:
+                        expose_entries = self.mqtt_devices[friendly_name]["definition"]["exposes"]
                         for expose_entry in expose_entries:
                             if ("name" in expose_entry and "unit" in expose_entry and
                                     expose_entry["name"] == command_value):
@@ -321,23 +357,6 @@ class ApiControl(RemoteApiClass):
 
                     if unit != "":
                         result = str(result) + " " + str(unit)
-
-        # ----
-        # if requested values, something like ...
-        # result = self.mqtt_devices_status
-        #
-        # otherwise execute something and wait for the result; use timeout
-
-        # ---- change for your api ----
-        #       if self.status == "Connected":
-        #         try:
-        #           result  = self.api.command(xxx)
-        #         except Exception as e:
-        #           self.working = True
-        #           return "ERROR "+self.api_name+" - query: " + str(e)
-        #       else:
-        #         self.working = True
-        #         return "ERROR "+self.api_name+": Not connected"
 
         self.working = False
         return result

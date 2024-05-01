@@ -394,14 +394,15 @@ function rmRemote(name) {
 		// Main Settings
 		var edit = "";
 		edit    += this.tab.start();
-		edit    += this.tab.row( lang("ID")+":",	       	device );
-		edit    += this.tab.row( lang("LABEL")+":",       		this.basic.input("edit_label",	device_config["settings"]["label"]) );
-		edit    += this.tab.row( lang("DESCRIPTION")+":&nbsp;", 	this.basic.input("edit_description", device_config["settings"]["description"]) );
+		edit    += this.tab.row( lang("ID")+":",                device );
+		edit    += this.tab.row( "External ID:",                this.basic.input("edit_device_id",	device_config["settings"]["device_id"]) );
+		edit    += this.tab.row( lang("LABEL")+":",             this.basic.input("edit_label",	device_config["settings"]["label"]) );
+		edit    += this.tab.row( lang("DESCRIPTION")+":&nbsp;", this.basic.input("edit_description", device_config["settings"]["description"]) );
 		edit    += this.tab.line();	
 		edit    += this.tab.row("<center>"+
 				"<input id='remote_visibility' value='"+remote_visible+"' style='display:none;'>"+
 				this.button.edit("apiRemoteChangeVisibility('remote','"+device+"','remote_visibility');",lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
-				this.button.edit("apiDeviceEdit('"+device+"','edit','description,label,interface,method');",lang("BUTTON_T_SAVE")) + "&nbsp;" +
+				this.button.edit("apiDeviceEdit('"+device+"','edit','description,label,interface,method,device_id');",lang("BUTTON_T_SAVE")) + "&nbsp;" +
 				this.button.edit("apiDeviceDelete_exe('"+device+"');","delete") + "</center>"
 				);		
 		edit    += this.tab.line();

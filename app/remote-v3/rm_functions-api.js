@@ -104,6 +104,15 @@ function apiSceneAdd(data) {
 
 	appFW.requestAPI("PUT",["scene",send_data["id"]], send_data, apiAlertReturn);
 	}
+function apiSceneAddCheckID(element) {
+    if (element.value && dataAll["CONFIG"]["scenes"][element.value]) {
+        element.style.color = "red";
+        }
+    else {
+        element.style.color = "";
+        }
+    }
+
 
 // edit scene header data
 function apiSceneEdit(device,prefix,fields) {
@@ -272,8 +281,9 @@ function apiDeviceAdd(data,onchange) {
 	send_data["device"]        = getValueById(data[3]);
 	send_data["config_device"] = getValueById(data[4]);
 	send_data["config_remote"] = getValueById(data[5]);
-	
-	console.error(send_data);
+	send_data["id_ext"]        = getValueById(data[6]);
+
+	console.debug(send_data);
         
 	if (dataAll["CONFIG"]["devices"][send_data["id"]])  { appMsg.alert(lang("DEVICE_EXISTS",[send_data["id"]])); return; }
 	else if (send_data["id"] == "")                     { appMsg.alert(lang("DEVICE_INSERT_ID")); return; }
@@ -283,6 +293,14 @@ function apiDeviceAdd(data,onchange) {
 
 	appFW.requestAPI("PUT",["device",send_data["id"]], send_data, apiAlertReturn);
 	}
+function apiDeviceAddCheckID(element) {
+    if (element.value && dataAll["CONFIG"]["devices"][element.value]) {
+        element.style.color = "red";
+        }
+    else {
+        element.style.color = "";
+        }
+    }
 
 // delete device
 function apiDeviceDelete_exe(device) {

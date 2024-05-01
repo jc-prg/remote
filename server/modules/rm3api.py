@@ -40,12 +40,15 @@ class RemoteAPI(RemoteDefaultClass):
         """
         templates = self.data.templates_read()
         apis = self.data.devices_read_api_structure()
+        apis_detect = self.data.devices_read_api_new_devices()
         macros = self.data.macros_read()
 
         config = {
             "apis": {
                 "list":                 list(apis.keys()),
                 "list_devices":         list(self.apis.available.keys()),
+                "list_description":     self.apis.available,
+                "list_detect":          apis_detect,
                 "structure":            apis
                 },
             "devices":                  self.data.devices_read_config(),

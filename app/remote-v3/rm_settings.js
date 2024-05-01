@@ -64,10 +64,13 @@ function rmSettings (name) {	// IN PROGRESS
             this.settings_ext_append(1, lang("SETTINGS"), this.module_index());
             this.settings_ext_append(2, lang("QUICK_ACCESS"), this.module_index_quick(true, true));
             this.create_show_ext();
+
+            statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
+            statusShow_powerButton('button_manual_mode', getTextById('button_manual_mode'));
             }
         else if (selected_mode == "general") {
             this.settings_ext_reset();
-            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_GENERAL"));
+            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_GENERAL"), "");
             this.settings_ext_append(1,lang("SETTINGS_GENERAL"), this.module_main_settings());
             this.create_show_ext();
             }
@@ -82,7 +85,7 @@ function rmSettings (name) {	// IN PROGRESS
             statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
             statusShow_powerButton('button_manual_mode', getTextById('button_manual_mode'));
             statusShow_powerButton('button_show_code', getTextById('button_show_code'));
-            apiGetConfig_showInterfaceData(this.module_interface_edit_info);
+            //apiGetConfig_showInterfaceData(this.module_interface_edit_info);
             }
         else if (selected_mode == "edit_interfaces") {
             this.settings_ext_reset();
@@ -91,6 +94,7 @@ function rmSettings (name) {	// IN PROGRESS
             this.settings_ext_append(1, "", this.module_interface_info());
             apiGetConfig_showInterfaceData(this.module_interface_edit_info);
             this.create_show_ext();
+            statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
             }
         else {
             setNavTitle("&raquo; " + lang('INFORMATION') + " &laquo");
@@ -99,19 +103,6 @@ function rmSettings (name) {	// IN PROGRESS
             this.settings_ext_append(1,lang("VERSION_AND_STATUS"), this.module_system_info());
             this.create_show_ext();
             this.create_show_log();
-
-            /*
-            this.write(0,"", this.module_index(true, "INFORMATION"));
-            this.write(1,lang("VERSION_AND_STATUS"), this.module_system_info());
-            this.write(2);
-            this.write(3);
-            this.write(4);
-            this.interface_list_update();
-            this.exec_time_list_update();
-            this.create_show();
-
-            //<div id='error_log'>
-            */
             }
         scrollTop();
         }
@@ -273,7 +264,7 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.row(	"Position:",		"<div id='scrollPosition'>0 px</div>" );
 		set_temp += this.tab.row( 	"Theme:", 		appTheme );
 		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_display","Screen &amp; Display",set_temp,true);
+		setting  += this.basic.container("setting_display","Screen &amp; Display",set_temp,false);
 
 		// button color codes
 		var buttons = "";
@@ -288,7 +279,7 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row( "<center>" + buttons + "</center>" );
 		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_color_codes","Button color codes",set_temp,true);
+		setting  += this.basic.container("setting_color_codes","Button color codes",set_temp,false);
 
         // server health
         var modules = [];
@@ -301,7 +292,7 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.row( 	"Threads:&nbsp;", "<div id='system_health'></div>" );
 		set_temp += this.tab.row( 	"Modules:&nbsp;", modules.join(", ") );
 		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_health","Server Health",set_temp,true);
+		setting  += this.basic.container("setting_health","Server Health",set_temp,false);
 
 		// status
 		set_temp  = this.tab.start();
@@ -351,7 +342,7 @@ function rmSettings (name) {	// IN PROGRESS
                 count += 1;
                 var text = "";
                 var key2 = key.replaceAll("-", "");
-                var initial_visible = "display:block;";
+                var initial_visible = "display:none;";
                 if (!interface_status[key]["active"]) { initial_visible = "display:none"; }
                 var command_on  = 'javascript:apiInterfaceOnOff(\''+key+'\', \'True\'); document.getElementById(\'interface_edit_'+key+'\').style.display=\'block\';';
                 var command_off = 'javascript:apiInterfaceOnOff(\''+key+'\', \'False\');';
@@ -528,6 +519,24 @@ function rmSettings (name) {	// IN PROGRESS
             }
             setting += "<br/>";
             setTextById(id, setting);
+
+            var slider = document.getElementById("toggle__"+key+"_input");
+            if (dataAll["STATUS"]["connections"][key]["active"] == true) {
+                elementVisible("interface_edit_"+key);
+                slider.value = 1;
+                slider.className = "rm-slider device_active";
+                slider.disabled = false;
+                }
+            else if (dataAll["STATUS"]["connections"][key]["active"] == false) {
+                slider.value = 0;
+                slider.className = "rm-slider device_disabled";
+                slider.disabled = false;
+                }
+            else {
+                slider.value = 0;
+                slider.className = "rm-slider device_undef";
+                slider.disabled = true;
+                }
             }
         }
 
@@ -678,7 +687,7 @@ function rmSettings (name) {	// IN PROGRESS
 		this.btn.height = "30px";
 
 		set_temp  = this.tab.start();
-		set_temp += this.tab.row( "ID:",            this.input("add_scene_id") );
+		set_temp += this.tab.row( "ID:",            this.input("add_scene_id", "", "apiSceneAddCheckID(this);") );
 		set_temp += this.tab.row( "Label:",         this.input("add_scene_label") );
 		set_temp += this.tab.row( "Description:",   this.input("add_scene_descr") );
 		set_temp += this.tab.row( "<center>" +
@@ -688,15 +697,16 @@ function rmSettings (name) {	// IN PROGRESS
 		setting  += this.basic.container("setting_add_scene","Add scene",set_temp,false);
 
 		set_temp  = this.tab.start();
-		set_temp += this.tab.row( "ID:",            this.input("add_device_id") );
+		set_temp += this.tab.row( "ID:",            this.input("add_device_id","", "apiDeviceAddCheckID(this);") );
+		set_temp += this.tab.row( "External ID:",   this.input("add_device_id_external") );
 		set_temp += this.tab.row( "Label:",         this.input("add_device_descr",onclick=onchange,oninput=onchange) );
-		set_temp += this.tab.row( "Interface:",     this.select("add_device_api","Select interface",this.data["CONFIG"]["interfaces"],onchange) );
+		set_temp += this.tab.row( "Interface:",     this.select("add_device_api","Select interface",this.data["CONFIG"]["apis"]["list_description"],onchange) );
 		set_temp += this.tab.row( "Device Name:",   this.input("add_device",onclick=onchange,oninput=onchange) );
 		set_temp += this.tab.line();
 		set_temp += this.tab.row( "Device-Config:",	this.input("add_device_device")+".json" );
 		set_temp += this.tab.row( "Remote-Config:",	this.input("add_device_remote")+".json" );
 		set_temp += this.tab.row( "<center>" +
-                    this.btn.sized(id="add_dev",label="Add Device",style="","apiDeviceAdd([#add_device_id#,#add_device_descr#,#add_device_api#,#add_device#,#add_device_device#,#add_device_remote#],"+onchange2+");") +
+                    this.btn.sized(id="add_dev",label="Add Device",style="","apiDeviceAdd([#add_device_id#,#add_device_descr#,#add_device_api#,#add_device#,#add_device_device#,#add_device_remote#,#add_device_id_external#],"+onchange2+");") +
                     "</center>", false);
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_add_device","Add device",set_temp,false);
@@ -725,7 +735,7 @@ function rmSettings (name) {	// IN PROGRESS
         setTextById("setting_ext_frames", "");
         }
 
-	this.settings_ext_append  = function (nr, label="", text="") {
+	this.settings_ext_append  = function (nr, label="", text="", style="") {
 	    var frame_content = getTextById("setting_ext_frames");
 
 		if (label != "") {
@@ -735,7 +745,7 @@ function rmSettings (name) {	// IN PROGRESS
                     + "<br/>";
 			}
 
-	    var device_frame = "<div id='device_frame" + nr + "' class='setting_bg' style='display:block;'>";
+	    var device_frame = "<div id='device_frame" + nr + "' class='setting_bg' style='display:block;"+style+"'>";
         device_frame += text;
 	    device_frame += "</div>";
 	    setTextById("setting_ext_frames", frame_content + device_frame);
