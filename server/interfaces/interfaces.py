@@ -177,7 +177,7 @@ class Connect(RemoteThreadingClass):
 
             if not active:
                 self.logging.debug("Interface '" + key + "' is disabled.")
-                self.api[key].status = "OFF (" + api + ")"
+                self.api[key].status = "DISABLED (" + api + ")"
 
             elif "IPAddress" in self.api[key].api_config:
                 connect = rm3ping.ping(self.api[key].api_config["IPAddress"])

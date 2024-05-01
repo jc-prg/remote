@@ -42,25 +42,6 @@ function statusCheck(data={}) {
 	console.log("statusCheck: Updated all status elements ("+duration+"ms)");
 	}
 
-// check status edit mode, intelligent mode & CO
-function statusCheck_modes() {
-    if (document.getElementById("toggle__edit_input")) {
-        slider = document.getElementById("toggle__edit_input");
-        if (rm3remotes.edit_mode)   { slider.value = 1; slider.className = "rm-slider device_active"; }
-        else                        { slider.value = 0; slider.className = "rm-slider device_disabled"; }
-        }
-    if (document.getElementById("toggle__intelligent_input")) {
-        slider = document.getElementById("toggle__intelligent_input");
-        if (!deactivateButton)   { slider.value = 1; slider.className = "rm-slider device_active"; }
-        else                     { slider.value = 0; slider.className = "rm-slider device_disabled"; }
-        }
-    if (document.getElementById("toggle__buttonshow_input")) {
-        slider = document.getElementById("toggle__buttonshow_input");
-        if (showButton)         { slider.value = 1; slider.className = "rm-slider device_active"; }
-        else                    { slider.value = 0; slider.className = "rm-slider device_disabled"; }
-        }
-    }
-
 // check and display current volume -> partly removed, final check open if still required
 function statusShow_volume_old( volume, maximum, vol_color, novol_color="" ) {
 
@@ -425,9 +406,10 @@ function statusCheck_apiConnection(data) {
         if (!success_no[api])    { success_no[api] = 0; }
         if (!off_no[api])        { off_no[api] = 0; }
 
-		if (status_dev == "Connected")            { success_no[api] += 1; }
-		else if (status_dev.indexOf("OFF") > -1)  { off_no[api]     += 1; }
-		else                                      { error_no[api]   += 1; }
+		if (status_dev == "Connected")                { success_no[api] += 1; }
+		else if (status_dev.indexOf("OFF") > -1)      { off_no[api]     += 1; }
+		else if (status_dev.indexOf("DISABLED") > -1) { off_no[api]     += 1; }
+		else                                          { error_no[api]   += 1; }
 
         if (status_api == false)                              { api_summary[api] = "OFF"; }
         else if (error_no[api] > 0 && success_no[api] == 0)   { api_summary[api] = "ERROR"; }
@@ -485,10 +467,11 @@ function statusCheck_apiConnection(data) {
 
             //if (api == "TEST") { alert(api+":"+connect_status_api); }
 
-            if (connect_status_api == false)                { value = "N/A"; }
-            else if (connect_status.indexOf("OFF") > -1)    { value = "OFF"; }
-            else if (connect_status.indexOf("ERROR") > -1)  { value = "ERROR"; }
-            else                                            { value = "ON"; }
+            if (connect_status_api == false)                  { value = "N/A"; }
+            else if (connect_status.indexOf("OFF") > -1)      { value = "OFF"; }
+            else if (connect_status.indexOf("DISABLED") > -1) { value = "OFF"; }
+            else if (connect_status.indexOf("ERROR") > -1)    { value = "ERROR"; }
+            else                                              { value = "ON"; }
             button.innerHTML = value;
 
             if (value == "ON")          { button.style.backgroundColor = colors_power["ON"];     button.disabled = false; }
@@ -600,6 +583,26 @@ function statusCheck_powerButtonScene(data) {
 	}
 	
 	
+// check status edit mode, intelligent mode & CO
+function statusCheck_modes() {
+    if (document.getElementById("toggle__edit_input")) {
+        slider = document.getElementById("toggle__edit_input");
+        if (rm3remotes.edit_mode)   { slider.value = 1; slider.className = "rm-slider device_active"; }
+        else                        { slider.value = 0; slider.className = "rm-slider device_disabled"; }
+        }
+    if (document.getElementById("toggle__intelligent_input")) {
+        slider = document.getElementById("toggle__intelligent_input");
+        if (!deactivateButton)   { slider.value = 1; slider.className = "rm-slider device_active"; }
+        else                     { slider.value = 0; slider.className = "rm-slider device_disabled"; }
+        }
+    if (document.getElementById("toggle__buttonshow_input")) {
+        slider = document.getElementById("toggle__buttonshow_input");
+        if (showButton)         { slider.value = 1; slider.className = "rm-slider device_active"; }
+        else                    { slider.value = 0; slider.className = "rm-slider device_disabled"; }
+        }
+    }
+
+
 // check and show if main audio device is mute
 function statusCheck_audioMute(data) {
 
