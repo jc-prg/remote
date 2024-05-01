@@ -115,12 +115,23 @@ button {
 }
 
 .button_setting_index {
-    width       :  46%;
+    width       :  48%;
     height      :  140px;
-    margin      :   5px;
+    margin      :   1%;
     float       : left;
     padding     : 10px;
-    background  : #3333AA;
+    background  : #333399;
+    border      : solid 2px #5555AA;
+}
+
+.button_setting_index_small {
+    width       :  23%;
+    height      :  40px;
+    margin      :   1%;
+    float       : left;
+    padding     : 1px;
+    background  : #333399;
+    border      : solid 2px #5555AA;
 }
 
 .header_image_toggle_container {

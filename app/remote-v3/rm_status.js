@@ -366,12 +366,12 @@ function statusCheck_apiConnection(data) {
             var status = data["STATUS"]["connections"][api]["active"];
             if (status == true) {
                 slider.value = 1;
-                slider.className = "rm-slider device_on";
+                slider.className = "rm-slider device_active";
                 slider.disabled = false;
                 }
             else if (status == false) {
                 slider.value = 0;
-                slider.className = "rm-slider device_off";
+                slider.className = "rm-slider device_disabled";
                 slider.disabled = false;
                 }
             else {

@@ -67,13 +67,15 @@ function rmSettings (name) {	// IN PROGRESS
             }
         else if (selected_mode == "general") {
             this.settings_ext_reset();
+            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_GENERAL"));
             this.settings_ext_append(1,lang("SETTINGS_GENERAL"), this.module_main_settings());
             this.create_show_ext();
             }
         else if (selected_mode == "edit") {
             this.settings_ext_reset();
-            this.settings_ext_append(2,lang("MODE_EDIT"), this.module_index_quick(true, false));
-	    	this.settings_ext_append(1,lang("EDIT_REMOTES"), this.module_add_remotes() + this.module_title() + this.module_order_remotes());
+            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_REMOTE"));
+            this.settings_ext_append(1,lang("MODE_EDIT"), this.module_index_quick(true, false));
+	    	this.settings_ext_append(2,lang("EDIT_REMOTES"), this.module_add_remotes() + this.module_title() + this.module_order_remotes());
     		this.settings_ext_append(2,lang("EDIT_MACROS"), this.module_macros_edit());
             this.create_show_ext();
 
@@ -84,6 +86,7 @@ function rmSettings (name) {	// IN PROGRESS
             }
         else if (selected_mode == "edit_interfaces") {
             this.settings_ext_reset();
+            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_API"));
             this.module_interface_edit();
             this.settings_ext_append(1, "", this.module_interface_info());
             apiGetConfig_showInterfaceData(this.module_interface_edit_info);
@@ -91,14 +94,24 @@ function rmSettings (name) {	// IN PROGRESS
             }
         else {
             setNavTitle("&raquo; " + lang('INFORMATION') + " &laquo");
-            this.write(0,lang("VERSION_AND_STATUS"), this.module_system_info());
-            this.write(1);
+            this.settings_ext_reset();
+            this.settings_ext_append(0,"", this.module_index(true, "INFORMATION"));
+            this.settings_ext_append(1,lang("VERSION_AND_STATUS"), this.module_system_info());
+            this.create_show_ext();
+            this.create_show_log();
+
+            /*
+            this.write(0,"", this.module_index(true, "INFORMATION"));
+            this.write(1,lang("VERSION_AND_STATUS"), this.module_system_info());
             this.write(2);
             this.write(3);
             this.write(4);
             this.interface_list_update();
             this.exec_time_list_update();
             this.create_show();
+
+            //<div id='error_log'>
+            */
             }
         scrollTop();
         }
@@ -106,7 +119,7 @@ function rmSettings (name) {	// IN PROGRESS
     this.create_show            = function () {
 
         elementVisible("setting_frames");
-        elementHidden("api_frames");
+        elementHidden("setting_ext_frames");
 
         show_settings = true;
         show_remotes  = false;
@@ -121,25 +134,43 @@ function rmSettings (name) {	// IN PROGRESS
 
         this.create_show();
         elementHidden("setting_frames");
-        elementVisible("api_frames");
+        elementVisible("setting_ext_frames");
         }
 
-	this.module_index           = function () {
-	    var html        = "&nbsp;<br/>";
+    this.create_show_log        = function () {
+
+        elementVisible("setting_frames");
+        for (var i=0; i<this.e_settings.length; i++) { elementHidden(this.e_settings[i]); }
+        elementVisible(this.e_settings[this.e_settings.length-1]);
+        }
+
+    this.module_index           = function (small=false, selected="") {
+	    var html  = "";
+	    if (!small) { html += "&nbsp;<br/>"; }
 	    var button_img  = this.data["CONFIG"]["elements"]["button_images"];
+	    var setting_modules_back = {
+	        "SETTINGS":         ["link_back",   "rm3settings.create('index');"],
+	    }
 	    var setting_modules = {
 	        "INFORMATION":      ["info",        "rm3settings.create('info');"],
 	        "SETTINGS_GENERAL": ["settings2",   "rm3settings.create('general');"],
 	        "SETTINGS_REMOTE":  ["remote",      "rm3settings.create('edit');"],
 	        "SETTINGS_API":     ["plug",        "rm3settings.create('edit_interfaces');"]
 	        }
+	    if (small) {
+	        var img_small = image(button_img[setting_modules_back["SETTINGS"][0]], big=false);
+	        html += "<button class='button_setting_index_small' onclick=\""+setting_modules_back["SETTINGS"][1]+"\">" + img_small + "</button>";
+	    }
 	    for(var key in setting_modules) {
-	        var img   = image(button_img[setting_modules[key][0]], big=true);
+            if (key == selected) { continue; }
+	        var img_big   = image(button_img[setting_modules[key][0]], big=true);
+	        var img_small = image(button_img[setting_modules[key][0]], big=false);
 	        var text  = lang(key);
-	        html += "<button class='button_setting_index' onclick=\""+setting_modules[key][1]+"\">" + img + "<br/>&nbsp;<br/>" + text + "</button>";
+	        if (small) { html += "<button class='button_setting_index_small' onclick=\""+setting_modules[key][1]+"\">" + img_small + "</button>"; }
+	        else       { html += "<button class='button_setting_index' onclick=\""+setting_modules[key][1]+"\">" + img_big + "<br/>&nbsp;<br/>" + text + "</button>"; }
 	        }
 
-	    html += "<div style='width:100%;height:18px;float:left;'></div>";
+	    if (!small) { html += "<div style='width:100%;height:18px;float:left;'></div>"; }
 		return html;
 	    }
 
@@ -313,21 +344,27 @@ function rmSettings (name) {	// IN PROGRESS
 
 		var count = 1;
         var devices_per_interface = this.data["CONFIG"]["apis"]["structure"];
+        var interface_status      = this.data["STATUS"]["connections"];
 
         for (var key in devices_per_interface) {
             if (key != "") {
                 count += 1;
                 var text = "";
-                var command_on  = 'javascript:apiInterfaceOnOff(\''+key+'\', \'True\')';
-                var command_off = 'javascript:apiInterfaceOnOff(\''+key+'\', \'False\')';
+                var key2 = key.replaceAll("-", "");
+                var initial_visible = "display:block;";
+                if (!interface_status[key]["active"]) { initial_visible = "display:none"; }
+                var command_on  = 'javascript:apiInterfaceOnOff(\''+key+'\', \'True\'); document.getElementById(\'interface_edit_'+key+'\').style.display=\'block\';';
+                var command_off = 'javascript:apiInterfaceOnOff(\''+key+'\', \'False\');';
+                var command_show_hide = "var el_"+key2+" = document.getElementById(\"interface_edit_"+key+"\"); ";
+                command_show_hide    += "if (el_"+key2+".style.display == \"block\") { el_"+key2+".style.display = \"none\"; } else { el_"+key2+".style.display = \"block\"; }";
                 var init = "";
                 text += "<div style='width:100%;float:left;max-height:30px;'>";
                 text += "   <div style='width:60px;float:right;'>"
                 text +=     this.toggle.toggleHTML("active_"+key, "", "", command_on, command_off, init);
                 text += "   </div>";
-                text += "   <div style='padding:5px;float:left;'><b>API: "+key+" </b>&nbsp;<text id='api_status_icon_"+key+"' style='font-size:18px;'></text></div>"; //<text id='api_status_"+key+"'> &nbsp;...</text><br/>";
+                text += "   <div style='padding:5px;float:left;'><b onclick='"+command_show_hide+"'>API: "+key+" </b>&nbsp;<text id='api_status_icon_"+key+"' style='font-size:18px;'></text></div>";
                 text += "</div>";
-                text += "<div id='interface_edit_"+key+"' style='width:100%;min-height:50px;float:left;'></div>";
+                text += "<div id='interface_edit_"+key+"' style='width:100%;min-height:50px;float:left;"+initial_visible+"'></div>";
 
                 this.settings_ext_append(count, "", text);
             }   }
@@ -685,11 +722,11 @@ function rmSettings (name) {	// IN PROGRESS
 
     this.settings_ext_reset   = function ()  {
 
-        setTextById("api_frames", "");
+        setTextById("setting_ext_frames", "");
         }
 
 	this.settings_ext_append  = function (nr, label="", text="") {
-	    var frame_content = getTextById("api_frames");
+	    var frame_content = getTextById("setting_ext_frames");
 
 		if (label != "") {
 			text 	= "<font class='remote_edit_headline'><center><b>" + label + "</b></center></font>"
@@ -701,7 +738,7 @@ function rmSettings (name) {	// IN PROGRESS
 	    var device_frame = "<div id='device_frame" + nr + "' class='setting_bg' style='display:block;'>";
         device_frame += text;
 	    device_frame += "</div>";
-	    setTextById("api_frames", frame_content + device_frame);
+	    setTextById("setting_ext_frames", frame_content + device_frame);
     	}
 		
 	this.is_filled			    = function (nr) {
@@ -731,7 +768,7 @@ function rmSettings (name) {	// IN PROGRESS
 		else                         { elementHidden("frame1");  elementHidden("frame2");  } //elementHidden("frame3"); }
 
         elementVisible("setting_frames");
-        elementHidden("api_frames");
+        elementHidden("setting_ext_frames");
 	    }
 
 	this.onoff			        = function () {
