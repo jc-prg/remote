@@ -62,7 +62,7 @@ function rmSettings (name) {	// IN PROGRESS
         if (selected_mode == "index") {
             this.settings_ext_reset();
             this.settings_ext_append(1, lang("SETTINGS"), this.module_index());
-            this.settings_ext_append(2, lang("QUICK_ACCESS"), this.module_index_quick(true, true));
+            this.settings_ext_append(2, lang("QUICK_ACCESS"), "&nbsp;<br/>" + this.module_index_quick(true, true));
             this.create_show_ext();
 
             statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
@@ -77,7 +77,7 @@ function rmSettings (name) {	// IN PROGRESS
         else if (selected_mode == "edit") {
             this.settings_ext_reset();
             this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_REMOTE"));
-            this.settings_ext_append(1,lang("MODE_EDIT"), this.module_index_quick(true, false));
+            this.settings_ext_append(1,"", this.module_index_quick(true, false));
 	    	this.settings_ext_append(2,lang("EDIT_REMOTES"), this.module_add_remotes() + this.module_title() + this.module_order_remotes());
     		this.settings_ext_append(2,lang("EDIT_MACROS"), this.module_macros_edit());
             this.create_show_ext();
@@ -168,9 +168,8 @@ function rmSettings (name) {	// IN PROGRESS
 	    }
 
 	this.module_index_quick     = function (edit=true, intelligent=false, button_code=false) {
-	    var html        = "&nbsp;<br/>";
 
-
+	    var html        = "";
 		html   += this.tab.start();
 		if (edit) {
 		    var command_on  = "remoteToggleEditMode(true);";
@@ -586,21 +585,6 @@ function rmSettings (name) {	// IN PROGRESS
 		var button_show_code = "OFF";
 
         set_temp = this.module_index_quick(true, true, true);
-/*
-		if (deactivateButton)       { button_value_manual_mode = "OFF"; }
-		if (rm3remotes.edit_mode)   { button_value_edit_mode = "ON"; }
-		if (showButton)             { button_show_code = "ON"; }
-
-		var link_edit_mode      = "remoteToggleEditMode(true); if (getTextById(\"button_edit_mode\")==\"OFF\") { setTextById(\"button_edit_mode\",\"ON\"); } else { setTextById(\"button_edit_mode\",\"OFF\"); }";
-		var link_manual_mode    = this.app_name+".button_deact(true); if (getTextById(\"button_manual_mode\")==\"OFF\") { setTextById(\"button_manual_mode\", \"ON\"); } else { setTextById(\"button_manual_mode\", \"OFF\"); }";
-		var link_show_code      = this.app_name+".button_show(); if (getTextById(\"button_show_code\")==\"OFF\") { setTextById(\"button_show_code\", \"ON\"); } else { setTextById(\"button_show_code\", \"OFF\"); }";
-
-		set_temp    = this.tab.start();
-		set_temp   += this.tab.row( "Edit mode:",         "<button onclick='"+link_edit_mode+"' id='button_edit_mode' style='width:70px;'>"+button_value_edit_mode+"</button>" );
-		set_temp   += this.tab.row( "Intelligent mode:",  "<button onclick='"+link_manual_mode+"' id='button_manual_mode' style='width:70px;'>"+button_value_manual_mode+"</button>" );
-		set_temp   += this.tab.row( "Show button code:",  "<button onclick='"+link_show_code+"' id='button_show_code' style='width:70px;'>"+button_show_code+"</button>" );
-		set_temp   += this.tab.end();
-*/
 		setting  += this.basic.container("setting_version",lang("CHANGE_MODES"),set_temp,true);
 
 		set_temp  = this.tab.start();
