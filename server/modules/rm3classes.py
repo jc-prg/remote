@@ -88,12 +88,19 @@ class RemoteApiClass(RemoteDefaultClass):
     def config_add_key(self, key, default_value=None):
         """
         add a key to the default configuration
+
+        Args:
+            key (str): key to be added
+            default_value (Any): default value, None if not set
         """
         self.api_config_default[key] = default_value
 
     def config_set_methods(self, methods):
         """
-        change default methods for API, options: "send", "query", "record"
+        change default methods for API
+
+        Args:
+            methods (list): available options als list, if all: ["send", "query", "record"]
         """
         self.api_config_default["Methods"] = methods
 
