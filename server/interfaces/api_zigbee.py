@@ -221,6 +221,7 @@ class ApiControl(RemoteApiClass):
                 "name":        device_infos["friendly_name"],
                 "id":          device_infos["ieee_address"],
                 "disabled":    device_infos["disabled"],
+                "available":   (device_infos["interviewing"] is False and device_infos["interview_completed"] is True),
                 "type":        device_infos["type"]
             }
             available[key]["description"] = ""

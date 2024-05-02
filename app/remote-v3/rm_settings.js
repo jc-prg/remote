@@ -455,8 +455,10 @@ function rmSettings (name) {	// IN PROGRESS
                 var disabled = "";
                 var info = "";
                 if (devices_detect[api_device][device]["id"] != devices_detect[api_device][device]["name"]) { name = devices_detect[api_device][device]["name"]; }
-                if (devices_detect[api_device][device]["description"]) { info = ": " + devices_detect[api_device][device]["description"];}
-                if (devices_detect[api_device][device]["disabled"])    { disable = "&nbsp;&nbsp;<small>DISABLED</small>"; }
+                if (devices_detect[api_device][device]["description"])         { info = ": " + devices_detect[api_device][device]["description"];}
+                if (devices_detect[api_device][device]["disabled"])            { disabled = "&nbsp;&nbsp;<small>(DISABLED)</small>"; }
+                if (devices_detect[api_device][device]["available"] == false)  { disabled = "&nbsp;&nbsp;<small>(N/A)</small>"; }
+                console.error(devices_detect[api_device][device]);
                 details_new += "<li><b>[" + devices_detect[api_device][device]["id"] + "]</b><br/>" + name + info + disabled + "</li>";
                 }
             details_new += "</ul>";
