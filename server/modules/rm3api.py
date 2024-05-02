@@ -640,9 +640,11 @@ class RemoteAPI(RemoteDefaultClass):
 
         interfaces = []
         device_config = self.data.devices_read_config(more_details=True)
+        api_config = self.config.interface_configuration
 
-        for key in device_config:
-            api = device_config[key]["interface"]["interface_api"]
+        self.logging.error(str(device_config.keys()))
+
+        for api in api_config:
             if api not in interfaces:
                 interfaces.append(api)
 

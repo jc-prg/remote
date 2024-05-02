@@ -384,7 +384,7 @@ function rmSettings (name) {	// IN PROGRESS
                 text += "   <div style='width:60px;float:right;'>"
                 text +=     this.toggle.toggleHTML("active_"+key, "", "", command_on, command_off, init);
                 text += "   </div>";
-                text += "   <div style='padding:5px;float:left;'><b onclick='"+command_show_hide+"'>API: "+key+" </b>&nbsp;<text id='api_status_icon_"+key+"' style='font-size:18px;'></text></div>";
+                text += "   <div style='padding:5px;float:left;'><b onclick='"+command_show_hide+"' style='cursor:pointer;'>API: "+key+" </b>&nbsp;<text id='api_status_icon_"+key+"' style='font-size:18px;'></text></div>";
                 text += "</div>";
                 text += "<div id='interface_edit_"+key+"' style='width:100%;min-height:50px;float:left;"+initial_visible+"'></div>";
 
@@ -406,10 +406,12 @@ function rmSettings (name) {	// IN PROGRESS
         var details = "<div style='width:100%;height:9px;'></div>";
         var external_ids = {};
 
+console.error("!" + interface)
         for (var api_device in devices_per_interface[interface]) {
             details += "<i>API Device: " + api_device + "</i>&nbsp;&nbsp;";
             var connect  = data["STATUS"]["interfaces"]["connect"][interface + "_" + api_device];
-
+            if (!connect) { connect = "N/A"; }
+console.error("!!" + api_device)
             details += "<ul>";
             for (var i=0;i<devices_per_interface[interface][api_device].length;i++) {
                 var device          = devices_per_interface[interface][api_device][i];
@@ -472,11 +474,13 @@ function rmSettings (name) {	// IN PROGRESS
     	this.tab       = new rmRemoteTable(name+".tab");
     	this.btn       = new rmRemoteButtons(name);			// rm_remotes-elements.js
         this.basic     = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
+
     	this.list      = function (interface, data) {
             var text = "";
             var devices_per_interface = dataAll["CONFIG"]["apis"]["structure"];
 
             //for (var interface in devices_per_interface) {
+            var count   = 0;
             var details = "<div style='width:100%;height:9px;'></div>";
 
             for (var api_device in devices_per_interface[interface]) {
@@ -486,6 +490,7 @@ function rmSettings (name) {	// IN PROGRESS
                 //details += "<text id='api_status_short_"+interface+"_"+api_device+"'></text>";
                 details += "<ul>";
                 for (var i=0;i<devices_per_interface[interface][api_device].length;i++) {
+                    count += 1;
                     var device          = devices_per_interface[interface][api_device][i];
                     var device_settings = dataAll["CONFIG"]["devices"][device];
                     var method          = dataAll["CONFIG"]["devices"][device]["interface"]["method"];
@@ -512,7 +517,7 @@ function rmSettings (name) {	// IN PROGRESS
             details += "<br/>";
                 //text += this.basic.container("details_"+interface,"Interface: "+interface+" </b><text id='api_status_"+interface+"'> &nbsp;...</text>",details,false);
                 //}
-            return details;
+            return [count, details];
             }
     	this.btn.width = "66px";
 
@@ -522,8 +527,9 @@ function rmSettings (name) {	// IN PROGRESS
             var setting   = "";
             setting += "<hr style='border:solid lightgray 1px;'/>";
 
+            var [count, overview] = this.list(key, data);
             var container_title = "</b>Connected devices";
-            var overview = this.list(key, data);
+            if (count == 0) { container_title += " (empty)"; }
             setting += this.basic.container("details_"+key+"_overview", container_title, overview, false);
 
             for (var dev in interface["API-Devices"]) {
@@ -545,9 +551,9 @@ function rmSettings (name) {	// IN PROGRESS
 
                 console.log("module_interface_edit_list: " + key + "_" + dev)
                 var connect_status_api = dataAll["STATUS"]["interfaces"]["active"][key];
-                var connect_status = dataAll["STATUS"]["interfaces"]["connect"][key+"_"+dev];
+                var connect_status     = dataAll["STATUS"]["interfaces"]["connect"][key+"_"+dev];
 
-                if (!connect_status) { continue; }
+                if (!connect_status) { connect_status = "NO DEVICE connected yet."; }
 
                 var on_off_status = "";
                 if (connect_status_api == false)                { on_off_status = "N/A"; }

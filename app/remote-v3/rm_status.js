@@ -352,8 +352,7 @@ function statusCheck_apiConnection(data) {
 	var off_no         = {};
 
 
-	for (var api in data["STATUS"]["connections"]) {
-
+	for (var api in data["CONFIG"]["apis"]["structure"]) {
         // update breakdown from API over API Device to Connected devices
         if (document.getElementById("details_"+api+"_overview_body")) {
             var text = rm3settings.module_interface_edit_list(api, data);
