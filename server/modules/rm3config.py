@@ -1,5 +1,6 @@
 import time
 import os
+import sys
 import logging
 from dotenv import load_dotenv
 from logging.handlers import RotatingFileHandler
@@ -29,6 +30,22 @@ log_loggers = {}
 log_logger_list = []
 
 # ---------------------------
+
+
+def check_submodules():
+    """
+    check if required submodules from git are installed otherwise show error message and quit
+    """
+    global git_submodules, git_submodules_installed, git_submodules_directory
+
+    for module in git_submodules:
+        module_path = os.path.join(git_submodules_directory, git_submodules[module], "README.md")
+        if not os.path.exists(module_path):
+            print("ERROR: Submodule from git not installed yet: https://github.com/" + module + " in directory " +
+                  git_submodules[module])
+            print("-> Try: 'sudo git submodule update --init --recursive' in the root directory.")
+            sys.exit()
+    git_submodules_installed = True
 
 
 def get_env(var_name):
@@ -194,6 +211,14 @@ active_devices = "_ACTIVE-DEVICES"
 active_scenes = "_ACTIVE-SCENES"
 active_macros = "_ACTIVE-MACROS"
 active_apis = "_ACTIVE-APIS"
+
+git_submodules_directory = os.path.join(os.path.dirname(__file__), "..", "..")
+git_submodules_installed = False
+git_submodules = {
+    "jc-prg/modules": "app/modules",
+    "jc-prg/app-framework": "app/framework"
+}
+check_submodules()
 
 app_config_file = os.path.join(os.path.dirname(__file__), "..", "..", "app", "remote-v3", "config_stage.js")
 app_configuration = """

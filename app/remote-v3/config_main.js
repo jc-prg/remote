@@ -11,8 +11,10 @@ var app_title         = "jc://remote/";
 var app_version       = "v2.9.6";
 var app_api_dir       = "api/";
 var app_api_status    = "list";
-var app_loading_image = "";
-var appAutoLoad       = false;
+
+var app_loading_image   = "";
+var app_status_commands = "";
+var appAutoLoad         = false;
 
 //--------------------------------	
 // create menu entries

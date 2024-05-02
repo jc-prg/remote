@@ -21,9 +21,28 @@
     <script src="/modules/modules_1.1.js"></script>
     <script src="/framework/app-fw.js"></script>
     <script src="/remote-v3/remote.js"></script>
+    <style>
+        .loading_overlay {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            z-index: 200;
+            background: lightgray;
+            height: 100%;
+            width: 100%;
+            border-radius: 0px;
+            border: 0px;
+            display: flex; /* Add flexbox */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            }
+    </style>
 
 </head>
 <body>
+    <div id="loading_overlay" class="loading_overlay">
+        <img src="framework/img/loading3.gif" height="100px" width="100px" />
+    </div>
 
     <nav id="nav">
     <nav-logo id="rest_status"></nav-logo>
@@ -85,15 +104,16 @@
         loadScripts("/modules/",   modules_js);
         loadCss("/modules/",       modules_css);
 
-        loadScripts("/framework/", app_js);
-        loadCss("/framework/",     app_css);
-
         loadCss("/remote-v3/",     remote_css);
         loadScripts("/remote-v3/", remote_js);
+
+        loadScripts("/framework/", app_js);
+        loadCss("/framework/",     app_css);
 
         setTimeout( function() {
             startApp();
             startRemote();
+            elementHidden("loading_overlay");
         }, 500 );
 
     </script>

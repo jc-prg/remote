@@ -153,14 +153,14 @@ function rmSettings (name) {	// IN PROGRESS
 	        "SETTINGS_API":     ["plug",        "rm3settings.create('edit_interfaces');"]
 	        }
 	    if (small) {
-	        var img_small = image(button_img[setting_modules_back["SETTINGS"][0]], big=false);
+	        var img_small = rm_image(button_img[setting_modules_back["SETTINGS"][0]], big=false);
 	        html += "<button class='button_setting_index_small' onclick=\""+setting_modules_back["SETTINGS"][1]+"\">" + img_small + "</button>";
 	    }
 	    for(var key in setting_modules) {
 	        var css_class = "";
             if (key == selected) { css_class = " selected"; }
-	        var img_big   = image(button_img[setting_modules[key][0]], big=true);
-	        var img_small = image(button_img[setting_modules[key][0]], big=false);
+	        var img_big   = rm_image(button_img[setting_modules[key][0]], big=true);
+	        var img_small = rm_image(button_img[setting_modules[key][0]], big=false);
 	        var text  = lang(key);
 	        if (small) { html += "<button class='button_setting_index_small"+css_class+"' onclick=\""+setting_modules[key][1]+"\">" + img_small + "</button>"; }
 	        else       { html += "<button class='button_setting_index' onclick=\""+setting_modules[key][1]+"\">" + img_big + "<br/>&nbsp;<br/>" + text + "</button>"; }
