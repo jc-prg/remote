@@ -406,12 +406,10 @@ function rmSettings (name) {	// IN PROGRESS
         var details = "<div style='width:100%;height:9px;'></div>";
         var external_ids = {};
 
-console.error("!" + interface)
         for (var api_device in devices_per_interface[interface]) {
             details += "<i>API Device: " + api_device + "</i>&nbsp;&nbsp;";
             var connect  = data["STATUS"]["interfaces"]["connect"][interface + "_" + api_device];
             if (!connect) { connect = "N/A"; }
-console.error("!!" + api_device)
             details += "<ul>";
             for (var i=0;i<devices_per_interface[interface][api_device].length;i++) {
                 var device          = devices_per_interface[interface][api_device][i];
@@ -480,7 +478,6 @@ console.error("!!" + api_device)
             var devices_per_interface = dataAll["CONFIG"]["apis"]["structure"];
 
             //for (var interface in devices_per_interface) {
-            var count   = 0;
             var details = "<div style='width:100%;height:9px;'></div>";
 
             for (var api_device in devices_per_interface[interface]) {

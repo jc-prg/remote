@@ -325,12 +325,13 @@ class RemotesData(RemoteThreadingClass):
         Returns:
             dict: devices detected by API Devices
         """
-        devices = self.devices_read_config()
         devices_per_interface = {}
-        for key in devices:
-            if "interface" in devices[key] and "api" in devices[key]["interface"]:
-                api_dev = devices[key]["interface"]["api"]
+        apis = self.config.interface_configuration
+        for api in apis:
+            for api_device in apis[api]["devices"]:
+                api_dev = api + "_" + api_device
                 detect = self.apis.devices_available(api_dev)
+                self.logging.debug("Check for new devices: " + str(api_dev) + " ... " + str(detect))
                 if detect != {}:
                     devices_per_interface[api_dev] = detect
 

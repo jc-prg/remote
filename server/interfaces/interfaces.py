@@ -1,4 +1,5 @@
 import time
+import sys
 import datetime
 
 import modules.rm3json as rm3json
@@ -68,75 +69,20 @@ class Connect(RemoteThreadingClass):
         """
         self.logging.info("Starting " + self.name)
 
-        try:
-            active_devices = self.config.read_status()
-        except Exception as e:
-            self.logging.error("Error while requesting information from " + rm3config.active_devices + ".json: " + str(e))
-            return
-
-        self.logging.info(".................... 1st CONNECT OF INTERFACES ....................")
-        for device in active_devices:
-            self.logging.debug("Load API for device " + device + " ...")
-            api = active_devices[device]["config"]["interface_api"]
-            dev = active_devices[device]["config"]["interface_dev"]
-
-            if api == "":
-                continue
-
-            if api + "_" + dev not in self.api_device_list:
-                self.api_device_list[api+"_"+dev] = []
-                self.api_device_settings[api+"_"+dev] = {}
-
-            self.api_device_list[api+"_"+dev].append(device)
-            self.api_device_settings[api + "_" + dev][device] = active_devices[device]
-
-            dev_config = {}
-            if rm3json.if_exist(rm3config.commands + api + "/00_interface"):
-                api_config = self.config.read(rm3config.commands + api + "/00_interface")
-                if "API-Devices" in api_config and dev in api_config["API-Devices"]:
-                    dev_config = api_config["API-Devices"][dev]
-                elif "API-Devices" in api_config and "default" in api_config["API-Devices"]:
-                    dev_config = api_config["API-Devices"]["default"]
-                else:
-                    self.logging.warning("Error in config-file - device not defined / no default device: " +
-                                         rm3config.commands + api + "/00_interface.json")
-
-            if dev_config != {}:
-                api_dev = api + "_" + dev
-                self.logging.debug("- try to import API connector '" + self.api_modules[api] +
-                                   "' for API '" + api_dev + "' ...")
-
-                if api in self.api_modules and api_dev not in self.api:
-                    cmd_import = "import interfaces." + self.api_modules[api]
-                    cmd_connect = "interfaces." + self.api_modules[
-                        api] + ".ApiControl(api,dev,dev_config,self.log_commands,config=self.config)"
-                    try:
-                        exec(compile(cmd_import, "string", "exec"))
-                        self.api[api_dev] = eval(cmd_connect)
-                        self.logging.debug("- OK")
-
-                    except ModuleNotFoundError:
-                        self.logging.error("Could not connect API: Module '" +
-                                           self.api_modules[api] + ".py' not found (" + api_dev + ")")
-                        self.logging.error("... if exist, check if all required modules are installed, " +
-                                           "that are to be imported in this module.")
-                    except Exception as e:
-                        self.logging.error("Could not connect API: " + str(e) + " (" + api_dev + ")")
-                    except:
-                        self.logging.error("Could not connect API: Unknown reason (" + api_dev + ")")
-
-            else:
-                self.logging.error("Could not connect to " + api + " - Error in config file (" + rm3config.commands + api + "/00_interface.json)")
-
-        for key in self.api:
-            dev_key = key.split("_")[1]
-            self.available[key] = self.api[key].api_description + " [" + dev_key + "]"
-
+        api_load = self.load_api_connectors()
         time.sleep(5)
         self.config.interfaces_identify()
 
-        while self._running:
+        if not api_load:
+            self.logging.error("First load of API connectors didn't work. Try again ...")
+            if not self.load_api_connectors():
+                self.logging.critical("Could not load any API Connector! " +
+                                      "Check your basic API and DEVICE configuration.")
+                sys.exit()
+            else:
+                self.logging.info("Loading API connectors OK.")
 
+        while self._running:
             if self.checking_last + self.checking_interval < time.time() or self.check_directly:
                 self.checking_last = time.time()
                 self.check_directly = False
@@ -201,7 +147,10 @@ class Connect(RemoteThreadingClass):
 
             elif "IPAddress" in self.api[key].api_config:
                 connect = rm3ping.ping(self.api[key].api_config["IPAddress"])
-                self.logging.debug(" * " + key + ": " + str(self.api_device_list[key]))
+                if key in self.api_device_list:
+                    self.logging.debug(" * " + key + ": " + str(self.api_device_list[key]))
+                else:
+                    self.logging.debug(" * " + key + ": no devices connected yet.")
                 self.logging.debug("   -> IP: " + self.api[key].api_config["IPAddress"] + " / connect = " +
                                    str(connect).upper())
                 if dev in self.config.interface_configuration[api]["devices_active"]:
@@ -240,6 +189,11 @@ class Connect(RemoteThreadingClass):
         auto_off = []
 
         for key in self.api:
+            if key not in self.api_device_list:
+                self.logging.error("Device Activity: Could not find list of devices for '" + key + "'; " +
+                                   "Assumption: no devices connected yet.")
+                continue
+
             device_list = self.api_device_list[key]
             self.logging.debug(" * " + key + " : " + str(device_list))
             if self.api[key].last_action > 0:
@@ -263,6 +217,97 @@ class Connect(RemoteThreadingClass):
             self.logging.info("-> ACTIVITY: " + ", ".join(active))
         if len(inactive) > 0:
             self.logging.info("-> INACTIVE: " + ", ".join(inactive))
+
+    def load_api_connectors(self):
+        """
+        load API connectors
+        """
+        config_dev = self.config.read(rm3config.active_devices)
+        config_api = self.config.read(rm3config.active_apis)
+        self.logging.info(".................... 1st CONNECT OF INTERFACES ....................")
+
+        api_devices = []
+        for device in config_dev:
+            api = config_dev[device]["config"]["interface_api"]
+            dev = config_dev[device]["config"]["interface_dev"]
+            api_dev = api + "_" + dev
+            if api_dev not in api_devices:
+                api_devices.append(api_dev)
+            if api_dev not in self.api_device_list:
+                self.api_device_list[api_dev] = []
+            self.api_device_list[api_dev].append(device)
+
+        if config_api != {}:
+            for api in config_api:
+                if api not in self.api_modules:
+                    self.logging.error("API Connector for '" + api + "' not available.")
+                    continue
+                for api_device in config_api[api]["devices"]:
+                    api_dev = api + "_" + api_device
+                    api_device_config = config_api[api]["devices"][api_device]
+                    self.logging.debug("Loading API connector for '" + api_dev + "' ...")
+
+                    cmd_import = "import interfaces." + self.api_modules[api]
+                    cmd_connect = ("interfaces." + self.api_modules[api] +
+                                   ".ApiControl(api, api_device, api_device_config, self.log_commands, self.config)")
+
+                    try:
+                        exec(compile(cmd_import, "string", "exec"))
+                        self.api[api_dev] = eval(cmd_connect)
+                        self.logging.debug("- OK")
+                    except ModuleNotFoundError:
+                        self.logging.error("Could not connect API: Module '" +
+                                           self.api_modules[api] + ".py' not found (" + api_dev + ")")
+                        self.logging.error("... if exist, check if all required modules are installed, " +
+                                           "that are to be imported in this module.")
+                    except Exception as e:
+                        self.logging.error("Could not connect API: " + str(e) + " (" + api_dev + ")")
+                    except:
+                        self.logging.error("Could not connect API: Unknown reason (" + api_dev + ")")
+            return True
+
+        elif config_dev != {}:
+            for api_dev in api_devices:
+                api, api_device = api_dev.split("_")
+                api_device_config = {}
+
+                if rm3json.if_exist(rm3config.commands + api + "/00_interface"):
+                    api_config = self.config.read(rm3config.commands + api + "/00_interface")
+                    if "API-Devices" in api_config and api_device in api_config["API-Devices"]:
+                        api_device_config = api_config["API-Devices"][api_device]
+                    elif "API-Devices" in api_config and "default" in api_config["API-Devices"]:
+                        api_device_config = api_config["API-Devices"]["default"]
+                    else:
+                        self.logging.warning("Error in config-file - device not defined / no default device: " +
+                                             rm3config.commands + api + "/00_interface.json")
+                else:
+                    self.logging.error("Error: no configuration file '00_interface.json' available for API '" +
+                                       api_dev + "'.")
+
+                if api_device_config != {}:
+                    self.logging.debug("Loading API for device " + api_dev + " ...")
+
+                    cmd_import = "import interfaces." + self.api_modules[api]
+                    cmd_connect = ("interfaces." + self.api_modules[api] +
+                                   ".ApiControl(api, api_device, api_device_config, self.log_commands, self.config)")
+
+                    try:
+                        exec(compile(cmd_import, "string", "exec"))
+                        self.api[api_dev] = eval(cmd_connect)
+                        self.logging.debug("- OK")
+                    except ModuleNotFoundError:
+                        self.logging.error("Could not connect API: Module '" +
+                                           self.api_modules[api] + ".py' not found (" + api_dev + ")")
+                        self.logging.error("... if exist, check if all required modules are installed, " +
+                                           "that are to be imported in this module.")
+                    except Exception as e:
+                        self.logging.error("Could not connect API: " + str(e) + " (" + api_dev + ")")
+                    except:
+                        self.logging.error("Could not connect API: Unknown reason (" + api_dev + ")")
+
+            return True
+        else:
+            return False
 
     def api_reconnect(self, interface=""):
         """
