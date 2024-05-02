@@ -97,6 +97,28 @@ class RemoteApiClass(RemoteDefaultClass):
         """
         self.api_config_default["Methods"] = methods
 
+    def devices_available(self):
+        """
+        get all available devices of this interface, if supported
+
+        Returns:
+            dict: empty dict, as not implemented for this API
+        """
+        self.logging.debug("Method 'devices_available()' is not implemented for the API '" + self.name + "'.")
+        return {}
+
+    def devices_listen(self, active):
+        """
+        activate / disable listen mode new ZigBee devices
+
+        Args:
+            active (bool): True to activate, False to disable
+        Returns:
+            dict: empty dict, as not implemented for this API
+        """
+        self.logging.debug("Method 'devices_listen()' is not implemented for the API '" + self.name + "'.")
+        return {}
+
 
 class RemoteThreadingClass(threading.Thread, RemoteDefaultClass):
     """

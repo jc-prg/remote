@@ -440,7 +440,7 @@ function statusCheck_apiConnection(data) {
             var status = data["STATUS"]["interfaces"]["connect"][key];
             if (status == "Connected")                { setTextById("api_status_" + key, "<font color='" + color_api_connect + "'>" + status + "</font>"); }
             else if (status == "Start")               { setTextById("api_status_" + key, "<font color='" + color_api_warning + "'>" + status + "</font>"); }
-            else if (status.indexOf("OFF") > -1)      { setTextById("api_status_" + key, "<font color='" + color_api_no_connect + "'>OFF</font>"); }
+            else if (status.indexOf("OFF") > -1)      { setTextById("api_status_" + key, "<font color='" + color_api_no_connect + "'>" + status + "</font>"); }
             else if (status.indexOf("DISABLED") > -1) { setTextById("api_status_" + key, "<font color='" + color_api_no_connect + "'>DISABLED</font>"); }
             else                                      { setTextById("api_status_" + key, "<font color='" + color_api_error + "'>" + status + "</font>"); }
 

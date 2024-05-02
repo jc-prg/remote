@@ -158,32 +158,56 @@ class Connect(RemoteThreadingClass):
         connected = []
         not_connected = []
         start_time = time.time()
+        device_status = self.config.read(rm3config.active_devices)
 
         # check API status
         for key in self.api:
             [api, dev] = key.split("_")
             if api in self.config.interface_configuration and "active" in self.config.interface_configuration[api]:
-                active = self.config.interface_configuration[api]["active"]
-                if active and dev in self.config.interface_configuration[api]["devices_active"]:
-                    active = self.config.interface_configuration[api]["devices_active"][dev]
-                elif not active:
-                    self.logging.info("API-Device is disabled: " + key + " (" + str(active) + ")")
-                else:
-                    self.logging.warning("API-Device not yet in config file: " + key + " (" + str(active) + ")")
-                    self.logging.debug("-> WARNING " + api + ": " + str(self.config.interface_configuration[api]))
+                api_active = self.config.interface_configuration[api]["active"]
             else:
                 self.logging.warning("API not yet in config file: " + api)
-                active = True
+                api_active = True
 
-            if not active:
-                self.logging.debug("Interface '" + key + "' is disabled.")
+            api_device_power = True
+            if "PowerDevice" in self.config.interface_configuration[api]["devices"][dev]:
+                power_device = self.config.interface_configuration[api]["devices"][dev]["PowerDevice"]
+                if "_" in power_device:
+                    [power_api, power_dev] = power_device.split("_")
+                    check_devices = {}
+                    check_devices_last_key = ""
+                    for device in device_status:
+                        if (device_status[device]["config"]["interface_api"] == power_api
+                                and device_status[device]["config"]["interface_dev"] == power_dev
+                                and "power" in device_status[device]["status"]):
+                            check_devices_last_key = power_api+"_"+power_dev+"_"+device
+                            check_devices[check_devices_last_key] = device_status[device]["status"]["power"]
+                    if len(check_devices) == 1:
+                        if "OFF" in check_devices[check_devices_last_key].upper():
+                            api_device_power = False
+
+            if not api_active:
+                self.logging.debug("API '" + key + "' is disabled.")
                 self.api[key].status = "DISABLED (" + api + ")"
+
+            elif (dev in self.config.interface_configuration[api]["devices_active"] and
+                  not self.config.interface_configuration[api]["devices_active"][dev]):
+                self.logging.debug("API-Interface '" + key + "' is disabled.")
+                self.api[key].status = "DISABLED (" + key + ")"
+
+            elif not api_device_power:
+                self.logging.debug("API-Interface '" + key + "' is switched off.")
+                self.api[key].status = "OFF (PowerDevice)"
 
             elif "IPAddress" in self.api[key].api_config:
                 connect = rm3ping.ping(self.api[key].api_config["IPAddress"])
                 self.logging.debug(" * " + key + ": " + str(self.api_device_list[key]))
                 self.logging.debug("   -> IP: " + self.api[key].api_config["IPAddress"] + " / connect = " +
                                    str(connect).upper())
+                if dev in self.config.interface_configuration[api]["devices_active"]:
+                    self.logging.debug("   -> API Active: " + str(self.config.interface_configuration[api]["active"]) +
+                                       "  / API-Device Active: " +
+                                       str(self.config.interface_configuration[api]["devices_active"][dev]))
 
                 if not connect:
                     connect = rm3ping.ping(self.api[key].api_config["IPAddress"])
@@ -683,13 +707,12 @@ class Connect(RemoteThreadingClass):
         Returns:
             dict: available devices with following parameters: id, name, supported, disabled, description
         """
-        try:
-            if interface in self.api:
-                result = self.api[interface].devices_available()
-                return result
-        except Exception as e:
-            self.logging.debug("ERROR getting available devices: " + str(e))
-        return {}
+        if interface in self.api:
+            result = self.api[interface].devices_available()
+            return result
+        else:
+            self.logging.warning("devices_available() ... API for '" + interface + "' not loaded.")
+            return {}
 
     def device_listen(self, interface, active):
         """
@@ -699,12 +722,11 @@ class Connect(RemoteThreadingClass):
             interface (str): interface id
             active (bool): True to activate, False to disable
         """
-        try:
-            if interface in self.api:
-                return self.api[interface].devices_available()
-        except Exception as e:
-            self.logging.debug("ERROR getting available devices: " + str(e))
-        return {}
+        if interface in self.api:
+            return self.api[interface].devices_listen(active)
+        else:
+            self.logging.warning("devices_listen() ... API for '" + interface + "' not loaded.")
+            return {}
 
     def command_get(self, dev_api, button_query, device, button):
         """
