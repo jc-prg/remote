@@ -755,8 +755,8 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.row( "Interface:",     this.select("add_device_api","Select interface",this.data["CONFIG"]["apis"]["list_description"],onchange) );
 		set_temp += this.tab.row( "Device Name:",   this.input("add_device",onclick=onchange,oninput=onchange) );
 		set_temp += this.tab.line();
-		set_temp += this.tab.row( "Device-Config:",	this.input("add_device_device")+".json" );
-		set_temp += this.tab.row( "Remote-Config:",	this.input("add_device_remote")+".json" );
+		set_temp += this.tab.row( "Device-Driver:",	    this.input("add_device_device")+".json" );
+		set_temp += this.tab.row( "Remote-Definition:",	this.input("add_device_remote")+".json" );
 		set_temp += this.tab.row( "<center>" +
                     this.btn.sized(id="add_dev",label="Add Device",style="","apiDeviceAdd([#add_device_id#,#add_device_descr#,#add_device_api#,#add_device#,#add_device_device#,#add_device_remote#,#add_device_id_external#],"+onchange2+");") +
                     "</center>", false);

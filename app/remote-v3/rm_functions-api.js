@@ -360,12 +360,18 @@ function apiCommandSend(cmdButton, sync="", callback="", device="") {
   		console.warn("use of apiCommandSend with sync -> try to reduce or eliminate");
   		
 		appFW.requestAPI("GET",dc,"",callback,"wait");		// send command and reload data when done
-		if (showButton) {setTextById("audio4", button_show);}
+		if (showButton) {
+		    //setTextById("audio4", button_show);
+            info_message_add("<b>Request Button:</b> " + device + " / " + cmdButton);
+		    }
 		}
 
 	else {
 		appFW.requestAPI("GET",dc,"",callback);		// send command and reload data when done
-		if (showButton) {setTextById("audio4", button_show);}
+		if (showButton) {
+		    //setTextById("audio4", button_show);
+            info_message_add("<b>Request Button:</b> " + device + " / " + cmdButton);
+		    }
 		}
 		
 	// device content info (scenes)
@@ -464,6 +470,7 @@ function apiButtonDelete(device_id, button_id) {
 // decompose macro data
 function apiMacroDecompose(macro) {
     var types = ["macro", "dev-on", "dev-off"];
+    var full_decompose = [];
     var translate = {
         "macro": "global",
         "dev-on": "device-on",
@@ -477,24 +484,26 @@ function apiMacroDecompose(macro) {
             var macro_translate = translate[types[a]];
             var macro_data = rm3remotes.data["CONFIG"]["macros"][macro_translate];
 
-            console.error(types[a]);
-            console.error(macro_data);
-
             if (macro_data[macro_cmd[1]]) {
                 for (var i=0; i<macro_data[macro_cmd[1]].length; i++) {
                     var command = macro_data[macro_cmd[1]][i];
                     if (command.startsWith && command.startsWith("WAIT")) {
                         var wait = command.split("-");
                         macro_wait = 'appMsg.wait_time("'+lang("MACRO_PLEASE_WAIT")+'", '+wait[1]+');';
+                        full_decompose.push("wait=" + wait[1]+"s");
                         }
                     else {
                         macro_string += macro_data[macro_cmd[1]][i] + "::";
+                        full_decompose.push(macro_data[macro_cmd[1]][i]);
                         }
                     }
                 }
             }
         }
-    console.error("apiMacroDecompose: " + macro + " -> " + macro_string + " | " + macro_wait);
+    console.debug("apiMacroDecompose: " + macro + " -> " + macro_string + " | " + macro_wait);
+    if (showButton) {
+        info_message_add("<b>Macro Decompose:</b> " + macro + " -> " + full_decompose.join(", "));
+        }
     return [ macro_string, macro_wait ];
     }
 
@@ -508,12 +517,19 @@ function apiMacroSend( macro, device="", content="" ) {  // SEND -> FEHLER? obwo
         }
 	dc = [ "macro", macro ];
 	appFW.requestAPI( "GET", dc, "", apiMacroSend_return );
-	device_media_info[device] = content;	
+	device_media_info[device] = content;
+
+	if (showButton) {
+	    info_message_add("<b>Request Macro:</b> " + dc);
+	    }
 	}
 
 function apiMacroSend_return( data ) {
 	console.log("Send macro return :");
 	console.log(data);
+	if (showButton) {
+	    info_message_add("<b>Macro 2 Queue:</b> " + data["REQUEST"]["decoded_macro"]);
+	    }
 	}
 
 // send a command directly to an API of a device

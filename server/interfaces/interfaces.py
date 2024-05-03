@@ -255,6 +255,9 @@ class Connect(RemoteThreadingClass):
                         exec(compile(cmd_import, "string", "exec"))
                         self.api[api_dev] = eval(cmd_connect)
                         self.logging.debug("- OK")
+
+                        if api in config_api:
+                            self.available[api_dev] = api_dev + " (" + config_api[api]["description"] + ")"
                     except ModuleNotFoundError:
                         self.logging.error("Could not connect API: Module '" +
                                            self.api_modules[api] + ".py' not found (" + api_dev + ")")
@@ -295,6 +298,8 @@ class Connect(RemoteThreadingClass):
                         exec(compile(cmd_import, "string", "exec"))
                         self.api[api_dev] = eval(cmd_connect)
                         self.logging.debug("- OK")
+                        if api in config_api:
+                            self.available[api_dev] = api_device + " (" + config_api[api]["description"] + ")"
                     except ModuleNotFoundError:
                         self.logging.error("Could not connect API: Module '" +
                                            self.api_modules[api] + ".py' not found (" + api_dev + ")")
