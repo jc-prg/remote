@@ -973,18 +973,16 @@ class RemoteAPI(RemoteDefaultClass):
 
                     # !!! data["CONFIG"]["scenes"][scene/button]["remote"]["macro-scene-on"]
 
-                    if button in data["CONFIG"]["scenes"] and "macro-scene-on" in data["CONFIG"]["scenes"][button]["remote"]:
+                    if (button in data["CONFIG"]["scenes"] and
+                            "macro-scene-on" in data["CONFIG"]["scenes"][button]["remote"]):
                         commands_2nd.extend(data["CONFIG"]["scenes"][button]["remote"]["macro-scene-on"])
-                    #if button in data["DATA"]["macros"]["scene-on"]:
-                    #    commands_2nd.extend(data["DATA"]["macros"]["scene-on"][button])
                     else:
                         return_msg += "; ERROR: macro not defined (" + command + ")"
 
                 elif "scene-off_" in command:
-                    if button in data["CONFIG"]["scenes"] and "macro-scene-off" in data["CONFIG"]["scenes"][button]["remote"]:
+                    if (button in data["CONFIG"]["scenes"] and
+                            "macro-scene-off" in data["CONFIG"]["scenes"][button]["remote"]):
                         commands_2nd.extend(data["CONFIG"]["scenes"][button]["remote"]["macro-scene-off"])
-                    #if button in data["DATA"]["macros"]["scene-off"]:
-                    #    commands_2nd.extend(data["DATA"]["macros"]["scene-off"][button])
                     else:
                         return_msg += "; ERROR: macro not defined (" + command + ")"
                 else:
@@ -1000,8 +998,8 @@ class RemoteAPI(RemoteDefaultClass):
             if not command_str.isnumeric() and "_" in command:
                 device, button = command.split("_", 1)
                 if "dev-on_" in command or "device-on_" in command:
-                    if button in data["DATA"]["macros"]["device-on"]:
-                        commands_3rd.extend(data["DATA"]["macros"]["device-on"][button])
+                    if button in data["CONFIG"]["macros"]["device-on"]:
+                        commands_3rd.extend(data["CONFIG"]["macros"]["device-on"][button])
                     else:
                         return_msg += "; ERROR: macro not defined (" + command + ")"
                 elif "dev-off_" in command or "device-off_" in command:
