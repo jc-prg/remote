@@ -447,8 +447,11 @@ class RemotesData(RemoteThreadingClass):
         # read data for active devices
         for device in data:
             status[device] = data[device]["status"]
-            status[device]["api"] = data[device]["config"]["interface_api"] + "_" + data[device]["config"][
-                "interface_dev"]
+            status[device]["api"] = (data[device]["config"]["interface_api"] + "_" +
+                                     data[device]["config"]["interface_dev"])
+
+            if status[device]["api"] in self.apis.api:
+                status[device]["api-status"] = self.apis.api[status[device]["api"]].status
 
             if data[device]["settings"]["main-audio"]:
                 status[device]["main-audio"] = data[device]["settings"]["main-audio"]

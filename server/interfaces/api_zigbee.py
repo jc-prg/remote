@@ -225,10 +225,14 @@ class ApiControl(RemoteApiClass):
                 "type":        device_infos["type"]
             }
             available[key]["description"] = ""
-            if "manufacturer" in device_infos:
-                available[key]["description"] += device_infos["manufacturer"] + " "
-            if "model_id" in device_infos:
-                available[key]["description"] += device_infos["model_id"] + " "
+            if ("definition" in device_infos and device_infos["definition"] is not None
+                    and "description" in device_infos["definition"]):
+                available[key]["description"] = device_infos["definition"]["description"]
+            else:
+                if "manufacturer" in device_infos:
+                    available[key]["description"] += device_infos["manufacturer"] + " "
+                if "model_id" in device_infos:
+                    available[key]["description"] += device_infos["model_id"] + " "
 
         return available
 
