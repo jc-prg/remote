@@ -299,7 +299,7 @@ paths:
       operationId: __main__.remoteAPI.send_macro_buttons
       tags:
         - send
-      summary: send marko
+      summary: send marco
       description: the macro commands are send
       parameters:
         - name: macro

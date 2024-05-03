@@ -464,12 +464,21 @@ function apiButtonDelete(device_id, button_id) {
 // decompose macro data
 function apiMacroDecompose(macro) {
     var types = ["macro", "dev-on", "dev-off"];
+    var translate = {
+        "macro": "global",
+        "dev-on": "device-on",
+        "dev-off": "device-off"
+    }
     for (var a=0;a<types.length;a++) {
         if (macro.startsWith(types[a]+"_")) {
             var macro_cmd = macro.split("_");
             var macro_string = "";
             var macro_wait = "";
-            var macro_data = rm3remotes.data["CONFIG"]["macros"][types[a]];
+            var macro_translate = translate[types[a]];
+            var macro_data = rm3remotes.data["CONFIG"]["macros"][macro_translate];
+
+            console.error(types[a]);
+            console.error(macro_data);
 
             if (macro_data[macro_cmd[1]]) {
                 for (var i=0; i<macro_data[macro_cmd[1]].length; i++) {
@@ -485,7 +494,7 @@ function apiMacroDecompose(macro) {
                 }
             }
         }
-    console.debug("apiMacroDecompose: " + macro + " -> " + macro_string + " | " + macro_wait);
+    console.error("apiMacroDecompose: " + macro + " -> " + macro_string + " | " + macro_wait);
     return [ macro_string, macro_wait ];
     }
 

@@ -473,7 +473,7 @@ function rmRemote(name) {
 	    var device    = data["DATA"]["device"];
 	    var commands  = data["DATA"][device]["api_commands"];
 	    var api_url   = data["DATA"][device]["interface_details"]["API-Info"];
-	    var api_name  = data["DATA"][device]["interface"]["interface_api"];
+	    var api_name  = data["DATA"][device]["interface"]["api_key"];
 	    var on_change = "setValueById('api_command', getValueById('api_cmd_select'));";
 
     	this.basic              = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js

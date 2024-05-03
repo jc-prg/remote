@@ -131,8 +131,8 @@ class RemotesData(RemoteThreadingClass):
                 connection[api]["api_devices"][api_device] = api_device_infos
 
         for device in status_devices:
-            dev_api = status_devices[device]["config"]["interface_api"]
-            dev_api_device = status_devices[device]["config"]["interface_dev"]
+            dev_api = status_devices[device]["config"]["api_key"]
+            dev_api_device = status_devices[device]["config"]["api_device"]
             if dev_api in connection and dev_api_device in connection[dev_api]["api_devices"]:
                 connection[dev_api]["api_devices"][dev_api_device]["devices"][device] = status_devices[device]["status"]
                 key_device = dev_api + "_" + dev_api_device + "_" + device
@@ -169,7 +169,7 @@ class RemotesData(RemoteThreadingClass):
         # read data for active devices
         for device in data:
 
-            interface = data[device]["config"]["interface_api"]
+            interface = data[device]["config"]["api_key"]
             device_key = data[device]["config"]["device"]
 
             if interface == "":
@@ -235,10 +235,10 @@ class RemotesData(RemoteThreadingClass):
                 data_config[device]["interface"]["files"] = [interface + "/00_interface.json",
                                                              interface + "/00_default.json",
                                                              interface + "/" + device_key + ".json"]
-                data_config[device]["interface"]["api"] = (data[device]["config"]["interface_api"] + "_" +
-                                                           data[device]["config"]["interface_dev"])
-                data_config[device]["interface"]["interface_api"] = data[device]["config"]["interface_api"]
-                data_config[device]["interface"]["interface_dev"] = data[device]["config"]["interface_dev"]
+                data_config[device]["interface"]["api"] = (data[device]["config"]["api_key"] + "_" +
+                                                           data[device]["config"]["api_device"])
+                data_config[device]["interface"]["api_key"] = data[device]["config"]["api_key"]
+                data_config[device]["interface"]["api_device"] = data[device]["config"]["api_device"]
                 data_config[device]["interface"]["device"] = device_key
                 data_config[device]["interface"]["remote"] = data[device]["config"]["remote"]
 
@@ -359,12 +359,12 @@ class RemotesData(RemoteThreadingClass):
         # read data for active devices
         for device in data:
 
-            if data[device]["config"]["interface_api"] != "":
+            if data[device]["config"]["api_key"] != "":
                 if selected == [] or device in selected:
 
                     device_key = data[device]["config"]["device"]
                     key_remote = data[device]["config"]["remote"]
-                    interface = data[device]["config"]["interface_api"]
+                    interface = data[device]["config"]["api_key"]
                     remote = self.config.read(rm3config.remotes + key_remote)  # remote layout & display
 
                     if "devices" not in self.errors:
@@ -447,8 +447,8 @@ class RemotesData(RemoteThreadingClass):
         # read data for active devices
         for device in data:
             status[device] = data[device]["status"]
-            status[device]["api"] = (data[device]["config"]["interface_api"] + "_" +
-                                     data[device]["config"]["interface_dev"])
+            status[device]["api"] = (data[device]["config"]["api_key"] + "_" +
+                                     data[device]["config"]["api_device"])
 
             if status[device]["api"] in self.apis.api:
                 status[device]["api-status"] = self.apis.api[status[device]["api"]].status
@@ -514,9 +514,9 @@ class RemotesData(RemoteThreadingClass):
             if (device in config and "interface" in config[device]
                     and "method" in config[device]["interface"]):
 
-                interface = config[device]["interface"]["interface_api"]
-                api_dev = (config[device]["interface"]["interface_api"] + "_" +
-                           config[device]["interface"]["interface_dev"])
+                interface = config[device]["interface"]["api_key"]
+                api_dev = (config[device]["interface"]["api_key"] + "_" +
+                           config[device]["interface"]["api_device"])
                 method = config[device]["interface"]["method"]
 
                 # get status values from config files, if connected
@@ -928,8 +928,8 @@ class RemotesEdit(RemoteDefaultClass):
                 "device": info["config_device"],
                 "device_id": info["id_ext"],
                 "remote": info["config_remote"],
-                "interface_api": interface,
-                "interface_dev": "default"
+                "api_key": interface,
+                "api_device": "default"
             },
             "settings": {
                 "description": info["label"] + ": " + info["device"],
@@ -1000,7 +1000,7 @@ class RemotesEdit(RemoteDefaultClass):
         active_json = self.data.devices_read(selected=[], remotes=False)
         self.logging.debug(active_json)
 
-        interface = active_json[device]["config"]["interface_api"]
+        interface = active_json[device]["config"]["api_key"]
         device_code = active_json[device]["config"]["device"]
         device_remote = active_json[device]["config"]["remote"]
 
@@ -1069,7 +1069,7 @@ class RemotesEdit(RemoteDefaultClass):
         """
         devices = {}
         active_json = self.config.read_status()
-        interface = active_json[device]["config"]["interface_api"]
+        interface = active_json[device]["config"]["api_key"]
         device_code = active_json[device]["config"]["device"]
         device_remote = active_json[device]["config"]["remote"]
         file_device_remote = rm3config.remotes + device_remote
@@ -1179,11 +1179,11 @@ class RemotesEdit(RemoteDefaultClass):
 
         # reset if device is not able to return status and interface is defined
         for key in status:
-            if status[key]["config"]["interface_api"] != "":
+            if status[key]["config"]["api_key"] != "":
                 device_code = self.config.translate_device(key)
-                device = self.config.read(rm3config.commands + status[key]["config"]["interface_api"] + "/" +
+                device = self.config.read(rm3config.commands + status[key]["config"]["api_key"] + "/" +
                                           device_code)
-                logging.info("device_status_reset(): " + device_code + "/" + status[key]["config"]["interface_api"])
+                logging.info("device_status_reset(): " + device_code + "/" + status[key]["config"]["api_key"])
 
                 if device["data"]["method"] != "query":
                     status[key]["status"]["power"] = "OFF"
@@ -1202,12 +1202,12 @@ class RemotesEdit(RemoteDefaultClass):
 
         # reset if device is not able to return status and interface is defined
         for key in status:
-            if status[key]["config"]["interface_api"] != "":
+            if status[key]["config"]["api_key"] != "":
                 device_code = self.config.translate_device(key)
-                device = self.config.read(rm3config.commands + status[key]["config"]["interface_api"] + "/" +
+                device = self.config.read(rm3config.commands + status[key]["config"]["api_key"] + "/" +
                                           device_code)
                 logging.info("Reset device_status_reset_audio(): " + device_code + "/" +
-                             status[key]["config"]["interface_api"])
+                             status[key]["config"]["api_key"])
 
                 if device["data"]["method"] != "query":
                     if "vol" in status[key]["status"]:
@@ -1286,7 +1286,7 @@ class RemotesEdit(RemoteDefaultClass):
             str: success or error message
         """
         config = self.config.read_status()
-        interface = config[device]["config"]["interface_api"]
+        interface = config[device]["config"]["api_key"]
         device_code = config[device]["config"]["device"]
         data = self.config.read(rm3config.commands + interface + "/" + device_code)
 
@@ -1314,7 +1314,7 @@ class RemotesEdit(RemoteDefaultClass):
             str: success or error message
         """
         config = self.config.read_status()
-        interface = config[device]["config"]["interface_api"]
+        interface = config[device]["config"]["api_key"]
         device_code = config[device]["config"]["device"]
         data = self.config.read(rm3config.commands + interface + "/" + device_code)
 
@@ -1369,7 +1369,7 @@ class RemotesEdit(RemoteDefaultClass):
             button = "power"
 
         method = self.config.cache["_api"]["devices"][device]["method"]
-        interface = self.config.cache["_api"]["devices"][device]["config"]["interface_api"]
+        interface = self.config.cache["_api"]["devices"][device]["config"]["api_key"]
 
         self.logging.debug("button_get_value(): ...m:" + method + " ...d:" + device + " ...b:" + button)
         if method == "record":

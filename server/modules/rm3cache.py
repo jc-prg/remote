@@ -199,7 +199,7 @@ class ConfigCache(RemoteThreadingClass):
         get method for device
         """
         status = self.read(rm3config.active_devices)
-        interface = status[device]["config"]["interface_api"]
+        interface = status[device]["config"]["api_key"]
         device = status[device]["config"]["device"]
         definition = self.read(rm3config.devices + interface + "/" + device)
         return definition["data"]["method"]
@@ -353,7 +353,7 @@ class ConfigCache(RemoteThreadingClass):
 
             for device in status:
                 key = status[device]["config"]["device"]
-                interface = status[device]["config"]["interface_api"]
+                interface = status[device]["config"]["api_key"]
                 if interface != "" and key != "":
                     config = self.read(rm3config.commands + interface + "/" + key)
                     config_default = self.read(rm3config.commands + interface + "/00_default")

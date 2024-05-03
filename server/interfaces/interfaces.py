@@ -123,8 +123,8 @@ class Connect(RemoteThreadingClass):
                     check_devices = {}
                     check_devices_last_key = ""
                     for device in device_status:
-                        if (device_status[device]["config"]["interface_api"] == power_api
-                                and device_status[device]["config"]["interface_dev"] == power_dev
+                        if (device_status[device]["config"]["api_key"] == power_api
+                                and device_status[device]["config"]["api_device"] == power_dev
                                 and "power" in device_status[device]["status"]):
                             check_devices_last_key = power_api+"_"+power_dev+"_"+device
                             check_devices[check_devices_last_key] = device_status[device]["status"]["power"]
@@ -228,8 +228,8 @@ class Connect(RemoteThreadingClass):
 
         api_devices = []
         for device in config_dev:
-            api = config_dev[device]["config"]["interface_api"]
-            dev = config_dev[device]["config"]["interface_dev"]
+            api = config_dev[device]["config"]["api_key"]
+            dev = config_dev[device]["config"]["api_device"]
             api_dev = api + "_" + dev
             if api_dev not in api_devices:
                 api_devices.append(api_dev)
@@ -660,8 +660,8 @@ class Connect(RemoteThreadingClass):
         """
         try:
             active_devices = self.config.read_status()
-            api = active_devices[device]["config"]["interface_api"]
-            dev = active_devices[device]["config"]["interface_dev"]
+            api = active_devices[device]["config"]["api_key"]
+            dev = active_devices[device]["config"]["api_device"]
             return api + "_" + dev
 
         except:
@@ -684,7 +684,7 @@ class Connect(RemoteThreadingClass):
         active = self.config.read_status()
         if device in active:
             device_code = active[device]["config"]["device"]
-            device_api = active[device]["config"]["interface_api"]
+            device_api = active[device]["config"]["api_key"]
             device_config = self.config.read(rm3config.commands + device_api + "/" + device_code)
             return device_config.copy()
         else:
@@ -740,7 +740,7 @@ class Connect(RemoteThreadingClass):
         if device in active and "device_id" in active[device]["config"]:
             d_id = active[device]["config"]["device_id"]
         else:
-            d_id = active[device]["config"]["interface_api"]+"_" + active[device]["config"]["interface_api"]+"_"+device
+            d_id = active[device]["config"]["api_key"]+"_" + active[device]["config"]["api_key"]+"_"+device
         return d_id
 
     def devices_available(self, interface):
