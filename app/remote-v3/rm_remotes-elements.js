@@ -426,27 +426,20 @@ function rmRemoteDisplays(name) {
 	//--------------------------------
 	// show display with information
 	this.default		= function (id, device, type="devices", style="", display_data={}) {
-		var remote_data	= this.data["CONFIG"][type][device]["remote"];
-		var status_data	= this.data["STATUS"][type][device];
-		if (type != "devices") { status_data = {}; }
-		
-		if (type == "devices") {
-			var status_data_new	= this.data["STATUS"]["devices"][device];
-			var device_api		= status_data_new["api"];
-			var connected		= this.data["STATUS"]["interfaces"][device_api];
-			}
-		else {
-			// check included devices ?
-			var connected = "unknown";
-			}
-		
+
 		if (!this.data["CONFIG"][type]) {
 			this.logging.error(this.app_name+".display() - type not supported ("+type+")");
 			return;
 			}
-		
+
+		var remote_data	= this.data["CONFIG"][type][device]["remote"];
+		var status_data	= this.data["STATUS"][type][device];
+
+		if (type == "devices") { var connected = this.data["STATUS"]["devices"][device]["api-status"].toLowerCase(); }
+		else                   { var connected = "unknown"; status_data = {}; }
+
 		if (display_data != {})             {}
-		else if (remote_data["display"])    { display_data = remote_data["display"]; }
+		else if (remote_data["display"])    { display_data          = remote_data["display"]; }
 		else                                { display_data["Error"] = "No display defined"; }
 
         var text    = "";
@@ -460,10 +453,10 @@ function rmRemoteDisplays(name) {
 
 		if (this.edit_mode)                                                     { status = "EDIT_MODE"; }
 		else if (type == "scenes")                                              { status = "ON"; }
+		else if (connected.indexOf("off") > -1)                                 { status = "OFF"; }
 		else if (connected != "connected")                                      { status = "ERROR"; }
-		else if (status_data["power"] == "ON" || status_data["power"] == "on")  { status = "ON"; }
-		else if (status_data["power"].indexOf("OFF") >= 0 || status_data["power"].indexOf("off") >= 0)
-		                                                                        { status = "OFF" }
+		else if (status_data["power"].toUpperCase().indexOf("ON") >= 0)         { status = "ON"; }
+		else if (status_data["power"].toUpperCase().indexOf("OFF") >= 0)        { status = "OFF" }
 		else                                                                    { status = "ERROR"; }
 
 		// display if ERROR
@@ -522,7 +515,7 @@ function rmRemoteDisplays(name) {
 		text  = text.replace( /##STYLE##/g, style + " display_off" );
 		if (status == "OFF"  && !this.edit_mode)    { text  = text.replace( /##DISPLAY##/g, "block" ); }
 		else                                        { text  = text.replace( /##DISPLAY##/g, "none" ); }
-		text += "<center>power off</center>";
+		text += "<center>power off<br/><i><text id='display_power_info_"+device+"'></text></i></center>";
 		text += display_end;
 
         return text;

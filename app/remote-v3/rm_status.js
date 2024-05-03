@@ -42,6 +42,7 @@ function statusCheck(data={}) {
 	console.log("statusCheck: Updated all status elements ("+duration+"ms)");
 	}
 
+
 // check and display current volume -> partly removed, final check open if still required
 function statusShow_volume_old( volume, maximum, vol_color, novol_color="" ) {
 
@@ -657,129 +658,66 @@ function statusCheck_audioMute(data) {
 function statusCheck_powerButton(data={}) {
 
 	// check device status and change color of power buttons / main menu buttons device
-	var devices     = data["STATUS"]["devices"];
-	var device_list = "";
+	var devices        = data["STATUS"]["devices"];
+	var devices_config = data["CONFIG"]["devices"]
+	var device_list    = "";
+
 	for (var device in devices) {
-	
-	    if (device == "default") { continue; }
-		if (!data["CONFIG"]["devices"][device]) {
-		    console.warn("Device not defined correctly: '" + device + "' has no configuration.");
-		    continue;
-		    }
+
+	    if (device == "default")         { continue; }
+		if (!devices_config[device])     { console.warn("Device not defined correctly: '" + device + "' has no configuration."); continue; }
+	    if (!devices[device]["power"])   { continue; }
 
 	    var device_api         = data["STATUS"]["devices"][device]["api"];
+	    var device_api_connect = data["STATUS"]["devices"][device]["api-status"];
 	    var device_api_status  = data["STATUS"]["interfaces"]["connect"][device_api];
-	    device_list += device + " ";
 
 		if (!device_api_status) {
 		    console.warn("Device not defined correctly: '" + device + "' has no interface '" + device_api + "'");
 		    continue;
 		    }
 
-	    for (var key2 in devices[device]) {
-	    
-	        // if power status
-	        if (key2.includes("power") ) {
+	    device_list += device + " ";
 
-                var key = device;
-                if (key2 != "power") { key += "_"+key2; }
-                if (!document.getElementById(key+"_on-off") && !document.getElementById(key+"_on") &&
-                    !document.getElementById(key+"_off") && !document.getElementById("device_"+key)) { continue; }
+        var power_status     = devices[device]["power"].toUpperCase() + "";
+        var power_status_api = devices[device]["api-status"].toUpperCase();
 
-                check_button = devices[device][key2];
-                connection   = device_api_status.toLowerCase();					 // indicator if server is already ready to interact with client
-                console.debug("statusCheck_powerButton: "+key+"="+check_button+" - "+connection);
+        if (power_status_api.indexOf("OFF") > -1)   { power_status = "OFF"; }
+        else if (power_status_api != "CONNECTED")   { power_status = "ERROR"; }
 
-                if (connection.toLowerCase() != "connected") {
-                    if (deactivateButton == false) {
-                        statusShow_powerButton( "device_" + key, "ERROR" ); // main menu button
-                        statusShow_powerButton( key + "_on-off", "ERROR" ); // on-off device button
-                        statusShow_powerButton( key + "_on",     "ERROR" );
-                        statusShow_powerButton( key + "_off",    "ERROR" );
-                        }
-                    statusShow_display(key, "ERROR");
-                    console.debug("statusCheck_powerButton: "+device+"_"+key+"="+check_button+" - "+connection)
-                    continue;
-                    }
+        console.debug("Check PWR BUTTON & DISPLAY: " + device + " / " + power_status + " / " + power_status_api)
 
-                if (typeof check_button == "string") {
-                    check_button = check_button.toUpperCase()
+        if (deactivateButton == false) {
+            if (power_status.includes("ERROR")) {
+                statusShow_powerButton( "device_" + device, "ERROR" ); // main menu button
+                statusShow_powerButton( device + "_on-off", "ERROR" ); // on-off device button
+                statusShow_powerButton( device + "_on",     "ERROR" );
+                statusShow_powerButton( device + "_off",    "ERROR" );
+            }
+            else if (power_status.includes("ON")) {
+                statusShow_powerButton( "device_" + device, "ON" ); // main menu button
+                statusShow_powerButton( device + "_on-off", "ON" ); // on-off device button
+                statusShow_powerButton( device + "_on",  "ON" );
+                statusShow_powerButton( device + "_off", "" );
+                }
+            else if (power_status.includes("OFF")) {
+                statusShow_powerButton( "device_" + device, "OFF" ); // main menu button
+                statusShow_powerButton( device + "_on-off", "OFF" ); // on-o:16
+                statusShow_powerButton( device + "_off", "OFF" );
+                statusShow_powerButton( device + "_on",  "" );
+                }
+            }
 
-                    if (check_button.includes("ON")) {
-                        if (deactivateButton == false) {
-                            statusShow_powerButton( "device_" + key, "ON" ); // main menu button
-                            statusShow_powerButton( key + "_on-off", "ON" ); // on-off device button
-                            statusShow_powerButton( key + "_on",  "ON" );
-                            statusShow_powerButton( key + "_off", "" );
-                            }
-                        statusShow_display(key, "ON");
-                        }
-                    else if (check_button.includes("OFF")) {
-                        if (deactivateButton == false) {
-                            statusShow_powerButton( "device_" + key, "OFF" ); // main menu button
-                            statusShow_powerButton( key + "_on-off", "OFF" ); // on-o:16
-                            statusShow_powerButton( key + "_off", "OFF" );
-                            statusShow_powerButton( key + "_on",  "" );
-                            }
-                        statusShow_display(key, "OFF");
-                        }
-                    else if (check_button.includes("ERROR")) {
-                        if (deactivateButton == false) {
-                            statusShow_powerButton( "device_" + key, "ERROR" ); // main menu button
-                            statusShow_powerButton( key + "_on-off", "ERROR" ); // on-o:16
-                            statusShow_powerButton( key + "_off", "ERROR" );
-                            statusShow_powerButton( key + "_on",  "ERROR" );
-                            }
-                        statusShow_display(key, "ERROR");
-                        }
-                    }
+        if (rm3remotes.edit_mode)                 { statusShow_display(device, "EDIT_MODE"); }
+        else if (deactivateButton)                { statusShow_display(device, "MANUAL"); }
+        else if (power_status.includes("ERROR"))  { statusShow_display(device, "ERROR"); }
+        else if (power_status.includes("ON"))     { statusShow_display(device, "ON"); }
+        else if (power_status.includes("OFF"))    { statusShow_display(device, "OFF"); }
+        }
 
-                else if (typeof check_button == "object") {
-                    if (check_button.indexOf("off") >= 0) {
-                        if (deactivateButton == false) {
-                            statusShow_powerButton( "device_" + key, "OFF" ); // main menu button
-                            statusShow_powerButton( key + "_on-off", "OFF" ); // on-off device button
-                            statusShow_powerButton( key + "_off", "OFF" );
-                            statusShow_powerButton( key + "_on",  "" );
-                            }
-                        statusShow_display(key, "OFF");
-                        }
-                    else if (check_button.indexOf("on") >= 0) {
-                        if (deactivateButton == false) {
-                            statusShow_powerButton( "device_" + key, "ON" ); // main menu button
-                            statusShow_powerButton( key + "_on-off", "ON" ); // on-off device button
-                            statusShow_powerButton( key + "_on",  "ON" );
-                            statusShow_powerButton( key + "_off", "" );
-                            }
-                        statusShow_display(key, "ON");
-                        }
-                    else if (check_button.includes("Error") || check_button.includes("ERROR") || check_button.includes("error")) {
-                        if (deactivateButton == false) {
-                            statusShow_powerButton( "device_" + key, "ERROR" ); // main menu button
-                            statusShow_powerButton( key + "_on-off", "ERROR" ); // on-o:16
-                            statusShow_powerButton( key + "_off", "ERROR" );
-                            statusShow_powerButton( key + "_on",  "ERROR" );
-                            }
-                        statusShow_display(key, "ERROR");
-                        }
-                    }
-
-                else {
-                    statusShow_display(key, "ERROR");
-                    }
-
-                if (deactivateButton) {
-                    statusShow_display(key, "MANUAL");
-                    }
-                if (rm3remotes.edit_mode) {
-                    statusShow_display(key, "EDIT_MODE");
-                    }
-
-	        }
-	        }
-  	    }
     console.debug("statusCheck_powerButton: "+device_list)
 	}
+
 
 // check system health
 function statusCheck_health(data={}) {
@@ -806,6 +744,7 @@ function statusCheck_health(data={}) {
         document.getElementById("system_health").innerHTML = health_msg;
         }
 }
+
 
 // check status information of device -> insert into display
 function statusCheck_display(data={}) {
@@ -941,7 +880,6 @@ function statusCheck_display(data={}) {
 			for (var i=0; i<display.length; i++) {
 				var value_key   = display[i];
 				var element2    = document.getElementById("display_full_" + key + "_" + value_key);
-				//var status      = device_status[value_key];
 				var status      = device_status[value_key];
 				if (typeof(status) == "string") {
 				    status          = status.replaceAll("'", "\"");
@@ -1012,8 +950,8 @@ function statusCheck_display(data={}) {
 		}
 	}
 
-// show specific display and hide the others
 
+// show specific display and hide the others
 function statusShow_display(id, view) {
     var keys = ["ON", "OFF", "ERROR", "MANUAL", "EDIT_MODE"];
     view = view.toUpperCase();
