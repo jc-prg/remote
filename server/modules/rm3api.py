@@ -1031,7 +1031,7 @@ class RemoteAPI(RemoteDefaultClass):
 
         self.logging.debug("Decoded macro-string 4th: " + str(commands_4th))
 
-        data["REQUEST"]["decoded_macro"] = ", ".join(commands_4th)
+        data["REQUEST"]["decoded_macro"] = ", ".join(str(e) for e in commands_4th)
 
         # execute buttons
         for command in commands_4th:

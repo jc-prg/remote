@@ -528,7 +528,7 @@ function apiMacroSend_return( data ) {
 	console.log("Send macro return :");
 	console.log(data);
 	if (showButton) {
-	    info_message_add("<b>Macro 2 Queue:</b> " + data["REQUEST"]["decoded_macro"]);
+	    info_message_add("<b>Macro Queue:</b> " + data["REQUEST"]["decoded_macro"]);
 	    }
 	}
 
