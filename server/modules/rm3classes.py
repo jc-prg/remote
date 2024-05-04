@@ -114,6 +114,18 @@ class RemoteApiClass(RemoteDefaultClass):
         self.logging.debug("Method 'devices_available()' is not implemented for the API '" + self.name + "'.")
         return {}
 
+    def api_device_available(self, api_device):
+        """
+        check if API device is available, if not connected via IP (e.g. USB Dongle)
+
+        Args:
+            api_device (str): API Device identifier
+        Returns:
+            bool: True (otherwise redefine function in API connector)
+        """
+        self.logging.debug("Method 'api_device_available()' is not implemented for the API '" + self.name + "'.")
+        return "OK"
+
     def devices_listen(self, active):
         """
         activate / disable listen mode new ZigBee devices

@@ -1,3 +1,4 @@
+import os.path
 import time
 import json
 import modules.rm3json as rm3json
@@ -205,6 +206,33 @@ class ApiControl(RemoteApiClass):
             rc = self.mqtt_client.publish(topic)
         else:
             rc = self.mqtt_client.publish(topic, data, 1)
+
+    def api_device_available(self, api_device):
+        """
+        check if API device (USB Dongle) is defined and available
+
+        Args:
+            api_device (str): API Device identifier
+        Returns:
+            bool: False if USB Dongle is defined but not found
+        """
+        self.logging.info("!!! " + api_device + " / " + self.api_config["USBDongle"] + " / " + str(os.path.exists(self.api_config["USBDongle"])))
+        if self.api_config["USBDongle"] != "":
+            device_file = self.api_config["USBDongle"]
+            try:
+                # Try opening the device file in read mode
+                with open(device_file, 'r') as f:
+                    return "OK: " + device_file + " is available."
+            except FileNotFoundError:
+                return "ERROR: " + device_file + " does not exist."
+            except PermissionError:
+                return "ERROR: " + device_file + " exists but is not accessible due to permissions."
+            except Exception as e:
+                return "ERROR: An error occurred: " + str(e)
+
+            #if not os.path.islink(self.api_config["USBDongle"]):
+            #    return "ERROR: Could not find USB dongle " + self.api_config["USBDongle"] + " (" + api_device + ")"
+        return "OK"
 
     def devices_available(self):
         """

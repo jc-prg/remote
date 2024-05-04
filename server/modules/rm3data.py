@@ -29,7 +29,7 @@ class RemotesData(RemoteThreadingClass):
         self.queue = queue
         self.apis = apis
         self.errors = {}
-        self.thread_priority(5)
+        self.thread_priority(4)
 
     def run(self):
         """
@@ -799,18 +799,15 @@ class RemotesEdit(RemoteDefaultClass):
                 i_list += key + ","
 
         # write central config file
-        self.config.scene_set_values(scene, "settings", active_json[scene]["settings"])
+        msg = self.config.scene_set_values(scene, "settings", active_json[scene]["settings"])
 
         # write remote layout definition
         try:
             self.config.write(rm3presets.remotes + "scene_" + scene, remotes)
         except Exception as e:
-            return "ERROR: could not write changes (remotes) - " + str(e)
+            msg += "ERROR: could not write changes (remotes) - " + str(e)
 
-        if i > 0:
-            return "OK: Edited device parameters of " + scene + " <br/>(" + str(i) + " changes: " + i_list + ")"
-        else:
-            return "ERROR: no data key matched with keys from config-files (" + str(info.keys) + ")"
+        return msg
 
     def scene_delete(self, scene):
         """

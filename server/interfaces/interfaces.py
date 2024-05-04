@@ -141,6 +141,10 @@ class Connect(RemoteThreadingClass):
                 self.logging.debug("API-Interface '" + key + "' is disabled.")
                 self.api[key].status = "DISABLED (" + key + ")"
 
+            elif "ERROR" in self.api[key].api_device_available(key):
+                self.logging.debug("API Device for '" + key + "' not found at the server.")
+                self.api[key].status = self.api[key].api_device_available(key)
+
             elif not api_device_power:
                 self.logging.debug("API-Interface '" + key + "' is switched off.")
                 self.api[key].status = "OFF (PowerDevice)"

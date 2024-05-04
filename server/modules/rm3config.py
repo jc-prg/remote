@@ -188,7 +188,8 @@ class ConfigCache(RemoteThreadingClass):
         """
         write cache content to files
         """
-        # main_config_files = [rm3presets.active_devices, rm3presets.active_apis, rm3presets.active_scenes]
+        # main_config_files = [rm3presets.active_devices, rm3presets.active_apis,
+        #                      rm3presets.active_scenes, rm3presets.active_macros]
         main_config_files = [rm3presets.active_devices, rm3presets.active_scenes]
 
         self.logging.debug("Write cache to config files (main_config="+str(main_config)+") ...")
