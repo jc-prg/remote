@@ -1,8 +1,8 @@
 import pythonping
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3presets
 
 
-ping_logger = rm3config.set_logging("ping")
+ping_logger = rm3presets.set_logging("ping")
 
 
 def ping(host):

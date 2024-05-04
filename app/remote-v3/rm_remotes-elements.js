@@ -435,6 +435,10 @@ function rmRemoteDisplays(name) {
 		var remote_data	= this.data["CONFIG"][type][device]["remote"];
 		var status_data	= this.data["STATUS"][type][device];
 
+		if (!status_data)           { console.error("Error building display: no status data for " + device + " (" + type + ")"); }
+		if (!status_data["power"])  { console.error("Error building display: no status_power data for " + device + " (" + type + ")"); status_data["power"] = "ERROR"; }
+		if (!remote_data)           { console.error("Error building display: no remote definition for " + device + " (" + type + ")"); }
+
 		if (type == "devices") { var connected = this.data["STATUS"]["devices"][device]["api-status"].toLowerCase(); }
 		else                   { var connected = "unknown"; status_data = {}; }
 

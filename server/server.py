@@ -7,10 +7,10 @@ import traceback
 import connexion
 from flask_cors import CORS
 
-import modules.rm3cache as rm3cache
+import modules.rm3config as rm3cache
 import modules.rm3data as rm3data
 import modules.rm3queue as rm3queue
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3config
 import modules.rm3api as rm3api
 import interfaces
 
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     configFiles = rm3cache.ConfigCache("ConfigFiles")
     configInterfaces = rm3cache.ConfigInterfaces("configInterfaces")
 
-    if configFiles.check_config() == "ERROR":
+    if configFiles.check_main_config_files() == "ERROR":
         exit()
 
     deviceAPIs = interfaces.Connect(configFiles)

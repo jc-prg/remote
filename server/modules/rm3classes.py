@@ -1,7 +1,7 @@
 import logging
 import time
 import threading
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3presets
 
 
 class RemoteDefaultClass(object):
@@ -22,17 +22,17 @@ class RemoteDefaultClass(object):
 
         self.log_level = None
         self.log_level_name = ""
-        for key in rm3config.log_level_module:
-            if self.class_id in rm3config.log_level_module[key]:
+        for key in rm3presets.log_level_module:
+            if self.class_id in rm3presets.log_level_module[key]:
                 self.log_level = eval("logging." + key.upper())
                 self.log_level_name = key
 
         if self.log_level is None:
-            self.log_level = rm3config.log_set2level
-            self.log_level_name = rm3config.log_level
+            self.log_level = rm3presets.log_set2level
+            self.log_level_name = rm3presets.log_level
 
-        rm3config.server_health[class_id] = "registered"
-        self.logging = rm3config.set_logging(self.class_id, self.log_level)
+        rm3presets.server_health[class_id] = "registered"
+        self.logging = rm3presets.set_logging(self.class_id, self.log_level)
         self.logging.debug("Creating class " + name + " (Log Level: " + self.log_level_name + ") ...")
 
 
@@ -150,7 +150,7 @@ class RemoteThreadingClass(threading.Thread, RemoteDefaultClass):
         self._thread_priority = 3                      # range 0..4 (1..5 via self.threat_set_priority)
         self._thread_waiting_times = [0.5, 1, 2, 4, 6, 8, 16, 32]  # to be used depending on priority
 
-        rm3config.server_health[class_id] = time.time()
+        rm3presets.server_health[class_id] = time.time()
 
         self.logging.debug("Creating thread " + name + " ...")
 
@@ -161,7 +161,7 @@ class RemoteThreadingClass(threading.Thread, RemoteDefaultClass):
         self.logging.debug("GOT STOPPING SIGNAL ...")
         self._running = False
         self._processing = False
-        rm3config.server_health[self.class_id] = "stopped"
+        rm3presets.server_health[self.class_id] = "stopped"
 
     def thread_wait(self):
         """
@@ -172,7 +172,7 @@ class RemoteThreadingClass(threading.Thread, RemoteDefaultClass):
         while self._running and start_time + wait > time.time():
             time.sleep(0.1)
 
-        rm3config.server_health[self.class_id] = time.time()
+        rm3presets.server_health[self.class_id] = time.time()
 
     def thread_priority(self, priority):
         """

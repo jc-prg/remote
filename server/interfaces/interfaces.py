@@ -3,7 +3,7 @@ import sys
 import datetime
 
 import modules.rm3json as rm3json
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3presets
 import modules.rm3ping as rm3ping
 from modules.rm3classes import RemoteThreadingClass
 
@@ -50,13 +50,13 @@ class Connect(RemoteThreadingClass):
         }
         self.available = {}
 
-        self.checking_interval = rm3config.refresh_device_connection
+        self.checking_interval = rm3presets.refresh_device_connection
         self.checking_last = 0
         self.check_error = time.time()
         self.check_directly = False
         self.last_message = ""
 
-        if rm3config.log_api_data == "NO":
+        if rm3presets.log_api_data == "NO":
             self.log_commands = False
         else:
             self.log_commands = True
@@ -104,7 +104,7 @@ class Connect(RemoteThreadingClass):
         connected = []
         not_connected = []
         start_time = time.time()
-        device_status = self.config.read(rm3config.active_devices)
+        device_status = self.config.read(rm3presets.active_devices)
 
         # check API status
         for key in self.api:
@@ -222,8 +222,8 @@ class Connect(RemoteThreadingClass):
         """
         load API connectors
         """
-        config_dev = self.config.read(rm3config.active_devices)
-        config_api = self.config.read(rm3config.active_apis)
+        config_dev = self.config.read(rm3presets.active_devices)
+        config_api = self.config.read(rm3presets.active_apis)
         self.logging.info(".................... 1st CONNECT OF INTERFACES ....................")
 
         api_devices = []
@@ -236,6 +236,8 @@ class Connect(RemoteThreadingClass):
             if api_dev not in self.api_device_list:
                 self.api_device_list[api_dev] = []
             self.api_device_list[api_dev].append(device)
+
+        self.logging.info("---> " + str(self.api_device_list))
 
         if config_api != {}:
             for api in config_api:
@@ -274,15 +276,15 @@ class Connect(RemoteThreadingClass):
                 api, api_device = api_dev.split("_")
                 api_device_config = {}
 
-                if rm3json.if_exist(rm3config.commands + api + "/00_interface"):
-                    api_config = self.config.read(rm3config.commands + api + "/00_interface")
+                if rm3json.if_exist(rm3presets.commands + api + "/00_interface"):
+                    api_config = self.config.read(rm3presets.commands + api + "/00_interface")
                     if "API-Devices" in api_config and api_device in api_config["API-Devices"]:
                         api_device_config = api_config["API-Devices"][api_device]
                     elif "API-Devices" in api_config and "default" in api_config["API-Devices"]:
                         api_device_config = api_config["API-Devices"]["default"]
                     else:
                         self.logging.warning("Error in config-file - device not defined / no default device: " +
-                                             rm3config.commands + api + "/00_interface.json")
+                                             rm3presets.commands + api + "/00_interface.json")
                 else:
                     self.logging.error("Error: no configuration file '00_interface.json' available for API '" +
                                        api_dev + "'.")
@@ -647,17 +649,10 @@ class Connect(RemoteThreadingClass):
             active[device]["status"]["api-last-send"] = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')
             active[device]["status"]["api-last-send-tc"] = int(time.time())
 
-            #power_auto_off = self.device_auto_power_off(device)
-            #if power_auto_off != 1:
-            #    active[device]["status"]["auto-power-off"] = power_auto_off["auto_off"]
-
-            return_msg = "OK"
+            return self.config.device_set_values(device, "status", active[device]["status"])
 
         else:
-            return_msg = "ERROR record_status: device not found"
-
-        self.config.write_status(active, "save_status " + device + "/" + button)
-        return return_msg
+            return "ERROR record_status: device not found"
 
     def device_api_string(self, device):
         """
@@ -690,7 +685,7 @@ class Connect(RemoteThreadingClass):
         if device in active:
             device_code = active[device]["config"]["device"]
             device_api = active[device]["config"]["api_key"]
-            device_config = self.config.read(rm3config.commands + device_api + "/" + device_code)
+            device_config = self.config.read(rm3presets.commands + device_api + "/" + device_code)
             return device_config.copy()
         else:
             return {"ERROR": "Device configuration doesn't exist."}
@@ -798,7 +793,7 @@ class Connect(RemoteThreadingClass):
                 device_id = active[device]["config"]["device_id"]
             else:
                 device_id = "N/A"
-            device_file = rm3config.commands + api + "/" + device_code
+            device_file = rm3presets.commands + api + "/" + device_code
             buttons_device = self.device_configuration(device)
             if rm3json.if_exist(device_file):
                 if self.log_commands:
@@ -807,7 +802,7 @@ class Connect(RemoteThreadingClass):
             else:
                 return "ERROR: device configuration isn't correct: " + device_file + " / " + str(buttons_device)
 
-            device_default = rm3config.commands + api + "/00_default"
+            device_default = rm3presets.commands + api + "/00_default"
             if rm3json.if_exist(device_default):
                 buttons_default = self.config.read(device_default)
                 if self.log_commands:
@@ -856,8 +851,8 @@ class Connect(RemoteThreadingClass):
             buttons = self.device_configuration(device)
 
             # add button definitions from default.json if exist
-            if rm3json.if_exist(rm3config.commands + api + "/00_default"):
-                buttons_default = self.config.read(rm3config.commands + api + "/00_default")
+            if rm3json.if_exist(rm3presets.commands + api + "/00_default"):
+                buttons_default = self.config.read(rm3presets.commands + api + "/00_default")
 
                 key_list = ["buttons", "queries", "commands", "values", "send-data"]
                 for key in key_list:

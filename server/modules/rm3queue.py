@@ -41,6 +41,7 @@ class QueueApiCalls(RemoteThreadingClass):
         while self._running:
 
             if len(self.queue) > 0:
+                self.logging.debug("Queue size: " + str(len(self.queue)))
                 command = self.queue.pop(0)
                 self.execute(command)
                 count = 0
@@ -59,14 +60,12 @@ class QueueApiCalls(RemoteThreadingClass):
     def execute(self, command):
         """
         execute command or wait
-        SEND  -> command = number or command = [interface,device,button,state]
-        QUERY -> command = number or command = [interface,device,[query1,query2,query3,...],state]
+        Args:
+            command (Any): command separated in parameters, depending on purpose:
+                           SEND  -> number or command = [interface,device,button,state];
+                           QUERY -> number or command = [interface,device,[query1,query2,query3,...],state]
         """
-
-        # read device information if query
-        devices = {}
-        if self.config != "" and self.query_send == "query":
-            devices = self.config.read_status()
+        devices = self.config.read_status()
 
         # check, if reload is requested ...
         if "START_OF_RELOAD" in str(command):
@@ -78,6 +77,9 @@ class QueueApiCalls(RemoteThreadingClass):
         elif "," in str(command):
 
             interface, device, button, state, request_time = command
+
+            if device not in devices:
+                self.logging.error("ERROR: Could not find '" + device + "' in current configuration!")
 
             self.logging.debug("Queue: Execute " + self.name + " - " + str(interface) + ":" + str(device) + ":" +
                                str(button) + ":" + str(state) + ":" + str(request_time))
@@ -120,40 +122,12 @@ class QueueApiCalls(RemoteThreadingClass):
                         devices[device]["status"][value] = "Error"
 
                 if self.config != "":
-                    self.config.write_status(devices, "execute (" + str(command) + ")")
+                    self.config.device_set_values(device, "status", devices[device]["status"])
+                    #self.config.write_status(devices, "execute (" + str(command) + ")")
 
         # if is a number
         else:
             time.sleep(float(command))
-
-    def add_reload_commands(self, commands):
-        """
-        add list of commands required for reloading device data
-        """
-
-        if commands == "RESET":
-            self.device_reload = []
-        else:
-            self.device_reload.append(commands)
-
-    def add2queue(self, commands):
-        """
-        add single command or list of commands to queue
-        """
-        self.logging.debug("Add to queue " + self.name + ": " + str(commands))
-
-        # set reload status
-        if "START_OF_RELOAD" in str(commands):
-            self.reload = True
-
-        # or add command to queue
-        else:
-            for command in commands:
-                if "," in str(command):
-                    command.append(time.time())  # add element to array
-                self.queue.append(command)       # add command array to queue
-
-        return "OK: Added command(s) to the queue '" + self.name + "': " + str(commands)
 
     def execution_time(self, device, start_time, end_time):
         """
@@ -191,3 +165,32 @@ class QueueApiCalls(RemoteThreadingClass):
         self.logging.info("__EXEC TIME: '" + device + "' average: " + str(
             round(self.average_exec[device], average_round)) + " / last " + str(
             round(duration, average_round)) + " / change " + str(round(average_diff, average_round)))
+
+    def add_reload_commands(self, commands):
+        """
+        add list of commands required for reloading device data
+        """
+
+        if commands == "RESET":
+            self.device_reload = []
+        else:
+            self.device_reload.append(commands)
+
+    def add2queue(self, commands):
+        """
+        add single command or list of commands to queue
+        """
+        self.logging.debug("Add to queue " + self.name + ": " + str(commands))
+
+        # set reload status
+        if "START_OF_RELOAD" in str(commands):
+            self.reload = True
+
+        # or add command to queue
+        else:
+            for command in commands:
+                if "," in str(command):
+                    command.append(time.time())  # add element to array
+                self.queue.append(command)       # add command array to queue
+
+        return "OK: Added command(s) to the queue '" + self.name + "': " + str(commands)

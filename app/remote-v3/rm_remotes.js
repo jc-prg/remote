@@ -1607,13 +1607,13 @@ function rmRemote(name) {
 		var remote_data  = this.data["CONFIG"][type][device]["remote"];
 		var status_data  = this.data["STATUS"]["devices"][device];
 		
-        	var display_start = "<button id=\"colorpicker_"+device+"\" class=\"color-picker\">";
-        	var display_end   = "</button>";
-        	
-        	var text = display_start;
-        	text += this.color_picker.colorPickerHTML();
-        	text += display_end;
-        	return text;
+        var display_start = "<button id=\"colorpicker_"+device+"\" class=\"color-picker\">";
+        var display_end   = "</button>";
+
+        var text = display_start;
+        text += this.color_picker.colorPickerHTML();
+        text += display_end;
+        return text;
 
 		}
 	
@@ -1626,9 +1626,10 @@ function rmRemote(name) {
 		var remote_data         = this.data["CONFIG"][type][device]["remote"];
 		var status_data         = this.data["STATUS"]["devices"][device];
         var device_api          = this.data["STATUS"]["devices"][device]["api"];
-        var device_api_status   = this.data["STATUS"]["interfaces"][device_api];
+        var device_api_status   = this.data["STATUS"]["interfaces"]["connect"][device_api];
 
-        if (device_api_status.toLowerCase() != "connected") { disabled = true; }
+        if (!device_api_status) { console.error("API Device not defined correctly for " + device + ": " + device_api + " doesn't exist.")}
+        else if (device_api_status.toLowerCase() != "connected") { disabled = true; }
 
 		if (!this.data["CONFIG"][type]) {
 			this.logging.error(this.app_name+".slider() - type not supported ("+type+")");

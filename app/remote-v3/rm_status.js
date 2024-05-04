@@ -425,6 +425,11 @@ function statusCheck_sceneDevices(data) {
 
 		for (var i=0;i<required.length;i++) {
 
+            if (!devices_status[required[i]]) {
+                console.error("Did not found " + required[i] + ", defined as requirement in " + key + ".");
+                continue;
+                }
+
 	        var device_api         = devices_status[required[i]]["api"];
 	        var device_api_status  = data["STATUS"]["interfaces"]["connect"][device_api];
 	        log_data[key]         += required[i];

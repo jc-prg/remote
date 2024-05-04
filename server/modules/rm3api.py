@@ -1,5 +1,5 @@
 import time
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3presets
 from modules.rm3classes import RemoteDefaultClass
 
 
@@ -53,9 +53,9 @@ class RemoteAPI(RemoteDefaultClass):
                 },
             "devices":                  self.data.devices_read_config(),
             "elements": {
-                "button_images":        self.config.read(rm3config.icons_dir + "/index"),
-                "button_colors":        self.config.read(rm3config.buttons + "button_colors"),
-                "scene_images":         self.config.read(rm3config.scene_img_dir + "/index")
+                "button_images":        self.config.read(rm3presets.icons_dir + "/index"),
+                "button_colors":        self.config.read(rm3presets.buttons + "button_colors"),
+                "scene_images":         self.config.read(rm3presets.scene_img_dir + "/index")
                 },
             "macros": {
                 "device-on":            macros["dev-on"],
@@ -92,19 +92,19 @@ class RemoteAPI(RemoteDefaultClass):
             "interfaces":       self.apis.api_get_status(),
             "request_time":     self.queue_send.average_exec,
             "system": {
-                "message":                  rm3config.server_status,
-                "server_start":             rm3config.start_time,
-                "server_start_duration":    rm3config.start_duration,
-                "server_running":           time.time() - rm3config.start_time
+                "message":                  rm3presets.server_status,
+                "server_start":             rm3presets.start_time,
+                "server_start_duration":    rm3presets.start_duration,
+                "server_running":           time.time() - rm3presets.start_time
                 },
             "system_health": {}  # to be filled in self._end()
             }
 
-        for key in rm3config.server_health:
-            if rm3config.server_health[key] == "stopped" or rm3config.server_health[key] == "registered":
-                status["system_health"][key] = rm3config.server_health[key]
+        for key in rm3presets.server_health:
+            if rm3presets.server_health[key] == "stopped" or rm3presets.server_health[key] == "registered":
+                status["system_health"][key] = rm3presets.server_health[key]
             else:
-                status["system_health"][key] = round(time.time() - rm3config.server_health[key], 2)
+                status["system_health"][key] = round(time.time() - rm3presets.server_health[key], 2)
 
         return status
 
@@ -169,7 +169,8 @@ class RemoteAPI(RemoteDefaultClass):
         """
         Trigger cache update
         """
-        self.config.update()
+        #self.config.cache_request_update()
+        pass
 
     def _button_toggle(self, current_value, complete_list):
         """
@@ -209,15 +210,15 @@ class RemoteAPI(RemoteDefaultClass):
         d = {}
         data = self._start(["request-only"])
 
-        if app_version == rm3config.APP_version:
+        if app_version == rm3presets.APP_version:
             d["ReturnCode"] = "800"
-            d["ReturnMsg"] = "OK: " + rm3config.error_message("800")
-        elif app_version in rm3config.APP_support:
+            d["ReturnMsg"] = "OK: " + rm3presets.error_message("800")
+        elif app_version in rm3presets.APP_support:
             d["ReturnCode"] = "801"
-            d["ReturnMsg"] = "WARN: " + rm3config.error_message("801")
+            d["ReturnMsg"] = "WARN: " + rm3presets.error_message("801")
         else:
             d["ReturnCode"] = "802"
-            d["ReturnMsg"] = "WARN: " + rm3config.error_message("802")
+            d["ReturnMsg"] = "WARN: " + rm3presets.error_message("802")
 
         data["REQUEST"]["Return"] = d["ReturnMsg"]
         data["REQUEST"]["ReturnCode"] = d["ReturnCode"]
@@ -345,10 +346,10 @@ class RemoteAPI(RemoteDefaultClass):
             api, dev = interface.split("_")
             data["REQUEST"]["Return"] = "OK"
             data["DATA"]["interface"] = interface
-            config_org = self.config.read(rm3config.commands + api + "/00_interface")
+            config_org = self.config.read(rm3presets.commands + api + "/00_interface")
             config_org["API-Devices"][dev] = config
             try:
-                self.config.write(rm3config.commands + api + "/00_interface", config_org)
+                self.config.write(rm3presets.commands + api + "/00_interface", config_org)
             except Exception as e:
                 data["REQUEST"]["Return"] = "ERROR: Could not save configuration for '" + interface + "': " + str(e)
                 data["DATA"]["interface"] = "all"
@@ -357,7 +358,7 @@ class RemoteAPI(RemoteDefaultClass):
             data["REQUEST"]["Return"] = "OK"
             data["DATA"]["interface"] = interface
             try:
-                self.config.write(rm3config.commands + interface + "/00_interface-test", data)
+                self.config.write(rm3presets.commands + interface + "/00_interface-test", data)
             except Exception as e:
                 data["REQUEST"]["Return"] = "ERROR: Could not save configuration for '" + interface + "': " + str(e)
                 data["DATA"]["interface"] = "all"
@@ -593,7 +594,7 @@ class RemoteAPI(RemoteDefaultClass):
 
         if device in device_config:
             api = device_config[device]["interface"]["api_key"]
-            api_config = self.config.read(rm3config.commands + api + "/00_interface")
+            api_config = self.config.read(rm3presets.commands + api + "/00_interface")
 
             data["REQUEST"]["Return"] = "OK"
             data["DATA"]["device"] = device
@@ -608,7 +609,7 @@ class RemoteAPI(RemoteDefaultClass):
             for key in device_config:
                 api = device_config[key]["interface"]["api_key"]
                 api_method = device_config[key]["interface"]["method"]
-                api_config = self.config.read(rm3config.commands + api + "/00_interface")
+                api_config = self.config.read(rm3presets.commands + api + "/00_interface")
 
                 if api_method == "record":
                     data["DATA"]["devices"][key]["api_commands"] = {}
@@ -653,7 +654,7 @@ class RemoteAPI(RemoteDefaultClass):
             data["DATA"]["interface"] = "all"
             data["DATA"]["interfaces"] = {}
             for api in interfaces:
-                api_config = self.config.read(rm3config.commands + api + "/00_interface")
+                api_config = self.config.read(rm3presets.commands + api + "/00_interface")
                 # data["DATA"]["interfaces"][api] = str(api_config)
                 for key1 in api_config["API-Devices"]:
                     for key2 in api_config["API-Devices"][key1]:
@@ -665,7 +666,7 @@ class RemoteAPI(RemoteDefaultClass):
         elif interface in interfaces:
             data["REQUEST"]["Return"] = "OK"
             data["DATA"]["interface"] = interface
-            api_config = self.config.read(rm3config.commands + interface + "/00_interface")
+            api_config = self.config.read(rm3presets.commands + interface + "/00_interface")
             for key1 in api_config["API-Devices"]:
                 for key2 in api_config["API-Devices"][key1]:
                     if key2 == "MACAddress":
