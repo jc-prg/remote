@@ -454,12 +454,25 @@ function rmSettings (name) {	// IN PROGRESS
                 var name = "";
                 var disabled = "";
                 var info = "";
+                var button_add = "";
                 if (devices_detect[api_device][device]["id"] != devices_detect[api_device][device]["name"]) { name = devices_detect[api_device][device]["name"]; }
-                if (devices_detect[api_device][device]["description"])         { info = ": " + devices_detect[api_device][device]["description"];}
+                if (devices_detect[api_device][device]["description"])         { info = devices_detect[api_device][device]["description"];}
                 if (devices_detect[api_device][device]["disabled"])            { disabled = "&nbsp;&nbsp;<small>(DISABLED)</small>"; }
                 if (devices_detect[api_device][device]["available"] == false)  { disabled = "&nbsp;&nbsp;<small>(N/A)</small>"; }
-                console.error(devices_detect[api_device][device]);
-                details_new += "<li><b>[" + devices_detect[api_device][device]["id"] + "]</b><br/>" + name + info + disabled + "</li>";
+
+                if (disabled != "") {
+                    var button_cmd  = "rm3settings.modules_add_remote_alert({";
+                    button_cmd     += "\"external_id\": \"" + devices_detect[api_device][device]["id"] + "\", ";
+                    button_cmd     += "\"description\": \"" + info + "\", ";
+                    button_cmd     += "\"api_device\": \"" + api_device + "\", ";
+                    button_cmd     += "\"label\": \"" + name + "\", ";
+                    button_cmd     += "\"device_name\": \"" + name + "\"";
+                    button_cmd     += "});";
+                    button_add     = "<button onclick='"+button_cmd+"'> add </button>";
+                    }
+
+                if (info != "") {  info = ": " + info; }
+                details_new += "<li>" + button_add + "<b>[" + devices_detect[api_device][device]["id"] + "]</b><br/>" + name + info + disabled + "</li>";
                 }
             details_new += "</ul>";
             }
@@ -766,6 +779,46 @@ function rmSettings (name) {	// IN PROGRESS
 		return setting;
         }
 
+    this.modules_add_remote_alert = function(device_data_start) {
+		var setting        = "";
+		var set_temp       = "";
+		var onchange       = this.app_name + ".edit_filenames();";
+		var onchange2      = this.app_name + ".edit_filenames";
+		var add_command    = "apiDeviceAdd([#add_device_id#,#add_device_descr#,#add_device_label#,#add_device_api#,#add_device#,#add_device_device#,#add_device_remote#,#add_device_id_external#,#edit_image#],"+onchange2+");";
+		add_command       += "remoteToggleEditMode(true);";
+		var width          = this.input_width;
+		var icon_container = "<button class='button device_off small'><div id='device_edit_button_image'></div></button>";
+		this.input_width   = "200px";
+
+		var device_data = {
+		    "id": "",
+		    "api_device": "",
+		    "external_id": "",
+		    "label": "",
+		    "interface": "",
+		    "device_name": ""
+		}
+		for (var key in device_data_start) { device_data[key] = device_data_start[key]; }
+
+        set_temp  = this.tab.start();
+		set_temp += this.tab.row( "ID:",            this.input("add_device_id", onchange, onchange + "apiDeviceAddCheckID(this);", device_data["id"]) );
+		set_temp += this.tab.row( "Device Name:",   this.input("add_device", onchange, onchange, device_data["device_name"]) );
+		set_temp += this.tab.row( "Interface:",     this.select("add_device_api","Select interface", this.data["CONFIG"]["apis"]["list_description"], onchange, device_data["api_device"]) );
+		set_temp += this.tab.line();
+		set_temp += this.tab.row( icon_container,   rm3remotes.button_image_select("edit_image") );
+		set_temp += this.tab.row( "Label:",         this.input("add_device_label", "", onchange, device_data["label"]) );
+		set_temp += this.tab.row( "Description:",   this.input("add_device_descr", "", onchange, device_data["description"]) );
+		set_temp += this.tab.row( "External ID:",   this.input("add_device_id_external", "", "", device_data["external_id"]) );
+		set_temp += this.tab.line();
+		set_temp += this.tab.row( "Device-Driver:",	    this.input("add_device_device")+".json" );
+		set_temp += this.tab.row( "Remote-Definition:",	this.input("add_device_remote")+".json" );
+		set_temp += this.tab.end();
+
+        this.input_width = width;
+		appMsg.confirm(set_temp, add_command, 450);
+		this.edit_filenames();
+		}
+
 	// write settings category
 	this.write			        = function (nr,label="",text="") {
 
@@ -782,12 +835,12 @@ function rmSettings (name) {	// IN PROGRESS
 		setTextById(element,content);
 		}
 
-    this.settings_ext_reset   = function ()  {
+    this.settings_ext_reset     = function ()  {
 
         setTextById("setting_ext_frames", "");
         }
 
-	this.settings_ext_append  = function (nr, label="", text="", style="") {
+	this.settings_ext_append    = function (nr, label="", text="", style="") {
 	    var frame_content = getTextById("setting_ext_frames");
 
 		if (label != "") {
@@ -872,16 +925,19 @@ function rmSettings (name) {	// IN PROGRESS
 
 		replace_minus   = [" ","/","\\",":","&","#","?"];
 
+		id      = document.getElementById("add_device_id").value;
 		label   = document.getElementById("add_device_descr").value;
 		api     = document.getElementById("add_device_api").value;
 		device  = document.getElementById("add_device").value;
 
-		device_file	 = label.toLowerCase();
-		device_file += "_" + device.toLowerCase();
+		device_file	 = device.toLowerCase();
+		device_file  = device_file.replaceAll("_","-");
+		//device_file += "_" + device.toLowerCase();
 
 		for (var i=0;i<replace_minus.length;i++) { for (var j=0;j<5;j++) { device_file = device_file.replace(replace_minus[i], "-" ); } }
 
-		remote_file      = device_file + "_" + api.toLowerCase();
+		remote_file  = device_file + "_" + id.toLowerCase();
+		remote_file  = remote_file.replaceAll("_","-");
 
 		document.getElementById("add_device_device").value = device_file;
 		document.getElementById("add_device_remote").value = remote_file;
@@ -1004,9 +1060,9 @@ function rmSettings (name) {	// IN PROGRESS
 		this.show();		// recreate settings page
 		}
 
-	this.input			        = function (id,onclick="",oninput="") {
+	this.input			        = function (id, onclick="", oninput="", value="") {
 		
-		text = "<input id=\"" + id + "\" oninput=\""+oninput+"\" style='width:" + this.input_width + ";margin:1px;'>"; 
+		text = "<input id=\"" + id + "\" oninput=\""+oninput+"\" style='width:" + this.input_width + ";margin:1px;' value='" + value + "'>";
 		if (onclick != "") {
 			text += "&nbsp;<button onclick=\""+onclick+"\">&gt;&gt;</button>";
 			}
@@ -1014,13 +1070,16 @@ function rmSettings (name) {	// IN PROGRESS
 		return text;
 		}
 
-	this.select			        = function (id,title,data,onchange="") {
+	this.select			        = function (id, title, data, onchange="", value="") {
 		var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
 		item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
 		for (var key in data) {
+		    var selected = "";
+		    if (key == value) { selected = "selected"; }
 			if (key != "default") {
-				item += "<option value=\"" + key + "\">" + data[key] + "</option>";
-			}	}
+				item += "<option value=\"" + key + "\" " + selected+ ">" + data[key] + "</option>";
+			    }
+			}
 		item     += "</select>";
 		return item;
 		}

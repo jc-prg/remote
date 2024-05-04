@@ -272,19 +272,24 @@ function apiDeviceMovePosition(data) {
 // create new device
 function apiDeviceAdd(data,onchange) {
 
-	if (getValueById(data[4]) == "" || getValueById(data[5]) == "") { onchange(); }
+    console.error(data);
+
+	if (getValueById(data[5]) == "" || getValueById(data[6]) == "") { onchange(); }
 
 	send_data		   = {};
-	send_data["id"]            = getValueById(data[0]);
-	send_data["label"]         = getValueById(data[1]);
-	send_data["api"]           = getValueById(data[2]);
-	send_data["device"]        = getValueById(data[3]);
-	send_data["config_device"] = getValueById(data[4]);
-	send_data["config_remote"] = getValueById(data[5]);
-	send_data["id_ext"]        = getValueById(data[6]);
+	send_data["id"]            = getValueById(data[0]).replaceAll("_", "-");
+	send_data["description"]   = getValueById(data[1]);
+	send_data["label"]         = getValueById(data[2]);
+	send_data["api"]           = getValueById(data[3]);
+	send_data["device"]        = getValueById(data[4]);
+	send_data["config_device"] = getValueById(data[5]);
+	send_data["config_remote"] = getValueById(data[6]);
+	send_data["id_ext"]        = getValueById(data[7]);
+	send_data["image"]         = getValueById(data[8]);
 
-	console.debug(send_data);
-        
+	console.error(send_data);
+	console.error(dataAll["CONFIG"]["devices"]);
+
 	if (dataAll["CONFIG"]["devices"][send_data["id"]])  { appMsg.alert(lang("DEVICE_EXISTS",[send_data["id"]])); return; }
 	else if (send_data["id"] == "")                     { appMsg.alert(lang("DEVICE_INSERT_ID")); return; }
 	else if (send_data["label"] == "")                  { appMsg.alert(lang("DEVICE_INSERT_LABEL")); return; }

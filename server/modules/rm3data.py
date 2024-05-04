@@ -871,9 +871,9 @@ class RemotesEdit(RemoteDefaultClass):
                 "api_device": "default"
             },
             "settings": {
-                "description": info["label"] + ": " + info["device"],
+                "description": info["description"],
                 "label": info["label"],
-                "image": device,
+                "image": info["image"],
                 "main-audio": "no",
                 "position": active_json_position,
                 "visible": "yes"
