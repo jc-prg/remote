@@ -121,7 +121,7 @@ class RemoteAPI(RemoteDefaultClass):
         if setting is None:
             setting = []
 
-        self.config.cache_last_action = time.time()
+        self.config.user_action()
         data = self.config.api_init.copy()
 
         if "request-only" not in setting:

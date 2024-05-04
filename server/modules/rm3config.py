@@ -116,6 +116,21 @@ class ConfigCache(RemoteThreadingClass):
 
         self.logging.info("Exiting " + self.name)
 
+    def user_action(self):
+        """
+        document a user activity, e.g. API request from client
+        """
+        self.cache_last_action = time.time()
+
+    def user_inactive(self):
+        """
+        check, if user was inactive a while
+        """
+        if time.time() - self.cache_last_action > self.cache_sleep:
+            return True
+        else:
+            return False
+
     def check_main_config_files(self):
         """
         read and check main config_files
@@ -133,7 +148,8 @@ class ConfigCache(RemoteThreadingClass):
         check = self.read(rm3presets.active_apis)
         if "ERROR" in check:
             self.logging.warning("Error while reading MAIN CONFIG FILES:")
-            self.logging.warning(" - " + rm3presets.data_dir + "/" + rm3presets.active_apis + ".json: " + check["ERROR"])
+            self.logging.warning(
+                " - " + rm3presets.data_dir + "/" + rm3presets.active_apis + ".json: " + check["ERROR"])
 
         if error_msg != {}:
             self.logging.error("Error while reading MAIN CONFIG FILES:")
@@ -257,6 +273,24 @@ class ConfigCache(RemoteThreadingClass):
         active_devices_key = rm3presets.active_devices.replace("/", "**")
         self.write(rm3presets.active_devices, status_temp, "cache.write_ status " + source)
         self.cache[active_devices_key] = status_temp.copy()
+
+    def delete(self, config_file):
+        """
+        delete config file and clean up cache
+
+        Args:
+            config_file (str): configuration file to be deleted
+        Returns:
+            str: status message
+        """
+        config_key = config_file.replace("/", "**")
+        rm3json.delete(config_file)
+        if not rm3json.if_exist(config_file):
+            if config_key in self.cache:
+                del self.cache[config_key]
+            return "OK: Config file '" + config_file + "' deleted."
+        else:
+            return "ERROR: Could not delete '" + config_file + "' deleted."
 
     def device_set_values(self, device_id, category, values):
         """

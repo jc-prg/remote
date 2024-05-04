@@ -40,9 +40,12 @@ class RemotesData(RemoteThreadingClass):
         while self._running:
 
             self.thread_wait()
-            start = time.time()
-            self.devices_get_status({}, True)
             self.logging.debug("Waiting time = " + str(self.thread_waiting_time()) + "s")
+
+            if not self.config.user_inactive():
+                self.devices_get_status({}, True)
+            else:
+                self.logging.debug("Skipping status requests due to missing user activity.")
 
         self.logging.info("Exiting " + self.name)
 
@@ -702,8 +705,7 @@ class RemotesEdit(RemoteDefaultClass):
 
         try:
             msg = self.config.scene_add(scene, active_json[scene])
-            #self.data.scenes_write(active_json)
-            if not "OK:" in msg:
+            if "OK:" not in msg:
                 raise msg
 
         except Exception as e:
@@ -729,7 +731,6 @@ class RemotesEdit(RemoteDefaultClass):
         except Exception as e:
             return "ERROR: " + str(e)
 
-        #self.config.cache_update = True
         return "OK: Scene " + scene + " added."
 
     def scene_edit(self, scene, info):
@@ -799,15 +800,12 @@ class RemotesEdit(RemoteDefaultClass):
 
         # write central config file
         self.config.scene_set_values(scene, "settings", active_json[scene]["settings"])
-        # self.data.scenes_write(active_json)
 
         # write remote layout definition
         try:
             self.config.write(rm3presets.remotes + "scene_" + scene, remotes)
         except Exception as e:
             return "ERROR: could not write changes (remotes) - " + str(e)
-
-        #self.config.cache_update = True
 
         if i > 0:
             return "OK: Edited device parameters of " + scene + " <br/>(" + str(i) + " changes: " + i_list + ")"
@@ -832,19 +830,11 @@ class RemotesEdit(RemoteDefaultClass):
         if not rm3json.if_exist(rm3presets.remotes + "scene_" + scene):
             return "ERROR: Scene " + scene + " doesn't exists (remotes)."
 
-        self.config.scene_delete(scene)
-        # del active_json[scene]
-        # self.data.scenes_write(active_json)
-
-        try:
-            rm3json.delete(rm3presets.remotes + "scene_" + scene)
-            #self.config.cache_update = True
-            if not rm3json.if_exist(rm3presets.remotes + "scene_" + scene):
-                return "OK: Scene '" + scene + "' deleted."
-            else:
-                return "ERROR: Could not delete scene '" + scene + "'"
-        except Exception as e:
-            return "ERROR: Could not delete scene '" + scene + "': " + str(e)
+        message = self.config.scene_delete(scene)
+        if "OK:" not in message:
+            return self.config.delete(rm3presets.remotes + "scene_" + scene)
+        else:
+            return message
 
     def device_add(self, device, info):
         """
@@ -898,8 +888,6 @@ class RemotesEdit(RemoteDefaultClass):
         msg = ""
         try:
             msg += self.config.device_add(device, active_json[device])
-            # self.config.write_status(active_json, "addDevice")
-            # config_file = self.config.read(rm3presets.active_devices)
             if "OK:" in msg:
                 self.logging.debug("Added new device '"+device+"' to config file.")
                 self.logging.debug("-> " + str(active_json[device]))
@@ -1058,28 +1046,13 @@ class RemotesEdit(RemoteDefaultClass):
         if "ERROR: " in message:
             return message
 
-        try:
-            rm3json.delete(file_device_remote)
-            rm3json.delete(file_interface_remote)
+        msg1 = self.config.delete(file_device_remote)
+        msg2 = self.config.delete(file_interface_remote)
 
-            if not rm3json.if_exist(file_device_remote) and not rm3json.if_exist(file_interface_remote):
-                message = "OK: Device '" + device + "' deleted."
-            else:
-                message = "ERROR: Could not delete device '" + device + "'"
-
-        except Exception as e:
-            message = "ERROR: Could not delete device '" + device + "': " + str(e)
-
-        if "OK" in message:
-            try:
-                file_interface_remote = file_interface_remote.replace("/", "**")
-                file_device_remote = file_device_remote.replace("/", "**")
-                del self.config.cache[file_interface_remote]
-                del self.config.cache[file_device_remote]
-
-            except Exception as e:
-                message += "; ERROR: " + str(e)
-
+        if "OK:" in msg1 and "OK:" in msg2:
+            message = "OK: Device '" + device + "' deleted."
+        else:
+            message = "ERROR: Could not fully delete device '" + device + "'. (" + msg1 + "; " + msg2 + ")"
         return message
 
     def device_status_get(self, device, key):
@@ -1205,14 +1178,9 @@ class RemotesEdit(RemoteDefaultClass):
         if device in status:
             for key in status:
                 if key == device:
-                    #status[key]["settings"]["main-audio"] = "yes"
                     self.config.device_set_values(key, "settings", {"main-audio": "yes"})
                 else:
-                    #status[key]["settings"]["main-audio"] = "no"
                     self.config.device_set_values(key, "settings", {"main-audio": "no"})
-
-            #self.config.write_status(status, "device_status_audio_reset()")
-            # !!!!!!!
 
             if "main-audio" in status[device]["settings"] and status[device]["settings"]["main-audio"] == "yes":
                 return_msg = "OK: Set " + device + " as main-audio device."
@@ -1490,7 +1458,6 @@ class RemotesEdit(RemoteDefaultClass):
         elif remote_type == "scene":
             self.data.scenes_write(status)  # configFiles.write(modules.active_scenes,status)
 
-        #self.config.cache_update = True
         return return_msg
 
     def remote_visibility(self, remote_type, device, visibility):
@@ -1515,7 +1482,6 @@ class RemotesEdit(RemoteDefaultClass):
             elif visibility == "yes" or visibility == "no":
                 data[device]["settings"]["visible"] = visibility
                 self.data.scenes_write(data)
-                #self.config.cache_update = True
                 return "OK: Change visibility for '" + device + "': " + visibility
 
             else:
