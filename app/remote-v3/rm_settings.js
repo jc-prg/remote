@@ -751,6 +751,10 @@ function rmSettings (name) {	// IN PROGRESS
 		this.btn.width  = "120px";
 		this.btn.height = "30px";
 
+		var button = "<center>" +
+                     this.btn.sized(id="add_dev",label="Add Device",style="","rm3settings.modules_add_remote_alert();") +
+                     "</center>";
+
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row( "ID:",            this.input("add_scene_id", "", "apiSceneAddCheckID(this);") );
 		set_temp += this.tab.row( "Label:",         this.input("add_scene_label") );
@@ -774,7 +778,8 @@ function rmSettings (name) {	// IN PROGRESS
                     this.btn.sized(id="add_dev",label="Add Device",style="","apiDeviceAdd([#add_device_id#,#add_device_descr#,#add_device_api#,#add_device#,#add_device_device#,#add_device_remote#,#add_device_id_external#],"+onchange2+");") +
                     "</center>", false);
 		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_add_device","Add device",set_temp,false);
+		//setting  += this.basic.container("setting_add_device","Add device",set_temp,false);
+		setting  += this.basic.container("setting_add_device","Add device",button,false);
 
 		return setting;
         }
