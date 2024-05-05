@@ -394,14 +394,15 @@ function rmRemote(name) {
 		// Main Settings
 		var edit   = "";
 		var images = this.data["CONFIG"]["elements"]["button_images"];
-        var icon   = "<img src='icon/"+images[device_config["settings"]["image"]]+"' style='width:30px;'>";
+        var icon   = "<img src='icon/"+images[device_config["settings"]["image"]]+"' style='max-width:30px;max-height:40px;'>";
 		icon       = "<button class='button device_off small'><div id='device_edit_button_image'>"+icon+"</div></button>";
 		edit    += this.tab.start();
-		edit    += this.tab.row( icon,                            lang("ID") + ":<br/><b>" + device + "</b>" );
-		edit    += this.tab.row( lang("EXTERNAL_ID")+":",         this.basic.input("edit_device_id",	device_config["settings"]["device_id"]) );
-		edit    += this.tab.row( lang("LABEL")+":",               this.basic.input("edit_label",	device_config["settings"]["label"]) );
+		edit    += this.tab.row( lang("ID"),                      "<b>" + device + "</b>" );
+		edit    += this.tab.row( lang("LABEL")+":",               this.basic.input("edit_label", device_config["settings"]["label"]) );
+		edit    += this.tab.line();
+		edit    += this.tab.row( icon,                            this.button_image_select("edit_image", device_config["settings"]["image"]) );
+		edit    += this.tab.row( lang("EXTERNAL_ID")+":",         this.basic.input("edit_device_id", device_config["settings"]["device_id"]) );
 		edit    += this.tab.row( lang("DESCRIPTION")+":&nbsp;",   this.basic.input("edit_description", device_config["settings"]["description"]) );
-		edit    += this.tab.row( lang("IMAGE"),                   this.button_image_select("edit_image",  device_config["settings"]["image"]) );
 
 		edit    += this.tab.line();
 		edit    += this.tab.row("<center>"+
@@ -1456,7 +1457,7 @@ function rmRemote(name) {
 	    var images     = this.data["CONFIG"]["elements"]["button_images"];
         var selected   = getValueById("edit_image");
         if (images[selected]) {
-            var image_html = "<img src='icon/"+images[selected]+"' style='width:30px;'>";
+            var image_html = "<img src='icon/"+images[selected]+"' style='max-width:30px;max-height:40px;'>";
             setTextById("device_edit_button_image", image_html);
             }
         }
