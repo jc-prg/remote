@@ -200,6 +200,15 @@ button {
     border-width : 2px;
 }
 
+.button.calculate_values {
+    width       : 24px;
+    height      : 24px;
+    color       : white;
+    background  : #555555;
+    float       : right;
+    margin      : 0px;
+}
+
 .button.updown {
     width  		: 30px;
     height 		: 30px;
