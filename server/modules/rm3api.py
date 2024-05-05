@@ -1105,8 +1105,10 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Button"] = button
         data["REQUEST"]["Command"] = "RemoteSendText"
 
-        if device in self.config.cache["_api"]["devices"]:
-            interface = self.config.cache["_api"]["devices"][device]["config"]["api_key"]
+        device_info = self.config.read_status()
+
+        if device in device_info:
+            interface = device_info[device]["config"]["api_key"]
             data["REQUEST"]["Return"] = self.queue_send.add2queue([[interface, device, button, text]])
 
         else:

@@ -475,7 +475,7 @@ class Connect(RemoteThreadingClass):
 
             if button.startswith("send-"):
 
-                button = button.split("-")[1]
+                button = button.replace("send-", "")
                 if method == "query" and value != "":
                     try:
                         button_code = self.command_get(call_api, "send-data", device, button)

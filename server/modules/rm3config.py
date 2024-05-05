@@ -127,8 +127,12 @@ class ConfigCache(RemoteThreadingClass):
         check, if user was inactive a while
         """
         if time.time() - self.cache_last_action > self.cache_sleep:
+            self.logging.debug("User INACTIVE: " + str(round(time.time()-self.cache_last_action, 1)) + " > " +
+                               str(self.cache_sleep))
             return True
         else:
+            self.logging.debug("User ACTIVE: " + str(round(time.time()-self.cache_last_action, 1)) + " < " +
+                               str(self.cache_sleep))
             return False
 
     def check_main_config_files(self):

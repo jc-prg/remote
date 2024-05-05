@@ -950,7 +950,7 @@ class RemotesEdit(RemoteDefaultClass):
 
         # read central config file
         active_json = self.data.devices_read(selected=[], remotes=False)
-        self.logging.debug("device edit: " + active_json[device])
+        self.logging.debug("device edit: " + str(active_json[device]))
 
         interface = active_json[device]["config"]["api_key"]
         device_code = active_json[device]["config"]["device"]

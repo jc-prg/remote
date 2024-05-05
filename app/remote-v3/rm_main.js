@@ -181,7 +181,7 @@ function remoteToggleEditMode(settings="") {
     rm3start.edit_mode    = rm3remotes.edit_mode;
     rm3menu.edit_mode     = rm3remotes.edit_mode;
 
-    remoteStartMenu_load();
+    //remoteStartMenu_load();
     remoteDropDown_load();
 	}
 

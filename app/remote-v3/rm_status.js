@@ -393,6 +393,8 @@ function statusCheck_sliderToggle(data) {
             // slider
             if (document.getElementById("slider_"+device+"_send-"+key+"_input")) {
                 slider = document.getElementById("slider_"+device+"_send-"+key+"_input");
+                value  = getTextById("send-" + key + "_value");
+
                 if (device_api_status.toLowerCase() == "connected" && value.toLowerCase() != "error")   {
                     console.debug("statusCheck_sliderToggle: "+device+"_"+key+"="+value+" - "+device_api_status)
                     statusShow_sliderActive("slider_"+device+"_send-"+key+"_input", true);

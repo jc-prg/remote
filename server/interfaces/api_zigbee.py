@@ -304,38 +304,27 @@ class ApiControl(RemoteApiClass):
 
             command_key = command.split("=")[0]
             command_value = command[len(command_key)+1:].replace("'", "\"")
+
+            try:
+                command_value_json = json.loads(command_value)
+            except Exception as e:
+                result = "ERROR: Could not send data '" + command_value + "': " + str(e)
+                self.logging.error("__SEND: " + result)
+                return result
+
+            if "color" in command_value_json and ":" in command_value_json["color"]:
+                xy = command_value_json["color"].split(":")
+                command_value_json["color"] = {"x": float(xy[0]), "y": float(xy[1])}
+
             self.logging.debug("__SEND: " + str(device_id) + " !!! " + command_key + " -> " + command_value)
 
             if command_key == "set":
-                self.execute_request(device_id + "/set", json.loads(command_value))
+                self.execute_request(device_id + "/set", command_value_json)
                 result = "OK"
             else:
                 result = "ERROR: unknown command (" + command + ")"
         else:
             result = "ERROR: API not connected"
-
-
-        # ----
-        # something like ...
-        # self.execute_request(device + "/set", command)
-        # ----
-        # command defined in device specific json files
-        # buttons : {
-        #     "on": '{"state": "ON"}',
-        #     "off": '{"state": "OFF"}',
-        #     "toggle": '{"state": "TOGGLE"}'
-        # }
-
-        # ---- change for your api ----
-        #       if self.status == "Connected":
-        #         try:
-        #           result  = self.api.command(xxx)
-        #         except Exception as e:
-        #           self.working = True
-        #           return "ERROR "+self.api_name+" - send: " + str(e)
-        #       else:
-        #         self.working = True
-        #         return "ERROR "+self.api_name+": Not connected"
 
         self.working = False
         return result
@@ -380,6 +369,9 @@ class ApiControl(RemoteApiClass):
                 unit = ""
                 if friendly_name in self.mqtt_devices_status and command_value in self.mqtt_devices_status[friendly_name]:
                     result = self.mqtt_devices_status[friendly_name][command_value]
+                    if command_value == "color":
+                        result["x"] = round(result["x"], 4)
+                        result["y"] = round(result["y"], 4)
                     if friendly_name in self.mqtt_devices and "definition" in self.mqtt_devices[friendly_name] \
                             and "exposes" in self.mqtt_devices[friendly_name]["definition"]:
                         expose_entries = self.mqtt_devices[friendly_name]["definition"]["exposes"]
