@@ -12,3 +12,6 @@ cp -r ./remotes/* ../remotes/
 
 mkdir ../devices
 cp -r ./devices/* ../devices/
+
+mkdir ../zigbee2mqtt
+cp -r ./zigbee2mqtt/* ../zigbee2mqtt/
