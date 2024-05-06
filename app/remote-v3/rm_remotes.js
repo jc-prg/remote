@@ -1614,16 +1614,41 @@ function rmRemote(name) {
 		var remote_data  = this.data["CONFIG"][type][device]["remote"];
 		var status_data  = this.data["STATUS"]["devices"][device];
 		
+        var display_start = "<button id=\"colorpicker_"+device+"_2\" class=\"color-picker\">";
+        display_start    += "<canvas id=\"colorpicker_"+device+"\" style=\"width:250px;border:1 solid white;\">";
+        var display_end   = "</canvas>";
+        display_end       += "<center><canvas id=\"colorpicker_demo\"></canvas></center>";
+        display_end       += "</button>";
+
+        var text = display_start;
+        //text += this.color_picker.colorPickerHTML(send_command);
+        text += display_end;
+
+        setTimeout(function() { rm3remotes.color_picker.colorPickerHTMLv2("colorpicker_"+device, send_command); }, 100);
+        return text;
+		}
+	
+	// create color picker
+	this.colorPicker_v1              = function (id, device, type="devices", data) {
+
+		if (type != "devices") {
+			this.logging.error(this.app_name+".colorPicker() - type not supported ("+type+")");
+			return;
+			}
+
+        var send_command = data[1];
+		var remote_data  = this.data["CONFIG"][type][device]["remote"];
+		var status_data  = this.data["STATUS"]["devices"][device];
+
         var display_start = "<button id=\"colorpicker_"+device+"\" class=\"color-picker\">";
-        var display_end   = "</button>";
+        var display_end    = "</button>";
 
         var text = display_start;
         text += this.color_picker.colorPickerHTML(send_command);
         text += display_end;
         return text;
-
 		}
-	
+
 	// create slider
 	this.slider_element             = function (id, device, type="devices", data) {
 		console.debug("slider_element: "+id+"/"+device+"/"+type+"/"+data);

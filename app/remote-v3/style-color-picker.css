@@ -17,9 +17,16 @@
 
 
    width   :  276px;
-   height  :  280px;
+   height  :  300px;
 }
 
 .color-picker img {
    opacity : 1.0;
+}
+
+#colorpicker_demo {
+    margin-top    : 10px;
+    border-radius : 5px;
+    height        : 10px;
+    width         : 120px;
 }

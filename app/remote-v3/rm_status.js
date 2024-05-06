@@ -983,33 +983,3 @@ function statusShow_display(id, view) {
         }
 }
 
-
-// info message at the bottom
-var info_messages = {}
-function info_message_add(message) {
-
-    var message_box = document.getElementById(message_overlay);
-    var timestamp   = Date.now();
-    info_messages[timestamp] = message;
-    }
-
-function statusCheck_messages() {
-
-    var timestamp        = Date.now();
-    var message_box      = document.getElementById(message_overlay);
-    var messages         = "";
-    var message_duration = 10000;
-    var message_delete   = [];
-    for (var key in info_messages) {
-        if (Number(key) + message_duration > timestamp) {
-            messages += "<div class='message_overlay_box'>"+info_messages[key]+"</div>";
-            }
-        else                     { message_delete.push(key); }
-        }
-    setTextById("message_overlay", messages);
-    for (var i=0;i<message_delete.length;i++) {
-        delete info_messages[message_delete[i]];
-        }
-    }
-
-setInterval(function() { statusCheck_messages(); }, 500);

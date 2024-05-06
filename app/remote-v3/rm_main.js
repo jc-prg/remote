@@ -28,6 +28,7 @@ function startRemote() {
     rm3remotes  = new rmRemote(   "rm3remotes" );
     rm3settings = new rmSettings( "rm3settings" );
 
+    appMsg.info_message_init(appMsg);
     remoteInit(first_load=true);
     }
 

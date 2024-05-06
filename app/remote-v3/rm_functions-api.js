@@ -367,7 +367,7 @@ function apiCommandSend(cmdButton, sync="", callback="", device="") {
 		appFW.requestAPI("GET",dc,"",callback,"wait");		// send command and reload data when done
 		if (showButton) {
 		    //setTextById("audio4", button_show);
-            info_message_add("<b>Request Button:</b> " + device + " / " + cmdButton);
+            appMsg.info("<b>Request Button:</b> " + device + " / " + cmdButton);
 		    }
 		}
 
@@ -375,7 +375,7 @@ function apiCommandSend(cmdButton, sync="", callback="", device="") {
 		appFW.requestAPI("GET",dc,"",callback);		// send command and reload data when done
 		if (showButton) {
 		    //setTextById("audio4", button_show);
-            info_message_add("<b>Request Button:</b> " + device + " / " + cmdButton);
+            appMsg.info("<b>Request Button:</b> " + device + " / " + cmdButton);
 		    }
 		}
 		
@@ -507,7 +507,7 @@ function apiMacroDecompose(macro) {
         }
     console.debug("apiMacroDecompose: " + macro + " -> " + macro_string + " | " + macro_wait);
     if (showButton) {
-        info_message_add("<b>Macro Decompose:</b> " + macro + " -> " + full_decompose.join(", "));
+        appMsg.info("<b>Macro Decompose:</b> " + macro + " -> " + full_decompose.join(", "));
         }
     return [ macro_string, macro_wait ];
     }
@@ -525,7 +525,7 @@ function apiMacroSend( macro, device="", content="" ) {  // SEND -> FEHLER? obwo
 	device_media_info[device] = content;
 
 	if (showButton) {
-	    info_message_add("<b>Request Macro:</b> " + dc);
+	    appMsg.info("<b>Request Macro:</b> " + dc);
 	    }
 	}
 
@@ -533,7 +533,7 @@ function apiMacroSend_return( data ) {
 	console.log("Send macro return :");
 	console.log(data);
 	if (showButton) {
-	    info_message_add("<b>Macro Queue:</b> " + data["REQUEST"]["decoded_macro"]);
+	    appMsg.info("<b>Macro Queue:</b> " + data["REQUEST"]["decoded_macro"]);
 	    }
 	}
 

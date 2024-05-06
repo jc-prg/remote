@@ -312,7 +312,8 @@ class ApiControl(RemoteApiClass):
                 self.logging.error("__SEND: " + result)
                 return result
 
-            if "color" in command_value_json and ":" in command_value_json["color"]:
+            if ("color" in command_value_json and ":" in command_value_json["color"]
+                    and "{" not in command_value_json["color"]):
                 xy = command_value_json["color"].split(":")
                 command_value_json["color"] = {"x": float(xy[0]), "y": float(xy[1])}
 

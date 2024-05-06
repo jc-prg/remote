@@ -87,28 +87,3 @@
 /*        overflow   : auto; */
 }
 
-.message_overlay {
-    position    : fixed;
-    bottom      : 10px;
-    right       : 10px;
-    border      : 0px red solid;
-    z-index     : 190;
-    min-height  : 50px;
-    width       : 200px;
-}
-
-.message_overlay_box {
-    bottom        : 0px;
-    color         : white;
-    padding       : 10px;
-    margin        : 3px;
-    display       : block;
-    float         : right;
-    font-size     : 12px;
-    width         : 180px;
-    min-height    : 30px;
-    z-index       : 191;
-    border-radius : 5px;
-    background    : #888888;
-    opacity       : 90%;
-}

@@ -60,6 +60,57 @@ function rmColorPicker(name) {
 		appFW.requestAPI('GET',[ 'send-data', this.active_name, send_command, '"'+input+'"' ], '','');
     }
 
+    this.colorPickerHTMLv2 = function (container_id, send_command) {
+
+        console.error("Load Color Picker ("+container_id+") ...");
+
+        // Get the canvas element and its context
+        const canvas = document.getElementById(container_id);
+        const ctx    = canvas.getContext('2d');
+        const color_send_command = send_command;
+
+        // Load image
+        const image = new Image();
+        image.src   = 'remote-v3/img/rgb.png'; // Replace 'image.jpg' with your image path
+        //image.src   = 'remote-v3/img/img_colormap.gif'; // Replace 'image.jpg' with your image path
+        image.width = 250;
+        image.height = 250;
+
+        // When the image is loaded, draw it on the canvas
+        image.onload = function() {
+            canvas.width = image.width;
+            canvas.height = image.height;
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+            //ctx.drawImage(image, 0, 0, image.width, image.height);
+            console.error(canvas.width + "x" + canvas.height);
+        };
+
+        // Event listener for click on the canvas
+        canvas.addEventListener('click', function(event) {
+            // Get the clicked pixel data
+            var x = event.offsetX;
+            var y = event.offsetY;
+            const pixelData = ctx.getImageData(x, y, 1, 1).data;
+
+            // Extract RGB values
+            const red   = pixelData[0];
+            const green = pixelData[1];
+            const blue  = pixelData[2];
+
+            // Display RGB values
+            console.error(pixelData);
+            console.error(`X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue}`);
+            //document.getElementById('rgb').textContent = `R: ${red}, G: ${green}, B: ${blue}`;
+
+            //document.getElementById("colorpicker_demo").style.backgroundColor = "rgb(255,0,0)";
+            document.getElementById("colorpicker_demo").style.backgroundColor = "rgb(" + red +","+green+","+blue+")";
+            var input = `${red}:${green}:${blue}`;
+            rm3remotes.color_picker.sendColorCode_CIE1931(color_send_command, input);
+        });
+
+
+    }
+
 	this.colorPickerHTML = function (send_command) {
 		html = `
     <div style="margin:auto;width:236px;">
@@ -201,38 +252,33 @@ function rmColorPicker(name) {
 		return html;
 		}
 
-    // Conversion matrix from RGB to XYZ
-    // The values are derived from standard transformations
-
-    // Function to convert RGB to CIE 1931 XYZ
-    this.RGB_to_XYZ = function (rgb) {
-        // Normalize RGB values to range 0-1
-        const r = rgb[0] / 255.0;
-        const g = rgb[1] / 255.0;
-        const b = rgb[2] / 255.0;
-
-        // Apply matrix transformation
-        const x = this.RGB_to_XYZ_matrix[0][0] * r + this.RGB_to_XYZ_matrix[0][1] * g + this.RGB_to_XYZ_matrix[0][2] * b;
-        const y = this.RGB_to_XYZ_matrix[1][0] * r + this.RGB_to_XYZ_matrix[1][1] * g + this.RGB_to_XYZ_matrix[1][2] * b;
-        const z = this.RGB_to_XYZ_matrix[2][0] * r + this.RGB_to_XYZ_matrix[2][1] * g + this.RGB_to_XYZ_matrix[2][2] * b;
-
-        return [x, y, z];
-    }
-
-    // Function to convert XYZ to XY
-    this.XYZ_to_XY = function (xyz) {
-        const denominator = xyz[0] + xyz[1] + xyz[2];
-        const x = denominator === 0 ? 0 : xyz[0] / denominator;
-        const y = denominator === 0 ? 0 : xyz[1] / denominator;
-        return [x, y];
-    }
-
     // Function to convert RGB to XY
     this.RGB_to_XY = function (rgb) {
-        const xyz = this.RGB_to_XYZ(rgb);
-        const xy = this.XYZ_to_XY(xyz);
-        return xy;
-    }
+
+        var red = rgb[0];
+        var green = rgb[1];
+        var blue = rgb[2];
+
+        //Apply a gamma correction to the RGB values, which makes the color more vivid and more the like the color displayed on the screen of your device
+        var red 	= (red > 0.04045) ? Math.pow((red + 0.055) / (1.0 + 0.055), 2.4) : (red / 12.92);
+        var green 	= (green > 0.04045) ? Math.pow((green + 0.055) / (1.0 + 0.055), 2.4) : (green / 12.92);
+        var blue 	= (blue > 0.04045) ? Math.pow((blue + 0.055) / (1.0 + 0.055), 2.4) : (blue / 12.92);
+
+        //RGB values to XYZ using the Wide RGB D65 conversion formula
+        var X 		= red * 0.664511 + green * 0.154324 + blue * 0.162028;
+        var Y 		= red * 0.283881 + green * 0.668433 + blue * 0.047685;
+        var Z 		= red * 0.000088 + green * 0.072310 + blue * 0.986039;
+
+        //Calculate the xy values from the XYZ values
+        var x 		= (X / (X + Y + Z)).toFixed(4);
+        var y 		= (Y / (X + Y + Z)).toFixed(4);
+
+        if (isNaN(x))
+            x = 0;
+        if (isNaN(y))
+            y = 0;
+        return [x, y];
+        }
 
 	}
 
