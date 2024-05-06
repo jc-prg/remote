@@ -461,7 +461,7 @@ function rmSettings (name) {	// IN PROGRESS
                 if (devices_detect[api_device][device]["disabled"])            { disabled = "&nbsp;&nbsp;<small>(DISABLED)</small>"; }
                 if (devices_detect[api_device][device]["available"] == false)  { disabled = "&nbsp;&nbsp;<small>(N/A)</small>"; }
 
-                if (disabled != "") {
+                if (disabled == "") {
                     var button_cmd  = "rm3settings.create(\"edit_remotes\", \"add_device\", {";
                     button_cmd     += "\"external_id\": \"" + devices_detect[api_device][device]["id"] + "\", ";
                     button_cmd     += "\"description\": \"" + info + "\", ";
@@ -469,8 +469,6 @@ function rmSettings (name) {	// IN PROGRESS
                     button_cmd     += "\"label\": \"" + name + "\", ";
                     button_cmd     += "\"device_name\": \"" + name + "\"";
                     button_cmd     += "});";
-                    }
-                else {
                     button_add     = "<button onclick='"+button_cmd+"'> add </button>";
                     }
 
