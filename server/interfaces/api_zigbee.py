@@ -273,6 +273,12 @@ class ApiControl(RemoteApiClass):
         """
         self.execute_request("bridge/request/permit_join", {"value": active})
 
+    def devices_permit_joint(self):
+        """
+        permit new images to join for 2 min (120s)
+        """
+        self.execute_request("bridge/request/permit_join", "{\"value\": true, \"time\": 120}")
+
     def wait_if_working(self):
         """Some devices run into problems, if send several requests at the same time"""
         while self.working:
@@ -322,6 +328,10 @@ class ApiControl(RemoteApiClass):
             if command_key == "set":
                 self.execute_request(device_id + "/set", command_value_json)
                 result = "OK"
+
+            elif "request" in command_key:
+                self.execute_request("bridge/" + command_key, command_value_json)
+
             else:
                 result = "ERROR: unknown command (" + command + ")"
         else:

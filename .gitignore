@@ -61,3 +61,4 @@ server/interfaces/broadlink/__pycache__/
 server/server_org.py
 
 server/tryout
+/data/zigbee2mqtt/
