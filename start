@@ -86,8 +86,16 @@ fi
 if [ $config == "start" ]; then
     $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml up -d
 
+    if [ $ZIGBEE2MQTT_START == "YES" ]; then
+      $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml up -d
+    fi
+
 elif [ $config == "restart" ]; then
     $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml restart
+
+    if [ $ZIGBEE2MQTT_START == "YES" ]; then
+      $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml restart
+    fi
 
 elif [ $config == "install" ]; then
     cd data/_sample
@@ -101,6 +109,10 @@ elif [ $config == "update" ]; then
 
     echo "Stop docker"
     $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml stop
+
+    if [ $ZIGBEE2MQTT_START == "YES" ]; then
+      $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml stop
+    fi
 
     echo "Update REMOTE from repository"
     git stash
@@ -118,6 +130,10 @@ elif [ $config == "update" ]; then
     echo "Restart docker"
     $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml up -d
 
+    if [ $ZIGBEE2MQTT_START == "YES" ]; then
+      $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml up -d
+    fi
+
 elif [ $config == "rebuild" ]; then
 
     echo "Change dir"
@@ -125,6 +141,10 @@ elif [ $config == "rebuild" ]; then
 
     echo "Stop docker"
     $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml stop
+
+    if [ $ZIGBEE2MQTT_START == "YES" ]; then
+      $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml stop
+    fi
 
     echo "Update REMOTE from repository"
     git stash
@@ -142,8 +162,16 @@ elif [ $config == "rebuild" ]; then
     echo "Rebuild docker container"
     $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml rebuild
 
+    if [ $ZIGBEE2MQTT_START == "YES" ]; then
+      $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml rebuild
+    fi
+
     echo "Restart docker"
     $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml up -d
+
+    if [ $ZIGBEE2MQTT_START == "YES" ]; then
+      $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml up -d
+    fi
 
 elif [ $config == "prune" ]; then
 
