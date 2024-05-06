@@ -469,6 +469,8 @@ function rmSettings (name) {	// IN PROGRESS
                     button_cmd     += "\"label\": \"" + name + "\", ";
                     button_cmd     += "\"device_name\": \"" + name + "\"";
                     button_cmd     += "});";
+                    }
+                else {
                     button_add     = "<button onclick='"+button_cmd+"'> add </button>";
                     }
 
