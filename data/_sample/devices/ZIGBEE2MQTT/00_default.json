@@ -1,7 +1,46 @@
 {
 	"data": {
-        "buttons" : {},
-        "commands" : {},
+        "buttons" : {
+			"off": "set={'state': 'OFF'}",
+            "on": "set={'state': 'ON'}",
+            "toggle": "set={'state': 'TOGGLE'}",
+            "bridge-permit": "request/permit_join={'value': true, 'time': 120}",
+            "bridge-restart": "request/restart="
+		},
+        "commands" : {
+			"link-quality": {
+                "cmd": [
+                    "get"
+                ],
+                "get": "get=linkquality"
+            },
+            "power": {
+                "cmd": [
+                    "get",
+                    "set"
+                ],
+                "get": "get=state",
+                "set": "get={'state': '{DATA}'}",
+                "type": "enum",
+                "values": [
+                    "ON",
+                    "OFF"
+                ]
+            },
+            "state": {
+                "cmd": [
+                    "get",
+                    "set"
+                ],
+                "get": "get=state",
+                "set": "get={'state': '{DATA}'}",
+                "type": "enum",
+                "values": [
+                    "ON",
+                    "OFF"
+                ]
+            }
+		},
 		"description" : "API for ZigBee Devices",
 		"method" : "query"
 	},

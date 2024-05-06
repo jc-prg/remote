@@ -1,0 +1,75 @@
+{
+    "data": {
+        "buttons": {
+            "brightness-high": "set={'brightness': 254}",
+            "brightness-low": "set={'brightness': 30}",
+            "color-cold": "set={'color_temp': 'coolest'}",
+            "color-neutral": "set={'color_temp': 'neutral'}",
+            "color-warm": "set={'color_temp': 'warmest'}",
+            "blue": "set={'color': {'x': 0.1400, 'y': 0.0500}}",
+            "cyan": "set={'color': {'x': 0.2200, 'y': 0.3500}}",
+            "green": "set={'color': {'x': 0.2900, 'y': 0.6200}}",
+            "orange": "set={'color': {'x': 0.5600, 'y': 0.4000}}",
+            "pink": "set={'color': {'x': 0.3500, 'y': 0.1400}}",
+            "red": "set={'color': {'x': 0.6800, 'y': 0.3000}}",
+            "yellow": "set={'color': {'x': 0.4400, 'y': 0.5000}}",
+            "white": "set={'color': {'x': 0.3300, 'y': 0.3300}}"
+        },
+        "commands": {
+            "brightness": {
+                "cmd": [
+                    "get",
+                    "set"
+                ],
+                "get": "get=brightness",
+                "set": "set={'brightness': {DATA}}",
+                "type": "integer",
+                "values": {
+                    "max": 254,
+                    "min": 0
+                }
+            },
+            "color-temp": {
+                "cmd": [
+                    "get",
+                    "set"
+                ],
+                "get": "get=color_temp",
+                "set": "set={'color_temp': {DATA}}",
+                "type": "enum",
+                "values": [
+                    "coolest",
+                    "cool",
+                    "neutral",
+                    "warm",
+                    "warmest"
+                ]
+            },
+            "color-temp2": {
+                "cmd": [
+                    "get",
+                    "set"
+                ],
+                "get": "get=color_temp",
+                "set": "set={'color_temp': {DATA}}",
+                "type": "integer",
+                "values": {
+                    "max": 500,
+                    "min": 153
+                }
+            },
+            "color-xy": {
+                "cmd": [
+                    "get",
+                    "set"
+                ],
+                "get": "get=color",
+                "set": "set={'color': {DATA}}",
+                "type": "list"
+            }
+        },
+        "description": "Zigbee Bulb 01: zigbee-bulb",
+        "method": "query"
+    },
+    "info": "jc://remote/ - In this files the device-specific commands and buttons are defined."
+}
