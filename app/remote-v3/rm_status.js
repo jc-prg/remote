@@ -32,7 +32,7 @@ function statusCheck(data={}) {
 	statusCheck_deviceActive(data);
 	statusCheck_devicePowerButtonDisplay(data);
 	statusCheck_scenePowerButton(data);
-	statusCheck_sliderToggle(data);
+	statusCheck_sliderToggleColorPicker(data);
 	statusCheck_audioMute(data);
 	statusCheck_apiConnection(data);
 	statusCheck_deviceIdle(data);
@@ -78,9 +78,13 @@ function statusShow_volume( volume ) {
 function statusShow_sliderActive(id, active) {
 	if (document.getElementById(id)) {
 	    slider = document.getElementById(id);
-		if (active) {
+		if (active == "on") {
 		    slider.className = "rm-slider device_on";
 		    slider.disabled = false;
+		    }
+		else if (active == "off") {
+		    slider.className = "rm-slider device_off";
+		    slider.disabled = true;
 		    }
 		else {
 		    slider.className = "rm-slider device_undef";
@@ -363,13 +367,14 @@ function statusCheck_audioMute(data) {
 
 
 // check status for all sliders and toggles -> show via color // IN PROGRESS
-function statusCheck_sliderToggle(data) {
+function statusCheck_sliderToggleColorPicker(data) {
 
 	var devices    = data["STATUS"]["devices"];
 
 	for (var device in devices) {
 	    if (!data["CONFIG"]["devices"][device]) { continue; }
 	    var device_api         = data["STATUS"]["devices"][device]["api"];
+	    var device_api_power   = data["STATUS"]["devices"][device]["power"];
 	    var device_api_status  = data["STATUS"]["interfaces"]["connect"][device_api];
 
         for (key in devices[device]) {
@@ -397,12 +402,24 @@ function statusCheck_sliderToggle(data) {
 
                 if (device_api_status.toLowerCase() == "connected" && value.toLowerCase() != "error")   {
                     console.debug("statusCheck_sliderToggle: "+device+"_"+key+"="+value+" - "+device_api_status)
-                    statusShow_sliderActive("slider_"+device+"_send-"+key+"_input", true);
+                    if (device_api_power.toUpperCase() == "ON") { statusShow_sliderActive("slider_"+device+"_send-"+key+"_input", "on"); }
+                    else                                        { statusShow_sliderActive("slider_"+device+"_send-"+key+"_input", "off"); }
                     }
                 else {
                     value = "Error";
                     console.debug("statusCheck_sliderToggle: "+device+"_send-"+key+"="+value+" - "+device_api_status)
-                    statusShow_sliderActive("slider_"+device+"_send-"+key+"_input", false);
+                    statusShow_sliderActive("slider_"+device+"_send-"+key+"_input", "error");
+                    }
+                }
+
+            // color picker
+            if (document.getElementById("colorpicker_"+device)) {
+                color_picker = document.getElementById("colorpicker_"+device);
+                if (device_api_status.toLowerCase() == "connected" && device_api_power && device_api_power.toUpperCase().indexOf("ON") > -1)   {
+                    color_picker.style.opacity = "100%";
+                    }
+                else {
+                    color_picker.style.opacity = "40%";
                     }
                 }
             }
