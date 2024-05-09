@@ -188,7 +188,7 @@ class ApiControl(RemoteApiClass):
                 self.mqtt_client.subscribe(self.mqtt_msg_start + friendly_name + "/availability")
                 self.mqtt_client.publish(self.mqtt_msg_start + friendly_name + "/availability")
                 self.mqtt_client.publish(self.mqtt_msg_start + friendly_name + "/availability/get")
-                self.logging.info("Subscribed /availability for device " + friendly_name + "/" + device_id)
+                self.logging.info("Subscribed '/availability' for device " + friendly_name + "/" + device_id)
                 self.mqtt_device_availability_subscribed.append(friendly_name)
 
             if topic == self.mqtt_msg_start + device_id:
@@ -217,8 +217,8 @@ class ApiControl(RemoteApiClass):
                 friendly_name = self.mqtt_friendly_name[device_id]
             self.mqtt_device_availability[device_id] = data
             self.mqtt_device_availability[friendly_name] = data
-            self.logging.warning("Availability " + str(friendly_name) + ": " + str(data))
-            self.logging.warning("             " + str(self.mqtt_device_availability))
+            self.logging.debug("Availability " + str(friendly_name) + ": " + str(data) +
+                               str(self.mqtt_device_availability))
 
     def execute_request(self, topic, data=None):
         """
@@ -245,7 +245,9 @@ class ApiControl(RemoteApiClass):
         Returns:
             bool: False if USB Dongle is defined but not found
         """
-        self.logging.info("!!! " + api_device + " / " + self.api_config["USBDongle"] + " / " + str(os.path.exists(self.api_config["USBDongle"])))
+        self.logging.debug("Device available: " + api_device + " / " + self.api_config["USBDongle"] + " / available=" +
+                           str(os.path.exists(self.api_config["USBDongle"])))
+
         if self.api_config["USBDongle"] != "":
             device_file = self.api_config["USBDongle"]
             try:
@@ -259,8 +261,6 @@ class ApiControl(RemoteApiClass):
             except Exception as e:
                 return "ERROR: An error occurred: " + str(e)
 
-            #if not os.path.islink(self.api_config["USBDongle"]):
-            #    return "ERROR: Could not find USB dongle " + self.api_config["USBDongle"] + " (" + api_device + ")"
         return "OK"
 
     def devices_available(self):

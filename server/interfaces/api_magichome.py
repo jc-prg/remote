@@ -196,11 +196,6 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return result_param
 
-    def record(self, device, device_id, command):
-        """Record command, especially build for IR devices"""
-
-        return "ERROR: record not available"
-
     def test(self):
         """Test device by sending a couple of commands"""
 
@@ -247,7 +242,7 @@ class APIaddOn(RemoteDefaultClass):
         self.volume = 0
         self.cache_metadata = {}  # cache metadata to reduce api requests
         self.cache_time = time.time()  # init cache time
-        self.cache_wait = 5  # time in seconds how much time should be between two api metadata requests
+        self.cache_wait = 3  # time in seconds how much time should be between two api metadata requests
         self.brightness = 1
         self.last_r = 0
         self.last_g = 0
@@ -500,10 +495,11 @@ class APIaddOn(RemoteDefaultClass):
         status_info = {}
         self.logging.debug("..." + param)
 
-        if self.status == "Connected":
+        if self.api.status == "Connected":
 
             self.logging.debug(str(self.last_request_time) + "__" + str(time.time()))
-            if not self.last_request_data or self.last_request_data == {} or self.last_request_time < time.time() - self.cache_wait:
+            if (not self.last_request_data or self.last_request_data == {} or
+                    self.last_request_time + self.cache_wait < time.time()):
 
                 try:
                     raw_status = self.api.get_status()
@@ -512,10 +508,8 @@ class APIaddOn(RemoteDefaultClass):
 
                 except Exception as e:
                     self.logging.error("Error requesting data - get_info('" + str(param) + "'): " + str(e))
-                    self.last_request_time = time.time()  # wait for a while for next retry; seems not to work yet .... ??????
+                    self.last_request_time = time.time()
                     return {"error": "error requesting data - get_info('" + str(param) + "'): " + str(e)}
-
-                ######## -> wait for a while, till next request ist done???
 
                 try:
                     self.logging.debug("RAW STATUS: " + str(raw_status))
@@ -547,10 +541,8 @@ class APIaddOn(RemoteDefaultClass):
             else:
                 return {"error": "unknown tag '" + param + "'"}
 
-            return {"result": "get_info"}
-
         else:
-            return self.not_connected
+            return self.api.not_connected
 
     def test(self):
 

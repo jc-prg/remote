@@ -233,7 +233,7 @@ class APIaddOn(RemoteDefaultClass):
         self.status = "Start"
         self.cache_metadata = {}  # cache metadata to reduce api requests
         self.cache_time = time.time()  # init cache time
-        self.cache_wait = 2  # time in seconds how much time should be between two api metadata requests
+        self.cache_wait = 3  # time in seconds how much time should be between two api metadata requests
         self.power_status = "OFF"
         self.logging = logger
         self.not_connected = "Connection Error api.P100"
@@ -382,7 +382,4 @@ class APIaddOn(RemoteDefaultClass):
             return {"result", "test"}
 
         else:
-            return self.not_connected
-
-# -------------------------------------------------
-# EOF
+            return self.api.not_connected

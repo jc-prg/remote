@@ -108,8 +108,8 @@ class ApiControl(RemoteApiClass):
         self.last_action_cmd = "QUERY: " + device + "/" + command
 
         if self.status == "Connected":
-            if self.log_command: self.logging.info(
-                "__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+            if self.log_command:
+                self.logging.info("__QUERY " + device + "/" + command[:shorten_info_to] + " ... ("+self.api_name+")")
 
             if "=" in command:
                 params = command.split("=")
@@ -138,15 +138,9 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return result
 
-    def record(self, device, device_id, command):
-        """
-        Record command, especially build for IR devices
-        """
-        return "ERROR " + self.api_name + ": Not supported by this API"
-
     def register(self, command, pin=""):
         """
-        Register command if device requires registration to initialize authentification
+        Register command if device requires registration to initialize authentication
         -> creates config file, to be stored
         """
         self.wait_if_working()

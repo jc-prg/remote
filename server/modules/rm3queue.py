@@ -26,6 +26,7 @@ class QueueApiCalls(RemoteThreadingClass):
         self.config = config
         self.query_send = query_send
         self.reload = False
+        self.reload_time = time.time()
         self.exec_times = {}
         self.average_exec = {}
 
@@ -41,19 +42,18 @@ class QueueApiCalls(RemoteThreadingClass):
         while self._running:
 
             if len(self.queue) > 0:
-                self.logging.debug("Queue size: " + str(len(self.queue)))
                 command = self.queue.pop(0)
                 self.execute(command)
                 count = 0
 
             else:
-                self.thread_wait()
-
                 # send life sign from time to time
                 if count > 360:
                     self.logging.info("Queue still running.")
                     count = 0
                 count += 1
+
+            self.thread_wait()
 
         self.logging.info("Exiting " + self.name)
 
@@ -70,8 +70,12 @@ class QueueApiCalls(RemoteThreadingClass):
         # check, if reload is requested ...
         if "START_OF_RELOAD" in str(command):
             self.reload = True
+            self.reload_time = time.time()
+
         elif "END_OF_RELOAD" in str(command):
             self.reload = False
+            self.logging.debug("__RELOAD: execution = " + str(round(time.time() - self.reload_time, 2)) + "s (Queue: " +
+                               str(len(self.queue)) + " entries)")
 
         # if is an array / not a number
         elif "," in str(command):
@@ -81,16 +85,16 @@ class QueueApiCalls(RemoteThreadingClass):
             if device not in devices:
                 self.logging.error("ERROR: Could not find '" + device + "' in current configuration!")
 
-            self.logging.debug("Queue: Execute " + self.name + " - " + str(interface) + ":" + str(device) + ":" +
-                               str(button) + ":" + str(state) + ":" + str(request_time))
-            self.logging.debug(str(command))
+            #self.logging.debug("Queue: Execute - " + str(interface) + ":" + str(device) + ":" +
+            #                   str(button) + ":" + str(state) + ":" + str(request_time))
+            #self.logging.debug(str(command))
 
-            if self.query_send == "send":
+            elif self.query_send == "send":
                 try:
                     result = self.device_apis.api_send(interface, device, button, state)
                     self.execution_time(device, request_time, time.time())
                     self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')
-                    self.logging.debug(result)
+                    self.logging.debug("send '" + interface + "/" + device + "/" + button + "=" + state + "': "+result)
 
                 except Exception as e:
                     result = "ERROR queue query_list (send," + interface + "," + device + "," +\
@@ -98,10 +102,17 @@ class QueueApiCalls(RemoteThreadingClass):
                     self.logging.error(result)
 
             elif self.query_send == "query":
+                log_results = []
+                log_error = 0
+                log_time_start = time.time()
                 for value in button:
+                    if log_error > 1:
+                        continue
                     try:
                         result = self.device_apis.api_query(interface, device, value)
                         # self.execution_time(device,request_time,time.time())
+                        if "ERROR" in str(result):
+                            log_error += 1
 
                         self.last_query = device + "_" + value
                         self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')
@@ -109,7 +120,7 @@ class QueueApiCalls(RemoteThreadingClass):
                         devices[device]["status"]["api-last-query-tc"] = int(time.time())
                         devices[device]["status"]["api-status"] = \
                             self.device_apis.api[self.device_apis.device_api_string(device)].status
-                        self.logging.debug(result)
+                        log_results.append(value + "=" + str(result))
 
                     except Exception as e:
                         result = "ERROR queue query_list (query," + str(interface) + "," + str(device) + "," + str(
@@ -120,6 +131,11 @@ class QueueApiCalls(RemoteThreadingClass):
                         devices[device]["status"][value] = str(result)
                     else:
                         devices[device]["status"][value] = "Error"
+
+                if log_error > 1:
+                    log_results.append("...")
+                self.logging.debug("query " + interface + " (" + str(round(time.time() - log_time_start, 1)) + "s): " +
+                                   ", ".join(log_results))
 
                 if self.config != "":
                     self.config.device_set_values(device, "status", devices[device]["status"])
@@ -180,17 +196,16 @@ class QueueApiCalls(RemoteThreadingClass):
         """
         add single command or list of commands to queue
         """
-        self.logging.debug("Add to queue " + self.name + ": " + str(commands))
+        self.logging.debug("Add2Queue: " + str(commands))
 
         # set reload status
         if "START_OF_RELOAD" in str(commands):
             self.reload = True
 
         # or add command to queue
-        else:
-            for command in commands:
-                if "," in str(command):
-                    command.append(time.time())  # add element to array
-                self.queue.append(command)       # add command array to queue
+        for command in commands:
+            if "," in str(command):
+                command.append(time.time())  # add element to array
+            self.queue.append(command)       # add command array to queue
 
         return "OK: Added command(s) to the queue '" + self.name + "': " + str(commands)

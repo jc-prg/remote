@@ -209,7 +209,7 @@ class APIaddOn(RemoteDefaultClass):
         self.volume = 0
         self.cache_metadata = {}  # cache metadata to reduce api requests
         self.cache_time = time.time()  # init cache time
-        self.cache_wait = 2  # time in seconds how much time should be between two api metadata requests
+        self.cache_wait = 3  # time in seconds how much time should be between two api metadata requests
 
         self.available_commands = {
             "jc.get_addons(parameter)": {
@@ -377,8 +377,6 @@ class APIaddOn(RemoteDefaultClass):
         else:
             return {"error": "API " + self.api.api_name + " not connected."}
 
-    # -------------------------------------------
-
     def IncreaseVolume(self, step):
         """
         get current volume and increase by step
@@ -469,14 +467,6 @@ class APIaddOn(RemoteDefaultClass):
 
         else:
             return self.not_connected
-
-    # -------------------------------------------------
-    # IDEA ... def NavigationCommands
-    # -------------------------------------------------
-    # analogue to the official KODI app ...
-    # up / down - show information - if media is running
-    # left / right - jump step back / jump step forward - if media is running
-    # ...
 
     def ReplaceHTML(self, text):
         """
@@ -701,8 +691,12 @@ class APIaddOn(RemoteDefaultClass):
             metadata = {}
 
             # read all metadata from API (if no tag is given or tag requires to read all metadata)
-            if (self.cache_metadata == {} or (
-                    self.cache_time + self.cache_wait) < time.time()) and tag not in all_media_properties and tag not in selected_system_properties and tag not in selected_player_properties and tag not in selected_plist_properties and tag not in selected_other_properties:
+            if ((self.cache_metadata == {} or (self.cache_time + self.cache_wait) < time.time())
+                    and tag not in all_media_properties
+                    and tag not in selected_system_properties
+                    and tag not in selected_player_properties
+                    and tag not in selected_plist_properties
+                    and tag not in selected_other_properties):
 
                 application = self.api.Application.GetProperties({'properties': selected_system_properties})
 
@@ -735,20 +729,17 @@ class APIaddOn(RemoteDefaultClass):
                     playerid = active["playerid"]
                     playertype = active["playertype"]
 
-                    player = \
-                        self.api.Player.GetProperties({'playerid': playerid, 'properties': selected_player_properties})[
-                            'result']
+                    player = self.api.Player.GetProperties({'playerid': playerid,
+                                                            'properties': selected_player_properties})['result']
 
                     playlistid = player['playlistid']
-                    playlist = self.api.Playlist.GetProperties(
-                        {'playlistid': playlistid, 'properties': selected_plist_properties})['result']
-                    item = \
-                        self.api.Player.GetItem({'playerid': playerid, 'properties': selected_media_properties})[
-                            'result'][
-                            'item']
-                    item2 = \
-                        self.api.Player.GetItem({'playerid': playerid, 'properties': all_media_properties})['result'][
-                            'item']
+                    playlist = self.api.Playlist.GetProperties({'playlistid': playlistid,
+                                                                'properties': selected_plist_properties})['result']
+                    item = self.api.Player.GetItem({'playerid': playerid,
+                                                    'properties': selected_media_properties})['result']['item']
+
+                    #item2 = self.api.Player.GetItem({'playerid': playerid,
+                    #                                 'properties': all_media_properties})['result']['item']
 
                     metadata["player"] = player
                     metadata["player-type"] = playertype
@@ -857,8 +848,6 @@ class APIaddOn(RemoteDefaultClass):
 
             else:
                 metadata = self.cache_metadata
-
-            # ----------------------------------------------------
 
             if tag != "item" and "item" in metadata:
                 if "plot" in metadata["item"]:       metadata["item"]["plot"] = self.ReplaceHTML(

@@ -29,7 +29,7 @@ class RemotesData(RemoteThreadingClass):
         self.queue = queue
         self.apis = apis
         self.errors = {}
-        self.thread_priority(4)
+        self.thread_priority(6)
 
     def run(self):
         """
@@ -42,8 +42,12 @@ class RemotesData(RemoteThreadingClass):
             self.thread_wait()
             self.logging.debug("Waiting time = " + str(self.thread_waiting_time()) + "s")
 
-            if not self.config.user_inactive():
+            if not self.config.user_inactive() and not self.queue.reload:
                 self.devices_get_status({}, True)
+
+            elif self.config.user_inactive():
+                self.logging.debug("Skipping status request as last reload still running")
+
             else:
                 self.logging.debug("Skipping status requests due to missing user activity.")
 
@@ -452,8 +456,8 @@ class RemotesData(RemoteThreadingClass):
 
         # set reload status
         if read_api:
-            self.queue.add2queue(["START_OF_RELOAD"])
             self.queue.add2queue([0.5])
+            self.queue.add2queue(["START_OF_RELOAD"])
             self.logging.info("RELOAD data from devices")
 
         # read status of all devices
@@ -485,7 +489,7 @@ class RemotesData(RemoteThreadingClass):
                     # request update for devices with API query
                     if method == "query" and read_api:
 
-                        self.queue.add2queue([0.1])
+                        #self.queue.add2queue([0.1])
                         self.queue.add2queue([[interface, device, config[device]["commands"]["get"], ""]])
 
         # set reload status

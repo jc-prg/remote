@@ -138,6 +138,18 @@ class RemoteApiClass(RemoteDefaultClass):
         self.logging.debug("Method 'devices_listen()' is not implemented for the API '" + self.name + "'.")
         return {}
 
+    def send(self, device, device_id, command):
+        return "ERROR: 'send' not implemented (" + self.api_name + ")"
+
+    def query(self, device, device_id, command):
+        return "ERROR: 'query' not implemented (" + self.api_name + ")"
+
+    def record(self, device, device_id, command):
+        return "ERROR: 'record' not implemented (" + self.api_name + ")"
+
+    def test(self):
+        return "ERROR: 'test' not implemented (" + self.api_name + ")"
+
 
 class RemoteThreadingClass(threading.Thread, RemoteDefaultClass):
     """
