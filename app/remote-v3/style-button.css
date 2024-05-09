@@ -263,3 +263,10 @@ button {
     padding       : 4px;
     padding-top   : 8px;
 }
+
+.button_image_start {
+    max-width   : 40px;
+    max-height  : 25px;
+    margin      : 0px;
+    padding     : 0px;
+}
