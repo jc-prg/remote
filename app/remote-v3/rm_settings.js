@@ -416,6 +416,7 @@ function rmSettings (name) {	// IN PROGRESS
                 var device          = devices_per_interface[interface][api_device][i];
                 var device_settings = data["CONFIG"]["devices"][device];
                 var power_status    = data["STATUS"]["devices"][device]["power"];
+                var online_status   = data["STATUS"]["devices"][device]["availability"];
                 var method          = device_settings["interface"]["method"];
                 var label           = device_settings["settings"]["label"];
                 var visibility      = device_settings["settings"]["visible"];
@@ -427,6 +428,7 @@ function rmSettings (name) {	// IN PROGRESS
                 external_id       = device_settings["settings"]["device_id"];
                 if (external_id != undefined && external_id != "") { external_ids[external_id] = true; }
 
+                if (online_status && online_status == "offline") { power_status = "N/A (offline)"; }
                 if (visibility != "yes") { hidden = "*"; }
                 if (method == "record" && power_status == "ON")  {
                     power_status = "<u id=\"CHANGE_STATUS_"+device+"\"><status onclick=\""+command_off+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";

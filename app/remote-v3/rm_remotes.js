@@ -394,7 +394,7 @@ function rmRemote(name) {
 		// Main Settings
 		var edit   = "";
 		var images = this.data["CONFIG"]["elements"]["button_images"];
-        var icon   = "<img src='icon/"+images[device_config["settings"]["image"]]+"' style='max-width:30px;max-height:40px;'>";
+        var icon   = "<img src='icon/"+images[device_config["settings"]["image"]]+"' class='button_image_start'>";
 		icon       = "<button class='button device_off small'><div id='device_edit_button_image'>"+icon+"</div></button>";
 		edit    += this.tab.start();
 		edit    += this.tab.row( lang("ID"),                      "<b>" + device + "</b>" );
@@ -1462,7 +1462,7 @@ function rmRemote(name) {
 	    var images     = this.data["CONFIG"]["elements"]["button_images"];
         var selected   = getValueById("edit_image");
         if (images[selected]) {
-            var image_html = "<img src='icon/"+images[selected]+"' style='max-width:30px;max-height:40px;'>";
+            var image_html = "<img src='icon/"+images[selected]+"' class='button_image_start'>";
             setTextById("device_edit_button_image", image_html);
             }
         }

@@ -152,7 +152,7 @@ function rmStart(name) {
                 
 	// create image tag for icons
 	this.image                = function(file) {
-	        return "<img src='icon/"+file+"' style='height:20px;margin:0px;padding:0px;' alt='"+file+"' />";
+	        return "<img src='icon/"+file+"' class='button_image_start' alt='"+file+"' />";
 	        }
 	}
 

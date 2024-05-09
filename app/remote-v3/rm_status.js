@@ -28,7 +28,7 @@ function statusCheck(data={}) {
 	dataAll = data;
 
     statusCheck_modes();
-	statusCheck_display(data);
+	statusCheck_displayValues(data);
 	statusCheck_deviceActive(data);
 	statusCheck_devicePowerButtonDisplay(data);
 	statusCheck_scenePowerButton(data);
@@ -783,7 +783,7 @@ function statusCheck_health(data={}) {
 
 
 // check status information of device -> insert into display
-function statusCheck_display(data={}) {
+function statusCheck_displayValues(data={}) {
 
 	// check status for displays
 	var devices     = data["CONFIG"]["devices"];
@@ -873,6 +873,7 @@ function statusCheck_display(data={}) {
 			var display     	= devices[key]["remote"]["display"];
 			var connected   	= device_api_status.toLowerCase();
 			var device_status   = data["STATUS"]["devices"][key];
+			var online_status   = device_status["availability"];
 		        
 			for (var display_key in display) {
 				var value_key      = display[display_key];
@@ -890,10 +891,11 @@ function statusCheck_display(data={}) {
 					}
 									
 				if (status && value_key == "power") {
-					if (connected != "connected")                                       { status = "<b style='color:red;'>Connection Error:</b><br/>"+connected; }
-			        else if (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)    { status = "<b style='color:lightgreen;'>Connected<b/>"; }
-					else if (status.indexOf("OFF") >= 0 || status.indexOf("off") >= 0)  { status = "<b style='color:gold;'>Connected: Power Off<b/>"; }
-                    else                                                                { status = "<b style='color:red;'>Unknown Error:</b> "+status; }
+					if (connected != "connected")                         { status = "<b style='color:red;'>Connection Error:</b><br/>"+connected; }
+					else if (online_status && online_status == "offline") { status = "<b style='color:gold;'>Offline</b><br/>"; }
+			        else if (status.toUpperCase().indexOf("ON") >= 0)     { status = "<b style='color:lightgreen;'>Power On<b/>"; }
+					else if (status.toUpperCase().indexOf("OFF") >= 0)    { status = "<b style='color:gold;'>Power Off<b/>"; }
+                    else                                                  { status = "<b style='color:red;'>Unknown Error:</b> "+status; }
 					}
 				if (status && element)  { element.innerHTML  = status; }
 				if (status && element2) { element2.innerHTML = status.replace(/,/g,"; "); }
