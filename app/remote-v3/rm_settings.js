@@ -279,6 +279,19 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_version","Versions",set_temp,true);
 
+        // server health
+        var modules = [];
+        for (const [key, value] of Object.entries(system_health)) {
+            if (value == "registered")      { modules.push(key); }
+        }
+        setTimeout(function(){ statusCheck_health(this.data); }, 500 );
+
+		set_temp  = this.tab.start();
+		set_temp += this.tab.row( 	"Threads:&nbsp;", "<div id='system_health'></div>" );
+		set_temp += this.tab.row( 	"Modules:&nbsp;", modules.join(", ") );
+		set_temp += this.tab.end();
+		setting  += this.basic.container("setting_health","Server Health",set_temp,true);
+
 		// sceen & display
 		set_temp  = this.tab.start();
 		var d_width  = screen.width;
@@ -312,19 +325,6 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.row( "<center>" + buttons + "</center>" );
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_color_codes","Button color codes",set_temp,false);
-
-        // server health
-        var modules = [];
-        for (const [key, value] of Object.entries(system_health)) {
-            if (value == "registered")      { modules.push(key); }
-        }
-        setTimeout(function(){ statusCheck_health(this.data); }, 500 );
-
-		set_temp  = this.tab.start();
-		set_temp += this.tab.row( 	"Threads:&nbsp;", "<div id='system_health'></div>" );
-		set_temp += this.tab.row( 	"Modules:&nbsp;", modules.join(", ") );
-		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_health","Server Health",set_temp,false);
 
 		// status
 		set_temp  = this.tab.start();
