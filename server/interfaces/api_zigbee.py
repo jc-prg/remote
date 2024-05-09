@@ -42,6 +42,8 @@ class ApiControl(RemoteApiClass):
         self.mqtt_msg_received = {}
         self.mqtt_friendly_name = {}
         self.mqtt_device_id = {}
+        self.mqtt_device_availability = {}
+        self.mqtt_device_availability_subscribed = []
         self.connect_config = {
             "FIRST_RECONNECT_DELAY": 1,
             "RECONNECT_RATE": 2,
@@ -106,10 +108,16 @@ class ApiControl(RemoteApiClass):
         async reaction API request
         """
         return_data = str(message.payload.decode("utf-8"))
-        self.logging.debug("Message received: " + message.topic + " : " + str(return_data))
+        return_data_short = str(return_data)
+        if len(return_data_short) > 300:
+            return_data_short = return_data_short[:300] + "..."
+
+        self.logging.debug("Message received: " + message.topic + " : " + str(return_data_short))
         self.mqtt_msg_received[message.topic+return_data] = True
-        self.logging.debug("                : '"+message.topic+return_data+"'")
-        self.execute_results(message.topic, json.loads(return_data))
+        if "{" in str(return_data):
+            self.execute_results(message.topic, json.loads(return_data))
+        else:
+            self.execute_results(message.topic, return_data)
 
     def connect(self):
         """Connect / check connection"""
@@ -145,6 +153,7 @@ class ApiControl(RemoteApiClass):
                 self.mqtt_client.loop_start()
                 self.execute_request("bridge/devices")
                 self.execute_request("bridge/info")
+                self.execute_request("availability")
             else:
                 self.mqtt_client = None
                 raise "Could not send connect command correctly: " + str(rc)
@@ -172,6 +181,16 @@ class ApiControl(RemoteApiClass):
         execute commands based on received messages
         """
         for device_id in self.mqtt_devices:
+            friendly_name = device_id
+            if device_id in self.mqtt_friendly_name:
+                friendly_name = self.mqtt_friendly_name[device_id]
+            if friendly_name not in self.mqtt_device_availability_subscribed:
+                self.mqtt_client.subscribe(self.mqtt_msg_start + friendly_name + "/availability")
+                self.mqtt_client.publish(self.mqtt_msg_start + friendly_name + "/availability")
+                self.mqtt_client.publish(self.mqtt_msg_start + friendly_name + "/availability/get")
+                self.logging.info("Subscribed /availability for device " + friendly_name + "/" + device_id)
+                self.mqtt_device_availability_subscribed.append(friendly_name)
+
             if topic == self.mqtt_msg_start + device_id:
                 self.mqtt_devices_status[device_id] = data
                 self.logging.debug("-> " + device_id + " : " + str(data))
@@ -190,6 +209,16 @@ class ApiControl(RemoteApiClass):
                 self.mqtt_device_id[device_id] = device["ieee_address"]
                 self.mqtt_friendly_name[device["ieee_address"]] = device_id
             self.config.write(rm3config.commands + self.api_name + "/10_devices", self.mqtt_devices)
+
+        if "availability" in topic and data != {} and data != "":
+            device_id = topic.split("/")[1]
+            friendly_name = device_id
+            if device_id in self.mqtt_friendly_name:
+                friendly_name = self.mqtt_friendly_name[device_id]
+            self.mqtt_device_availability[device_id] = data
+            self.mqtt_device_availability[friendly_name] = data
+            self.logging.warning("Availability " + str(friendly_name) + ": " + str(data))
+            self.logging.warning("             " + str(self.mqtt_device_availability))
 
     def execute_request(self, topic, data=None):
         """
@@ -378,11 +407,28 @@ class ApiControl(RemoteApiClass):
             if command_key == "get":
                 result = "N/A"
                 unit = ""
+
+                if "availability" in command:
+                    result = self.mqtt_device_availability[friendly_name]
+
                 if friendly_name in self.mqtt_devices_status and command_value in self.mqtt_devices_status[friendly_name]:
                     result = self.mqtt_devices_status[friendly_name][command_value]
                     if command_value == "color":
                         result["x"] = round(result["x"], 4)
                         result["y"] = round(result["y"], 4)
+
+                    #elif command_value == "availability" and friendly_name in self.mqtt_device_availability:
+
+                    #    self.mqtt_client.publish(self.mqtt_msg_start + friendly_name + "/availability")
+                    #    self.mqtt_client.publish(self.mqtt_msg_start + friendly_name + "/availability/get")
+                    #    result = self.mqtt_device_availability[friendly_name]
+
+                    #elif command_value == "availability" and device_id in self.mqtt_device_availability:
+
+                    #    self.mqtt_client.publish(self.mqtt_msg_start + device_id + "/availability")
+                    #    self.mqtt_client.publish(self.mqtt_msg_start + device_id + "/availability/get")
+                    #    result = self.mqtt_device_availability[device_id]
+
                     if friendly_name in self.mqtt_devices and "definition" in self.mqtt_devices[friendly_name] \
                             and "exposes" in self.mqtt_devices[friendly_name]["definition"]:
                         expose_entries = self.mqtt_devices[friendly_name]["definition"]["exposes"]

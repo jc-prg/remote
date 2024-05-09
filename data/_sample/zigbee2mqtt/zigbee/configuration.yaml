@@ -1,6 +1,7 @@
 homeassistant: false
 frontend: true
 permit_join: false
+availability: true
 mqtt:
   base_topic: zigbee2mqtt
   server: mqtt://192.168.1.10:1883
@@ -36,7 +37,7 @@ advanced:
     - 108
     - 46
   homeassistant_legacy_entity_attributes: false
-  legacy_api: false
-  legacy_availability_payload: false
+  legacy_api: true
+  legacy_availability_payload: true
 device_options:
   legacy: false
