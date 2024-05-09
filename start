@@ -36,6 +36,7 @@ if [ ! $config ]; then
   echo " 'q' - exit"
   echo " 's' - start"
   echo " 'r' - restart"
+  echo " 'x' - stop"
   echo " 'i' - install sample configuration"
   echo " 'u' - update from github (branch:$branch)"
   echo " 'v' - update from github (branch:$branch) and rebuild container"
@@ -54,6 +55,10 @@ if [ ! $config ]; then
     elif [[ $k = r ]] ; then
        config="restart"
        printf "\n... restarting.\n"
+       break
+    elif [[ $k = x ]] ; then
+       config="stop"
+       printf "\n... stopping.\n"
        break
     elif [[ $k = u ]] ; then
        config="update"
@@ -83,6 +88,8 @@ if [ ! $config ]; then
   done
 fi
 
+echo ""
+
 if [ $config == "start" ]; then
     $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml up -d
 
@@ -101,6 +108,15 @@ elif [ $config == "install" ]; then
     cd data/_sample
     ./install-config
     cd ../..
+
+elif [ $config == "stop" ]; then
+
+    echo "Stop docker container:"
+    $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml stop
+
+    if [ $ZIGBEE2MQTT_START == "YES" ]; then
+      $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml stop
+    fi
 
 elif [ $config == "update" ]; then
 
