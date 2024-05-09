@@ -227,7 +227,7 @@ class ApiControl(RemoteApiClass):
         if data is None:
             data = {}
         data = json.dumps(data)
-        self.logging.debug(data)
+        self.logging.debug("execute: " + str(data))
         topic = self.mqtt_msg_start + topic
 
         self.mqtt_client.subscribe(topic)
@@ -345,6 +345,7 @@ class ApiControl(RemoteApiClass):
             except Exception as e:
                 result = "ERROR: Could not send data '" + command_value + "': " + str(e)
                 self.logging.error("__SEND: " + result)
+                self.working = False
                 return result
 
             if ("color" in command_value_json and ":" in command_value_json["color"]
@@ -393,6 +394,7 @@ class ApiControl(RemoteApiClass):
             friendly_name = device_id
         else:
             self.logging.error("ERROR: No data for device '" + device_id + "' available.")
+            self.working = False
             return "N/A"
 
         if self.log_command:
