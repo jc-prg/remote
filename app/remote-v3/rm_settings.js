@@ -105,6 +105,7 @@ function rmSettings (name) {	// IN PROGRESS
             this.settings_ext_reset();
             this.settings_ext_append(0,"", this.module_index(true, "INFORMATION"));
             this.settings_ext_append(1,lang("VERSION_AND_STATUS"), this.module_system_info());
+            this.settings_ext_append(2,lang("BUTTON_INFOS"), this.module_system_info_buttons());
             this.create_show_ext();
             this.create_show_log();
             }
@@ -311,6 +312,33 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_display","Screen &amp; Display",set_temp,false);
 
+		// status
+		set_temp  = this.tab.start();
+		set_temp += this.tab.row( 	"Server:", 	this.app_stat );
+		set_temp += this.tab.row( 	"Cookie:",	cookie );
+		set_temp += this.tab.row( 	"Button:",	this.app_last );
+        if (main_device && main_device_config) {
+    		set_temp += this.tab.row( 	"Audio:",	audio2 + "<br/>" + audio1 );
+    		}
+    	else {
+    		set_temp += this.tab.row( 	"Audio:",	"<i>No main audio device defined yet.</i>" );
+    	    }
+		set_temp += this.tab.end();
+		setting  += this.basic.container("setting_other","Other",set_temp,false);
+
+	    return setting;
+		}
+
+	this.module_system_info_buttons = function () {
+
+		var setting            = "";
+		var cookie             = appCookie.get("remote");
+        var main_audio         = this.data["CONFIG"]["main-audio"];  // get main audio device from file
+		var main_device_config = this.data["CONFIG"]["devices"][main_audio];
+		var main_device        = this.data["STATUS"]["devices"][main_audio];
+		var system_health      = this.data["STATUS"]["system_health"];
+		var audio_max		   = 100;
+
 		// button color codes
 		var buttons = "";
 		for (var key in colors_power) {
@@ -326,19 +354,31 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_color_codes","Button color codes",set_temp,false);
 
-		// status
-		set_temp  = this.tab.start();
-		set_temp += this.tab.row( 	"Server:", 	this.app_stat );
-		set_temp += this.tab.row( 	"Cookie:",	cookie );
-		set_temp += this.tab.row( 	"Button:",	this.app_last );
-        if (main_device && main_device_config) {
-    		set_temp += this.tab.row( 	"Audio:",	audio2 + "<br/>" + audio1 );
-    		}
-    	else {
-    		set_temp += this.tab.row( 	"Audio:",	"<i>No main audio device defined yet.</i>" );
-    	    }
-		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_other","Other",set_temp,false);
+        // button images
+        set_temp  = "";
+        images    = dataAll["CONFIG"]["elements"]["button_images"];
+        for (var key in images) {
+            set_temp += "<button class='image_list key' style='width:50px;'>";
+            set_temp += key;
+            set_temp += "</button>";
+            set_temp += "<button class='image_list'>";
+            set_temp += rm_image(images[key], false);
+            set_temp += "</button>";
+            }
+		setting  += this.basic.container("setting_button_images","Images buttons",set_temp,false);
+
+
+        set_temp  = "";
+        colors    = dataAll["CONFIG"]["elements"]["button_colors"];
+        for (var key in colors) {
+            set_temp += "<button class='image_list key'>";
+            set_temp += key;
+            set_temp += "</button>";
+            set_temp += "<button class='button bg"+key+"' style='width:50px;'>";
+            set_temp += "";
+            set_temp += "</button>";
+            }
+		setting  += this.basic.container("setting_button_colors","Color buttons",set_temp,false);
 
 	    return setting;
 		}

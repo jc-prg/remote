@@ -28,7 +28,7 @@ function setNavTitle (title) {
 function rm_image(file, big=false) {
         if (big)    { var style = "max-height:54px;max-width:72px;"; }
         else        { var style = "max-height:18px;max-width:24px;"; }
-        return "<img src='icon/"+file+"' style='" + style + "margin:0px;padding:0px;' alt='"+file+"' />";
+        return "<img src='icon/"+file+"' style='" + style + "margin:auto;padding:0px;' alt='"+file+"' />";
         }
 
 function writeKeyBoard () {
