@@ -60,7 +60,7 @@ function rmColorPicker(name) {
 		appFW.requestAPI('GET',[ 'send-data', this.active_name, send_command, '"'+input+'"' ], '','');
     }
 
-    this.colorPickerHTMLv2 = function (container_id, send_command) {
+    this.colorPickerHTMLv2 = function (container_id, send_command, color_model) {
 
         console.error("Load Color Picker ("+container_id+") ...");
 
@@ -105,7 +105,8 @@ function rmColorPicker(name) {
             //document.getElementById("colorpicker_demo").style.backgroundColor = "rgb(255,0,0)";
             document.getElementById("colorpicker_demo").style.backgroundColor = "rgb(" + red +","+green+","+blue+")";
             var input = `${red}:${green}:${blue}`;
-            rm3remotes.color_picker.sendColorCode_CIE1931(color_send_command, input);
+            if (color_model == "CIE_1931")  { rm3remotes.color_picker.sendColorCode_CIE1931(color_send_command, input); }
+            else                            { rm3remotes.color_picker.sendColorCode(color_send_command, input); }
         });
 
 

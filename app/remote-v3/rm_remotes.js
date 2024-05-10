@@ -569,6 +569,10 @@ function rmRemote(name) {
 		if (device_config["commands"]["set"].length > 0) {
 			edit    += this.tab.row(
                     this.basic.select_array("add_colorpicker_cmd",lang("BUTTON_T_SEND"), device_config["commands"]["set"], "", ""),
+                    this.button.edit("","","disabled")
+                    );
+			edit    += this.tab.row(
+                    this.basic.select_array("add_colorpicker_model", lang("BUTTON_T_COLOR"), ["RGB", "CIE_1931"]),
                     this.button.edit(this.app_name+".remote_add_colorpicker('device','"+device+"','add_colorpicker_cmd','remote_json_buttons');", lang("BUTTON_T_COLORPICKER"),"")
                     );
 			}
@@ -1275,11 +1279,13 @@ function rmRemote(name) {
 
 	// add a line with description
 	this.remote_add_colorpicker     = function (type,scene,button_select,remote,position="") {
-	
+
+        var color_model = "";
 		var button = getValueById(button_select);
 		if (button == "" || button == undefined)	{ appMsg.alert(lang("COLORPICKER_SELECT_CMD")); return; }
 
-		if (document.getElementById(button_select)) { button = "COLOR-PICKER||send-"+button; }
+        if (document.getElementById("add_colorpicker_model"))   { color_model = "||" + document.getElementById("add_colorpicker_model").value; }
+		if (document.getElementById(button_select))             { button = "COLOR-PICKER||send-" + button + color_model; }
 		this.remote_add_button(type,scene,button,remote,position);
 		this.remote_preview( type, scene );
 		}
@@ -1610,11 +1616,14 @@ function rmRemote(name) {
 			return;
 			}
 
+        var color_model = "RGB";
         var send_command = data[1];
+        if (data.length > 2) { color_model  = data[2]; }
+
 		var remote_data  = this.data["CONFIG"][type][device]["remote"];
 		var status_data  = this.data["STATUS"]["devices"][device];
 		
-        var display_start = "<button id=\"colorpicker_"+device+"_2\" class=\"color-picker\">";
+        var display_start = "<button id=\"colorpicker_"+device+"_button\" class=\"color-picker\">";
         display_start    += "<canvas id=\"colorpicker_"+device+"\" style=\"width:250px;border:1 solid white;\">";
         var display_end   = "</canvas>";
         display_end       += "<center><canvas id=\"colorpicker_demo\"></canvas></center>";
@@ -1624,7 +1633,7 @@ function rmRemote(name) {
         //text += this.color_picker.colorPickerHTML(send_command);
         text += display_end;
 
-        setTimeout(function() { rm3remotes.color_picker.colorPickerHTMLv2("colorpicker_"+device, send_command); }, 100);
+        setTimeout(function() { rm3remotes.color_picker.colorPickerHTMLv2("colorpicker_"+device, send_command, color_model); }, 100);
         return text;
 		}
 	

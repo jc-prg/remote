@@ -138,6 +138,9 @@ class RemoteApiClass(RemoteDefaultClass):
         self.logging.debug("Method 'devices_listen()' is not implemented for the API '" + self.name + "'.")
         return {}
 
+    def send_api(self, command):
+        return "ERROR: 'send_api' not implemented (" + self.api_name + ")"
+
     def send(self, device, device_id, command):
         return "ERROR: 'send' not implemented (" + self.api_name + ")"
 

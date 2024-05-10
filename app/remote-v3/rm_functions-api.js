@@ -543,6 +543,10 @@ function apiSendToDeviceApi( device, api_command ) {
     var send_data = api_command;
 	appFW.requestAPI( "POST", send_cmd, send_data, apiSendToDeviceApi_return );
 }
+function apiSendToApi( api_command ) {
+    var send_cmd  = ["send-api-command", api_command];
+	appFW.requestAPI( "POST", send_cmd, "", apiSendToDeviceApi_return );
+}
 
 function apiSendToDeviceApi_return( data ) {
     console.warn(data);

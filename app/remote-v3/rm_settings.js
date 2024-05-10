@@ -447,7 +447,7 @@ function rmSettings (name) {	// IN PROGRESS
         var new_exist   = false;
         for (var api_device in devices_detect) {
             if (api_device.indexOf(interface) == -1) { continue; }
-            details_new += "<i>API Device: not yet connected</i>&nbsp;&nbsp;";
+            details_new += "<i>API Device: not yet connected ("+interface+") </i>&nbsp;&nbsp;";
             details_new += "<ul>";
             for (var device in devices_detect[api_device]) {
 
@@ -476,6 +476,10 @@ function rmSettings (name) {	// IN PROGRESS
 
                 if (info != "") {  info = ": " + info; }
                 details_new += "<li>" + button_add + "<b>[" + devices_detect[api_device][device]["id"] + "]</b><br/>" + name + info + disabled + "</li>";
+                }
+
+            if (interface == "ZIGBEE2MQTT") {
+                details_new += "<li>Permit new devices to join: <button onclick='apiCommandSend(\"plug10_bridge-permit\");'>permit</button></li>";
                 }
             details_new += "</ul>";
             }
@@ -582,6 +586,15 @@ function rmSettings (name) {	// IN PROGRESS
                 buttons      += this.btn.sized("edit_"+key+"_"+dev,  lang("EDIT"), "", edit_link)
                 buttons      += this.btn.sized("save_"+key+"_"+dev,  lang("SAVE"), "", save_link);
                 buttons      += this.btn.sized("info_"+key+"_"+dev,  "API-Info", "", api_link);
+
+                if (dataAll["CONFIG"]["apis"]["list_api_commands"][key+"_"+dev] && dataAll["CONFIG"]["apis"]["list_api_commands"][key+"_"+dev].length > 0) {
+                    buttons += "<hr style='width:100%;float:left;'/>";
+                    for (var i=0;i<dataAll["CONFIG"]["apis"]["list_api_commands"][key+"_"+dev].length > 0;i++) {
+                        var command = dataAll["CONFIG"]["apis"]["list_api_commands"][key+"_"+dev][i];
+                        var command_link = "apiSendToApi(\"" + key+"_"+dev + "::" +command + "\");";
+                        buttons += this.btn.sized("api_cmd_"+key+"_"+dev, command, "", command_link);
+                        }
+                    }
 
                 var temp = this.tab.start();
                 temp    += this.tab.row("ID: ",    use_color(key+"_"+dev, "VALUE"));

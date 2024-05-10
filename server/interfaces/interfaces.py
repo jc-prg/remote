@@ -438,20 +438,32 @@ class Connect(RemoteThreadingClass):
         """
         answer = "N/A"
         power = "N/A"
-        api_dev = self.device_api_string(device)
-        device_id = self.device_id_get(device)
-        method = self.api_method(device)
-        self.logging.info("__SEND DIRECTLY: " + api_dev + "/" + device + " | " + command)
 
-        if self.api[api_dev].status == "Connected":
-            answer = self.api[api_dev].query(device, device_id, command)
-            power = self.device_status(device)["status"]["power"]
+        if device in self.api:
+            command_string = self.command_api_get(device, command)
+            self.logging.info("__SEND API: " + device + " | " + command + " (" + command_string + ")")
+            answer = self.api[device].send_api(command_string)
+            return_msg = {
+                "connect": self.api[device].status,
+                "command": command_string,
+                "answer": answer
+                }
+        else:
+            api_dev = self.device_api_string(device)
+            device_id = self.device_id_get(device)
+            method = self.api_method(device)
+            self.logging.info("__SEND DIRECTLY: " + api_dev + "/" + device + " | " + command)
 
-        return_msg = {
-            "connect": self.api[api_dev].status,
-            "power": power,
-            "answer": answer
-            }
+            if self.api[api_dev].status == "Connected":
+                answer = self.api[api_dev].query(device, device_id, command)
+                power = self.device_status(device)["status"]["power"]
+
+            return_msg = {
+                "connect": self.api[api_dev].status,
+                "command": command,
+                "power": power,
+                "answer": answer
+                }
 
         return return_msg
 
@@ -681,9 +693,14 @@ class Connect(RemoteThreadingClass):
         else:
             return {"ERROR":  device}
 
-    def device_configuration(self, device) -> dict:
+    def device_configuration(self, device):
         """
         return configuration file of a device
+
+        Args:
+            device (str): device id
+        Returns:
+            dict: return message
         """
         active = self.config.read_status()
         if device in active:
@@ -840,6 +857,21 @@ class Connect(RemoteThreadingClass):
 
         else:
             return "ERROR get_command: device not found (" + dev_api + ": " + device + ")"
+
+    def command_api_get(self, api_dev, command):
+        """
+        get command string for API command
+        """
+        self.logging.info("command_api_get: " + api_dev + "::" + command)
+
+        api, api_device = api_dev.split("_")
+        config = self.config.read(rm3presets.commands + api + "/00_default")
+        self.logging.debug("command_api_get: " + str(config))
+
+        if "data" in config and "api_commands" in config["data"] and command in config["data"]["api_commands"]:
+            return config["data"]["api_commands"][command]
+        else:
+            return ""
 
     def command_create(self, dev_api, device, button, value):
         """

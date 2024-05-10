@@ -315,6 +315,29 @@ class ApiControl(RemoteApiClass):
             time.sleep(0.2)
         return
 
+    def send_api(self, command):
+        """
+        send API command
+
+        Args:
+            command (str): command string, e.g. "api_command={'key': 'value'}"
+        Returns:
+            Any: result from command execution
+        """
+        result = "OK"
+        if "=" not in command:
+            result = "ERROR: command not in the correct format (api_command={'key': 'value'})"
+            self.logging.error(result)
+
+        else:
+            command_key, command_value = command.split("=")
+            command_value = command_value.replace("'", "\"")
+            command_value_json = json.loads(command_value)
+            self.execute_request("bridge/" + command_key, command_value_json)
+            self.logging.debug(result)
+
+        return result
+
     def send(self, device, device_id, command):
         """
         Send command to API
@@ -418,18 +441,6 @@ class ApiControl(RemoteApiClass):
                     if command_value == "color":
                         result["x"] = round(result["x"], 4)
                         result["y"] = round(result["y"], 4)
-
-                    #elif command_value == "availability" and friendly_name in self.mqtt_device_availability:
-
-                    #    self.mqtt_client.publish(self.mqtt_msg_start + friendly_name + "/availability")
-                    #    self.mqtt_client.publish(self.mqtt_msg_start + friendly_name + "/availability/get")
-                    #    result = self.mqtt_device_availability[friendly_name]
-
-                    #elif command_value == "availability" and device_id in self.mqtt_device_availability:
-
-                    #    self.mqtt_client.publish(self.mqtt_msg_start + device_id + "/availability")
-                    #    self.mqtt_client.publish(self.mqtt_msg_start + device_id + "/availability/get")
-                    #    result = self.mqtt_device_availability[device_id]
 
                     if friendly_name in self.mqtt_devices and "definition" in self.mqtt_devices[friendly_name] \
                             and "exposes" in self.mqtt_devices[friendly_name]["definition"]:

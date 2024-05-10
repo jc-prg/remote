@@ -40,6 +40,7 @@ class RemoteAPI(RemoteDefaultClass):
         """
         templates = self.data.templates_read()
         apis = self.data.devices_read_api_structure()
+        apis_commands = self.data.devices_read_api_commands(apis)
         apis_detect = self.data.devices_read_api_new_devices()
         macros = self.data.macros_read()
 
@@ -49,6 +50,7 @@ class RemoteAPI(RemoteDefaultClass):
                 "list_devices":         list(self.apis.available.keys()),
                 "list_description":     self.apis.available,
                 "list_detect":          apis_detect,
+                "list_api_commands":    apis_commands,
                 "structure":            apis
                 },
             "devices":                  self.data.devices_read_config(),
@@ -611,9 +613,6 @@ class RemoteAPI(RemoteDefaultClass):
                 api_method = device_config[key]["interface"]["method"]
                 api_config = self.config.read(rm3presets.commands + api + "/00_interface")
 
-                if api_method == "record":
-                    data["DATA"]["devices"][key]["api_commands"] = {}
-
                 if "ERROR" not in str(api_config):
                     data["DATA"]["devices"][key]["interface_details"] = str(api_config)
                     # PROBLEM if not converted to string!
@@ -730,6 +729,44 @@ class RemoteAPI(RemoteDefaultClass):
         }
         data["REQUEST"]["Command"] = "RemoteSendApiCmd"
 
+        data = self._end(data, ["no-data", "no-config", "no-status"])
+        return data
+
+    def send_api_command(self, api_command):
+        """
+        send a command to an API device (without device respective remote definition)
+        """
+        data = self._start([])
+        interfaces = data["CONFIG"]["apis"]["list_api_commands"]
+
+        api_dev = ""
+        command = ""
+        if "::" in api_command:
+            api_dev, command = api_command.split("::")
+
+        if api_dev in interfaces and command in interfaces[api_dev]:
+            data["REQUEST"]["Return"] = {
+                "answer": self.apis.api_send_directly(api_dev, command),
+                "api_device": api_dev,
+                "command": api_command
+            }
+        elif api_dev in interfaces:
+            data["REQUEST"]["Return"] = {
+                "error": "Given API Device doesn't have this command (" + api_dev + ": " + command + ")",
+                "command": api_command
+            }
+        elif api_dev != "":
+            data["REQUEST"]["Return"] = {
+                "error": "Given API Device isn't defined (" + api_dev + ")",
+                "command": api_command
+            }
+        else:
+            data["REQUEST"]["Return"] = {
+                "error": "Command doesn't contain an API Device",
+                "command": api_command
+            }
+
+        data["REQUEST"]["Command"] = "RemoteSendApiDeviceCmd"
         data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 

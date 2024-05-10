@@ -1,13 +1,21 @@
 {
 	"data": {
+        "api_commands": {
+            "permit-join": "request/permit_join={'value': true, 'time': 120}",
+            "restart": "request/restart="
+        },
         "buttons" : {
 			"off": "set={'state': 'OFF'}",
             "on": "set={'state': 'ON'}",
-            "toggle": "set={'state': 'TOGGLE'}",
-            "bridge-permit": "request/permit_join={'value': true, 'time': 120}",
-            "bridge-restart": "request/restart="
+            "toggle": "set={'state': 'TOGGLE'}"
 		},
         "commands" : {
+            "availability": {
+                "cmd": ["get"],
+                "get": "get=availability",
+                "type": "enum",
+                "values": ["online", "offline"]
+            },
 			"link-quality": {
                 "cmd": [
                     "get"

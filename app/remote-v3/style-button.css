@@ -235,15 +235,27 @@ button {
 .button.bgcyan   { background-color: cyan;    color: cyan; }
 .button.black    { background-color: black;   color: black; }
 
-.button.bgred.device_off    { background-color: red;		opacity: 0.4; }
-.button.bgyellow.device_off { background-color: #ffff00;	opacity: 0.4; }
-.button.bgblue.device_off   { background-color: blue;	opacity: 0.4; }
-.button.bggreen.device_off  { background-color: green;	opacity: 0.4; }
-.button.bgwhite.device_off  { background-color: white;	opacity: 0.4; }
-.button.bgorange.device_off { background-color: orange;	opacity: 0.4; }
-.button.bgpink.device_off   { background-color: #FF00FF;	opacity: 0.4; }
-.button.bgcyan.device_off   { background-color: cyan;	opacity: 0.4; }
-.button.black.device_off    { background-color: black;	opacity: 0.4; }
+.button.bgwhite-warm    { background-color: #ffffdd; color: #ffffdd; max-width: 57px; }
+.button.bgwhite-warmest { background-color: #ffffaa; color: #ffffaa; max-width: 57px; }
+.button.bgwhite-cool    { background-color: #ddddff; color: #ddddff; max-width: 57px; }
+.button.bgwhite-coolest { background-color: #aaaaff; color: #aaaaff; max-width: 57px; }
+.button.bgwhite-neutral { background-color: white;   color: white;   max-width: 57px;  }
+
+.button.bgred.device_off    { opacity: 0.4; }
+.button.bgyellow.device_off { opacity: 0.4; }
+.button.bgblue.device_off   { opacity: 0.4; }
+.button.bggreen.device_off  { opacity: 0.4; }
+.button.bgwhite.device_off  { opacity: 0.4; }
+.button.bgorange.device_off { opacity: 0.4; }
+.button.bgpink.device_off   { opacity: 0.4; }
+.button.bgcyan.device_off   { opacity: 0.4; }
+.button.black.device_off    { opacity: 0.4; }
+
+.button.bgwhite-warm.device_off        { opacity: 0.4; }
+.button.bgwhite-warmest.device_off     { opacity: 0.4; }
+.button.bgwhite-cool.device_off        { opacity: 0.4; }
+.button.bgwhite-coolest.device_off     { opacity: 0.4; }
+.button.bgwhite-neutral.device_off     { opacity: 0.4; }
 
 /* show button code when pressed */
 

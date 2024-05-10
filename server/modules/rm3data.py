@@ -176,10 +176,10 @@ class RemotesData(RemoteThreadingClass):
                 if interface_def_combined["buttons"] != "":
                     data_config[device]["buttons"] = list(interface_def_combined["buttons"].keys())
 
-                    if more_details:
-                        data_config[device]["api_commands"] = {}
-                        for key in interface_def_combined["buttons"]:
-                            data_config[device]["api_commands"]["btn: " + key] = interface_def_combined["buttons"][key]
+                if more_details:
+                    data_config[device]["api_commands"] = {}
+                    for key in interface_def_combined["buttons"]:
+                        data_config[device]["api_commands"]["btn: " + key] = interface_def_combined["buttons"][key]
 
                 data_config[device]["settings"] = devices[device]["settings"]
                 if "device_id" in data[device]["config"]:
@@ -275,6 +275,26 @@ class RemotesData(RemoteThreadingClass):
                     devices_per_interface[api][dev].append(key)
 
         return devices_per_interface.copy()
+
+    def devices_read_api_commands(self, api_structure):
+        """
+        read api overarching commands using the API structure
+
+        Args:
+            api_structure (dict): API structure created by "devices_read_api_structure()"
+        Returns:
+            dict: API commands
+        """
+        api_info = {}
+        for api in api_structure:
+            interface_info = self.config.read(rm3presets.commands + api + "/00_default")
+            for api_device in api_structure[api]:
+                api_info[api + "_" + api_device] = []
+                if "data" in interface_info and "api_commands" in interface_info["data"]:
+                    for key in interface_info["data"]["api_commands"]:
+                        api_info[api + "_" + api_device].append(key)
+
+        return api_info
 
     def devices_read_api_new_devices(self):
         """
