@@ -200,8 +200,8 @@ class Connect(RemoteThreadingClass):
 
         for key in self.api:
             if key not in self.api_device_list:
-                self.logging.error("Device Activity: Could not find list of devices for '" + key + "'; " +
-                                   "Assumption: no devices connected yet.")
+                self.logging.warning("Device Activity: Could not find list of devices for '" + key + "'; " +
+                                     "Assumption: no devices connected yet.")
                 continue
 
             device_list = self.api_device_list[key]
