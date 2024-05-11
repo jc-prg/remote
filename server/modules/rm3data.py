@@ -478,7 +478,7 @@ class RemotesData(RemoteThreadingClass):
         if read_api:
             self.queue.add2queue([0.5])
             self.queue.add2queue(["START_OF_RELOAD"])
-            self.logging.info("RELOAD data from devices")
+            self.logging.info("Request status information from connected devices ...")
 
         # read status of all devices
         for device in devices:
