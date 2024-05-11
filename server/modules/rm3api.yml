@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: "2.3.0"
+  version: "2.4.0"
   title: "jc://remote/"
   description: API to control remote control devices
   
@@ -833,6 +833,30 @@ paths:
         - maintain
       summary: reload data from config files
       description: reload data from config files
+      responses:
+        200:
+          description: Successfully done reset
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
+  /reconnect/{interface}/:
+    post:
+      operationId: __main__.remoteAPI.reconnect_api
+      tags:
+        - maintain
+      summary: reload data from config files
+      description: reload data from config files
+      parameters:
+        - name: interface
+          in: path
+          type: string
+          required: true
       responses:
         200:
           description: Successfully done reset

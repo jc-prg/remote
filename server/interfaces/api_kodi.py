@@ -22,16 +22,17 @@ class ApiControl(RemoteApiClass):
         self.api_description = "API for KODI Servers"
         RemoteApiClass.__init__(self, "api.KODI", api_name, "query",
                                 self.api_description, device, device_config, log_command, config)
-
-        self.api_url = "http://" + str(self.api_config["IPAddress"]) + ":" + str(self.api_config["Port"]) + "/jsonrpc"
+        self.api_url = ""
 
     def connect(self):
         """
         Connect / check connection
         """
+        self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
+
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
-            self.status = self.not_connected + " ... PING"
+            self.status = self.not_connected + " ... PING " + self.api_config["IPAddress"]
             self.logging.warning(self.status)
             return self.status
 
@@ -40,6 +41,8 @@ class ApiControl(RemoteApiClass):
         self.count_success = 0
 
         try:
+            self.api_url = ("http://" + str(self.api_config["IPAddress"]) + ":" +
+                            str(self.api_config["Port"]) + "/jsonrpc")
             self.api = Kodi(self.api_url)
 
         except Exception as e:
@@ -56,6 +59,9 @@ class ApiControl(RemoteApiClass):
         except Exception as e:
             self.status = self.not_connected + " ... CONNECT " + str(e)
             self.logging.warning(self.status)
+
+        if self.status == "Connected":
+            self.logging.info("Connected KODI (" + self.api_config["IPAddress"] + ")")
 
     def wait_if_working(self):
         """
@@ -161,18 +167,6 @@ class ApiControl(RemoteApiClass):
 
         self.working = False
         return result_param
-
-    def record(self, device, device_id, command):
-        """
-        Record command, especially build for IR devices
-        """
-        return "ERROR " + self.api_name + ": Not supported by this API"
-
-    def register(self, command, pin=""):
-        """
-        Register command if device requires registration to initialize authentification
-        """
-        return "ERROR " + self.api_name + ": Register not implemented"
 
     def test(self):
         """

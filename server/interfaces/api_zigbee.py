@@ -121,7 +121,7 @@ class ApiControl(RemoteApiClass):
 
     def connect(self):
         """Connect / check connection"""
-        self.logging.debug("Connecting " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
+        self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
         self.status = "Starting ..."
         self.count_error = 0
         self.count_success = 0
@@ -166,7 +166,6 @@ class ApiControl(RemoteApiClass):
                                    + ":" + str(self.api_config["Port"]))
             return self.status
 
-        self.test()
         return self.status
 
     def disconnect(self):

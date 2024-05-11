@@ -642,7 +642,7 @@ class RemoteAPI(RemoteDefaultClass):
         device_config = self.data.devices_read_config(more_details=True)
         api_config = self.config.interface_configuration
 
-        self.logging.error(str(device_config.keys()))
+        self.logging.debug("get_config_interface: " + str(device_config.keys()))
 
         for api in api_config:
             if api not in interfaces:
@@ -700,6 +700,19 @@ class RemoteAPI(RemoteDefaultClass):
         self.data.devices_get_status(data["STATUS"]["devices"], read_api=True)
 
         data = self._end(data, ["no-data"])
+        return data
+
+    def reconnect_api(self, interface):
+        """
+        trigger reconnect of APIs
+        """
+        data = self._start()
+        data["REQUEST"]["Return"] = "OK: Configuration reloaded"
+        data["REQUEST"]["Command"] = "Reload"
+
+        self.apis.api_reconnect(interface, True)
+
+        data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
     def send_api(self, device, command):

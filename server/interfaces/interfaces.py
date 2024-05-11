@@ -50,6 +50,7 @@ class Connect(RemoteThreadingClass):
             "query": "Request per API (query)"
         }
         self.available = {}
+        self.api_request_reconnect = {}
 
         self.checking_interval = rm3presets.refresh_device_connection
         self.checking_last = 0
@@ -89,6 +90,11 @@ class Connect(RemoteThreadingClass):
                 self.check_activity()
 
             self.thread_wait()
+
+            if self.api_request_reconnect != {}:
+                for key in self.api_request_reconnect:
+                    self.api_reconnect(key)
+                self.api_request_reconnect = {}
 
         self.logging.info("Exiting " + self.name)
 
@@ -164,7 +170,8 @@ class Connect(RemoteThreadingClass):
                 if not connect:
                     connect = rm3ping.ping(self.api[key].api_config["IPAddress"])
                     if not connect:
-                        self.api[key].status = self.api[key].not_connected + " ... PING"
+                        self.api[key].status = (self.api[key].not_connected + " ... PING " +
+                                                self.api[key].api_config["IPAddress"])
                         self.logging.debug("   -> " + self.api[key].status)
 
                 if connect:
@@ -324,15 +331,40 @@ class Connect(RemoteThreadingClass):
         else:
             return False
 
-    def api_reconnect(self, interface=""):
+    def api_reconnect(self, interface="", reread_config=False):
         """
         reconnect single device or all devices if status is not "Connected"
+
+        Args:
+            interface (str): interface id (<api>_<api_device>)
+            reread_config (bool): reread configuration data
         """
+        config = {}
+        if reread_config or interface == "all":
+            config = self.config.interfaces_identify()
+            if interface != "all":
+                api, api_device = interface.split("_")
+                self.api[interface].config_set(config[api]["devices"][api_device])
+
+        ip_address = ""
+        if "_" in interface:
+            api, api_device = interface.split("_")
+            ip_address = self.config.interface_configuration[api]["devices"][api_device]["IPAddress"]
+
+        self.logging.info("API (re)connect '" + str(interface) + "' (reread_config=" + str(reread_config) +
+                          ";IPAddress=" + ip_address + ") ...")
 
         if interface == "":
             for key in self.api:
                 if self.api[key].status != "Connected":
                     self.api[key].connect()
+
+        elif interface == "all":
+            for api_dev in self.api:
+                api, api_device = api_dev.split("_")
+                self.api[api_dev].config_set(config[api]["devices"][api_device])
+                self.api[api_dev].connect()
+
         else:
             self.api[interface].connect()
 

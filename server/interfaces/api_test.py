@@ -37,15 +37,19 @@ class ApiControl(RemoteApiClass):
         """
         Connect / check connection
         """
+        self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
+
         self.status = "Connected"
         self.count_error = 0
         self.count_success = 0
+
+        self.logging.info("Connected TEST API.")
 
     def wait_if_working(self):
         """
         Some devices run into problems, if send several requests at the same time
         """
-        while working:
+        while self.working:
             logging.debug(".")
             time.sleep(0.2)
         return

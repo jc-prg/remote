@@ -219,6 +219,10 @@ button {
     background		: gray;
 }
 
+.button.hidden {
+    display:none;
+}
+
 .button.device_off {
     background-color: rgb(102, 102, 102);
 }

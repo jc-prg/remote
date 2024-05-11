@@ -34,6 +34,8 @@ class ApiControl(RemoteApiClass):
         """
         Connect / check connection
         """
+        self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
+
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
             self.status = self.not_connected + " ... PING"
@@ -63,6 +65,10 @@ class ApiControl(RemoteApiClass):
             self.status = self.not_connected + " ... CONNECT " + str(e)
             self.api.jc.status = self.status
             self.logging.warning(self.status)
+
+        if self.status == "Connected":
+            self.logging.info("Connected ONKYO (" + self.api_config["IPAddress"] + ")")
+
 
     def wait_if_working(self):
         """

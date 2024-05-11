@@ -29,6 +29,8 @@ class ApiControl(RemoteApiClass):
         """
         Connect / check connection
         """
+        self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
+
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
             self.status = self.not_connected + " ... PING"
@@ -60,6 +62,9 @@ class ApiControl(RemoteApiClass):
             self.status = self.not_connected + " ... CONNECT " + str(e)
             self.api.jc.status = self.status
             return self.status
+
+        if self.status == "Connected":
+            self.logging.info("Connected TAPO P100 (" + self.api_config["IPAddress"] + ")")
 
         return self.status
 
@@ -169,28 +174,6 @@ class ApiControl(RemoteApiClass):
 
         self.working = False
         return result_param
-
-    def record(self, device, device_id, command):
-        """
-        Record command, especially build for IR devices
-        """
-
-        self.wait_if_working()
-        self.working = True
-
-        # ---- change for your api ----
-        #       if self.status == "Connected":
-        #         try:
-        #           result  = self.api.command(xxx)
-        #         except Exception as e:
-        #           self.working = True
-        #           return "ERROR "+self.api_name+" - record: " + str(e)
-        #       else:
-        #         self.working = True
-        #         return "ERROR "+self.api_name+": Not connected"
-
-        self.working = False
-        return "OK"
 
     def test(self):
         """

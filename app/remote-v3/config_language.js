@@ -24,6 +24,7 @@ var language_app = {
 		"API_COMMANDS_TEST"     : "API commands - manual testing",
 		"API_INFORMATION"       : "API information",
 		"API_SELECT_CMD"        : "API command or use your own ...",
+		"API_INFO"              : "API Info",
 		
 		"BUTTON_ASK_DELETE"     : "Do you really want to delete the button '{0}' from '{1}'?",
 		"BUTTON_ASK_DELETE_NUMBER" : "Do you really want to delete the button number [{0}] from '{1}'?",
@@ -213,7 +214,8 @@ var language_app = {
 		"PREVIEW"                      : "Preview",
 
 		"QUICK_ACCESS"                 : "Quick Access",
-		
+
+		"RECONNECT"                    : "Reconnect",
 		"RECORD_COMMAND"               : "Record command",
 		"RECORD_DELETE_COMMANDS"       : "Record / delete commands",
 		"REMOTE_ADD"                   : "Add remote controls",

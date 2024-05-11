@@ -578,7 +578,7 @@ function rmSettings (name) {	// IN PROGRESS
                 //}
             return [count, details];
             }
-    	this.btn.width = "66px";
+    	this.btn.width = "72px";
 
         for (var key in interfaces) {
             var id        = "interface_edit_"+key;
@@ -603,11 +603,16 @@ function rmSettings (name) {	// IN PROGRESS
                 information += "<textarea id=\"api_status_edit_"+key+"_"+dev+"\" style=\"width:95%;height:150px;\" disabled>" + edit_json + "</textarea>";
                 information += "</div>";
 
-                var save_link = "apiSetConfig_InterfaceData( \""+key+"_"+dev+"\", \"api_status_edit_"+key+"_"+dev+"\" );"
-                var edit_link = "document.getElementById(\"api_status_edit_"+key+"_"+dev+"\").removeAttribute(\"disabled\")";
-                var api_link  = "window.open(\""+interface["API-Info"]+"\")";
-                var buttons   = "";
+                var api_dev        = key.toLowerCase() + "_" + dev.toLowerCase();
+                var link_save      = "apiSetConfig_InterfaceData( \""+key+"_"+dev+"\", \"api_status_edit_"+key+"_"+dev+"\" );"
+                var link_reconnect = "apiReconnectInterface( \""+key+"_"+dev+"\");"
+                var link_edit      = "document.getElementById(\"api_status_edit_"+key+"_"+dev+"\").removeAttribute(\"disabled\");";
+                link_edit         += "this.className=\"button hidden\";";
+                link_edit         += "document.getElementById(\"save_"+api_dev+"\").className=\"button\";";
+                var link_api_info  = "window.open(\""+interface["API-Info"]+"\")";
+                var link_on_off    = "apiApiDeviceOnOff_button(\""+key+"\", \""+dev+"\", this);";
 
+                var buttons   = "";
                 console.log("module_interface_edit_list: " + key + "_" + dev)
                 var connect_status_api = dataAll["STATUS"]["interfaces"]["active"][key];
                 var connect_status     = dataAll["STATUS"]["interfaces"]["connect"][key+"_"+dev];
@@ -620,12 +625,11 @@ function rmSettings (name) {	// IN PROGRESS
                 else if (connect_status.indexOf("ERROR") > -1)  { on_off_status = "ERROR"; }
                 else                                            { on_off_status = "ON"; }
 
-                var on_off_link   = "apiApiDeviceOnOff_button(\""+key+"\", \""+dev+"\", this);"; //\"onoff_"+key+"_"+dev+"\");";
-
-                buttons      += this.btn.sized("onoff_"+key+"_"+dev, on_off_status, "", on_off_link);
-                buttons      += this.btn.sized("edit_"+key+"_"+dev,  lang("EDIT"), "", edit_link)
-                buttons      += this.btn.sized("save_"+key+"_"+dev,  lang("SAVE"), "", save_link);
-                buttons      += this.btn.sized("info_"+key+"_"+dev,  "API-Info", "", api_link);
+                buttons      += this.btn.sized("onoff_"+api_dev,      on_off_status,    "",  link_on_off);
+                buttons      += this.btn.sized("edit_"+api_dev,       lang("EDIT"),     "",  link_edit)
+                buttons      += this.btn.sized("save_"+api_dev,       lang("SAVE"),     "hidden",  link_save);
+                buttons      += this.btn.sized("reconnect_"+api_dev,  lang("RECONNECT"),"",  link_reconnect);
+                buttons      += this.btn.sized("info_"+api_dev,       lang("API_INFO"), "",  link_api_info);
 
                 if (dataAll["CONFIG"]["apis"]["list_api_commands"][key+"_"+dev] && dataAll["CONFIG"]["apis"]["list_api_commands"][key+"_"+dev].length > 0) {
                     buttons += "<hr style='width:100%;float:left;'/>";

@@ -12,6 +12,7 @@ function apiCheckUpdates() {
 	appMsg.wait("Loading App ...", "remoteInit();" );
 	appFW.requestAPI("GET", ["version",rm3version], "", apiCheckUpdates_msg, "wait" ); 	// doesn't work asynchronuous yet ... -> "wait" as param
 	}
+
 function apiCheckUpdates_msg( data ) {
 
 	msg = data["REQUEST"]["Return"];
@@ -23,6 +24,7 @@ function apiCheckUpdates_msg( data ) {
 		rm3update = true;
 		}
 	}
+
 
 // show return message as alert
 function apiAlertReturn(data) {
@@ -52,15 +54,20 @@ function apiAlertReturn(data) {
         }, 2000);
     }
 
+
 // set main audio device
 function setMainAudio(device)           { appFW.requestAPI( "POST", ["main-audio",device], "", apiAlertReturn ); }
 
+
 // swt volume
 function setVolume(main_audio,volume)   { appFW.requestAPI( "GET",  ["set",main_audio,"send-vol",volume], "", remoteReload_load ); }
+
 function apiSetVolume(volume)           { appFW.requestAPI( "GET",  ["set",rm3slider.device,"send-vol",volume], "", remoteReload_load ); }
+
 
 // add template (load as JSON)
 function apiTemplateAdd_exe(device,template) { appFW.requestAPI("PUT",["template",device,template], "", apiAlertReturn); }
+
 function apiTemplateAdd(device_id, template_id) {
 
         device   = check_if_element_or_value(device_id,false);
@@ -74,7 +81,8 @@ function apiTemplateAdd(device_id, template_id) {
 	question = "Do you really want overwrite buttons of '" + device + "' with template '" + template + "'?";
 	appMsg.confirm(question,"apiTemplateAdd_exe('" + device + "','" + template + "'); ");
 	}
-	
+
+
 // edit macros
 function apiMacroChange(data=[]) {
 
@@ -87,6 +95,7 @@ function apiMacroChange(data=[]) {
 
 	appFW.requestAPI("PUT",["macro"], send_data, apiAlertReturn);
 	}
+
 
 // create new device
 function apiSceneAdd(data) {
@@ -104,6 +113,7 @@ function apiSceneAdd(data) {
 
 	appFW.requestAPI("PUT",["scene",send_data["id"]], send_data, apiAlertReturn);
 	}
+
 function apiSceneAddCheckID(element) {
     if (element.value && dataAll["CONFIG"]["scenes"][element.value]) {
         element.style.color = "red";
@@ -129,6 +139,7 @@ function apiSceneEdit(device,prefix,fields) {
 
 	appFW.requestAPI("POST",["scene",device], info, apiAlertReturn);
 	}
+
 
 // edit button and display data using JSON
 function apiSceneJsonEdit(device,field_names) {
@@ -180,6 +191,7 @@ function apiSceneJsonEdit(device,field_names) {
 
 	}
 
+
 // delete scene
 function apiSceneDelete_exe(device) {
     appFW.requestAPI("DELETE",["scene",device], "", apiAlertReturn);
@@ -200,15 +212,18 @@ function apiSceneDelete(scene_id) {
         }
 	}
 
+
 // switch interfaces and API devices On or Off
 function apiInterfaceOnOff(interface, value) {
 
     appFW.requestAPI("PUT",["interface", interface, value], "", "");
     }
+
 function apiApiDeviceOnOff(interface, api_device, value) {
 
     appFW.requestAPI("PUT",["api_device", interface, api_device, value], "", "");
     }
+
 function apiApiDeviceOnOff_button(interface, api_device, button) {
 
     var value  = button.innerHTML;
@@ -226,6 +241,7 @@ function apiApiDeviceOnOff_button(interface, api_device, button) {
         }
     }
 
+
 // edit device data
 function apiDeviceEdit(device,prefix,fields) {
 
@@ -241,6 +257,7 @@ function apiDeviceEdit(device,prefix,fields) {
 
 	appFW.requestAPI("POST",["device",device], info, apiAlertReturn);
 	}
+
 
 // edit button and display data using JSON
 function apiDeviceJsonEdit(device,json_buttons,json_display,display_size) {
@@ -260,15 +277,19 @@ function apiDeviceJsonEdit(device,json_buttons,json_display,display_size) {
 	appFW.requestAPI("POST",["device",device], info, apiAlertReturn);	
 	}
 
+
 // move position of device or scene in the menu
 function apiDeviceMovePosition_exe(type,device,direction) { appFW.requestAPI( "POST", ["move",type,device,direction], "", apiDeviceMovePosition_get); }
+
 function apiDeviceMovePosition_get(data) { appFW.requestAPI("GET",["list"],"",apiDeviceMovePosition); }
+
 function apiDeviceMovePosition(data) {
 	remoteReload_load();
 	rm3settings.data = data;
 	rm3settings.create();
 	}
-	
+
+
 // create new device
 function apiDeviceAdd(data,onchange) {
 
@@ -298,6 +319,7 @@ function apiDeviceAdd(data,onchange) {
 
 	appFW.requestAPI("PUT",["device",send_data["id"]], send_data, apiAlertReturn);
 	}
+
 function apiDeviceAddCheckID(element) {
     if (element.value && dataAll["CONFIG"]["devices"][element.value]) {
         element.style.color = "red";
@@ -306,6 +328,7 @@ function apiDeviceAddCheckID(element) {
         element.style.color = "";
         }
     }
+
 
 // delete device
 function apiDeviceDelete_exe(device) {
@@ -324,6 +347,7 @@ function apiDeviceDelete(device_id) {
 	remoteMainMenu(cookie_erase=true);
 	}
 
+
 // REMOTES
 function apiRemoteChangeVisibility(type, device_id, value_id) {
         device   = check_if_element_or_value(device_id,true);
@@ -336,6 +360,7 @@ function apiRemoteChangeVisibility(type, device_id, value_id) {
         
 	appFW.requestAPI("PUT",["visibility",type,device,value], "", apiAlertReturn);
 	}
+
 
 // send command
 function apiCommandSend(cmdButton, sync="", callback="", device="") {
@@ -383,8 +408,10 @@ function apiCommandSend(cmdButton, sync="", callback="", device="") {
 	//device_media_info[device] = "";
 	}
 
+
 // delete commands
 function apiCommandDelete_exe(button) { b = button.split("_"); appFW.requestAPI("DELETE",["command",b[0],b[1]], "", apiAlertReturn); }
+
 function apiCommandDelete(device_id, button_id) {
 
 	var device1 = document.getElementById(device_id);
@@ -404,6 +431,7 @@ function apiCommandDelete(device_id, button_id) {
 	appMsg.confirm(lang("BUTTON_ASK_DELETE",[button1[1],device]),"apiCommandDelete_exe('" + button + "'); ");
 	}
 
+
 // add button to device
 function apiCommandRecord(device_id, button_id) {
 
@@ -422,6 +450,7 @@ function apiCommandRecord(device_id, button_id) {
 	
 	appMsg.confirm(lang("BUTTON_RECORD",[button,device]),cmd); return; 
 	}
+
 
 // add button to device
 function apiButtonAdd(device_id, button_id) {
@@ -452,8 +481,10 @@ function apiButtonAdd(device_id, button_id) {
 	appFW.requestAPI("PUT",["button",device,button], "", apiAlertReturn);
 	}
 
+
 // delete buttons
 function apiButtonDelete_exe(device,button) { appFW.requestAPI("DELETE",["button",device,button], "", apiAlertReturn); }
+
 function apiButtonDelete(device_id, button_id) {
 
 	var device1 = document.getElementById(device_id);
@@ -471,6 +502,7 @@ function apiButtonDelete(device_id, button_id) {
 
 	appMsg.confirm(lang("BUTTON_ASK_DELETE_NUMBER",[button,device]),"apiButtonDelete_exe('"+device+"'," + button + "); ");
 	}
+
 
 // decompose macro data
 function apiMacroDecompose(macro) {
@@ -512,6 +544,7 @@ function apiMacroDecompose(macro) {
     return [ macro_string, macro_wait ];
     }
 
+
 // separate macro into single commands and send commands
 function apiMacroSend( macro, device="", content="" ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
     console.debug("apiMacroSend: " + macro);
@@ -537,12 +570,14 @@ function apiMacroSend_return( data ) {
 	    }
 	}
 
+
 // send a command directly to an API of a device
 function apiSendToDeviceApi( device, api_command ) {
     var send_cmd  = ["send-api", device];
     var send_data = api_command;
 	appFW.requestAPI( "POST", send_cmd, send_data, apiSendToDeviceApi_return );
 }
+
 function apiSendToApi( api_command ) {
     var send_cmd  = ["send-api-command", api_command];
 	appFW.requestAPI( "POST", send_cmd, "", apiSendToDeviceApi_return );
@@ -557,6 +592,7 @@ function apiSendToDeviceApi_return( data ) {
     answer         += "total: " + (data["REQUEST"]["load-time-app"])/1000 + "s / srv: " + Math.round(data["REQUEST"]["load-time"]*10000)/10000 + "s";
     setTextById('api_response', answer);
 }
+
 
 // get and edit specific configuration files
 function apiGetConfig_createDropDown( device, callback ) {
@@ -577,4 +613,11 @@ function apiSetConfig_InterfaceData( device, config ) {
     catch(e)    { appMsg.alert("<b>JSON Config " + device + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 
 	appFW.requestAPI( "POST", send_cmd, config_data, apiAlertReturn );
+}
+
+
+// reload API Device connections
+function apiReconnectInterface( interface ) {
+    var send_cmd    = ["reconnect", interface];
+	appFW.requestAPI( "POST", send_cmd, "", apiAlertReturn );
 }

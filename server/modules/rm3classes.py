@@ -95,6 +95,15 @@ class RemoteApiClass(RemoteDefaultClass):
         """
         self.api_config_default[key] = default_value
 
+    def config_set(self, device_config):
+        """
+        (re)set API device configuration
+
+        Args:
+            device_config (dict): API device configuration
+        """
+        self.api_config = device_config
+
     def config_set_methods(self, methods):
         """
         change default methods for API
@@ -149,6 +158,9 @@ class RemoteApiClass(RemoteDefaultClass):
 
     def record(self, device, device_id, command):
         return "ERROR: 'record' not implemented (" + self.api_name + ")"
+
+    def register(self, command, pin=""):
+        return "ERROR: 'register' not implemented (" + self.api_name + ")"
 
     def test(self):
         return "ERROR: 'test' not implemented (" + self.api_name + ")"

@@ -34,9 +34,11 @@ class ApiControl(RemoteApiClass):
         """
         Connect / check connection
         """
+        self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
+
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
-            self.status = self.not_connected + " ... PING"
+            self.status = self.not_connected + " ... PING " + self.api_config["IPAddress"]
             self.logging.warning(self.status)
             return self.status
 
@@ -54,6 +56,9 @@ class ApiControl(RemoteApiClass):
         except Exception as e:
             self.status = self.not_connected + " ... CONNECT " + str(e)
             return self.status
+
+        if self.status == "Connected":
+            self.logging.info("Connected SONY (" + self.api_config["IPAddress"] + ")")
 
         return self.status
 
