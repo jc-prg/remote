@@ -257,10 +257,10 @@ button {
 .button.bgcyan   { background-color: cyan;    color: cyan; }
 .button.black    { background-color: black;   color: black; }
 
-.button.bgwhite-warm    { background-color: #ffffdd; color: #ffffdd; max-width: 57px; }
-.button.bgwhite-warmest { background-color: #ffffaa; color: #ffffaa; max-width: 57px; }
+.button.bgwhite-warm    { background-color: #ffeedd; color: #ffeedd; max-width: 57px; }
+.button.bgwhite-warmest { background-color: #ffddaa; color: #ffddaa; max-width: 57px; }
 .button.bgwhite-cool    { background-color: #ddddff; color: #ddddff; max-width: 57px; }
-.button.bgwhite-coolest { background-color: #aaaaff; color: #aaaaff; max-width: 57px; }
+.button.bgwhite-coolest { background-color: #bbbbff; color: #bbbbff; max-width: 57px; }
 .button.bgwhite-neutral { background-color: white;   color: white;   max-width: 57px;  }
 
 .button.bgred.device_off    { opacity: 0.4; }
