@@ -25,6 +25,7 @@ class Connect(RemoteThreadingClass):
         self.config = config
 
         self.api = {}
+        self.api_first_load = True
         self.api_device_list = {}
         self.api_device_settings = {}
         self.api_modules = {
@@ -53,7 +54,6 @@ class Connect(RemoteThreadingClass):
         self.checking_interval = rm3presets.refresh_device_connection
         self.checking_last = 0
         self.check_error = time.time()
-        self.check_directly = False
         self.last_message = ""
 
         if rm3presets.log_api_data == "NO":
@@ -83,13 +83,12 @@ class Connect(RemoteThreadingClass):
                 self.logging.info("Loading API connectors OK.")
 
         while self._running:
-            if self.checking_last + self.checking_interval < time.time() or self.check_directly:
+            if self.checking_last + self.checking_interval < time.time():
                 self.checking_last = time.time()
-                self.check_directly = False
                 self.check_connection()
                 self.check_activity()
-            else:
-                self.thread_wait()
+
+            self.thread_wait()
 
         self.logging.info("Exiting " + self.name)
 
@@ -228,7 +227,12 @@ class Connect(RemoteThreadingClass):
         """
         config_dev = self.config.read(rm3presets.active_devices)
         config_api = self.config.read(rm3presets.active_apis)
-        self.logging.info(".................... 1st CONNECT OF INTERFACES ....................")
+
+        if self.api_first_load:
+            self.logging.info(".................... 1st CONNECT OF INTERFACES ....................")
+            self.api_first_load = False
+        else:
+            self.logging.info(".................... RECONNECT OF INTERFACES ....................")
 
         api_devices = []
         for device in config_dev:
