@@ -39,6 +39,7 @@ class ApiControl(RemoteApiClass):
         """
         Connect / check connection
         """
+        self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
 
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
@@ -70,6 +71,9 @@ class ApiControl(RemoteApiClass):
             except Exception as e:
                 self.status = "ERROR IR Device: " + str(e)
                 self.logging.error(self.status)
+
+        if self.status == "Connected":
+            self.logging.info("Connected BROADLINK (" + self.api_config["IPAddress"] + ")")
 
         return self.status
 

@@ -351,8 +351,8 @@ class Connect(RemoteThreadingClass):
             api, api_device = interface.split("_")
             ip_address = self.config.interface_configuration[api]["devices"][api_device]["IPAddress"]
 
-        self.logging.info("API (re)connect '" + str(interface) + "' (reread_config=" + str(reread_config) +
-                          ";IPAddress=" + ip_address + ") ...")
+        self.logging.debug("API (re)connect '" + str(interface) + "' (reread_config=" + str(reread_config) +
+                           ";IPAddress=" + ip_address + ") ...")
 
         if interface == "":
             for key in self.api:

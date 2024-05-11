@@ -69,7 +69,6 @@ class ApiControl(RemoteApiClass):
         if self.status == "Connected":
             self.logging.info("Connected ONKYO (" + self.api_config["IPAddress"] + ")")
 
-
     def wait_if_working(self):
         """
         Some devices run into problems, if send several requests at the same time
