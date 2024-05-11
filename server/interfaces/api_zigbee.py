@@ -187,7 +187,7 @@ class ApiControl(RemoteApiClass):
                 self.mqtt_client.subscribe(self.mqtt_msg_start + friendly_name + "/availability")
                 self.mqtt_client.publish(self.mqtt_msg_start + friendly_name + "/availability")
                 self.mqtt_client.publish(self.mqtt_msg_start + friendly_name + "/availability/get")
-                self.logging.info("Subscribed '/availability' for device " + friendly_name + "/" + device_id)
+                self.logging.debug("Subscribed '/availability' for device " + friendly_name + "/" + device_id)
                 self.mqtt_device_availability_subscribed.append(friendly_name)
 
             if topic == self.mqtt_msg_start + device_id:
