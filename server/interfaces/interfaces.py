@@ -252,7 +252,7 @@ class Connect(RemoteThreadingClass):
                 self.api_device_list[api_dev] = []
             self.api_device_list[api_dev].append(device)
 
-        self.logging.info("---> " + str(self.api_device_list))
+        self.logging.debug("---> api_device_list: " + str(self.api_device_list))
 
         if config_api != {}:
             for api in config_api:
