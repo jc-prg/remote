@@ -125,9 +125,9 @@ button {
 }
 
 .button_setting_index_small {
-    width       :  18%;
+    width       :  15.5%;
     height      :  40px;
-    margin      :   1%;
+    margin      :   0.5%;
     float       : left;
     padding     : 1px;
     background  : #333399;

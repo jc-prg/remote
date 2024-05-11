@@ -96,9 +96,16 @@ function rmSettings (name) {	// IN PROGRESS
             this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_API"));
             this.module_interface_edit();
             this.settings_ext_append(1, "", this.module_interface_info());
-            apiGetConfig_showInterfaceData(this.module_interface_edit_info);
             this.create_show_ext();
+            apiGetConfig_showInterfaceData(this.module_interface_edit_info);
             statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
+            }
+        else if (selected_mode == "edit_timer") {
+            setNavTitle(lang('SETTINGS_TIMER'));
+            this.settings_ext_reset();
+            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_TIMER"));
+            this.settings_ext_append(1,lang("SETTINGS_TIMER"), this.module_timer());
+            this.create_show_ext();
             }
         else {
             setNavTitle(lang('INFORMATION'));
@@ -152,7 +159,8 @@ function rmSettings (name) {	// IN PROGRESS
 	        "INFORMATION":      ["info",        "rm3settings.create('info');"],
 	        "SETTINGS_GENERAL": ["settings2",   "rm3settings.create('general');"],
 	        "SETTINGS_REMOTE":  ["remote",      "rm3settings.create('edit_remotes');"],
-	        "SETTINGS_API":     ["plug",        "rm3settings.create('edit_interfaces');"]
+	        "SETTINGS_API":     ["plug",        "rm3settings.create('edit_interfaces');"],
+	        "SETTINGS_TIMER":   ["timer",        "rm3settings.create('edit_timer');"]
 	        }
 	    if (small) {
 	        var img_small = rm_image(button_img[setting_modules_back["SETTINGS"][0]], big=false);
@@ -383,6 +391,25 @@ function rmSettings (name) {	// IN PROGRESS
 	    return setting;
 		}
 
+	this.module_timer           = function () {
+	    var html = "";
+	    html += "<div id='module_timer_info' style='width:100%;min-height:100px;'></div>";
+	    setTimeout(function(){ appFW.requestAPI("GET", ["timer"], "", rm3settings.module_timer_info); }, 500);
+	    return html;
+	    }
+
+	this.module_timer_info      = function (data) {
+	    console.error(data["DATA"]);
+	    var html = "";
+	    for (var key in data["DATA"]["timer"]) {
+	        var entry      = data["DATA"]["timer"][key];
+	        var entry_html = entry["description"];
+
+    		html  += rm3settings.basic.container("timer_edit_"+key, entry["name"], entry_html, false);
+	        }
+	    setTextById('module_timer_info', html);
+	    }
+
 	this.module_interface_info  = function () {
 		var setting = "<b>&nbsp;API details for devices</b><text style='font-size:25px;'>&nbsp;</text>";
 		setting    += "<hr style='border:1px lightgray solid;' />";
@@ -431,12 +458,6 @@ function rmSettings (name) {	// IN PROGRESS
 
                 this.settings_ext_append(count, "", text);
             }   }
-        }
-
-    this.module_interface_edit_load = function (api_id) {
-        //alert("test: " + api_id);
-        console.warn("!");
-        return;
         }
 
     this.module_interface_edit_list = function (interface, data) {

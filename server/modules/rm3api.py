@@ -8,7 +8,7 @@ class RemoteAPI(RemoteDefaultClass):
     Class with API commands
     """
 
-    def __init__(self, data, edit, config, apis, queue, queue_send):
+    def __init__(self, data, edit, config, apis, queue, queue_send, timer):
         """
         Class constructor for Remote API
 
@@ -29,6 +29,7 @@ class RemoteAPI(RemoteDefaultClass):
         self.queue = queue
         self.queue_send = queue_send
         self.edit = edit
+        self.timer = timer
         self.errors = {}
 
     def _api_CONFIG(self):
@@ -677,6 +678,20 @@ class RemoteAPI(RemoteDefaultClass):
             data["DATA"]["interface"] = interface
             data["DATA"][interface] = {"error": "Interface '" + interface + "' not found!"}
 
+        data = self._end(data, ["no-config", "no-status"])
+        return data
+
+    def get_timer(self):
+        """
+        Load and list all data
+
+        Return:
+            dict: API response
+        """
+        data = self._start()
+        data["REQUEST"]["Return"] = "OK: Returned timer data."
+        data["REQUEST"]["Command"] = "Get timer"
+        data["DATA"] = {"timer": self.timer.get_timer_events() }
         data = self._end(data, ["no-config", "no-status"])
         return data
 

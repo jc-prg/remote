@@ -211,6 +211,7 @@ active_devices = "_ACTIVE-DEVICES"
 active_scenes = "_ACTIVE-SCENES"
 active_macros = "_ACTIVE-MACROS"
 active_apis = "_ACTIVE-APIS"
+active_timer = "_ACTIVE-TIMER"
 
 git_submodules_directory = os.path.join(os.path.dirname(__file__), "..", "..")
 git_submodules_installed = False

@@ -62,3 +62,4 @@ server/server_org.py
 
 server/tryout
 /data/zigbee2mqtt/
+/data/_ACTIVE-TIMER.json

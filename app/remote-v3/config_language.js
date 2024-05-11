@@ -245,6 +245,7 @@ var language_app = {
 		"SETTINGS_GENERAL"             : "General settings",
 		"SETTINGS_REMOTE"              : "Remote Control Settings",
 		"SETTINGS_API"                 : "API Settings",
+		"SETTINGS_TIMER"               : "Timer Settings",
 
 		"SLIDER"                       : "slider",
 		"SLIDER_SELECT_CMD"            : "Select command, to insert slider.",

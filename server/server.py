@@ -12,6 +12,7 @@ import modules.rm3data as rm3data
 import modules.rm3queue as rm3queue
 import modules.rm3presets as rm3config
 import modules.rm3api as rm3api
+import modules.rm3timer as rm3timer
 import interfaces
 
 
@@ -50,9 +51,11 @@ if __name__ == "__main__":
     deviceAPIs = interfaces.Connect(configFiles)
     queueSend = rm3queue.QueueApiCalls("queueSend", "send", deviceAPIs, configFiles)
     queueQuery = rm3queue.QueueApiCalls("queueQuery", "query", deviceAPIs, configFiles)
+    remoteSchedule = rm3timer.ScheduleTimer(configFiles)
     remotesData = rm3data.RemotesData(configFiles, configInterfaces, deviceAPIs, queueQuery)
     remotesEdit = rm3data.RemotesEdit(remotesData, configFiles, configInterfaces, deviceAPIs, queueQuery)
-    remoteAPI = rm3api.RemoteAPI(remotesData, remotesEdit, configFiles, deviceAPIs, queueQuery, queueSend)
+    remoteAPI = rm3api.RemoteAPI(remotesData, remotesEdit, configFiles, deviceAPIs,
+                                 queueQuery, queueSend, remoteSchedule)
 
     configFiles.start()
     configInterfaces.start()
@@ -60,6 +63,7 @@ if __name__ == "__main__":
     queueQuery.start()
     deviceAPIs.start()
     remotesData.start()   # !!! create threading class
+    remoteSchedule.start()
 
     # Create REST API
     rm3config.server_status = "Running"

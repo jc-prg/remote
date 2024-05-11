@@ -338,6 +338,24 @@ paths:
               REQUEST:
                 $ref: "#/definitions/REQUEST"
 
+  /timer/:
+    get:
+      operationId: __main__.remoteAPI.get_timer
+      tags:
+        - status
+      summary: list timer data
+      description: list timer data
+      responses:
+        200:
+          description: Successfully status data
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              DATA:
+                $ref: "#/definitions/DATA"
 
 #------------------------ EDIT FUNCTIONS ------------------------
 
