@@ -223,7 +223,7 @@ class ApiControl(RemoteApiClass):
         """
         publish / subscribe command
         """
-        if data is None:
+        if data is None or data == "":
             data = {}
         data = json.dumps(data)
         self.logging.debug("execute: " + str(data))
@@ -330,8 +330,11 @@ class ApiControl(RemoteApiClass):
 
         else:
             command_key, command_value = command.split("=")
-            command_value = command_value.replace("'", "\"")
-            command_value_json = json.loads(command_value)
+            if "{" in command_value:
+                command_value = command_value.replace("'", "\"")
+                command_value_json = json.loads(command_value)
+            else:
+                command_value_json = {}
             self.execute_request("bridge/" + command_key, command_value_json)
             self.logging.debug(result)
 
