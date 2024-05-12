@@ -26,7 +26,7 @@ There are a few templates available to be used and modified.
 * KODI server
 * Magic Home compatible LED strips 
 * Tapo SmartPlugs P100
-* ZigBee2MQTT API _... started to implement first ZigBee devices_
+* ZigBee API using ZigBee2MQTT
 
 ## Screenshots
 
@@ -82,7 +82,13 @@ src="./docs/remote_browser_edit_03.png" width="48%">
 
 ## Main features
 
-### App v2.9 / Server v2.3 (in progress)
+### App v3.0 / Server v3.0 (in progress)
+
+* integration of ZigBee interface (using a Zigbee USB Dongle): Smart Plug + RGB+CCT Bulb 
+* schedule events (device commands and macros)
+* improved API configuration and other settings via app
+
+### App v2.9 / Server v2.3
 
 * directly view and execute API commands for devices in edit mode
 * edit interface configuration via app
