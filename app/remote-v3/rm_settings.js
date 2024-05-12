@@ -22,11 +22,11 @@ function rmSettings (name) {	// IN PROGRESS
 	this.line         = "<div style=\"border:1px solid;height:1px;margin:5px;margin-top:10px;padding:0px;\"></div>";
 
 	this.logging      = new jcLogging(this.app_name);
-	this.btn          = new rmRemoteButtons(name);			// rm_remotes-elements.js
-	this.basic        = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
-	this.tab          = new rmRemoteTable(name+".tab");			// rm_remotes-elements.js
-	this.json         = new rmRemoteJSON(name+".json");			// rm_remotes-elements.js
-	this.toggle       = new rmSlider(name+".toggle");
+	this.btn          = new rmRemoteButtons(name);          // rm_remotes-elements.js
+	this.basic        = new rmRemoteBasic(name+".basic");   // rm_remotes-elements.js
+	this.tab          = new rmRemoteTable(name+".tab");     // rm_remotes-elements.js
+	this.json         = new rmRemoteJSON(name+".json");     // rm_remotes-elements.js
+	this.toggle       = new rmSlider(name+".toggle");       // rm_remotes-slider.js
 	
 	// init settings / set vars
 	this.init			        = function (data) {
@@ -394,20 +394,106 @@ function rmSettings (name) {	// IN PROGRESS
 	this.module_timer           = function () {
 	    var html = "";
 	    html += "<div id='module_timer_info' style='width:100%;min-height:100px;'></div>";
-	    setTimeout(function(){ appFW.requestAPI("GET", ["timer"], "", rm3settings.module_timer_info); }, 500);
+	    setTimeout(function(){ appFW.requestAPI("GET", ["timer"], "", rm3settings.module_timer_info); }, 100);
 	    return html;
 	    }
 
 	this.module_timer_info      = function (data) {
-	    console.error(data["DATA"]);
 	    var html = "";
 	    for (var key in data["DATA"]["timer"]) {
 	        var entry      = data["DATA"]["timer"][key];
-	        var entry_html = entry["description"];
+	        var entry_html = "";
+	        var tab        = rm3settings.tab;
+	        var input      = rm3settings.input;
+    	    var btn        = rm3settings.btn;
+            var basic      = rm3settings.basic;
+            btn.width      = "70px;"
+
+            var link_save   = "alert('not implemented');";
+            var link_reset  = "alert('not implemented');";
+            var link_delete = "alert('not implemented');";
+	        var buttons     = "";
+            buttons   += btn.sized("timer_save_"+key,    lang("BUTTON_T_SAVE"),   "",  link_save);
+            buttons   += btn.sized("timer_reset_"+key,   lang("BUTTON_T_RESET"),  "",  link_reset);
+            buttons   += btn.sized("timer_delete_"+key,  lang("BUTTON_T_DELETE"), "",  link_delete);
+
+            entry_html += tab.start();
+            entry_html += tab.row("ID:",            key);
+            entry_html += tab.row("Title:",         input("timer_name_"+key, "", "",  entry["name"]));
+            entry_html += tab.row("Description:",   input("timer_descr_"+key, "", "", entry["description"]));
+            entry_html += tab.line();
+            entry_html += tab.row("Repeating timer:");
+            entry_html += tab.row("<textarea id='timer_regular_"+key+"' style='width:95%;height:80px;display:none;'>" + JSON.stringify(entry["timer_regular"]) + "</textarea>");
+            entry_html += tab.row(rm3settings.module_timer_element("regular", key, entry["timer_regular"]));
+            entry_html += tab.row("&nbsp;");
+            //entry_html += tab.row("One-time timer:");
+            //entry_html += tab.row("<textarea id='timer_once_"+key+"'    style='width:95%;height:80px;'>" + JSON.stringify(entry["timer_once"]) + "</textarea>");
+            entry_html += tab.row("Commands:");
+            entry_html += tab.row("<input id='timer_commands_"+key+"'   style='width:95%' value='" + JSON.stringify(entry["commands"]) + "'>");
+            entry_html += tab.row("&nbsp;");
+            entry_html += tab.line();
+            entry_html += tab.row(buttons);
+
+            entry_html += tab.end();
 
     		html  += rm3settings.basic.container("timer_edit_"+key, entry["name"], entry_html, false);
 	        }
 	    setTextById('module_timer_info', html);
+	    }
+
+	this.module_timer_element   = function (type, key, data) {
+
+	    this.module_timer_input = function (input_type, timer_type, key, value) {
+	        var onchange = "rm3settings.module_timer_change(\"" + timer_type + "\", \""+key+"\");";
+	        var html = "<select id='timer_select_" + input_type + "_" + key +"' style='width:40px;' onchange='"+onchange+"'>";
+
+	        if (input_type == "month")             { var options = {"**": -1}; for (var i=1;i<=12;i++) { options[i.toString().padStart(2, '0')] = i.toString().padStart(2, '0'); } }
+	        else if (input_type == "day_of_month") { var options = {"**": -1}; for (var i=1;i<=31;i++) { options[i.toString().padStart(2, '0')] = i.toString().padStart(2, '0'); } }
+	        else if (input_type == "hour")         { var options = {"**": -1}; for (var i=0;i<=24;i++) { options[i.toString().padStart(2, '0')] = i.toString().padStart(2, '0'); } }
+	        else if (input_type == "minute")       { var options = {"**": -1}; for (var i=0;i<=60;i++) { options[i.toString().padStart(2, '0')] = i.toString().padStart(2, '0'); } }
+	        else if (input_type == "day_of_week")  { var options = {"*": -1}; for (var i=0;i<=6;i++)  { options[i.toString().padStart(1, '0')] = i.toString().padStart(1, '0'); } }
+	        else                                   { var options = {}; console.error("input type unknown: " + input_type); }
+
+            option_keys = Object.keys(options).sort();
+            for (var i=0;i<option_keys.length;i++) {
+                var key = option_keys[i];
+                var selected = "";
+                if (options[key] == value) { selected = "selected"; }
+                html += "<option value='"+options[key]+"' "+selected+">" + key + "</option>";
+            }
+	        html += "</select>";
+	        return html;
+	        }
+
+	    var html = "";
+	    if (type == "regular") {
+	        var checked = "";
+            var onchange = "rm3settings.module_timer_change(\"" + type + "\", \""+key+"\");";
+	        if (data["active"]) { checked = "checked"; }
+	        html += "<input id='timer_"+type+"_active_"+key+"' type='checkbox' value='active' "+checked+" onchange='"+onchange+"'>: &nbsp;";
+	        html += "<input id='timer_"+type+"_YY_"+key+"' type='input' style='width:30px;' value='****' disabled>-";
+	        html += this.module_timer_input("month",        type, key, data["month"]) + "-";
+	        html += this.module_timer_input("day_of_month", type, key, data["day_of_month"]) + " / ";
+	        html += this.module_timer_input("hour",         type, key, data["hour"]) + "-";
+	        html += this.module_timer_input("minute",       type, key, data["minute"]) + " / ";
+	        html += this.module_timer_input("day_of_week",  type, key, data["day_of_week"]);
+	        }
+	    return html;
+	}
+
+	this.module_timer_change    = function (timer_type, key) {
+
+	    var timer_data = JSON.parse(getTextById("timer_" + timer_type + "_" + key));
+	    var active     = document.getElementById("timer_" + timer_type + "_active_" + key);
+        for (var data_key in timer_data) {
+            if (data_key != "active") {
+                value = getValueById("timer_select_" + data_key + "_" + key);
+                timer_data[data_key] = value;
+                }
+            }
+
+        if (active.checked) { timer_data["active"] = true; } else { timer_data["active"] = false; }
+        setTextById("timer_regular_"+key,JSON.stringify(timer_data));
 	    }
 
 	this.module_interface_info  = function () {
