@@ -9,96 +9,213 @@ button {
    font-size       : 12px;
 }
 
-/* buttons for remote controls */
+/* REDEFINE buttons for remote-control */
 
-.button {
+.rm-button {
+   width           :  23%;
+   max-width       :  23%;
+   margin          :   1%;
    color           : white;
-   width           :  63px;
    height          :  40px;
-   max-width       :  63px;
    max-height      :  40px;
+
    padding         :   2px;
-   margin          :   4px;
    border-style    : solid 0px #111111;
-   border-radius   :   6px;   
+   border-radius   :   6px;
    background-color: #111111;
    font-size       : 13px;
    overflow        : hidden;
    float           : left;
 }
 
-.button:hover {
-   color            : yellow;
+.rm-button:hover {
+    color            : yellow;
    background-color : #555555;
    box-shadow       : 0 4px 4px 0 rgba(0,0,0,0.24), 0 4px 4px 0 rgba(0,0,0,0.19);
 }
 
-.button:disabled {
-   background-color: #dddddd;
-   color           : #dddddd;
+.rm-button:disabled {
+   background-color : #dddddd;
+   color            : #dddddd;
    border           : gray;
    border-style     : none;
    box-shadow       : 0 0px 0px 0 rgba(0,0,0,0.24), 0 0px 0px 0 rgba(0,0,0,0.19);
 }
 
-.button.complete {
-   background-color: #eeeeee;
-   border          : blue;
-   border-style    : solid;
-   border-width    : 2px;
+.rm-button.notfound {
+   background-color : #000055;
+   border           : red;
+   border-style     : solid;
+   border-width     : 2px;
 }
 
-.button.notfound {
-   background-color: #000055;
-   border          : red;
-   border-style    : solid;
-   border-width    : 2px;
+.rm-button.notfound:disabled {
+   background-color : #777777;
+   border           : red solid 2px;
 }
 
-.button.notfound:disabled {
-   background-color: #777777;
-   border          : red;
-   border-style    : solid;
-   border-width    : 2px;
+.rm-button.big, .rm-button.big_edit {
+    width  		    : 31.3%;
+    max-width       : 31.3%;
+    margin          : 1%;
+    height 		    : 66px;
+    max-height      : 66px;
+    background-size : 100% 100%;
 }
 
-.button.big {
-    width  		: 88px;
-    height 		: 66px;
-    max-width          : 88px;
-    max-height         : 66px;
-    background-size    : 100% 100%;
+.rm-button.big_edit {
+    border          : blue solid 2px;
 }
 
-.button.big_edit {
-    width  		: 88px;
-    height 		: 66px;
-    max-width          : 88px;
-    max-height         : 66px;
+.rm-button.small, .rm-button.small_edit {
+    width           : 18%;
+    max-width       : 18%;
+    margin          :  1%;
+    height          : 50px;
+    max-height      : 50px;
+}
+
+.rm-button.small_edit {
+    border          : blue solid 2px;
+}
+
+.rm-button.hugh, .rm-button.hugh_edit {
+    width  		    : 48%;
+    max-width       : 48%;
+    margin          : 1%;
+    height 		    : 100px;
+    max-height      : 100px;
+    background-size : 100% 100%;
+}
+
+.rm-button.hugh_edit {
     border           	: blue solid 2px;
-    background-size    : 100% 100%;
 }
 
-.button.hugh {
-    width  		: 158px;
-    height 		: 100px;
-    max-width          : 158px;
-    max-height         : 100px;
-    background-size    : 100% 100%;
+
+/* other buttons */
+
+.rm-button.calculate_values {
+    width       : 24px;
+    height      : 24px;
+    color       : white;
+    background  : #555555;
+    float       : right;
+    margin      : 0px;
 }
 
-.button.hugh_edit {
-    width  		: 158px;
-    height 		: 100px;
-    max-width          : 158px;
-    max-height         : 100px;
-    border           	: blue solid 2px;
-    background-size    : 100% 100%;
+.rm-button.updown {
+    width  		: 30px;
+    height 		: 30px;
+    margin		: 1px;
 }
 
-.button.header_image {
-    width              : 276px;
-    max-width          : 276px;
+.rm-button.updown:disabled {
+    background		: gray;
+}
+
+.rm-button.hidden {
+    display:none;
+}
+
+.rm-button.device_off {
+    background-color: rgb(102, 102, 102);
+}
+
+/* colored buttons */
+
+.rm-button.bgred               { background-color: red;     color: red; }
+.rm-button.bgyellow            { background-color: #ffff00; color: #ffff00; }
+.rm-button.bgblue              { background-color: blue;    color: blue; }
+.rm-button.bggreen             { background-color: green;   color: green; }
+.rm-button.bgwhite             { background-color: white;   color: white; }
+.rm-button.bgorange            { background-color: orange;  color: orange; }
+.rm-button.bgpink              { background-color: #FF00FF; color: #FF00FF; }
+.rm-button.bgcyan              { background-color: cyan;    color: cyan; }
+.rm-button.black               { background-color: black;   color: black; }
+
+.rm-button.bgwhite-warm        { background-color: #ffeedd; color: #ffeedd; max-width: 18%; margin: 1%; }
+.rm-button.bgwhite-warmest     { background-color: #ffddaa; color: #ffddaa; max-width: 18%; margin: 1%; }
+.rm-button.bgwhite-cool        { background-color: #ddddff; color: #ddddff; max-width: 18%; margin: 1%; }
+.rm-button.bgwhite-coolest     { background-color: #bbbbff; color: #bbbbff; max-width: 18%; margin: 1%; }
+.rm-button.bgwhite-neutral     { background-color: white;   color: white;   max-width: 18%; margin: 1%; }
+
+.rm-button.bgred.device_off                { background-color: red;     opacity: 0.4; }
+.rm-button.bgyellow.device_off             { background-color: #ffff00; opacity: 0.4; }
+.rm-button.bgblue.device_off               { background-color: blue;    opacity: 0.4; }
+.rm-button.bggreen.device_off              { background-color: green;   opacity: 0.4; }
+.rm-button.bgwhite.device_off              { background-color: white;   opacity: 0.4; }
+.rm-button.bgorange.device_off             { background-color: orange;  opacity: 0.4; }
+.rm-button.bgpink.device_off               { background-color: #FF00FF; opacity: 0.4; }
+.rm-button.bgcyan.device_off               { background-color: cyan;    opacity: 0.4; }
+.rm-button.black.device_off                { background-color: black;   opacity: 0.4; }
+
+.rm-button.bgwhite-warm.device_off         { background-color: #ffeedd; opacity: 0.4; }
+.rm-button.bgwhite-warmest.device_off      { background-color: #ffddaa; opacity: 0.4; }
+.rm-button.bgwhite-cool.device_off         { background-color: #ddddff; opacity: 0.4; }
+.rm-button.bgwhite-coolest.device_off      { background-color: #bbbbff; opacity: 0.4; }
+.rm-button.bgwhite-neutral.device_off      { background-color: white;   opacity: 0.4; }
+
+/* show button code when pressed */
+
+.rm-button_show {
+    position          : fixed;
+    right             : 20px;
+    top               : 50px;
+    height            : 20px;
+    min-width         : 100px;
+    border            : 1px solid gray;
+    background-color  : lightyellow;
+    opacity           : 80%;
+    border-radius     : 3px;
+    text-align        : center;
+    vertical-align    : middle;
+    padding           : 4px;
+    padding-top       : 8px;
+}
+
+.rm-button_image_start {
+    max-width   : 40px;
+    max-height  : 25px;
+    margin      : 0px;
+    padding     : 0px;
+}
+
+/* setting buttons */
+
+
+.rm-button_setting_index {
+    width       :   48%;
+    max-width   :   48%;
+    margin      :    1%;
+    height      : 140px;
+    padding     :  10px;
+    float       :  left;
+    background  : #333399;
+    border      : solid 2px #5555AA;
+}
+
+.rm-button_setting_index_small {
+    width       :  15.5%;
+    margin      :   0.5%;
+    height      :   40px;
+    padding     :    1px;
+    float       :   left;
+    background  : #333399;
+    border      : solid 2px #5555AA;
+}
+
+.rm-button_setting_index_small.selected {
+    border      : solid 2px #8888AA;
+}
+
+
+/* image header */
+
+.rm-button.header_image {
+    width              : 98%;
+    max-width          : 98%;
+    margin             :  1%;
 
     height             : 180px;
     max-height         : 180px;
@@ -109,33 +226,13 @@ button {
     padding            : 0px;
     margin-bottom      : 10px;
 }
-    
-.button.header_image:hover {
+
+.rm-button.header_image:hover {
     box-shadow         : 0 0px 0px 0 rgba(0,0,0,0.24), 0 0px 0px 0 rgba(0,0,0,0.19);
 }
 
-.button_setting_index {
-    width       :  48%;
-    height      :  140px;
-    margin      :   1%;
-    float       : left;
-    padding     : 10px;
-    background  : #333399;
-    border      : solid 2px #5555AA;
-}
 
-.button_setting_index_small {
-    width       :  15.5%;
-    height      :  40px;
-    margin      :   0.5%;
-    float       : left;
-    padding     : 1px;
-    background  : #333399;
-    border      : solid 2px #5555AA;
-}
-.button_setting_index_small.selected {
-    border      : solid 2px #8888AA;
-}
+/* further image formats */
 
 .header_image_toggle_container {
     height      : 40px;
@@ -146,15 +243,15 @@ button {
 }
 
 .header_image_toggle {
-    width       : 60px;
-    height      : 32px;
-    margin      :  2px;
-    padding     :  0px;
-    padding-bottom : 0px;
-    padding-right  : 5px;
-    float       : right;
-    //background  : black;
-    //box-shadow         : 0 3px 3px 0 rgba(0,0,0,0.24), 0 3px 3px 0 rgba(0,0,0,0.19);
+    width           : 60px;
+    height          : 32px;
+    margin          :  2px;
+    padding         :  0px;
+    padding-bottom  : 0px;
+    padding-right   : 5px;
+    float           : right;
+    //background    : black;
+    //box-shadow    : 0 3px 3px 0 rgba(0,0,0,0.24), 0 3px 3px 0 rgba(0,0,0,0.19);
     border-radius   :   19px;
 }
 
@@ -181,126 +278,20 @@ button {
     );
 }
 
-.button.small {
-    width        : 51px;
-    height       : 50px;
-    max-width    : 51px;
-    max-height   : 50px;
-    margin       :  3px;
-}
-
-.button.small_edit { 
-    width        : 60px;
-    height       : 50px;
-    max-width    : 60px;
-    max-height   : 50px;
-    margin       :  3px;
-    border       : blue;
-    border-style : solid;
-    border-width : 2px;
-}
-
-.button.calculate_values {
-    width       : 24px;
-    height      : 24px;
-    color       : white;
-    background  : #555555;
-    float       : right;
-    margin      : 0px;
-}
-
-.button.updown {
-    width  		: 30px;
-    height 		: 30px;
-    margin		: 1px;
-}
-
-.button.updown:disabled {
-    background		: gray;
-}
-
-.button.hidden {
-    display:none;
-}
-
-.button.device_off {
-    background-color: rgb(102, 102, 102);
-}
-
 .image_list {
-    margin: 3px;
-    background-color: blue;
-    border: 1px solid white;
-    border-radius: 3px;
-    height: 30px;
-    width: 44px;
-    float: left;
-    justify-content: center;
+    margin              : 3px;
+    background-color    : blue;
+    border              : 1px solid white;
+    border-radius       : 3px;
+    height              : 30px;
+    width               : 44px;
+    float               : left;
+    justify-content     : center;
 }
 .image_list.key {
-    max-width: 50;
-    width: 50;
-    background-color: gray;
-    color: white;
-    border: 0px;
-}
-
-/* colored buttons */
-
-.button.bgred    { background-color: red;     color: red; }
-.button.bgyellow { background-color: #ffff00; color: #ffff00; }
-.button.bgblue   { background-color: blue;    color: blue; }
-.button.bggreen  { background-color: green;   color: green; }
-.button.bgwhite  { background-color: white;   color: white; }
-.button.bgorange { background-color: orange;  color: orange; }
-.button.bgpink   { background-color: #FF00FF; color: #FF00FF; }
-.button.bgcyan   { background-color: cyan;    color: cyan; }
-.button.black    { background-color: black;   color: black; }
-
-.button.bgwhite-warm    { background-color: #ffeedd; color: #ffeedd; max-width: 57px; }
-.button.bgwhite-warmest { background-color: #ffddaa; color: #ffddaa; max-width: 57px; }
-.button.bgwhite-cool    { background-color: #ddddff; color: #ddddff; max-width: 57px; }
-.button.bgwhite-coolest { background-color: #bbbbff; color: #bbbbff; max-width: 57px; }
-.button.bgwhite-neutral { background-color: white;   color: white;   max-width: 57px;  }
-
-.button.bgred.device_off    { opacity: 0.4; }
-.button.bgyellow.device_off { opacity: 0.4; }
-.button.bgblue.device_off   { opacity: 0.4; }
-.button.bggreen.device_off  { opacity: 0.4; }
-.button.bgwhite.device_off  { opacity: 0.4; }
-.button.bgorange.device_off { opacity: 0.4; }
-.button.bgpink.device_off   { opacity: 0.4; }
-.button.bgcyan.device_off   { opacity: 0.4; }
-.button.black.device_off    { opacity: 0.4; }
-
-.button.bgwhite-warm.device_off        { opacity: 0.4; }
-.button.bgwhite-warmest.device_off     { opacity: 0.4; }
-.button.bgwhite-cool.device_off        { opacity: 0.4; }
-.button.bgwhite-coolest.device_off     { opacity: 0.4; }
-.button.bgwhite-neutral.device_off     { opacity: 0.4; }
-
-/* show button code when pressed */
-
-.button_show {
-    position      : fixed;
-    right         : 20px;
-    top           : 50px;
-
-    height        : 20px;
-    min-width         : 100px;
-    border        : 1px solid gray;
-    background-color    : lightyellow;
-    opacity       : 80%;
-    border-radius : 3px;
-    text-align    : center;
-    vertical-align: middle;
-    padding       : 4px;
-    padding-top   : 8px;
-}
-
-.button_image_start {
-    max-width   : 40px;
-    max-height  : 25px;
-    margin      : 0px;
-    padding     : 0px;
+    max-width           : 50;
+    width               : 50;
+    background-color    : gray;
+    color               : white;
+    border              : 0px;
 }

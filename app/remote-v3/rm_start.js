@@ -128,10 +128,10 @@ function rmStart(name) {
 				}
 				
 			bgimage = "style='background-image:url("+rm3scene_dir+image+");'"
-			return "<button id='" + id + "' class='button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + " " + bgimage + "></button>";
+			return "<button id='" + id + "' class='rm-button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + " " + bgimage + "></button>";
 			}
 		else {
-			return "<button id='" + id + "' class='button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + " >" + label + "</button>";
+			return "<button id='" + id + "' class='rm-button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + " >" + label + "</button>";
 			}
         }
 
@@ -152,7 +152,7 @@ function rmStart(name) {
                 
 	// create image tag for icons
 	this.image                = function(file) {
-	        return "<img src='icon/"+file+"' class='button_image_start' alt='"+file+"' />";
+	        return "<img src='icon/"+file+"' class='rm-button_image_start' alt='"+file+"' />";
 	        }
 	}
 

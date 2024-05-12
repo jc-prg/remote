@@ -394,8 +394,8 @@ function rmRemote(name) {
 		// Main Settings
 		var edit   = "";
 		var images = this.data["CONFIG"]["elements"]["button_images"];
-        var icon   = "<img src='icon/"+images[device_config["settings"]["image"]]+"' class='button_image_start'>";
-		icon       = "<button class='button device_off small'><div id='device_edit_button_image'>"+icon+"</div></button>";
+        var icon   = "<img src='icon/"+images[device_config["settings"]["image"]]+"' class='rm-button_image_start'>";
+		icon       = "<button class='rm-button device_off small'><div id='device_edit_button_image'>"+icon+"</div></button>";
 		edit    += this.tab.start();
 		edit    += this.tab.row( lang("ID"),                      "<b>" + device + "</b>" );
 		edit    += this.tab.row( lang("LABEL")+":",               this.basic.input("edit_label", device_config["settings"]["label"]) );
@@ -1188,7 +1188,7 @@ function rmRemote(name) {
 			}
 
 		if (image && image != "") {
-			var image_html = "<button class='button header_image' style='background-image:url("+rm3scene_dir+image+")'>";
+			var image_html = "<button class='rm-button header_image' style='background-image:url("+rm3scene_dir+image+")'>";
 			image_html    += " <div class='header_image_toggle_container' id='toggle_place_"+id+"'>"+toggle_html+"</div>";
 			image_html    += " <div class='header_image_fade'>";
 			image_html    += "  <div class='header_image_text'>&nbsp;<br/>&nbsp;<br/>"+label+"</div>";
@@ -1469,7 +1469,7 @@ function rmRemote(name) {
 	    var images     = this.data["CONFIG"]["elements"]["button_images"];
         var selected   = getValueById("edit_image");
         if (images[selected]) {
-            var image_html = "<img src='icon/"+images[selected]+"' class='button_image_start'>";
+            var image_html = "<img src='icon/"+images[selected]+"' class='rm-button_image_start'>";
             setTextById("device_edit_button_image", image_html);
             }
         }

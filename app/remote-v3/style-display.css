@@ -1,12 +1,12 @@
 /* display information within the remote control */
 
 .display {
-   width           :  133px;
+   width           :  48%;
+   margin          :   1%;
    height          :  40px;
    color           : yellow;
    padding         :   2px;
-   margin          :   4px;
-   font-size       :   9px; 
+   font-size       :   9px;
    border-radius   :   6px; 
    background-color: #000044;
    overflow        : hidden;
@@ -17,16 +17,16 @@
 
 .display.right  { float  : right; }
 
-.display.small  { width  : 133px;   height  :  40px; } 
-.display.middle { width  : 133px;   height  :  88px; } 
-.display.big    { width  : 276px;   height  :  88px; } 
+.display.small  { width  : 48%;   height  :  40px; }
+.display.middle { width  : 48%;   height  :  88px; }
+.display.big    { width  : 98%;   height  :  88px; }
 
-.display.h1w4   { width  : 276px;   height  :  40px; } 
-.display.h1w2   { width  : 133px;   height  :  40px; } 
-.display.h2w2   { width  : 133px;   height  :  88px; } 
-.display.h2w4   { width  : 276px;   height  :  88px; } 
-.display.h3w2   { width  : 133px;   height  :  136px; } 
-.display.h4w2   { width  : 133px;   height  :  184px; } 
+.display.h1w4   { width  : 98%;   height  :  40px; }
+.display.h1w2   { width  : 48%;   height  :  40px; }
+.display.h2w2   { width  : 48%;   height  :  88px; }
+.display.h2w4   { width  : 98%;   height  :  88px; }
+.display.h3w2   { width  : 48%;   height  :  136px; }
+.display.h4w2   { width  : 48%;   height  :  184px; }
 
 .display-element {
    width	: 56px;
@@ -38,28 +38,33 @@
 }
 
 .display-element.alert   { color : black; }
-.display-element.small   { width : 56px; }
-.display-element.middle  { width : 118px; }
-.display-element.big     { width : 118px; }
+.display-element.small   { width : 48%; }
+.display-element.middle  { width : 98%; }
+.display-element.big     { width : 48%; }
 
-.display-element.h1w4    { width : 118px; }
-.display-element.h2w4    { width : 118px; }
-.display-element.h3w2    { width : 118px; }
-.display-element.h4w2    { width : 118px; }
+.display-element.h1w4    { width : 48%; }
+.display-element.h2w4    { width : 48%; }
+.display-element.h3w2    { width : 98%; }
+.display-element.h4w2    { width : 98%; }
 
 .display-label {
-   width        : 45px;
+   width        : 35%;
+   max-width    : 35%;
    float        : left;
+   overflow     : hidden;
 }
 
 .display-input {
    float        : left;
-   width        : 90px;
+   width        : 62%;
+   max-width    : 62%;
+   overflow     : hidden;
 }
 
 .display-input-shorten {
    float        : left;
-   width        : 90px;
+   width        : 62%;
+   max-width    : 62%;
 
    white-space: nowrap;
    overflow: hidden;

@@ -352,7 +352,7 @@ function apiRemoteChangeVisibility(type, device_id, value_id) {
 function apiCommandSend(cmdButton, sync="", callback="", device="") {
 	var ee, vv;
 	var onoff = false;
-	var button_show = "<div class='button_show'>&nbsp;"+cmdButton+"&nbsp;</div>";
+	var button_show = "<div class='rm-button_show'>&nbsp;"+cmdButton+"&nbsp;</div>";
 
 	// check if macro
 	var types = ["macro", "scene-on", "scene-off", "dev-on", "dev-off"];

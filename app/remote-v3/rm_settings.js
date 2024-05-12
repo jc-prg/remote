@@ -164,7 +164,7 @@ function rmSettings (name) {	// IN PROGRESS
 	        }
 	    if (small) {
 	        var img_small = rm_image(button_img[setting_modules_back["SETTINGS"][0]], big=false);
-	        html += "<button class='button_setting_index_small' onclick=\""+setting_modules_back["SETTINGS"][1]+"\">" + img_small + "</button>";
+	        html += "<button class='rm-button_setting_index_small' onclick=\""+setting_modules_back["SETTINGS"][1]+"\">" + img_small + "</button>";
 	    }
 	    for(var key in setting_modules) {
 	        var css_class = "";
@@ -172,8 +172,8 @@ function rmSettings (name) {	// IN PROGRESS
 	        var img_big   = rm_image(button_img[setting_modules[key][0]], big=true);
 	        var img_small = rm_image(button_img[setting_modules[key][0]], big=false);
 	        var text  = lang(key);
-	        if (small) { html += "<button class='button_setting_index_small"+css_class+"' onclick=\""+setting_modules[key][1]+"\">" + img_small + "</button>"; }
-	        else       { html += "<button class='button_setting_index' onclick=\""+setting_modules[key][1]+"\">" + img_big + "<br/>&nbsp;<br/>" + text + "</button>"; }
+	        if (small) { html += "<button class='rm-button_setting_index_small"+css_class+"' onclick=\""+setting_modules[key][1]+"\">" + img_small + "</button>"; }
+	        else       { html += "<button class='rm-button_setting_index' onclick=\""+setting_modules[key][1]+"\">" + img_big + "<br/>&nbsp;<br/>" + text + "</button>"; }
 	        }
 
 	    if (!small) { html += "<div style='width:100%;height:18px;float:left;'></div>"; }
@@ -350,12 +350,12 @@ function rmSettings (name) {	// IN PROGRESS
 		// button color codes
 		var buttons = "";
 		for (var key in colors_power) {
-			buttons += "<button class='button' style='background-color:"+colors_power[key]+";width:22%;'>"+key+"</button>";
+			buttons += "<button class='rm-button' style='background-color:"+colors_power[key]+";width:22%;'>"+key+"</button>";
 			}
 		button_style = "width:30%;max-width:none;height:40px;";
-		buttons += "<button class='button notfound' style='"+button_style+"' disabled>command not found</button>";
-        buttons += "<button class='button notfound' style='"+button_style+"'>edit mode: cmd not found</button>";
-		buttons += "<button class='button small_edit' style='"+button_style+"'>edit mode: invisible</button>";
+		buttons += "<button class='rm-button notfound' style='"+button_style+"' disabled>command not found</button>";
+        buttons += "<button class='rm-button notfound' style='"+button_style+"'>edit mode: cmd not found</button>";
+		buttons += "<button class='rm-button small_edit' style='"+button_style+"'>edit mode: invisible</button>";
 
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row( "<center>" + buttons + "</center>" );
@@ -382,7 +382,7 @@ function rmSettings (name) {	// IN PROGRESS
             set_temp += "<button class='image_list key'>";
             set_temp += key;
             set_temp += "</button>";
-            set_temp += "<button class='button bg"+key+"' style='width:50px;'>";
+            set_temp += "<button class='rm-button bg"+key+"' style='width:50px;'>";
             set_temp += "";
             set_temp += "</button>";
             }
@@ -976,7 +976,7 @@ function rmSettings (name) {	// IN PROGRESS
 		var add_command    = "apiDeviceAdd([#add_device_id#,#add_device_descr#,#add_device_label#,#add_device_api#,#add_device#,#add_device_device#,#add_device_remote#,#add_device_id_external#,#edit_image#],"+onchange2+");";
 		add_command       += "remoteToggleEditMode(true);";
 		var width          = this.input_width;
-		var icon_container = "<button class='button device_off small'><div id='device_edit_button_image'></div></button>";
+		var icon_container = "<button class='rm-button device_off small'><div id='device_edit_button_image'></div></button>";
 
 		var device_data = {
 		    "id": "",
@@ -1262,7 +1262,7 @@ function rmSettings (name) {	// IN PROGRESS
 		
 		text = "<input id=\"" + id + "\" oninput=\""+oninput+"\" style='width:" + this.input_width + ";margin:1px;' value='" + value + "'>";
 		if (onclick != "") {
-			text += "<button onclick=\""+onclick+"\" class='button calculate_values'>&gt;&gt;</button>";
+			text += "<button onclick=\""+onclick+"\" class='rm-button calculate_values'>&gt;&gt;</button>";
 			}
 			
 		return text;

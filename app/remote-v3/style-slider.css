@@ -8,11 +8,11 @@
    color           : #222222;
    font-size       :   9px; 
 
-   width           :  276px;
+   width           :  98%;
+   margin          :   1%;
    height          :  70px;
    padding         :   2px;
-   margin          :   4px;
-   
+
    border-radius   :   6px; 
    border          : 1px solid #bbbbbb;
    background-color: #cccccc;

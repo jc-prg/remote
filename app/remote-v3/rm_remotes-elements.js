@@ -188,7 +188,7 @@ function rmRemoteButtons(name) {
 	        	}
 	
 		if (style != "") { style = " " + style; }
-		var button = "<button id='" + id.toLowerCase() + "' class='button" + style + "' " + btnstyle + " " +
+		var button = "<button id='" + id.toLowerCase() + "' class='rm-button" + style + "' " + btnstyle + " " +
 		             onClick + " " + onContext + " " + disabled + " >" + label + "</button>"; // style='float:left;'
 		return button;
 		}
