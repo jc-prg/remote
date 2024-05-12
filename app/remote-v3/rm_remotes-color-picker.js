@@ -4,114 +4,14 @@ function rmColorPicker(name) {
 
 	this.hh = 0;
 	this.class_name = name;
-	this.RGB_to_XYZ_matrix = [
-        [0.4124564, 0.3575761, 0.1804375],
-        [0.2126729, 0.7151522, 0.0721750],
-        [0.0193339, 0.1191920, 0.9503041]
-    ];
 
 	this.set_device     = function(name) {
 
 		this.active_name = name;		
 		}
 
-	this.mouseOverColor = function(hex) {
-		document.getElementById("divpreview").style.visibility = "visible";
-		document.getElementById("divpreview").style.backgroundColor = hex;
-		document.body.style.cursor = "pointer";
-		}
 
-	this.mouseOutMap    = function () {
-		if (this.hh == 0) {
-		 	document.getElementById("divpreview").style.backgroundColor = "";
-			//document.getElementById("divpreview").style.visibility = "hidden";
-			} 
-		else { this.hh = 0; }
-		}
-
-	this.clickColor     = function (send_command, hex, sel_top, sel_left, html5) {
-
-		document.getElementById("divpreview").style.visibility = "visible";
-		document.getElementById("divpreview").style.backgroundColor = hex;
-
-		r = parseInt(hex.substr(1,2), 16);
-		g = parseInt(hex.substr(3,2), 16);
-		b = parseInt(hex.substr(5,2), 16);
-		
-        console.log('this.sendColorCode(r+":"+g+":"+b);')
-        console.log(r+":"+g+":"+b);
-
-        //this.sendColorCode(r+":"+g+":"+b);
-        this.sendColorCode_CIE1931(send_command, r+":"+g+":"+b);
-		}
-
-	this.sendColorCode = function (send_command, input) {
-
-		appFW.requestAPI('GET',[ 'send-data', this.active_name, send_command, '"'+input+'"'	 ], '','');
-		}
-
-    this.sendColorCode_CIE1931 = function (send_command, input) {
-
-        rgb_color = input.split(":");
-        xy_color  = this.RGB_to_XY(rgb_color);
-        input     = xy_color[0] + ":" + xy_color[1];
-        console.error("CIE 1931 XY coordinates: " + input + " / " + this.class_name);
-
-		appFW.requestAPI('GET',[ 'send-data', this.active_name, send_command, '"'+input+'"' ], '','');
-    }
-
-    this.colorPickerHTMLv2 = function (container_id, send_command, color_model) {
-
-        console.error("Load Color Picker ("+container_id+") ...");
-
-        // Get the canvas element and its context
-        const canvas = document.getElementById(container_id);
-        const ctx    = canvas.getContext('2d');
-        const color_send_command = send_command;
-
-        // Load image
-        const image = new Image();
-        image.src   = 'remote-v3/img/rgb.png'; // Replace 'image.jpg' with your image path
-        //image.src   = 'remote-v3/img/img_colormap.gif'; // Replace 'image.jpg' with your image path
-        image.width = 250;
-        image.height = 250;
-
-        // When the image is loaded, draw it on the canvas
-        image.onload = function() {
-            canvas.width = image.width;
-            canvas.height = image.height;
-            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-            //ctx.drawImage(image, 0, 0, image.width, image.height);
-            console.error(canvas.width + "x" + canvas.height);
-        };
-
-        // Event listener for click on the canvas
-        canvas.addEventListener('click', function(event) {
-            // Get the clicked pixel data
-            var x = event.offsetX;
-            var y = event.offsetY;
-            const pixelData = ctx.getImageData(x, y, 1, 1).data;
-
-            // Extract RGB values
-            const red   = pixelData[0];
-            const green = pixelData[1];
-            const blue  = pixelData[2];
-
-            // Display RGB values
-            console.error(pixelData);
-            console.error(`X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue}`);
-            //document.getElementById('rgb').textContent = `R: ${red}, G: ${green}, B: ${blue}`;
-
-            //document.getElementById("colorpicker_demo").style.backgroundColor = "rgb(255,0,0)";
-            document.getElementById("colorpicker_demo").style.backgroundColor = "rgb(" + red +","+green+","+blue+")";
-            var input = `${red}:${green}:${blue}`;
-            if (color_model == "CIE_1931")  { rm3remotes.color_picker.sendColorCode_CIE1931(color_send_command, input); }
-            else                            { rm3remotes.color_picker.sendColorCode(color_send_command, input); }
-        });
-
-
-    }
-
+    // color picker visualization v1
 	this.colorPickerHTML = function (send_command) {
 		html = `
     <div style="margin:auto;width:236px;">
@@ -253,6 +153,108 @@ function rmColorPicker(name) {
 		return html;
 		}
 
+	this.mouseOverColor = function(hex) {
+		document.getElementById("divpreview").style.visibility = "visible";
+		document.getElementById("divpreview").style.backgroundColor = hex;
+		document.body.style.cursor = "pointer";
+		}
+
+	this.mouseOutMap    = function () {
+		if (this.hh == 0) {
+		 	document.getElementById("divpreview").style.backgroundColor = "";
+			//document.getElementById("divpreview").style.visibility = "hidden";
+			} 
+		else { this.hh = 0; }
+		}
+
+	this.clickColor     = function (send_command, hex, sel_top, sel_left, html5) {
+
+		document.getElementById("divpreview").style.visibility = "visible";
+		document.getElementById("divpreview").style.backgroundColor = hex;
+
+		r = parseInt(hex.substr(1,2), 16);
+		g = parseInt(hex.substr(3,2), 16);
+		b = parseInt(hex.substr(5,2), 16);
+
+        console.log('this.sendColorCode(r+":"+g+":"+b);')
+        console.log(r+":"+g+":"+b);
+
+        //this.sendColorCode(r+":"+g+":"+b);
+        this.sendColorCode_CIE1931(send_command, r+":"+g+":"+b);
+		}
+
+
+    // color picker visualization v2
+    this.colorPickerHTMLv2 = function (container_id, send_command, color_model) {
+
+        console.debug("Load Color Picker ("+container_id+") ...");
+
+        // Get the canvas element and its context
+        const canvas = document.getElementById(container_id);
+        const ctx    = canvas.getContext('2d');
+        const color_send_command = send_command;
+
+        // Load image
+        const image = new Image();
+        image.src   = 'remote-v3/img/rgb.png'; // Replace 'image.jpg' with your image path
+        //image.src   = 'remote-v3/img/img_colormap.gif'; // Replace 'image.jpg' with your image path
+        image.width = 250;
+        image.height = 250;
+
+        // When the image is loaded, draw it on the canvas
+        image.onload = function() {
+            canvas.width = image.width;
+            canvas.height = image.height;
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+            //ctx.drawImage(image, 0, 0, image.width, image.height);
+            console.debug("Color picker canvas size: " + canvas.width + "x" + canvas.height);
+        };
+
+        // Event listener for click on the canvas
+        canvas.addEventListener('click', function(event) {
+            // Get the clicked pixel data
+            var x = event.offsetX;
+            var y = event.offsetY;
+            const pixelData = ctx.getImageData(x, y, 1, 1).data;
+
+            // Extract RGB values
+            const red   = pixelData[0];
+            const green = pixelData[1];
+            const blue  = pixelData[2];
+
+            // Display RGB values
+            console.error(pixelData);
+            console.error(`X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue}`);
+            //document.getElementById('rgb').textContent = `R: ${red}, G: ${green}, B: ${blue}`;
+
+            //document.getElementById("colorpicker_demo").style.backgroundColor = "rgb(255,0,0)";
+            document.getElementById("colorpicker_demo").style.backgroundColor = "rgb(" + red +","+green+","+blue+")";
+            var input = `${red}:${green}:${blue}`;
+            if (color_model == "CIE_1931")  { rm3remotes.color_picker.sendColorCode_CIE1931(color_send_command, input); }
+            else                            { rm3remotes.color_picker.sendColorCode(color_send_command, input); }
+        });
+
+
+    }
+
+
+    // send commands depending on color model
+	this.sendColorCode = function (send_command, input) {
+
+		appFW.requestAPI('GET',[ 'send-data', this.active_name, send_command, '"'+input+'"'	 ], '','');
+		}
+
+    this.sendColorCode_CIE1931 = function (send_command, input) {
+
+        rgb_color = input.split(":");
+        xy_color  = this.RGB_to_XY(rgb_color);
+        input     = xy_color[0] + ":" + xy_color[1];
+        console.error("CIE 1931 XY coordinates: " + input + " / " + this.class_name);
+
+		appFW.requestAPI('GET',[ 'send-data', this.active_name, send_command, '"'+input+'"' ], '','');
+    }
+
+
     // Function to convert RGB to XY
     this.RGB_to_XY = function (rgb) {
 
@@ -280,8 +282,4 @@ function rmColorPicker(name) {
             y = 0;
         return [x, y];
         }
-
 	}
-
-
-
