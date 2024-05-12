@@ -399,35 +399,39 @@ function rmSettings (name) {	// IN PROGRESS
 	    }
 
 	this.module_timer_info      = function (data) {
-	    var html = "";
-	    for (var key in data["DATA"]["timer"]) {
-	        var entry      = data["DATA"]["timer"][key];
-	        var entry_html = "";
-	        var tab        = rm3settings.tab;
-	        var input      = rm3settings.input;
-    	    var btn        = rm3settings.btn;
-            var basic      = rm3settings.basic;
-            btn.width      = "70px;"
 
-            var link_save   = "alert('not implemented');";
-            var link_reset  = "alert('not implemented');";
-            var link_delete = "alert('not implemented');";
+	    this.module_timer_dialog = function(key, entry) {
+
+            var data_fields = "timer_name_"+key+",timer_description_"+key+",timer_regular_"+key+",timer_once_"+key+",timer_commands_"+key;
+            var link_save   = "val=document.getElementById(\"timer_name_"+key+"\").value; if(val!=\"\") { apiTimerEdit(\""+key+"\",\""+data_fields+"\"); } else { appMsg.alert(\"Add a title!\"); }";
+            var link_reset  = "rm3settings.module_timer();";
+            var link_delete = "apiTimerDelete(\""+key+"\");";
+
 	        var buttons     = "";
-            buttons   += btn.sized("timer_save_"+key,    lang("BUTTON_T_SAVE"),   "",  link_save);
-            buttons   += btn.sized("timer_reset_"+key,   lang("BUTTON_T_RESET"),  "",  link_reset);
-            buttons   += btn.sized("timer_delete_"+key,  lang("BUTTON_T_DELETE"), "",  link_delete);
+            if (key != "NEW_TIMER_ID") {
+                buttons   += btn.sized("timer_save_"+key,    lang("BUTTON_T_SAVE"),   "",  link_save);
+                buttons   += btn.sized("timer_reset_"+key,   lang("BUTTON_T_RESET"),  "",  link_reset);
+                buttons   += btn.sized("timer_delete_"+key,  lang("BUTTON_T_DELETE"), "",  link_delete);
+                }
+            else {
+                buttons   += btn.sized("timer_add_"+key,     lang("BUTTON_T_CREATE"),   "",  link_save);
+                }
 
+	        var entry_html = "";
             entry_html += tab.start();
-            entry_html += tab.row("ID:",            key);
+            if (key != "NEW_TIMER_ID") {
+                entry_html += tab.row("ID:",            key);
+                }
             entry_html += tab.row("Title:",         input("timer_name_"+key, "", "",  entry["name"]));
-            entry_html += tab.row("Description:",   input("timer_descr_"+key, "", "", entry["description"]));
+            entry_html += tab.row("Description:",   input("timer_description_"+key, "", "", entry["description"]));
             entry_html += tab.line();
             entry_html += tab.row("Repeating timer:");
             entry_html += tab.row("<textarea id='timer_regular_"+key+"' style='width:95%;height:80px;display:none;'>" + JSON.stringify(entry["timer_regular"]) + "</textarea>");
             entry_html += tab.row(rm3settings.module_timer_element("regular", key, entry["timer_regular"]));
             entry_html += tab.row("&nbsp;");
             //entry_html += tab.row("One-time timer:");
-            //entry_html += tab.row("<textarea id='timer_once_"+key+"'    style='width:95%;height:80px;'>" + JSON.stringify(entry["timer_once"]) + "</textarea>");
+            entry_html += tab.row("<textarea id='timer_once_"+key+"'    style='width:95%;height:80px;display:none;'>" + JSON.stringify(entry["timer_once"]) + "</textarea>");
+            //entry_html += tab.row("&nbsp;");
             entry_html += tab.row("Commands:");
             entry_html += tab.row("<input id='timer_commands_"+key+"'   style='width:95%' value='" + JSON.stringify(entry["commands"]) + "'>");
             entry_html += tab.row("&nbsp;");
@@ -436,8 +440,33 @@ function rmSettings (name) {	// IN PROGRESS
 
             entry_html += tab.end();
 
-    		html  += rm3settings.basic.container("timer_edit_"+key, entry["name"], entry_html, false);
+            return entry_html;
 	        }
+
+	    var html = "";
+        var tab         = rm3settings.tab;
+        var input       = rm3settings.input;
+        var btn         = rm3settings.btn;
+        var basic       = rm3settings.basic;
+        btn.width       = "70px;"
+
+	    for (var key in data["DATA"]["timer"]) {
+	        var entry       = data["DATA"]["timer"][key];
+            var entry_html  = this.module_timer_dialog(key, entry);
+            var entry_title = entry["name"] + "</b>";
+            if (entry["timer_regular"]["active"]) { entry_title += ""; }
+            else                                  { entry_title += " <i>(inactive)</i>"; }
+
+    		html  += rm3settings.basic.container("timer_edit_"+key, entry_title, entry_html, false);
+	        }
+
+	    var entry_html  = this.module_timer_dialog("NEW_TIMER_ID", {"name":"","description":"","commands":[],
+	                                                          "timer_regular":{"active":false,"month":-1,"day_of_month":-1,
+	                                                          "hour":-1,"minute":-1,"day_of_week":-1}, "timer_once": []});
+        var entry_title = "<i>Create new timer ...</i>";
+        html  += rm3settings.basic.container("timer_edit_add_new", entry_title, entry_html, false);
+
+
 	    setTextById('module_timer_info', html);
 	    }
 
@@ -470,7 +499,7 @@ function rmSettings (name) {	// IN PROGRESS
 	        var checked = "";
             var onchange = "rm3settings.module_timer_change(\"" + type + "\", \""+key+"\");";
 	        if (data["active"]) { checked = "checked"; }
-	        html += "<input id='timer_"+type+"_active_"+key+"' type='checkbox' value='active' "+checked+" onchange='"+onchange+"'>: &nbsp;";
+	        html += "<input id='timer_"+type+"_active_"+key+"' type='checkbox' value='active' "+checked+" onchange='"+onchange+"'>:&nbsp;";
 	        html += "<input id='timer_"+type+"_YY_"+key+"' type='input' style='width:30px;' value='****' disabled>-";
 	        html += this.module_timer_input("month",        type, key, data["month"]) + "-";
 	        html += this.module_timer_input("day_of_month", type, key, data["day_of_month"]) + " / ";

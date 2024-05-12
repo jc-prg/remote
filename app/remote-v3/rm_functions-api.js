@@ -83,20 +83,6 @@ function apiTemplateAdd(device_id, template_id) {
 	}
 
 
-// edit macros
-function apiMacroChange(data=[]) {
-
-	send_data = {};
-	for (var i=0;i<data.length;i++) {
-		var key            = data[i];
-        try		{ send_data[key] = JSON.parse(getValueById(key)); }
-        catch(e)	{ appMsg.alert("<b>JSON Macro " + key + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
-		}
-
-	appFW.requestAPI("PUT",["macro"], send_data, apiAlertReturn);
-	}
-
-
 // create new device
 function apiSceneAdd(data) {
 
@@ -504,6 +490,20 @@ function apiButtonDelete(device_id, button_id) {
 	}
 
 
+// edit macros
+function apiMacroChange(data=[]) {
+
+	send_data = {};
+	for (var i=0;i<data.length;i++) {
+		var key            = data[i];
+        try		{ send_data[key] = JSON.parse(getValueById(key)); }
+        catch(e)	{ appMsg.alert("<b>JSON Macro " + key + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+		}
+
+	appFW.requestAPI("PUT",["macro"], send_data, apiAlertReturn);
+	}
+
+
 // decompose macro data
 function apiMacroDecompose(macro) {
     var types = ["macro", "dev-on", "dev-off"];
@@ -569,6 +569,37 @@ function apiMacroSend_return( data ) {
 	    appMsg.info("<b>Macro Queue:</b> " + data["REQUEST"]["decoded_macro"]);
 	    }
 	}
+
+
+// edit timer
+function apiTimerEdit(key, data_fields) {
+
+    send_data = {};
+    send_fields = data_fields.split(",");
+    for (var i=0;i<send_fields.length;i++) {
+        field_name = send_fields[i].split("_")[1];
+        if (getValueById(send_fields[i])) { send_data[field_name] = getValueById(send_fields[i]); }
+        else                              { send_data[field_name] = getTextById(send_fields[i]); }
+        }
+
+    try { send_data["timer_regular"] = JSON.parse(send_data["regular"]); }  catch(e) { appMsg.alert("<b>Repeating timer - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+    try { send_data["timer_once"]    = JSON.parse(send_data["once"]); }     catch(e) { appMsg.alert("<b>One-time timer - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+    try { send_data["commands"]      = JSON.parse(send_data["commands"]); } catch(e) { appMsg.alert("<b>Commands - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+
+    delete send_data["regular"];
+    delete send_data["once"];
+
+    //console.error(data_fields);
+    //console.error(send_data);
+	appFW.requestAPI("PUT",["timer-edit", key], send_data, apiAlertReturn);
+    }
+
+function apiTimerAdd(data_fields) {}
+
+function apiTimerDelete(key) {
+
+    appFW.requestAPI("DELETE",["timer-edit", key], "", apiAlertReturn);
+    }
 
 
 // send a command directly to an API of a device

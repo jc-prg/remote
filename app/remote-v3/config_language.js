@@ -34,9 +34,11 @@ var language_app = {
 		"BUTTON_INFOS"          : "Button Information",
 		
 		"BUTTON_T"              : "button",
+		"BUTTON_T_ADD"          : "add",
 		"BUTTON_T_CLONE"        : "clone",
 		"BUTTON_T_COLORPICKER"  : "color picker",
 		"BUTTON_T_COLOR"        : "color model",
+		"BUTTON_T_CREATE"       : "create",
 		"BUTTON_T_DEL"          : "delete button",
 		"BUTTON_T_DELETE"       : "delete",
 		"BUTTON_T_DEL_VALUE"    : "delete value",
