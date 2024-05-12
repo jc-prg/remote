@@ -8,10 +8,10 @@ from logging.handlers import RotatingFileHandler
 # ---------------------------------
 
 API_name = "jc://remote/"
-API_version = "v2.5.0"
-APP_version = "v2.9.6"
+API_version = "v2.6.0"
+APP_version = "v2.9.7"
 APP_support = [APP_version,
-               "v2.9.6"
+               "v2.9.7"
                ]  # other supported versions
 
 # ---------------------------
@@ -85,25 +85,37 @@ def set_logging(set_name, set_log_level=None):
     """
     global log_loggers, log_logger_list, log_to_file, log_filename
     init_time = time.time()
+    set_name = set_name.replace(".", "-")
 
-    if log_loggers.get(set_name) or set_name in log_logger_list:
-        # print("... logger already exists: " + name)
+    if len(log_logger_list) == 0:
+        root_logger = logging.getLogger()
+        if root_logger.hasHandlers():
+            root_logger.handlers.clear()
+
+    if set_name in log_logger_list:
+        # print("---> LOGGING : " + set_name + " <---- EXISTS ")
         return log_loggers.get(set_name)
 
     else:
-        log_logger_list.append(set_name)
-
+        # print("---> LOGGING : " + set_name)
         if set_log_level is None:
             set_log_level = log_set2level
 
-        if log_to_file:
-            logger = logging.getLogger(set_name + str(init_time))
-            logger.setLevel(set_log_level)
-        else:
+        #if log_to_file:
+        #    logger = logging.getLogger(set_name + str(init_time))
+        #    logger.setLevel(set_log_level)
+        #else:
+        #    logger = logging.getLogger(set_name)
+        #    logger.setLevel(set_log_level)
+
+        if log_to_file == "YES" and not os.access(log_filename, os.W_OK):
+            print("Could not write to log file " + log_filename)
+            log_to_file = "NO"
+
+        if log_to_file == "YES" and os.access(log_filename, os.W_OK):
             logger = logging.getLogger(set_name)
             logger.setLevel(set_log_level)
 
-        if log_to_file == "YES" and os.access(log_filename, os.W_OK):
             log_format_string = '%(asctime)s | %(levelname)-8s ' + set_name.ljust(10) + ' | %(message)s'
             log_format = logging.Formatter(fmt=log_format_string,
                                            datefmt='%m/%d %H:%M:%S')
@@ -114,6 +126,9 @@ def set_logging(set_name, set_log_level=None):
             logger.addHandler(handler)
 
         else:
+            logger = logging.getLogger(set_name + str(init_time))
+            logger.setLevel(set_log_level)
+
             log_format_string = '%(asctime)s | %(levelname)-8s %(name)-10s | %(message)s'
             logging.basicConfig(format=log_format_string,
                                 datefmt='%m/%d %H:%M:%S',
@@ -121,10 +136,9 @@ def set_logging(set_name, set_log_level=None):
 
         logger.debug("Init logger '" + set_name + "', into_file=" + str(log_to_file))
 
-        if log_to_file and not os.access(log_filename, os.W_OK):
-            logger.warning("Could not write to log file " + log_filename)
-
         log_loggers[set_name] = logger
+        log_logger_list.append(set_name)
+
         return logger
 
 

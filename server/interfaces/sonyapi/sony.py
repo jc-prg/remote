@@ -39,7 +39,7 @@ class sonyDevice():
         '''
         initialize device
         '''
-        self.logging       = logging.getLogger("api.SONYlib")
+        self.logging       = logging.getLogger("api-SONYlib")
 
         self.device_ip     = ip
         self.device_name   = name

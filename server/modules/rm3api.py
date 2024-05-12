@@ -691,8 +691,48 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start()
         data["REQUEST"]["Return"] = "OK: Returned timer data."
         data["REQUEST"]["Command"] = "Get timer"
-        data["DATA"] = {"timer": self.timer.get_timer_events() }
+        data["DATA"] = {"timer": self.timer.get_timer_events()}
         data = self._end(data, ["no-config", "no-status"])
+        return data
+
+    def edit_timer(self, timer_id, timer_config):
+        """
+        edit data of a timer event
+
+        Args:
+            timer_id (str): timer id
+            timer_config (dict): timer configuration
+        Return:
+            dict: API response
+        """
+        data = self._start()
+
+        if timer_id != "NEW_TIMER_ID":
+            data["REQUEST"]["Return"] = "OK: Edit timer data (" + str(timer_id) + ")"
+            data["REQUEST"]["Command"] = "Edit timer"
+            self.timer.schedule_timer_edit(timer_id, timer_config)
+        else:
+            data["REQUEST"]["Return"] = "OK: Create new timer"
+            data["REQUEST"]["Command"] = "Create new timer"
+            self.timer.schedule_timer_add(timer_config)
+
+        data = self._end(data, ["no-config", "no-status", "no-data"])
+        return data
+
+    def edit_timer_delete(self, timer_id):
+        """
+        edit data of a timer event
+
+        Args:
+            timer_id (str): timer id
+        Return:
+            dict: API response
+        """
+        data = self._start()
+        data["REQUEST"]["Return"] = "OK: Delete timer data (" + str(timer_id) + ")"
+        data["REQUEST"]["Command"] = "Delete timer"
+        self.timer.schedule_timer_delete(timer_id)
+        data = self._end(data, ["no-config", "no-status", "no-data"])
         return data
 
     def reload(self):

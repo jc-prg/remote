@@ -659,6 +659,83 @@ class RemotesData(RemoteThreadingClass):
 
         return data
 
+    def macro_decode(self, macro):
+        """
+        decompose macro down to device commands
+
+        Args:
+            macro (list): list of buttons and macros
+        Returns:
+            list: list of device strings
+        """
+        decomposed_v1 = []
+        decomposed_v2 = []
+        decomposed_v3 = []
+        act_devices = self.config.read(rm3presets.active_devices)
+        act_macros = self.config.read(rm3presets.active_macros)
+        act_scenes = self.config.read(rm3presets.active_scenes)
+
+        # <device>_*
+        # global_*
+        # device-on_*
+        # device-off_*
+
+        for command in macro:
+            if "_" not in command:
+                continue
+            parts = command.split("_")
+            if parts[0] in act_devices:
+                decomposed_v1.append(command)
+            elif parts[0] == "global" or parts[0] == "macro":
+                global_macro = command.replace("global_", "").replace("macro_", "")
+                decomposed_v1.extend(act_macros["macro"][global_macro])
+            elif parts[0] == "dev-on" or parts[0] == "dev-off":
+                global_macro = command.replace(parts[0]+"_", "")
+                decomposed_v1.extend(act_macros[parts[0]][global_macro])
+            elif parts[0] in act_scenes and "macro-scene" in act_scenes[parts[0]]["remote"]:
+                macro_key = command.replace(parts[0] + "_", "")
+                decomposed_v1.extend(act_scenes[parts[0]]["remote"]["macro-scene"][macro_key])
+            else:
+                decomposed_v1.append(command)
+
+        for command in decomposed_v1:
+            if "_" in str(command):
+                parts = command.split("_")
+                if parts[0] in act_devices:
+                    decomposed_v2.append(command)
+                elif parts[0] == "global" or parts[0] == "macro":
+                    global_macro = command.replace("global_", "").replace("macro_", "")
+                    decomposed_v2.extend(act_macros["macro"][global_macro])
+                elif parts[0] == "dev-on" or parts[0] == "dev-off":
+                    global_macro = command.replace(parts[0]+"_", "")
+                    decomposed_v2.extend(act_macros[parts[0]][global_macro])
+                else:
+                    decomposed_v2.append(command)
+            else:
+                decomposed_v2.append(command)
+
+        for command in decomposed_v2:
+            if "_" in str(command):
+                parts = command.split("_")
+                if parts[0] in act_devices:
+                    decomposed_v3.append(command)
+                elif parts[0] == "global" or parts[0] == "macro":
+                    global_macro = command.replace("global_", "").replace("macro_", "")
+                    decomposed_v3.extend(act_macros["macro"][global_macro])
+                elif parts[0] == "dev-on" or parts[0] == "dev-off":
+                    global_macro = command.replace(parts[0]+"_", "")
+                    decomposed_v3.extend(act_macros[parts[0]][global_macro])
+                else:
+                    decomposed_v3.append(command)
+            else:
+                decomposed_v3.append(command)
+
+        # <scene>_*
+        # <scene>_scene-on
+        # <scene>_scene-off
+
+        return decomposed_v3
+
 
 class RemotesEdit(RemoteDefaultClass):
     """

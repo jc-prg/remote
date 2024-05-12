@@ -10,14 +10,14 @@ class ScheduleTimer(RemoteThreadingClass):
     class to schedule events based on macros and buttons
     """
 
-    def __init__(self, config):
+    def __init__(self, config, apis, data):
         """
         Class constructor
         """
         RemoteThreadingClass.__init__(self, "schedule", "schedule")
         self.initial_config = {
             "data": {
-                "sample_timer": {
+                "timer_001": {
                     "name":             "Sample timer",
                     "description":      "Sample timer event, to demonstrate the timer functionality",
                     "commands":         ["plug01_toggle"],
@@ -29,6 +29,8 @@ class ScheduleTimer(RemoteThreadingClass):
             "info": "jc://remote/ - In this files the scheduling of timer events is defined."
         }
         self.config = config
+        self.apis = apis
+        self.data = data
 
         self.schedule = self.config.read(rm3presets.active_timer)
         self.schedule_short = {}
@@ -39,11 +41,13 @@ class ScheduleTimer(RemoteThreadingClass):
 
         if "ERROR" in self.schedule:
             self.config.write(rm3presets.active_timer, self.initial_config)
+            self.schedule = self.initial_config
 
     def run(self):
         """
         Run to schedule events
         """
+        time.sleep(10)
         self.logging.info("Starting ScheduleTimer ...")
         self.schedule_create_short()
         while self._running:
@@ -72,6 +76,8 @@ class ScheduleTimer(RemoteThreadingClass):
         create short schedule for processing, ID contains timing information and VALUE is a list of timer_ids
         """
         self.logging.info("Create short schedule information ...")
+        self.schedule_short = {}
+
         for key in self.schedule["data"]:
             timer_config = self.schedule["data"][key]
 
@@ -88,43 +94,46 @@ class ScheduleTimer(RemoteThreadingClass):
             if timer_config["timer_regular"]["active"]:
                 timer_time = timer_config["timer_regular"]
                 timestamp = "****-"
-                if timer_time["month"] != -1:
+                if int(timer_time["month"]) != -1:
                     timestamp += timer_time["month"] + "-"
                 else:
                     timestamp += "**-"
-                if timer_time["day_of_month"] != -1:
+                if int(timer_time["day_of_month"]) != -1:
                     timestamp += timer_time["day_of_month"]
                 else:
                     timestamp += "**"
                 timestamp += "-"
-                if timer_time["hour"] != -1:
+                if int(timer_time["hour"]) != -1:
                     timestamp += timer_time["hour"] + "-"
                 else:
                     timestamp += "**-"
-                if timer_time["minute"] != -1:
+                if int(timer_time["minute"]) != -1:
                     timestamp += timer_time["minute"]
                 else:
                     timestamp += "**"
                 timestamp += "-"
-                if timer_time["day_of_week"] != -1:
+                if int(timer_time["day_of_week"]) != -1:
                     timestamp += timer_time["day_of_week"]
                 else:
                     timestamp += "*"
-                self.logging.info("TIMER_REGULAR: " + timestamp)
+                self.logging.debug("TIMER_REGULAR: " + timestamp)
 
                 if timestamp not in self.schedule_short:
                     self.schedule_short[timestamp] = []
+
                 self.schedule_short[timestamp].append(key)
+
+        self.logging.debug("Schedule short: " + str(self.schedule_short))
 
     def schedule_check(self):
         """
         check if there are events to be started
         """
-        now = datetime.now().strftime("%Y-%m-%d-%H-%M-%A")
+        now = datetime.now().strftime("%Y-%m-%d-%H-%M-%w")
         if now == self.last_execute:
             return
 
-        self.logging.info("Check if timer is scheduled ...")
+        self.logging.info("Check if timer is scheduled (~60s) ...")
         self.last_execute = now
         n_year, n_month, n_day, n_hour, n_minute, n_week_day = now.split("-")
 
@@ -132,22 +141,22 @@ class ScheduleTimer(RemoteThreadingClass):
         for compare in self.schedule_short:
             year, month, day, hour, minute, week_day = compare.split("-")
 
-            if ((year == "****" or year == n_year)
-                    and (month == "**" or month == n_month)
-                    and (day == "**" or day == n_day)
-                    and (hour == "**" or hour == n_hour)
-                    and (minute == "**" or minute == n_minute)
-                    and (week_day == "*" or week_day == n_week_day)):
+            if ((year == "****" or int(year) == int(n_year))
+                    and (month == "**" or int(month) == int(n_month))
+                    and (day == "**" or int(day) == int(n_day))
+                    and (hour == "**" or int(hour) == int(n_hour))
+                    and (minute == "**" or int(minute) == int(n_minute))
+                    and (week_day == "*" or int(week_day) == int(n_week_day))):
 
-                execute.extend(self.schedule_short[compare])
+                if self.schedule_short[compare] not in execute:
+                    execute.extend(self.schedule_short[compare])
 
         if len(execute) > 0:
-            self.logging.info("__EXECUTE: " + str(execute))
+            self.logging.info("__EXECUTE TIMER: " + str(execute) + " ... " + str(now))
             for timer_id in execute:
-                self.logging.info(timer_id)
                 self.schedule_timer_execute(self.schedule["data"][timer_id])
         else:
-            self.logging.debug("__EXECUTE ... Nothing to execute at the moment")
+            self.logging.debug("__EXECUTE TIMER: ... Nothing to execute at the moment")
 
     def schedule_timer_execute(self, timer_config):
         """
@@ -158,7 +167,29 @@ class ScheduleTimer(RemoteThreadingClass):
         """
         self.logging.debug("Execute timer event " + timer_config["name"] + " ...")
         commands = timer_config["commands"]
-        self.logging.warning("EXECUTE: " + str(commands))
+        commands_decomposed = self.data.macro_decode(commands)
+        self.logging.info("__EXECUTE TIMER: " + str(commands_decomposed))
+
+        act_devices = self.config.read(rm3presets.active_devices)
+        for command in commands_decomposed:
+            device = ""
+            button = ""
+            value = ""
+
+            if "||" in str(command):
+                command, value = command.split("||")
+            if "_" in str(command):
+                device, rest = command.split("_")
+                button = command.replace(device+"_", "")
+
+            if type(command) is int:
+                time.sleep(command)
+                self.logging.debug("WAIT: " + str(command) + "s")
+
+            elif device in act_devices and button != "":
+                call_api = act_devices[device]["config"]["api_key"] + "_" + act_devices[device]["config"]["api_device"]
+                self.apis.api_send(call_api=call_api, device=device, button=button, value=value)
+                self.logging.debug("SEND: call_api="+call_api+", device="+device+", button="+button+", value="+value)
 
     def schedule_timer_add(self, timer_config):
         """
@@ -211,21 +242,10 @@ class ScheduleTimer(RemoteThreadingClass):
             str: ID string for the timer entry
         """
         self.logging.debug("Create id from timer name '" + timer_name + "' ...")
-        if timer_name == "":
-            timer_name = "timer_01"
+        amount = 1
 
-        timer_id = timer_name.lower()
-        timer_id = re.sub('[^0-9a-zA-Z]+', '_', timer_id)
+        while "timer_" + str(amount).rjust(3,"0") in self.schedule["data"]:
+            amount += 1
 
-        digits_at_end = re.search(r'\d+$', text)
-        if digits_at_end:
-            digits_at_end = digits_at_end.group(0)
-        else:
-            digits_at_end = ""
-
-        if timer_id in self.schedule["data"] and digits_at_end == "":
-            timer_id = timer_id + "_02"
-        else:
-            timer_id = timer_id[:-len(digits_at_end)] + str(int(digits_at_end)+1)
-
+        timer_id = "timer_" + str(amount).rjust(3, "0")
         return timer_id

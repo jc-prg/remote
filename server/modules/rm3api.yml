@@ -357,6 +357,55 @@ paths:
               DATA:
                 $ref: "#/definitions/DATA"
 
+  /timer-edit/{timer_id}/:
+    put:
+      operationId: __main__.remoteAPI.edit_timer
+      tags:
+        - send
+      summary: edit timer event
+      description: edit timer event
+      parameters:
+        - name: timer_id
+          in: path
+          type: string
+          required: true
+        - name: timer_config
+          in: body
+          description: edit configuration
+          schema:
+            type: object
+          required: true
+      responses:
+        200:
+          description: Successfully send API request
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+    delete:
+      operationId: __main__.remoteAPI.edit_timer_delete
+      tags:
+        - send
+      summary: delete timer event
+      description: delete timer event
+      parameters:
+        - name: timer_id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully send API request
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+
 #------------------------ EDIT FUNCTIONS ------------------------
 
   /macro/:

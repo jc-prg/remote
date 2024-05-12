@@ -28,6 +28,7 @@ class Connect(RemoteThreadingClass):
         self.api_first_load = True
         self.api_device_list = {}
         self.api_device_settings = {}
+        self.api_request_reconnect = {}
         self.api_modules = {
             "KODI": "api_kodi",
             "SONY": "api_sony",
@@ -50,7 +51,6 @@ class Connect(RemoteThreadingClass):
             "query": "Request per API (query)"
         }
         self.available = {}
-        self.api_request_reconnect = {}
 
         self.checking_interval = rm3presets.refresh_device_connection
         self.checking_last = 0
@@ -508,6 +508,11 @@ class Connect(RemoteThreadingClass):
         send command if connected
         """
         api_dev = self.device_api_string(device)
+
+        if api_dev not in self.api:
+            self.logging.warning("Could not send command, API not (yet) loaded: " + api_dev)
+            return
+
         device_id = self.device_id_get(device)
         method = self.api_method(device)
         return_msg = ""
@@ -797,7 +802,7 @@ class Connect(RemoteThreadingClass):
         if device in active and "device_id" in active[device]["config"]:
             d_id = active[device]["config"]["device_id"]
         else:
-            d_id = active[device]["config"]["api_key"]+"_" + active[device]["config"]["api_key"]+"_"+device
+            d_id = active[device]["config"]["api_key"]+"_" + active[device]["config"]["api_device"]+"_"+device
         return d_id
 
     def devices_available(self, interface):
