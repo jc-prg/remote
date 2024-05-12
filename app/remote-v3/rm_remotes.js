@@ -995,6 +995,7 @@ function rmRemote(name) {
 		for (key in this.data["CONFIG"]["macros"])  {
 			if (key != "description") { device_macro[key] = "Macro: "+key; }
 			}
+		device_macro["scene"] = "Macro: " + scene;
 			
 		var device_macro_onchange   = this.app_name +".scene_button_select(div_id='add_button_device_input','add_button_value','add_button_device','"+scene+"');";
 		var device_display_onchange = this.app_name +".scene_display_select(div_id='add_display_input','add_display_value','add_display_device');";
@@ -1043,7 +1044,7 @@ function rmRemote(name) {
 		// add elements
 		edit    = this.tab.start();
 		edit   += this.tab.row(
-		          this.basic.select("add_button_device","device / type of macro", device_macro, device_macro_onchange),
+		          this.basic.select("add_button_device","device / macro", device_macro, device_macro_onchange),
 		          this.button.edit("N/A","","disabled")
 		          );
 		edit   += this.tab.row(
@@ -1570,11 +1571,11 @@ function rmRemote(name) {
 		var device_config       = this.data["CONFIG"]["devices"];
 		var device_macro        = {};
 		var device_macro_button = {};
-		var macros              = {};
 		var macros_scene        = dictCopy(this.data["CONFIG"]["scenes"][scene]["remote"]["macro-scene"]);
+		var macros              = {"scene": macros_scene};
 
 		for (var key in this.data["CONFIG"]["macros"])  { macros[key] = dictCopy(this.data["CONFIG"]["macros"][key]); }
-		for (var key in macros_scene)                   { macros["macro"][key] = macros_scene[key]; }
+
 
 		for (key in this.data["CONFIG"]["devices"]) {
 			device_macro[key] = "Device: "+device_config[key]["settings"]["label"];
