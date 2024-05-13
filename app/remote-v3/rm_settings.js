@@ -654,8 +654,9 @@ function rmSettings (name) {	// IN PROGRESS
                 details_new += "<li>" + button_add + "<b>[" + devices_detect[api_device][device]["id"] + "]</b><br/>" + name + info + disabled + "</li>";
                 }
 
+
             if (interface == "ZIGBEE2MQTT") {
-                details_new += "<li>Permit new devices to join: <button onclick='apiCommandSend(\"plug10_bridge-permit\");'>permit</button></li>";
+                details_new += "<li>Permit new devices to join: <button onclick='apiSendToApi(\"ZIGBEE2MQTT_default::permit-join\");'>permit</button></li>";
                 }
             details_new += "</ul>";
             }
