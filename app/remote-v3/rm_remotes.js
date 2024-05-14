@@ -218,7 +218,7 @@ function rmRemote(name) {
 			var cmd     	= device + "_" + button;
 
 			if (this.edit_mode) {			
-				var context_menu     = "["+i+"] " + cmd.split("||")[0] + "<br/><br/>";
+				var context_menu     = "["+i+"] <b>" + cmd.split("||")[0] + "</b><br/><br/>";
 				var link_preview     = this.app_name+".device_remote_preview('"+device+"');";
 				var link_delete      = this.app_name+".remote_delete_button('device','"+device+"','"+i+"','remote_json_buttons');";
 				var link_move_left   = this.app_name+".remote_move_button(  'device','"+device+"',"+i+",'remote_json_buttons','left');";
@@ -226,7 +226,7 @@ function rmRemote(name) {
 				var link_button_left = this.app_name+".remote_add_button(   'device','"+device+"','add_button_"+i+"','remote_json_buttons','"+i+"');";
 				var link_button_right= this.app_name+".remote_add_button(   'device','"+device+"','add_button_"+i+"','remote_json_buttons','"+(i+1)+"');";
 				this.button.width    = "50px;"	
-				var input_add_button = "<br/>&nbsp;<br/><input id='add_button_"+i+"' style='width:100px'><br/>" +
+				var input_add_button = "<br/>&nbsp;<br/><input id='add_button_"+i+"' style='width:100px'><br/>&nbsp;<br/>" +
 				                       this.button.edit( link_button_left  + link_preview, "&lt; +") +
 				                       this.button.edit( link_button_right + link_preview, "+ &gt;");
 
@@ -255,7 +255,7 @@ function rmRemote(name) {
 				else if (button.indexOf("COLOR-PICKER") == 0)  { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,240); }
 				else                                           { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
 
-				next_button = this.tooltip.create( next_button, context_menu, i );
+				next_button = this.tooltip.create_inside( next_button, context_menu, i );
 				}
 
 			remote += next_button;
@@ -337,7 +337,7 @@ function rmRemote(name) {
 				var context_menu = input_add + "["+i+"] "+ cmd + "<br/><br/>" + this.button.edit( link_add + link_preview, lang("BUTTON_T_MOVE2REMOTE"),"");;
 				
 				this.tooltip.settings(this.tooltip_mode,this.tooltip_width,"80px",this.tooltip_distance);
-				next_button = this.tooltip.create( next_button, context_menu, "not_used"+i );
+				next_button = this.tooltip.create_inside( next_button, context_menu, "not_used"+i );
 				}
 
 			remote     += next_button;
@@ -395,7 +395,7 @@ function rmRemote(name) {
 		var edit   = "";
 		var images = this.data["CONFIG"]["elements"]["button_images"];
         var icon   = "<img src='icon/"+images[device_config["settings"]["image"]]+"' class='rm-button_image_start'>";
-		icon       = "<button class='rm-button device_off small'><div id='device_edit_button_image'>"+icon+"</div></button>";
+		icon       = "<button class='button device_off small' style='height:40px;'><div id='device_edit_button_image'>"+icon+"</div></button>";
 		edit    += this.tab.start();
 		edit    += this.tab.row( lang("ID"),                      "<b>" + device + "</b>" );
 		edit    += this.tab.row( lang("LABEL")+":",               this.basic.input("edit_label", device_config["settings"]["label"]) );
@@ -791,17 +791,17 @@ function rmRemote(name) {
 				var button_name_test = button_name.split("_");
 				if (button_name_test[1] == "undefined") { button_name = button_name_test[0]; }
 				 
-				var context_menu      = "["+i+"] " + button_name + "<br/><br/>";
+				var context_menu      = "["+i+"] <b>" + button_name + "</b><br/><br/>";
 				var link_preview      = this.app_name+".scene_remote_preview('"+scene+"');";
 				
 				var link_delete       = this.app_name+".remote_delete_button('scene','"+scene+"','"+i+"','json::remote');";
 				var link_move_left    = this.app_name+".remote_move_button(  'scene','"+scene+"',"+i+",'json::remote','left');";
 				var link_move_right   = this.app_name+".remote_move_button(  'scene','"+scene+"',"+i+",'json::remote','right');";
 				
-				var link_button_left  = this.app_name+".remote_add_button(  'scene','"+scene+"','add_button_"+i+"','json::remote','"+i+"');";
-				var link_button_right = this.app_name+".remote_add_button(  'scene','"+scene+"','add_button_"+i+"','json::remote','"+(i+1)+"');";
+				var link_button_left  = this.app_name+".remote_add_button(   'scene','"+scene+"','add_button_"+i+"','json::remote','"+i+"');";
+				var link_button_right = this.app_name+".remote_add_button(   'scene','"+scene+"','add_button_"+i+"','json::remote','"+(i+1)+"');";
 				this.button.width     = "50px;"
-				var input_add_button  = "<br/>&nbsp;<br/><input id='add_button_"+i+"' style='width:100px'><br/>" +
+				var input_add_button  = "<br/>&nbsp;<br/><input id='add_button_"+i+"' style='width:100px'><br/>&nbsp;<br/>" +
 							            this.button.edit( link_button_left + link_preview, "&lt; +") +
 							            this.button.edit( link_button_right + link_preview, "+ &gt;");
 
@@ -856,7 +856,7 @@ function rmRemote(name) {
 				else if (button[0].indexOf("TOGGLE") == 0)          { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,50); }
 				else if (button[0].indexOf("DISPLAY") == 0)         { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
 				else                                                { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
-				next_button = this.tooltip.create( next_button, context_menu, i );
+				next_button = this.tooltip.create_inside( next_button, context_menu, i );
 				}
 
 			remote += next_button;
@@ -888,10 +888,10 @@ function rmRemote(name) {
     		for (var i=0; i<channels.length; i++) {
                 var cmd   	= "channel_"+i; //channels[i];
                 var next_button	= this.button.channel(cmd, channels[i], scene_name, macros[channels[i]],"","");
-                var context_menu = "["+i+"] " + cmd +  "<br/><br/><i>" + lang("CHANNEL_USE_JSON") +"</i>";
+                var context_menu = "["+i+"] <b>" + cmd +  "</b><br/><br/><i>" + lang("CHANNEL_USE_JSON") +"</i>";
 			
                 if (this.edit_mode) {
-                    next_button = this.tooltip.create( next_button, context_menu, "channel_"+i );
+                    next_button = this.tooltip.create_inside( next_button, context_menu, "channel_"+i );
                     }
                 remote += next_button;
         		}

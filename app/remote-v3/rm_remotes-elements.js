@@ -16,10 +16,13 @@ function rmRemoteBasic(name) {
 	this.logging        = new jcLogging(this.app_name);
 
 	// input for text
-	this.input	= function (id,value="")   { return "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"'>"; }
+	this.input	            = function (id,value="")   {
+
+	    return "<div style='width:" + this.input_width + ";margin:0px;'><input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"'></div>";
+	    }
 
 	// select for different data 
-	this.select	= function (id,title,data,onchange="",selected_value="",sort=false, change_key_value=false) {
+	this.select	            = function (id,title,data,onchange="",selected_value="",sort=false, change_key_value=false) {
 
 	            if (change_key_value) {
 	                var new_data = {};
@@ -44,7 +47,7 @@ function rmRemoteBasic(name) {
                 return item;
                 }
 
-	this.select_array  = function (id,title,data,onchange="",selected_value="") {
+	this.select_array       = function (id,title,data,onchange="",selected_value="") {
 	            var control = {};
                 var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
                 item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
@@ -61,7 +64,7 @@ function rmRemoteBasic(name) {
                 }
 
     // write line with text ...
-	this.line	= function (text="") {
+	this.line	            = function (text="") {
           	var remote = "";
 		remote += "<div class='remote-line'><hr/>";
 		if (text != "") { remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>"; }
@@ -69,7 +72,7 @@ function rmRemoteBasic(name) {
 		return remote;
 		}
 		
-	this.edit_line	= function (text="") {
+	this.edit_line	        = function (text="") {
           	var remote = "";
 		remote += "<div style='border:1px solid;height:1px;margin:5px;margin-top:10px;padding:0px;'>";
 		if (text != "") { remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>"; }
@@ -79,7 +82,7 @@ function rmRemoteBasic(name) {
 		
 	this.container_open = {};
 		
-	this.container  = function(id,title,text="",open=true) {
+	this.container           = function(id,title,text="",open=true) {
 	
 		if (this.container_open[id] != undefined)	{ open = this.container_open[id]; }
 		else						{ this.container_open[id] = open; }

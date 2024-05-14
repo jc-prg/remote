@@ -653,11 +653,6 @@ function rmSettings (name) {	// IN PROGRESS
                 if (info != "") {  info = ": " + info; }
                 details_new += "<li>" + button_add + "<b>[" + devices_detect[api_device][device]["id"] + "]</b><br/>" + name + info + disabled + "</li>";
                 }
-
-
-            if (interface == "ZIGBEE2MQTT") {
-                details_new += "<li>Permit new devices to join: <button onclick='apiSendToApi(\"ZIGBEE2MQTT_default::permit-join\");'>permit</button></li>";
-                }
             details_new += "</ul>";
             }
         if (new_exist) { details += details_new; }
