@@ -401,7 +401,7 @@ function rmSettings (name) {	// IN PROGRESS
 
 	this.module_timer_info      = function (data) {
 
-	    this.module_timer_dialog = function(key, entry) {
+        this.module_timer_dialog = function(key, entry) {
 
             var data_fields = "timer_name_"+key+",timer_description_"+key+",timer_regular_"+key+",timer_once_"+key+",timer_commands_"+key;
             var link_save   = "val=document.getElementById(\"timer_name_"+key+"\").value; if(val!=\"\") { apiTimerEdit(\""+key+"\",\""+data_fields+"\"); } else { appMsg.alert(\"Add a title!\"); }";
@@ -467,6 +467,8 @@ function rmSettings (name) {	// IN PROGRESS
         var entry_title = "<i>Create new timer ...</i>";
         html  += rm3settings.basic.container("timer_edit_add_new", entry_title, entry_html, false);
 
+
+        html += "<center>&nbsp;<hr style='border:1px solid;height:1px;margin:5px;margin-top:10px;padding:0px;'/><small><i>Server time: <text id='current_server_time'></text></i></small></center>";
 
 	    setTextById('module_timer_info', html);
 	    }

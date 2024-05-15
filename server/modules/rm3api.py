@@ -1,7 +1,7 @@
 import time
 import modules.rm3presets as rm3presets
 from modules.rm3classes import RemoteDefaultClass
-
+from datetime import datetime
 
 class RemoteAPI(RemoteDefaultClass):
     """
@@ -152,6 +152,7 @@ class RemoteAPI(RemoteDefaultClass):
             setting = []
 
         data["REQUEST"]["load-time"] = (time.time() - data["REQUEST"]["start-time"])
+        data["REQUEST"]["server-time"] = datetime.now().strftime("%Y-%m-%d / %H:%M:%S / %w")
 
         if "CONFIG" in data:
             data["CONFIG"]["reload_status"] = self.queue.reload
