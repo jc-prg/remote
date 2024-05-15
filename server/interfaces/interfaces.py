@@ -175,10 +175,14 @@ class Connect(RemoteThreadingClass):
                         self.logging.debug("   -> " + self.api[key].status)
 
                 if connect:
-                    connected.append(key.replace("_default", ""))
-                    self.api_reconnect(key)
-                else:
+                    if self.api[key].status != "Connected":
+                        self.api[key].connect()
+                    #self.api_reconnect(key)
+
+                if not connect or self.api[key].status != "Connected":
                     not_connected.append(key.replace("_default", ""))
+                else:
+                    connected.append(key.replace("_default", ""))
 
         self.logging.info("Checked device connections (duration=" + str(round(time.time() - start_time, 1)) +
                           "s / interval=" + str(self.checking_interval) + "s) ...")
