@@ -12,7 +12,7 @@ function showRemoteInBackground(show=false) {
         body.style.backgroundPosition   = "bottom center";
         body.style.backgroundAttachment = "fixed";
         if (width < 350)	{ body.style.backgroundSize     = "100%"; }
-        else 			{ body.style.backgroundSize     = "350px"; }
+        else 			    { body.style.backgroundSize     = "350px"; }
         }
     else {
         body.style.backgroundImage    = "";

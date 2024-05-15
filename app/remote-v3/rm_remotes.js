@@ -58,7 +58,7 @@ function rmRemote(name) {
 
 	// create complete remote setup (for scenes and devices)
 	this.create                     = function (type="", rm_id="") {
-	
+
         if (type == "")   { type  = this.active_type; }
         if (rm_id == "")  { rm_id = this.active_name; }
         if (rm_id == "")  {
@@ -214,8 +214,10 @@ function rmRemote(name) {
 		for (var i=0; i<remote_definition.length; i++) {
 
 			var next_button;
-			var button  	= remote_definition[i];
-			var cmd     	= device + "_" + button;
+			var button             = remote_definition[i];
+			var cmd     	       = device + "_" + button;
+			var button_style       = "";
+			this.display.edit_mode = this.edit_mode;
 
 			if (this.edit_mode) {			
 				var context_menu     = "["+i+"] <b>" + cmd.split("||")[0] + "</b><br/><br/>";
@@ -235,6 +237,7 @@ function rmRemote(name) {
                              context_menu += this.button.edit( link_delete     + link_preview, "x","");
 				if (i+1 < remote_definition.length)	{ context_menu += this.button.edit( link_move_right + link_preview, "&gt;",""); }
 				context_menu += input_add_button;
+				button_style = " edit";
 				}
 						
 			if (button == "LINE")                         { next_button = this.basic.line(""); }
@@ -245,14 +248,14 @@ function rmRemote(name) {
 			else if (button == "DISPLAY")                 { next_button = this.display.default(id, device, "devices", remote_display_size, remote_display); }
 			else if (button.indexOf("COLOR-PICKER") == 0) { next_button = this.colorPicker(id, device, "devices", button.split("||")); }
 			else if (button == "keyboard")                { next_button = this.button.device_keyboard( cmd, button, device, "", cmd, "" ); this.active_buttons.push(cmd); }
-			else if (remote_buttons.includes(button))     { next_button = this.button.device( cmd, button, device, "", cmd, "" ); this.active_buttons.push(cmd); }
+			else if (remote_buttons.includes(button))     { next_button = this.button.device( cmd, button, device, button_style, cmd, "" ); this.active_buttons.push(cmd); }
 			else if (this.edit_mode)                      { next_button = this.button.device_add( cmd, button, device, "notfound", cmd, "" ); }
 			else                                          { next_button = this.button.device( cmd, button, device, "notfound", cmd, "disabled" ); }
 
 			if (this.edit_mode) {
-				if (button.indexOf("LINE") == 0)               { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,20); }
+				if (button.indexOf("LINE") == 0)               { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,30); }
 				else if (button.indexOf("DISPLAY") == 0)       { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
-				else if (button.indexOf("COLOR-PICKER") == 0)  { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,240); }
+				else if (button.indexOf("COLOR-PICKER") == 0)  { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
 				else                                           { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
 
 				next_button = this.tooltip.create_inside( next_button, context_menu, i );
@@ -717,6 +720,8 @@ function rmRemote(name) {
 		var remote_channel          = [];
     	var scene_definition        = this.data["CONFIG"]["scenes"][scene];
 		var scene_label             = scene_definition["settings"]["label"];
+        this.display.edit_mode      = this.edit_mode;
+
 
 		appCookie.set("remote","scene::"+scene+"::"+scene_label);
 
@@ -850,12 +855,13 @@ function rmRemote(name) {
 			                                               this.active_buttons.push(cmd); }
 									  
 			if (this.edit_mode) {
-				if (button[0].indexOf("LINE") == 0)                 { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,20); }
-				else if (button[0].indexOf("HEADER-IMAGE") == 0)    { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,160); }
-				else if (button[0].indexOf("SLIDER") == 0)          { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,50); }
-				else if (button[0].indexOf("TOGGLE") == 0)          { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,50); }
+				if (button[0].indexOf("LINE") == 0)                 { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,30); }
+				else if (button[0].indexOf("HEADER-IMAGE") == 0)    { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,20); }
+				else if (button[0].indexOf("SLIDER") == 0)          { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,40); }
+				else if (button[0].indexOf("TOGGLE") == 0)          { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,20); }
 				else if (button[0].indexOf("DISPLAY") == 0)         { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
 				else                                                { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
+
 				next_button = this.tooltip.create_inside( next_button, context_menu, i );
 				}
 

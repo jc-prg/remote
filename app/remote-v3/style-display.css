@@ -16,6 +16,7 @@
 }
 
 .display.right  { float  : right; }
+.display.edit   { opacity: 1; }
 
 .display.small  { width  : 48%;   height  :  40px; }
 .display.middle { width  : 48%;   height  :  88px; }

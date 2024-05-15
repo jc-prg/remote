@@ -28,11 +28,14 @@ function statusCheck(data={}) {
 	dataAll = data;
 
     statusCheck_modes();
-	statusCheck_displayValues(data);
-	statusCheck_deviceActive(data);
-	statusCheck_devicePowerButtonDisplay(data);
-	statusCheck_scenePowerButton(data);
-	statusCheck_sliderToggleColorPicker(data);
+
+    if (!rm3remotes.edit_mode) {
+        statusCheck_displayValues(data);
+        statusCheck_deviceActive(data);
+        statusCheck_devicePowerButtonDisplay(data);
+        statusCheck_scenePowerButton(data);
+        statusCheck_sliderToggleColorPicker(data);
+        }
 	statusCheck_audioMute(data);
 	statusCheck_apiConnection(data);
 	statusCheck_deviceIdle(data);

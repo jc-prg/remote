@@ -173,27 +173,27 @@ function rmRemoteButtons(name) {
 	// default buttons
 	this.default         = function (id, label, style, script_apiCommandSend, disabled="", btnstyle="" ){
 	
-	        var onContext  = "";
-	        var onClick    = "";
-	        
-	        if (Array.isArray(script_apiCommandSend)) {
-	                var test   = "onmousedown_left_right(event,'alert(#left#);','alert(#right#);');"
-	                onClick    = "onmousedown_left_right(event,\"" + script_apiCommandSend[0].replaceAll("\"","#") +
-	                             "\",\"" + script_apiCommandSend[1].replaceAll("\"","#") + "\");";
-	                onClick    = "onmousedown='"+onClick+"'";
-	                onContext  = "oncontextmenu=\"return false;\"";
-	                }
-	        else if (script_apiCommandSend != "") { 
-	        	onClick    = "onclick='" + script_apiCommandSend + "'"; 
-	        	onClick    = onClick.replaceAll("##", "$$!$$");
-	        	onClick    = onClick.replaceAll("#", "\"");
-	        	onClick    = onClick.replaceAll("$$!$$", "#");
-	        	}
+        var onContext  = "";
+        var onClick    = "";
+
+        if (Array.isArray(script_apiCommandSend)) {
+                var test   = "onmousedown_left_right(event,'alert(#left#);','alert(#right#);');"
+                onClick    = "onmousedown_left_right(event,\"" + script_apiCommandSend[0].replaceAll("\"","#") +
+                             "\",\"" + script_apiCommandSend[1].replaceAll("\"","#") + "\");";
+                onClick    = "onmousedown='"+onClick+"'";
+                onContext  = "oncontextmenu=\"return false;\"";
+                }
+        else if (script_apiCommandSend != "") {
+            onClick    = "onclick='" + script_apiCommandSend + "'";
+            onClick    = onClick.replaceAll("##", "$$!$$");
+            onClick    = onClick.replaceAll("#", "\"");
+            onClick    = onClick.replaceAll("$$!$$", "#");
+            }
 	
-		if (style != "") { style = " " + style; }
-		var button = "<button id='" + id.toLowerCase() + "' class='rm-button" + style + "' " + btnstyle + " " +
-		             onClick + " " + onContext + " " + disabled + " >" + label + "</button>"; // style='float:left;'
-		return button;
+        if (style != "") { style = " " + style; }
+        var button = "<button id='" + id.toLowerCase() + "' class='rm-button" + style + "' " + btnstyle + " " +
+                     onClick + " " + onContext + " " + disabled + " >" + label + "</button>"; // style='float:left;'
+        return button;
 		}
 
 	// default with size from values
@@ -248,11 +248,11 @@ function rmRemoteButtons(name) {
 	// create button for single command -> if no command assigned yet to record command for button
 	this.device_add      = function (id, label, device, style, cmd, disabled ) {
 
-	        var device_button	= cmd.split("_");
+        var device_button	= cmd.split("_");
 		var label2		= this.image( label, style );
 		if (label == ".")	{ disabled = "disabled"; label2[0] = "&nbsp;"; }
 	        
-	        var button = this.default( id, label2[0], label2[1], 'apiCommandRecord("'+device_button[0]+'","'+device_button[1]+'");', disabled );
+        var button = this.default( id, label2[0], label2[1], 'apiCommandRecord("'+device_button[0]+'","'+device_button[1]+'");', disabled );
 		return button;		
 		}		
 
@@ -466,64 +466,68 @@ function rmRemoteDisplays(name) {
 		else if (status_data["power"].toUpperCase().indexOf("OFF") >= 0)        { status = "OFF" }
 		else                                                                    { status = "ERROR"; }
 
-		// display if ERROR
-		text += display_start;
-		text  = text.replace( /##STATUS##/g, "ERROR" );
-		text  = text.replace( /##STYLE##/g, style + " display_error" );
-		if (status == "ERROR" && !this.edit_mode)       { text  = text.replace( /##DISPLAY##/g, "block" ); }
-		else                                            { text  = text.replace( /##DISPLAY##/g, "none" ); }
-		if (status_data["power"] == undefined)          { status_data["power"] = "N/A"; }
-		text += "<center><b>Connection Error</b>:</center>"; //<br/>";
-		text += "<center><i>"+connected+" :: Power-Status: "+status_data["power"].toUpperCase()+"</i></center>";
-		text += display_end;
-		
-		// display if ON
-		text += display_start;
-		text  = text.replace( /##STATUS##/g, "ON" );
-		text  = text.replace( /##STYLE##/g, style + " display_on" );
-		if (status == "ON" && !this.edit_mode)	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
-		else                                    { text  = text.replace( /##DISPLAY##/g, "none" ); }
-
-        for (var key in display_data) {
-            var input_id = "";
-            if (display_data[key].indexOf("_") >= 0)    { input_id = 'display_' + display_data[key]; }
-            else                                        { input_id = 'display_' + device + '_' + display_data[key]; }
-            var label    = "<data class='display-label'>"+key+":</data>";
-            var input    = "<data class='display-input' id='"+input_id+"'>no data</data>";
-            text += "<div class='display-element "+style+"'>"+label+input+"</div>";
+        if (this.edit_mode) {
+            // display if EDIT_MODE
+            text += display_start;
+            text  = text.replace( /##STATUS##/g, "EDIT_MODE" );
+            text  = text.replace( /##STYLE##/g, style + " display_on edit" );
+            if (this.edit_mode) { text  = text.replace( /##DISPLAY##/g, "block" ); }
+            else                { text  = text.replace( /##DISPLAY##/g, "none" ); }
+            for (var key in display_data) {
+                var label = "<data class='display-label'>"+key+":</data>";
+                var input = "<data class='display-input-shorten' id='display_"+device+"_"+display_data[key]+"_edit'>{"+display_data[key]+"}</data>";
+                text += "<div class='display-element "+style+"'>"+label+input+"</div>";
+                }
+            text += display_end;
             }
-		text += display_end;
 
-		// display if EDIT_MODE
-		text += display_start;
-		text  = text.replace( /##STATUS##/g, "EDIT_MODE" );
-		text  = text.replace( /##STYLE##/g, style + " display_on" );
-		if (this.edit_mode) { text  = text.replace( /##DISPLAY##/g, "block" ); }
-		else                { text  = text.replace( /##DISPLAY##/g, "none" ); }
-        for (var key in display_data) {
-            var label = "<data class='display-label'>"+key+":</data>";
-			var input = "<data class='display-input-shorten' id='display_"+device+"_"+display_data[key]+"_edit'>{"+display_data[key]+"}</data>";
-            text += "<div class='display-element "+style+"'>"+label+input+"</div>";
+        else {
+            // display if ERROR
+            text += display_start;
+            text  = text.replace( /##STATUS##/g, "ERROR" );
+            text  = text.replace( /##STYLE##/g, style + " display_error" );
+            if (status == "ERROR" && !this.edit_mode)       { text  = text.replace( /##DISPLAY##/g, "block" ); }
+            else                                            { text  = text.replace( /##DISPLAY##/g, "none" ); }
+            if (status_data["power"] == undefined)          { status_data["power"] = "N/A"; }
+            text += "<center><b>Connection Error</b>:</center>"; //<br/>";
+            text += "<center><i>"+connected+" :: Power-Status: "+status_data["power"].toUpperCase()+"</i></center>";
+            text += display_end;
+
+            // display if ON
+            text += display_start;
+            text  = text.replace( /##STATUS##/g, "ON" );
+            text  = text.replace( /##STYLE##/g, style + " display_on" );
+            if (status == "ON" && !this.edit_mode)	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
+            else                                    { text  = text.replace( /##DISPLAY##/g, "none" ); }
+
+            for (var key in display_data) {
+                var input_id = "";
+                if (display_data[key].indexOf("_") >= 0)    { input_id = 'display_' + display_data[key]; }
+                else                                        { input_id = 'display_' + device + '_' + display_data[key]; }
+                var label    = "<data class='display-label'>"+key+":</data>";
+                var input    = "<data class='display-input' id='"+input_id+"'>no data</data>";
+                text += "<div class='display-element "+style+"'>"+label+input+"</div>";
+                }
+            text += display_end;
+
+            // display if MANUAL_MODE
+            text += display_start;
+            text  = text.replace( /##STATUS##/g, "MANUAL" );
+            text  = text.replace( /##STYLE##/g, style + " display_manual" );
+            if (rm3settings.manual_mode)    { text  = text.replace( /##DISPLAY##/g, "block" ); }
+            else                            { text  = text.replace( /##DISPLAY##/g, "none" ); }
+            text += "<center>MANUAL MODE<br/><i>no information available</i></center>";
+            text += display_end;
+
+            // display if OFF
+            text += display_start;
+            text  = text.replace( /##STATUS##/g, "OFF" );
+            text  = text.replace( /##STYLE##/g, style + " display_off" );
+            if (status == "OFF"  && !this.edit_mode)    { text  = text.replace( /##DISPLAY##/g, "block" ); }
+            else                                        { text  = text.replace( /##DISPLAY##/g, "none" ); }
+            text += "<center>power off<br/><i><text id='display_power_info_"+device+"'></text></i></center>";
+            text += display_end;
             }
-		text += display_end;
-
-		// display if MANUAL_MODE
-		text += display_start;
-		text  = text.replace( /##STATUS##/g, "MANUAL" );
-		text  = text.replace( /##STYLE##/g, style + " display_manual" );
-		if (rm3settings.manual_mode)    { text  = text.replace( /##DISPLAY##/g, "block" ); }
-		else                            { text  = text.replace( /##DISPLAY##/g, "none" ); }
-		text += "<center>MANUAL MODE<br/><i>no information available</i></center>";
-		text += display_end;
-
-		// display if OFF
-		text += display_start;
-		text  = text.replace( /##STATUS##/g, "OFF" );
-		text  = text.replace( /##STYLE##/g, style + " display_off" );
-		if (status == "OFF"  && !this.edit_mode)    { text  = text.replace( /##DISPLAY##/g, "block" ); }
-		else                                        { text  = text.replace( /##DISPLAY##/g, "none" ); }
-		text += "<center>power off<br/><i><text id='display_power_info_"+device+"'></text></i></center>";
-		text += display_end;
 
         return text;
         }
