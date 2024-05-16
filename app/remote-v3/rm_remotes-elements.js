@@ -185,9 +185,9 @@ function rmRemoteButtons(name) {
                 }
         else if (script_apiCommandSend != "") {
             onClick    = "onclick='" + script_apiCommandSend + "'";
-            onClick    = onClick.replaceAll("##", "$$!$$");
+            onClick    = onClick.replaceAll("##", "{{!!}}");
             onClick    = onClick.replaceAll("#", "\"");
-            onClick    = onClick.replaceAll("$$!$$", "#");
+            onClick    = onClick.replaceAll("{{!!}}", "#");
             }
 	
         if (style != "") { style = " " + style; }

@@ -406,7 +406,7 @@ function rmSettings (name) {	// IN PROGRESS
             var data_fields = "timer_name_"+key+",timer_description_"+key+",timer_regular_"+key+",timer_once_"+key+",timer_commands_"+key;
             var link_save   = "val=document.getElementById(\"timer_name_"+key+"\").value; if(val!=\"\") { apiTimerEdit(\""+key+"\",\""+data_fields+"\"); } else { appMsg.alert(\"Add a title!\"); }";
             var link_reset  = "rm3settings.module_timer();";
-            var link_delete = "apiTimerDelete(\""+key+"\");";
+            var link_delete = "appMsg.confirm(#Delete timer?#, #apiTimerDelete(##"+key+"##);#, 140);";
 
 	        var buttons     = "";
             if (key != "NEW_TIMER_ID") {
@@ -477,7 +477,7 @@ function rmSettings (name) {	// IN PROGRESS
 
 	    this.module_timer_input = function (input_type, timer_type, key, value) {
 	        var onchange = "rm3settings.module_timer_change(\"" + timer_type + "\", \""+key+"\");";
-	        var html = "<select id='timer_select_" + input_type + "_" + key +"' style='width:40px;' onchange='"+onchange+"'>";
+	        var html = "<select id='timer_select_" + input_type + "_" + key +"' style='width:40px;' onchange='"+onchange+"' class='timer_select'>";
 
 	        if (input_type == "month")             { var options = {"**": -1}; for (var i=1;i<=12;i++) { options[i.toString().padStart(2, '0')] = i.toString().padStart(2, '0'); } }
 	        else if (input_type == "day_of_month") { var options = {"**": -1}; for (var i=1;i<=31;i++) { options[i.toString().padStart(2, '0')] = i.toString().padStart(2, '0'); } }
@@ -503,11 +503,11 @@ function rmSettings (name) {	// IN PROGRESS
             var onchange = "rm3settings.module_timer_change(\"" + type + "\", \""+key+"\");";
 	        if (data["active"]) { checked = "checked"; }
 	        html += "<input id='timer_"+type+"_active_"+key+"' type='checkbox' value='active' "+checked+" onchange='"+onchange+"'>:&nbsp;";
-	        html += "<input id='timer_"+type+"_YY_"+key+"' type='input' style='width:30px;' value='****' disabled>-";
+	        html += "<input id='timer_"+type+"_YY_"+key+"' type='input' style='width:30px;' value='****' disabled class='timer_select'>-";
 	        html += this.module_timer_input("month",        type, key, data["month"]) + "-";
-	        html += this.module_timer_input("day_of_month", type, key, data["day_of_month"]) + " / ";
-	        html += this.module_timer_input("hour",         type, key, data["hour"]) + "-";
-	        html += this.module_timer_input("minute",       type, key, data["minute"]) + " / ";
+	        html += this.module_timer_input("day_of_month", type, key, data["day_of_month"]) + " | ";
+	        html += this.module_timer_input("hour",         type, key, data["hour"]) + ":";
+	        html += this.module_timer_input("minute",       type, key, data["minute"]) + " | ";
 	        html += this.module_timer_input("day_of_week",  type, key, data["day_of_week"]);
 	        }
 	    return html;

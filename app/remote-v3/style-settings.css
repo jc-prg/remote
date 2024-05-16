@@ -87,3 +87,10 @@
 /*        overflow   : auto; */
 }
 
+.timer_select {
+     border                 : 1px solid gray;
+     height                 : 25px;
+    -webkit-border-radius   : 5px;
+    -moz-border-radius      : 5px;
+     border-radius          : 5px !important;
+}

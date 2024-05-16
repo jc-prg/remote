@@ -152,7 +152,7 @@ class RemoteAPI(RemoteDefaultClass):
             setting = []
 
         data["REQUEST"]["load-time"] = (time.time() - data["REQUEST"]["start-time"])
-        data["REQUEST"]["server-time"] = datetime.now().strftime("%Y-%m-%d / %H:%M:%S / %w")
+        data["REQUEST"]["server-time"] = datetime.now().strftime("%Y-%m-%d | %H:%M | %w")
 
         if "CONFIG" in data:
             data["CONFIG"]["reload_status"] = self.queue.reload
