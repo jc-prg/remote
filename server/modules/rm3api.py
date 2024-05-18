@@ -335,6 +335,7 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start(["request-only"])
 
         data["DATA"] = {}
+        data["REQUEST"]["Command"] = "EditApiConfig"
         interfaces = []
         device_config = self.data.devices_read_config(more_details=True)
 
