@@ -369,7 +369,7 @@ function apiCommandSend(cmdButton, sync="", callback="", device="") {
 	if (deactivateButton)   { dc = ["send" , dc[0] , dc[1]]; }
     else                    { dc = ["send_check" , dc[0] , dc[1]]; }
         
-    if (callback == "")	{ callback = remoteReload_load; }
+    //if (callback == "")	{ callback = remoteReload_load; }
 
 	// send via app
 	if (sync == "sync") { 							// check, if still required ....
