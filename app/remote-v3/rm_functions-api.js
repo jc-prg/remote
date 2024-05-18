@@ -583,6 +583,9 @@ function apiMacroSend( macro, device="", content="" ) {  // SEND -> FEHLER? obwo
 function apiMacroSend_return( data ) {
 	console.log("Send macro return :");
 	console.log(data);
+	if (data["REQUEST"]["macro_error"] && data["REQUEST"]["macro_error"] != "") {
+	    appMsg.info("<b>Macro Error:</b> " + data["REQUEST"]["macro_error"], "error");
+	    }
 	if (showButton) {
 	    appMsg.info("<b>Macro Queue:</b> " + data["REQUEST"]["decoded_macro"]);
 	    }

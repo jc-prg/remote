@@ -136,10 +136,10 @@ class RemotesData(RemoteThreadingClass):
                     self.logging.warning(device + ": " + str(data[device]))
                 continue
 
-            interface_def_device = self.config.read(
-                rm3presets.commands + interface + "/" + device_key)  # button definitions, presets, queries ...
-            interface_def_default = self.config.read(
-                rm3presets.commands + interface + "/00_default")  # button definitions, presets, queries ...
+            # button definitions, presets, queries ...
+            interface_def_combined = {}
+            interface_def_device = self.config.read(rm3presets.commands + interface + "/" + device_key)
+            interface_def_default = self.config.read(rm3presets.commands + interface + "/00_default", True)
 
             if "ERROR" in interface_def_device or "ERROR" in interface_def_default:
                 self.logging.error("Error while reading configuration for device (" + device_key + ")")
@@ -149,12 +149,11 @@ class RemotesData(RemoteThreadingClass):
                     self.logging.error("... " + str(interface_def_default["ERROR"]))
 
             else:
-                interface_def_device = interface_def_device["data"]
-                interface_def_default = interface_def_default["data"]
-                interface_def_combined = {}
+                data_config[device] = {}
+                interface_def_device = interface_def_device["data"].copy()
+                interface_def_default = interface_def_default["data"].copy()
 
                 for value in config_keys:
-
                     if value in interface_def_default:
                         interface_def_combined[value] = interface_def_default[value]
                     elif value == "method":
@@ -171,10 +170,10 @@ class RemotesData(RemoteThreadingClass):
                     elif value in interface_def_device:
                         interface_def_combined[value] = interface_def_device[value]
 
-                data_config[device] = {}
-                data_config[device]["buttons"] = {}
                 if interface_def_combined["buttons"] != "":
                     data_config[device]["buttons"] = list(interface_def_combined["buttons"].keys())
+                else:
+                    data_config[device]["buttons"] = []
 
                 if more_details:
                     data_config[device]["api_commands"] = {}

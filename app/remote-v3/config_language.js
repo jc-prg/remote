@@ -19,7 +19,7 @@ var language_app = {
 		"AUDIO_SET_AS_MAIN"     : "Set as main AUDIO device (change from &quot;{0}&quot;).",
 		"AUDIO_N/A_AS_MAIN"     : "This device can't be set as main AUDIO device, no audio volume control available.",
 		
-		"API_INTERFACE"         : "API / Interface",
+		"API_INTERFACE"         : "API / API-Device",
 		"API_COMMANDS"          : "API commands",
 		"API_COMMANDS_TEST"     : "API commands - manual testing",
 		"API_INFORMATION"       : "API information",
