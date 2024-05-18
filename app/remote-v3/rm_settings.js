@@ -742,8 +742,8 @@ function rmSettings (name) {	// IN PROGRESS
                 var link_save      = "apiSetConfig_InterfaceData( \""+key+"_"+dev+"\", \"api_status_edit_"+key+"_"+dev+"\" );"
                 var link_reconnect = "apiReconnectInterface( \""+key+"_"+dev+"\");"
                 var link_edit      = "document.getElementById(\"api_status_edit_"+key+"_"+dev+"\").removeAttribute(\"disabled\");";
-                link_edit         += "this.className=\"button hidden\";";
-                link_edit         += "document.getElementById(\"save_"+api_dev+"\").className=\"button\";";
+                link_edit         += "this.className=\"rm-button hidden\";";
+                link_edit         += "document.getElementById(\"save_"+api_dev+"\").className=\"rm-button\";";
                 var link_api_info  = "window.open(\""+interface["API-Info"]+"\")";
                 var link_on_off    = "apiApiDeviceOnOff_button(\""+key+"\", \""+dev+"\", this);";
 

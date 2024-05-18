@@ -6,3 +6,26 @@
   .hidden_entry_edit	{ color	: yellow; }
   }
 
+.remote_nav {
+    min-width       : 170px;
+    max-width       : 170px;
+}
+
+.remote_nav ul {
+    min-width       : 165px;
+    max-width       : 165px;
+}
+
+.remote_nav ul li {
+    overflow        : hidden;
+}
+
+nav-title {
+    width       : 50%;
+    max-width       : 50%;
+}
+
+nav-title div {
+    overflow        : hidden;
+    height          : 18px;
+}

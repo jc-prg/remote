@@ -3,6 +3,7 @@ import modules.rm3presets as rm3presets
 from modules.rm3classes import RemoteDefaultClass
 from datetime import datetime
 
+
 class RemoteAPI(RemoteDefaultClass):
     """
     Class with API commands
@@ -348,7 +349,7 @@ class RemoteAPI(RemoteDefaultClass):
 
         elif "_" in interface and interface.split("_")[0] in interfaces:
             api, dev = interface.split("_")
-            data["REQUEST"]["Return"] = "OK"
+            data["REQUEST"]["Return"] = "OK: saved interface configuration (" + interface + ")"
             data["DATA"]["interface"] = interface
             config_org = self.config.read(rm3presets.commands + api + "/00_interface")
             config_org["API-Devices"][dev] = config
@@ -359,7 +360,7 @@ class RemoteAPI(RemoteDefaultClass):
                 data["DATA"]["interface"] = "all"
 
         elif interface in interfaces:
-            data["REQUEST"]["Return"] = "OK"
+            data["REQUEST"]["Return"] = "OK: saved interface configuration (" + interface + ")"
             data["DATA"]["interface"] = interface
             try:
                 self.config.write(rm3presets.commands + interface + "/00_interface-test", data)
