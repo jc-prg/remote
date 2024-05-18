@@ -55,6 +55,11 @@
    overflow     : hidden;
 }
 
+.display-label-dialog {
+   float        : left;
+   overflow     : hidden;
+}
+
 .display-input {
    float        : left;
    width        : 62%;

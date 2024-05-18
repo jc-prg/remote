@@ -589,18 +589,18 @@ function rmRemoteDisplays(name) {
         	for (var i=0; i<display_data.length; i++) {
 
       			if (display_data[i] != "power" && display_data[i].substring && display_data[i].substring(0,3) != "api") { // || display_data[i].indexOf("api") != 0)) {
-	        		var label = "<data class='display-label'>"+display_data[i]+":</data>";
-				var input = "<data class='display-detail' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>";
+	        		var label = "<data class='display-label-dialog'>"+display_data[i]+":</data>";
+				var input = use_color("<data class='display-detail-dialog' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>", "VALUE");
 		        	//text += "<div class='display-element alert'>"+label+input+"</div><br/>";
 		        	text += this.tab_row("<div style='width:100px;'>"+label+"</div>",input);
 		        	}
 	        	}
         	text  += this.tab_row("<hr/>",false);
 
-      		text  += this.tab_row("<data class='display-label'>API:</data>", "<data class='display-detail' id='display_full_"+device+"_api'>no data</data>" );
-      		text  += this.tab_row("<data class='display-label'>Status:</data>", "<data class='display-detail' id='display_full_"+device+"_api-status'>no data</data>" );
-      		text  += this.tab_row("<data class='display-label'>Last&nbsp;Send:</data>", "<data class='display-detail' id='display_full_"+device+"_api-last-send'>no data</data>" );
-      		text  += this.tab_row("<data class='display-label'>Last&nbsp;Query:</data>", "<data class='display-detail' id='display_full_"+device+"_api-last-query'>no data</data>" );
+      		text  += this.tab_row("<data class='display-label-dialog'>API:</data>",             use_color("<data class='display-detail' id='display_full_"+device+"_api'>no data</data>", "VALUE") );
+      		text  += this.tab_row("<data class='display-label-dialog'>Status:</data>",          use_color("<data class='display-detail' id='display_full_"+device+"_api-status'>no data</data>", "VALUE") );
+      		text  += this.tab_row("<data class='display-label-dialog'>Last&nbsp;Send:</data>",  use_color("<data class='display-detail' id='display_full_"+device+"_api-last-send'>no data</data>", "VALUE") );
+      		text  += this.tab_row("<data class='display-label-dialog'>Last&nbsp;Query:</data>", use_color("<data class='display-detail' id='display_full_"+device+"_api-last-query'>no data</data>", "VALUE") );
         	text  += this.tab_row("end");
 
         	text  += "</div>";
