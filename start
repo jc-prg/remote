@@ -137,12 +137,6 @@ elif [ $config == "update" ]; then
     echo "Update MODULES from repository"
     git submodule update --init --recursive
 
-    echo "Create new configuration"
-    cd $REMOTE_DIR
-    cd config/
-    ./create $REMOTE_CURRENT_STAGE
-    cd ..
-
     echo "Restart docker"
     $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml up -d
 
@@ -168,12 +162,6 @@ elif [ $config == "rebuild" ]; then
 
     echo "Update MODULES from repository"
     git submodule update --init --recursive
-
-    echo "Create new configuration"
-    cd $REMOTE_DIR
-    cd config/
-    ./create $REMOTE_CURRENT_STAGE
-    cd ..
 
     echo "Rebuild docker container"
     $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml rebuild

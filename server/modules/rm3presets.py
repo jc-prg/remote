@@ -2,6 +2,7 @@ import time
 import os
 import sys
 import logging
+import subprocess
 from dotenv import load_dotenv
 from logging.handlers import RotatingFileHandler
 
@@ -21,7 +22,7 @@ start_time = time.time()
 server_status = "Starting"
 server_health = {}
 
-rollout = server_port = client_port = data_dir = icons_dir = scene_img_dir = app_language = None
+rollout = server_port = client_port = data_dir = icons_dir = scene_img_dir = app_language = git_branch = None
 
 log_level = log_to_file = log_webserver = log_api_data = log_api_ext = log_set2level = None
 log_level_module = {"INFO": [], "DEBUG": [], "WARNING": [], "ERROR": []}
@@ -142,6 +143,33 @@ def set_logging(set_name, set_log_level=None):
         return logger
 
 
+def get_git_branch_from_head():
+    # Start from the current working directory
+    current_dir = os.path.join(os.getcwd(), "..")
+
+    while current_dir:
+        git_dir = os.path.join(current_dir, '.git')
+        head_file = os.path.join(git_dir, 'HEAD')
+
+        if os.path.exists(head_file):
+            with open(head_file, 'r') as f:
+                ref_line = f.readline().strip()
+                if ref_line.startswith('ref: '):
+                    branch_name = ref_line.split('/')[-1]
+                    return branch_name
+                else:
+                    return None
+        else:
+            # Move up one directory
+            parent_dir = os.path.dirname(current_dir)
+            if parent_dir == current_dir:
+                # Reached the root directory
+                break
+            current_dir = parent_dir
+
+    return None
+
+
 # ---------------------------
 
 
@@ -227,6 +255,7 @@ active_macros = "_ACTIVE-MACROS"
 active_apis = "_ACTIVE-APIS"
 active_timer = "_ACTIVE-TIMER"
 
+git_branch = get_git_branch_from_head()
 git_submodules_directory = os.path.join(os.path.dirname(__file__), "..", "..")
 git_submodules_installed = False
 git_submodules = {
@@ -246,6 +275,7 @@ var test            = """ + str(test).lower() + """;
 var log_level       = '""" + log_level.lower() + """';
 var server_port     = """ + str(server_port) + """;
 var rollout         = '""" + rollout + """';
+var git_branch      = '""" + str(git_branch) + """';
 LANG                = '""" + app_language + """';
 
 if (rollout === "test")	{ test = true; }

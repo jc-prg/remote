@@ -284,7 +284,7 @@ function rmSettings (name) {	// IN PROGRESS
                                     " / jcCookies " + appCookie.appVersion +
                                     " / jcFunction "+ jc_functions_version +
                                     " / jcSlider "  + rm3slider.appVersion );
-		set_temp += this.tab.row( "Sources:",  "<a href='https://github.com/jc-prg/remote/' style='color:white' target='_blank'>https://github.com/jc-prg/remote/</a>");
+		set_temp += this.tab.row( "Sources:",  "<a href='https://github.com/jc-prg/remote/tree/"+git_branch+"/' style='color:white' target='_blank'>https://github.com/jc-prg/remote/tree/"+git_branch+"/</a>");
 		set_temp += this.tab.row( "REST API:", "<a href='"+ RESTurl + "api/list/' style='color:white' target='_blank'>" + RESTurl + "api/list/</a>");
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_version","Versions",set_temp,true);
