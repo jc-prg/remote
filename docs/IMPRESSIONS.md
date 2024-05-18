@@ -65,6 +65,6 @@ src="./app_dark/settings_07.PNG" width="17%">
 src="./desktop/remote_browser_03.png" width="48%"> <img 
 src="./desktop/remote_browser_edit_01.png" width="48%"> <img 
 src="./desktop/remote_browser_edit_02.png" width="48%"> <img 
-src="./desktop/remote_browser_edit_03.png" width="48%"> <img 
-src="./desktop/remote_edit.PNG" width="48%"> 
+src="./desktop/remote_browser_edit_03.png" width="48%"> 
+
 
