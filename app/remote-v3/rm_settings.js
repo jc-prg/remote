@@ -876,7 +876,7 @@ function rmSettings (name) {	// IN PROGRESS
 
 		setting  += "<div style='width:100%;align:center;'><center><br/>";
 //		setting  += this.btn.sized("apiMacroChange(['macro','scene-on','scene-off','dev-on','dev-off']);",lang("BUTTON_T_SAVE"),"");
-		setting  += this.btn.sized(id="add_scene",label=lang("BUTTON_T_SAVE"),style="","apiMacroChange([#macro#,#scene-on#,#scene-off#,#dev-on#,#dev-off#]);","");
+		setting  += this.btn.sized(id="add_scene",label=lang("BUTTON_T_SAVE"),style="","apiMacroChange([#macro#,#dev-on#,#dev-off#]);","");
 		setting  += "<br/></center></div>";
 		return setting;
 	    }
