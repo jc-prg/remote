@@ -10,8 +10,9 @@ The following interfaces are integrated at the moment.
 * [EISCP ONKYO](eiscp/README.md) / [api_eiscp.py](api_eiscp.py)
 * [KODI v13](kodi/README.md) / [api_kodi.py](api_kodi.py)
 * [MAGIC-HOME](magichome/README.md) / [api_magichome.py](api_magichome.py)
-* [TAPO P100](p100/README.md) / [api_p100.py](api_p100.py)
 * [SONY API](sonyapi/README.md) / [api_sony.py](api_sony.py)
+* [TAPO P100](p100/README.md) / [api_p100.py](api_p100.py)
+* [ZIGBEE](zigbee/README.md) / [api_zigbee.py](api_zigbee.py)
 
 ## Definitions
 
