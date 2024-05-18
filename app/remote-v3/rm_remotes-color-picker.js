@@ -196,7 +196,7 @@ function rmColorPicker(name) {
 
         // Load image
         const image = new Image();
-        image.src   = 'remote-v3/img/rgb.png'; // Replace 'image.jpg' with your image path
+        image.src   = 'remote-v3/img/rgb2.png'; // Replace 'image.jpg' with your image path
         //image.src   = 'remote-v3/img/img_colormap.gif'; // Replace 'image.jpg' with your image path
         image.width = 250;
         image.height = 250;

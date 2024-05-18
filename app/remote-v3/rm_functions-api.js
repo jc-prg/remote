@@ -49,7 +49,21 @@ function apiAlertReturn(data) {
         else if (data["REQUEST"]["Command"] == "DeleteScene") 	{ remoteMainMenu(); }
         else                                                    {}
 
-	    appMsg.alertReturn(data);
+        if (data["REQUEST"]["Return"].indexOf("ERROR") > -1 && data["REQUEST"]["Command"]) {
+            appMsg.alert("<b>" + data["REQUEST"]["Command"] + "</b>: " + data["REQUEST"]["Return"]);
+            }
+        else if (data["REQUEST"]["Return"].indexOf("ERROR") > -1 && data["REQUEST"]["Command"]) {
+            appMsg.alert(data["REQUEST"]["Return"]);
+            }
+        else if (data["REQUEST"]["Return"] && data["REQUEST"]["Command"] && data["REQUEST"]["Return"].indexOf("OK") > -1) {
+            appMsg.info("<b>" + data["REQUEST"]["Command"] + "</b>: " + data["REQUEST"]["Return"], "ok");
+            }
+        else if (data["REQUEST"]["Return"] && data["REQUEST"]["Command"]) {
+            appMsg.info("<b>" + data["REQUEST"]["Command"] + "</b>: " + data["REQUEST"]["Return"]);
+            }
+        else if (data["REQUEST"]["Return"]) {
+            appMsg.info(data["REQUEST"]["Return"]);
+            }
 
         }, 2000);
     }
@@ -368,7 +382,7 @@ function apiCommandSend(cmdButton, sync="", callback="", device="") {
 	// check, if manual mode (with out checking the device status) or intelligent mode (with checking the device status)
 	if (deactivateButton)   { dc = ["send" , dc[0] , dc[1]]; }
     else                    { dc = ["send_check" , dc[0] , dc[1]]; }
-        
+
     //if (callback == "")	{ callback = remoteReload_load; }
 
 	// send via app
