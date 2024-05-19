@@ -208,7 +208,7 @@ function apiSceneDelete(scene_id) {
 	    appMsg.alert("Scene '"+scene_id+"' doesn't exist.");
 	    }
 	else {
-        appMsg.confirm(lang("SCENE_ASK_DELETE",[scene]),"apiSceneDelete_exe('" + scene + "');");
+        appMsg.confirm(lang("SCENE_ASK_DELETE",[scene]),"apiSceneDelete_exe('" + scene + "');", 140);
         }
 	}
 
@@ -293,6 +293,7 @@ function apiDeviceMovePosition(data) {
 	rm3settings.create();
 	}
 
+function apiMovePosition(from, to) { appMsg.info("MOVE "+from+" >> "+to +"<br/>not ready implemented yet", "error"); }
 
 // create new device
 function apiDeviceAdd(data,onchange) {

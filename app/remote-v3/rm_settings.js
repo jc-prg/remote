@@ -82,7 +82,7 @@ function rmSettings (name) {	// IN PROGRESS
             this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_REMOTE"));
             this.settings_ext_append(1,"", this.module_index_quick(true, false));
 	    	this.settings_ext_append(2,lang("EDIT_REMOTES"), this.module_add_remotes(direct_cmd, direct_data) + this.module_title() + this.module_order_remotes());
-    		this.settings_ext_append(2,lang("EDIT_MACROS"), this.module_macros_edit());
+    		this.settings_ext_append(3,lang("EDIT_MACROS"), this.module_macros_edit());
             this.create_show_ext();
 
             statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
@@ -90,6 +90,17 @@ function rmSettings (name) {	// IN PROGRESS
             statusShow_powerButton('button_show_code', getTextById('button_show_code'));
             //apiGetConfig_showInterfaceData(this.module_interface_edit_info);
             }
+        else if (selected_mode == "edit_scenes") {
+            setNavTitle(lang('SETTINGS_SCENES'));
+
+            this.settings_ext_reset();
+            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_SCENES"));
+            this.settings_ext_append(1,lang('SETTINGS_SCENES'), this.module_scenes());
+    		this.settings_ext_append(3,lang("EDIT_MACROS"), this.module_macros_edit());
+            this.create_show_ext();
+
+            startDragAndDrop("sort_scenes", apiMovePosition);
+        }
         else if (selected_mode == "edit_interfaces") {
             setNavTitle(lang('SETTINGS_API'));
             this.settings_ext_reset();
@@ -159,8 +170,9 @@ function rmSettings (name) {	// IN PROGRESS
 	        "INFORMATION":      ["info",        "rm3settings.create('info');"],
 	        "SETTINGS_GENERAL": ["settings2",   "rm3settings.create('general');"],
 	        "SETTINGS_REMOTE":  ["remote",      "rm3settings.create('edit_remotes');"],
+	        "SETTINGS_SCENES":  ["pictures",    "rm3settings.create('edit_scenes');"],
 	        "SETTINGS_API":     ["plug",        "rm3settings.create('edit_interfaces');"],
-	        "SETTINGS_TIMER":   ["timer",        "rm3settings.create('edit_timer');"]
+	        "SETTINGS_TIMER":   ["timer",       "rm3settings.create('edit_timer');"]
 	        }
 	    if (small) {
 	        var img_small = rm_image(button_img[setting_modules_back["SETTINGS"][0]], big=false);
@@ -227,6 +239,46 @@ function rmSettings (name) {	// IN PROGRESS
 
 		return html;
 	    }
+
+    this.module_remote_edit     = function (type, id, visible) {
+
+	    var images          = dataAll["CONFIG"]["elements"]["button_images"];
+        var img_visible     = rm_image(images["hidden"]);
+        var img_edit        = rm_image(images["edit"]);
+        var img_delete      = rm_image(images["trash2"]);
+        var onclick_reload  = "setTimeout(function() { rm3settings.create(\"edit_scenes\"); }, 2000);";
+
+        if (visible == "no") { img_visible = rm_image(images["visible"]); }
+
+        var edit_commands   = "<span onclick='remoteToggleEditMode(true);rm3remotes.create(\""+type+"\",\""+id+"\");' style='cursor:pointer;'>" + img_edit + "</span>&nbsp;&nbsp;";
+        //apiRemoteChangeVisibility('scene','tv2','scene_visibility');
+        edit_commands      += "<input id=\"visibility_"+key+"\" style=\"display:none;\" value=\""+visible+"\">";
+        edit_commands      += "<span onclick='apiRemoteChangeVisibility(\""+type+"\",\""+id+"\",\"visibility_"+key+"\");"+onclick_reload+"' style='cursor:pointer;'>" + img_visible + "</span>&nbsp;&nbsp;";
+        edit_commands      += "<span onclick='apiSceneDelete(\""+id+"\");' style='cursor:pointer;'>" + img_delete + "</span>";
+	    return edit_commands;
+        }
+
+	this.module_scenes          = function () {
+	    var scenes = dataAll["CONFIG"]["scenes"];
+	    var html   = "&nbsp;<br/><ul id='sort_scenes'>";
+
+        for (var key in scenes) { scenes[key]["position"] = scenes[key]["settings"]["position"]; }
+		var order  = sortDict(scenes, "position");
+	    for (var key in order) {
+	        var scene           = order[key];
+	        var visible         = "";
+	        var style           = "font-weight:bold;";
+	        if (scenes[scene]["settings"]["visible"] == "no") { style = "font-style:italic;"; }
+
+	        html += "<li>";
+	        html += "<div style='width:65%;float:left;"+style+"'>" + scenes[scene]["settings"]["label"] + "</div>";
+	        html += "<div style='width:25%;float:right;'>" + this.module_remote_edit("scene", scene, scenes[scene]["settings"]["visible"]) + "</div>";
+	        html += "</li>";
+	    }
+
+        html += "</ul>";
+	    return html;
+	}
 
 	this.module_title           = function (title="") {
 	    var setting = "<br/>";

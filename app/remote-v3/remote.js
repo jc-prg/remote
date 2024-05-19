@@ -12,6 +12,7 @@ remote_js = [
     "rm_settings.js",
     "rm_menu.js",
     "rm_start.js",
+    "rm_sort-list.js",
     "rm_remotes.js",
     "rm_remotes-color-picker.js",
     "rm_remotes-elements.js",
@@ -35,5 +36,6 @@ remote_css = [
     "style-screensize-big.css",
     "style-screensize-iphone.css",
     "style-screensize-ipad.css",
+    "style-sort-list.css",
     ];
 
