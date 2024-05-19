@@ -271,7 +271,7 @@ function rmSettings (name) {	// IN PROGRESS
 	        if (scenes[scene]["settings"]["visible"] == "no") { style = "font-style:italic;"; }
 
 	        html += "<li>";
-	        html += "<div style='width:65%;float:left;"+style+"'>" + scenes[scene]["settings"]["label"] + "</div>";
+	        html += "<div style='width:65%;float:left;line-height:0.9;"+style+"'>" + scenes[scene]["settings"]["label"] + "<br/><font style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'>"+scene+"</font></div>";
 	        html += "<div style='width:25%;float:right;'>" + this.module_remote_edit("scene", scene, scenes[scene]["settings"]["visible"]) + "</div>";
 	        html += "</li>";
 	    }

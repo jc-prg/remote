@@ -10,10 +10,12 @@
     align-items     : center;
     margin          : 5px;
     padding         : 6px;
+    padding-top     : 9px;
+    padding-bottom  : 9px;
     border          : 1px solid #909090;
     border-radius   : 6px;
     background      : #303030;
-    color           : #dddddd;
+    color           : #eeeeee;
     touch-action    : none; /* Prevent default touch actions */
 }
 
