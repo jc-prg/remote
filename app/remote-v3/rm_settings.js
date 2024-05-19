@@ -399,9 +399,28 @@ function rmSettings (name) {	// IN PROGRESS
 	    return html;
 	    }
 
+    this.module_timer_select    = function (key, target, selected) {
+        var value = getValueById(selected);
+        if (value.indexOf("macro_") > -1)   {
+            value    = value.split("_")[1];
+            var data = Object.keys(dataAll["CONFIG"]["macros"][value]);
+            }
+        else {
+            var data = dataAll["CONFIG"]["devices"][value]["buttons"];
+            }
+        console.error(value);
+        console.error(data);
+        var basic           = new rmRemoteBasic(name+".basic")
+        basic.input_width   = "125px;";
+        var onchange        = "document.getElementById('add_button_"+key+"').removeAttribute('disabled');";
+        var select          = basic.select_array("add_button_command2_"+key, " ("+value+") ...", data, onchange);
+
+        setTextById(target, select);
+        }
+
 	this.module_timer_info      = function (data) {
 
-        this.module_timer_dialog = function(key, entry) {
+        this.module_timer_dialog   = function (key, entry) {
 
             var data_fields = "timer_name_"+key+",timer_description_"+key+",timer_regular_"+key+",timer_once_"+key+",timer_commands_"+key;
             var link_save   = "val=document.getElementById(\"timer_name_"+key+"\").value; if(val!=\"\") { apiTimerEdit(\""+key+"\",\""+data_fields+"\"); } else { appMsg.alert(\"Add a title!\"); }";
@@ -421,7 +440,7 @@ function rmSettings (name) {	// IN PROGRESS
 	        var entry_html = "";
             entry_html += tab.start();
             if (key != "NEW_TIMER_ID") {
-                entry_html += tab.row("ID:",            key);
+                entry_html += tab.row("ID:",        key);
                 }
             entry_html += tab.row("Title:",         input("timer_name_"+key, "", "",  entry["name"]));
             entry_html += tab.row("Description:",   input("timer_description_"+key, "", "", entry["description"]));
@@ -436,9 +455,28 @@ function rmSettings (name) {	// IN PROGRESS
             entry_html += tab.row("Commands:");
             entry_html += tab.row("<input id='timer_commands_"+key+"'   style='width:95%' value='" + JSON.stringify(entry["commands"]) + "'>");
             entry_html += tab.row("&nbsp;");
+
+
+            var basic           = new rmRemoteBasic(name+".basic")
+            basic.input_width   = "125px;";
+            var onchange        = "rm3settings.module_timer_select('"+key+"', 'add_button_command_"+key+"','add_button_device_"+key+"');";
+            var onclick         = "var command = getValueById(\"add_button_device_"+key+"\") + \"_\" + getValueById(\"add_button_command2_"+key+"\");";
+            onclick            += "var value   = JSON.parse(getValueById(\"timer_commands_"+key+"\")); value.push(command); ";
+            onclick            += "setValueById(\"timer_commands_"+key+"\", JSON.stringify(value));";
+
+            var device_macro	= {};
+            for (key2 in dataAll["CONFIG"]["devices"]) { device_macro[key2] = "Device: " + dataAll["CONFIG"]["devices"][key2]["settings"]["label"]; }
+            for (key2 in dataAll["CONFIG"]["macros"])  { if (key2 != "description") { device_macro["macro_"+key2] = "Macro: " + key2; } }
+
+            entry_html += tab.row("Add Command:");
+            entry_html += tab.row(
+                "<div style='float:left;'>" + basic.select("add_button_device_"+key,"...", device_macro, onchange) + "&nbsp; </div>" +
+                "<div style='float:left;' id='add_button_command_"+key+"'><select style='width:"+basic.input_width+";margin:1px;' disabled><option>...</option></select></div>" +
+                "<div style='float:left;'>&nbsp;<button id='add_button_"+key+"'style='height:25px;margin:1px;' onclick='"+onclick+"' disabled>&nbsp;add&nbsp;</button>"
+                );
+            entry_html += tab.row("&nbsp;");
             entry_html += tab.line();
             entry_html += tab.row(buttons);
-
             entry_html += tab.end();
 
             return entry_html;
@@ -462,8 +500,8 @@ function rmSettings (name) {	// IN PROGRESS
 	        }
 
 	    var entry_html  = this.module_timer_dialog("NEW_TIMER_ID", {"name":"","description":"","commands":[],
-	                                                          "timer_regular":{"active":false,"month":-1,"day_of_month":-1,
-	                                                          "hour":-1,"minute":-1,"day_of_week":-1}, "timer_once": []});
+                                                   "timer_regular":{"active":false,"month":-1,"day_of_month":-1,
+                                                   "hour":-1,"minute":-1,"day_of_week":-1}, "timer_once": []});
         var entry_title = "<i>Create new timer ...</i>";
         html  += rm3settings.basic.container("timer_edit_add_new", entry_title, entry_html, false);
 
@@ -481,8 +519,8 @@ function rmSettings (name) {	// IN PROGRESS
 
 	        if (input_type == "month")             { var options = {"**": -1}; for (var i=1;i<=12;i++) { options[i.toString().padStart(2, '0')] = i.toString().padStart(2, '0'); } }
 	        else if (input_type == "day_of_month") { var options = {"**": -1}; for (var i=1;i<=31;i++) { options[i.toString().padStart(2, '0')] = i.toString().padStart(2, '0'); } }
-	        else if (input_type == "hour")         { var options = {"**": -1}; for (var i=0;i<=24;i++) { options[i.toString().padStart(2, '0')] = i.toString().padStart(2, '0'); } }
-	        else if (input_type == "minute")       { var options = {"**": -1}; for (var i=0;i<=60;i++) { options[i.toString().padStart(2, '0')] = i.toString().padStart(2, '0'); } }
+	        else if (input_type == "hour")         { var options = {"**": -1}; for (var i=0;i<24;i++) { options[i.toString().padStart(2, '0')] = i.toString().padStart(2, '0'); } }
+	        else if (input_type == "minute")       { var options = {"**": -1}; for (var i=0;i<60;i++) { options[i.toString().padStart(2, '0')] = i.toString().padStart(2, '0'); } }
 	        else if (input_type == "day_of_week")  { var options = {"*": -1}; for (var i=0;i<=6;i++)  { options[i.toString().padStart(1, '0')] = i.toString().padStart(1, '0'); } }
 	        else                                   { var options = {}; console.error("input type unknown: " + input_type); }
 

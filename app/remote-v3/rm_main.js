@@ -227,7 +227,7 @@ function remoteLastFromCookie() {
 
 		// start remote if cookie is set (reopen with last remote control)
 		if (remote[0] == "scene") 	{
-			rm3remotes.create('scene',remote[1]);           console.remote("!!! CREATE - last from cookie");
+			rm3remotes.create('scene',remote[1]);
 			rm3settings.hide();
 			setNavTitle(remote[2]);
 			//clickMenu();
