@@ -12,7 +12,7 @@
     padding         : 6px;
     border          : 1px solid #909090;
     border-radius   : 6px;
-    background      : #595959;
+    background      : #303030;
     color           : #dddddd;
     touch-action    : none; /* Prevent default touch actions */
 }
