@@ -733,7 +733,7 @@ class RemoteAPI(RemoteDefaultClass):
         """
         data = self._start(["request-only"])
 
-        data["REQUEST"]["Return"] = "OK: Add timer to queue to try out directly"
+        data["REQUEST"]["Return"] = "OK: Added timer to queue. It will run within the next minute."
         data["REQUEST"]["Command"] = "Try out timer"
         self.timer.schedule_timer_try(timer_id)
 
