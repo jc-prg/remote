@@ -79,8 +79,9 @@ class ScheduleTimer(RemoteThreadingClass):
         self.logging.info("Create short schedule information ...")
         self.schedule_short = {}
 
-        if "data" not in self.schedule_short:
+        if "data" not in self.schedule:
             self.logging.error("Schedule data not correct.")
+            self.logging.error("-> " + str(self.schedule))
             return
 
         for key in self.schedule["data"]:
