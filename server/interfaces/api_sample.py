@@ -1,6 +1,6 @@
 import time
 import modules.rm3json as rm3json
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3config
 from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 
 # import sampleAPI as sample
@@ -18,11 +18,14 @@ class ApiControl(RemoteApiClass):
     Integration of sample API to be used by jc://remote/
     """
 
-    def __init__(self, api_name, device="", device_config={}, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """Initialize API / check connect to device"""
+        if device_config is None:
+            device_config = {}
+
         self.api_description = "Sample API Description"
         RemoteApiClass.__init__(self, "api.SAMPLE", api_name, "query",
-                                self.api_description, device, device_config, log_command)
+                                self.api_description, device, device_config, log_command, config)
 
     def connect(self):
         """Connect / check connection"""
@@ -49,7 +52,7 @@ class ApiControl(RemoteApiClass):
             time.sleep(0.2)
         return
 
-    def send(self, device, command):
+    def send(self, device, device_id, command):
         """Send command to API"""
 
         self.wait_if_working()
@@ -74,7 +77,7 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return "OK"
 
-    def query(self, device, command):
+    def query(self, device, device_id, command):
         """Send command to API and wait for answer"""
 
         result = ""
@@ -100,7 +103,7 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return result
 
-    def record(self, device, command):
+    def record(self, device, device_id, command):
         """Record command, especially build for IR devices"""
 
         self.wait_if_working()

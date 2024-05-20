@@ -11,7 +11,7 @@ import os
 import time
 
 import interfaces
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3config
 
 # -----------------------------
 # define which test cases should be used and if silent

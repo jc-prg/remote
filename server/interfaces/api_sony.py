@@ -1,6 +1,6 @@
 import logging
 import time
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3config
 import modules.rm3ping as rm3ping
 from modules.rm3classes import RemoteApiClass
 import interfaces.sonyapi.sony as sony
@@ -18,13 +18,13 @@ class ApiControl(RemoteApiClass):
     """
     Integration of sample API to be use by jc://remote/
     """
-    def __init__(self, api_name, device="", device_config=None, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """
         API Class constructor
         """
         self.api_description = "API for SONY Devices (SonyAPILib)"
         RemoteApiClass.__init__(self, "api.SONY", api_name, "query",
-                                self.api_description, device, device_config, log_command)
+                                self.api_description, device, device_config, log_command, config)
 
         if rm3config.log_api_ext == "NO":
             log = logging.getLogger("sonyapilib.device")
@@ -34,9 +34,11 @@ class ApiControl(RemoteApiClass):
         """
         Connect / check connection
         """
+        self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
+
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
-            self.status = self.not_connected + " ... PING"
+            self.status = self.not_connected + " ... PING " + self.api_config["IPAddress"]
             self.logging.warning(self.status)
             return self.status
 
@@ -55,6 +57,9 @@ class ApiControl(RemoteApiClass):
             self.status = self.not_connected + " ... CONNECT " + str(e)
             return self.status
 
+        if self.status == "Connected":
+            self.logging.info("Connected SONY (" + self.api_config["IPAddress"] + ")")
+
         return self.status
 
     def wait_if_working(self):
@@ -72,7 +77,7 @@ class ApiControl(RemoteApiClass):
         """
         return self.query("power")
 
-    def send(self, device, command):
+    def send(self, device, device_id, command):
         """
         Send command to API
         """
@@ -97,7 +102,7 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return "OK"
 
-    def query(self, device, command):
+    def query(self, device, device_id, command):
         """
         Send command to API and wait for answer
         """
@@ -108,8 +113,8 @@ class ApiControl(RemoteApiClass):
         self.last_action_cmd = "QUERY: " + device + "/" + command
 
         if self.status == "Connected":
-            if self.log_command: self.logging.info(
-                "__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+            if self.log_command:
+                self.logging.info("__QUERY " + device + "/" + command[:shorten_info_to] + " ... ("+self.api_name+")")
 
             if "=" in command:
                 params = command.split("=")
@@ -138,15 +143,9 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return result
 
-    def record(self, device, command):
-        """
-        Record command, especially build for IR devices
-        """
-        return "ERROR " + self.api_name + ": Not supported by this API"
-
     def register(self, command, pin=""):
         """
-        Register command if device requires registration to initialize authentification
+        Register command if device requires registration to initialize authentication
         -> creates config file, to be stored
         """
         self.wait_if_working()

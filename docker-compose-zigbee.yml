@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  mqtt:
+    image: eclipse-mosquitto:2.0
+    restart: unless-stopped
+    container_name: mqtt4zigbee
+    volumes:
+      - "./data/zigbee2mqtt/mqtt:/mosquitto/config"
+    ports:
+      - "${ZIGBEE2MQTT_BRIDGE_PORT:-1883}:1883"
+      - "9001:9001"
+
+  zigbee:
+    container_name: zigbee2mqtt
+    restart: unless-stopped
+    image: koenkk/zigbee2mqtt
+    environment:
+      - TZ=${ZIGBEE2MQTT_LOCATION:-Europe/Berlin}
+    volumes:
+      - ./data/zigbee2mqtt/zigbee:/app/data
+    ports:
+      - "${ZIGBEE2MQTT_FRONTEND_PORT:-8080}:8080"
+    devices:
+      - ${ZIGBEE2MQTT_USB_DONGLE:-/dev/ttyACM0}:${ZIGBEE2MQTT_USB_DONGLE:-/dev/ttyACM0}

@@ -1,40 +1,23 @@
 /* format for bigger devices, except iPad */
 
 .screen_default { display : block; }
-.screen_big { display : none; }
+.screen_big     { display : none; }
 
 @media (min-width: 730px) 
 {
 
   .screen_big       { display : block; }
   .screen_default   { display : none; }
-  
-.button                                                         { width  :  74px; max-width  :  74px; }
-  .button.big,   .button.big_edit                               { width  : 102px; max-width  : 102px; }
-  .button.small, .button.small_edit                             { width  :  60px; max-width  :  60px; }
-  .button.header_image                                          { width  : 328px; max-width  : 328px; }
-  
+
   .display                                                      { font-size : 10px; }
-  .display.small, .display.middle                               { width  : 156px; }
-  .display.big,   .display.h1w4, .display.h2w4                  { width  : 320px; }
-  .display.h1w2,  .display.h2w2, .display.h3w2, .display.h4w2   { width  : 156px; }
- 
-  .display-element,         .display-element.small              { width :  68px; }
-  .display-element.middle,  .display-element.big                { width : 142px; }
-  
-  .display-element.h1w4,    .display-element.h2w4               { width : 142px; }
-  .display-element.h3w2,    .display-element.h4w2               { width : 142px; }
 
   #audio1         	{ right  : 145px; }
   #audio2         	{ right  : 145px; }
 
   .remote           { width  : 335px; }
-  .channel-entry    { width  : 163px; }
   .setting_bg       { width  : 335px; }
-  .color-picker	    { width  : 320px; }
-  .remote-line      { width  : 316px; }
+  .setting_bg.wide  { width  : 698px; }
 
-  .rm-slider-button	     { width  : 320px; }
   .rm-toggle-button      { width  :  74px; }
   .rm-toggle-label.short { width  :  74px; }
   .rm-toggle-label.long  { width  :  238px; }
@@ -46,3 +29,11 @@
   .remote_nav    { width : 164px; }
   .remote_nav ul { width : 160px; }
 }
+
+@media (min-width: 1200px) {
+    .setting_bg.wide  { width : 1056px; }
+    }
+
+@media (min-width: 1530px) {
+    .setting_bg.wide  { width : 1413px; }
+    }

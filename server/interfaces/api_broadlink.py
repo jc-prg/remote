@@ -2,7 +2,7 @@ import time
 import codecs
 import netaddr
 import modules.rm3json as rm3json
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3config
 import modules.rm3ping as rm3ping
 from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 import interfaces.broadlink.broadlink as broadlink
@@ -24,13 +24,13 @@ class ApiControl(RemoteApiClass):
     Integration of BROADLINK API to be use by jc://remote/
     """
 
-    def __init__(self, api_name, device="", device_config=None, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """
         Initialize API / check connect to device
         """
         self.api_description = "API for Infrared Broadlink RM3"
         RemoteApiClass.__init__(self, "api.RM3", api_name, "record",
-                                self.api_description, device, device_config, log_command)
+                                self.api_description, device, device_config, log_command, config)
 
         self.config_add_key("MACAddress", "")
         self.config_set_methods(["send", "record"])
@@ -39,10 +39,11 @@ class ApiControl(RemoteApiClass):
         """
         Connect / check connection
         """
+        self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
 
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
-            self.status = self.not_connected + " ... PING"
+            self.status = self.not_connected + " ... PING " + self.api_config["IPAddress"]
             self.logging.warning(self.status)
             return self.status
 
@@ -71,6 +72,9 @@ class ApiControl(RemoteApiClass):
                 self.status = "ERROR IR Device: " + str(e)
                 self.logging.error(self.status)
 
+        if self.status == "Connected":
+            self.logging.info("Connected BROADLINK (" + self.api_config["IPAddress"] + ")")
+
         return self.status
 
     def wait_if_working(self):
@@ -91,7 +95,7 @@ class ApiControl(RemoteApiClass):
         self.logging.debug("power_status:" + msg)
         return msg
 
-    def send(self, device, command):
+    def send(self, device, device_id, command):
         """Send command to API"""
 
         self.wait_if_working()
@@ -118,7 +122,7 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return "OK"
 
-    def query(self, device, command):
+    def query(self, device, device_id, command):
         """
         Send command to API and wait for answer
         """
@@ -126,7 +130,7 @@ class ApiControl(RemoteApiClass):
         self.logging.debug(msg)
         return msg
 
-    def record(self, device, command):
+    def record(self, device, device_id, command):
         """
         Record command, especially build for IR devices
         """

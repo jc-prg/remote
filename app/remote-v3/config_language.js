@@ -14,26 +14,34 @@ var language_app = {
 	"EN" : {
 		"ADD_ELEMENTS"          : "Add elements",
 		"ADD_DISPLAY"           : "Add display",
-		
+		"ADD_SCENE"             : "Add scene",
+		"ADD_REMOTE"            : "Add remote",
+		"ADD_DEVICE"            : "Add device",
+
 		"AUDIO_IS_MAIN"         : "This device is defined as main AUDIO device.",
 		"AUDIO_SET_AS_MAIN"     : "Set as main AUDIO device (change from &quot;{0}&quot;).",
 		"AUDIO_N/A_AS_MAIN"     : "This device can't be set as main AUDIO device, no audio volume control available.",
 		
-		"API_INTERFACE"         : "API / Interface",
+		"API_INTERFACE"         : "API / API-Device",
 		"API_COMMANDS"          : "API commands",
 		"API_COMMANDS_TEST"     : "API commands - manual testing",
 		"API_INFORMATION"       : "API information",
 		"API_SELECT_CMD"        : "API command or use your own ...",
+		"API_INFO"              : "API Info",
 		
 		"BUTTON_ASK_DELETE"     : "Do you really want to delete the button '{0}' from '{1}'?",
 		"BUTTON_ASK_DELETE_NUMBER" : "Do you really want to delete the button number [{0}] from '{1}'?",
 		"BUTTON_INSERT_NAME"    : "Please insert name for button.",
 		"BUTTON_RECORD"         : "Record button &quot;{0}&quot; for device &quot;{1}&quot;: click OK and then press button within the next 5 seconds.",
 		"BUTTON_SELECT"         : "Please select button.",
+		"BUTTON_INFOS"          : "Button Information",
 		
 		"BUTTON_T"              : "button",
+		"BUTTON_T_ADD"          : "add",
 		"BUTTON_T_CLONE"        : "clone",
 		"BUTTON_T_COLORPICKER"  : "color picker",
+		"BUTTON_T_COLOR"        : "color model",
+		"BUTTON_T_CREATE"       : "create",
 		"BUTTON_T_DEL"          : "delete button",
 		"BUTTON_T_DELETE"       : "delete",
 		"BUTTON_T_DEL_VALUE"    : "delete value",
@@ -59,6 +67,7 @@ var language_app = {
 		"BUTTON_T_PARAMETER"    : "paremter",
 		"BUTTON_T_PREVIEW"      : "preview",
 		"BUTTON_T_VALUE"        : "add value",
+		"BUTTON_T_TRY"          : "try",
 		
 		"CHANNEL_USE_JSON"      : "Please use JSON to edit the channel list.",
 		"CHANGE_ORDER"          : "Change order of remote controls",
@@ -101,12 +110,17 @@ var language_app = {
 		"DISPLAY_LABEL_EXISTS_ALREADY" : "Label already exists in the display.",
 		"DISPLAY_NOT_ADDED"      : "No display added yet. Changes below will have no effect.",
 		
+		"EDIT_DEVICE"            : "Edit device",
+		"EDIT_DEVICES"           : "Edit devices",
 		"EDIT_REMOTE"            : "Edit remote",
 		"EDIT_REMOTES"           : "Edit remotes",
+		"EDIT_SCENE"             : "Edit scene",
+		"EDIT_SCENES"            : "Edit scenes",
 		"EDIT_DISPLAY"           : "Edit display",
 		"EDIT_MACROS"            : "Edit macros",
 		"EDIT_INTERFACES"        : "Edit interfaces",
 		"EDIT_INTERFACE"         : "Edit interface configuration for {0}",
+		"EXTERNAL_ID"            : "External ID",
 
 		"FORMAT_INCORRECT"       : "format is not correct",
 		
@@ -116,6 +130,7 @@ var language_app = {
 		"HEADER_IMAGE_EXISTS"    : "There is already a HEADER-IMAGE in this remote control.",
 		
 		"ID"                     : "ID",
+		"IMAGE"                  : "Image",
 		"INTERFACES"             : "Interfaces",
 		"INTERFACE_STATUS"       : "Interface Status",
 
@@ -204,10 +219,13 @@ var language_app = {
 		
 		"NOT_USED"              : "not used in remote control",
 
-		"PLEASE_WAIT"         : "Please wait ... .",
+		"PLEASE_WAIT"                  : "Please wait ... .",
 		
-		"PREVIEW"             : "Preview",
-		
+		"PREVIEW"                      : "Preview",
+
+		"QUICK_ACCESS"                 : "Quick Access",
+
+		"RECONNECT"                    : "Reconnect",
 		"RECORD_COMMAND"               : "Record command",
 		"RECORD_DELETE_COMMANDS"       : "Record / delete commands",
 		"REMOTE_ADD"                   : "Add remote controls",
@@ -234,8 +252,12 @@ var language_app = {
 		"SELECT_DEV_FIRST"             : "select device first",
 		"SERVER_SETTINGS"              : "Server &amp; client settings",
 		"SETTINGS"                     : "Settings",
-		"SETTINGS_REMOTE"              : "Settings REMOTE",
-		"SETTINGS_API"                 : "Settings API",
+		"SETTINGS_GENERAL"             : "General settings",
+		"SETTINGS_REMOTE"              : "Remote Control Settings",
+		"SETTINGS_DEVICES"             : "Device Settings",
+		"SETTINGS_API"                 : "API Settings",
+		"SETTINGS_SCENES"              : "Scene Settings",
+		"SETTINGS_TIMER"               : "Timer Settings",
 
 		"SLIDER"                       : "slider",
 		"SLIDER_SELECT_CMD"            : "Select command, to insert slider.",

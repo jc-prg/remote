@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: "2.3.0"
+  version: "2.4.0"
   title: "jc://remote/"
   description: API to control remote control devices
   
@@ -264,6 +264,28 @@ paths:
               REQUEST:
                 $ref: "#/definitions/REQUEST"
 
+  /send-api-command/{api_command}/:
+    post:
+      operationId: __main__.remoteAPI.send_api_command
+      tags:
+        - send
+      summary: send API request for a specific api device command
+      description: send API request for a specific api device command
+      parameters:
+        - name: api_command
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully send API request
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
   /set/{device}/{command}/{value}/:
     get:
       operationId: __main__.remoteAPI.send_api_value
@@ -299,7 +321,7 @@ paths:
       operationId: __main__.remoteAPI.send_macro_buttons
       tags:
         - send
-      summary: send marko
+      summary: send marco
       description: the macro commands are send
       parameters:
         - name: macro
@@ -316,8 +338,97 @@ paths:
               REQUEST:
                 $ref: "#/definitions/REQUEST"
 
+  /timer/:
+    get:
+      operationId: __main__.remoteAPI.get_timer
+      tags:
+        - status
+      summary: list timer data
+      description: list timer data
+      responses:
+        200:
+          description: Successfully status data
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              DATA:
+                $ref: "#/definitions/DATA"
 
-#------------------------ EDIT FUNCTIONS ------------------------
+  /timer-edit/{timer_id}/:
+    put:
+      operationId: __main__.remoteAPI.edit_timer
+      tags:
+        - send
+      summary: edit timer event
+      description: edit timer event
+      parameters:
+        - name: timer_id
+          in: path
+          type: string
+          required: true
+        - name: timer_config
+          in: body
+          description: edit configuration
+          schema:
+            type: object
+          required: true
+      responses:
+        200:
+          description: Successfully send API request
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+    delete:
+      operationId: __main__.remoteAPI.edit_timer_delete
+      tags:
+        - send
+      summary: delete timer event
+      description: delete timer event
+      parameters:
+        - name: timer_id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully send API request
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+  /timer-try/{timer_id}/:
+    put:
+      operationId: __main__.remoteAPI.edit_timer_try
+      tags:
+        - send
+      summary: try timer event
+      description: try timer event (send to queue directly)
+      parameters:
+        - name: timer_id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully send API request
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+
+  #------------------------ EDIT FUNCTIONS ------------------------
 
   /macro/:
     put:
@@ -823,6 +934,30 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
 
+  /reconnect/{interface}/:
+    post:
+      operationId: __main__.remoteAPI.reconnect_api
+      tags:
+        - maintain
+      summary: reload data from config files
+      description: reload data from config files
+      parameters:
+        - name: interface
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully done reset
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
   /reset/:
     get:
       operationId: __main__.remoteAPI.status_devices_reset
@@ -903,7 +1038,11 @@ definitions:
   STATUS:
     type: object
     properties:
+      config_errors:
+        type: object
       devices:
+        type: object
+      connections:
         type: object
       interfaces:
         type: object
@@ -913,7 +1052,7 @@ definitions:
         type: object
       system:
         type: object
-      config_errors:
+      system_health:
         type: object
 
   STATUS_SYSTEM:
@@ -925,10 +1064,15 @@ definitions:
   CONFIG:
     type: object
     properties:
-      button_colors:
+      apis:
         type: object
-      button_images:
-        type: object
+        properties:
+          list:
+            type: array
+          list_devices:
+            type: array
+          structure:
+            type: object
       devices:
         type: object
         properties:
@@ -975,6 +1119,12 @@ definitions:
                 properties:
                   api:
                     type: string
+                  device:
+                    type: string
+                  interface_api:
+                    type: string
+                  interface_dev:
+                    type: string
                   files:
                     type: array
                     items:
@@ -983,29 +1133,6 @@ definitions:
                     type: string
                     items:
                       type: string
-              url:
-                type: string
-      interfaces:
-        type: object
-      main-audio:
-        type: string
-      methods:
-        type: object
-
-  DATA_DEVICE:
-    type: object
-
-  DATA:
-    type: object
-    properties:
-      devices:
-        type: object
-        properties:
-          "<device-id>":
-            type: object
-            properties:
-              config:
-                type: object
               remote:
                 type: object
                 properties:
@@ -1015,53 +1142,23 @@ definitions:
                     type: object
                   remote:
                     type: array
-                    items:
-                      type: string
                   type:
                     type: string
-                    enum: ["device"]
               settings:
                 type: object
-                properties:
-                  description:
-                    type: string
-                  image:
-                    type: string
-                  label:
-                    type: string
-                  main-audio:
-                    type: string
-                    enum: ["yes","no"]
-                  position:
-                    type: integer
-                  visible:
-                    type: string
-                    enum: ["yes","no"]
-              status:
-                type: object
-      scenes:
+              url:
+                type: string
+      elements:
         type: object
         properties:
-          "<scene-id>":
+          button_colors:
             type: object
-            properties:
-              label:
-                type: string
-              devices:
-                type: array
-                items:
-                  type: string
-              remote:
-                type: array
-                items:
-                  type: string
-              channel:
-                type: object
-                properties:
-                  "<channel-name>":
-                    type: array
-                    items:
-                      type: string
+          button_images:
+            type: object
+          scene_images:
+            type: object
+      interfaces:
+        type: object
       macros:
         type: object
         properties:
@@ -1103,21 +1200,60 @@ definitions:
                     type: array
                     items:
                       type: string
-      templates:
+      main-audio:
+        type: string
+      methods:
+        type: object
+      reload_status:
+        type: boolean
+      scenes:
         type: object
         properties:
-          "<template-name>":
+          "<scene-id>":
             type: object
             properties:
-              description:
-                type: string 
               label:
-                type: string            
+                type: string
+              devices:
+                type: array
+                items:
+                  type: string
               remote:
                 type: array
                 items:
-                  type: string            
-      template_list:
-        type: array
-        items:
-          type: string
+                  type: string
+              channel:
+                type: object
+                properties:
+                  "<channel-name>":
+                    type: array
+                    items:
+                      type: string
+      templates:
+        type: object
+        properties:
+          definition:
+            type: object
+            properties:
+              "<template-name>":
+                type: object
+                properties:
+                  description:
+                    type: string
+                  label:
+                    type: string
+                  remote:
+                    type: array
+                    items:
+                      type: string
+          list:
+            type: array
+            items:
+              type: string
+
+
+  DATA_DEVICE:
+    type: object
+
+  DATA:
+    type: object

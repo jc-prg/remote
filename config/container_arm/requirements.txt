@@ -1,6 +1,6 @@
 netaddr
 configparser
-broadlink
+broadlink==0.19.0
 flask==2.2.2
 flask-restful
 flask-httpauth
@@ -9,10 +9,10 @@ pyaes
 connexion[swagger-ui]==2.14.1
 netifaces
 kodi-json
-sonyapilib
+sonyapilib==0.5.0
 Crypto
 pycryptodome
 pkcs7
-pythonping
+pythonping==1.1.4
 python-dotenv
-
+paho-mqtt==2.0.0

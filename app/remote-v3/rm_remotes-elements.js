@@ -16,10 +16,13 @@ function rmRemoteBasic(name) {
 	this.logging        = new jcLogging(this.app_name);
 
 	// input for text
-	this.input	= function (id,value="")   { return "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"'>"; }
+	this.input	            = function (id,value="")   {
+
+	    return "<div style='width:" + this.input_width + ";margin:0px;'><input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"'></div>";
+	    }
 
 	// select for different data 
-	this.select	= function (id,title,data,onchange="",selected_value="",sort=false, change_key_value=false) {
+	this.select	            = function (id,title,data,onchange="",selected_value="",sort=false, change_key_value=false) {
 
 	            if (change_key_value) {
 	                var new_data = {};
@@ -44,7 +47,7 @@ function rmRemoteBasic(name) {
                 return item;
                 }
 
-	this.select_array  = function (id,title,data,onchange="",selected_value="") {
+	this.select_array       = function (id,title,data,onchange="",selected_value="") {
 	            var control = {};
                 var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
                 item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
@@ -61,7 +64,7 @@ function rmRemoteBasic(name) {
                 }
 
     // write line with text ...
-	this.line	= function (text="") {
+	this.line	            = function (text="") {
           	var remote = "";
 		remote += "<div class='remote-line'><hr/>";
 		if (text != "") { remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>"; }
@@ -69,7 +72,7 @@ function rmRemoteBasic(name) {
 		return remote;
 		}
 		
-	this.edit_line	= function (text="") {
+	this.edit_line	        = function (text="") {
           	var remote = "";
 		remote += "<div style='border:1px solid;height:1px;margin:5px;margin-top:10px;padding:0px;'>";
 		if (text != "") { remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>"; }
@@ -79,7 +82,7 @@ function rmRemoteBasic(name) {
 		
 	this.container_open = {};
 		
-	this.container  = function(id,title,text="",open=true) {
+	this.container           = function(id,title,text="",open=true) {
 	
 		if (this.container_open[id] != undefined)	{ open = this.container_open[id]; }
 		else						{ this.container_open[id] = open; }
@@ -170,27 +173,27 @@ function rmRemoteButtons(name) {
 	// default buttons
 	this.default         = function (id, label, style, script_apiCommandSend, disabled="", btnstyle="" ){
 	
-	        var onContext  = "";
-	        var onClick    = "";
-	        
-	        if (Array.isArray(script_apiCommandSend)) {
-	                var test   = "onmousedown_left_right(event,'alert(#left#);','alert(#right#);');"
-	                onClick    = "onmousedown_left_right(event,\"" + script_apiCommandSend[0].replaceAll("\"","#") +
-	                             "\",\"" + script_apiCommandSend[1].replaceAll("\"","#") + "\");";
-	                onClick    = "onmousedown='"+onClick+"'";
-	                onContext  = "oncontextmenu=\"return false;\"";
-	                }
-	        else if (script_apiCommandSend != "") { 
-	        	onClick    = "onclick='" + script_apiCommandSend + "'"; 
-	        	onClick    = onClick.replaceAll("##", "$$!$$");
-	        	onClick    = onClick.replaceAll("#", "\"");
-	        	onClick    = onClick.replaceAll("$$!$$", "#");
-	        	}
+        var onContext  = "";
+        var onClick    = "";
+
+        if (Array.isArray(script_apiCommandSend)) {
+                var test   = "onmousedown_left_right(event,'alert(#left#);','alert(#right#);');"
+                onClick    = "onmousedown_left_right(event,\"" + script_apiCommandSend[0].replaceAll("\"","#") +
+                             "\",\"" + script_apiCommandSend[1].replaceAll("\"","#") + "\");";
+                onClick    = "onmousedown='"+onClick+"'";
+                onContext  = "oncontextmenu=\"return false;\"";
+                }
+        else if (script_apiCommandSend != "") {
+            onClick    = "onclick='" + script_apiCommandSend + "'";
+            onClick    = onClick.replaceAll("##", "{{!!}}");
+            onClick    = onClick.replaceAll("#", "\"");
+            onClick    = onClick.replaceAll("{{!!}}", "#");
+            }
 	
-		if (style != "") { style = " " + style; }
-		var button = "<button id='" + id.toLowerCase() + "' class='button" + style + "' " + btnstyle + " " +
-		             onClick + " " + onContext + " " + disabled + " >" + label + "</button>"; // style='float:left;'
-		return button;
+        if (style != "") { style = " " + style; }
+        var button = "<button id='" + id.toLowerCase() + "' class='rm-button" + style + "' " + btnstyle + " " +
+                     onClick + " " + onContext + " " + disabled + " >" + label + "</button>"; // style='float:left;'
+        return button;
 		}
 
 	// default with size from values
@@ -245,11 +248,11 @@ function rmRemoteButtons(name) {
 	// create button for single command -> if no command assigned yet to record command for button
 	this.device_add      = function (id, label, device, style, cmd, disabled ) {
 
-	        var device_button	= cmd.split("_");
+        var device_button	= cmd.split("_");
 		var label2		= this.image( label, style );
 		if (label == ".")	{ disabled = "disabled"; label2[0] = "&nbsp;"; }
 	        
-	        var button = this.default( id, label2[0], label2[1], 'apiCommandRecord("'+device_button[0]+'","'+device_button[1]+'");', disabled );
+        var button = this.default( id, label2[0], label2[1], 'apiCommandRecord("'+device_button[0]+'","'+device_button[1]+'");', disabled );
 		return button;		
 		}		
 
@@ -290,8 +293,8 @@ function rmRemoteButtons(name) {
 	this.image           = function (label,style) {
 
 		// set vars
-        	var button_color = this.data["CONFIG"]["button_colors"];  // definition of button color
-		var button_img2  = this.data["CONFIG"]["button_images"];  // definition of images for buttons (without path and ".png")
+        var button_color = this.data["CONFIG"]["elements"]["button_colors"];  // definition of button color
+		var button_img2  = this.data["CONFIG"]["elements"]["button_images"];  // definition of images for buttons (without path and ".png")
 
 		// if image available set image
 		var button_img   = [];
@@ -426,26 +429,24 @@ function rmRemoteDisplays(name) {
 	//--------------------------------
 	// show display with information
 	this.default		= function (id, device, type="devices", style="", display_data={}) {
-		var remote_data	= this.data["DATA"][type][device]["remote"];
-		var status_data	= this.data["DATA"][type][device]["status"];
-		
-		if (type == "devices") {
-			var status_data_new	= this.data["STATUS"]["devices"][device];
-			var device_api		= status_data_new["api"];
-			var connected		= this.data["STATUS"]["interfaces"][device_api];
-			}
-		else {
-			// check included devices ?
-			var connected = "unknown";
-			}
-		
-		if (!this.data["DATA"][type]) {
+
+		if (!this.data["CONFIG"][type]) {
 			this.logging.error(this.app_name+".display() - type not supported ("+type+")");
 			return;
 			}
-		
+
+		var remote_data	= this.data["CONFIG"][type][device]["remote"];
+		var status_data	= this.data["STATUS"][type][device];
+
+		if (!status_data)           { console.error("Error building display: no status data for " + device + " (" + type + ")"); }
+		if (!status_data["power"])  { console.error("Error building display: no status_power data for " + device + " (" + type + ")"); status_data["power"] = "ERROR"; }
+		if (!remote_data)           { console.error("Error building display: no remote definition for " + device + " (" + type + ")"); }
+
+		if (type == "devices") { var connected = this.data["STATUS"]["devices"][device]["api-status"].toLowerCase(); }
+		else                   { var connected = "unknown"; status_data = {}; }
+
 		if (display_data != {})             {}
-		else if (remote_data["display"])    { display_data = remote_data["display"]; }
+		else if (remote_data["display"])    { display_data          = remote_data["display"]; }
 		else                                { display_data["Error"] = "No display defined"; }
 
         var text    = "";
@@ -459,70 +460,74 @@ function rmRemoteDisplays(name) {
 
 		if (this.edit_mode)                                                     { status = "EDIT_MODE"; }
 		else if (type == "scenes")                                              { status = "ON"; }
+		else if (connected.indexOf("off") > -1)                                 { status = "OFF"; }
 		else if (connected != "connected")                                      { status = "ERROR"; }
-		else if (status_data["power"] == "ON" || status_data["power"] == "on")  { status = "ON"; }
-		else if (status_data["power"].indexOf("OFF") >= 0 || status_data["power"].indexOf("off") >= 0)
-		                                                                        { status = "OFF" }
+		else if (status_data["power"].toUpperCase().indexOf("ON") >= 0)         { status = "ON"; }
+		else if (status_data["power"].toUpperCase().indexOf("OFF") >= 0)        { status = "OFF" }
 		else                                                                    { status = "ERROR"; }
 
-		// display if ERROR
-		text += display_start;
-		text  = text.replace( /##STATUS##/g, "ERROR" );
-		text  = text.replace( /##STYLE##/g, style + " display_error" );
-		if (status == "ERROR" && !this.edit_mode)       { text  = text.replace( /##DISPLAY##/g, "block" ); }
-		else                                            { text  = text.replace( /##DISPLAY##/g, "none" ); }
-		if (status_data["power"] == undefined)          { status_data["power"] = "N/A"; }
-		text += "<center><b>Connection Error</b>:</center>"; //<br/>";
-		text += "<center><i>"+connected+" :: Power-Status: "+status_data["power"].toUpperCase()+"</i></center>";
-		text += display_end;
-		
-		// display if ON
-		text += display_start;
-		text  = text.replace( /##STATUS##/g, "ON" );
-		text  = text.replace( /##STYLE##/g, style + " display_on" );
-		if (status == "ON" && !this.edit_mode)	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
-		else                                    { text  = text.replace( /##DISPLAY##/g, "none" ); }
-
-        for (var key in display_data) {
-            var input_id = "";
-            if (display_data[key].indexOf("_") >= 0)    { input_id = 'display_' + display_data[key]; }
-            else                                        { input_id = 'display_' + device + '_' + display_data[key]; }
-            var label    = "<data class='display-label'>"+key+":</data>";
-            var input    = "<data class='display-input' id='"+input_id+"'>no data</data>";
-            text += "<div class='display-element "+style+"'>"+label+input+"</div>";
+        if (this.edit_mode) {
+            // display if EDIT_MODE
+            text += display_start;
+            text  = text.replace( /##STATUS##/g, "EDIT_MODE" );
+            text  = text.replace( /##STYLE##/g, style + " display_on edit" );
+            if (this.edit_mode) { text  = text.replace( /##DISPLAY##/g, "block" ); }
+            else                { text  = text.replace( /##DISPLAY##/g, "none" ); }
+            for (var key in display_data) {
+                var label = "<data class='display-label'>"+key+":</data>";
+                var input = "<data class='display-input-shorten' id='display_"+device+"_"+display_data[key]+"_edit'>{"+display_data[key]+"}</data>";
+                text += "<div class='display-element "+style+"'>"+label+input+"</div>";
+                }
+            text += display_end;
             }
-		text += display_end;
 
-		// display if EDIT_MODE
-		text += display_start;
-		text  = text.replace( /##STATUS##/g, "EDIT_MODE" );
-		text  = text.replace( /##STYLE##/g, style + " display_on" );
-		if (this.edit_mode) { text  = text.replace( /##DISPLAY##/g, "block" ); }
-		else                { text  = text.replace( /##DISPLAY##/g, "none" ); }
-        for (var key in display_data) {
-            var label = "<data class='display-label'>"+key+":</data>";
-			var input = "<data class='display-input-shorten' id='display_"+device+"_"+display_data[key]+"_edit'>{"+display_data[key]+"}</data>";
-            text += "<div class='display-element "+style+"'>"+label+input+"</div>";
+        else {
+            // display if ERROR
+            text += display_start;
+            text  = text.replace( /##STATUS##/g, "ERROR" );
+            text  = text.replace( /##STYLE##/g, style + " display_error" );
+            if (status == "ERROR" && !this.edit_mode)       { text  = text.replace( /##DISPLAY##/g, "block" ); }
+            else                                            { text  = text.replace( /##DISPLAY##/g, "none" ); }
+            if (status_data["power"] == undefined)          { status_data["power"] = "N/A"; }
+            text += "<center><b>Connection Error</b>:</center>"; //<br/>";
+            text += "<center><i>"+connected+" :: Power-Status: "+status_data["power"].toUpperCase()+"</i></center>";
+            text += display_end;
+
+            // display if ON
+            text += display_start;
+            text  = text.replace( /##STATUS##/g, "ON" );
+            text  = text.replace( /##STYLE##/g, style + " display_on" );
+            if (status == "ON" && !this.edit_mode)	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
+            else                                    { text  = text.replace( /##DISPLAY##/g, "none" ); }
+
+            for (var key in display_data) {
+                var input_id = "";
+                if (display_data[key].indexOf("_") >= 0)    { input_id = 'display_' + display_data[key]; }
+                else                                        { input_id = 'display_' + device + '_' + display_data[key]; }
+                var label    = "<data class='display-label'>"+key+":</data>";
+                var input    = "<data class='display-input' id='"+input_id+"'>no data</data>";
+                text += "<div class='display-element "+style+"'>"+label+input+"</div>";
+                }
+            text += display_end;
+
+            // display if MANUAL_MODE
+            text += display_start;
+            text  = text.replace( /##STATUS##/g, "MANUAL" );
+            text  = text.replace( /##STYLE##/g, style + " display_manual" );
+            if (rm3settings.manual_mode)    { text  = text.replace( /##DISPLAY##/g, "block" ); }
+            else                            { text  = text.replace( /##DISPLAY##/g, "none" ); }
+            text += "<center>MANUAL MODE<br/><i>no information available</i></center>";
+            text += display_end;
+
+            // display if OFF
+            text += display_start;
+            text  = text.replace( /##STATUS##/g, "OFF" );
+            text  = text.replace( /##STYLE##/g, style + " display_off" );
+            if (status == "OFF"  && !this.edit_mode)    { text  = text.replace( /##DISPLAY##/g, "block" ); }
+            else                                        { text  = text.replace( /##DISPLAY##/g, "none" ); }
+            text += "<center>power off<br/><i><text id='display_power_info_"+device+"'></text></i></center>";
+            text += display_end;
             }
-		text += display_end;
-
-		// display if MANUAL_MODE
-		text += display_start;
-		text  = text.replace( /##STATUS##/g, "MANUAL" );
-		text  = text.replace( /##STYLE##/g, style + " display_manual" );
-		if (rm3settings.manual_mode)    { text  = text.replace( /##DISPLAY##/g, "block" ); }
-		else                            { text  = text.replace( /##DISPLAY##/g, "none" ); }
-		text += "<center>MANUAL MODE<br/><i>no information available</i></center>";
-		text += display_end;
-
-		// display if OFF
-		text += display_start;
-		text  = text.replace( /##STATUS##/g, "OFF" );
-		text  = text.replace( /##STYLE##/g, style + " display_off" );
-		if (status == "OFF"  && !this.edit_mode)    { text  = text.replace( /##DISPLAY##/g, "block" ); }
-		else                                        { text  = text.replace( /##DISPLAY##/g, "none" ); }
-		text += "<center>power off</center>";
-		text += display_end;
 
         return text;
         }
@@ -552,20 +557,21 @@ function rmRemoteDisplays(name) {
 		
 		if (type != "devices") { 
 
-			if (!this.data["DATA"][type][device]["remote"]["display-detail"]) {
+			if (!this.data["CONFIG"][type][device]["remote"]["display-detail"]) {
 			
 				this.logging.warn(this.app_name+".display_alert() not implemented for this type and device ("+type+"/"+device+")");
-				this.logging.warn(this.data["DATA"][type][device]);
+				this.logging.warn(this.data["CONFIG"][type][device]);
 				return;
 				}
 			else {
-				display_data = Object.keys(this.data["DATA"][type][device]["remote"]["display-detail"]);
+				display_data = Object.keys(this.data["CONFIG"][type][device]["remote"]["display-detail"]);
 				this.logging.warn(display_data);
 				}
 			}
 			
 		else {
-			var power = this.data["DATA"][type][device]["status"];
+			var power = this.data["STATUS"][type][device];
+			if (type != "devices") { power = {}; }
 			var queries = this.data["CONFIG"]["devices"][device]["commands"]["definition"];
 			if (this.data["CONFIG"]["devices"][device] && queries)	{ display_data = Object.keys(queries); }
 			else								{ display_data = ["ERROR","No display defined"]; } 
@@ -583,18 +589,18 @@ function rmRemoteDisplays(name) {
         	for (var i=0; i<display_data.length; i++) {
 
       			if (display_data[i] != "power" && display_data[i].substring && display_data[i].substring(0,3) != "api") { // || display_data[i].indexOf("api") != 0)) {
-	        		var label = "<data class='display-label'>"+display_data[i]+":</data>";
-				var input = "<data class='display-detail' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>";
+	        		var label = "<data class='display-label-dialog'>"+display_data[i]+":</data>";
+				var input = use_color("<data class='display-detail-dialog' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>", "VALUE");
 		        	//text += "<div class='display-element alert'>"+label+input+"</div><br/>";
 		        	text += this.tab_row("<div style='width:100px;'>"+label+"</div>",input);
 		        	}
 	        	}
         	text  += this.tab_row("<hr/>",false);
 
-      		text  += this.tab_row("<data class='display-label'>API:</data>", "<data class='display-detail' id='display_full_"+device+"_api'>no data</data>" );
-      		text  += this.tab_row("<data class='display-label'>Status:</data>", "<data class='display-detail' id='display_full_"+device+"_api-status'>no data</data>" );
-      		text  += this.tab_row("<data class='display-label'>Last&nbsp;Send:</data>", "<data class='display-detail' id='display_full_"+device+"_api-last-send'>no data</data>" );
-      		text  += this.tab_row("<data class='display-label'>Last&nbsp;Query:</data>", "<data class='display-detail' id='display_full_"+device+"_api-last-query'>no data</data>" );
+      		text  += this.tab_row("<data class='display-label-dialog'>API:</data>",             use_color("<data class='display-detail' id='display_full_"+device+"_api'>no data</data>", "VALUE") );
+      		text  += this.tab_row("<data class='display-label-dialog'>Status:</data>",          use_color("<data class='display-detail' id='display_full_"+device+"_api-status'>no data</data>", "VALUE") );
+      		text  += this.tab_row("<data class='display-label-dialog'>Last&nbsp;Send:</data>",  use_color("<data class='display-detail' id='display_full_"+device+"_api-last-send'>no data</data>", "VALUE") );
+      		text  += this.tab_row("<data class='display-label-dialog'>Last&nbsp;Query:</data>", use_color("<data class='display-detail' id='display_full_"+device+"_api-last-query'>no data</data>", "VALUE") );
         	text  += this.tab_row("end");
 
         	text  += "</div>";
@@ -608,7 +614,7 @@ function rmRemoteDisplays(name) {
 	this.mediainfo		= function (id, device, style="") {
                 	
         var display      = "";
-		var status_data  = this.data["DATA"]["devices"][device]["status"];
+		var status_data  = this.data["STATUS"]["devices"][device];
         	
         return display;
         }

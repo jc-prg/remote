@@ -59,3 +59,7 @@ server/interfaces/test_api_magichome.py
 server/interfaces/broadlink/__pycache__/
 
 server/server_org.py
+
+server/tryout
+/data/zigbee2mqtt/
+/data/_ACTIVE-TIMER.json

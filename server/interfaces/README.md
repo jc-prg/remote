@@ -10,8 +10,9 @@ The following interfaces are integrated at the moment.
 * [EISCP ONKYO](eiscp/README.md) / [api_eiscp.py](api_eiscp.py)
 * [KODI v13](kodi/README.md) / [api_kodi.py](api_kodi.py)
 * [MAGIC-HOME](magichome/README.md) / [api_magichome.py](api_magichome.py)
-* [TAPO P100](p100/README.md) / [api_p100.py](api_p100.py)
 * [SONY API](sonyapi/README.md) / [api_sony.py](api_sony.py)
+* [TAPO P100](p100/README.md) / [api_p100.py](api_p100.py)
+* [ZIGBEE](zigbee/README.md) / [api_zigbee.py](api_zigbee.py)
 
 ## Definitions
 
@@ -24,11 +25,15 @@ The following interfaces are integrated at the moment.
 ## How to integrate new interfaces
 
 * Find Python sources for the device API you want to integrate
-* Copy sources to a sub-directory here
-* Create a copy of the following code: [api_sample.py](api_sample.py)
-* Add code to control the device API into the given framework; \
-  check-out the other APIs to learn more about the possibilities
+* Create a subdirectory for your new API connector using small letters and/or "_"
+* Copy sources to a subdirectory here or just add a README.md to describe your API implementation if the sources are available via 'pip3 install'
+* Create a copy of the sample API connector [api_sample.py](api_sample.py) and name it "api_<short-api-name>.py"
+* If you use new external sources in this API connector, add them to the docker requirements in both files [container/requirements.txt](../../config/container/requirements.txt) and
+  [container_arm/requirements.txt](../../config/container_arm/requirements.txt)
+* Add code to control the device API into the given framework (check-out the other APIs to learn more about the possibilities)
 * Add the new api_*.py into the var **self.api_modules** in the file [interfaces.py](interfaces.py)
+* Create a copy of the sample API configuration [data/_sample/devices/SAMPLE/](../../data/_sample/devices/SAMPLE/) and adjust it to your needs
+* Create a new device in the file [data/_ACTIVE_DEVICES.json](../../data/_sample/_ACTIVE-DEVICES.json) that uses this new interface
 
 ## How to create the configuration files
 

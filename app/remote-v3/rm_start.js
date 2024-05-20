@@ -6,17 +6,17 @@
 
 function rmStart(name) {
 
-	this.data        = {}
-	this.app_name    = name;
-	this.edit_mode   = false;
+	this.data         = {}
+	this.app_name     = name;
+	this.edit_mode    = false;
 	this.initial_load = true;
-	this.logging     = new jcLogging(this.app_name);
+	this.logging      = new jcLogging(this.app_name);
 
-        // load data with devices (deviceConfig["devices"])
+    // load data with devices (deviceConfig["devices"])
 	this.init                 = function(data) {
-        
-        if (data["DATA"])   { this.data = data; }
-        else                { return; }
+
+        if (data["CONFIG"])  { this.data = data; }
+        else                 { return; }
 
         if (this.initial_load) {
             this.logging.default("Initialized new class 'rmStart'.");
@@ -27,6 +27,15 @@ function rmStart(name) {
             }
         }
 
+    // edit mode
+    this.set_edit_mode        = function () {
+        if (this.edit_mode)  {
+            rm3settings.create("index_small");
+            elementVisible("frame3");
+            elementVisible("frame4");
+            }
+        else                 { rm3settings.settings_ext_reset(); }
+    }
 
 	// add links to devices to drop down menu
 	this.add_devices          = function(data,menuItems) {
@@ -47,21 +56,20 @@ function rmStart(name) {
 			if (device != "default") {
 				if (data[device]["settings"]["visible"] == "yes") {
 					var id     = "device_"+device;
-        				menu  += this.entry_device( data, id, device, "small" );
-					}
-			        else if (this.edit_mode && data[device]["settings"]["visible"] == "no") { 
-					var id     = "device_"+device;
-			        	menu  += this.entry_device( data, id, device, "small_edit" );
-			        	}
-			        }
-		}
+                    menu  += this.entry_device( data, id, device, "small" );
+                    }
+                else if (this.edit_mode && data[device]["settings"]["visible"] == "no") {
+                var id     = "device_"+device;
+                    menu  += this.entry_device( data, id, device, "small_edit" );
+                    }
+			    }
+		    }
 
 		// replace old menu
         setTextById(menuItems,menu);
         setTextById("frame1","");
         setTextById("frame2","");
 		}
-
 
 	// add links to scenes to drop down menu
 	this.add_scenes           = function(data,menuItems) {
@@ -122,37 +130,38 @@ function rmStart(name) {
 		bgimage = "";
 		if (image != "") { 
 		
-			var scene_images  = this.data["CONFIG"]["scene_images"];
+			var scene_images  = this.data["CONFIG"]["elements"]["scene_images"];
 			if (scene_images[image]) {
 				image = scene_images[image][0];
 				}
 				
 			bgimage = "style='background-image:url("+rm3scene_dir+image+");'"
-			return "<button id='" + id + "' class='button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + " " + bgimage + "></button>";
+			return "<button id='" + id + "' class='rm-button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + " " + bgimage + "></button>";
 			}
 		else {
-			return "<button id='" + id + "' class='button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + " >" + label + "</button>";
+			return "<button id='" + id + "' class='rm-button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + " >" + label + "</button>";
 			}
-                }
+        }
 
         // check if image exists for button
 	this.button_image         = function(label,style) {
 
                 // set vars
-                var button_color = this.data["CONFIG"]["button_colors"];  // definition of button color
-                var button_img2  = this.data["CONFIG"]["button_images"];  // definition of images for buttons (without path and ".png")
+                var button_color = this.data["CONFIG"]["elements"]["button_colors"];  // definition of button color
+                var button_img2  = this.data["CONFIG"]["elements"]["button_images"];  // definition of images for buttons (without path and ".png")
                 var button_img   = [];
                 for (var key in button_img2) { button_img[key] = this.image(button_img2[key]); }
 
                 // check label
-                if (button_color && label in button_color)	{ style = style + " bg" + label + " "; }
-                if (label in button_img && showImg ) 	{ label = button_img[label]; }
+                if (button_color && label in button_color)  { style = style + " bg" + label + " "; }
+                if (label in button_img && showImg )        { label = button_img[label]; }
                 return [label, style];
                 }
                 
 	// create image tag for icons
 	this.image                = function(file) {
-	        return "<img src='icon/"+file+"' style='height:15px;margin:0px;padding:0px;' alt='"+file+"' />";
+
+	        return "<img src='icon/"+file+"' class='rm-button_image_start' alt='"+file+"' />";
 	        }
 	}
 

@@ -10,27 +10,10 @@
   .screen_ipad      { display : block; }
   .screen_default   { display : none; }
 
-  .button                                                       { width  :  76px; max-width  :  76px; }
-  .button.big,   .button.big_edit                               { width  :  88px; max-width  :  88px; }
-  .button.small, .button.small_edit   	                        { width  :  51px; max-width  :  51px; }
-  .button.header_image                                          { width  : 276px; max-width  : 276px; }
-  
-  .display.small, .display.middle                               { width  : 133px; }
-  .display.h1w2,  .display.h2w2, .display.h3w2, .display.h4w2   { width  : 133px; }
-  .display.big,   .display.h1w4, .display.h2w4                  { width  : 276px; }
- 
-  .display-element,         .display-element.small              { width :  56px; }
-  .display-element.middle,  .display-element.big                { width : 118px; }
-  .display-element.h1w4,    .display-element.h2w4               { width : 118px; }
-  .display-element.h3w2,    .display-element.h4w2               { width : 118px; }
+  .remote           { width  : 290px; }
+  .setting_bg       { width  : 290px; }
+  .setting_bg.width { width  : 590px; }
 
-  .remote               { width  : 290px; }
-  .setting_bg		    { width  : 290px; }
-  .channel-entry	    { width  : 140px; }
-  .color-picker         { width  : 276px; }
-  .remote-line          { width  : 276px; }
-
-  .rm-slider-button	     { width  : 276px; }
   .rm-toggle-button      { width  :  76px; }
   .rm-toggle-label.short { width  :  76px; }
   .rm-toggle-label.long  { width  :  204px; }

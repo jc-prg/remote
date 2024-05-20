@@ -1,6 +1,7 @@
 import time
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3presets
 from modules.rm3classes import RemoteDefaultClass
+from datetime import datetime
 
 
 class RemoteAPI(RemoteDefaultClass):
@@ -8,7 +9,7 @@ class RemoteAPI(RemoteDefaultClass):
     Class with API commands
     """
 
-    def __init__(self, data, edit, config, apis, queue, queue_send):
+    def __init__(self, data, edit, config, apis, queue, queue_send, timer):
         """
         Class constructor for Remote API
 
@@ -29,63 +30,118 @@ class RemoteAPI(RemoteDefaultClass):
         self.queue = queue
         self.queue_send = queue_send
         self.edit = edit
+        self.timer = timer
         self.errors = {}
+
+    def _api_CONFIG(self):
+        """
+        collect configuration information
+
+        Returns:
+            dict: information for "CONFIG" section
+        """
+        templates = self.data.templates_read()
+        apis = self.data.devices_read_api_structure()
+        apis_commands = self.data.devices_read_api_commands(apis)
+        apis_detect = self.data.devices_read_api_new_devices()
+        macros = self.data.macros_read()
+
+        config = {
+            "apis": {
+                "list":                 list(apis.keys()),
+                "list_devices":         list(self.apis.available.keys()),
+                "list_description":     self.apis.available,
+                "list_detect":          apis_detect,
+                "list_api_commands":    apis_commands,
+                "structure":            apis
+                },
+            "devices":                  self.data.devices_read_config(),
+            "elements": {
+                "button_images":        self.config.read(rm3presets.icons_dir + "/index"),
+                "button_colors":        self.config.read(rm3presets.buttons + "button_colors"),
+                "scene_images":         self.config.read(rm3presets.scene_img_dir + "/index")
+                },
+            "macros": {
+                "device-on":            macros["dev-on"],
+                "device-off":           macros["dev-off"],
+                "global":               macros["macro"]
+            },
+            "main-audio":               "NONE",
+            "methods":                  self.apis.methods,
+            "scenes":                   self.data.scenes_read(None, True),
+            "templates": {
+                "definition":           templates["templates"],
+                "list":                 templates["template_list"]
+                }
+            }
+        for device in config["devices"]:
+            if ("main-audio" in config["devices"][device]["settings"] and
+                    config["devices"][device]["settings"]["main-audio"] == "yes"):
+                config["main-audio"] = device
+                break
+        return config.copy()
+
+    def _api_STATUS(self):
+        """
+        collect status information for system, interfaces and devices
+
+        Returns:
+            dict: information for "STATUS" section
+        """
+        status = {
+            "config_errors":    self.data.errors,
+            "connections":      self.data.api_devices_connections(),
+            "devices":          self.data.devices_status(),
+            "scenes":           self.data.scenes_status(),
+            "interfaces":       self.apis.api_get_status(),
+            "request_time":     self.queue_send.average_exec,
+            "system": {
+                "message":                  rm3presets.server_status,
+                "server_start":             rm3presets.start_time,
+                "server_start_duration":    rm3presets.start_duration,
+                "server_running":           time.time() - rm3presets.start_time
+                },
+            "system_health": {}  # to be filled in self._end()
+            }
+
+        for key in rm3presets.server_health:
+            if rm3presets.server_health[key] == "stopped" or rm3presets.server_health[key] == "registered":
+                status["system_health"][key] = rm3presets.server_health[key]
+            else:
+                status["system_health"][key] = round(time.time() - rm3presets.server_health[key], 2)
+
+        return status
 
     def _start(self, setting=None):
         """
         create data structure for API response and read relevant data from config files
+
+        Args:
+            setting (list): values can be "status-only", "request-only" or empty
+        Returns:
+            dict: CONFIG and STATUS element for API response
         """
         # set time for last action -> re-read API information only if clients connected
         if setting is None:
             setting = []
 
-        self.config.cache_last_action = time.time()
+        self.config.user_action()
         data = self.config.api_init.copy()
 
-        if "status-only" not in setting and "request-only" not in setting:
-            data["DATA"] = self.data.complete_read()
-
-            data["CONFIG"] = {}
-            data["CONFIG"]["button_images"] = self.config.read(rm3config.icons_dir + "/index")
-            data["CONFIG"]["button_colors"] = self.config.read(rm3config.buttons + "button_colors")
-            data["CONFIG"]["scene_images"] = self.config.read(rm3config.scene_img_dir + "/index")
-            data["CONFIG"]["devices"] = self.data.devices_read_config()
-            data["CONFIG"]["devices_api"] = self.data.devices_read_interfaces()
-            data["CONFIG"]["interfaces"] = self.apis.available
-            data["CONFIG"]["methods"] = self.apis.methods
-
-            for device in data["DATA"]["devices"]:
-                data["CONFIG"]["main-audio"] = "NONE"
-                if "main-audio" in data["DATA"]["devices"][device]["settings"] and \
-                        data["DATA"]["devices"][device]["settings"]["main-audio"] == "yes":
-                    data["CONFIG"]["main-audio"] = device
-                    break
-        else:
-            if "DATA" in data:
-                del data["DATA"]
-
-        if "request-only" in setting:
-            self.logging.info("----------- !!! " + str(data))
-
-        data["REQUEST"] = {}
-        data["REQUEST"]["start-time"] = time.time()
-        data["REQUEST"]["Button"] = self.queue.last_button
-
-        data["STATUS"] = {}
         if "request-only" not in setting:
-            data["STATUS"]["devices"] = self.data.devices_status()
-            data["STATUS"]["scenes"] = self.data.scenes_status()
-            data["STATUS"]["interfaces"] = self.apis.api_get_status()
-            data["STATUS"]["system"] = {}  # to be filled in self._end()
-            data["STATUS"]["request_time"] = self.queue_send.average_exec
-            data["STATUS"]["config_errors"] = self.data.errors
-            data["STATUS"]["system_health"] = {}
+            data["STATUS"] = self._api_STATUS()
 
-            for key in rm3config.server_health:
-                if rm3config.server_health[key] == "stopped" or rm3config.server_health[key] == "registered":
-                    data["STATUS"]["system_health"][key] = rm3config.server_health[key]
-                else:
-                    data["STATUS"]["system_health"][key] = round(time.time() - rm3config.server_health[key], 2)
+        if "status-only" not in setting and "request-only" not in setting:
+            data["DATA"] = {}
+            data["CONFIG"] = self._api_CONFIG()
+
+        if "status-only" in setting or "request-only" in setting:
+            del data["DATA"]
+
+        data["REQUEST"] = {
+            "start-time":   time.time(),
+            "Button":       self.queue.last_button
+            }
 
         return data.copy()
 
@@ -97,20 +153,10 @@ class RemoteAPI(RemoteDefaultClass):
             setting = []
 
         data["REQUEST"]["load-time"] = (time.time() - data["REQUEST"]["start-time"])
-        data["STATUS"]["system"] = {
-            "message": rm3config.server_status,
-            "server_start": rm3config.start_time,
-            "server_start_duration": rm3config.start_duration,
-            "server_running": time.time() - rm3config.start_time
-        }
-
-        # --------------------------------
+        data["REQUEST"]["server-time"] = datetime.now().strftime("%Y-%m-%d | %H:%M | %w")
 
         if "CONFIG" in data:
             data["CONFIG"]["reload_status"] = self.queue.reload
-            data["CONFIG"]["reload_config"] = self.config.cache_update
-
-        # --------------------------------
 
         if "no-data" in setting and "DATA" in data:
             del data["DATA"]
@@ -128,7 +174,8 @@ class RemoteAPI(RemoteDefaultClass):
         """
         Trigger cache update
         """
-        self.config.update()
+        #self.config.cache_request_update()
+        pass
 
     def _button_toggle(self, current_value, complete_list):
         """
@@ -168,15 +215,15 @@ class RemoteAPI(RemoteDefaultClass):
         d = {}
         data = self._start(["request-only"])
 
-        if app_version == rm3config.APP_version:
+        if app_version == rm3presets.APP_version:
             d["ReturnCode"] = "800"
-            d["ReturnMsg"] = "OK: " + rm3config.error_message("800")
-        elif app_version in rm3config.APP_support:
+            d["ReturnMsg"] = "OK: " + rm3presets.error_message("800")
+        elif app_version in rm3presets.APP_support:
             d["ReturnCode"] = "801"
-            d["ReturnMsg"] = "WARN: " + rm3config.error_message("801")
+            d["ReturnMsg"] = "WARN: " + rm3presets.error_message("801")
         else:
             d["ReturnCode"] = "802"
-            d["ReturnMsg"] = "WARN: " + rm3config.error_message("802")
+            d["ReturnMsg"] = "WARN: " + rm3presets.error_message("802")
 
         data["REQUEST"]["Return"] = d["ReturnMsg"]
         data["REQUEST"]["ReturnCode"] = d["ReturnCode"]
@@ -237,7 +284,7 @@ class RemoteAPI(RemoteDefaultClass):
             dict: API response
         """
         data = self._start()
-        interface = data["DATA"]["devices"][device]["config"]["interface_api"]
+        interface = data["DATA"]["devices"][device]["config"]["api_key"]
         data["DATA"] = {}
 
         EncodedCommand = self.apis.api_record(interface, device, button)
@@ -288,11 +335,12 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start(["request-only"])
 
         data["DATA"] = {}
+        data["REQUEST"]["Command"] = "EditApiConfig"
         interfaces = []
         device_config = self.data.devices_read_config(more_details=True)
 
         for key in device_config:
-            api = device_config[key]["interface"]["interface_api"]
+            api = device_config[key]["interface"]["api_key"]
             if api not in interfaces:
                 interfaces.append(api)
 
@@ -302,21 +350,21 @@ class RemoteAPI(RemoteDefaultClass):
 
         elif "_" in interface and interface.split("_")[0] in interfaces:
             api, dev = interface.split("_")
-            data["REQUEST"]["Return"] = "OK"
+            data["REQUEST"]["Return"] = "OK: saved interface configuration (" + interface + ")"
             data["DATA"]["interface"] = interface
-            config_org = self.config.read(rm3config.commands + api + "/00_interface")
+            config_org = self.config.read(rm3presets.commands + api + "/00_interface")
             config_org["API-Devices"][dev] = config
             try:
-                self.config.write(rm3config.commands + api + "/00_interface", config_org)
+                self.config.write(rm3presets.commands + api + "/00_interface", config_org)
             except Exception as e:
                 data["REQUEST"]["Return"] = "ERROR: Could not save configuration for '" + interface + "': " + str(e)
                 data["DATA"]["interface"] = "all"
 
         elif interface in interfaces:
-            data["REQUEST"]["Return"] = "OK"
+            data["REQUEST"]["Return"] = "OK: saved interface configuration (" + interface + ")"
             data["DATA"]["interface"] = interface
             try:
-                self.config.write(rm3config.commands + interface + "/00_interface-test", data)
+                self.config.write(rm3presets.commands + interface + "/00_interface-test", data)
             except Exception as e:
                 data["REQUEST"]["Return"] = "ERROR: Could not save configuration for '" + interface + "': " + str(e)
                 data["DATA"]["interface"] = "all"
@@ -551,8 +599,8 @@ class RemoteAPI(RemoteDefaultClass):
         device_config = self.data.devices_read_config(more_details=True)
 
         if device in device_config:
-            api = device_config[device]["interface"]["interface_api"]
-            api_config = self.config.read(rm3config.commands + api + "/00_interface")
+            api = device_config[device]["interface"]["api_key"]
+            api_config = self.config.read(rm3presets.commands + api + "/00_interface")
 
             data["REQUEST"]["Return"] = "OK"
             data["DATA"]["device"] = device
@@ -565,12 +613,9 @@ class RemoteAPI(RemoteDefaultClass):
             data["DATA"]["devices"] = device_config
 
             for key in device_config:
-                api = device_config[key]["interface"]["interface_api"]
+                api = device_config[key]["interface"]["api_key"]
                 api_method = device_config[key]["interface"]["method"]
-                api_config = self.config.read(rm3config.commands + api + "/00_interface")
-
-                if api_method == "record":
-                    data["DATA"]["devices"][key]["api_commands"] = {}
+                api_config = self.config.read(rm3presets.commands + api + "/00_interface")
 
                 if "ERROR" not in str(api_config):
                     data["DATA"]["devices"][key]["interface_details"] = str(api_config)
@@ -599,9 +644,11 @@ class RemoteAPI(RemoteDefaultClass):
 
         interfaces = []
         device_config = self.data.devices_read_config(more_details=True)
+        api_config = self.config.interface_configuration
 
-        for key in device_config:
-            api = device_config[key]["interface"]["interface_api"]
+        self.logging.debug("get_config_interface: " + str(device_config.keys()))
+
+        for api in api_config:
             if api not in interfaces:
                 interfaces.append(api)
 
@@ -610,7 +657,7 @@ class RemoteAPI(RemoteDefaultClass):
             data["DATA"]["interface"] = "all"
             data["DATA"]["interfaces"] = {}
             for api in interfaces:
-                api_config = self.config.read(rm3config.commands + api + "/00_interface")
+                api_config = self.config.read(rm3presets.commands + api + "/00_interface")
                 # data["DATA"]["interfaces"][api] = str(api_config)
                 for key1 in api_config["API-Devices"]:
                     for key2 in api_config["API-Devices"][key1]:
@@ -622,7 +669,7 @@ class RemoteAPI(RemoteDefaultClass):
         elif interface in interfaces:
             data["REQUEST"]["Return"] = "OK"
             data["DATA"]["interface"] = interface
-            api_config = self.config.read(rm3config.commands + interface + "/00_interface")
+            api_config = self.config.read(rm3presets.commands + interface + "/00_interface")
             for key1 in api_config["API-Devices"]:
                 for key2 in api_config["API-Devices"][key1]:
                     if key2 == "MACAddress":
@@ -637,6 +684,78 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._end(data, ["no-config", "no-status"])
         return data
 
+    def get_timer(self):
+        """
+        Load and list all data
+
+        Return:
+            dict: API response
+        """
+        data = self._start()
+        data["REQUEST"]["Return"] = "OK: Returned timer data."
+        data["REQUEST"]["Command"] = "Get timer"
+        data["DATA"] = {"timer": self.timer.get_timer_events()}
+        data = self._end(data, ["no-config", "no-status"])
+        return data
+
+    def edit_timer(self, timer_id, timer_config):
+        """
+        edit data of a timer event
+
+        Args:
+            timer_id (str): timer id
+            timer_config (dict): timer configuration
+        Return:
+            dict: API response
+        """
+        data = self._start()
+
+        if timer_id != "NEW_TIMER_ID":
+            data["REQUEST"]["Return"] = "OK: Edit timer data (" + str(timer_id) + ")"
+            data["REQUEST"]["Command"] = "Edit timer"
+            self.timer.schedule_timer_edit(timer_id, timer_config)
+        else:
+            data["REQUEST"]["Return"] = "OK: Create new timer"
+            data["REQUEST"]["Command"] = "Create new timer"
+            self.timer.schedule_timer_add(timer_config)
+
+        data = self._end(data, ["no-config", "no-status", "no-data"])
+        return data
+
+    def edit_timer_try(self, timer_id):
+        """
+        edit timer event to queue to try out immediately
+
+        Args:
+            timer_id (str): timer id
+        Return:
+            dict: API response
+        """
+        data = self._start(["request-only"])
+
+        data["REQUEST"]["Return"] = "OK: Added timer to queue. It will run within the next minute."
+        data["REQUEST"]["Command"] = "Try out timer"
+        self.timer.schedule_timer_try(timer_id)
+
+        data = self._end(data, ["no-config", "no-status", "no-data"])
+        return data
+
+    def edit_timer_delete(self, timer_id):
+        """
+        edit data of a timer event
+
+        Args:
+            timer_id (str): timer id
+        Return:
+            dict: API response
+        """
+        data = self._start()
+        data["REQUEST"]["Return"] = "OK: Delete timer data (" + str(timer_id) + ")"
+        data["REQUEST"]["Command"] = "Delete timer"
+        self.timer.schedule_timer_delete(timer_id)
+        data = self._end(data, ["no-config", "no-status", "no-data"])
+        return data
+
     def reload(self):
         """
         reload interfaces and reload config data in cache
@@ -649,14 +768,27 @@ class RemoteAPI(RemoteDefaultClass):
         self._refresh()
         time.sleep(1)
 
-        data = self._start(["request-only"])
+        data = self._start()
         data["REQUEST"]["Return"] = "OK: Configuration reloaded"
         data["REQUEST"]["Command"] = "Reload"
 
         self.apis.api_reconnect()
-        self.data.get_device_status(data, read_api=True)
+        self.data.devices_get_status(data["STATUS"]["devices"], read_api=True)
 
         data = self._end(data, ["no-data"])
+        return data
+
+    def reconnect_api(self, interface):
+        """
+        trigger reconnect of APIs
+        """
+        data = self._start()
+        data["REQUEST"]["Return"] = "OK: Configuration reloaded"
+        data["REQUEST"]["Command"] = "Reload"
+
+        self.apis.api_reconnect(interface, True)
+
+        data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
     def send_api(self, device, command):
@@ -689,6 +821,44 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
+    def send_api_command(self, api_command):
+        """
+        send a command to an API device (without device respective remote definition)
+        """
+        data = self._start([])
+        interfaces = data["CONFIG"]["apis"]["list_api_commands"]
+
+        api_dev = ""
+        command = ""
+        if "::" in api_command:
+            api_dev, command = api_command.split("::")
+
+        if api_dev in interfaces and command in interfaces[api_dev]:
+            data["REQUEST"]["Return"] = {
+                "answer": self.apis.api_send_directly(api_dev, command),
+                "api_device": api_dev,
+                "command": api_command
+            }
+        elif api_dev in interfaces:
+            data["REQUEST"]["Return"] = {
+                "error": "Given API Device doesn't have this command (" + api_dev + ": " + command + ")",
+                "command": api_command
+            }
+        elif api_dev != "":
+            data["REQUEST"]["Return"] = {
+                "error": "Given API Device isn't defined (" + api_dev + ")",
+                "command": api_command
+            }
+        else:
+            data["REQUEST"]["Return"] = {
+                "error": "Command doesn't contain an API Device",
+                "command": api_command
+            }
+
+        data["REQUEST"]["Command"] = "RemoteSendApiDeviceCmd"
+        data = self._end(data, ["no-data", "no-config", "no-status"])
+        return data
+
     def send_api_value(self, device, command, value):
         """
         send command incl. value and return JSON msg
@@ -700,8 +870,8 @@ class RemoteAPI(RemoteDefaultClass):
         Return:
             dict: API response
         """
-        data = self._start(["request-only"])
-        interface = self.config.cache["_api"]["devices"][device]["config"]["interface_api"]
+        data = self._start()
+        interface = data["CONFIG"]["devices"][device]["interface"]["api"]
         method = self.apis.api_method(device)
 
         data["REQUEST"]["Device"] = device
@@ -711,11 +881,11 @@ class RemoteAPI(RemoteDefaultClass):
         if method == "query":
             # data["REQUEST"]["Return"] = self.apis.send(interface,device,command,value)
             data["REQUEST"]["Return"] = self.queue_send.add2queue([[interface, device, command, value]])
-            self.data.get_device_status(data, read_api=True)
+            self.data.devices_get_status(data, read_api=True)
 
         elif method == "record":
             data["REQUEST"]["Return"] = self.edit.device_status_set(device, command, value)
-            self.data.get_device_status(data, read_api=True)
+            self.data.devices_get_status(data, read_api=True)
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config", "no-status"])
@@ -731,13 +901,18 @@ class RemoteAPI(RemoteDefaultClass):
         Return:
             dict: API response
         """
-        data = self._start(["request-only"])
-        interface = self.config.cache["_api"]["devices"][device]["config"]["interface_api"]
-
+        data = self._start()
+        interface = data["CONFIG"]["devices"][device]["interface"]["api"]
+        data["REQUEST"]["Command"] = "Remote"
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Button"] = button
-        data["REQUEST"]["Return"] = self.queue_send.add2queue([[interface, device, button, ""]])
-        data["REQUEST"]["Command"] = "Remote"
+
+        if device in data["CONFIG"]["devices"] and button in data["CONFIG"]["devices"][device]["buttons"]:
+            data["REQUEST"]["Return"] = self.queue_send.add2queue([[interface, device, button, ""]])
+
+        elif device not in data["CONFIG"]["devices"]:
+            data["REQUEST"]["Return"] = "ERROR: device '" + device + "' doesn't exist."
+            data["REQUEST"]["Return"] = "ERROR: button '" + button + "' not defined for device '" + device + "'."
 
         if "ERROR" in data["REQUEST"]["Return"]:
             self.logging.error(data["REQUEST"]["Return"])
@@ -767,8 +942,12 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start()
 
         method = self.apis.api_method(device)
-        interface = data["CONFIG"]["devices"][device]["interface"]["interface_api"]
+        interface = data["CONFIG"]["devices"][device]["interface"]["api_key"]
         api_dev = data["CONFIG"]["devices"][device]["interface"]["api"]
+
+        data["REQUEST"]["Device"] = device
+        data["REQUEST"]["Button"] = button
+        data["REQUEST"]["Command"] = "SendButton (Check Values)"
 
         self.logging.info("__BUTTON: " + device + "/" + button + " (" + interface + "/" + method + ")")
 
@@ -778,7 +957,7 @@ class RemoteAPI(RemoteDefaultClass):
             # Get method and presets
             definition = data["CONFIG"]["devices"][device]["commands"]["definition"]
 
-            # special with power buttons
+            # special with power buttons / and vol buttons
             if button == "on-off" or button == "on" or button == "off":
                 value = "power"
             elif button[-1:] == "-" or button[-1:] == "+":
@@ -790,6 +969,9 @@ class RemoteAPI(RemoteDefaultClass):
             current_status = self.edit.device_status_get(device, value)
             device_status = self.edit.device_status_get(device, "power")
 
+            data["REQUEST"]["status_device"] = device_status
+            data["REQUEST"]["status_value"] = current_status
+
             # buttons power / ON / OFF
             if value == "power":
                 if button == "on":
@@ -799,6 +981,7 @@ class RemoteAPI(RemoteDefaultClass):
                 if button == "on-off":
                     status = self._button_toggle(current_status, ["ON", "OFF"])
 
+            # other buttons
             elif value in definition and "type" in definition[value] \
                     and ("values" in definition[value] or "param" in definition[value]):
 
@@ -811,6 +994,7 @@ class RemoteAPI(RemoteDefaultClass):
                 if device_status == "ON":
                     if d_type == "enum":
                         status = self._button_toggle(current_status, d_values)
+
                     elif d_type == "integer" and "min" in d_values and "max" in d_values:
                         minimum = int(d_values["min"])
                         maximum = int(d_values["max"])
@@ -876,10 +1060,6 @@ class RemoteAPI(RemoteDefaultClass):
                 self.logging.warning("RemoteOnOff - Command not defined: " + device + "_" + value)
                 self.logging.debug("types = " + str(types) + " / presets = " + str(presets))
 
-        data["REQUEST"]["Device"] = device
-        data["REQUEST"]["Button"] = button
-        data["REQUEST"]["Command"] = "OnOff"
-
         self.logging.debug("... add to queue [" + str(api_dev) + "," + str(device) + "," + str(button) +
                            "," + str(status) + "]")
 
@@ -903,6 +1083,11 @@ class RemoteAPI(RemoteDefaultClass):
         Return:
             dict: API response
         """
+
+        # !!! Auf Config statt auf DATA Zugreifen!
+        # !!! dev-on zu device-on; dev-off zu device-off; macro zu global
+        # !!! scene-on/off aus scene ziehen
+
         data = self._start()
         data["REQUEST"]["Button"] = macro
         data["REQUEST"]["Return"] = "ERROR: Started but not finished..."  # self.apis.send(interface,device,button)
@@ -912,6 +1097,7 @@ class RemoteAPI(RemoteDefaultClass):
         commands_2nd = []
         commands_3rd = []
         commands_4th = []
+        commands_dont_exist = []
         return_msg = ""
 
         self.logging.debug("Decoded macro-string 1st: " + str(commands_1st))
@@ -922,15 +1108,32 @@ class RemoteAPI(RemoteDefaultClass):
             if not command_str.isnumeric() and "_" in command:
                 device, button = command.split("_", 1)
                 if "scene-on_" in command:
-                    if button in data["DATA"]["macros"]["scene-on"]:
-                        commands_2nd.extend(data["DATA"]["macros"]["scene-on"][button])
-                    else:
+
+                    if button not in data["CONFIG"]["scenes"]:
                         return_msg += "; ERROR: macro not defined (" + command + ")"
+                        commands_dont_exist.append(command + " (scene '"+button+"' not found)")
+
+                    elif (button in data["CONFIG"]["scenes"] and
+                            "macro-scene-on" in data["CONFIG"]["scenes"][button]["remote"]):
+                        return_msg += "; ERROR: macro not defined (" + command + ")"
+                        commands_dont_exist.append(command + " (scene '" + button + "' has no scene-macros)")
+
+                    else:
+                        commands_2nd.extend(data["CONFIG"]["scenes"][button]["remote"]["macro-scene-on"])
+
                 elif "scene-off_" in command:
-                    if button in data["DATA"]["macros"]["scene-off"]:
-                        commands_2nd.extend(data["DATA"]["macros"]["scene-off"][button])
-                    else:
+                    if button not in data["CONFIG"]["scenes"]:
                         return_msg += "; ERROR: macro not defined (" + command + ")"
+                        commands_dont_exist.append(command + " (scene '"+button+"' not found)")
+
+                    elif (button in data["CONFIG"]["scenes"] and
+                            "macro-scene-on" in data["CONFIG"]["scenes"][button]["remote"]):
+                        return_msg += "; ERROR: macro not defined (" + command + ")"
+                        commands_dont_exist.append(command + " (scene '" + button + "' has no scene-macros)")
+
+                    else:
+                        commands_2nd.extend(data["CONFIG"]["scenes"][button]["remote"]["macro-scene-off"])
+
                 else:
                     commands_2nd.extend([command])
             else:
@@ -943,16 +1146,20 @@ class RemoteAPI(RemoteDefaultClass):
             command_str = str(command)
             if not command_str.isnumeric() and "_" in command:
                 device, button = command.split("_", 1)
-                if "dev-on_" in command:
-                    if button in data["DATA"]["macros"]["dev-on"]:
-                        commands_3rd.extend(data["DATA"]["macros"]["dev-on"][button])
+                if "dev-on_" in command or "device-on_" in command:
+                    if button in data["CONFIG"]["macros"]["device-on"]:
+                        commands_3rd.extend(data["CONFIG"]["macros"]["device-on"][button])
                     else:
                         return_msg += "; ERROR: macro not defined (" + command + ")"
-                elif "dev-off_" in command:
-                    if button in data["DATA"]["macros"]["dev-off"]:
-                        commands_3rd.extend(data["DATA"]["macros"]["dev-off"][button])
+                        commands_dont_exist.append(command + " (no such dev-on macro defined)")
+
+                elif "dev-off_" in command or "device-off_" in command:
+                    if button in data["CONFIG"]["macros"]["device-off"]:
+                        commands_3rd.extend(data["CONFIG"]["macros"]["device-off"][button])
                     else:
                         return_msg += "; ERROR: macro not defined (" + command + ")"
+                        commands_dont_exist.append(command + " (no such dev-off macro defined)")
+
                 else:
                     commands_3rd.extend([command])
             else:
@@ -965,11 +1172,12 @@ class RemoteAPI(RemoteDefaultClass):
             command_str = str(command)
             if not command_str.isnumeric() and "_" in command:
                 device, button = command.split("_", 1)
-                if "macro_" in command:
-                    if button in data["DATA"]["macros"]["macro"]:
-                        commands_4th.extend(data["DATA"]["macros"]["macro"][button])
+                if "macro_" in command or "global_" in command:
+                    if button in data["CONFIG"]["macros"]["global"]:
+                        commands_4th.extend(data["CONFIG"]["macros"]["global"][button])
                     else:
                         return_msg += "; ERROR: macro not defined (" + command + ")"
+                        commands_dont_exist.append(command + " (no such global macro defined)")
                 else:
                     commands_4th.extend([command])
             else:
@@ -977,8 +1185,32 @@ class RemoteAPI(RemoteDefaultClass):
 
         self.logging.debug("Decoded macro-string 4th: " + str(commands_4th))
 
-        # execute buttons
+        # check if buttons exist ...
+        commands_exist = []
         for command in commands_4th:
+            command_str = str(command)
+            if not command_str.isnumeric() and "_" in command:
+                device, button_status = command.split("_")
+                if "||" in button_status:
+                    button, status = button_status.split("||")
+                else:
+                    button = button_status
+                if device not in data["CONFIG"]["devices"]:
+                    commands_dont_exist.append(command + " (device '"+device+"' not found)")
+
+                elif device in data["CONFIG"]["devices"] and button not in data["CONFIG"]["devices"][device]["buttons"]:
+                    commands_dont_exist.append(command + " (button '"+button+"' for '" + device + "' not found)")
+                else:
+                    commands_exist.append(command)
+            elif not command_str.isnumeric() and "WAIT-" not in command_str:
+                commands_dont_exist.append(command)
+            elif "WAIT-" in command_str:
+                pass
+            else:
+                commands_exist.append(command)
+
+        # execute buttons
+        for command in commands_exist:
             command_str = str(command)
             if not command_str.isnumeric() and "_" in command:
 
@@ -986,13 +1218,13 @@ class RemoteAPI(RemoteDefaultClass):
                 power_buttons = ["on", "on-off", "off"]
                 device, button_status = command.split("_", 1)  # split device and button
 
-                if device not in data["DATA"]["devices"]:
+                if device not in data["CONFIG"]["devices"]:
                     error_msg = "; ERROR: Device defined in macro not found (" + device + ")"
                     return_msg += error_msg
                     self.logging.error(error_msg)
                     continue
 
-                interface = data["CONFIG"]["devices"][device]["interface"]["interface_api"]  # get interface / API
+                interface = data["CONFIG"]["devices"][device]["interface"]["api_key"]  # get interface / API
 
                 # check if future state defined
                 if "||" in button_status:
@@ -1010,11 +1242,11 @@ class RemoteAPI(RemoteDefaultClass):
                 # if future state not already in place add command to queue
                 self.logging.debug(" ...i:" + interface + " ...d:" + device + " ...b:" + button + " ...s:" + status)
 
-                if device in data["DATA"]["devices"] and status_var in data["DATA"]["devices"][device]["status"]:
+                if device in data["STATUS"]["devices"] and status_var in data["STATUS"]["devices"][device]:
                     self.logging.debug(" ...y:" + status_var + "=" +
-                                       str(data["DATA"]["devices"][device]["status"][status_var]) + " -> " + status)
+                                       str(data["STATUS"]["devices"][device][status_var]) + " -> " + status)
 
-                    if data["DATA"]["devices"][device]["status"][status_var] != status:
+                    if data["STATUS"]["devices"][device][status_var] != status:
                         return_msg += ";" + self.queue_send.add2queue([[interface, device, button, status]])
 
                 # if no future state is defined just add command to queue
@@ -1028,7 +1260,11 @@ class RemoteAPI(RemoteDefaultClass):
         self._refresh()
         if return_msg != "":
             data["REQUEST"]["Return"] = return_msg
-        data["DATA"] = {}
+
+        data["REQUEST"]["decoded_macro"] = ", ".join(str(e) for e in commands_4th)
+        if len(commands_dont_exist) > 0:
+            data["REQUEST"]["macro_error"] = ", ".join(str(e) for e in commands_dont_exist)
+
         data = self._end(data, ["no-config", "no-data", "no-status"])
         return data
 
@@ -1048,8 +1284,10 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Button"] = button
         data["REQUEST"]["Command"] = "RemoteSendText"
 
-        if device in self.config.cache["_api"]["devices"]:
-            interface = self.config.cache["_api"]["devices"][device]["config"]["interface_api"]
+        device_info = self.config.read_status()
+
+        if device in device_info:
+            interface = device_info[device]["config"]["api_key"]
             data["REQUEST"]["Return"] = self.queue_send.add2queue([[interface, device, button, text]])
 
         else:

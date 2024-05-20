@@ -8,11 +8,13 @@ var app_setting_count = 6;
 var app_setting_style = "setting_bg";
 var app_last_load     = 0;
 var app_title         = "jc://remote/";
-var app_version       = "v2.9.4";
+var app_version       = "v2.9.7";
 var app_api_dir       = "api/";
 var app_api_status    = "list";
-var app_loading_image = "";
-var appAutoLoad       = false;
+
+var app_loading_image   = "";
+var app_status_commands = "";
+var appAutoLoad         = false;
 
 //--------------------------------	
 // create menu entries
@@ -32,7 +34,7 @@ function app_status(data) {
 		//birdhousePrint(data=data, active_page=appActivePage, camera=app_active_cam);
 		reload = false;
 		}
-	if (data["DATA"]) {
+	if (data["CONFIG"]) {
         statusCheck(data);
         rm3remotes.init(  data );
         rm3settings.init( data );
@@ -115,11 +117,17 @@ var colors_power            = {
 				"OTHER"	    : "darkcyan",
 				"ERROR"	    : "blueviolet",
 				}
+var function_colors         = {
+                "ON"        : "green",
+                "OFF"       : "red",
+                "VALUE"     : "#66FFFF"
+                }
 
-var sign_ok     = "&#10003;";       // &#9745;
-var sign_error  = "&#10008;";       // &#9746;
-var sign_off    = "&nbsp;<small>OFF</small>"; // "&#9744;";
-var sign_start  = "&#10138;";
+var sign_ok       = "&#10003;";       // &#9745;
+var sign_error    = "&#10008;";       // &#9746;
+var sign_off      = "&nbsp;<small>OFF</small>"; // "&#9744;";
+var sign_disabled = "&nbsp;<small>DISABLED</small>"; // "&#9744;";
+var sign_start    = "&#10138;";
 
 // Standard-Definition für RemoteControl
 //----------------------------------

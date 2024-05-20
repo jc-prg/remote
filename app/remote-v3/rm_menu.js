@@ -19,8 +19,8 @@ function rmMenu(name, menu) {
     // load data with devices (deviceConfig["devices"])
     this.init                 = function(data) {
 
-        if (data["DATA"]) 	{ this.data = data; }
-        else			{ return; }
+        if (data["CONFIG"]) { this.data = data; }
+        else                { return; }
 
             if (this.initial_load) {
                 this.logging.default("Initialized new class 'rmMenu'.");
@@ -74,42 +74,45 @@ function rmMenu(name, menu) {
 	// add links to devices to drop down menu
 	this.add_devices          = function(data) {
 
-		// return if no data
+        // return if no data
         if (!data) { return; }
 
-		// set vars
+        // set vars
+        var error  = {};
         var menu   = this.readMenu();
-        if (this.data["STATUS"])    { var error  = this.data["STATUS"]["config_errors"]["devices"]; }
-        else                        { var error = {}; }
+        if (this.data["STATUS"] && this.data["STATUS"]["config_errors"] && this.data["STATUS"]["config_errors"]["devices"])   {
+            var error  = this.data["STATUS"]["config_errors"]["devices"];
+            }
 
         for (var key in data) { if (data[key]["settings"]["position"]) { data[key]["position"] = data[key]["settings"]["position"]; }}
+
         var order  = sortDict(data,"position");
         var i      = 0;
         for (var j=0;j<order.length;j++) {
-			device = order[j];
-			if (device != "default") {
+            device = order[j];
+            if (device != "default") {
 
-				if (device in error) { 
-					if (data[device]["settings"]["visible"] != "no") {
-					    menu  += this.entry_device( device, "<div class=#entry_error#>! " + data[device]["settings"]["label"] + "</div>" );
-					    }
-					else if (this.edit_mode) {
-					    menu  += this.entry_device( device, "<div class=#entry_error#>.(" + data[device]["settings"]["label"] + ").</div>" );
-					    }
-					}
-				else {
-					if (data[device]["settings"]["visible"] != "no") {
-					    menu  += this.entry_device( device, data[device]["settings"]["label"] );
-					    }
-					else if (this.edit_mode) {
-					    menu  += this.entry_device( device, "<div class=#hidden_entry_edit#>.(" + data[device]["settings"]["label"] + ").</div>" );
-					    }
-					}			        
-				}
-        		}
+                if (device in error) {
+                    if (data[device]["settings"]["visible"] != "no") {
+                        menu  += this.entry_device( device, "<div class=#entry_error#>! " + data[device]["settings"]["label"] + "</div>" );
+                        }
+                    else if (this.edit_mode) {
+                        menu  += this.entry_device( device, "<div class=#entry_error#>.(" + data[device]["settings"]["label"] + ").</div>" );
+                        }
+                    }
+                else {
+                    if (data[device]["settings"]["visible"] != "no") {
+                        menu  += this.entry_device( device, data[device]["settings"]["label"] );
+                        }
+                    else if (this.edit_mode) {
+                        menu  += this.entry_device( device, "<div class=#hidden_entry_edit#>.(" + data[device]["settings"]["label"] + ").</div>" );
+                        }
+                    }
+                }
+            }
 
-        this.writeMenu(menu + "<li><hr/></li>");
-		}
+            this.writeMenu(menu + "<li><hr/></li>");
+        }
 		
 	// add links to scenes to drop down menu
 	this.add_scenes           = function(data) {

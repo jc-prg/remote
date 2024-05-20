@@ -1,6 +1,6 @@
 import time
 import modules.rm3json as rm3json
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3config
 import modules.rm3ping as rm3ping
 from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 import interfaces.eiscp as eiscp
@@ -15,13 +15,13 @@ class ApiControl(RemoteApiClass):
     Integration of sample API to be use by jc://remote/
     """
 
-    def __init__(self, api_name, device="", device_config=None, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """
         Initialize API / check connect to device
         """
         self.api_description = "API for ONKYO Devices"
         RemoteApiClass.__init__(self, "api.ONKYO", api_name, "query",
-                                self.api_description, device, device_config, log_command)
+                                self.api_description, device, device_config, log_command, config)
 
         self.api_timeout = 5
         self.api_ip = self.api_config["IPAddress"]
@@ -34,9 +34,11 @@ class ApiControl(RemoteApiClass):
         """
         Connect / check connection
         """
+        self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
+
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
-            self.status = self.not_connected + " ... PING"
+            self.status = self.not_connected + " ... PING " + self.api_config["IPAddress"]
             self.logging.warning(self.status)
             return self.status
 
@@ -64,6 +66,9 @@ class ApiControl(RemoteApiClass):
             self.api.jc.status = self.status
             self.logging.warning(self.status)
 
+        if self.status == "Connected":
+            self.logging.info("Connected ONKYO (" + self.api_config["IPAddress"] + ")")
+
     def wait_if_working(self):
         """
         Some devices run into problems, if send several requests at the same time
@@ -84,7 +89,7 @@ class ApiControl(RemoteApiClass):
         if "off" in str(status).lower():
             return "OFF"
 
-    def send(self, device, command):
+    def send(self, device, device_id, command):
         """
         Send command to API
         """
@@ -113,7 +118,7 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return "OK"
 
-    def query(self, device, command):
+    def query(self, device, device_id, command):
         """
         Send command to API and wait for answer
         """
@@ -189,7 +194,7 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return result
 
-    def record(self, device, command):
+    def record(self, device, device_id, command):
         """
         Record command, especially build for IR devices
         """

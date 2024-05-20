@@ -1,0 +1,82 @@
+/* LIST STYLES */
+.slist {
+    list-style  : none;
+    padding     : 0;
+    margin      : 0;
+}
+.slist li {
+    display         : flex;
+    justify-content : flex-start;
+    align-items     : center;
+    margin          : 5px;
+    padding         : 6px;
+    padding-top     : 9px;
+    padding-bottom  : 9px;
+    border          : 1px solid #909090;
+    border-radius   : 6px;
+    background      : #303040;
+    color           : #eeeeee;
+    touch-action    : none; /* Prevent default touch actions */
+}
+
+.slist li img           { opacity  : 0.4; }
+.slist li img:hover     { opacity  : 0.9; }
+
+
+/* DRAG-AND-DROP HINT */
+.slist li.hint {
+    color           : #909090;
+    border          : 1px dashed #909090;
+    background      : unset;
+}
+.slist li.active {
+    border          : 1px dashed #ffa5a5;
+    background      : unset;
+}
+
+/* CLONE STYLES */
+.clone {
+    display:none;
+    position        : absolute;
+    pointer-events  : none;
+    opacity         : 0.8;
+    z-index         : 1000;
+}
+
+/* DRAG HANDLE STYLES */
+.slist_handle {
+    cursor          : grab;
+    color           : #ff6666;
+    margin-left     : 1%;
+    margin-right    : 3%;
+    max-width       : 6%;
+    float           : left;
+}
+
+.slist_li_edit {
+    width           : 25%;
+    float           : right;
+}
+
+.slist_li_content {
+    width           : 65%;
+    line-height     : 0.9;
+    float           : left;
+    color           : white;
+    font-weight     : bold;
+    font-style      : normal;
+    overflow        : hidden;
+}
+
+.slist_li_content.hidden {
+    font-weight     : normal;
+    font-style      : italic;
+    color           : #DDDD88;
+}
+
+@media (max-width: 320px) {
+    nav-title         { max-width : 100px; }
+    .slist_li_edit    { width     : 30%; }
+    .slist_li_content { width     : 60%; }
+    }
+}

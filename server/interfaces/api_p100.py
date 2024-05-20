@@ -1,5 +1,5 @@
 import time
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3config
 import modules.rm3ping as rm3ping
 from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 import interfaces.p100.PyP100 as PyP100
@@ -14,13 +14,13 @@ class ApiControl(RemoteApiClass):
     Integration of PyP100 API to be use by jc://remote/
     """
 
-    def __init__(self, api_name, device="", device_config=None, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """
         Initialize API / check connect to device
         """
         self.api_description = "API for Tapo-Link P100"
         RemoteApiClass.__init__(self, "api.P100", api_name, "query",
-                                self.api_description, device, device_config, log_command)
+                                self.api_description, device, device_config, log_command, config)
 
         self.config_add_key("TapoUser", "")
         self.config_add_key("TapoPwd", "")
@@ -29,6 +29,8 @@ class ApiControl(RemoteApiClass):
         """
         Connect / check connection
         """
+        self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
+
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
             self.status = self.not_connected + " ... PING"
@@ -61,6 +63,9 @@ class ApiControl(RemoteApiClass):
             self.api.jc.status = self.status
             return self.status
 
+        if self.status == "Connected":
+            self.logging.info("Connected TAPO P100 (" + self.api_config["IPAddress"] + ")")
+
         return self.status
 
     def wait_if_working(self):
@@ -72,7 +77,7 @@ class ApiControl(RemoteApiClass):
             time.sleep(0.2)
         return
 
-    def send(self, device, command):
+    def send(self, device, device_id, command):
         """
         Send command to API
         """
@@ -108,7 +113,7 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return "OK"
 
-    def query(self, device, command):
+    def query(self, device, device_id, command):
         """
         Send command to API and wait for answer
         """
@@ -170,28 +175,6 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return result_param
 
-    def record(self, device, command):
-        """
-        Record command, especially build for IR devices
-        """
-
-        self.wait_if_working()
-        self.working = True
-
-        # ---- change for your api ----
-        #       if self.status == "Connected":
-        #         try:
-        #           result  = self.api.command(xxx)
-        #         except Exception as e:
-        #           self.working = True
-        #           return "ERROR "+self.api_name+" - record: " + str(e)
-        #       else:
-        #         self.working = True
-        #         return "ERROR "+self.api_name+": Not connected"
-
-        self.working = False
-        return "OK"
-
     def test(self):
         """
         Test device by sending a couple of commands
@@ -233,7 +216,7 @@ class APIaddOn(RemoteDefaultClass):
         self.status = "Start"
         self.cache_metadata = {}  # cache metadata to reduce api requests
         self.cache_time = time.time()  # init cache time
-        self.cache_wait = 2  # time in seconds how much time should be between two api metadata requests
+        self.cache_wait = 3  # time in seconds how much time should be between two api metadata requests
         self.power_status = "OFF"
         self.logging = logger
         self.not_connected = "Connection Error api.P100"
@@ -382,7 +365,4 @@ class APIaddOn(RemoteDefaultClass):
             return {"result", "test"}
 
         else:
-            return self.not_connected
-
-# -------------------------------------------------
-# EOF
+            return self.api.not_connected

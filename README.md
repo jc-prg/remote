@@ -1,4 +1,4 @@
-# jc://remote/
+s# jc://remote/
 
 With this software you can control several **home media devices** via Infrared and API with an app on your smartphone.
 It requires a small server such as a Raspberry Pi and can control the hardware listed below. 
@@ -18,62 +18,29 @@ There are a few templates available to be used and modified.
 - [Disclaimer](#disclaimer)
 
 
-## Currently Supported Hardware
+## Currently Supported Interfaces
 
-* Broadlink RM 3 Mini - Infrared receiver/sender
-* Several ONKYO devices with API (see section modelsets [eiscp-commands.yaml](https://github.com/miracle2k/onkyo-eiscp/blob/master/eiscp-commands.yaml))
-* Several SONY devices with API (see [compatibility list](https://github.com/alexmohr/sonyapilib#compatibility-list))
-* KODI server
-* Magic Home compatible LED strips 
-* Tapo SmartPlugs P100
+1. Broadlink RM 3 Mini (Infrared receiver/sender)  ... [API Info](./server/interfaces/broadlink/README.md)
+3. SONY devices with API ... [API Info](./server/interfaces/sonyapi/README.md)
+4. KODI server  ... [API Info](./server/interfaces/kodi/README.md)
+5. Magic Home compatible LED strips  ... [API Info](./server/interfaces/magichome/README.md)
+6. Tapo SmartPlugs P100 ... [API Info](./server/interfaces/p100/README.md)
+7. ZigBee Devices via ZigBee2MQTT API ... [API Info](./server/interfaces/zigbee/README.md)
 
 ## Screenshots
 
-### Default theme on iPhone XS
+<img src="./docs/app_light/remotes_04.PNG" width="19%"> <img 
+src="./docs/app_light/remotes_01.PNG" width="19%"> <img 
+src="./docs/app_dark/remotes_01.PNG" width="19%"> <img 
+src="./docs/app_dark/remotes_05.PNG" width="19%"> <img 
+src="./docs/app_dark/remotes_06.PNG" width="19%"> <img 
+src="./docs/app_dark/remotes_04.PNG" width="19%"> <img 
+src="./docs/app_dark/remotes_07.PNG" width="19%"> <img 
+src="./docs/app_dark/remotes_10.PNG" width="19%"> <img 
+src="./docs/app_dark/settings_01.PNG" width="19%"> <img 
+src="./docs/app_dark/settings_02.PNG" width="19%">
 
-<img src="./docs/remote_iphone_default_01.PNG" width="17%"> <img 
-src="./docs/remote_iphone_default_02.PNG" width="17%"> <img 
-src="./docs/remote_iphone_default_03.PNG" width="17%"> <img 
-src="./docs/remote_iphone_default_04.PNG" width="17%"> <img 
-src="./docs/remote_iphone_15.PNG" width="17%"> <img 
-src="./docs/remote_iphone_14.PNG" width="17%"> <img 
-src="./docs/remote_iphone_default_05.PNG" width="17%"> <img 
-src="./docs/remote_iphone_default_06.PNG" width="17%"> <img 
-src="./docs/remote_iphone_default_07.PNG" width="17%"> <img 
-src="./docs/remote_iphone_default_08.PNG" width="17%"> <img 
-src="./docs/remote_iphone_default_09.PNG" width="17%"> <img 
-src="./docs/remote_iphone_default_10.PNG" width="17%"> <img 
-src="./docs/remote_iphone_default_11.PNG" width="17%"> 
-
-### Default theme in the browser
-
-<img src="./docs/remote_browser_01.png" width="48%"> <img src="./docs/remote_browser_03.png" width="48%">
-
-### Dark theme on iPhone XS
-
-<img src="./docs/remote_iphone_01.PNG" width="17%"> <img src="./docs/remote_iphone_11.PNG" width="17%"> <img 
-src="./docs/remote_iphone_02.PNG" width="17%"> <img src="./docs/remote_iphone_03.PNG" width="17%"> <img 
-src="./docs/remote_iphone_05.PNG" width="17%"> <img src="./docs/remote_iphone_04.PNG" width="17%"> <img 
-src="./docs/remote_iphone_07.PNG" width="17%"> <img src="./docs/remote_iphone_06.PNG" width="17%"><img 
-src="./docs/remote_iphone_09.PNG" width="17%"> <img src="./docs/remote_iphone_08.PNG" width="17%">
-
-### Information and Settings on iPhone XS
-
-<img src="./docs/remote_iphone_16.PNG" width="17%"> <img src="./docs/remote_iphone_17.PNG" width="17%"> <img 
-src="./docs/remote_iphone_18.PNG" width="17%">
-
-### Edit mode on iPhone XS
-
-<img src="./docs/remote_edit_iphone_01.PNG" width="17%"> <img src="./docs/remote_edit_iphone_02.PNG" width="17%"> <img 
-src="./docs/remote_edit_iphone_03.PNG" width="17%"> <img src="./docs/remote_edit_iphone_04.PNG" width="17%"> <img 
-src="./docs/remote_edit_iphone_05.PNG" width="17%"> <img src="./docs/remote_edit_iphone_06.PNG" width="17%"> <img 
-src="./docs/remote_edit_iphone_07.PNG" width="17%"> 
-
-
-### Edit mode in the browser
-
-<img src="./docs/remote_browser_edit_01.png" width="48%"> <img src="./docs/remote_browser_edit_02.png" width="48%"> <img 
-src="./docs/remote_browser_edit_03.png" width="48%">
+Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 
 ## Data structure
 
@@ -81,14 +48,23 @@ src="./docs/remote_browser_edit_03.png" width="48%">
 
 ## Main features
 
-### App v2.9 / Server v2.3 (in progress)
+### App v3.0 / Server v3.0 (in progress)
+
+* integration of ZigBee interface (using a Zigbee USB Dongle and ZigBee2MQTT): Smart Plug + RGB+CCT Bulb 
+* schedule events (device commands and macros)
+* improved API configuration and other settings via app
+
+**Note:** The data structure changed: recreate configuration files by coping them from the 
+folder [_sample/devices](data/_sample/devices) to the productive folders and adjusting them to your needs.
+
+### App v2.9 / Server v2.3
 
 * directly view and execute API commands for devices in edit mode
 * edit interface configuration via app
 * activate and deactivate interfaces
-* simplify server configuration (.env), code refactoring, improve logging
+* simplify server configuration (.env), code and REST api refactoring, improve logging
 
-**Note:** The data structure changed a bit. Recreate the _00_interface.json_ files by coping them from the 
+**Note:** The data structure changed: recreate the _00_interface.json_ files by coping them from the 
 folder [_sample/devices](data/_sample/devices) to the productive folders.
 
 ### App v2.8 / Server v2.1
@@ -158,6 +134,7 @@ Many thanks to the authors ...
 * [SonyApiLib](https://https://github.com/alexmohr/sonyapilib)
 * [MagicHome API](https://github.com/adamkempenich/magichome-python)
 * [PyP100 API](https://github.com/fishbigger/TapoP100)
+* [ZigBee2MQTT](https://www.zigbee2mqtt.io/)
 * Free icons and images: https://icon-icons.com/, https://www.freeicons.io/, https://www.flaticon.com/, https://icons8.com/, https://unsplash.com/
 
 Own included modules:
@@ -186,7 +163,7 @@ In order to use jc://remote/ as it is, the following software must be installed:
     $ cd remote
     ```
 
-2. Change settings: [sample.env](./sample.env)
+2. Create configuration: [sample.env](./sample.env)
 
     ```bash
     $ cp sample.env .env

@@ -1,0 +1,12 @@
+{
+	"API-Devices"    : {
+		"default" : {
+			"IPAddress"   : "127.0.0.1",
+			"MacAddress"  : "",
+			"Timeout"     : 5,
+			"Methods"     : ["send","query"],
+			"Description" : "Test device"
+			}
+		},
+	"API-Description"  : "Test interface for automated tests"
+}

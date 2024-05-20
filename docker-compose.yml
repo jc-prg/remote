@@ -18,6 +18,7 @@ services:
       - ./log:/log
     ports:
       - ${REMOTE_SERVER_PORT}:${REMOTE_SERVER_PORT}
+    privileged: true
 
   remote_client:
     image: ${REMOTE_DOCKERIMAGE_CLIENT}

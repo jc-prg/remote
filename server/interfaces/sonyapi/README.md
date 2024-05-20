@@ -3,6 +3,7 @@
 ## Source
 
 * Python sources: https://github.com/alexmohr/sonyapilib
+* Compatibility list: https://github.com/alexmohr/sonyapilib#compatibility-list
 
 ## Registration and list of commands
 

@@ -7,7 +7,7 @@
 import logging
 import time
 import modules.rm3json as rm3json
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3config
 from modules.rm3classes import RemoteApiClass
 
 # import sampleAPI as sample
@@ -25,27 +25,31 @@ class ApiControl(RemoteApiClass):
      Integration of sample API to be use by jc://remote/
     """
 
-    def __init__(self, api_name, device="", device_config=None, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """
         Initialize API / check connect to device
         """
         self.api_description = "Test API for automatic testing"
         RemoteApiClass.__init__(self, "api.TEST", api_name, "query",
-                                self.api_description, device, device_config, log_command)
+                                self.api_description, device, device_config, log_command, config)
 
     def connect(self):
         """
         Connect / check connection
         """
+        self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
+
         self.status = "Connected"
         self.count_error = 0
         self.count_success = 0
+
+        self.logging.info("Connected TEST API.")
 
     def wait_if_working(self):
         """
         Some devices run into problems, if send several requests at the same time
         """
-        while working:
+        while self.working:
             logging.debug(".")
             time.sleep(0.2)
         return
@@ -56,7 +60,7 @@ class ApiControl(RemoteApiClass):
         """
         return "N/A"
 
-    def send(self, device, command):
+    def send(self, device, device_id, command):
         """
         Send command to API
         """
@@ -64,7 +68,7 @@ class ApiControl(RemoteApiClass):
             "__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
         return "OK: send test-" + device + "-" + command
 
-    def query(self, device, command):
+    def query(self, device, device_id, command):
         """
         Send command to API and wait for answer
         """
@@ -72,7 +76,7 @@ class ApiControl(RemoteApiClass):
             "__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
         return "WARN: Not supported by this API"
 
-    def record(self, device, command):
+    def record(self, device, device_id, command):
         """
         Record command, especially build for IR devices
         """

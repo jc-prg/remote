@@ -7,7 +7,7 @@
 import logging
 import time
 import modules.rm3json as rm3json
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3config
 import modules.rm3ping as rm3ping
 from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 import interfaces.magichome.magichome as mh_device
@@ -28,13 +28,13 @@ class ApiControl(RemoteApiClass):
     Integration of Magic Home API to be use by jc://remote/
     """
 
-    def __init__(self, api_name, device="", device_config=None, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """
         Initialize API / check connect to device
         """
         self.api_description = "API for LED via Magic Home"
         RemoteApiClass.__init__(self, "api.MAGIC", api_name, "query",
-                                self.api_description, device, device_config, log_command)
+                                self.api_description, device, device_config, log_command, config)
 
         self.power_status = "STARTING"
         self.brightness = 1
@@ -104,7 +104,7 @@ class ApiControl(RemoteApiClass):
         """
         return self.jc.get_info("power")
 
-    def send(self, device, command):
+    def send(self, device, device_id, command):
         """
         Send command to API
         """
@@ -141,7 +141,7 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return "OK"
 
-    def query(self, device, command):
+    def query(self, device, device_id, command):
         """
         Send command to API and wait for answer
         """
@@ -196,11 +196,6 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return result_param
 
-    def record(self, device, command):
-        """Record command, especially build for IR devices"""
-
-        return "ERROR: record not available"
-
     def test(self):
         """Test device by sending a couple of commands"""
 
@@ -247,7 +242,7 @@ class APIaddOn(RemoteDefaultClass):
         self.volume = 0
         self.cache_metadata = {}  # cache metadata to reduce api requests
         self.cache_time = time.time()  # init cache time
-        self.cache_wait = 5  # time in seconds how much time should be between two api metadata requests
+        self.cache_wait = 3  # time in seconds how much time should be between two api metadata requests
         self.brightness = 1
         self.last_r = 0
         self.last_g = 0
@@ -500,10 +495,11 @@ class APIaddOn(RemoteDefaultClass):
         status_info = {}
         self.logging.debug("..." + param)
 
-        if self.status == "Connected":
+        if self.api.status == "Connected":
 
             self.logging.debug(str(self.last_request_time) + "__" + str(time.time()))
-            if not self.last_request_data or self.last_request_data == {} or self.last_request_time < time.time() - self.cache_wait:
+            if (not self.last_request_data or self.last_request_data == {} or
+                    self.last_request_time + self.cache_wait < time.time()):
 
                 try:
                     raw_status = self.api.get_status()
@@ -512,10 +508,8 @@ class APIaddOn(RemoteDefaultClass):
 
                 except Exception as e:
                     self.logging.error("Error requesting data - get_info('" + str(param) + "'): " + str(e))
-                    self.last_request_time = time.time()  # wait for a while for next retry; seems not to work yet .... ??????
+                    self.last_request_time = time.time()
                     return {"error": "error requesting data - get_info('" + str(param) + "'): " + str(e)}
-
-                ######## -> wait for a while, till next request ist done???
 
                 try:
                     self.logging.debug("RAW STATUS: " + str(raw_status))
@@ -547,10 +541,8 @@ class APIaddOn(RemoteDefaultClass):
             else:
                 return {"error": "unknown tag '" + param + "'"}
 
-            return {"result": "get_info"}
-
         else:
-            return self.not_connected
+            return self.api.not_connected
 
     def test(self):
 
