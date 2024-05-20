@@ -684,7 +684,8 @@ class RemotesData(RemoteThreadingClass):
         # device-off_*
 
         for command in macro:
-            if "_" not in command:
+            if "_" not in str(command):
+                decomposed_v1.append(command)
                 continue
             parts = command.split("_")
             if parts[0] in act_devices:
