@@ -85,8 +85,8 @@ function rmSettings (name) {	// IN PROGRESS
 
             this.settings_ext_reset();
             this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_DEVICES"), "", true);
-            this.settings_ext_append(4,lang('EDIT_DEVICES'), this.module_devices());
 	    	this.settings_ext_append(2,lang("ADD_DEVICE"), this.module_add_device(direct_cmd, direct_data));
+            this.settings_ext_append(4,lang('EDIT_DEVICES'), this.module_devices());
 	    	//this.settings_ext_append(2,lang("EDIT_REMOTES"), this.module_add_remotes(direct_cmd, direct_data) + this.module_title() + this.module_order_remotes());
             //this.settings_ext_append(1,"", this.module_index_quick(true, false));
     		//this.settings_ext_append(3,lang("EDIT_MACROS"), this.module_macros_edit());
@@ -104,8 +104,8 @@ function rmSettings (name) {	// IN PROGRESS
 
             this.settings_ext_reset();
             this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_SCENES"), "", true);
-            this.settings_ext_append(1,lang('EDIT_SCENES'), this.module_scenes());
 	    	this.settings_ext_append(2,lang("ADD_SCENE"), this.module_add_scene(direct_cmd, direct_data));
+            this.settings_ext_append(1,lang('EDIT_SCENES'), this.module_scenes());
     		this.settings_ext_append(3,lang("EDIT_MACROS"), this.module_macros_edit());
             this.create_show_ext();
 
@@ -923,7 +923,7 @@ function rmSettings (name) {	// IN PROGRESS
 
             var slider = document.getElementById("toggle__"+key+"_input");
             if (dataAll["STATUS"]["connections"][key]["active"] == true) {
-                elementVisible("interface_edit_"+key);
+                //elementVisible("interface_edit_"+key);
                 slider.value = 1;
                 slider.className = "rm-slider device_active";
                 slider.disabled = false;

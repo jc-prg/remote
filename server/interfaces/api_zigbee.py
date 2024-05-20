@@ -254,7 +254,7 @@ class ApiControl(RemoteApiClass):
                 with open(device_file, 'r') as f:
                     return "OK: " + device_file + " is available."
             except FileNotFoundError:
-                return "ERROR: " + device_file + " does not exist."
+                return "ERROR: " + device_file + " not found."
             except PermissionError:
                 return "ERROR: " + device_file + " exists but is not accessible due to permissions."
             except Exception as e:
