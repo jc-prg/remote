@@ -209,8 +209,8 @@ class ScheduleTimer(RemoteThreadingClass):
 
             elif device in act_devices and button != "":
                 call_api = act_devices[device]["config"]["api_key"] + "_" + act_devices[device]["config"]["api_device"]
-                self.apis.api_send(call_api=call_api, device=device, button=button, value=value)
                 self.logging.debug("SEND: call_api="+call_api+", device="+device+", button="+button+", value="+value)
+                self.apis.api_send(call_api=call_api, device=device, button=button, value=value)
 
     def schedule_timer_add(self, timer_config):
         """
