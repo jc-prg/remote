@@ -1477,7 +1477,7 @@ class RemotesEdit(RemoteDefaultClass):
         Returns:
             str: success or error message
         """
-        if remote_type == "device":
+        if remote_type == "device" or remote_type == "remote":
             status = self.config.read_status()
         elif remote_type == "scene":
             status = self.data.scenes_read(selected=[], remotes=False)  # configFiles.read(modules.active_scenes)
@@ -1510,7 +1510,7 @@ class RemotesEdit(RemoteDefaultClass):
 
         # check if device is defined
         if device not in status:
-            return "ERROR: " + remote_type + " not defined."
+            return "ERROR: " + device + " (" + remote_type + ") not defined."
 
         # check if position is defined and add, if not existing
         for key in status:
@@ -1568,7 +1568,7 @@ class RemotesEdit(RemoteDefaultClass):
         Returns:
             str: success or error message
         """
-        if remote_type == "remote":
+        if remote_type == "remote" or remote_type == "device":
             return self.config.device_set_values(device, "settings", {"visible": visibility})
 
         elif remote_type == "scene":

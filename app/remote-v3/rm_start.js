@@ -6,17 +6,17 @@
 
 function rmStart(name) {
 
-	this.data        = {}
-	this.app_name    = name;
-	this.edit_mode   = false;
+	this.data         = {}
+	this.app_name     = name;
+	this.edit_mode    = false;
 	this.initial_load = true;
-	this.logging     = new jcLogging(this.app_name);
+	this.logging      = new jcLogging(this.app_name);
 
-        // load data with devices (deviceConfig["devices"])
+    // load data with devices (deviceConfig["devices"])
 	this.init                 = function(data) {
-        
-        if (data["CONFIG"]) { this.data = data; }
-        else                { return; }
+
+        if (data["CONFIG"])  { this.data = data; }
+        else                 { return; }
 
         if (this.initial_load) {
             this.logging.default("Initialized new class 'rmStart'.");
@@ -27,6 +27,15 @@ function rmStart(name) {
             }
         }
 
+    // edit mode
+    this.set_edit_mode        = function () {
+        if (this.edit_mode)  {
+            rm3settings.create("index_small");
+            elementVisible("frame3");
+            elementVisible("frame4");
+            }
+        else                 { rm3settings.settings_ext_reset(); }
+    }
 
 	// add links to devices to drop down menu
 	this.add_devices          = function(data,menuItems) {
@@ -61,7 +70,6 @@ function rmStart(name) {
         setTextById("frame1","");
         setTextById("frame2","");
 		}
-
 
 	// add links to scenes to drop down menu
 	this.add_scenes           = function(data,menuItems) {
@@ -152,6 +160,7 @@ function rmStart(name) {
                 
 	// create image tag for icons
 	this.image                = function(file) {
+
 	        return "<img src='icon/"+file+"' class='rm-button_image_start' alt='"+file+"' />";
 	        }
 	}

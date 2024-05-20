@@ -293,7 +293,13 @@ function apiDeviceMovePosition(data) {
 	rm3settings.create();
 	}
 
-function apiMovePosition(from, to) { appMsg.info("MOVE "+from+" >> "+to +"<br/>not ready implemented yet", "error"); }
+function apiMovePosition(id, dnd_list, from, to) {
+    if (dnd_list.indexOf("scene") > -1 && id != "")         { apiDeviceMovePosition_exe("scene", id, (to - from)); }
+    else if (dnd_list.indexOf("device") > -1 && id != "")   { apiDeviceMovePosition_exe("device", id, (to - from)); }
+    else {
+        appMsg.info("MOVE "+from+" >> "+to +"<br/>not ready implemented yet", "error");
+        }
+    }
 
 // create new device
 function apiDeviceAdd(data,onchange) {
@@ -348,21 +354,19 @@ function apiDeviceDelete(device_id) {
 	var device = check_if_element_or_value(device_id,true);
 	if (device == "")  { appMsg.alert(lang("DEVICE_SELECT")); return; }
 
-	appMsg.confirm(lang("DEVICE_ASK_DELETE",[device]),"apiDeviceDelete_exe('" + device + "');");
-	remoteMainMenu(cookie_erase=true);
+	appMsg.confirm(lang("DEVICE_ASK_DELETE",[device]),"apiDeviceDelete_exe('" + device + "');", 140);
 	}
 
 
 // REMOTES
 function apiRemoteChangeVisibility(type, device_id, value_id) {
-        device   = check_if_element_or_value(device_id,true);
-        value    = getValueById(value_id,false);
-        
-        if (value == "yes")	{ setValueById(value_id, "no"); }
-        else			{ setValueById(value_id, "yes"); }
-	
-        value    = getValueById(value_id,false);
-        
+    device   = check_if_element_or_value(device_id,true);
+    value    = getValueById(value_id, "", true);
+
+    if (value == "yes") { setValueById(value_id, "no"); }
+    else                { setValueById(value_id, "yes"); }
+    value               = getValueById(value_id, "", true);
+
 	appFW.requestAPI("PUT",["visibility",type,device,value], "", apiAlertReturn);
 	}
 

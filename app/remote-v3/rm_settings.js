@@ -68,34 +68,44 @@ function rmSettings (name) {	// IN PROGRESS
             statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
             statusShow_powerButton('button_manual_mode', getTextById('button_manual_mode'));
             }
+        else if (selected_mode == "index_small") {
+            this.settings_ext_reset();
+            this.settings_ext_append(0,"", this.module_index(true, ""), "", true);
+            this.create_show_ext();
+            }
         else if (selected_mode == "general") {
             setNavTitle(lang('SETTINGS_GENERAL'));
             this.settings_ext_reset();
-            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_GENERAL"), "");
+            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_GENERAL"), "", true);
             this.settings_ext_append(1,lang("SETTINGS_GENERAL"), this.module_general_settings());
             this.create_show_ext();
             }
-        else if (selected_mode == "edit_remotes") {
-            setNavTitle(lang('SETTINGS_REMOTE'));
+        else if (selected_mode == "edit_devices") {
+            setNavTitle(lang('SETTINGS_DEVICES'));
 
             this.settings_ext_reset();
-            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_REMOTE"));
-            this.settings_ext_append(1,"", this.module_index_quick(true, false));
-	    	this.settings_ext_append(2,lang("EDIT_REMOTES"), this.module_add_remotes(direct_cmd, direct_data) + this.module_title() + this.module_order_remotes());
-    		this.settings_ext_append(3,lang("EDIT_MACROS"), this.module_macros_edit());
+            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_DEVICES"), "", true);
+            this.settings_ext_append(4,lang('EDIT_DEVICES'), this.module_devices());
+	    	this.settings_ext_append(2,lang("ADD_DEVICE"), this.module_add_device(direct_cmd, direct_data));
+	    	//this.settings_ext_append(2,lang("EDIT_REMOTES"), this.module_add_remotes(direct_cmd, direct_data) + this.module_title() + this.module_order_remotes());
+            //this.settings_ext_append(1,"", this.module_index_quick(true, false));
+    		//this.settings_ext_append(3,lang("EDIT_MACROS"), this.module_macros_edit());
             this.create_show_ext();
 
             statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
             statusShow_powerButton('button_manual_mode', getTextById('button_manual_mode'));
             statusShow_powerButton('button_show_code', getTextById('button_show_code'));
             //apiGetConfig_showInterfaceData(this.module_interface_edit_info);
+
+            startDragAndDrop("sort_devices", apiMovePosition);
             }
         else if (selected_mode == "edit_scenes") {
             setNavTitle(lang('SETTINGS_SCENES'));
 
             this.settings_ext_reset();
-            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_SCENES"));
-            this.settings_ext_append(1,lang('SETTINGS_SCENES'), this.module_scenes());
+            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_SCENES"), "", true);
+            this.settings_ext_append(1,lang('EDIT_SCENES'), this.module_scenes());
+	    	this.settings_ext_append(2,lang("ADD_SCENE"), this.module_add_scene(direct_cmd, direct_data));
     		this.settings_ext_append(3,lang("EDIT_MACROS"), this.module_macros_edit());
             this.create_show_ext();
 
@@ -104,7 +114,7 @@ function rmSettings (name) {	// IN PROGRESS
         else if (selected_mode == "edit_interfaces") {
             setNavTitle(lang('SETTINGS_API'));
             this.settings_ext_reset();
-            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_API"));
+            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_API"), "", true);
             this.module_interface_edit();
             this.settings_ext_append(1, "", this.module_interface_info());
             this.create_show_ext();
@@ -114,14 +124,14 @@ function rmSettings (name) {	// IN PROGRESS
         else if (selected_mode == "edit_timer") {
             setNavTitle(lang('SETTINGS_TIMER'));
             this.settings_ext_reset();
-            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_TIMER"));
+            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_TIMER"), "", true);
             this.settings_ext_append(1,lang("SETTINGS_TIMER"), this.module_timer());
             this.create_show_ext();
             }
         else {
             setNavTitle(lang('INFORMATION'));
             this.settings_ext_reset();
-            this.settings_ext_append(0,"", this.module_index(true, "INFORMATION"));
+            this.settings_ext_append(0,"", this.module_index(true, "INFORMATION"), "", true);
             this.settings_ext_append(1,lang("VERSION_AND_STATUS"), this.module_system_info());
             this.settings_ext_append(2,lang("BUTTON_INFOS"), this.module_system_info_buttons());
             this.create_show_ext();
@@ -169,7 +179,7 @@ function rmSettings (name) {	// IN PROGRESS
 	    var setting_modules = {
 	        "INFORMATION":      ["info",        "rm3settings.create('info');"],
 	        "SETTINGS_GENERAL": ["settings2",   "rm3settings.create('general');"],
-	        "SETTINGS_REMOTE":  ["remote",      "rm3settings.create('edit_remotes');"],
+	        "SETTINGS_DEVICES": ["remote",      "rm3settings.create('edit_devices');"],
 	        "SETTINGS_SCENES":  ["pictures",    "rm3settings.create('edit_scenes');"],
 	        "SETTINGS_API":     ["plug",        "rm3settings.create('edit_interfaces');"],
 	        "SETTINGS_TIMER":   ["timer",       "rm3settings.create('edit_timer');"]
@@ -189,6 +199,7 @@ function rmSettings (name) {	// IN PROGRESS
 	        }
 
 	    if (!small) { html += "<div style='width:100%;height:18px;float:left;'></div>"; }
+	    else        { html  = "<div style='max-width:650px;margin:auto;'>" + html + "</div>"; }
 		return html;
 	    }
 
@@ -245,16 +256,20 @@ function rmSettings (name) {	// IN PROGRESS
 	    var images          = dataAll["CONFIG"]["elements"]["button_images"];
         var img_visible     = rm_image(images["hidden"]);
         var img_edit        = rm_image(images["edit"]);
-        var img_delete      = rm_image(images["trash2"]);
-        var onclick_reload  = "setTimeout(function() { rm3settings.create(\"edit_scenes\"); }, 2000);";
+        var img_delete      = rm_image(images["trash"]);
 
-        if (visible == "no") { img_visible = rm_image(images["visible"]); }
+        var onclick_reload  = "setTimeout(function() { rm3settings.create(\"edit_"+type+"s\"); }, 2000);";
 
-        var edit_commands   = "<span onclick='remoteToggleEditMode(true);rm3remotes.create(\""+type+"\",\""+id+"\");' style='cursor:pointer;'>" + img_edit + "</span>&nbsp;&nbsp;";
+        if (visible == "no")  { img_visible = rm_image(images["visible"]); }
+        if (type == "device") { delete_cmd  = "apiDeviceDelete"; }
+        else                  { delete_cmd  = "apiSceneDelete"; }
+
+        var edit_commands   = "";
+        edit_commands      += "<span onclick='apiRemoteChangeVisibility(\""+type+"\",\""+id+"\",\"rm_visibility_"+id+"\");"+onclick_reload+"' style='cursor:pointer;'>" + img_visible + "</span>&nbsp;&nbsp;&nbsp;";
+        edit_commands      += "<span onclick='remoteToggleEditMode(true);rm3remotes.create(\""+type+"\",\""+id+"\");' style='cursor:pointer;'>" + img_edit + "</span>&nbsp;&nbsp;";
         //apiRemoteChangeVisibility('scene','tv2','scene_visibility');
-        edit_commands      += "<input id=\"visibility_"+key+"\" style=\"display:none;\" value=\""+visible+"\">";
-        edit_commands      += "<span onclick='apiRemoteChangeVisibility(\""+type+"\",\""+id+"\",\"visibility_"+key+"\");"+onclick_reload+"' style='cursor:pointer;'>" + img_visible + "</span>&nbsp;&nbsp;";
-        edit_commands      += "<span onclick='apiSceneDelete(\""+id+"\");' style='cursor:pointer;'>" + img_delete + "</span>";
+        edit_commands      += "<input id=\"rm_visibility_"+id+"\" style=\"display:none;\" value=\""+visible+"\">";
+        edit_commands      += "<span onclick='"+delete_cmd+"(\""+id+"\");' style='cursor:pointer;'>" + img_delete + "</span>";
 	    return edit_commands;
         }
 
@@ -267,18 +282,41 @@ function rmSettings (name) {	// IN PROGRESS
 	    for (var key in order) {
 	        var scene           = order[key];
 	        var visible         = "";
-	        var style           = "font-weight:bold;";
-	        if (scenes[scene]["settings"]["visible"] == "no") { style = "font-style:italic;"; }
+	        var style           = "";
+	        if (scenes[scene]["settings"]["visible"] == "no") { style = " hidden"; }
 
-	        html += "<li>";
-	        html += "<div style='width:65%;float:left;line-height:0.9;"+style+"'>" + scenes[scene]["settings"]["label"] + "<br/><font style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'>"+scene+"</font></div>";
-	        html += "<div style='width:25%;float:right;'>" + this.module_remote_edit("scene", scene, scenes[scene]["settings"]["visible"]) + "</div>";
+	        html += "<li id='"+scene+"'>";
+	        html += "<div class='slist_li_content"+style+"'>" + scenes[scene]["settings"]["label"] + "<br/>";
+	        html += "<font style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>"+scene+"</rm-id></font></div>";
+	        html += "<div class='slist_li_edit;'>" + this.module_remote_edit("scene", scene, scenes[scene]["settings"]["visible"]) + "</div>";
 	        html += "</li>";
 	    }
 
         html += "</ul>";
 	    return html;
-	}
+	    }
+
+	this.module_devices         = function () {
+	    var devices = dataAll["CONFIG"]["devices"];
+	    var html   = "&nbsp;<br/><ul id='sort_devices'>";
+
+        for (var key in devices) { devices[key]["position"] = devices[key]["settings"]["position"]; }
+		var order  = sortDict(devices, "position");
+	    for (var key in order) {
+	        var device          = order[key];
+	        var visible         = "";
+	        var style           = "";
+	        if (devices[device]["settings"]["visible"] == "no") { style = " hidden"; }
+
+	        html += "<li id='"+device+"'>";
+	        html += "<div class='slist_li_content"+style+"'>" + devices[device]["settings"]["label"] + "<br/>";
+	        html += "<font style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>"+device+"</rm-id></font></div>";
+	        html += "<div class='slist_li_edit;'>" + this.module_remote_edit("device", device, devices[device]["settings"]["visible"]) + "</div>";
+	        html += "</li>";
+	    }
+
+	    return html;
+	    }
 
 	this.module_title           = function (title="") {
 	    var setting = "<br/>";
@@ -367,7 +405,7 @@ function rmSettings (name) {	// IN PROGRESS
 						"<div class='screen_ipad_landscape'>iPad screen (landscape)</div>" +
 						"");
 		set_temp += this.tab.row( 	"Device:", 		d_width + "x" + d_height );
-		set_temp += this.tab.row( 	"Window:", 		document.body.clientWidth + "x" + document.body.clientHeight );
+		set_temp += this.tab.row( 	"Window:", 		window.innerWidth + "x" + window.innerHeight );
 		set_temp += this.tab.row(	"Position:",		"<div id='scrollPosition'>0 px</div>" );
 		set_temp += this.tab.row( 	"Theme:", 		appTheme );
 		set_temp += this.tab.end();
@@ -733,7 +771,7 @@ function rmSettings (name) {	// IN PROGRESS
                 if (devices_detect[api_device][device]["available"] == false)  { disabled = "&nbsp;&nbsp;<small>(N/A)</small>"; }
 
                 if (disabled == "") {
-                    var button_cmd  = "rm3settings.create(\"edit_remotes\", \"add_device\", {";
+                    var button_cmd  = "rm3settings.create(\"edit_devices\", \"add_device\", {";
                     button_cmd     += "\"external_id\": \"" + devices_detect[api_device][device]["id"] + "\", ";
                     button_cmd     += "\"description\": \"" + info + "\", ";
                     button_cmd     += "\"api_device\": \"" + api_device + "\", ";
@@ -1026,14 +1064,26 @@ function rmSettings (name) {	// IN PROGRESS
         return setting;
     	}
 
-    this.module_add_remotes     = function (direct_cmd="", direct_data="") {
-
+    this.module_add_device      = function  (direct_cmd="", direct_data="") {
 		var setting   = "";
 		var set_temp  = "";
 		this.btn.width  = "120px";
 		this.btn.height = "30px";
 
-        // add scene
+        var open_add_device = false;
+        if (direct_cmd == "add_device" && direct_data != "") { set_temp = this.modules_add_remote_dialog(direct_data); open_add_device = true; }
+        else                                                 { set_temp = this.modules_add_remote_dialog(); }
+
+		setting  += this.basic.container("setting_add_device",lang("ADD_DEVICE"),set_temp,open_add_device);
+		return setting;
+        }
+
+    this.module_add_scene       = function  (direct_cmd="", direct_data="") {
+		var setting   = "";
+		var set_temp  = "";
+		this.btn.width  = "120px";
+		this.btn.height = "30px";
+
         var open_add_scene = false;
         if (direct_cmd == "add_scene") { open_add_scene = true; }
 
@@ -1042,18 +1092,19 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.row( "Label:",         this.input("add_scene_label") );
 		set_temp += this.tab.row( "Description:",   this.input("add_scene_descr") );
 		set_temp += this.tab.row( "<center>" +
-                    this.btn.sized(id="add_scene",label="Add Scene",style="","apiSceneAdd([#add_scene_id#,#add_scene_descr#,#add_scene_label#]);") +
+                    this.btn.sized(id="add_scene",label=lang("ADD_SCENE"),style="","apiSceneAdd([#add_scene_id#,#add_scene_descr#,#add_scene_label#]);") +
                     "</center>", false);
 		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_add_scene","Add scene",set_temp,open_add_scene);
+		setting  += this.basic.container("setting_add_scene",lang("ADD_SCENE"),set_temp,open_add_scene);
 
-        // add device
-        var open_add_device = false;
-        if (direct_cmd == "add_device" && direct_data != "") { set_temp = this.modules_add_remote_dialog(direct_data); open_add_device = true; }
-        else                                                 { set_temp = this.modules_add_remote_dialog(); }
+		return setting;
+        }
 
-		setting  += this.basic.container("setting_add_device","Add device",set_temp,open_add_device);
+    this.module_add_remotes     = function (direct_cmd="", direct_data="") {
 
+        var setting = "";
+        setting += this.module_add_scene(direct_cmd, direct_data);
+        setting += this.module_add_device(direct_cmd, direct_data);
 		return setting;
         }
 
@@ -1065,7 +1116,7 @@ function rmSettings (name) {	// IN PROGRESS
 		var add_command    = "apiDeviceAdd([#add_device_id#,#add_device_descr#,#add_device_label#,#add_device_api#,#add_device#,#add_device_device#,#add_device_remote#,#add_device_id_external#,#edit_image#],"+onchange2+");";
 		add_command       += "remoteToggleEditMode(true);";
 		var width          = this.input_width;
-		var icon_container = "<button class='rm-button device_off small'><div id='device_edit_button_image'></div></button>";
+		var icon_container = "<button class='button device_off' style='width:50px;height:40px;'><div id='device_edit_button_image'></div></button>";
 
 		var device_data = {
 		    "id": "",
@@ -1124,10 +1175,11 @@ function rmSettings (name) {	// IN PROGRESS
 
     this.settings_ext_reset     = function ()  {
 
+        setTextById("setting_ext_top_frame", "");
         setTextById("setting_ext_frames", "");
         }
 
-	this.settings_ext_append    = function (nr, label="", text="", style="") {
+	this.settings_ext_append    = function (nr, label="", text="", style="", top=false) {
 	    var frame_content = getTextById("setting_ext_frames");
 
 		if (label != "") {
@@ -1137,10 +1189,18 @@ function rmSettings (name) {	// IN PROGRESS
                     + "<br/>";
 			}
 
-	    var device_frame = "<div id='device_frame" + nr + "' class='setting_bg' style='display:block;"+style+"'>";
-        device_frame += text;
-	    device_frame += "</div>";
-	    setTextById("setting_ext_frames", frame_content + device_frame);
+        if (top) {
+            var device_frame = "<div id='device_frame" + nr + "' class='setting_bg wide' style='display:block;"+style+"'>";
+            device_frame += text;
+	        device_frame += "</div>";
+	        setTextById("setting_ext_top_frame", frame_content + device_frame);
+	        }
+        else {
+            var device_frame = "<div id='device_frame" + nr + "' class='setting_bg' style='display:block;"+style+"'>";
+            device_frame += text;
+	        device_frame += "</div>";
+	        setTextById("setting_ext_frames", frame_content + device_frame);
+	        }
     	}
 		
 	this.is_filled			    = function (nr) {

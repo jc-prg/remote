@@ -1,7 +1,7 @@
 /* format for bigger devices, except iPad */
 
 .screen_default { display : block; }
-.screen_big { display : none; }
+.screen_big     { display : none; }
 
 @media (min-width: 730px) 
 {
@@ -16,6 +16,7 @@
 
   .remote           { width  : 335px; }
   .setting_bg       { width  : 335px; }
+  .setting_bg.wide  { width  : 698px; }
 
   .rm-toggle-button      { width  :  74px; }
   .rm-toggle-label.short { width  :  74px; }
@@ -28,3 +29,11 @@
   .remote_nav    { width : 164px; }
   .remote_nav ul { width : 160px; }
 }
+
+@media (min-width: 1200px) {
+    .setting_bg.wide  { width : 1056px; }
+    }
+
+@media (min-width: 1530px) {
+    .setting_bg.wide  { width : 1413px; }
+    }

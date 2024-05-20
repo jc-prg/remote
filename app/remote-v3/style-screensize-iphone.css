@@ -9,12 +9,15 @@
   .screen_iphone    { display : block; }
   .screen_default   { display : none; }
 
-  #audio1 		    { right: 125px; }
-  #audio2 		    { right: 125px; }
+  #audio1 		    { right: 140px; }
+  #audio2 		    { right: 140px; }
   #audio3 		    { right: 45px; }
 
   .remote           { width  : 340px; }
   .setting_bg       { width  : 340px; }
+  .setting_bg.wide  { width  : 340px; }
+
+  nav-title         { max-width  : 160px; }
 
   .rm-toggle-button     { width  :  76px; }
   .rm-toggle-label.long { width  : 242px; }
@@ -33,6 +36,7 @@
 
   .remote           { width  : 335px; }
   .setting_bg 		{ width  : 335px; }
+  .setting_bg.wide  { width  : 670px; }
 
   .rm-toggle-button     { width  :  74px; }
   .rm-toggle-label.long { width  : 240px; }

@@ -49,16 +49,32 @@ function remote_slist(target, callback_pos) {
 
     function handleDragEnd(e) {
 
-      if (dragStartPos != dragEndPos && dragStartCount == true) { callback_pos(dragStartPos, dragEndPos); dragStartCount = false; }
+        var i = 0;
+        var startElement, endElement;
 
-      for (let it of items) {
-        it.classList.remove("hint");
-        it.classList.remove("active");
-      }
-      if (clone) {
-        clone.remove();
-        clone = null;
-      }
+        for (let it of items) {
+            it.classList.remove("hint");
+            it.classList.remove("active");
+            if (i == dragStartPos) { startElement = it; }
+            if (i == dragEndPos)   { endElement   = it; }
+            i += 1;
+            }
+
+        if (dragStartPos != dragEndPos && dragStartCount == true) {
+            if (endElement.innerHTML.indexOf("rm-id") > 0) {
+                var id = endElement.innerHTML.split("</rm-id>")[0];
+                id     = id.split("<rm-id>")[1];
+                }
+            else {
+                var id = "";
+                }
+            callback_pos(id, target.id, dragStartPos, dragEndPos); dragStartCount = false;
+            }
+
+        if (clone) {
+            clone.remove();
+            clone = null;
+            }
     }
 
     function handleDrop(e) {
@@ -87,7 +103,7 @@ function remote_slist(target, callback_pos) {
     for (let i of items) {
       // Create and append the handle element
       let handle = document.createElement("span");
-      handle.className = "handle";
+      handle.className = "slist_handle";
       handle.innerHTML = handle_element;
       i.insertBefore(handle, i.firstChild);
 

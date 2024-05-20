@@ -14,6 +14,9 @@ function rmRemote(name) {
 	this.edit_mode      = false;
 	this.initial_load   = true;
 	this.loaded_remote  = [];
+
+	this.frames_edit    = ["frame1","frame2"];
+	this.frames_remote  = ["frame3","frame4","frame5"];
 	
 	this.basic          = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
 	this.button         = new rmRemoteButtons(name);			// rm_remotes-elements.js
@@ -77,8 +80,8 @@ function rmRemote(name) {
 			}
 			
 		// format frame1, frame2 for edit mode
-		document.getElementById("frame1").className = "setting_bg";
-		document.getElementById("frame2").className = "setting_bg";
+		document.getElementById(this.frames_edit[0]).className = "setting_bg";
+		document.getElementById(this.frames_edit[1]).className = "setting_bg";
 
 		// set active remote (type, id)
 		this.active_name    = rm_id;
@@ -96,13 +99,15 @@ function rmRemote(name) {
 		var edit_mode       = "";
 		if (this.edit_mode) {
 		    edit_mode = " / EDIT";
-		    elementVisible("frame1");
-		    elementVisible("frame2");
+		    rm3settings.create("index_small");
+		    elementVisible(this.frames_edit[0]);
+		    elementVisible(this.frames_edit[1]);
 		    }
 		else {
-		    elementHidden("frame1");
-		    elementHidden("frame2");
-		    document.getElementById("frame1").style.display = "none";
+		    rm3settings.settings_ext_reset();
+		    elementHidden(this.frames_edit[0]);
+		    elementHidden(this.frames_edit[1]);
+		    document.getElementById(this.frames_edit[0]).style.display = "none";
 		    }
 
 		if (type == "device") {
@@ -113,13 +118,13 @@ function rmRemote(name) {
             this.logging.default("Write Device Remote Control: " + rm_id);
 
 			// create remote for device
-            this.device_remote("frame3",rm_id);
-            this.device_description("frame4",rm_id);
-            this.device_notused("frame5",rm_id);
+            this.device_remote(     this.frames_remote[0], rm_id);
+            this.device_description(this.frames_remote[1], rm_id);
+            this.device_notused(    this.frames_remote[2], rm_id);
 			
 			// create edit panels
-            this.device_edit("frame1",rm_id);
-            this.device_edit_json("frame2",rm_id);
+            this.device_edit(       this.frames_edit[0],   rm_id);
+            this.device_edit_json(  this.frames_edit[1],   rm_id);
 
 			// show
             this.show(rm_id);
@@ -133,13 +138,13 @@ function rmRemote(name) {
             this.logging.default("Write Scene Remote Control: " + rm_id);
 
             // create remote for scene
-            this.scene_remote("frame3",rm_id);
-            this.scene_description("frame4",rm_id);
-            this.scene_channels("frame5",rm_id);
+            this.scene_remote(     this.frames_remote[0], rm_id);
+            this.scene_description(this.frames_remote[1], rm_id);
+            this.scene_channels(   this.frames_remote[2],rm_id);
 
             // create edit panels
-            this.scene_edit("frame1",rm_id);
-            this.scene_edit_json("frame2",rm_id);
+            this.scene_edit(       this.frames_edit[0], rm_id);
+            this.scene_edit_json(  this.frames_edit[1], rm_id);
 
             // show
             this.show();
@@ -155,9 +160,9 @@ function rmRemote(name) {
 
 	// reread data from current definition and create preview
 	this.device_remote_preview      = function (device) {
-		this.device_edit_json(id='frame2', device=device, preview_remote='remote_json_buttons', preview_display='remote_json_display', preview_display_size='remote_display_size');
-		this.device_remote(   id='frame3', device=device, preview_remote='remote_json_buttons', preview_display='remote_json_display', preview_display_size='remote_display_size');
-		this.device_notused(  id='frame5', device=device);
+		this.device_edit_json(id=this.frames_edit[1],   device=device, preview_remote='remote_json_buttons', preview_display='remote_json_display', preview_display_size='remote_display_size');
+		this.device_remote(   id=this.frames_remote[0], device=device, preview_remote='remote_json_buttons', preview_display='remote_json_display', preview_display_size='remote_display_size');
+		this.device_notused(  id=this.frames_remote[2], device=device);
 		}
 	
 	// create remote for a specific device
@@ -410,7 +415,7 @@ function rmRemote(name) {
 		edit    += this.tab.line();
 		edit    += this.tab.row("<center>"+
 				"<input id='remote_visibility' value='"+remote_visible+"' style='display:none;'>"+
-				this.button.edit("apiRemoteChangeVisibility('remote','"+device+"','remote_visibility');",lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
+				this.button.edit("apiRemoteChangeVisibility('device','"+device+"','remote_visibility');",lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
 				this.button.edit("apiDeviceEdit('"+device+"','edit','description,label,interface,method,device_id,image');",lang("BUTTON_T_SAVE")) + "&nbsp;" +
 				this.button.edit("apiDeviceDelete_exe('"+device+"');","delete") + "</center>"
 				);		
@@ -692,8 +697,8 @@ function rmRemote(name) {
 		remote += this.basic.edit_line();
 		remote += "<br/><center>" +
 		          this.button.edit(this.app_name+".device_edit_json('"+id+"','"+device+"');"+
-		          this.app_name+".device_remote('frame3','"+device+"','remote_json_buttons','remote_json_channel');"+
-		          this.app_name+".device_notused('frame5','"+device+"','remote_json_buttons');",lang("BUTTON_T_RESET")) + "&nbsp;" +
+		          this.app_name+".device_remote('"+this.frames_remote[0]+"','"+device+"','remote_json_buttons','remote_json_channel');"+
+		          this.app_name+".device_notused('"+this.frames_remote[2]+"','"+device+"','remote_json_buttons');",lang("BUTTON_T_RESET")) + "&nbsp;" +
 		          this.button.edit("apiDeviceJsonEdit('"+device+"','remote_json_buttons','remote_json_display','remote_display_size');",lang("BUTTON_T_SAVE")) + "&nbsp;" +
 		          this.button.edit(this.app_name+".device_remote_preview('"+device+"');",lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
 		          this.button.edit("remoteToggleEditMode(false);"+this.app_name+".create('"+this.active_type+"','"+device+"');","stop edit") +
@@ -705,9 +710,9 @@ function rmRemote(name) {
 
 	// reread data from current definition and create preview
 	this.scene_remote_preview       = function (scene) {
-		this.scene_edit_json( id='frame2', scene=scene, preview_remote='json::remote', preview_channel='json::macro-channel', preview_display='json::display', preview_display_size='json::display-size');
-		this.scene_remote(    id='frame3', scene=scene, preview_remote='json::remote', preview_display='json::display', preview_display_size='json::display-size');
-		this.scene_channels(  id='frame5', scene=scene, preview_channel='json::macro-channel');
+		this.scene_edit_json( id=this.frames_edit[0], scene=scene, preview_remote='json::remote', preview_channel='json::macro-channel', preview_display='json::display', preview_display_size='json::display-size');
+		this.scene_remote(    id=this.frames_remote[0], scene=scene, preview_remote='json::remote', preview_display='json::display', preview_display_size='json::display-size');
+		this.scene_channels(  id=this.frames_remote[2], scene=scene, preview_channel='json::macro-channel');
 		}
 	
 	// create remote for a specific scene
@@ -1164,13 +1169,13 @@ function rmRemote(name) {
         this.button.width = "70px";
 		remote += "<br/><center>" +
 		          this.button.edit(this.app_name+".scene_edit_json('"+id+"','"+scene+"');"+
-				                   this.app_name+".scene_remote(  'frame3','"+scene+"','json::remote','json::display');"+
-				                   this.app_name+".scene_channels('frame5','"+scene+"','json::macro-channel');",
+				                   this.app_name+".scene_remote(  '"+this.frames_remote[0]+"','"+scene+"','json::remote','json::display');"+
+				                   this.app_name+".scene_channels('"+this.frames_remote[2]+"','"+scene+"','json::macro-channel');",
 				                   lang("BUTTON_T_RESET")) + "&nbsp;" +
                   this.button.edit("apiSceneJsonEdit('"+scene+"','json::remote,json::devices,json::display,json::macro-channel,json::macro-scene-on,json::macro-scene-off,json::macro-scene,json::display-size');",
 				                   lang("BUTTON_T_SAVE"),"") + "&nbsp;" +
-                  this.button.edit(this.app_name+".scene_remote(  'frame3','"+scene+"','json::remote','json::display','json::display-size');"+
-				                   this.app_name+".scene_channels('frame5','"+scene+"','json::macro-channel');",
+                  this.button.edit(this.app_name+".scene_remote(  '"+this.frames_remote[0]+"','"+scene+"','json::remote','json::display','json::display-size');"+
+				                   this.app_name+".scene_channels('"+this.frames_remote[2]+"','"+scene+"','json::macro-channel');",
 				                   lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
 		          this.button.edit("remoteToggleEditMode(false);"+this.app_name+".create('"+this.active_type+"','"+scene+"');","stop edit") +
 				  "</center><br/>";

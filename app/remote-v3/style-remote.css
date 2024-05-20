@@ -94,7 +94,6 @@ ul.help ul li {
    z-index          : 61;
    }
 
-
 .remote_edit_headline {
     font-size   : 16px;
     font-variant: small-caps;
@@ -122,16 +121,13 @@ ul.help ul li {
 	}
 
 .remote_group_header:hover {
+
 	color           : yellow;
 	}
 
 #frame3    { z-index: 61; }
 
 #reload_msg { color : gray; font-family: sans-serif; font-size: 10px;}
-
-.remoteblock {
-   width : 100%;
-}
 
 .remote-line {
     position		: relative;
@@ -155,6 +151,26 @@ ul.help ul li {
     font-size		: 10px;
     clear		    : left;
     }
+
+/* setting frames */
+
+.setting_bg {
+   font-family      : sans-serif;
+   width            : 290px;
+   margin           : 4px;
+   padding          : 5px;
+   float            : left;
+   border-radius    : 5px;
+   background-color : #444444;
+   color            : white;
+   font-size        : 14px;
+   opacity          : 0.9;
+}
+
+.setting_bg.wide {
+   background       : #dddddd;
+   width            : 290px;
+}
 
 /* entries for channel lists */
 

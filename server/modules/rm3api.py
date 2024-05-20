@@ -852,8 +852,8 @@ class RemoteAPI(RemoteDefaultClass):
         Return:
             dict: API response
         """
-        data = self._start(["request-only"])
-        interface = self.config.cache["_api"]["devices"][device]["config"]["api_key"]
+        data = self._start()
+        interface = data["CONFIG"]["devices"][device]["interface"]["api"]
         method = self.apis.api_method(device)
 
         data["REQUEST"]["Device"] = device

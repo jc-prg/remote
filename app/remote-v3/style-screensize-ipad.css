@@ -10,8 +10,9 @@
   .screen_ipad      { display : block; }
   .screen_default   { display : none; }
 
-  .remote               { width  : 290px; }
-  .setting_bg		    { width  : 290px; }
+  .remote           { width  : 290px; }
+  .setting_bg       { width  : 290px; }
+  .setting_bg.width { width  : 590px; }
 
   .rm-toggle-button      { width  :  76px; }
   .rm-toggle-label.short { width  :  76px; }

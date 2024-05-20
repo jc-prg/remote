@@ -1,7 +1,9 @@
 @media (prefers-color-scheme: dark) {
 
-  button            { opacity: 1; color : #dddddd; background: #333333; }
+  button                { opacity: 1; color : #dddddd; background: #333333; }
   
+  .setting_bg.wide      { background: #222222 !important; }
+
   .rm-button            { opacity: 1; color : #dddddd; background: #333333; }
   .rm-button.empty      { background: #000000; }
   .rm-button:disabled   { background: #000000; }
@@ -18,6 +20,7 @@
 
   .rm-button.header_image { border: #000000 solid 3px; }
   .rm-button.header_image:hover { color: white; }
+
 
   .header_image_fade {
     font-size : 30px;

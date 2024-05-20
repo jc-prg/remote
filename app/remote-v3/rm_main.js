@@ -20,8 +20,14 @@ function startRemote() {
     rm3slider  = new jcSlider(name="rm3slider", container="audio_slider");              // create slider
     rm3slider.init(min=0,max=100,label="loading");                                      // set device information
     rm3slider.setPosition(top="45px",bottom=false,left=false,right="10px");             // set position (if not default)
-    rm3slider.setOnChange(apiSetVolume);                                                // -> setVolume (api call to set volume -> this.callOnChange( this.value ))
-    rm3slider.setShowVolume(statusShow_volume);                                         // -> showVolume e.g. in header
+
+    if (apiSetVolume && statusShow_volume) {
+        rm3slider.setOnChange(apiSetVolume);                                            // -> setVolume (api call to set volume -> this.callOnChange( this.value ))
+        rm3slider.setShowVolume(statusShow_volume);                                     // -> showVolume e.g. in header
+        }
+    else {
+        console.error("Could not connect 'apiSetVolume' and 'statusShow_volume'.");
+        }
 
     rm3menu     = new rmMenu(     "rm3menu", ["menuItems","menuItems2"] );
     rm3start    = new rmStart(    "rm3start" );
@@ -72,7 +78,7 @@ function remoteInit (first_load=true) {
 function remoteFirstLoad_load() {appFW.requestAPI("GET",["list"],"",remoteFirstLoad); }
 function remoteFirstLoad(data) {
     dataAll = data;
-	//remoteReload(data);		// initial load of data incl. remotes, settings
+	remoteReload(data);		// initial load of data incl. remotes, settings
 	remoteStartMenu(data);		// initial load start menu
 	remoteDropDown(data);		// initial load drop down menu
 	remoteLastFromCookie();		// get data from cookie
@@ -145,7 +151,7 @@ function remoteSetSliderDevice(data) {
 		console.error("Min and max values not defined, set to 0..100!");
 		}
 	label      	= data["CONFIG"]["devices"][main_audio]["settings"]["label"];
-	
+
 	rm3slider.init(min,max,label+" ("+main_audio+")");
 	rm3slider.device = main_audio;
 	}
@@ -204,6 +210,7 @@ function remoteStartMenu(data) {
 
 	// load buttons on start page
 	rm3start.init(        data);	// load data to class
+	rm3start.set_edit_mode();
 	rm3start.add_scenes(  data["CONFIG"]["scenes"],  "frame3" );
 	rm3start.add_devices( data["CONFIG"]["devices"], "frame4" );
 	

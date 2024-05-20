@@ -14,7 +14,10 @@ var language_app = {
 	"EN" : {
 		"ADD_ELEMENTS"          : "Add elements",
 		"ADD_DISPLAY"           : "Add display",
-		
+		"ADD_SCENE"             : "Add scene",
+		"ADD_REMOTE"            : "Add remote",
+		"ADD_DEVICE"            : "Add device",
+
 		"AUDIO_IS_MAIN"         : "This device is defined as main AUDIO device.",
 		"AUDIO_SET_AS_MAIN"     : "Set as main AUDIO device (change from &quot;{0}&quot;).",
 		"AUDIO_N/A_AS_MAIN"     : "This device can't be set as main AUDIO device, no audio volume control available.",
@@ -106,8 +109,12 @@ var language_app = {
 		"DISPLAY_LABEL_EXISTS_ALREADY" : "Label already exists in the display.",
 		"DISPLAY_NOT_ADDED"      : "No display added yet. Changes below will have no effect.",
 		
+		"EDIT_DEVICE"            : "Edit device",
+		"EDIT_DEVICES"           : "Edit devices",
 		"EDIT_REMOTE"            : "Edit remote",
 		"EDIT_REMOTES"           : "Edit remotes",
+		"EDIT_SCENE"             : "Edit scene",
+		"EDIT_SCENES"            : "Edit scenes",
 		"EDIT_DISPLAY"           : "Edit display",
 		"EDIT_MACROS"            : "Edit macros",
 		"EDIT_INTERFACES"        : "Edit interfaces",
@@ -246,6 +253,7 @@ var language_app = {
 		"SETTINGS"                     : "Settings",
 		"SETTINGS_GENERAL"             : "General settings",
 		"SETTINGS_REMOTE"              : "Remote Control Settings",
+		"SETTINGS_DEVICES"             : "Device Settings",
 		"SETTINGS_API"                 : "API Settings",
 		"SETTINGS_SCENES"              : "Scene Settings",
 		"SETTINGS_TIMER"               : "Timer Settings",
