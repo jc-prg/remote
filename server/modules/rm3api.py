@@ -722,6 +722,24 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._end(data, ["no-config", "no-status", "no-data"])
         return data
 
+    def edit_timer_try(self, timer_id):
+        """
+        edit timer event to queue to try out immediately
+
+        Args:
+            timer_id (str): timer id
+        Return:
+            dict: API response
+        """
+        data = self._start(["request-only"])
+
+        data["REQUEST"]["Return"] = "OK: Add timer to queue to try out directly"
+        data["REQUEST"]["Command"] = "Try out timer"
+        self.timer.schedule_timer_try(timer_id)
+
+        data = self._end(data, ["no-config", "no-status", "no-data"])
+        return data
+
     def edit_timer_delete(self, timer_id):
         """
         edit data of a timer event

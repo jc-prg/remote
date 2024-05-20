@@ -33,6 +33,7 @@ class ScheduleTimer(RemoteThreadingClass):
         self.data = data
 
         self.schedule = self.config.read(rm3presets.active_timer)
+        self.schedule_tryout = []
         self.schedule_short = {}
         self.schedule_short_recreate = 3600
         self.schedule_short_created = time.time()
@@ -77,6 +78,10 @@ class ScheduleTimer(RemoteThreadingClass):
         """
         self.logging.info("Create short schedule information ...")
         self.schedule_short = {}
+
+        if "data" not in self.schedule_short:
+            self.logging.error("Schedule data not correct.")
+            return
 
         for key in self.schedule["data"]:
             timer_config = self.schedule["data"][key]
@@ -137,7 +142,9 @@ class ScheduleTimer(RemoteThreadingClass):
         self.last_execute = now
         n_year, n_month, n_day, n_hour, n_minute, n_week_day = now.split("-")
 
-        execute = []
+        execute = self.schedule_tryout
+        self.schedule_tryout = []
+
         for compare in self.schedule_short:
             year, month, day, hour, minute, week_day = compare.split("-")
 
@@ -157,6 +164,19 @@ class ScheduleTimer(RemoteThreadingClass):
                 self.schedule_timer_execute(self.schedule["data"][timer_id])
         else:
             self.logging.debug("__EXECUTE TIMER: ... Nothing to execute at the moment")
+
+    def schedule_timer_try(self, timer_id):
+        """
+        add timer to be tried out immediately to queue
+
+        Args:
+            timer_id (str): timer id
+        Return:
+            str: OK
+        """
+        self.logging.info("Add timer '" + timer_id + "' to queue to try out ...")
+        self.schedule_tryout.append(timer_id)
+        return "OK"
 
     def schedule_timer_execute(self, timer_config):
         """

@@ -620,6 +620,11 @@ function apiTimerEdit(key, data_fields) {
 	appFW.requestAPI("PUT",["timer-edit", key], send_data, apiAlertReturn);
     }
 
+function apiTimerTry(key) {
+
+	appFW.requestAPI("PUT",["timer-try", key], send_data, apiAlertReturn);
+    }
+
 function apiTimerAdd(data_fields) {}
 
 function apiTimerDelete(key) {

@@ -67,6 +67,7 @@ var language_app = {
 		"BUTTON_T_PARAMETER"    : "paremter",
 		"BUTTON_T_PREVIEW"      : "preview",
 		"BUTTON_T_VALUE"        : "add value",
+		"BUTTON_T_TRY"          : "try",
 		
 		"CHANNEL_USE_JSON"      : "Please use JSON to edit the channel list.",
 		"CHANGE_ORDER"          : "Change order of remote controls",

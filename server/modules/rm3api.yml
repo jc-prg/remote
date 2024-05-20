@@ -405,8 +405,30 @@ paths:
               REQUEST:
                 $ref: "#/definitions/REQUEST"
 
+  /timer-try/{timer_id}/:
+    put:
+      operationId: __main__.remoteAPI.edit_timer_try
+      tags:
+        - send
+      summary: try timer event
+      description: try timer event (send to queue directly)
+      parameters:
+        - name: timer_id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully send API request
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
 
-#------------------------ EDIT FUNCTIONS ------------------------
+
+  #------------------------ EDIT FUNCTIONS ------------------------
 
   /macro/:
     put:

@@ -516,12 +516,14 @@ function rmSettings (name) {	// IN PROGRESS
             var link_save   = "val=document.getElementById(\"timer_name_"+key+"\").value; if(val!=\"\") { apiTimerEdit(\""+key+"\",\""+data_fields+"\"); } else { appMsg.alert(\"Add a title!\"); }";
             var link_reset  = "rm3settings.module_timer();";
             var link_delete = "appMsg.confirm(#Delete timer?#, #apiTimerDelete(##"+key+"##);#, 140);";
+            var link_try    = "";
 
 	        var buttons     = "";
             if (key != "NEW_TIMER_ID") {
                 buttons   += btn.sized("timer_save_"+key,    lang("BUTTON_T_SAVE"),   "",  link_save);
                 buttons   += btn.sized("timer_reset_"+key,   lang("BUTTON_T_RESET"),  "",  link_reset);
                 buttons   += btn.sized("timer_delete_"+key,  lang("BUTTON_T_DELETE"), "",  link_delete);
+                buttons   += btn.sized("timer_try_"+key,     lang("BUTTON_T_TRY"),    "",  link_try);
                 }
             else {
                 buttons   += btn.sized("timer_add_"+key,     lang("BUTTON_T_CREATE"),   "",  link_save);
