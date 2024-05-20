@@ -17,8 +17,6 @@
   .setting_bg       { width  : 340px; }
   .setting_bg.wide  { width  : 340px; }
 
-  nav-title         { max-width  : 160px; }
-
   .rm-toggle-button     { width  :  76px; }
   .rm-toggle-label.long { width  : 242px; }
 }

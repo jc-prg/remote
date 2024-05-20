@@ -73,3 +73,10 @@
     font-style      : italic;
     color           : #DDDD88;
 }
+
+@media (max-width: 320px) {
+    nav-title         { max-width : 100px; }
+    .slist_li_edit    { width     : 30%; }
+    .slist_li_content { width     : 60%; }
+    }
+}
