@@ -180,7 +180,7 @@ function rmSettings (name) {	// IN PROGRESS
 	        "INFORMATION":      ["info2",       "rm3settings.create('info');"],
 	        "SETTINGS_GENERAL": ["settings2",   "rm3settings.create('general');"],
 	        "SETTINGS_DEVICES": ["remote",      "rm3settings.create('edit_devices');"],
-	        "SETTINGS_SCENES":  ["stage",       "rm3settings.create('edit_scenes');"],
+	        "SETTINGS_SCENES":  ["cinema",      "rm3settings.create('edit_scenes');"],
 	        "SETTINGS_API":     ["plug",        "rm3settings.create('edit_interfaces');"],
 	        "SETTINGS_TIMER":   ["timer2",      "rm3settings.create('edit_timer');"]
 	        }
