@@ -181,8 +181,8 @@ function rmSettings (name) {	// IN PROGRESS
 	        "SETTINGS_GENERAL": ["settings2",   "rm3settings.create('general');"],
 	        "SETTINGS_DEVICES": ["remote",      "rm3settings.create('edit_devices');"],
 	        "SETTINGS_SCENES":  ["cinema",      "rm3settings.create('edit_scenes');"],
-	        "SETTINGS_API":     ["plug",        "rm3settings.create('edit_interfaces');"],
-	        "SETTINGS_TIMER":   ["timer2",      "rm3settings.create('edit_timer');"]
+	        "SETTINGS_API":     ["plug2",       "rm3settings.create('edit_interfaces');"],
+	        "SETTINGS_TIMER":   ["timer",       "rm3settings.create('edit_timer');"]
 	        }
 	    if (small) {
 	        var img_small = rm_image(button_img[setting_modules_back["SETTINGS"][0]], big=false);
