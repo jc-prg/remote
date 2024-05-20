@@ -1352,11 +1352,12 @@ function rmSettings (name) {	// IN PROGRESS
 		var status      = "<br/>";
         var filter_list = document.getElementById(id_filter);
         var filter      = filter_list.options[filter_list.selectedIndex].value;
-		for (var key in this.data["STATUS"]["devices"][filter]) {
+
+		for (var key in dataAll["STATUS"]["devices"][filter]) {
 			if (key == "power") {
 				command_on    = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','ON'], '', '', '' );rm3settings.onoff();remoteInit();";
 				command_off   = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','OFF'], '', '', '' );rm3settings.onoff();remoteInit();";
-				status_value  = this.data["CONFIG"]["devices"][filter]["status"][key];
+				status_value  = dataAll["STATUS"]["devices"][filter][key];
 				if (status_value == "ON"){
 				    command_link = "<div onclick=\""+command_off+"\" style=\"cursor:pointer\">" + key + ": <u>" + use_color("ON", "ON") + "</u></div>";
 				    }
