@@ -516,7 +516,7 @@ function rmSettings (name) {	// IN PROGRESS
             var link_save   = "val=document.getElementById(\"timer_name_"+key+"\").value; if(val!=\"\") { apiTimerEdit(\""+key+"\",\""+data_fields+"\"); } else { appMsg.alert(\"Add a title!\"); }";
             var link_reset  = "rm3settings.module_timer();";
             var link_delete = "appMsg.confirm(#Delete timer?#, #apiTimerDelete(##"+key+"##);#, 140);";
-            var link_try    = "";
+            var link_try    = "appMsg.confirm(#Try out timer?#, #apiTimerTry(##"+key+"##);#, 140);";
 
 	        var buttons     = "";
             if (key != "NEW_TIMER_ID") {
