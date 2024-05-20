@@ -185,7 +185,11 @@ class RemotesData(RemoteThreadingClass):
                     data_config[device]["settings"]["device_id"] = data[device]["config"]["device_id"]
                 else:
                     data_config[device]["settings"]["device_id"] = ""
-                data_config[device]["remote"] = devices[device]["remote"]
+
+                if "remote" in devices[device]:
+                    data_config[device]["remote"] = devices[device]["remote"]
+                else:
+                    data_config[device]["remote"] = {}
 
                 data_config[device]["interface"] = {}
                 data_config[device]["interface"]["method"] = interface_def_combined["method"]
