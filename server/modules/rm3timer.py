@@ -187,30 +187,34 @@ class ScheduleTimer(RemoteThreadingClass):
             timer_config (dict): config data of timer event (ID will be created automatically)
         """
         self.logging.debug("Execute timer event " + timer_config["name"] + " ...")
-        commands = timer_config["commands"]
-        commands_decomposed = self.data.macro_decode(commands)
-        self.logging.info("__EXECUTE TIMER: " + str(commands_decomposed))
+        try:
+            commands = timer_config["commands"]
+            commands_decomposed = self.data.macro_decode(commands)
+            self.logging.info("__EXECUTE TIMER: " + str(commands_decomposed))
 
-        act_devices = self.config.read(rm3presets.active_devices)
-        for command in commands_decomposed:
-            device = ""
-            button = ""
-            value = ""
+            act_devices = self.config.read(rm3presets.active_devices)
+            for command in commands_decomposed:
+                device = ""
+                button = ""
+                value = ""
 
-            if "||" in str(command):
-                command, value = command.split("||")
-            if "_" in str(command):
-                device, rest = command.split("_")
-                button = command.replace(device+"_", "")
+                if "||" in str(command):
+                    command, value = command.split("||")
+                if "_" in str(command):
+                    device, rest = command.split("_")
+                    button = command.replace(device+"_", "")
 
-            if type(command) is int:
-                time.sleep(command)
-                self.logging.debug("WAIT: " + str(command) + "s")
+                if type(command) is int:
+                    time.sleep(command)
+                    self.logging.debug("WAIT: " + str(command) + "s")
 
-            elif device in act_devices and button != "":
-                call_api = act_devices[device]["config"]["api_key"] + "_" + act_devices[device]["config"]["api_device"]
-                self.logging.debug("SEND: call_api="+call_api+", device="+device+", button="+button+", value="+value)
-                self.apis.api_send(call_api=call_api, device=device, button=button, value=value)
+                elif device in act_devices and button != "":
+                    call_api = act_devices[device]["config"]["api_key"] + "_" + act_devices[device]["config"]["api_device"]
+                    self.logging.debug("SEND: call_api="+call_api+", device="+device+", button="+button+", value="+value)
+                    self.apis.api_send(call_api=call_api, device=device, button=button, value=value)
+
+        except Exception as e:
+            self.logging.error("Could not execute timer event: " + str(e))
 
     def schedule_timer_add(self, timer_config):
         """
