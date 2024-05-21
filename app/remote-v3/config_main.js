@@ -118,8 +118,9 @@ var colors_power            = {
 				"ERROR"	    : "blueviolet",
 				}
 var function_colors         = {
-                "ON"        : "green",
-                "OFF"       : "red",
+                "ON"        : "#33FF33",
+                "OFF"       : "FF3333",
+                "ERROR"     : "FF3333",
                 "VALUE"     : "#66FFFF"
                 }
 

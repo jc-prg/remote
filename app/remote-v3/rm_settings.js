@@ -1349,31 +1349,47 @@ function rmSettings (name) {	// IN PROGRESS
         	}
 
 	this.device_list_status	    = function (id_filter, id_list_container) {
-		var status      = "<br/>";
-        var filter_list = document.getElementById(id_filter);
-        var filter      = filter_list.options[filter_list.selectedIndex].value;
+		var status        = "<br/>";
+        var filter_list   = document.getElementById(id_filter);
+        var filter        = filter_list.options[filter_list.selectedIndex].value;
+	    var device_status = dataAll["STATUS"]["devices"][filter];
+	    var device_values = dataAll["CONFIG"]["devices"][filter]["commands"]["get"];
+        var dont_use      = ["api", "api-last-query", "api-last-query-tc", "api-last-send", "api-last-send-tc", "api-status","presets"];
+        var color         = "VALUE";
+        if (device_status["api-status"].indexOf("ERROR") > -1)          { color = "ERROR"; }
+        else if (device_status["api-status"].indexOf("Connected") > -1) { color = "ON"; }
+        else if (device_status["api-status"].indexOf("DISABLED") > -1)  { color = "OFF"; }
 
-		for (var key in dataAll["STATUS"]["devices"][filter]) {
+        status += this.tab.start();
+        status += this.tab.line();
+        status += this.tab.row("API:",             use_color(device_status["api"], "VALUE"));
+        status += this.tab.row("",                 use_color(device_status["api-status"],color));
+        status += this.tab.row("Last&nbsp;send:",  use_color(device_status["api-last-send"]),"VALUE");
+        status += this.tab.row("Last&nbsp;query:", use_color(device_status["api-last-query"],"VALUE"));
+        status += this.tab.line();
+
+		for (var key in device_status) {
 			if (key == "power") {
 				command_on    = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','ON'], '', '', '' );rm3settings.onoff();remoteInit();";
 				command_off   = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','OFF'], '', '', '' );rm3settings.onoff();remoteInit();";
-				status_value  = dataAll["STATUS"]["devices"][filter][key];
+				status_value  = device_status[key];
 				if (status_value == "ON"){
-				    command_link = "<div onclick=\""+command_off+"\" style=\"cursor:pointer\">" + key + ": <u>" + use_color("ON", "ON") + "</u></div>";
+				    command_link = "<div onclick=\""+command_off+"\" style=\"cursor:pointer\"><u>" + use_color("ON", "ON") + "</u></div>";
 				    }
 				else if (status_value == "OFF")	{
-				    command_link = "<div onclick=\""+command_on +"\" style=\"cursor:pointer\">" + key + ": <u>" + use_color("OFF", "OFF") + "</u></div>";
+				    command_link = "<div onclick=\""+command_on +"\" style=\"cursor:pointer\"><u>" + use_color("OFF", "OFF") + "</u></div>";
 				    }
 				else {
-				    command_link = key + ": " + use_color(status_value, "VALUE") + "</br>";
+				    command_link = use_color(status_value, "VALUE");
 				    }
-				status += command_link;
+				status += this.tab.row(key + ":", command_link);
 				}
-			else if (key != "presets") {
-				status += key + ": " + use_color(this.data["STATUS"]["devices"][filter][key], "VALUE") + "<br/>";
+			else if (dont_use.indexOf(key) == -1 && (!device_values || device_values.indexOf(key) > -1)) {
+				status += this.tab.row(key + ": ", use_color(device_status[key], "VALUE"));
 				}
 			}
-	        setTextById( id_list_container, status + "<br/>" );
+        status += this.tab.end();
+        setTextById( id_list_container, status + "<br/>" );
 		}
 
 	// show button code in header if pressed button
