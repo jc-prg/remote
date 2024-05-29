@@ -1,0 +1,39 @@
+{
+    "data": {
+        "description": "Zigbee Bulb 01: zigbee-bulb",
+        "display": {
+            "Bright.": "brightness",
+            "Color": "color-xy",
+            "State": "power",
+            "Temp.": "color-temp"
+        },
+        "display-size": "big",
+        "method": "query",
+        "remote": [
+            "LINE||SmartBulb",
+            "DISPLAY",
+            "on",
+            "off",
+            "LINE",
+            "SLIDER||send-brightness||Brightness||0-254||brightness",
+            "SLIDER||send-color-temp||Color Temperature||153-500||color-temp",
+            "COLOR-PICKER||send-color-xy||CIE_1931",
+            "white",
+            "yellow",
+            "orange",
+            "red",
+            "pink",
+            "blue",
+            "cyan",
+            "green",
+            "LINE||",
+            "white-coolest",
+            "white-cool",
+            "white-neutral",
+            "white-warm",
+            "white-warmest"
+        ],
+        "type": "device"
+    },
+    "info": "jc://remote/ - In this file the remote layout and a display layout is defined."
+}
