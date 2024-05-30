@@ -1660,7 +1660,7 @@ function rmRemote(name) {
         var display_start = "<button id=\"colorpicker_"+sub_id+"_button\" class=\"color-picker\">";
         display_start    += "<center><canvas id=\"colorpicker_"+sub_id+"\">";
         var display_end   = "</canvas>";
-        display_end       += "<canvas id=\"colorpicker_demo_"+sub_id+"\" style=\"height:20px;width:50px;border-radius:5px;border:1px white solid;\"></canvas></center>";
+        display_end       += "<canvas id=\"colorpicker_demo_"+sub_id+"\" style=\"border-radius:5px;border:1px white solid;\"></canvas></center>";
         display_end       += "</button>";
 
         var text = display_start;

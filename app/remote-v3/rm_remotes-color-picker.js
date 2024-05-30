@@ -222,6 +222,11 @@ function rmColorPicker(name) {
             color_demo.style.height = "28px";
             color_demo.style.background = "2px solid white";
             }
+        else {
+            color_demo.style.width  = "80px";
+            color_demo.style.height = "10px";
+            color_demo.style.background = "2px solid white";
+            }
 
         // When the image is loaded, draw it on the canvas
         image.onload = function() {
