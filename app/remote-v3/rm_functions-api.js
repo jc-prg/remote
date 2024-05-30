@@ -285,9 +285,9 @@ function apiDeviceMovePosition_get(data) {
     }
 
 function apiDeviceMovePosition(data) {
-	remoteReload_load();
-	//rm3settings.data = data;
-	//rm3settings.create();
+	rm3settings.data = data;
+	rm3settings.create();
+	remoteReload(data);
 	}
 
 function apiMovePosition(id, dnd_list, from, to) {
