@@ -1,10 +1,6 @@
 //--------------------------------
 // jc://remote/
 //--------------------------------
-// (c) Christoph Kloth
-// settings page & functions
-//--------------------------------
-
 
 function rmSettings (name) {	// IN PROGRESS
 
@@ -457,10 +453,12 @@ function rmSettings (name) {	// IN PROGRESS
         set_temp  = "";
         images    = dataAll["CONFIG"]["elements"]["button_images"];
         for (var key in images) {
+            var onclick = "appMsg.info(\"Copied button key ["+key+"] to clipboard.\");";
+            onclick    += "navigator.clipboard.writeText(\""+key+"\");";
             set_temp += "<button class='image_list key' style='width:50px;'>";
             set_temp += key;
             set_temp += "</button>";
-            set_temp += "<button class='image_list'>";
+            set_temp += "<button class='image_list' onclick='"+onclick+"'>";
             set_temp += rm_image(images[key], false);
             set_temp += "</button>";
             }
@@ -470,10 +468,13 @@ function rmSettings (name) {	// IN PROGRESS
         set_temp  = "";
         colors    = dataAll["CONFIG"]["elements"]["button_colors"];
         for (var key in colors) {
+            var onclick = "appMsg.info(\"Copied button key ["+key+"] to clipboard.\");";
+            onclick    += "navigator.clipboard.writeText(\""+key+"\");";
+
             set_temp += "<button class='image_list key'>";
             set_temp += key;
             set_temp += "</button>";
-            set_temp += "<button class='rm-button bg"+key+"' style='width:50px;'>";
+            set_temp += "<button class='rm-button bg"+key+"' style='width:50px;' onclick='"+onclick+"'>";
             set_temp += "";
             set_temp += "</button>";
             }
@@ -596,7 +597,6 @@ function rmSettings (name) {	// IN PROGRESS
                                                    "hour":-1,"minute":-1,"day_of_week":-1}, "timer_once": []});
         var entry_title = "<i>Create new timer ...</i>";
         html  += rm3settings.basic.container("timer_edit_add_new", entry_title, entry_html, false);
-
 
         html += "<center>&nbsp;<hr style='border:1px solid;height:1px;margin:5px;margin-top:10px;padding:0px;'/><small><i>Server time: <text id='current_server_time'></text></i></small></center>";
 

@@ -574,13 +574,28 @@ function rmRemote(name) {
                     this.button.edit("N/A","","disabled")
                     );
 			}
-		if (device_config["commands"]["set"].length > 0) {
+
+        var select_color_values = [];
+        for (var i=0;i<device_config["commands"]["set"].length;i++) {
+            var key = device_config["commands"]["set"][i];
+            if (device_config["commands"]["definition"][key] != undefined && device_config["commands"]["definition"][key]["values"] != undefined &&
+                device_config["commands"]["definition"][key]["values"]["min"] != undefined && device_config["commands"]["definition"][key]["values"]["max"] != undefined) {
+                select_color_values.push(key);
+            }
+            else if (device_config["commands"]["definition"][key] != undefined && device_config["commands"]["definition"][key]["type"] == "list") {
+                select_color_values.push(key);
+            }
+        }
+
+		if (select_color_values.length > 0) {
+		    var color_models = ["Brightness", "Color RGB", "Color CIE_1931", "Color RGB (small)",  "Color CIE_1931 (small)", "Color temperature"];
+
 			edit    += this.tab.row(
-                    this.basic.select_array("add_colorpicker_cmd",lang("BUTTON_T_SEND"), device_config["commands"]["set"], "", ""),
+                    this.basic.select_array("add_colorpicker_cmd",lang("BUTTON_T_SEND"), select_color_values, "", ""),
                     this.button.edit("","","disabled")
                     );
 			edit    += this.tab.row(
-                    this.basic.select_array("add_colorpicker_model", lang("BUTTON_T_COLOR"), ["RGB", "CIE_1931"]),
+                    this.basic.select_array("add_colorpicker_model", lang("BUTTON_T_COLOR"), color_models),
                     this.button.edit(this.app_name+".remote_add_colorpicker('device','"+device+"','add_colorpicker_cmd','remote_json_buttons');", lang("BUTTON_T_COLORPICKER"),"")
                     );
 			}
@@ -1298,8 +1313,14 @@ function rmRemote(name) {
 
         if (document.getElementById("add_colorpicker_model"))   { color_model = "||" + document.getElementById("add_colorpicker_model").value; }
 		if (document.getElementById(button_select))             { button = "COLOR-PICKER||send-" + button + color_model; }
-		this.remote_add_button(type,scene,button,remote,position);
-		this.remote_preview( type, scene );
+
+        if (document.getElementById("remote_json_buttons").innerHTML.indexOf(button) > -1) {
+            appMsg.alert(lang("MSG_ONLY_ONE_COLOR_PICKER"));
+            }
+        else {
+		    this.remote_add_button(type,scene,button,remote,position);
+		    this.remote_preview( type, scene );
+		    }
 		}
 
 	// add button to JSON	
@@ -1628,24 +1649,25 @@ function rmRemote(name) {
 			return;
 			}
 
-        var color_model = "RGB";
+        var color_model  = "RGB";
         var send_command = data[1];
+        var sub_id       = device + "_" + send_command;
         if (data.length > 2) { color_model  = data[2]; }
 
 		var remote_data  = this.data["CONFIG"][type][device]["remote"];
 		var status_data  = this.data["STATUS"]["devices"][device];
 		
-        var display_start = "<button id=\"colorpicker_"+device+"_button\" class=\"color-picker\">";
-        display_start    += "<canvas id=\"colorpicker_"+device+"\" style=\"width:250px;border:1 solid white;\">";
+        var display_start = "<button id=\"colorpicker_"+sub_id+"_button\" class=\"color-picker\">";
+        display_start    += "<center><canvas id=\"colorpicker_"+sub_id+"\">";
         var display_end   = "</canvas>";
-        display_end       += "<center><canvas id=\"colorpicker_demo\"></canvas></center>";
+        display_end       += "<canvas id=\"colorpicker_demo_"+sub_id+"\" style=\"border-radius:5px;border:1px white solid;\"></canvas></center>";
         display_end       += "</button>";
 
         var text = display_start;
         //text += this.color_picker.colorPickerHTML(send_command);
         text += display_end;
 
-        setTimeout(function() { rm3remotes.color_picker.colorPickerHTMLv2("colorpicker_"+device, send_command, color_model); }, 100);
+        setTimeout(function() { rm3remotes.color_picker.colorPickerHTMLv2("colorpicker_"+sub_id, sub_id, send_command, color_model); }, 100);
         return text;
 		}
 	

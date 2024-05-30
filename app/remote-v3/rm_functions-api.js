@@ -1,10 +1,6 @@
 //--------------------------------
 // jc://remote/
 //--------------------------------
-// (c) Christoph Kloth
-// All complex commands to call API
-//-----------------------------
-
 
 // check if APP updates are available
 function apiCheckUpdates() {

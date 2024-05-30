@@ -185,26 +185,49 @@ function rmColorPicker(name) {
 
 
     // color picker visualization v2
-    this.colorPickerHTMLv2 = function (container_id, send_command, color_model) {
+    this.colorPickerHTMLv2 = function (container_id, sub_id, send_command, color_model) {
 
         console.debug("Load Color Picker ("+container_id+") ...");
 
+        var use_image = "rgb";
+        var device    = sub_id.replace("_"+send_command, "");
+
+        if (color_model.indexOf("Brightness") > -1)       { use_image = "strip_brightness"; }
+        else if (color_model.indexOf("temperature") > -1) { use_image = "strip_temperature"; }
+        else if (color_model.indexOf("small") > -1)       { use_image = "strip_rgb"; }
+        else if (color_model.indexOf("old") > -1)         { use_image = "old"; }
+
+        var color_picker_images = {
+            "rgb":               ['remote-v3/img/rgb2.png', 250, 250],
+            "strip_rgb":         ['remote-v3/img/rgb-regenbogen.png', 280, 30],
+            "strip_temperature": ['remote-v3/img/color-temp.png', 280, 30],
+            "strip_brightness":  ['remote-v3/img/brightness.png', 280, 30],
+            "old":               ['remote-v3/img/img_colormap.gif', 234, 199]
+        }
+
         // Get the canvas element and its context
-        const canvas = document.getElementById(container_id);
-        const ctx    = canvas.getContext('2d');
+        const color_demo         = document.getElementById("colorpicker_demo_" + sub_id);
+        const canvas             = document.getElementById(container_id);
+        const ctx                = canvas.getContext('2d');
         const color_send_command = send_command;
 
         // Load image
-        const image = new Image();
-        image.src   = 'remote-v3/img/rgb2.png'; // Replace 'image.jpg' with your image path
-        //image.src   = 'remote-v3/img/img_colormap.gif'; // Replace 'image.jpg' with your image path
-        image.width = 250;
-        image.height = 250;
+        const image  = new Image();
+        image.src    = color_picker_images[use_image][0]; // Replace 'image.jpg' with your image path
+        image.width  = color_picker_images[use_image][1];
+        image.height = color_picker_images[use_image][2];
+
+        if (image.height == 30) {
+            color_demo.style.width  = "10px";
+            color_demo.style.height = "28px";
+            color_demo.style.background = "2px solid white";
+            }
 
         // When the image is loaded, draw it on the canvas
         image.onload = function() {
-            canvas.width = image.width;
+            canvas.width  = image.width;
             canvas.height = image.height;
+            canvas.style.borderRadius = "5px";
             ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
             //ctx.drawImage(image, 0, 0, image.width, image.height);
             console.debug("Color picker canvas size: " + canvas.width + "x" + canvas.height);
@@ -221,17 +244,18 @@ function rmColorPicker(name) {
             const red   = pixelData[0];
             const green = pixelData[1];
             const blue  = pixelData[2];
+            const value = Math.round(x / canvas.width * 1000) / 10;
 
             // Display RGB values
-            console.error(pixelData);
-            console.error(`X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue}`);
-            //document.getElementById('rgb').textContent = `R: ${red}, G: ${green}, B: ${blue}`;
+            console.debug("PIXEL DATA: " + pixelData);
+            console.debug(`PIXEL DATA: X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue} | value: ${value}`);
+            color_demo.style.backgroundColor = "rgb("+red+","+green+","+blue+")";
 
-            //document.getElementById("colorpicker_demo").style.backgroundColor = "rgb(255,0,0)";
-            document.getElementById("colorpicker_demo").style.backgroundColor = "rgb(" + red +","+green+","+blue+")";
             var input = `${red}:${green}:${blue}`;
-            if (color_model == "CIE_1931")  { rm3remotes.color_picker.sendColorCode_CIE1931(color_send_command, input); }
-            else                            { rm3remotes.color_picker.sendColorCode(color_send_command, input); }
+            if (color_model.indexOf("CIE_1931") > -1)          { rm3remotes.color_picker.sendColorCode_CIE1931(color_send_command, input); }
+            else if (color_model.indexOf("temperature") > -1)  { rm3remotes.color_picker.sendColorCode_temperature(color_send_command, value, device); }
+            else if (color_model.indexOf("Brightness") > -1)   { rm3remotes.color_picker.sendColorCode_brightness(color_send_command, value, device); }
+            else                                               { rm3remotes.color_picker.sendColorCode(color_send_command, input); }
         });
 
 
@@ -239,12 +263,12 @@ function rmColorPicker(name) {
 
 
     // send commands depending on color model
-	this.sendColorCode = function (send_command, input) {
+	this.sendColorCode              = function (send_command, input) {
 
 		appFW.requestAPI('GET',[ 'send-data', this.active_name, send_command, '"'+input+'"'	 ], '','');
 		}
 
-    this.sendColorCode_CIE1931 = function (send_command, input) {
+    this.sendColorCode_CIE1931      = function (send_command, input) {
 
         rgb_color = input.split(":");
         xy_color  = this.RGB_to_XY(rgb_color);
@@ -253,6 +277,43 @@ function rmColorPicker(name) {
 
 		appFW.requestAPI('GET',[ 'send-data', this.active_name, send_command, '"'+input+'"' ], '','');
     }
+
+    this.sendColorCode_brightness   = function (send_command, input, device) {
+        var pure_cmd = send_command.replace("send-", "");
+        var min_max  = dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]["values"];
+        var type     = dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]["type"];
+        if (min_max == undefined || min_max["min"] == undefined || min_max["max"] == undefined) {
+            appMsg.info("Could not set brightness: no min-max values for " + device + " / " + pure_cmd + ".  Check remote configuration!","error");
+            console.error(dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]);
+            console.error(min_max["min"]);
+            }
+        else {
+            var range = min_max["max"] - min_max["min"];
+            var value = (range * input) / 100 + min_max["min"];
+            if (type == "integer") { value = Math.round(value); }
+            console.log("BRIGHTNESS: " + send_command + " / " + input + " / min=" + min_max["min"] + "; max=" + min_max["max"] + " / " + value);
+            console.debug(min_max);
+            appFW.requestAPI('GET',[ 'send-data', this.active_name, send_command, value ], '','');
+            }
+        }
+
+    this.sendColorCode_temperature  = function (send_command, input, device) {
+        var pure_cmd = send_command.replace("send-", "");
+        var min_max  = dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]["values"];
+        var type     = dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]["type"];
+        if (min_max == undefined || min_max["min"] == undefined || min_max["max"] == undefined) {
+            appMsg.info("Could not set color temperature: no min-max values for " + device + " / " + pure_cmd + ". Check remote configuration!","error");
+            console.error(dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]);
+            }
+        else {
+            var range = min_max["max"] - min_max["min"];
+            var value = (range * input) / 100 + min_max["min"];
+            if (type == "integer") { value = Math.round(value); }
+            console.log("TEMPERATURE: " + send_command + " / " + input + " / min=" + min_max["min"] + "; max=" + min_max["max"] + " / " + value);
+            console.debug(min_max);
+            appFW.requestAPI('GET',[ 'send-data', this.active_name, send_command, value ], '','');
+            }
+        }
 
 
     // Function to convert RGB to XY

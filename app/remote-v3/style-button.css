@@ -209,6 +209,9 @@ button {
     border      : solid 2px #8888AA;
 }
 
+canvas {
+    margin : 5px;
+}
 
 /* image header */
 
