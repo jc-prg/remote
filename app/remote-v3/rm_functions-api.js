@@ -280,7 +280,6 @@ function apiDeviceMovePosition_exe(type,device,direction) { appFW.requestAPI( "P
 function apiDeviceMovePosition_get(data) {
     if (data["REQUEST"]["Return"].indexOf("ERROR") > -1)   { appMsg.alert(data["REQUEST"]["Return"]); }
     else if (data["REQUEST"]["Return"].indexOf("OK") > -1) { appMsg.info("<b>" + data["REQUEST"]["Command"] + "</b>: " + data["REQUEST"]["Return"], "ok"); }
-    appFW.requestAPI("GET",["list"],"",apiDeviceMovePosition);
     }
 
 function apiDeviceMovePosition(data) {
