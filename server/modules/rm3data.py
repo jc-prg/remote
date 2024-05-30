@@ -1521,10 +1521,11 @@ class RemotesEdit(RemoteDefaultClass):
             status[remote_id]["settings"]["position"] = i
             if device == remote_id:
                 remote_position = i
-            self.logging.info(" -> " + remote_id.ljust(12) + " pos=" + str(i))
+            self.logging.debug(" -> " + remote_id.ljust(12) + " pos=" + str(i))
             i += 1
 
         # check if in range
+        direction = int(direction)
         if remote_position + direction < 0:
             return "ERROR: Out of range (can move to " + str(remote_position + direction) + ")"
         elif remote_position + direction > len(order_keys):
@@ -1532,7 +1533,6 @@ class RemotesEdit(RemoteDefaultClass):
                     "; last=" + str(len(order_keys)) + ")")
 
         # start move
-        direction = int(direction)
         self.logging.debug("------------------ " + device + " move=" + str(direction) + "; pos=" + str(remote_position) +
                            "; " + str(remote_position + direction))
         i = 1
@@ -1564,6 +1564,7 @@ class RemotesEdit(RemoteDefaultClass):
         elif remote_type == "scene":
             self.data.scenes_write(status)  # configFiles.write(modules.active_scenes,status)
 
+        self.logging.info(return_msg)
         return return_msg
 
     def remote_visibility(self, remote_type, device, visibility):
