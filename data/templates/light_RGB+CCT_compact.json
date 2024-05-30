@@ -1,0 +1,24 @@
+{
+    "data": {
+        "description": "Compact RGB+CCT Light (Bulb, LED Strip)",
+        "display": {
+            "Bright.": "brightness",
+            "Color": "color-xy",
+            "State": "power",
+            "Temp.": "color-temp"
+        },
+        "display-size": "h2w2",
+        "method": "query",
+        "remote": [
+            "LINE||SmartBulb",
+            "DISPLAY",
+            "on",
+            "off",
+            "LINE",
+            "COLOR-PICKER||send-color-xy||Color CIE_1931",
+            "COLOR-PICKER||send-brightness||Brightness",
+            "COLOR-PICKER||send-color-temp2||Color temperature"
+        ],
+        "type": "device"
+    }
+}
