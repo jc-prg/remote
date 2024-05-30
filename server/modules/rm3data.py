@@ -447,7 +447,7 @@ class RemotesData(RemoteThreadingClass):
         """
         var_relevant = ["config", "settings", "status"]
 
-        self.logging.info(str(data))
+        self.logging.debug(str(data))
 
         for device in data:
             var_delete = []
@@ -1489,11 +1489,20 @@ class RemotesEdit(RemoteDefaultClass):
         else:
             return "ERROR: type " + remote_type + " is unknown."
 
+        # check if device is defined
+        if device not in status:
+            return "ERROR: " + device + " (" + remote_type + ") not defined."
+
         # normalize position (required, if remotes have been deleted)
         order = {}
         order_keys = []
+        no_position = 0
         for key in status:
-            pos = status[key]["settings"]["position"]
+            if "position" in status[key]["settings"]:
+                pos = status[key]["settings"]["position"]
+            else:
+                pos = 200 + no_position
+                no_position += 1
             if pos < 10:
                 pos = "00" + str(pos)
             elif pos < 100:
@@ -1503,59 +1512,54 @@ class RemotesEdit(RemoteDefaultClass):
             order[pos] = key
             order_keys.append(pos)
 
+        self.logging.debug("------------------ " + device + " move=" + str(direction))
         order_keys.sort()
         i = 1
+        remote_position = 0
         for key in order_keys:
-            status[order[key]]["settings"]["position"] = i
+            remote_id = order[key]
+            status[remote_id]["settings"]["position"] = i
+            if device == remote_id:
+                remote_position = i
+            self.logging.info(" -> " + remote_id.ljust(12) + " pos=" + str(i))
             i += 1
 
+        # check if in range
+        if remote_position + direction < 0:
+            return "ERROR: Out of range (can move to " + str(remote_position + direction) + ")"
+        elif remote_position + direction > len(order_keys):
+            return ("ERROR: Out of range (can move to " + str(remote_position + direction) +
+                    "; last=" + str(len(order_keys)) + ")")
+
         # start move
-        position = True
         direction = int(direction)
-
-        # check if device is defined
-        if device not in status:
-            return "ERROR: " + device + " (" + remote_type + ") not defined."
-
-        # check if position is defined and add, if not existing
-        for key in status:
-            if "position" not in status[key]["settings"]:
-                position = False
-
+        self.logging.debug("------------------ " + device + " move=" + str(direction) + "; pos=" + str(remote_position) +
+                           "; " + str(remote_position + direction))
         i = 1
-        if not position:
-            for key in status:
-                status[key]["settings"]["position"] = i
-                i += 1
-            if remote_type == "device":
-                self.config.device_set_values(device, "settings", {"position": i})
-            elif remote_type == "scene":
-                self.data.scenes_write(status)  # configFiles.write(modules.active_scenes,status)
+        for key in order_keys:
+            remote_id = order[key]
+            if i == remote_position:
+                status[remote_id]["settings"]["position"] += direction
+                self.logging.debug(" -> " + remote_id.ljust(12) + " move=" + str(direction) +
+                                   "  " + str(i) + "->" + str(i+direction))
 
-            return_msg = "WARN: Position wasn't existing. Has been set, please move again."
+            elif direction < 0 and remote_position > i >= remote_position + direction:
+                status[remote_id]["settings"]["position"] += 1
+                self.logging.debug(" -> " + remote_id.ljust(12) + " move=+1  " + str(i) + "->" + str(i+1))
 
-        # get position and move into direction
-        else:
-            i = 1
-            for key in status:
-                i += 1
-
-            if 0 < status[device]["settings"]["position"] + direction < i:
-                old_position = status[device]["settings"]["position"]
-                new_position = status[device]["settings"]["position"] + direction
-
-                for key in status:
-                    if status[key]["settings"]["position"] == new_position:
-                        status[key]["settings"]["position"] = old_position
-
-                status[device]["settings"]["position"] = new_position
-                return_msg = "OK. Moved " + device + " from " + str(old_position) + " to " + str(new_position) + "."
+            elif direction > 0 and remote_position < i <= remote_position + direction:
+                status[remote_id]["settings"]["position"] -= 1
+                self.logging.debug(" -> " + remote_id.ljust(12) + " move=-1  " + str(i) + "->" + str(i-1))
 
             else:
-                return_msg = "WARNING: Out of range."
+                self.logging.debug(" -> " + remote_id.ljust(12) + " move=0   " + str(i))
+
+            i += 1
+
+        return_msg = "OK: moved " + device + " from " + str(remote_position) + " to " + str(remote_position + direction)
 
         if remote_type == "device":
-            self.config.device_set_values(device, "settings", {"position": status[device]["settings"]["position"]})
+            self.data.devices_write(status)  # configFiles.write(modules.active_scenes,status)
 
         elif remote_type == "scene":
             self.data.scenes_write(status)  # configFiles.write(modules.active_scenes,status)
