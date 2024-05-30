@@ -281,7 +281,6 @@ function apiDeviceMovePosition_get(data) {
     if (data["REQUEST"]["Return"].indexOf("ERROR") > -1)   { appMsg.alert(data["REQUEST"]["Return"]); }
     else if (data["REQUEST"]["Return"].indexOf("OK") > -1) { appMsg.info("<b>" + data["REQUEST"]["Command"] + "</b>: " + data["REQUEST"]["Return"], "ok"); }
     setTimeout(function() { appFW.requestAPI("GET",["list"],"",apiDeviceMovePosition); }, 1000 );
-    //setTimeout(function() { remoteReload_load(); }, 1000 );
     }
 
 function apiDeviceMovePosition(data) {
