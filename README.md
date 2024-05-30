@@ -52,7 +52,9 @@ Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 
 * integration of ZigBee interface (using a Zigbee USB Dongle and ZigBee2MQTT): Smart Plug + RGB+CCT Bulb 
 * schedule events (device commands and macros)
-* improved API configuration and other settings via app
+* color picker for RGB, CIE_1391, brightness and color temperature
+* RGB+CCT light templates
+* improved setting section and API configuration via app
 
 **Note:** The data structure changed: recreate configuration files by coping them from the 
 folder [_sample/devices](data/_sample/devices) to the productive folders and adjusting them to your needs.
