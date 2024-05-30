@@ -537,12 +537,13 @@ function rmRemoteDisplays(name) {
 			"small" : "Small",
 			"middle" : "Middle",
 			"big"  : "Big",
-			"h1w2" : "1x heigh / 2x wide",
-			"h1w4" : "1x heigh / 4x wide",
-			"h2w2" : "2x heigh / 2x wide", 
-			"h2w4" : "2x heigh / 4x wide",
-			"h3w2" : "3x heigh / 2x wide",
-			"h4w2" : "4x heigh / 2x wide"
+			"h1w2" : "1x height / 2x wide",
+			"h1w4" : "1x height / 4x wide",
+			"h2w2" : "2x height / 2x wide",
+			"h2w3" : "2x height / 3x wide",
+			"h2w4" : "2x height / 4x wide",
+			"h3w2" : "3x height / 2x wide",
+			"h4w2" : "4x height / 2x wide"
 			}
 		return sizes;
 		}

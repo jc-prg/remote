@@ -25,6 +25,7 @@
 .display.h1w4   { width  : 98%;   height  :  40px; }
 .display.h1w2   { width  : 48%;   height  :  40px; }
 .display.h2w2   { width  : 48%;   height  :  88px; }
+.display.h2w3   { width  : 72%;   height  :  88px; }
 .display.h2w4   { width  : 98%;   height  :  88px; }
 .display.h3w2   { width  : 48%;   height  :  136px; }
 .display.h4w2   { width  : 48%;   height  :  184px; }
@@ -45,6 +46,7 @@
 
 .display-element.h1w4    { width : 48%; }
 .display-element.h2w4    { width : 48%; }
+.display-element.h2w3    { width : 48%; }
 .display-element.h3w2    { width : 98%; }
 .display-element.h4w2    { width : 98%; }
 

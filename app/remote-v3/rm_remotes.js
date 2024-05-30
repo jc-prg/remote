@@ -707,7 +707,7 @@ function rmRemote(name) {
 		remote += this.basic.container("display_json",  lang("JSON_DISPLAY"),   this.json.textarea( "remote_json_display", remote_display ) +
 		                                                                        "<br/>" + lang("MANUAL_DISPLAY"),false);
 		
-        this.button.width = "70px";
+        this.button.width = "23%";
         remote += "<br/>";
 		remote += this.basic.edit_line();
 		remote += "<br/><center>" +
@@ -1181,7 +1181,7 @@ function rmRemote(name) {
 		                                                    "</i>&nbsp;<br/>" + lang("MANUAL_MACROS_SCENE"),false);
 		remote += this.basic.edit_line();
 
-        this.button.width = "70px";
+        this.button.width = "23%";
 		remote += "<br/><center>" +
 		          this.button.edit(this.app_name+".scene_edit_json('"+id+"','"+scene+"');"+
 				                   this.app_name+".scene_remote(  '"+this.frames_remote[0]+"','"+scene+"','json::remote','json::display');"+
