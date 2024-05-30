@@ -381,6 +381,7 @@ function statusCheck_sliderToggleColorPicker(data) {
 	    var device_api         = data["STATUS"]["devices"][device]["api"];
 	    var device_api_power   = data["STATUS"]["devices"][device]["power"];
 	    var device_api_status  = data["STATUS"]["interfaces"]["connect"][device_api];
+	    var device_commands    = data["CONFIG"]["devices"][device]["commands"]["set"];
 
         for (key in devices[device]) {
             // toggle
@@ -426,6 +427,23 @@ function statusCheck_sliderToggleColorPicker(data) {
                 else {
                     color_picker.style.opacity = "40%";
                     }
+                }
+
+
+            for (var i=0;i<device_commands.length;i++) {
+                command = device_commands[i];
+                //console.debug("colorpicker_"+device+"_send-"+command);
+                //console.debug(device_commands);
+
+                if (document.getElementById("colorpicker_"+device+"_send-"+command)) {
+                color_picker = document.getElementById("colorpicker_"+device+"_send-"+command);
+                if (device_api_status.toLowerCase() == "connected" && device_api_power && device_api_power.toUpperCase().indexOf("ON") > -1)   {
+                    color_picker.style.opacity = "100%";
+                    }
+                else {
+                    color_picker.style.opacity = "40%";
+                    }
+                }
                 }
             }
 	    }
