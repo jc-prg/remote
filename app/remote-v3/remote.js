@@ -33,6 +33,7 @@ remote_css = [
     "style-settings.css",
     "style-display.css",
     "style-color-picker.css",
+    "style-color-picker-dark.css",
     "style-screensize-big.css",
     "style-screensize-iphone.css",
     "style-screensize-ipad.css",
