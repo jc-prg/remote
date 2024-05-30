@@ -225,7 +225,7 @@ function rmColorPicker(name) {
         else {
             color_demo.style.width  = image.width + "px";
             color_demo.style.height = "10px";
-            color_demo.style.background = "2px solid white";
+            color_demo.style.background = "2px solid gray";
             }
 
         // When the image is loaded, draw it on the canvas
