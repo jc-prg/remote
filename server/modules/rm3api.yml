@@ -1,0 +1,1259 @@
+swagger: "2.0"
+info:
+  version: "2.4.0"
+  title: "jc://remote/"
+  description: API to control remote control devices
+  
+consumes:
+  - application/json
+produces:
+  - application/json
+
+basePath: /api
+
+
+paths:
+
+#------------------------ TEST ------------------------
+
+  /test/:
+    get:
+      operationId: __main__.remoteAPI.test
+      tags:
+        - maintain
+      summary: test api functionality
+      description: test api functionality
+      responses:
+        200:
+          description: Successfully status data
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+#------------------------ LIST SERVER STATUS ------------------------
+
+  /list/:
+    get:
+      operationId: __main__.remoteAPI.get_config
+      tags:
+        - list
+      summary: list status and remote definition data
+      description: list status and remote definition data
+      responses:
+        200:
+          description: Successfully status data
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              CONFIG:
+                $ref: "#/definitions/CONFIG"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+              DATA:
+                $ref: "#/definitions/DATA"
+
+  /status/:
+    get:
+      operationId: __main__.remoteAPI.status
+      tags:
+        - status
+      summary: list status data
+      description: list status data
+      responses:
+        200:
+          description: Successfully status data
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
+  /config/device/{device}/:
+    get:
+      operationId: __main__.remoteAPI.get_config_device
+      tags:
+        - list
+      summary: request configuration data for a specific device
+      description: request configuration data for a specific device, use all to get all devices
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully requested configuration
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              DATA:
+                $ref: "#/definitions/DATA_DEVICE"
+
+  /config/interface/{interface}/:
+    get:
+      operationId: __main__.remoteAPI.get_config_interface
+      tags:
+        - list
+      summary: request configuration data for a specific interface
+      description: request configuration data for a specific interface, use all to get all interfaces
+      parameters:
+        - name: interface
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully requested configuration
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              DATA:
+                $ref: "#/definitions/DATA_DEVICE"
+    post:
+      operationId: __main__.remoteAPI.edit_config_interface
+      tags:
+        - list
+      summary: change configuration of a specific interface
+      description: change configuration of a specific interface
+      parameters:
+        - name: interface
+          in: path
+          type: string
+          required: true
+        - name: config
+          in: body
+          schema:
+            type: object
+          required: true
+      responses:
+        200:
+          description: Successfully saved configuration
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              DATA:
+                $ref: "#/definitions/DATA_DEVICE"
+
+  /send_check/{device}/{button}/:
+    get:
+      operationId: __main__.remoteAPI.send_button_on_off
+      tags:
+        - send
+      summary: send IR command including a check, if device is on
+      description: if device is off, no IR command is send except on-off
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: button
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully send IR command
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+  /send/{device}/{button}/:
+    get:
+      operationId: __main__.remoteAPI.send_button
+      tags:
+        - send
+      summary: send command and execute via queue
+      description: the command is send never the less the device is on or off
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: button
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully send IR command
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+  /send-data/{device}/{button}/{text}/:
+    get:
+      operationId: __main__.remoteAPI.send_text
+      tags:
+        - send
+      summary: send text and execute via queue
+      description: the command is send never the less the device is on or off
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: button
+          in: path
+          type: string
+          required: true
+        - name: text
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully send IR command
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS_SYSTEM"
+
+  /send-api/{device}/:
+    post:
+      operationId: __main__.remoteAPI.send_api
+      tags:
+        - send
+      summary: send API request for a specific command
+      description: send API request for a specific command and return answer given by the device
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: command
+          in: body
+          schema:
+            type:
+              string
+          required: true
+      responses:
+        200:
+          description: Successfully send API request
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+  /send-api-command/{api_command}/:
+    post:
+      operationId: __main__.remoteAPI.send_api_command
+      tags:
+        - send
+      summary: send API request for a specific api device command
+      description: send API request for a specific api device command
+      parameters:
+        - name: api_command
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully send API request
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+  /set/{device}/{command}/{value}/:
+    get:
+      operationId: __main__.remoteAPI.send_api_value
+      tags:
+        - send
+      summary: send command and value via queue
+      description: the command is send never the less the device is on or off
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: command
+          in: path
+          type: string
+          required: true
+        - name: value
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully send IR command
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+  /macro/{macro}/:
+    get:
+      operationId: __main__.remoteAPI.send_macro_buttons
+      tags:
+        - send
+      summary: send marco
+      description: the macro commands are send
+      parameters:
+        - name: macro
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully send macro commands
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+  /timer/:
+    get:
+      operationId: __main__.remoteAPI.get_timer
+      tags:
+        - status
+      summary: list timer data
+      description: list timer data
+      responses:
+        200:
+          description: Successfully status data
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              DATA:
+                $ref: "#/definitions/DATA"
+
+  /timer-edit/{timer_id}/:
+    put:
+      operationId: __main__.remoteAPI.edit_timer
+      tags:
+        - send
+      summary: edit timer event
+      description: edit timer event
+      parameters:
+        - name: timer_id
+          in: path
+          type: string
+          required: true
+        - name: timer_config
+          in: body
+          description: edit configuration
+          schema:
+            type: object
+          required: true
+      responses:
+        200:
+          description: Successfully send API request
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+    delete:
+      operationId: __main__.remoteAPI.edit_timer_delete
+      tags:
+        - send
+      summary: delete timer event
+      description: delete timer event
+      parameters:
+        - name: timer_id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully send API request
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+  /timer-try/{timer_id}/:
+    put:
+      operationId: __main__.remoteAPI.edit_timer_try
+      tags:
+        - send
+      summary: try timer event
+      description: try timer event (send to queue directly)
+      parameters:
+        - name: timer_id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully send API request
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+
+  #------------------------ EDIT FUNCTIONS ------------------------
+
+  /macro/:
+    put:
+      operationId: __main__.remoteAPI.edit_remote_macros
+      tags:
+        - edit
+      summary: edit marko
+      description: change marcos
+      parameters:
+        - name: macros
+          in: body
+          description: macros, dev-on/off, scene-on/off definition
+          schema:
+            type: object
+      responses:
+        200:
+          description: Successfully send macro commands
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+  /button/{device}/{button}/:
+    put:
+      operationId: __main__.remoteAPI.edit_button_add
+      tags:
+        - edit
+      summary: add button
+      description: add button to remote layout
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: button
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully added button
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+
+  /button/{device}/{button_number}/:
+    delete:
+      operationId: __main__.remoteAPI.edit_button_delete
+      tags:
+        - edit
+      summary: delete button
+      description: delete button from device from database
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: button_number
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully deleted button
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+  /interface/{interface}/{active}/:
+    put:
+      operationId: __main__.remoteAPI.set_status_interface
+      tags:
+        - edit
+      summary: change active status of interface
+      description: change active status of interface
+      parameters:
+        - name: interface
+          in: path
+          type: string
+          required: true
+        - name: active
+          enum: ["True", "False"]
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully changed status
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+  /api_device/{interface}/{api_device}/{active}/:
+    put:
+      operationId: __main__.remoteAPI.set_status_api_device
+      tags:
+        - edit
+      summary: change active status of an api-device
+      description: change active status of api-device
+      parameters:
+        - name: interface
+          in: path
+          type: string
+          required: true
+        - name: api_device
+          in: path
+          type: string
+          required: true
+        - name: active
+          enum: ["True", "False"]
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully changed status
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+  /move/{remote_type}/{device}/{direction}/:
+    post:
+      operationId: __main__.remoteAPI.edit_remote_move
+      tags:
+        - edit
+      summary: move device or scene in menu
+      description: move device or scene in menu
+      parameters:
+        - name: remote_type
+          in: path
+          type: string
+          enum: ["device","scene"]
+          required: true
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: direction
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully deleted button
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+
+  /command/{device}/{button}/:
+    post:
+      operationId: __main__.remoteAPI.edit_button_record
+      tags:
+        - edit
+      summary: record command for button
+      description: record button command of an existing device
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: button
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully recorded command to button
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+    delete:
+      operationId: __main__.remoteAPI.edit_button_reset
+      tags:
+        - edit
+      summary: delete command for button
+      description: delete command from device from database
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: button
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully deleted button
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
+  /scene/{scene}/:
+    delete:
+      operationId: __main__.remoteAPI.edit_scene_delete
+      tags:
+        - edit
+      summary: delete scene
+      description: delete scene including buttons from database
+      parameters:
+        - name: scene
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully deleted scene
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS_SYSTEM"
+    post:
+      operationId: __main__.remoteAPI.edit_scene
+      tags:
+        - edit
+      summary: edit scene data
+      description: edit scene data in database
+      parameters:
+        - name: scene
+          in: path
+          type: string
+          required: true
+        - name: info
+          in: body
+          description: parameters of device that can be edited
+          schema:
+            type: object     
+      responses:
+        200:
+          description: Successfully edited scene
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS_SYSTEM"
+    put:
+      operationId: __main__.remoteAPI.edit_scene_add
+      tags:
+        - edit
+      summary: add scene
+      description: add scene to database
+      parameters:
+        - name: scene
+          in: path
+          type: string
+          required: true
+        - name: info
+          in: body
+          description: parameters of device that should be added
+          schema:
+            type: object     
+      responses:
+        200:
+          description: Successfully added device
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS_SYSTEM"
+                
+
+  /device/{device}/:
+    delete:
+      operationId: __main__.remoteAPI.edit_device_delete
+      tags:
+        - edit
+      summary: delete device
+      description: delete device including buttons from database
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully deleted device
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS_SYSTEM"
+    post:
+      operationId: __main__.remoteAPI.edit_device
+      tags:
+        - edit
+      summary: edit device data
+      description: edit device data in database
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: info
+          in: body
+          description: parameters of device that can be edited
+          schema:
+            type: object     
+      responses:
+        200:
+          description: Successfully edited device
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS_SYSTEM"
+    put:
+      operationId: __main__.remoteAPI.edit_device_add
+      tags:
+        - edit
+      summary: add device
+      description: add device to database
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: device_data
+          in: body
+          description: parameters of device that should be added
+          schema:
+            type: object     
+      responses:
+        200:
+          description: Successfully added device
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS_SYSTEM"
+                
+
+  /template/{device}/{template}/:
+    put:
+      operationId: __main__.remoteAPI.edit_remote_template
+      tags:
+        - edit
+      summary: add template to device
+      description: add template to device
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: template
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully added device
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+                
+
+  /visibility/{remote_type}/{device}/{value}/:
+    put:
+      operationId: __main__.remoteAPI.edit_remote_visibility
+      tags:
+        - edit
+      summary: add template to device
+      description: add template to device
+      parameters:
+        - name: remote_type
+          in: path
+          type: string
+          required: true
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: value
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully added device
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+  /main-audio/{device}/:
+    post:
+      operationId: __main__.remoteAPI.set_main_audio
+      tags:
+        - edit
+      summary: change main audio device
+      description: change main audio device
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully changed device
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+#------------------------ SUPPORT FUNCTIONS ------------------------
+
+  /version/{app_version}/:
+    get:
+      operationId: __main__.remoteAPI.check_update
+      tags:
+        - maintain
+      summary: check if APP-version is supported
+      description: check if APP-version is supported
+      parameters:
+        - name: app_version
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully done reset
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
+  /reload/:
+    get:
+      operationId: __main__.remoteAPI.reload
+      tags:
+        - maintain
+      summary: reload data from config files
+      description: reload data from config files
+      responses:
+        200:
+          description: Successfully done reset
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
+  /reconnect/{interface}/:
+    post:
+      operationId: __main__.remoteAPI.reconnect_api
+      tags:
+        - maintain
+      summary: reload data from config files
+      description: reload data from config files
+      parameters:
+        - name: interface
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully done reset
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
+  /reset/:
+    get:
+      operationId: __main__.remoteAPI.status_devices_reset
+      tags:
+        - maintain
+      summary: reset all configuration status values
+      description: set all volumes to zero and turn off all devices before using this command
+      responses:
+        200:
+          description: Successfully read check APP version vs. API version
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
+  /reset-audio/:
+    get:
+      operationId: __main__.remoteAPI.status_audio_reset
+      tags:
+        - maintain
+      summary: reset all volume values
+      description: set all volumes to zero before using this command
+      responses:
+        200:
+          description: Successfully read check APP version vs. API version
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+                
+                
+
+#------------------------ DATA MODEL DEFINITIONS ------------------------
+
+definitions:
+
+  API:
+    type: object
+    properties:
+      stage:
+        type: string
+      rollout:
+        type: string
+      version:
+        type: string
+      name:
+        type: string
+
+  REQUEST:
+    type: object
+    properties:
+      load-time:
+        type: number
+        format: float
+      start-time:
+        type: number
+        format: float
+        
+      Parameter:
+        type: string
+      Device:
+        type: string
+      Button:
+        type: string
+      Return:
+        type: string
+      ReturnCode:
+        type: string
+
+  STATUS:
+    type: object
+    properties:
+      config_errors:
+        type: object
+      devices:
+        type: object
+      connections:
+        type: object
+      interfaces:
+        type: object
+      scenes:
+        type: object
+      request_time:
+        type: object
+      system:
+        type: object
+      system_health:
+        type: object
+
+  STATUS_SYSTEM:
+    type: object
+    properties:
+      system:
+        type: object
+
+  CONFIG:
+    type: object
+    properties:
+      apis:
+        type: object
+        properties:
+          list:
+            type: array
+          list_devices:
+            type: array
+          structure:
+            type: object
+      devices:
+        type: object
+        properties:
+          "<device-id>":
+            type: object
+            properties:
+              buttons:
+                type: array
+                items:
+                  type: string
+              commands:
+                type: object
+                properties:
+                  definition:
+                    type: object
+                    properties:
+                      "<command>":
+                        type: object
+                        properties:
+                          get:
+                            type: string
+                          set:
+                            type: string
+                          type:
+                            type: string
+                          param:
+                            type: array
+                            items:
+                              type: string
+                          values:
+                            type: array
+                            items:
+                              type: string
+                  set:
+                    type: array
+                    items:
+                      type: string
+                  get:
+                    type: array
+                    items:
+                      type: string
+              interface:
+                type: object
+                properties:
+                  api:
+                    type: string
+                  device:
+                    type: string
+                  interface_api:
+                    type: string
+                  interface_dev:
+                    type: string
+                  files:
+                    type: array
+                    items:
+                      type: string
+                  method:
+                    type: string
+                    items:
+                      type: string
+              remote:
+                type: object
+                properties:
+                  description:
+                    type: string
+                  display:
+                    type: object
+                  remote:
+                    type: array
+                  type:
+                    type: string
+              settings:
+                type: object
+              url:
+                type: string
+      elements:
+        type: object
+        properties:
+          button_colors:
+            type: object
+          button_images:
+            type: object
+          scene_images:
+            type: object
+      interfaces:
+        type: object
+      macros:
+        type: object
+        properties:
+          "<macro-name>":
+            type: object
+            properties:
+              "dev-on":
+                type: object
+                properties:
+                  "<button-name>":
+                    type: array
+                    items:
+                      type: string
+              "dev-off":
+                type: object
+                properties:
+                  "<button-name>":
+                    type: array
+                    items:
+                      type: string
+              "macro":
+                type: object
+                properties:
+                  "<button-name>":
+                    type: array
+                    items:
+                      type: string
+              "scene-on":
+                type: object
+                properties:
+                  "<button-name>":
+                    type: array
+                    items:
+                      type: string
+              "scene-off":
+                type: object
+                properties:
+                  "<button-name>":
+                    type: array
+                    items:
+                      type: string
+      main-audio:
+        type: string
+      methods:
+        type: object
+      reload_status:
+        type: boolean
+      scenes:
+        type: object
+        properties:
+          "<scene-id>":
+            type: object
+            properties:
+              label:
+                type: string
+              devices:
+                type: array
+                items:
+                  type: string
+              remote:
+                type: array
+                items:
+                  type: string
+              channel:
+                type: object
+                properties:
+                  "<channel-name>":
+                    type: array
+                    items:
+                      type: string
+      templates:
+        type: object
+        properties:
+          definition:
+            type: object
+            properties:
+              "<template-name>":
+                type: object
+                properties:
+                  description:
+                    type: string
+                  label:
+                    type: string
+                  remote:
+                    type: array
+                    items:
+                      type: string
+          list:
+            type: array
+            items:
+              type: string
+
+
+  DATA_DEVICE:
+    type: object
+
+  DATA:
+    type: object

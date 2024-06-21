@@ -1,13 +1,7 @@
-# -----------------------------------
-# Sample API integration for jc://remote/
-# -----------------------------------
-# (c) Christoph Kloth
-# -----------------------------------
-
-import logging, time
+import time
 import modules.rm3json as rm3json
-import modules.rm3config as rm3config
-import modules.rm3stage as rm3stage
+import modules.rm3presets as rm3config
+from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 
 # import sampleAPI as sample
 
@@ -16,35 +10,22 @@ import modules.rm3stage as rm3stage
 # -------------------------------------------------
 
 shorten_info_to = rm3config.shorten_info_to
+rm3config.api_modules.append("SAMPLE")
 
 
-class ApiControl:
+class ApiControl(RemoteApiClass):
     """
-    Integration of sample API to be use by jc://remote/
+    Integration of sample API to be used by jc://remote/
     """
 
-    def __init__(self, api_name, device="", device_config={}, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """Initialize API / check connect to device"""
+        if device_config is None:
+            device_config = {}
 
-        self.api_name = api_name
         self.api_description = "Sample API Description"
-        self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
-        self.status = "Start"
-        self.method = "query"
-        self.working = False
-        self.count_error = 0
-        self.count_success = 0
-        self.log_command = log_command
-        self.last_action = 0
-        self.last_action_cmd = ""
-
-        self.api_config = device_config
-        self.api_device = device
-
-        self.logging = logging.getLogger("api.SAMPLE")
-        self.logging.setLevel = rm3stage.log_set2level
-        self.logging.info(
-            "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
+        RemoteApiClass.__init__(self, "api.SAMPLE", api_name, "query",
+                                self.api_description, device, device_config, log_command, config)
 
     def connect(self):
         """Connect / check connection"""
@@ -71,7 +52,7 @@ class ApiControl:
             time.sleep(0.2)
         return
 
-    def send(self, device, command):
+    def send(self, device, device_id, command):
         """Send command to API"""
 
         self.wait_if_working()
@@ -96,7 +77,7 @@ class ApiControl:
         self.working = False
         return "OK"
 
-    def query(self, device, command):
+    def query(self, device, device_id, command):
         """Send command to API and wait for answer"""
 
         result = ""
@@ -106,7 +87,7 @@ class ApiControl:
         self.last_action_cmd = "QUERY: " + device + "/" + command
 
         if self.log_command:
-            self.logging.info("_QUERY: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+            self.logging.info("__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
 
         # ---- change for your api ----
         #       if self.status == "Connected":
@@ -122,7 +103,7 @@ class ApiControl:
         self.working = False
         return result
 
-    def record(self, device, command):
+    def record(self, device, device_id, command):
         """Record command, especially build for IR devices"""
 
         self.wait_if_working()
@@ -131,7 +112,7 @@ class ApiControl:
         self.last_action_cmd = "RECORD: " + device + "/" + command
 
         if self.log_command:
-            self.logging.info("_RECORD: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+            self.logging.info("__RECORD " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
 
         # ---- change for your api ----
         #       if self.status == "Connected":

@@ -1,61 +1,35 @@
-# -----------------------------------
-# API integration for jc://remote/ PyP100
-# -----------------------------------
-# (c) Christoph Kloth
-# -----------------------------------
-
-import logging, time
-import modules.rm3json as rm3json
-import modules.rm3config as rm3config
+import time
+import modules.rm3presets as rm3config
 import modules.rm3ping as rm3ping
-import modules.rm3stage as rm3stage
+from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
+import interfaces.p100.PyP100 as PyP100
 
-import interfaces.p100.PyP100 as device
-
-# -------------------------------------------------
-# API-class
-# -------------------------------------------------
 
 shorten_info_to = rm3config.shorten_info_to
+rm3config.api_modules.append("TAPO-P100")
 
 
-# -------------------------------------------------
-
-class ApiControl:
+class ApiControl(RemoteApiClass):
     """
     Integration of PyP100 API to be use by jc://remote/
     """
 
-    def __init__(self, api_name, device="", device_config={}, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """
         Initialize API / check connect to device
         """
-        self.api_name = api_name
         self.api_description = "API for Tapo-Link P100"
-        self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
-        self.status = "Start"
-        self.method = "query"
-        self.working = False
-        self.count_error = 0
-        self.count_success = 0
-        self.log_command = log_command
-        self.last_action = 0
-        self.last_action_cmd = ""
+        RemoteApiClass.__init__(self, "api.P100", api_name, "query",
+                                self.api_description, device, device_config, log_command, config)
 
-        self.api_config = device_config
-        self.api_device = device
-
-        self.logging = logging.getLogger("api.P100")
-        self.logging.setLevel = rm3stage.log_set2level
-        self.logging.info(
-            "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
-
-        # self.connect()
+        self.config_add_key("TapoUser", "")
+        self.config_add_key("TapoPwd", "")
 
     def connect(self):
         """
         Connect / check connection
         """
+        self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
 
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
@@ -72,7 +46,7 @@ class ApiControl:
         api_pwd = self.api_config["TapoPwd"]
 
         try:
-            self.api = device.P100(api_ip, api_user, api_pwd)
+            self.api = PyP100.P100(api_ip, api_user, api_pwd)
             self.api.handshake()
             self.api.login()
         except Exception as e:
@@ -89,6 +63,9 @@ class ApiControl:
             self.api.jc.status = self.status
             return self.status
 
+        if self.status == "Connected":
+            self.logging.info("Connected TAPO P100 (" + self.api_config["IPAddress"] + ")")
+
         return self.status
 
     def wait_if_working(self):
@@ -100,13 +77,7 @@ class ApiControl:
             time.sleep(0.2)
         return
 
-    def power_status(self):
-        """
-        request power status
-        """
-        return self.get_info("power")
-
-    def send(self, device, command):
+    def send(self, device, device_id, command):
         """
         Send command to API
         """
@@ -117,7 +88,7 @@ class ApiControl:
 
         if self.status == "Connected":
             if self.log_command: self.logging.info(
-                "_SEND: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+                "__SEND " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
 
             try:
                 command = "self.api." + command
@@ -128,7 +99,7 @@ class ApiControl:
                     self.working = False
                     return "ERROR " + self.api_name + " - " + result["error"]["message"]
 
-                if not "result" in result:
+                if "result" not in result:
                     self.working = False
                     return "ERROR " + self.api_name + " - unexpected result format."
 
@@ -142,7 +113,7 @@ class ApiControl:
         self.working = False
         return "OK"
 
-    def query(self, device, command):
+    def query(self, device, device_id, command):
         """
         Send command to API and wait for answer
         """
@@ -159,7 +130,7 @@ class ApiControl:
 
         if self.status == "Connected":
             if self.log_command:
-                self.logging.info("_QUERY: "+device+ "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+                self.logging.info("__QUERY "+device+"/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
 
             try:
                 command = "self.api." + command_param[0]
@@ -192,7 +163,7 @@ class ApiControl:
                     if len(command_param) > 1:
                         result_param = eval("result['result']" + command_param[1])
                     else:
-                        result_param = str(result['result'])
+                        result_param = result['result']
 
             except Exception as e:
                 self.working = False
@@ -203,28 +174,6 @@ class ApiControl:
 
         self.working = False
         return result_param
-
-    def record(self, device, command):
-        """
-        Record command, especially build for IR devices
-        """
-
-        self.wait_if_working()
-        self.working = True
-
-        # ---- change for your api ----
-        #       if self.status == "Connected":
-        #         try:
-        #           result  = self.api.command(xxx)
-        #         except Exception as e:
-        #           self.working = True
-        #           return "ERROR "+self.api_name+" - record: " + str(e)
-        #       else:
-        #         self.working = True
-        #         return "ERROR "+self.api_name+": Not connected"
-
-        self.working = False
-        return "OK"
 
     def test(self):
         """
@@ -252,16 +201,14 @@ class ApiControl:
         return "OK"
 
 
-# -------------------------------------------------
-# additional functions -> define self.api.jc.*
-# -------------------------------------------------
-
-class APIaddOn():
+class APIaddOn(RemoteDefaultClass):
     """
     individual commands for API
     """
 
     def __init__(self, api, logger):
+        self.api_description = "API-Addon for Tapo-Link P100"
+        RemoteDefaultClass.__init__(self, "api.P100", self.api_description)
 
         self.addon = "jc://addon/p100/"
         self.api = api
@@ -269,7 +216,7 @@ class APIaddOn():
         self.status = "Start"
         self.cache_metadata = {}  # cache metadata to reduce api requests
         self.cache_time = time.time()  # init cache time
-        self.cache_wait = 2  # time in seconds how much time should be between two api metadata requests
+        self.cache_wait = 3  # time in seconds how much time should be between two api metadata requests
         self.power_status = "OFF"
         self.logging = logger
         self.not_connected = "Connection Error api.P100"
@@ -279,8 +226,31 @@ class APIaddOn():
         self.last_request_data = {}
         self.cache_wait = 1
 
-        self.logging = logging.getLogger("api.P100")
-        self.logging.setLevel = rm3stage.log_set2level
+        self.available_commands = {
+            "jc.get_available_commands()": {
+                "info": "get a list of all available commands"
+            },
+            "jc.turn_on()": {
+                "description": "turn smart plug on"
+            },
+            "jc.turn_off()": {
+                "description": "turn smart plug off"
+            },
+            "jc.get_metadata(parameter)": {
+                "description": "get metadata from device",
+                "parameters": ['avatar', 'device_id', 'device_on', 'fw_ver', 'has_set_location_info', 'hw_ver', 'ip',
+                               'lang', 'latitude', 'longitude', 'location', 'mac', 'model', 'on_time', 'overheated',
+                               'power' 'region', 'signal_level', 'time_diff', 'type', 'default_status', 'nickname',
+                               'oemid', 'rssi', 'specs', 'ssid', 'state']
+            },
+            "jc.test()": {
+                "description": "switch on/off test sequence"
+            }
+        }
+
+    def get_available_commands(self):
+        """returns a list of all commands defined for this API"""
+        return {"result": self.available_commands}
 
     def turn_on(self):
         """
@@ -371,6 +341,9 @@ class APIaddOn():
 
         return info_result
 
+    def get_metadata(self, parameter=""):
+        return self.get_info(parameter)
+
     def test(self):
 
         if self.status == "Connected":
@@ -392,7 +365,4 @@ class APIaddOn():
             return {"result", "test"}
 
         else:
-            return self.not_connected
-
-# -------------------------------------------------
-# EOF
+            return self.api.not_connected

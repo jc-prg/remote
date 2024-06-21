@@ -14,26 +14,34 @@ var language_app = {
 	"EN" : {
 		"ADD_ELEMENTS"          : "Add elements",
 		"ADD_DISPLAY"           : "Add display",
-		
+		"ADD_SCENE"             : "Add scene",
+		"ADD_REMOTE"            : "Add remote",
+		"ADD_DEVICE"            : "Add device",
+
 		"AUDIO_IS_MAIN"         : "This device is defined as main AUDIO device.",
 		"AUDIO_SET_AS_MAIN"     : "Set as main AUDIO device (change from &quot;{0}&quot;).",
 		"AUDIO_N/A_AS_MAIN"     : "This device can't be set as main AUDIO device, no audio volume control available.",
 		
-		"API_INTERFACE"         : "API / Interface",
+		"API_INTERFACE"         : "API / API-Device",
 		"API_COMMANDS"          : "API commands",
 		"API_COMMANDS_TEST"     : "API commands - manual testing",
 		"API_INFORMATION"       : "API information",
 		"API_SELECT_CMD"        : "API command or use your own ...",
+		"API_INFO"              : "API Info",
 		
 		"BUTTON_ASK_DELETE"     : "Do you really want to delete the button '{0}' from '{1}'?",
 		"BUTTON_ASK_DELETE_NUMBER" : "Do you really want to delete the button number [{0}] from '{1}'?",
 		"BUTTON_INSERT_NAME"    : "Please insert name for button.",
 		"BUTTON_RECORD"         : "Record button &quot;{0}&quot; for device &quot;{1}&quot;: click OK and then press button within the next 5 seconds.",
 		"BUTTON_SELECT"         : "Please select button.",
+		"BUTTON_INFOS"          : "Button Information",
 		
 		"BUTTON_T"              : "button",
+		"BUTTON_T_ADD"          : "add",
 		"BUTTON_T_CLONE"        : "clone",
 		"BUTTON_T_COLORPICKER"  : "color picker",
+		"BUTTON_T_COLOR"        : "color model",
+		"BUTTON_T_CREATE"       : "create",
 		"BUTTON_T_DEL"          : "delete button",
 		"BUTTON_T_DELETE"       : "delete",
 		"BUTTON_T_DEL_VALUE"    : "delete value",
@@ -59,11 +67,13 @@ var language_app = {
 		"BUTTON_T_PARAMETER"    : "paremter",
 		"BUTTON_T_PREVIEW"      : "preview",
 		"BUTTON_T_VALUE"        : "add value",
+		"BUTTON_T_TRY"          : "try",
 		
 		"CHANNEL_USE_JSON"      : "Please use JSON to edit the channel list.",
-		"CHANGE_ORDER"          : "Change order",
+		"CHANGE_ORDER"          : "Change order of remote controls",
 		"CHANGE_ORDER_SCENES"   : "Change order of scenes",
 		"CHANGE_ORDER_DEVICES"  : "Change order of devices",
+		"CHANGE_MODES"          : "Change working modes",
 
 		"COLORPICKER_SELECT_CMD" : "Select command, to insert color picker.",
 		"COLORPICKER_N/A"       : "Color picker not supported",
@@ -100,17 +110,30 @@ var language_app = {
 		"DISPLAY_LABEL_EXISTS_ALREADY" : "Label already exists in the display.",
 		"DISPLAY_NOT_ADDED"      : "No display added yet. Changes below will have no effect.",
 		
+		"EDIT_DEVICE"            : "Edit device",
+		"EDIT_DEVICES"           : "Edit devices",
 		"EDIT_REMOTE"            : "Edit remote",
+		"EDIT_REMOTES"           : "Edit remotes",
+		"EDIT_SCENE"             : "Edit scene",
+		"EDIT_SCENES"            : "Edit scenes",
 		"EDIT_DISPLAY"           : "Edit display",
+		"EDIT_MACROS"            : "Edit macros",
+		"EDIT_INTERFACES"        : "Edit interfaces",
+		"EDIT_INTERFACE"         : "Edit interface configuration for {0}",
+		"EXTERNAL_ID"            : "External ID",
 
 		"FORMAT_INCORRECT"       : "format is not correct",
 		
 		"GET_DATA"               : "Get data",
+		"GET_AVAILABLE_COMMANDS" : "List commands",
 				
 		"HEADER_IMAGE_EXISTS"    : "There is already a HEADER-IMAGE in this remote control.",
 		
 		"ID"                     : "ID",
-		
+		"IMAGE"                  : "Image",
+		"INTERFACES"             : "Interfaces",
+		"INTERFACE_STATUS"       : "Interface Status",
+
 		"JSON_CHANNEL"			: "JSON channel macros",
 		"JSON_DISPLAY"			: "JSON display information",
 		"JSON_DEVICE"			: "JSON required devices",
@@ -193,16 +216,21 @@ var language_app = {
 		"MODE_EDIT"             : "Edit Mode",
 		"MODE_INTELLIGENT"      : "Intelligent Mode",
 		"MODE_MANUAL"           : "Manual Mode",
-		
-		"NOT_USED"              : "not used in remote control",
 
-		"PLEASE_WAIT"         : "Please wait ... .",
+		"MSG_ONLY_ONE_COLOR_PICKER"    : "This color picker already exists in the remote control, only one is possible.",
 		
-		"PREVIEW"             : "Preview",
+		"NOT_USED"                     : "not used in remote control",
+
+		"PLEASE_WAIT"                  : "Please wait ... .",
 		
+		"PREVIEW"                      : "Preview",
+
+		"QUICK_ACCESS"                 : "Quick Access",
+
+		"RECONNECT"                    : "Reconnect",
 		"RECORD_COMMAND"               : "Record command",
 		"RECORD_DELETE_COMMANDS"       : "Record / delete commands",
-		"REMOTE_ADD"                   : "Add Remote Control",
+		"REMOTE_ADD"                   : "Add remote controls",
 		"REMOTE_CONFIG_ERROR"          : "Error in remote config file(s) '{0}': ",
 		"REMOTE_CONFIG_ERROR_UNKNOWN"  : "Unknown error in remote config file(s) '{0}'",
 		"RELOAD_TAKES_LONGER"          : "Reload takes longer than expected ...",
@@ -210,10 +238,8 @@ var language_app = {
 		"RESET_SWITCH_OFF"             : "Reset Devices:<br/>switch off all devices before.",
 		"RESET_VOLUME_TO_ZERO"         : "Reset Audio Settings:<br/>set the volume of all audio devices to mininum (0) before.",
 
-		"SEND_DATA"                    : "Send data",
-		"SELECT_DEV_MACRO"             : "select device or macro",
-		"SELECT_DEV_FIRST"             : "select device first",
-		
+        "SAVE"                         : "Save",
+
 		"SCENE_CONFIG_ERROR"           : "Error in scene config file(s) '{0}': ",
 		"SCENE_CONFIG_ERROR_UNKNOWN"   : "Unknown error in scene config file(s) '{0}'",
 
@@ -223,6 +249,18 @@ var language_app = {
 		"SCENE_INSERT_LABEL"           : "Please insert label for scene.",
 		"SCENE_SELECT"                 : "Please select scene.",
 
+		"SEND_DATA"                    : "Send data",
+		"SELECT_DEV_MACRO"             : "select device or macro",
+		"SELECT_DEV_FIRST"             : "select device first",
+		"SERVER_SETTINGS"              : "Server &amp; client settings",
+		"SETTINGS"                     : "Settings",
+		"SETTINGS_GENERAL"             : "General settings",
+		"SETTINGS_REMOTE"              : "Remote Control Settings",
+		"SETTINGS_DEVICES"             : "Device Settings",
+		"SETTINGS_API"                 : "API Settings",
+		"SETTINGS_SCENES"              : "Scene Settings",
+		"SETTINGS_TIMER"               : "Timer Settings",
+
 		"SLIDER"                       : "slider",
 		"SLIDER_SELECT_CMD"            : "Select command, to insert slider.",
 		"SLIDER_SELECT_PARAM"          : "Select parameter, to insert slider.",
@@ -230,11 +268,12 @@ var language_app = {
 		"SLIDER_INSERT_MINMAX"         : "Insert minimum and maximum value (min-max), to insert slider.",
 		"SLIDER_N/A"                   : "Slider not supported",
 
-		"SETTINGS"                     : "Settings",
 		"TEXT_INPUT"                   : "Text input",
 		"TRY_OUT"                      : "try out",
 		
 		"VERSION_AND_STATUS"           : "Version and Status Information",
+
+		"WORKING_MODES"                : "Working modes",
 		}
 	}
 

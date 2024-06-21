@@ -7,11 +7,10 @@
 import logging
 import time
 import modules.rm3json as rm3json
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3config
 import modules.rm3ping as rm3ping
-import modules.rm3stage as rm3stage
-
-import interfaces.magichome.magichome as device
+from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
+import interfaces.magichome.magichome as mh_device
 
 # ######## to be solved:
 #  Error during requesting data: [Errno 9] Bad file descriptor
@@ -21,39 +20,24 @@ import interfaces.magichome.magichome as device
 
 
 shorten_info_to = rm3config.shorten_info_to
+rm3config.api_modules.append("MAGIC-HOME")
 
 
-class ApiControl:
+class ApiControl(RemoteApiClass):
     """
     Integration of Magic Home API to be use by jc://remote/
     """
 
-    def __init__(self, api_name, device="", device_config={}, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """
         Initialize API / check connect to device
         """
-        self.api_name = api_name
         self.api_description = "API for LED via Magic Home"
-        self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
-        self.status = "Start"
-        self.method = "query"
-        self.working = False
-        self.count_error = 0
-        self.count_success = 0
-        self.log_command = log_command
-        self.last_action = 0
-        self.last_action_cmd = ""
+        RemoteApiClass.__init__(self, "api.MAGIC", api_name, "query",
+                                self.api_description, device, device_config, log_command, config)
 
         self.power_status = "STARTING"
         self.brightness = 1
-
-        self.api_config = device_config
-        self.api_device = device
-
-        self.logging = logging.getLogger("api.MAGIC")
-        self.logging.setLevel = rm3stage.log_set2level
-        self.logging.info(
-            "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
 
     def connect(self):
         """
@@ -75,7 +59,7 @@ class ApiControl:
         api_timeout = self.api_config["Timeout"]
 
         try:
-            self.api = device.MagicHomeApi(api_ip, api_device_type, False, api_timeout)
+            self.api = mh_device.MagicHomeApi(api_ip, api_device_type, False, api_timeout)
 
         except Exception as e:
             self.status = self.not_connected + " ... CONNECT " + str(e)
@@ -120,7 +104,7 @@ class ApiControl:
         """
         return self.jc.get_info("power")
 
-    def send(self, device, command):
+    def send(self, device, device_id, command):
         """
         Send command to API
         """
@@ -157,7 +141,7 @@ class ApiControl:
         self.working = False
         return "OK"
 
-    def query(self, device, command):
+    def query(self, device, device_id, command):
         """
         Send command to API and wait for answer
         """
@@ -172,8 +156,9 @@ class ApiControl:
             command_param = [command]
 
         if self.status == "Connected":
-            if self.log_command: self.logging.info(
-                "_QUERY: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+            if self.log_command:
+                self.logging.info("__QUERY " + device + "/" + command[:shorten_info_to] +
+                                  " ... (" + self.api_name + ")")
 
             try:
                 command = "self.api." + command_param[0]
@@ -211,13 +196,8 @@ class ApiControl:
         self.working = False
         return result_param
 
-    def record(self, device, command):
-        '''Record command, especially build for IR devices'''
-
-        return "ERROR: record not available"
-
     def test(self):
-        '''Test device by sending a couple of commands'''
+        """Test device by sending a couple of commands"""
 
         self.wait_if_working()
         self.working = True
@@ -248,19 +228,21 @@ class ApiControl:
         return "OK"
 
 
-class APIaddOn():
-    '''
-   did not found a way to increase or decrease volume directly
-   '''
+class APIaddOn(RemoteDefaultClass):
+    """
+    did not found a way to increase or decrease volume directly
+    """
 
     def __init__(self, api, logger):
+        self.api_description = "API-Addon for LED via Magic Home"
+        RemoteDefaultClass.__init__(self, "api.MAGIC", self.api_description)
 
         self.addon = "jc://addon/magic-home/"
         self.api = api
         self.volume = 0
         self.cache_metadata = {}  # cache metadata to reduce api requests
         self.cache_time = time.time()  # init cache time
-        self.cache_wait = 5  # time in seconds how much time should be between two api metadata requests
+        self.cache_wait = 3  # time in seconds how much time should be between two api metadata requests
         self.brightness = 1
         self.last_r = 0
         self.last_g = 0
@@ -275,10 +257,10 @@ class APIaddOn():
         self.last_request_data = {}
 
     def turn_on(self):
-        '''
-     turn on and set metadata
-     if self.status == "Connected":
-     '''
+        """
+        turn on and set metadata
+        if self.status == "Connected":
+        """
         if self.status == "Connected":
             self.power_status = "ON"
 
@@ -297,9 +279,9 @@ class APIaddOn():
             return self.not_connected
 
     def turn_off(self):
-        '''
-     turn of and set metadata
-     '''
+        """
+        turn of and set metadata
+        """
         if self.status == "Connected":
             self.power_status = "OFF"
 
@@ -318,10 +300,9 @@ class APIaddOn():
             return self.not_connected
 
     def set_color(self, r, g=0, b=0):
-        '''
-     set color including brightness
-     '''
-
+        """
+        set color including brightness
+        """
         if g == 0 and b == 0 and ":" in str(r):
             data = r.split(":")
             r = int(data[0])
@@ -358,9 +339,9 @@ class APIaddOn():
             return self.not_connected
 
     def set_preset(self, preset):
-        '''
-     set led program
-     '''
+        """
+        set led program
+        """
         if self.status == "Connected":
             self.mode = "PRESET"
             self.last_preset = preset
@@ -379,10 +360,9 @@ class APIaddOn():
             return self.not_connected
 
     def set_speed(self, speed=100):
-        '''
-     set speed for preset
-     '''
-
+        """
+        set speed for preset
+        """
         if self.status == "Connected":
             self.last_speed = int(speed)
             if self.mode == "PRESET":
@@ -399,10 +379,9 @@ class APIaddOn():
             return self.not_connected
 
     def set_brightness(self, percent):
-        '''
-     set brightness
-     '''
-
+        """
+        set brightness
+        """
         if self.status == "Connected":
             self.brightness = percent / 100
             r = self.last_r
@@ -431,11 +410,10 @@ class APIaddOn():
             return self.not_connected
 
     def decode_status(self, raw_status_input):
-        '''
-      decode device string for status, e.g. 
+        """
+        decode device string for status, e.g.
 
-	get_info
-	      
+	    get_info
         b'\x813$a#\x1f\x00\x00\r\x00\n\x00\x0f\xa1'- OFF
         b'\x813$a#\x1f\x00\x003\x00\n\x00\x0f\xc7' - OFF blue
         b'\x813#a#\x1f\x0033\x00\n\x00\xf0\xda'    - ON
@@ -445,18 +423,18 @@ class APIaddOn():
         b'\x813#a#\x1f\n\x00\x00\x00\n\x00\xf0~'   - ON red 20%
         b'\x813#, #\x1f\x9c\x9c\x9c\x00\n\x00\xf0\x13'
 
-	return if send_data
+        return if send_data
 
-	b'\n\x00\xf0q\x813#a#\x1f\xff\xff\xff\x00'	OFF
-	b'\n\x00\xf0r\x813#a#\x1f\xff\x00\xff\x00'	ON
-	b'\x0fq#\xa3' 					ON
-	b'\x0fq$\xa4'					OFF
-	b'\x813#a#\x1f\xff\xff\x00\x00\n\x00\xf0r'	SEND COLOR
-	b'\x813#6#\x1f\x00\x00\x00\x00\n\x00\x0fh'	SEND PRESET
-        
+        b'\n\x00\xf0q\x813#a#\x1f\xff\xff\xff\x00'	OFF
+        b'\n\x00\xf0r\x813#a#\x1f\xff\x00\xff\x00'	ON
+        b'\x0fq#\xa3' 					ON
+        b'\x0fq$\xa4'					OFF
+        b'\x813#a#\x1f\xff\xff\x00\x00\n\x00\xf0r'	SEND COLOR
+        b'\x813#6#\x1f\x00\x00\x00\x00\n\x00\x0fh'	SEND PRESET
+
         -> App is able to decode ??
         -> API answers seem to be not stable, partly not a correct byte code
-      '''
+        """
         dec_status = {}
         raw_status = str(raw_status_input)
 
@@ -511,17 +489,17 @@ class APIaddOn():
         return dec_status
 
     def get_info(self, param):
-        '''
-      return data
-      '''
-
+        """
+        return data
+        """
         status_info = {}
         self.logging.debug("..." + param)
 
-        if self.status == "Connected":
+        if self.api.status == "Connected":
 
             self.logging.debug(str(self.last_request_time) + "__" + str(time.time()))
-            if not self.last_request_data or self.last_request_data == {} or self.last_request_time < time.time() - self.cache_wait:
+            if (not self.last_request_data or self.last_request_data == {} or
+                    self.last_request_time + self.cache_wait < time.time()):
 
                 try:
                     raw_status = self.api.get_status()
@@ -530,10 +508,8 @@ class APIaddOn():
 
                 except Exception as e:
                     self.logging.error("Error requesting data - get_info('" + str(param) + "'): " + str(e))
-                    self.last_request_time = time.time()  # wait for a while for next retry; seems not to work yet .... ??????
+                    self.last_request_time = time.time()
                     return {"error": "error requesting data - get_info('" + str(param) + "'): " + str(e)}
-
-                ######## -> wait for a while, till next request ist done???
 
                 try:
                     self.logging.debug("RAW STATUS: " + str(raw_status))
@@ -565,10 +541,8 @@ class APIaddOn():
             else:
                 return {"error": "unknown tag '" + param + "'"}
 
-            return {"result": "get_info"}
-
         else:
-            return self.not_connected
+            return self.api.not_connected
 
     def test(self):
 

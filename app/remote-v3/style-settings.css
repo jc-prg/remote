@@ -1,22 +1,12 @@
 
 /* Default element in settings - size for iPhone 5c */
-
-.setting_bg {
-   font-family : sans-serif;
-   width       : 290px;
-   margin      : 4px;
-   padding     : 5px;
-   float       : left;
-   
-   border-radius    : 5px;   
-   background-color : #444444;
-
-   color      : white;
-   font-size  : 14px;
-   opacity    : 0.9;
-}
-
 /* --------------------------------- */
+
+nav-title {
+    max-width  : 40%;
+    overflow   : hidden;
+    white-space: nowrap;
+    }
 
 #settings { 
 	display       : none; 
@@ -31,15 +21,15 @@
 	background    : white; 
 	border        : 2px solid #cccccc; 
 	border-radius : 10px; 
-        font-family   : Helvetica;
-        text-align    : center;
-        align         : center;
-        overflow      : auto;
+    font-family   : Helvetica;
+    text-align    : center;
+    align         : center;
+    overflow      : auto;
 	} 
 
 #settings.h3 {
-        font-size:15px;
-        }
+    font-size:15px;
+    }
 
 #error_log {
         font-size  : 12px;
@@ -87,5 +77,10 @@
 /*        overflow   : auto; */
 }
 
-
-
+.timer_select {
+     border                 : 1px solid gray;
+     height                 : 25px;
+    -webkit-border-radius   : 5px;
+    -moz-border-radius      : 5px;
+     border-radius          : 5px !important;
+}

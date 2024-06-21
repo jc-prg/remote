@@ -1,17 +1,6 @@
 //--------------------------------
 // jc://remote/
 //--------------------------------
-/* INDEX:
-function showRemoteInBackground(show=false)
-function setNavTitle (title)
-function image(file)
-function writeKeyBoard ()
-*/
-//--------------------------------
-
-//--------------------------------
-// create menus & landing page & setting page
-//--------------------------------
 
 function showRemoteInBackground(show=false) {
     var body   = document.getElementById("app_background");
@@ -23,7 +12,7 @@ function showRemoteInBackground(show=false) {
         body.style.backgroundPosition   = "bottom center";
         body.style.backgroundAttachment = "fixed";
         if (width < 350)	{ body.style.backgroundSize     = "100%"; }
-        else 			{ body.style.backgroundSize     = "350px"; }
+        else 			    { body.style.backgroundSize     = "350px"; }
         }
     else {
         body.style.backgroundImage    = "";
@@ -31,22 +20,16 @@ function showRemoteInBackground(show=false) {
     }
 
 
-//--------------------------------------
-// Show / hide menu and set app title
-//--------------------------------------
-
-
 function setNavTitle (title) {
+
         setTextById("navTitle", "<div onClick=\"javascript:remoteMainMenu();\" id='header_title'>"+title.replace(/#/g,"\"")+"</div>");
         }
 
-// ------------------------------------------
-
-function image(file) {
-        return "<img src='icon/"+file+"' style='max-height:18px;max-width:24px;margin:0px;padding:0px;' alt='"+file+"' />";
+function rm_image(file, big=false) {
+        if (big)    { var style = "max-height:54px;max-width:72px;"; }
+        else        { var style = "max-height:18px;max-width:24px;"; }
+        return "<img src='icon/"+file+"' style='" + style + "margin:auto;padding:0px;' alt='"+file+"' />";
         }
-
-//--------------------------------------
 
 function writeKeyBoard () {
    var test = "<ul>";
@@ -58,6 +41,16 @@ function writeKeyBoard () {
    }
 
 function dictCopy(dict) {
+
     return JSON.parse(JSON.stringify(dict));
     }
 
+function use_color (value, color="VALUE") {
+    if (!function_colors[color]) { return value; }
+    return "<font color='" + function_colors[color] + "'>" + value + "</font>";
+    }
+
+function scrollTop() {
+  document.body.scrollTop = 0; // For Safari
+  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+}

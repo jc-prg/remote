@@ -1,38 +1,36 @@
-import logging, time, datetime, threading
-
-import modules
-import modules.rm3config as rm3config
-import modules.rm3stage as rm3stage
+import time
+import datetime
+from modules.rm3classes import RemoteThreadingClass
 
 
-class QueueApiCalls(threading.Thread):
+class QueueApiCalls(RemoteThreadingClass):
     """
     class to create a queue to send commands (or a chain of commands) to the devices
-    -> see server_fnct.py: a queue for send commands and another queue for query commands, as query commands take some time
+    -> see server_cmd.py / rm3data.py: a queue for send commands and another queue for query commands,
+       as query commands take some time
     """
 
-    def __init__(self, name, query_send, device_apis):
+    def __init__(self, name, query_send, device_apis, config):
         """
         create queue, set name
         """
-        threading.Thread.__init__(self)
+        RemoteThreadingClass.__init__(self, "Q."+query_send, name)
+
         self.last_query_time = None
         self.last_query = None
         self.queue = []
         self.name = name
-        self.stopProcess = False
-        self.wait = 0.01
         self.device_apis = device_apis
         self.device_reload = []
         self.last_button = "<none>"
-        self.config = ""
+        self.config = config
         self.query_send = query_send
         self.reload = False
+        self.reload_time = time.time()
         self.exec_times = {}
         self.average_exec = {}
 
-        self.logging = logging.getLogger("queue")
-        self.logging.setLevel = rm3stage.log_set2level
+        self.thread_priority(1)
 
     def run(self):
         """
@@ -41,59 +39,62 @@ class QueueApiCalls(threading.Thread):
 
         self.logging.info("Starting " + self.name)
         count = 0
-        while not self.stopProcess:
+        while self._running:
 
             if len(self.queue) > 0:
                 command = self.queue.pop(0)
                 self.execute(command)
-                # self.logging.info("."+command[1]+command[2])
+                count = 0
 
             else:
-                time.sleep(self.wait)
-
                 # send life sign from time to time
-                if count * self.wait > 360:
-                    tt = time.time()
-                    self.logging.info("Queue running " + str(tt))
+                if count > 360:
+                    self.logging.info("Queue still running.")
                     count = 0
+                count += 1
 
-            count += 1
+            self.thread_wait()
 
         self.logging.info("Exiting " + self.name)
 
     def execute(self, command):
         """
         execute command or wait
-        SEND  -> command = number or command = [interface,device,button,state]
-        QUERY -> command = number or command = [interface,device,[query1,query2,query3,...],state]
+        Args:
+            command (Any): command separated in parameters, depending on purpose:
+                           SEND  -> number or command = [interface,device,button,state];
+                           QUERY -> number or command = [interface,device,[query1,query2,query3,...],state]
         """
-
-        # read device information if query
-        devices = {}
-        if self.config != "" and self.query_send == "query":
-            devices = self.config.read_status()
+        devices = self.config.read_status()
 
         # check, if reload is requested ...
         if "START_OF_RELOAD" in str(command):
             self.reload = True
+            self.reload_time = time.time()
+
         elif "END_OF_RELOAD" in str(command):
             self.reload = False
+            self.logging.debug("__RELOAD: execution = " + str(round(time.time() - self.reload_time, 2)) + "s (Queue: " +
+                               str(len(self.queue)) + " entries)")
 
         # if is an array / not a number
         elif "," in str(command):
 
             interface, device, button, state, request_time = command
 
-            self.logging.debug("Queue: Execute " + self.name + " - " + str(interface) + ":" + str(device) + ":" +
-                               str(button) + ":" + str(state) + ":" + str(request_time))
-            self.logging.debug(str(command))
+            if device not in devices:
+                self.logging.error("ERROR: Could not find '" + device + "' in current configuration!")
 
-            if self.query_send == "send":
+            #self.logging.debug("Queue: Execute - " + str(interface) + ":" + str(device) + ":" +
+            #                   str(button) + ":" + str(state) + ":" + str(request_time))
+            #self.logging.debug(str(command))
+
+            elif self.query_send == "send":
                 try:
                     result = self.device_apis.api_send(interface, device, button, state)
                     self.execution_time(device, request_time, time.time())
                     self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')
-                    self.logging.debug(result)
+                    self.logging.debug("send '" + interface + "/" + device + "/" + button + "=" + state + "': "+result)
 
                 except Exception as e:
                     result = "ERROR queue query_list (send," + interface + "," + device + "," +\
@@ -101,10 +102,17 @@ class QueueApiCalls(threading.Thread):
                     self.logging.error(result)
 
             elif self.query_send == "query":
+                log_results = []
+                log_error = 0
+                log_time_start = time.time()
                 for value in button:
+                    if log_error > 1:
+                        continue
                     try:
                         result = self.device_apis.api_query(interface, device, value)
                         # self.execution_time(device,request_time,time.time())
+                        if "ERROR" in str(result):
+                            log_error += 1
 
                         self.last_query = device + "_" + value
                         self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')
@@ -112,7 +120,7 @@ class QueueApiCalls(threading.Thread):
                         devices[device]["status"]["api-last-query-tc"] = int(time.time())
                         devices[device]["status"]["api-status"] = \
                             self.device_apis.api[self.device_apis.device_api_string(device)].status
-                        self.logging.debug(result)
+                        log_results.append(value + "=" + str(result))
 
                     except Exception as e:
                         result = "ERROR queue query_list (query," + str(interface) + "," + str(device) + "," + str(
@@ -124,46 +132,18 @@ class QueueApiCalls(threading.Thread):
                     else:
                         devices[device]["status"][value] = "Error"
 
+                if log_error > 1:
+                    log_results.append("...")
+                self.logging.debug("query " + interface + " (" + str(round(time.time() - log_time_start, 1)) + "s): " +
+                                   ", ".join(log_results))
+
                 if self.config != "":
-                    self.config.write_status(devices, "execute (" + str(command) + ")")
+                    self.config.device_set_values(device, "status", devices[device]["status"])
+                    #self.config.write_status(devices, "execute (" + str(command) + ")")
 
         # if is a number
         else:
             time.sleep(float(command))
-
-    def add_reload_commands(self, commands):
-        """
-        add list of commands required for reloading device data
-        """
-
-        if commands == "RESET":
-            self.device_reload = []
-        else:
-            self.device_reload.append(commands)
-
-    def add2queue(self, commands):
-        """
-        add single command or list of commands to queue
-        """
-        self.logging.debug("Add to queue " + self.name + ": " + str(commands))
-
-        # set reload status
-        if "START_OF_RELOAD" in str(commands):
-            self.reload = True
-
-        # or add command to queue
-        else:
-            for command in commands:
-                if "," in str(command):
-                    command.append(time.time())  # add element to array
-                self.queue.append(command)       # add command array to queue
-
-        return "OK: Added command(s) to the queue '" + self.name + "': " + str(commands)
-
-    def stop(self):
-        """stop thread"""
-
-        self.stopProcess = True
 
     def execution_time(self, device, start_time, end_time):
         """
@@ -185,11 +165,47 @@ class QueueApiCalls(threading.Thread):
             self.exec_times[device] = []
             self.exec_times[device].append(duration)
 
-        total = 0
-        for d in self.exec_times[device]: total += d
-        self.average_exec[device] = total / len(self.exec_times[device])
-        average_diff = self.average_exec[device] - average_start
+        if len(self.exec_times[device]) > 1:
+            total = 0
+            for d in self.exec_times[device]:
+                total += d
+            self.average_exec[device] = total / len(self.exec_times[device])
+            average_diff = self.average_exec[device] - average_start
+        elif len(self.exec_times[device]) == 1:
+            self.average_exec[device] = duration
+            average_diff = -1
+        else:
+            self.average_exec[device] = -1
+            average_diff = -1
 
-        self.logging.info("...... EXEC TIME '" + device + "' average: " + str(
+        self.logging.info("__EXEC TIME: '" + device + "' average: " + str(
             round(self.average_exec[device], average_round)) + " / last " + str(
             round(duration, average_round)) + " / change " + str(round(average_diff, average_round)))
+
+    def add_reload_commands(self, commands):
+        """
+        add list of commands required for reloading device data
+        """
+
+        if commands == "RESET":
+            self.device_reload = []
+        else:
+            self.device_reload.append(commands)
+
+    def add2queue(self, commands):
+        """
+        add single command or list of commands to queue
+        """
+        self.logging.debug("Add2Queue: " + str(commands))
+
+        # set reload status
+        if "START_OF_RELOAD" in str(commands):
+            self.reload = True
+
+        # or add command to queue
+        for command in commands:
+            if "," in str(command):
+                command.append(time.time())  # add element to array
+            self.queue.append(command)       # add command array to queue
+
+        return "OK: Added command(s) to the queue '" + self.name + "': " + str(commands)

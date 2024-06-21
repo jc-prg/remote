@@ -1,0 +1,37 @@
+#----------------------------------------
+# Docker Remote RM
+#----------------------------------------
+
+version: '3'
+services:
+
+  remote_server:
+    build: ${REMOTE_DOCKERIMAGE_SERVER}
+    container_name: ${REMOTE_DOCKER_SERVER}
+    volumes:
+      - ${REMOTE_DIR}:${REMOTE_DIR}
+      - ${REMOTE_DIR}:/usr/src/app
+#      - ${REMOTE_DIR_SERVER}:/usr/src/app/server
+      - ${REMOTE_DIR_DATA}:${REMOTE_DIR_DATA}
+      - ${REMOTE_DIR_ICONS}:${REMOTE_DIR_ICONS}
+      - ${REMOTE_DIR_ICON_INDEX}:${REMOTE_DIR_ICON_INDEX}
+      - ./log:/log
+    ports:
+      - ${REMOTE_SERVER_PORT}:${REMOTE_SERVER_PORT}
+    privileged: true
+
+  remote_client:
+    image: ${REMOTE_DOCKERIMAGE_CLIENT}
+    container_name: ${REMOTE_DOCKER_CLIENT}
+    ports:
+      - ${REMOTE_CLIENT_PORT}:5000
+    volumes:
+      - ${REMOTE_DIR_CLIENT}:/var/www/html/rm3
+      - ${REMOTE_DIR_ICONS}:/var/www/html/rm3/icon
+      - ${REMOTE_DIR_SCENES}:/var/www/html/rm3/scenes
+      - ./config/apache2/www-rm3.conf:/etc/apache2/sites-enabled/www-rm3.conf
+    depends_on:
+      - remote_server
+
+
+#----------------------------------------

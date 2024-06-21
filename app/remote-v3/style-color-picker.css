@@ -1,25 +1,32 @@
 /* display information within the remote control */
 
 .color-picker {
-   width           :  133px;
-   height          :  40px;
-   color           : yellow;
+   width           :  98%;
+   //height          :  300px;
+   height          :  auto;
+   margin          :   1%;
    padding         :   2px;
-   margin          :   4px;
-   font-size       :   9px; 
+   padding-top     :   4px;
+   padding-bottom  :   4px;
+
+   color           : yellow;
+   font-size       :   9px;
    border-radius   :   6px; 
-   border-color    : #222222;
-   background-color: #000000;
+   border-color    : #BBBBBB;
+   background-color: #CCCCCC;
    overflow        : hidden;
    float           : left;
    display         : inline-block;
    vertical-align  : top;
-
-
-   width   :  276px;
-   height  :  280px;
 }
 
 .color-picker img {
    opacity : 1.0;
+}
+
+#colorpicker_demo {
+    margin-top    : 10px;
+    border-radius : 5px;
+    height        : 10px;
+    width         : 120px;
 }

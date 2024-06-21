@@ -1,0 +1,8 @@
+{
+    "data": {
+        "buttons": {},
+        "commands": {},
+        "description": "test device"
+    },
+    "info": "jc://remote/ - In this files the device-specific commands and buttons are defined."
+}

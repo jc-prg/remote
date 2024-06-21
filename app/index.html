@@ -7,20 +7,42 @@
     <META charset="utf-8"></META>
     <META http-equiv="content-type" content="text/html; charset=utf-8"></META>
     <META http-equiv="cache-control" content="no-cache"></META>
-    <META name="apple-mobile-web-app-capable" content="yes"></META>
-    <META name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"></META>
+
+    <meta name="theme-color" content="#000000"></meta>
+    <meta name="apple-mobile-web-app-capable" content="yes"></meta>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"></meta>
 
     <LINK rel=apple-touch-icon href="favicon.png"></LINK>
     <LINK rel=apple-touch-icon-precomposed href="favicon.png"></LINK>
 
     <!-- load main javascript files, dynamic load of additional files is managed at the end of this file -->
 
-    <script src="/modules/modules_1.0.js"></script>
+    <script src="/modules/modules_1.2.js"></script>
     <script src="/framework/app-fw.js"></script>
     <script src="/remote-v3/remote.js"></script>
+    <style>
+        .loading_overlay {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            z-index: 200;
+            background: lightgray;
+            height: 100%;
+            width: 100%;
+            border-radius: 0px;
+            border: 0px;
+            display: flex; /* Add flexbox */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            }
+    </style>
 
 </head>
 <body>
+    <div id="loading_overlay" class="loading_overlay">
+        <img src="framework/img/loading3.gif" height="100px" width="100px" />
+    </div>
 
     <nav id="nav">
     <nav-logo id="rest_status"></nav-logo>
@@ -60,6 +82,8 @@
           </li>
          </ul>
         </nav-b></div>
+        <div id='setting_ext_top_frame' style="width:100%;"></div>
+        <div id='setting_ext_frames'></div>
         <div id='frames'></div>
         <div id='setting_frames'></div>
     </div>
@@ -81,15 +105,16 @@
         loadScripts("/modules/",   modules_js);
         loadCss("/modules/",       modules_css);
 
-        loadScripts("/framework/", app_js);
-        loadCss("/framework/",     app_css);
-
         loadCss("/remote-v3/",     remote_css);
         loadScripts("/remote-v3/", remote_js);
+
+        loadScripts("/framework/", app_js);
+        loadCss("/framework/",     app_css);
 
         setTimeout( function() {
             startApp();
             startRemote();
+            elementHidden("loading_overlay");
         }, 500 );
 
     </script>

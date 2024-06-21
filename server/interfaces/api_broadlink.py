@@ -1,18 +1,15 @@
-import logging, time
-import codecs, json, netaddr
+import time
+import codecs
+import netaddr
 import modules.rm3json as rm3json
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3config
 import modules.rm3ping as rm3ping
-import modules.rm3stage as rm3stage
-
+from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 import interfaces.broadlink.broadlink as broadlink
 
-# -------------------------------------------------
-# API-class
-# -------------------------------------------------
 
-# Shorten Button Code for logging.info
 shorten_info_to = rm3config.shorten_info_to
+rm3config.api_modules.append("BROADLINK")
 
 # commands to check on startup if IR devices runs (e.g. screen down and up)
 check_on_startup = False
@@ -22,48 +19,31 @@ check_on_startup_commands = [
 ]
 
 
-class ApiControl:
+class ApiControl(RemoteApiClass):
     """
     Integration of BROADLINK API to be use by jc://remote/
     """
 
-    def __init__(self, api_name, device="", device_config={}, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """
         Initialize API / check connect to device
         """
-        self.api = None
-        self.api_name = api_name
         self.api_description = "API for Infrared Broadlink RM3"
-        self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
-        self.status = "Start"
-        self.method = "record"
-        self.working = False
-        self.count_error = 0
-        self.count_success = 0
-        self.log_command = log_command
-        self.last_action = 0
-        self.last_action_cmd = ""
+        RemoteApiClass.__init__(self, "api.RM3", api_name, "record",
+                                self.api_description, device, device_config, log_command, config)
 
-        self.api_config = device_config
-        self.api_config["Port"] = int(self.api_config["Port"])
-        self.api_config["MACAddress"] = netaddr.EUI(self.api_config["MACAddress"])
-        self.api_config["Timeout"] = int(self.api_config["Timeout"])
-
-        self.logging = logging.getLogger("api.RM3")
-        self.logging.setLevel = rm3stage.log_set2level
-        self.logging.info(
-            "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
-
-        # self.connect()
+        self.config_add_key("MACAddress", "")
+        self.config_set_methods(["send", "record"])
 
     def connect(self):
         """
         Connect / check connection
         """
+        self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
 
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
-            self.status = self.not_connected + " ... PING"
+            self.status = self.not_connected + " ... PING " + self.api_config["IPAddress"]
             self.logging.warning(self.status)
             return self.status
 
@@ -71,8 +51,9 @@ class ApiControl:
         self.count_success = 0
 
         try:
-            self.api = broadlink.rm((self.api_config["IPAddress"], self.api_config["Port"]),
-                                    self.api_config["MACAddress"])
+            self.logging.debug("Configuration: " + str(self.api_config))
+            self.api = broadlink.rm((self.api_config["IPAddress"], int(self.api_config["Port"])),
+                                    netaddr.EUI(self.api_config["MACAddress"]))
             if self.api.auth():
                 self.status = "Connected"
             else:
@@ -90,6 +71,9 @@ class ApiControl:
             except Exception as e:
                 self.status = "ERROR IR Device: " + str(e)
                 self.logging.error(self.status)
+
+        if self.status == "Connected":
+            self.logging.info("Connected BROADLINK (" + self.api_config["IPAddress"] + ")")
 
         return self.status
 
@@ -111,7 +95,7 @@ class ApiControl:
         self.logging.debug("power_status:" + msg)
         return msg
 
-    def send(self, device, command):
+    def send(self, device, device_id, command):
         """Send command to API"""
 
         self.wait_if_working()
@@ -138,7 +122,7 @@ class ApiControl:
         self.working = False
         return "OK"
 
-    def query(self, device, command):
+    def query(self, device, device_id, command):
         """
         Send command to API and wait for answer
         """
@@ -146,7 +130,7 @@ class ApiControl:
         self.logging.debug(msg)
         return msg
 
-    def record(self, device, command):
+    def record(self, device, device_id, command):
         """
         Record command, especially build for IR devices
         """
@@ -157,7 +141,7 @@ class ApiControl:
 
         if self.status == "Connected":
             if self.log_command:
-                self.logging.info("_RECORD: " + device + "/" + command[:shorten_info_to] +
+                self.logging.info("__RECORD " + device + "/" + command[:shorten_info_to] +
                                   " ... (" + self.api_name + ")")
 
             code = device + "_" + command

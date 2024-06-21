@@ -5,6 +5,11 @@
 	"green" : 1,
 	"cyan" : 1,
 	"white" : 1,
+	"white-warmest": 1,
+	"white-warm": 1,
+	"white-neutral": 1,
+	"white-cool": 1,
+	"white-coolest": 1,
 	"orange" : 1,
 	"pink" : 1,
 	"black" : 1

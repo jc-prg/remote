@@ -8,110 +8,116 @@ var rmMenu_visibleWidth = 875;
 
 function rmMenu(name, menu) {
 
-	this.menuItems   = menu;
-	this.app_name    = name;
-	this.data        = {};
-	this.edit_mode   = false;
-	this.initial_load = true;
-	this.logging     = new jcLogging(this.app_name);
+	this.menuItems     = menu;
+	this.app_name      = name;
+	this.data          = {};
+	this.edit_mode     = false;
+	this.initial_load  = true;
+	this.logging       = new jcLogging(this.app_name);
+	this.hide_settings = "rm3settings.hide_settings();";
 
-        // load data with devices (deviceConfig["devices"])
-        this.init                 = function(data) {
+    // load data with devices (deviceConfig["devices"])
+    this.init                 = function(data) {
 
-        	if (data["DATA"]) 	{ this.data = data; }
-        	else			{ return; }
+        if (data["CONFIG"]) { this.data = data; }
+        else                { return; }
 
-                if (this.initial_load) { 
-                	this.logging.default("Initialized new class 'rmMenu'.");
-                	this.initial_load = false;
-                	}
-                else {	this.logging.default("Reload data 'rmMenu'.");
-                	}
-                
-    		this.writeMenu("");
-    		menuApp = this;
-    		
-    		// define variable menu size (scroll bars defined in app-menu.css)
-    		window.onresize = function(event) {
-    			height = (window.innerHeight - 70);
-    			width  = window.innerWidth;
-    			document.getElementById("menuItems").style.maxHeight  = height + "px"; 
-    			document.getElementById("menuItems2").style.maxHeight = height + "px"; 
-    			rm3menu.menu_height();	
-    			
-    			if (width > rmMenu_visibleWidth) {
-	    			document.getElementById("menuItems").style.visibility = "hidden"; 
-	    			}
-			}
-
-		height = (window.innerHeight - 70);
-		document.getElementById("menuItems").style.maxHeight  = height + "px"; 
-		document.getElementById("menuItems2").style.maxHeight = height + "px";
-		this.menu_height();	
+            if (this.initial_load) {
+                this.logging.default("Initialized new class 'rmMenu'.");
+                this.initial_load = false;
                 }
-                
-        this.click_menu          = function() {
-    			height       = (window.innerHeight - 70);
-    			width        = window.innerWidth;
-    			menuDropDown = document.getElementById("menuItems");
+            else {
+                this.logging.default("Reload data 'rmMenu'.");
+                }
 
-			if (width < rmMenu_visibleWidth) {
-				if (menuDropDown.style.visibility == "hidden")   { menuDropDown.style.visibility = "visible"; }
-				else                                             { menuDropDown.style.visibility = "hidden"; }
-     				}
-			else                                                     { menuDropDown.style.visibility = "hidden"; }
-   		}
- 
-        this.menu_height	  = function() {
+        this.writeMenu("");
+        menuApp = this;
+
+        // define variable menu size (scroll bars defined in app-menu.css)
+        window.onresize = function(event) {
+            height = (window.innerHeight - 70);
+            width  = window.innerWidth;
+            document.getElementById("menuItems").style.maxHeight  = height + "px";
+            document.getElementById("menuItems2").style.maxHeight = height + "px";
+            rm3menu.menu_height();
+
+            if (width > rmMenu_visibleWidth) {
+                document.getElementById("menuItems").style.visibility = "hidden";
+                }
+        }
+
+    height = (window.innerHeight - 70);
+    document.getElementById("menuItems").style.maxHeight  = height + "px";
+    document.getElementById("menuItems2").style.maxHeight = height + "px";
+    this.menu_height();
+    }
+
+    this.click_menu          = function() {
+            height       = (window.innerHeight - 70);
+            width        = window.innerWidth;
+            menuDropDown = document.getElementById("menuItems");
+
+        if (width < rmMenu_visibleWidth) {
+            if (menuDropDown.style.visibility == "hidden")   { menuDropDown.style.visibility = "visible"; }
+            else                                             { menuDropDown.style.visibility = "hidden"; }
+            }
+        else                                                 { menuDropDown.style.visibility = "hidden"; }
+    }
+
+    this.menu_height	     = function() {
 		document.getElementById("remote_nav").style.maxHeight = "100px";
 	        var height = pageHeight();
 	        height -= 50;
    		document.getElementById("remote_nav").style.maxHeight = height+ "px"; // window.innerHeight + "px"; // 
         	}
 
-
 	// add links to devices to drop down menu
 	this.add_devices          = function(data) {
 
-		// return if no data
-    		if (!data) { return; }
+        // return if no data
+        if (!data) { return; }
 
-		// set vars
-    		var menu   = this.readMenu();
-    		if (this.data["STATUS"])	{ var error  = this.data["STATUS"]["config_errors"]["devices"]; }
-    		else				{ var error = {}; }
-    		
-    		for (var key in data) { if (data[key]["settings"]["position"]) { data[key]["position"] = data[key]["settings"]["position"]; }}
-		var order  = sortDict(data,"position");
-    		var i      = 0;
-		for (var j=0;j<order.length;j++) {
-			device = order[j];
-			if (device != "default") {
+        // set vars
+        var error  = {};
+        var menu   = this.readMenu();
+        if (this.data["STATUS"] && this.data["STATUS"]["config_errors"] && this.data["STATUS"]["config_errors"]["devices"])   {
+            var error  = this.data["STATUS"]["config_errors"]["devices"];
+            }
 
-				if (device in error) { 
-					if (data[device]["settings"]["visible"] != "no")	{ menu  += this.entry_device( device, "<div class=#entry_error#>! " + data[device]["settings"]["label"] + "</div>" ); }
-					else if (this.edit_mode)				{ menu  += this.entry_device( device, "<div class=#entry_error#>.(" + data[device]["settings"]["label"] + ").</div>" ); }
-					}
-				else {
-					if (data[device]["settings"]["visible"] != "no")	{ menu  += this.entry_device( device, data[device]["settings"]["label"] ); }
-					else if (this.edit_mode)				{ menu  += this.entry_device( device, "<div class=#hidden_entry_edit#>.(" + data[device]["settings"]["label"] + ").</div>" ); }
-					}			        
-				}
-        		}
-    		this.writeMenu(menu + "<li><hr/></li>");
-		}
+        for (var key in data) { if (data[key]["settings"]["position"]) { data[key]["position"] = data[key]["settings"]["position"]; }}
+
+        var order  = sortDict(data,"position");
+        var i      = 0;
+        for (var j=0;j<order.length;j++) {
+            device = order[j];
+            if (device != "default") {
+
+                if (device in error) {
+                    if (data[device]["settings"]["visible"] != "no") {
+                        menu  += this.entry_device( device, "<div class=#entry_error#>! " + data[device]["settings"]["label"] + "</div>" );
+                        }
+                    else if (this.edit_mode) {
+                        menu  += this.entry_device( device, "<div class=#entry_error#>.(" + data[device]["settings"]["label"] + ").</div>" );
+                        }
+                    }
+                else {
+                    if (data[device]["settings"]["visible"] != "no") {
+                        menu  += this.entry_device( device, data[device]["settings"]["label"] );
+                        }
+                    else if (this.edit_mode) {
+                        menu  += this.entry_device( device, "<div class=#hidden_entry_edit#>.(" + data[device]["settings"]["label"] + ").</div>" );
+                        }
+                    }
+                }
+            }
+
+            this.writeMenu(menu + "<li><hr/></li>");
+        }
 		
-	// show hide edit mode for remotes
-	this.remoteToggleEditMode = function() {
-		if (this.edit_mode)  { this.edit_mode = false; }
-		else                 { this.edit_mode = true; }
-		}		
-
-
 	// add links to scenes to drop down menu
 	this.add_scenes           = function(data) {
 
-		// return if no data
+        // return if no data
         if (data) {} else { return; }
 
         var menu   = this.readMenu();
@@ -119,40 +125,42 @@ function rmMenu(name, menu) {
         else                        { var error = {}; }
 
         for (var key in data) { data[key]["position"] = data[key]["settings"]["position"]; }
-		var order  = sortDict(data,"position");
+        var order  = sortDict(data,"position");
 
-		for (var j=0;j<order.length;j++) {
-			scene = order[j];
-			if (data[scene]["settings"]["label"]) {
-				if (scene in error) {
-				        if (data[scene]["settings"]["visible"] != "no")	{
-				            menu  += this.entry_scene( scene, "<div class=#entry_error#>! " + data[scene]["settings"]["label"] + "</div>" );
-				            console.warn("addScenes: "+scene);
-				            console.warn(error[scene]);
-				            }
-				        else if (this.edit_mode) {
-				            menu  += this.entry_scene( scene, "<div class=#entry_error#>.(" + data[scene]["settings"]["label"] + ").</div>" );
-				            }
-					}
-				else {
-				        if (data[scene]["settings"]["visible"] != "no")	{ menu  += this.entry_scene( scene, data[scene]["settings"]["label"] ); }
-				        else if (this.edit_mode)				{ menu  += this.entry_scene( scene, "<div class=#hidden_entry_edit#>.(" + data[scene]["settings"]["label"] + ").</div>" ); }
-					}
-				}
+        for (var j=0;j<order.length;j++) {
+            scene = order[j];
+            if (data[scene]["settings"]["label"]) {
+                if (scene in error) {
+                        if (data[scene]["settings"]["visible"] != "no")	{
+                            menu  += this.entry_scene( scene, "<div class=#entry_error#>! " + data[scene]["settings"]["label"] + "</div>" );
+                            console.warn("addScenes: "+scene);
+                            console.warn(error[scene]);
+                            }
+                        else if (this.edit_mode) {
+                            menu  += this.entry_scene( scene, "<div class=#entry_error#>.(" + data[scene]["settings"]["label"] + ").</div>" );
+                            }
+                    }
+                else {
+                        if (data[scene]["settings"]["visible"] != "no")	{
+                            menu  += this.entry_scene( scene, data[scene]["settings"]["label"] );
+                            }
+                        else if (this.edit_mode) {
+                            menu  += this.entry_scene( scene, "<div class=#hidden_entry_edit#>.(" + data[scene]["settings"]["label"] + ").</div>" );
+                            }
+                    }
+                }
             }
 
         this.writeMenu(menu + "<li><hr/></li>");
 		}
 
-
 	// add links to scenes to drop down menu
 	this.add_script           = function(script,label) {
 
-    		var menu = this.readMenu();
-		menu += this.entry_script(script,label);
-    		this.writeMenu(menu);
-		}
-
+        var menu = this.readMenu();
+        menu += this.entry_script(script,label);
+        this.writeMenu(menu);
+        }
 
 	// add links to scenes to drop down menu
 	this.add_link             = function(link,label) {
@@ -164,31 +172,36 @@ function rmMenu(name, menu) {
 
 	// menu entries
 	this.entry_link           = function(link,label) {
+
    		return "<li><a href=\"" + link + "\" target=\"_blank\">" + label + "</a></li>";
 		}
 
 	this.entry_script         = function(script,label) {
+
   		return "<li><a onClick=\"javascript:" + script + ";"+this.app_name+".click_menu();\">"+label+"</a></li>";
 		}
 
 	this.entry_device         = function(device,label) {
+
 		return "<li><a onclick=\"rm3remotes.create('device','" + device + "');rm3settings.hide();"+this.app_name+".click_menu();\" >" + label.replace(/#/g,"'") + "</a></li>";
 		}
 
 	this.entry_scene          = function(scene,label) {
+
 		return "<li><a onclick=\"rm3remotes.create('scene','" + scene + "');rm3settings.hide();"+this.app_name+".click_menu();\" >" + label.replace(/#/g,"'") + "</a></li>";
 		}
 
-	this.writeMenu            = function(menutext) {
+	this.writeMenu            = function(menu_text) {
         	if (typeof this.menuItems == "string") {
-        		setTextById(this.menuItems,menutext);
+        		setTextById(this.menuItems,menu_text);
         		}
         	else if (typeof this.menuItems == "object") {
         		for (var i=0; i<this.menuItems.length; i++) {
-	        		setTextById(this.menuItems[i],menutext);
+	        		setTextById(this.menuItems[i],menu_text);
         			}
         		}
         	}
+
 	this.readMenu             = function() {
         	if (typeof this.menuItems == "string") {
         		return getTextById(this.menuItems);

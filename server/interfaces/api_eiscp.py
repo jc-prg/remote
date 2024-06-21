@@ -1,51 +1,30 @@
-import logging, time
+import time
 import modules.rm3json as rm3json
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3config
 import modules.rm3ping as rm3ping
-import modules.rm3stage as rm3stage
-
+from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 import interfaces.eiscp as eiscp
 
-# -------------------------------------------------
-# API-class
-# -------------------------------------------------
 
 shorten_info_to = rm3config.shorten_info_to
+rm3config.api_modules.append("EISCP-ONKYO")
 
 
-class ApiControl:
+class ApiControl(RemoteApiClass):
     """
     Integration of sample API to be use by jc://remote/
     """
 
-    def __init__(self, api_name, device="", device_config={}, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """
         Initialize API / check connect to device
         """
-
-        self.api_name = api_name
         self.api_description = "API for ONKYO Devices"
-        self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
-        self.status = "Start"
-        self.method = "query"
-        self.working = False
-        self.count_error = 0
-        self.count_success = 0
-        self.log_command = log_command
-        self.last_action = 0
-        self.last_action_cmd = ""
+        RemoteApiClass.__init__(self, "api.ONKYO", api_name, "query",
+                                self.api_description, device, device_config, log_command, config)
 
-        self.api_device = device
         self.api_timeout = 5
-        self.api_config = device_config
         self.api_ip = self.api_config["IPAddress"]
-
-        self.logging = logging.getLogger("api.ONKYO")
-        self.logging.setLevel = rm3stage.log_set2level
-        self.logging.info(
-            "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
-
-        # self.connect()
 
     def reconnect(self):
         self.api.command_socket = None
@@ -55,9 +34,11 @@ class ApiControl:
         """
         Connect / check connection
         """
+        self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
+
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
-            self.status = self.not_connected + " ... PING"
+            self.status = self.not_connected + " ... PING " + self.api_config["IPAddress"]
             self.logging.warning(self.status)
             return self.status
 
@@ -85,6 +66,9 @@ class ApiControl:
             self.api.jc.status = self.status
             self.logging.warning(self.status)
 
+        if self.status == "Connected":
+            self.logging.info("Connected ONKYO (" + self.api_config["IPAddress"] + ")")
+
     def wait_if_working(self):
         """
         Some devices run into problems, if send several requests at the same time
@@ -105,7 +89,7 @@ class ApiControl:
         if "off" in str(status).lower():
             return "OFF"
 
-    def send(self, device, command):
+    def send(self, device, device_id, command):
         """
         Send command to API
         """
@@ -134,7 +118,7 @@ class ApiControl:
         self.working = False
         return "OK"
 
-    def query(self, device, command):
+    def query(self, device, device_id, command):
         """
         Send command to API and wait for answer
         """
@@ -152,8 +136,9 @@ class ApiControl:
         self.logging.debug(command)
 
         if self.status == "Connected":
-            if self.log_command: self.logging.info(
-                "_QUERY: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+            if self.log_command:
+                self.logging.info("__QUERY " + device + "/" + command[:shorten_info_to] +
+                                  " ... (" + self.api_name + ")")
 
             if "jc." in command:
 
@@ -209,7 +194,7 @@ class ApiControl:
         self.working = False
         return result
 
-    def record(self, device, command):
+    def record(self, device, device_id, command):
         """
         Record command, especially build for IR devices
         """
@@ -239,16 +224,16 @@ class ApiControl:
         return "OK"
 
 
-# -------------------------------------------------
-# additional functions -> define self.api.jc.*
-# -------------------------------------------------
-
-class APIaddOn():
+class APIaddOn(RemoteDefaultClass):
     """
     additional functions that combine values
     """
     def __init__(self, api):
+        self.api_description = "API-Addon for ONKYO Devices"
+        RemoteDefaultClass.__init__(self, "api.ONKYO", self.api_description)
 
+        self.status = None
+        self.not_connected = None
         self.addon = "jc://addon/onkyo/"
         self.api = api
         self.volume = 0
@@ -256,8 +241,30 @@ class APIaddOn():
         self.cache_time = time.time()  # init cache time
         self.cache_wait = 2  # time in seconds how much time should be between two api metadata requests
 
-        self.logging = logging.getLogger("api.ONKYO")
-        self.logging.setLevel = rm3stage.log_set2level
+        self.available_commands = {
+            "jc.get_available_commands()": {
+                "info": "get a list of all available commands"
+            },
+            "jc.get_metadata(parameter)": {
+                "description": "get consolidated metadata from device",
+                "parameter": ["net-info"]
+            }
+        }
+
+    def get_available_commands(self):
+        """returns a list of all commands defined for this API"""
+        return ["result", self.available_commands]
+
+    def get_metadata(self, parameter):
+        """
+        get consolidated metadata from devices
+        """
+        if self.status == "Connected":
+            return self.metadata(parameter)
+        else:
+            return ["error", "API " + self.api.api_name + " not connected."]
+
+    # -------------------------------------------
 
     def metadata(self, tags=""):
         """

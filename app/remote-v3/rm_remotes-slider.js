@@ -1,19 +1,6 @@
 //-----------------------------------------
 // jc://volume-slider/
 //-----------------------------------------
-// slider for volume control
-// requires jc-volume-slider-<version>.css
-//-----------------------------------------
-/* SAMPLE IMPLEMENTATION
-
-var mboxSlider  = new jcSlider( name="mboxSlider", container="audio_slider");	// create slider
-mboxSlider.init(min=0,max=100,label=mbox_device);				// set device information
-mboxSlider.setPosition(top="45px",bottom=false,left=false,right="10px");	// set position (if not default)
-mboxSlider.setOnChange(mboxVolumeSet);						// -> setVolume (api call to set volume -> this.callOnChange( this.value ))
-mboxSlider.setShowVolume(mboxVolumeShow);					// -> showVolume e.g. in header
-
-*/
-//-----------------------------------------
 
 
 function rmSlider(name) {
@@ -80,12 +67,20 @@ function rmSlider(name) {
 		if (disabled)               { input_disabled = "disabled"; }
 		else                        { input_disabled = ""; }
 
-        var setCmdOn             = "if (document.getElementById('toggle_"+device+"_"+value_key+"_value').value==1) ";
-        setCmdOn                += "{ apiCommandSend('"+command_on+"','','','toggle'); }";
-        setCmdOn                += " else ";
-        setCmdOn                += "{ apiCommandSend('"+command_off+"','','','toggle'); } ";
+        if (command_on.indexOf("(") > -1 || command_on.indexOf("javascript:") > -1 || command_on.indexOf("javascript:") > -1)
+                { var command_on_JS = command_on.replace("javascript:", ""); }
+        else    { var command_on_JS = "apiCommandSend('"+command_on+"','','','toggle');"; }
 
-        var setCmdOnClick        = "if(this.value==0) { "+setValueCmd_set+" } ";
+        if (command_off.indexOf("(") > -1 || command_off.indexOf("javascript:") > -1 || command_off.indexOf("javascript:") > -1)
+                { var command_off_JS = command_off.replace("javascript:", ""); }
+        else    { var command_off_JS = "apiCommandSend('"+command_off+"','','','toggle');"; }
+
+        var setCmdOn             = "if (document.getElementById('toggle_"+device+"_"+value_key+"_value').value==1) ";
+        setCmdOn                += "{ " + command_on_JS + " }";
+        setCmdOn                += " else ";
+        setCmdOn                += "{ " + command_off_JS + " } ";
+
+        var setCmdOnClick        = "if (this.value==0) { "+setValueCmd_set+" } ";
         setCmdOnClick           += "else { "+setValueCmd_set+" };document.getElementById('toggle_"+device+"_"+value_key+"_value').value=this.value;"+setCmdOn;
 
 //        setCmdOnClick           += "alert(this.value+'|'+document.getElementById('toggle_"+device+"_"+value_key+"_value').value+'|'+document.getElementById('toggle_"+device+"_"+value_key+"_last_value').value);";

@@ -1,0 +1,11 @@
+@media (prefers-color-scheme: dark) {
+
+    .color-picker {
+       border-color    : #222222;
+       background-color: #000000;
+    }
+
+    .color-picker img {
+       opacity : 1.0;
+    }
+}

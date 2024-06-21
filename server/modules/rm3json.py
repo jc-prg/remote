@@ -1,16 +1,14 @@
-import modules.rm3stage as rm3stage
-import json, codecs, os
-import logging
+import modules.rm3presets as rm3presets
+import json
+import codecs
 import time
 from os import path
 import os
 
-jsonPath = rm3stage.data_dir + "/"
+jsonPath = rm3presets.data_dir + "/"
 jsonAppDir = path.dirname(path.abspath(__file__))
 jsonSettingsPath = ""
-
-json_logging = logging.getLogger("json")
-json_logging.setLevel = rm3stage.log_set2level
+json_logging = rm3presets.set_logging("json")
 
 
 def init():
@@ -47,7 +45,7 @@ def read(file, data_dir=True):
         }
         return d
 
-    return d
+    return d.copy()
 
 
 def delete(file):

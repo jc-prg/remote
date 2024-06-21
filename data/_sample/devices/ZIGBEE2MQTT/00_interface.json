@@ -1,0 +1,19 @@
+{
+	"API-Description"  : "ZigBee2MQTT interfaces",
+	"API-Devices"    : {
+		"default" : {
+			"IPAddress"   : "192.168.1.42",
+			"MacAddress"  : "",
+			"Methods"     : ["send","query"],
+			"MqttUser"    : "",
+			"MqttPassword": "",
+			"Description" : "ZigBee2MQTT Server",
+			"Port"		  : 1883,
+			"PowerDevice" : "",
+			"Timeout"     : 5,
+			"USBDongle"   : "/dev/ttyACM0"
+		}
+	},
+	"API-Info"         : "https://github.com/jc-prg/remote/blob/master/server/interfaces/zigbee2mqtt/README.md",
+	"API-Source"       : "https://github.com/Koenkk/zigbee2mqtt"
+}

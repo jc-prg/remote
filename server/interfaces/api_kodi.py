@@ -1,55 +1,38 @@
-# -----------------------------------
-# KODI API using kodijson
-# https://kodi.wiki/view/JSON-RPC_API/v10#Application.Property.Name
-# -----------------------------------
-
-import logging, time
+import time
 import modules.rm3json as rm3json
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3config
 import modules.rm3ping as rm3ping
-import modules.rm3stage as rm3stage
-
+from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 from interfaces.kodi import Kodi
 
 shorten_info_to = rm3config.shorten_info_to
+rm3config.api_modules.append("KODI")
 
 
-class ApiControl:
+class ApiControl(RemoteApiClass):
     """
-    Integration of KODI API to be use by jc://remote/
+    Integration of KODI API to be used by jc://remote/
+    based on https://kodi.wiki/view/JSON-RPC_API/v10#Application.Property.Name
     """
 
-    def __init__(self, api_name, device="", device_config={}, log_command=False):
+    def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """
         Initialize API / check connect to device
         """
-        self.api_name = api_name
         self.api_description = "API for KODI Servers"
-        self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
-        self.status = "Start"
-        self.method = "query"
-        self.working = False
-        self.count_error = 0
-        self.count_success = 0
-        self.log_command = log_command
-        self.last_action = 0
-        self.last_action_cmd = ""
-
-        self.api_config = device_config
-        self.api_url = "http://" + str(self.api_config["IPAddress"]) + ":" + str(self.api_config["Port"]) + "/jsonrpc"
-
-        self.logging = logging.getLogger("api.KODI")
-        self.logging.setLevel = rm3stage.log_set2level
-        self.logging.info(
-            "_INIT: " + self.api_name + " - " + self.api_description + " (" + self.api_config["IPAddress"] + ")")
+        RemoteApiClass.__init__(self, "api.KODI", api_name, "query",
+                                self.api_description, device, device_config, log_command, config)
+        self.api_url = ""
 
     def connect(self):
         """
         Connect / check connection
         """
+        self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
+
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
-            self.status = self.not_connected + " ... PING"
+            self.status = self.not_connected + " ... PING " + self.api_config["IPAddress"]
             self.logging.warning(self.status)
             return self.status
 
@@ -58,6 +41,8 @@ class ApiControl:
         self.count_success = 0
 
         try:
+            self.api_url = ("http://" + str(self.api_config["IPAddress"]) + ":" +
+                            str(self.api_config["Port"]) + "/jsonrpc")
             self.api = Kodi(self.api_url)
 
         except Exception as e:
@@ -75,6 +60,9 @@ class ApiControl:
             self.status = self.not_connected + " ... CONNECT " + str(e)
             self.logging.warning(self.status)
 
+        if self.status == "Connected":
+            self.logging.info("Connected KODI (" + self.api_config["IPAddress"] + ")")
+
     def wait_if_working(self):
         """
         Some devices run into problems, if send several requests at the same time
@@ -90,7 +78,7 @@ class ApiControl:
          """
         return self.jc.PlayerMetadata("power")
 
-    def send(self, device, command):
+    def send(self, device, device_id, command):
         """
         Send command to API
         """
@@ -113,7 +101,7 @@ class ApiControl:
                     self.working = False
                     return "ERROR " + self.api_name + " - " + result["error"]["message"]
 
-                if not "result" in result:
+                if "result" not in result:
                     self.working = False
                     return "ERROR " + self.api_name + " - unexpected result format."
 
@@ -127,7 +115,7 @@ class ApiControl:
         self.working = False
         return "OK"
 
-    def query(self, device, command):
+    def query(self, device, device_id, command):
         """
         Send command to API and wait for answer
         """
@@ -144,7 +132,7 @@ class ApiControl:
 
         if self.status == "Connected":
             if self.log_command: self.logging.info(
-                "_QUERY: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+                "__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
 
             try:
                 command = "self.api." + command_param[0]
@@ -159,7 +147,7 @@ class ApiControl:
                         msg = str(result["error"])
                     return "ERROR " + self.api_name + " - " + msg
 
-                elif not "result" in result:
+                elif "result" not in result:
                     self.working = False
                     return "ERROR " + self.api_name + " - unexpected result format."
 
@@ -167,7 +155,8 @@ class ApiControl:
                     if len(command_param) > 1:
                         result_param = eval("result['result']" + command_param[1])
                     else:
-                        result_param = str(result['result'])
+                        result_param = result['result']
+                        #result_param = str(result['result'])
 
             except Exception as e:
                 self.working = False
@@ -178,18 +167,6 @@ class ApiControl:
 
         self.working = False
         return result_param
-
-    def record(self, device, command):
-        """
-        Record command, especially build for IR devices
-        """
-        return "ERROR " + self.api_name + ": Not supported by this API"
-
-    def register(self, command, pin=""):
-        """
-        Register command if device requires registration to initialize authentification
-        """
-        return "ERROR " + self.api_name + ": Register not implemented"
 
     def test(self):
         """
@@ -209,16 +186,15 @@ class ApiControl:
         return "OK: Test done, check results"
 
 
-# -------------------------------------------------
-# additional functions -> define self.api.jc.*
-# -------------------------------------------------
-
-class APIaddOn():
+class APIaddOn(RemoteDefaultClass):
     """
     did not found a way to increase or decrease volume directly
     """
 
     def __init__(self, api):
+
+        self.api_description = "API-Addon for KODI Servers"
+        RemoteDefaultClass.__init__(self, "api.KODI", self.api_description)
 
         self.status = None
         self.not_connected = None
@@ -227,10 +203,173 @@ class APIaddOn():
         self.volume = 0
         self.cache_metadata = {}  # cache metadata to reduce api requests
         self.cache_time = time.time()  # init cache time
-        self.cache_wait = 2  # time in seconds how much time should be between two api metadata requests
+        self.cache_wait = 3  # time in seconds how much time should be between two api metadata requests
 
-        self.logging = logging.getLogger("api.KODI")
-        self.logging.setLevel = rm3stage.log_set2level
+        self.available_commands = {
+            "jc.get_addons(parameter)": {
+                "description": "get a list off installed KODI addons",
+                "parameter": ["list", "properties"]
+            },
+            "jc.get_available_commands()": {
+                "info": "get a list of all available commands"
+            },
+            "jc.get_metadata(category, parameter)": {
+                "description": "get metadata from server, playback, etc.",
+                "categories": ["title", "album", "artist", "plot", "mpaa", "genre", "episode", "season",
+                             "showtitle", "studio", "duration", "runtime", "version", "muted", "volume",
+                             "language", "name", "live", "speed", "percentage", "position", "playlistid", "subtitles",
+                             "currentsubtitle", "audiostreams", "currentaudiostream", "subtitleenabled", "size",
+                             "type", "addons", "addon-list", "power", "player", "playlist", "playlist-position",
+                             "playing", "item", "info", "item-position", "name"]
+            },
+            "jc.set_player(category, parameter)": {
+                "description": "player control",
+                "parameters": {
+                    "Playback": ["Play", "Stop", "PlayPause"],
+                    "Subtitle": ['previous', 'next', 'on', 'off'],
+                    "AudioStream": ['previous', 'next'],
+                    "Speed": ["default", "forward", "backward", -32, -16, -8, -4, -2, -1, 0, 1, 2, 4, 8, 16, 32]
+                }
+            },
+            "jc.set_volume(category, parameter)": {
+                "description": "control volume settings",
+                "parameters" : {
+                    "up": "integer: 1..100",
+                    "down": "integer: 1..100",
+                    "value": "integer: 1..100",
+                    "mute": "boolean: True|False"
+                }
+            },
+            "jc.set_addons(addon, command)": {
+                "description": "not implemented yet",
+                "addon": "'addonid' of addon to be controlled (use jc.get_metadata('addons') to see available addons)'",
+                "command": ["start", "execute"]
+            }
+        }
+
+    def get_available_commands(self):
+        """returns a list of all commands defined for this API"""
+        return {"result": self.available_commands}
+
+    def get_metadata(self, category="", parameter=""):
+        """
+        Get metadata from KODI server
+        """
+        if self.status == "Connected":
+            result = {"result": {}}
+            if category == "":
+                for key in self.available_commands["jc.get_metadata(category, parameter)"]["category"]:
+                    result["result"][key] = self.PlayerMetadata(key, "")["result"]
+                return result
+            else:
+                return self.PlayerMetadata(category, parameter)
+        else:
+            return {"error": "API " + self.api.api_name + " not connected."}
+
+    def get_addons(self, parameter):
+        """
+        get information for addons
+        """
+        if self.status == "Connected":
+            data = self.api.Addons.GetAddons()['result']['addons']
+            addons = []
+
+            if parameter == "list" or parameter == "":
+                for item in data:
+                    if item['type'] == 'xbmc.python.pluginsource':
+                        details = self.api.Addons.GetAddonDetails({'addonid': item['addonid'], 'properties': ['name']})
+                        details = details['result']['addon']
+                        result = self.ReplaceHTML(details['name'])
+                        addons.append(result)
+                return {"result": addons}
+
+            elif parameter == "properties":
+                for item in data:
+                    if item['type'] == 'xbmc.python.pluginsource':
+                        details = self.api.Addons.GetAddonDetails(
+                            {'addonid': item['addonid'], 'properties': ['name', 'description', 'enabled', 'installed']})
+                        details = details['result']['addon']
+                        details['addonid'] = item['addonid']
+                        details['name'] = self.ReplaceHTML(details['name'])
+                        addons.append(details)
+                return {"result": addons}
+
+            else:
+                return {"error": "unknown tag (" + parameter + ")"}
+        else:
+            return {"error": "API " + self.api.api_name + " not connected."}
+
+    def set_volume(self, category, parameter=""):
+        """
+        Combine all relevant parameters to set volume level
+        """
+        if self.status == "Connected":
+            if category == "up" and parameter != "":
+                result = self.IncreaseVolume(parameter)
+            elif category == "up":
+                result = self.IncreaseVolume(1)
+            elif category == "down" and parameter != "":
+                result = self.DecreaseVolume(parameter)
+            elif category == "down":
+                result = self.DecreaseVolume(1)
+            elif category == "value":
+                result = value = int(parameter)
+                if 0 <= value <= 100:
+                    self.api.Application.SetVolume({"volume": value})
+                    result = {"result": value}
+                else:
+                    msg = self.addon + ": Volume parameter doesn't match the required format integer 0..100 ("+parameter+")."
+                    self.logging.warning(msg)
+                    result = {"error": msg}
+            elif category == "mute" and type(parameter) is bool:
+                self.api.Application.SetMute({"mute": parameter})
+                result = {"result": parameter}
+            elif category == "mute":
+                result = self.ToggleMute()
+            else:
+                msg = self.addon + ": Volume category '" + category + "' doesn't exist."
+                self.logging.warning(msg)
+                result = {"error": msg}
+            return result
+        else:
+            return {"error": "API " + self.api.api_name + " not connected."}
+
+    def set_addons(self, addon, command=""):
+        """
+        execute commands on addons:
+        - Addons.ExecuteAddon({'addonid': 'plugin.video.amazon-test'})
+        """
+        if self.status == "Connected":
+            data = self.api.Addons.GetAddons()['result']['addons']
+            exist = False
+            for item in data:
+                if item["addonid"] == addon:
+                    exist = True
+            if not exist:
+                return {"error": "unknown addon (" + addon + ")"}
+
+            if command == "" or command == "start" or command == "execute":
+                result = self.api.Addons.ExecuteAddon({'addonid': addon})
+                return {"result": result}
+            else:
+                return {"error": "unknown command (" + command + ")"}
+
+        else:
+            return {"error": "API " + self.api.api_name + " not connected."}
+
+    def set_player(self, category, parameter=""):
+        """
+        playback functions
+        """
+        if self.status == "Connected":
+            if category.lower() == "playback":
+                return self.PlayerControl(parameter)
+            elif category.lower() in ['audiostream', 'subtitle', 'speed']:
+                return self.PlayerSettings(category, parameter)
+            else:
+                return {"error": "Category '"+category+"' not supported."}
+        else:
+            return {"error": "API " + self.api.api_name + " not connected."}
 
     def IncreaseVolume(self, step):
         """
@@ -308,8 +447,6 @@ class APIaddOn():
         else:
             return self.not_connected
 
-    # -------------------------------------------------
-
     def KodiVersion(self):
         """
         Return Kodi Version as string
@@ -325,14 +462,6 @@ class APIaddOn():
         else:
             return self.not_connected
 
-    # -------------------------------------------------
-    # IDEA ... def NavigationCommands
-    # -------------------------------------------------
-    # analouge to the official KODI app ...
-    # up / down - show information - if media is running
-    # left / right - jump step back / jump step forward - if media is running
-    # ...
-
     def ReplaceHTML(self, text):
         """
         replace known html tags
@@ -345,7 +474,8 @@ class APIaddOn():
         result = result.replace("[/I]", "</i>")
         result = result.replace("[/COLOR]", "</font>")
         result = result.replace("[COLOR ", "<font color=\"")
-        if "<font" in result: result = result.replace("]", "\">")
+        if "<font" in result:
+            result = result.replace("]", "\">")
 
         return result
 
@@ -466,7 +596,7 @@ class APIaddOn():
                 if value in command_values["AudioStream"]:
                     result = self.api.Player.SetAudioStream({'playerid': playerid, 'stream': value})
                 else:
-                    return {"error": "SetAudioStream: value not supported"}
+                    return {"error": "Set AudioStream: value not supported"}
 
             elif command == "Speed":
                 current_status = \
@@ -474,6 +604,8 @@ class APIaddOn():
                 self.logging.debug("..... SPEED ... " + str(current_status))
                 if value in command_values["Speed"]:
                     result = self.api.Player.SetSpeed({'playerid': playerid, 'speed': value})
+                elif value == "default":
+                    result = self.api.Player.SetSpeed({'playerid': playerid, 'speed': 1})
                 elif value == "forward":
                     if current_status <= 0:
                         current_status = 0
@@ -491,7 +623,7 @@ class APIaddOn():
                     new_status = command_values["Speed"][new_status]
                     result = self.api.Player.SetSpeed({'playerid': playerid, 'speed': new_status})
                 else:
-                    return {"error": "SetAudioStream: value not supported"}
+                    return {"error": "Set Speed: value not supported"}
 
             elif command == "Subtitle":
                 current_status = self.api.Player.GetProperties(
@@ -504,12 +636,13 @@ class APIaddOn():
                     else:
                         result = self.api.Player.SetSubtitle({'playerid': playerid, 'subtitle': 'on'})
                 else:
-                    return {"error": "SetSubtitle: value not supported"}
+                    return {"error": "Set Subtitle: value not supported"}
 
-            if result["result"] != "OK":
-                return {"error": command + ": '" + str(value) + "' failed (" + str(result["result"]) + ")"}
-            else:
-                return {"result": result}
+            #if result["result"] != "OK":
+            #    return {"error": command + ": '" + str(value) + "' failed (" + str(result["result"]) + ")"}
+            #else:
+            #    return {"result": result}
+            return {"result": result["result"]}
 
         else:
             return self.not_connected
@@ -525,28 +658,19 @@ class APIaddOn():
         5.10.6 Player.GetViewMode    - not implemented yet
         """
         all_media_properties = ["title", "artist", "albumartist", "genre", "year", "rating", "album", "track",
-                                "duration", "comment",
-                                "lyrics", "musicbrainztrackid", "musicbrainzartistid", "musicbrainzalbumid",
-                                "musicbrainzalbumartistid",
-                                "playcount", "fanart", "director", "trailer", "tagline", "plot", "plotoutline",
-                                "originaltitle",
-                                "lastplayed", "writer", "studio", "mpaa", "cast", "country", "imdbnumber", "premiered",
-                                "productioncode",
+                                "duration", "comment", "lyrics", "musicbrainztrackid", "musicbrainzartistid",
+                                "musicbrainzalbumid", "musicbrainzalbumartistid", "playcount", "fanart", "director",
+                                "trailer", "tagline", "plot", "plotoutline", "originaltitle", "lastplayed", "writer",
+                                "studio", "mpaa", "cast", "country", "imdbnumber", "premiered", "productioncode",
                                 "runtime", "set", "showlink", "streamdetails", "top250", "votes", "firstaired",
-                                "season", "episode",
-                                "showtitle", "thumbnail", "file", "resume", "artistid", "albumid", "tvshowid", "setid",
-                                "watchedepisodes",
-                                "disc", "tag", "art", "genreid", "displayartist", "albumartistid", "description",
-                                "theme", "mood", "style",
-                                "albumlabel", "sorttitle", "episodeguide", "uniqueid", "dateadded", "channel",
-                                "channeltype", "hidden",
-                                "locked", "channelnumber", "starttime", "endtime", "specialsortseason",
-                                "specialsortepisode",
+                                "season", "episode", "showtitle", "thumbnail", "file", "resume", "artistid", "albumid",
+                                "tvshowid", "setid", "watchedepisodes", "disc", "tag", "art", "genreid",
+                                "displayartist", "albumartistid", "description", "theme", "mood", "style", "albumlabel",
+                                "sorttitle", "episodeguide", "uniqueid", "dateadded", "channel", "locked",
+                                "channelnumber", "starttime", "endtime", "specialsortseason", "specialsortepisode",
                                 "compilation", "releasetype", "albumreleasetype", "contributors", "displaycomposer",
-                                "displayconductor",
-                                "displayorchestra", "displaylyricist", "userrating", "sortartist",
-                                "musicbrainzreleasegroupid",
-                                "mediapath", "dynpath"
+                                "displayconductor", "displayorchestra", "displaylyricist", "userrating", "sortartist",
+                                "musicbrainzreleasegroupid", "mediapath", "dynpath"
                                 ]
         selected_media_properties = ['title', 'album', 'artist', 'plot', 'mpaa', 'genre', 'episode', 'season',
                                      'showtitle', 'studio', 'duration', 'runtime']
@@ -561,14 +685,18 @@ class APIaddOn():
             metadata = {}
 
             # read all metadata from API (if no tag is given or tag requires to read all metadata)
-            if (self.cache_metadata == {} or (
-                    self.cache_time + self.cache_wait) < time.time()) and tag not in all_media_properties and tag not in selected_system_properties and tag not in selected_player_properties and tag not in selected_plist_properties and tag not in selected_other_properties:
+            if ((self.cache_metadata == {} or (self.cache_time + self.cache_wait) < time.time())
+                    and tag not in all_media_properties
+                    and tag not in selected_system_properties
+                    and tag not in selected_player_properties
+                    and tag not in selected_plist_properties
+                    and tag not in selected_other_properties):
 
                 application = self.api.Application.GetProperties({'properties': selected_system_properties})
 
                 if "error" in application:
                     return application
-                elif not "result" in application:
+                elif "result" not in application:
                     return {"error": "API not available OR unknown error"}
                 else:
                     application = application["result"]
@@ -580,7 +708,7 @@ class APIaddOn():
                 metadata["application"] = application
                 metadata["addons"] = self.AddOns("properties")["result"]
                 metadata["addon-list"] = self.AddOns("list")["result"]
-                metadata["power"] = self.PowerStatus()
+                metadata["power"] = self.PowerStatus()["result"]
                 metadata["version"] = version
 
                 for param in if_playing:
@@ -595,20 +723,17 @@ class APIaddOn():
                     playerid = active["playerid"]
                     playertype = active["playertype"]
 
-                    player = \
-                        self.api.Player.GetProperties({'playerid': playerid, 'properties': selected_player_properties})[
-                            'result']
+                    player = self.api.Player.GetProperties({'playerid': playerid,
+                                                            'properties': selected_player_properties})['result']
 
                     playlistid = player['playlistid']
-                    playlist = self.api.Playlist.GetProperties(
-                        {'playlistid': playlistid, 'properties': selected_plist_properties})['result']
-                    item = \
-                        self.api.Player.GetItem({'playerid': playerid, 'properties': selected_media_properties})[
-                            'result'][
-                            'item']
-                    item2 = \
-                        self.api.Player.GetItem({'playerid': playerid, 'properties': all_media_properties})['result'][
-                            'item']
+                    playlist = self.api.Playlist.GetProperties({'playlistid': playlistid,
+                                                                'properties': selected_plist_properties})['result']
+                    item = self.api.Player.GetItem({'playerid': playerid,
+                                                    'properties': selected_media_properties})['result']['item']
+
+                    #item2 = self.api.Player.GetItem({'playerid': playerid,
+                    #                                 'properties': all_media_properties})['result']['item']
 
                     metadata["player"] = player
                     metadata["player-type"] = playertype
@@ -625,7 +750,8 @@ class APIaddOn():
                         metadata["item-position"] = "N/A"
 
                     if "showtitle" in item:
-                        if len(item['showtitle']) > 0: metadata["info"] = item['showtitle'] + ": "
+                        if len(item['showtitle']) > 0:
+                            metadata["info"] = item['showtitle'] + ": "
 
                     if len(item['title']) > 0:
                         metadata["info"] += item['title']
@@ -649,14 +775,14 @@ class APIaddOn():
 
                 self.cache_metadata = metadata
 
-            # read single matadata field from API (if possible)
+            # read single metadata field from API (if possible)
             elif self.cache_metadata == {} or (self.cache_time + self.cache_wait) < time.time():
 
                 if tag in selected_system_properties:
                     application = self.api.Application.GetProperties({'properties': selected_system_properties})
                     if "error" in application:
                         return application
-                    elif not "result" in application:
+                    elif "result" not in application:
                         return {"error": "API not available OR unknown error"}
                     else:
                         application = application["result"]
@@ -675,8 +801,7 @@ class APIaddOn():
                     elif tag == "addon-list":
                         metadata[tag] = self.AddOns("list")["result"]
                     elif tag == "power":
-                        metadata[tag] = self.PowerStatus()
-
+                        metadata[tag] = self.PowerStatus()["result"]
 
                 elif (tag in selected_player_properties or tag in selected_plist_properties
                       or tag in selected_media_properties):
@@ -718,8 +843,6 @@ class APIaddOn():
             else:
                 metadata = self.cache_metadata
 
-            # ----------------------------------------------------
-
             if tag != "item" and "item" in metadata:
                 if "plot" in metadata["item"]:       metadata["item"]["plot"] = self.ReplaceHTML(
                     metadata["item"]["plot"])
@@ -743,35 +866,4 @@ class APIaddOn():
             return self.not_connected
 
     def AddOns(self, cmd=""):
-        """
-        get information for addons
-        """
-        if self.status == "Connected":
-            data = self.api.Addons.GetAddons()['result']['addons']
-            addons = []
-
-            if cmd == "list" or cmd == "":
-                for item in data:
-                    if item['type'] == 'xbmc.python.pluginsource':
-                        details = self.api.Addons.GetAddonDetails({'addonid': item['addonid'], 'properties': ['name']})
-                        details = details['result']['addon']
-                        result = self.ReplaceHTML(details['name'])
-                        addons.append(result)
-                return {"result": addons}
-
-            elif cmd == "properties":
-                for item in data:
-                    if item['type'] == 'xbmc.python.pluginsource':
-                        details = self.api.Addons.GetAddonDetails(
-                            {'addonid': item['addonid'], 'properties': ['name', 'description', 'enabled', 'installed']})
-                        details = details['result']['addon']
-                        details['addonid'] = item['addonid']
-                        details['name'] = self.ReplaceHTML(details['name'])
-                        addons.append(details)
-                return {"result": addons}
-
-            else:
-                return {"error": "unknown tag (" + tag + ")"}
-
-        else:
-            return self.not_connected
+        return self.get_addons(cmd)

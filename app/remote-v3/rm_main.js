@@ -5,6 +5,7 @@
 var rm3background  = "remote-v3/img/remote2.png";
 var rm3scene_dir   = "/scenes/";
 
+var app_data       = {};
 var reload_active  = false;
 var showImg        = true;
 var startActive    = true;
@@ -16,22 +17,29 @@ var rm3remotes     = undefined;
 var rm3settings    = undefined;
 
 function startRemote() {
-    rm3slider  = new jcSlider( name="rm3slider", container="audio_slider");              // create slider
+    rm3slider  = new jcSlider(name="rm3slider", container="audio_slider");              // create slider
     rm3slider.init(min=0,max=100,label="loading");                                      // set device information
     rm3slider.setPosition(top="45px",bottom=false,left=false,right="10px");             // set position (if not default)
-    rm3slider.setOnChange(apiSetVolume);                                                // -> setVolume (api call to set volume -> this.callOnChange( this.value ))
-    rm3slider.setShowVolume(statusShow_volume);                                         // -> showVolume e.g. in header
+
+    if (apiSetVolume && statusShow_volume) {
+        rm3slider.setOnChange(apiSetVolume);                                            // -> setVolume (api call to set volume -> this.callOnChange( this.value ))
+        rm3slider.setShowVolume(statusShow_volume);                                     // -> showVolume e.g. in header
+        }
+    else {
+        console.error("Could not connect 'apiSetVolume' and 'statusShow_volume'.");
+        }
 
     rm3menu     = new rmMenu(     "rm3menu", ["menuItems","menuItems2"] );
     rm3start    = new rmStart(    "rm3start" );
     rm3remotes  = new rmRemote(   "rm3remotes" );
     rm3settings = new rmSettings( "rm3settings" );
 
+    appMsg.info_message_init(appMsg);
     remoteInit(first_load=true);
     }
 
 //----------------------------------
-// initiale settings and load menus
+// initial settings and load menus
 //----------------------------------
 
 function remoteMainMenu (cookie_erase=true) {
@@ -39,8 +47,11 @@ function remoteMainMenu (cookie_erase=true) {
 	rm3settings.hide();
 	setNavTitle(appTitle);
 	showRemoteInBackground(1);
-	if (cookie_erase) { appCookie.erase('remote'); }
-	
+	if (cookie_erase) {
+	    appCookie.erase('remote');
+	    console.log("Erase cookie: " + appCookie.get('remote'));
+	    }
+
 	setTextById("menuItems","");
 	setTextById("frame1","");
 	setTextById("frame2","");
@@ -48,13 +59,14 @@ function remoteMainMenu (cookie_erase=true) {
 	setTextById("frame4","");
 	setTextById("frame5","");
 
-	remoteFirstLoad_load();	
+	rm3remotes.active_name = "";
+	remoteFirstLoad_load();
 	}
 
 
 function remoteInit (first_load=true) {
 
-	remoteMainMenu (cookie_erase=false);
+	remoteMainMenu(cookie_erase=false);
 	if (first_load) {
 		showRemoteInBackground(1);			// show start screen
 		setTextById("frame4","<center>Loading data ...</center>");
@@ -62,35 +74,31 @@ function remoteInit (first_load=true) {
 		}
 	}
 	
-//----------------------------------
 
 function remoteFirstLoad_load() {appFW.requestAPI("GET",["list"],"",remoteFirstLoad); }
 function remoteFirstLoad(data) {
-	remoteReload(data);			// initial load of data incl. remotes, settings
-	remoteStartMenu(data);			// initial load start menu
-	remoteDropDown(data);			// initial load drop down menu
+    dataAll = data;
+	remoteReload(data);		// initial load of data incl. remotes, settings
+	remoteStartMenu(data);		// initial load start menu
+	remoteDropDown(data);		// initial load drop down menu
 	remoteLastFromCookie();		// get data from cookie
 	}
 
-//----------------------------------
-
-function remoteUpdate(data) {
-        rm3remotes.data = data["DATA"]["devices"]; //["DeviceConfig"];
-        rm3remotes.create();
-        }
-        
-//----------------------------------
 
 function remoteInitData_load() { appFW.requestAPI("GET",["list"],"",remoteInitData); }
 function remoteInitData(data) {
 
-	if (data["DATA"]) {
+	if (data["CONFIG"]) {
+	    dataAll = data;
+
 		// init and reload data 
 		rm3remotes.init(  data );
 		rm3settings.init( data );
 		rm3menu.init(     data );
 		rm3start.init(    data );
-		rm3settings.create();
+
+		if (rm3settings.active)                                          { rm3settings.create(); }
+		else if (rm3remotes.active_name != "" && !rm3remotes.edit_mode)  { rm3remotes.create(); }
 		}
 	else {
 		console.error("remoteInitData: no data loaded!");
@@ -105,13 +113,12 @@ function remoteInitData(data) {
 function remoteReload_load() { appFW.requestAPI("GET",["list"],"",remoteReload); }
 function remoteReload(data) {
 
-	if (!data["DATA"]) {
+	if (!data["CONFIG"]) {
 		console.error("remoteReload: data not loaded.");
 		return;
 		}
 
-	// check if still used in a fct. -> to be removed
-	dataAll = data;
+    app_data = data;
 
     // remoteForceReload_checkIfReady(data); // check if reloaded
 	remoteInitData(data);               // init and reload data
@@ -122,12 +129,13 @@ function remoteReload(data) {
 	statusCheck(data);	
 
 	// reset button info in header
-	setTimeout(function(){setTextById("audio4", "");}, 1000);
+	//setTimeout(function(){setTextById("audio4", "");}, 1000);
 	}
 	
 //--------------------------------
 
 function remoteSetSliderDevice(data) {
+
 	main_audio = data["CONFIG"]["main-audio"];
 	var values = data["CONFIG"]["devices"][main_audio]["commands"]["definition"]["vol"]["values"];
 	var min    = 0;
@@ -142,8 +150,8 @@ function remoteSetSliderDevice(data) {
 		max    = 100;
 		console.error("Min and max values not defined, set to 0..100!");
 		}
-	label      	= data["DATA"]["devices"][main_audio]["settings"]["label"];
-	
+	label      	= data["CONFIG"]["devices"][main_audio]["settings"]["label"];
+
 	rm3slider.init(min,max,label+" ("+main_audio+")");
 	rm3slider.device = main_audio;
 	}
@@ -153,76 +161,58 @@ function remoteSetSliderDevice(data) {
 function remoteDropDown_load() { appFW.requestAPI( "GET", ["list"], "", remoteDropDown ); }
 function remoteDropDown(data) {
 
-	if (!data["DATA"]) {
+	if (!data["CONFIG"]) {
 		console.error("remoteDropDown: data not loaded.");
 		return;
 		}
 
-	// data for links
-	if (deactivateButton)	{ deact_link = lang("MODE_INTELLIGENT"); }
-	else			{ deact_link = lang("MODE_MANUAL"); }
-	
-	// show edit mode is on
-	var edit_on = "";
-	if (rm3remotes.edit_mode) { edit_on = " [ON]"; }
-	
 	// load drop down menu
 	rm3menu.init(        data );	// load data to class
-	rm3menu.add_scenes(  data["DATA"]["scenes"] );
-	rm3menu.add_devices( data["DATA"]["devices"] );	
-	rm3menu.add_script( "rm3settings.onoff();", 				lang("SETTINGS"));
-	rm3menu.add_script( "remoteToggleEditMode();", 			lang("MODE_EDIT") + edit_on );
-	rm3menu.add_script( "rm3settings.button_deact(true);remoteInit();",	deact_link);        
-	//rm3menu.add_script( "remoteForceReload(true);", "Force Reload");
-        }        
+	rm3menu.add_scenes(  data["CONFIG"]["scenes"] );
+	rm3menu.add_devices( data["CONFIG"]["devices"] );
+	rm3menu.add_script( "rm3settings.create('index');", lang("SETTINGS"));
+    }
 
 
 //--------------------------------
 
-function remoteToggleEditMode() {
-	var settings = rm3settings.active;
+function remoteToggleEditMode(settings="") {
 
-	if (settings) {
-		rm3remotes.remoteToggleEditMode();
-		rm3start.remoteToggleEditMode();
-		rm3settings.remoteToggleEditMode();
-		if(!startActive)	{ rm3settings.onoff(); }
-		else			{ remoteStartMenu_load(); }
-		}
-	else if (startActive) {
-		rm3remotes.remoteToggleEditMode();
-		rm3settings.remoteToggleEditMode();
-		rm3start.remoteToggleEditMode();
-		remoteStartMenu_load();
-		}
-	else {
-		rm3start.remoteToggleEditMode();
-		rm3settings.remoteToggleEditMode();
-		rm3remotes.remoteToggleEditMode();
-		}
+    if (settings == "") {
+        if (rm3remotes.edit_mode)   { rm3remotes.edit_mode = false; }
+        else                        { rm3remotes.edit_mode = true; }
+        }
+    else                            { rm3remotes.edit_mode = settings; }
 
-	rm3menu.remoteToggleEditMode();
-	remoteDropDown_load();
+    rm3settings.edit_mode = rm3remotes.edit_mode;
+    rm3start.edit_mode    = rm3remotes.edit_mode;
+    rm3menu.edit_mode     = rm3remotes.edit_mode;
 
+    //remoteStartMenu_load();
+    remoteDropDown_load();
 	}
-
 
 //--------------------------------
 
 function remoteStartMenu_load() { appFW.requestAPI( "GET", ["list"], "", remoteStartMenu ); }
 function remoteStartMenu(data) {
 
-	if (!data["DATA"]) {
+	if (!data["CONFIG"]) {
 		console.error("remoteStartMenu: data not loaded.");
 		return;
 		}
 		
 	startActive = true;
 
+    // no edit mode in start menu
+    elementHidden("frame1");
+    elementHidden("frame2");
+
 	// load buttons on start page
 	rm3start.init(        data);	// load data to class
-	rm3start.add_scenes(  data["DATA"]["scenes"],  "frame3" );
-	rm3start.add_devices( data["DATA"]["devices"], "frame4" );
+	rm3start.set_edit_mode();
+	rm3start.add_scenes(  data["CONFIG"]["scenes"],  "frame3" );
+	rm3start.add_devices( data["CONFIG"]["devices"], "frame4" );
 	
 	// check status and change button color
 	statusCheck(data);
@@ -237,9 +227,9 @@ function remoteLastFromCookie() {
 	var cookie   = appCookie.get("remote");
 
 	// if cookie ...
-	if (cookie) {
+	if (cookie && cookie != "") {
 		var remote = cookie.split("::");
-		console.log("Load Cookie:");
+		console.log("Load Cookie: " + cookie);
 		console.log(remote);
 
 		// start remote if cookie is set (reopen with last remote control)

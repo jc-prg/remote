@@ -1,0 +1,70 @@
+#!/usr/bin/bash
+
+source .env
+
+LOGFILE=$REMOTE_LOG_FILENAME
+LOGFILE_LINES=60
+PARAM=$1
+
+BLACK='\x1b[90m'
+RED='\x1b[91m'
+GREEN='\x1b[92m'
+YELLOW='\x1b[93m'
+BLUE='\x1b[94m'
+MAGENTA='\x1b[95m'
+CYAN='\x1b[96m'
+WHITE='\x1b[97m'
+NC='\x1b[0m' # No Color
+
+TEXT_GREEN='\(INFO\|TRUE\)'
+TEXT_YELLOW='\(WARNING\)'
+TEXT_RED='\(ERROR\|CRITICAL\|FAILED\|FALSE\|EXCEPTION\:\)'
+TEXT_MAGENTA='\(---\|-->\|\.\.\.\.\|CHECK ACTIVITY\|CHECK CONNECTION\|1st CONNECT OF INTERFACES\|jc\:\/\/remote\/\)'
+TEXT_CYAN='\(\_\_BUTTON\|\_\_SEND-DATA\|\_\_SEND API\|\_\_SEND\|\_\_QUERY\|\_\_RECORD\|-> CONNECTION\ OK\:\|-> ACTIVITY\:\|-> NO\ CONNECTION\:\|-> INACTIVE\:\|\_\_EXEC\ TIME\:\|\_\_EXECUTE TIMER\:\)'
+TEXT_DEBUG='\(DEBUG\)'
+
+
+# watch -n 1 "tail -n 20 logfile.txt | grep --color=always -E 'ERROR|WARNING' | sed 's/ERROR/\o033[1;31m&\o033[0m/g' | sed 's/WARNING/\o033[1;33m&\o033[0m/g'"
+
+# Function to monitor logfile
+monitor_logfile() {
+    DATE=`date`
+    INFO="WATCH jc://birdhouse/logfile/ ... end with <Strg+C>"
+    term_width=$(tput cols)
+    text_length=${#INFO}
+    date_length=${#DATE}
+    spaces_to_add=$((term_width - text_length - date_length - 2))
+    spaces=$(printf '%*s' "$spaces_to_add")
+
+    echo "$INFO $spaces $DATE"
+    echo
+    tail -n $LOGFILE_LINES $LOGFILE | sed -e "s/$TEXT_GREEN/$GREEN&$NC/g" -e "s/$TEXT_YELLOW/$YELLOW&$NC/g" -e "s/$TEXT_MAGENTA/$MAGENTA&$NC/g" -e "s/$TEXT_RED/$RED&$NC/g" -e "s/$TEXT_DEBUG/$BLUE&$CYAN/g" -e "s/\(\)/$NC&/" -e "s/$TEXT_CYAN/$CYAN&$NC/g"
+    #tail -n 60 $LOGFILE | sed -e "s/$TEXT_GREEN/$GREEN&$NC/g" -e "s/$TEXT_YELLOW/$YELLOW&$NC/g" -e "s/$TEXT_RED/$RED&$NC/g" -e "s/\(OK\)/$GREEN&$NC/g" -e "s/\(DEBUG\)/$BLUE&$CYAN/g" -e "s/\(\)/$NC&/"
+}
+
+# Function to continuously watch updates
+loop_logfile() {
+  while true; do
+    clear  # Clear the screen before each update
+    monitor_logfile  # Call the function to monitor the logfile
+    sleep 1  # Adjust the refresh interval as needed
+  done
+}
+
+# function to show complete logfile
+end_watch() {
+    clear
+    cat $LOGFILE | sed -e "s/$TEXT_GREEN/$GREEN&$NC/g" -e "s/$TEXT_YELLOW/$YELLOW&$NC/g" -e "s/$TEXT_MAGENTA/$MAGENTA&$NC/g" -e "s/$TEXT_RED/$RED&$NC/g" -e "s/$TEXT_DEBUG/$BLUE&$CYAN/g" -e "s/\(\)/$NC&/" -e "s/$TEXT_CYAN/$CYAN&$NC/g"
+    echo
+    exit 0
+}
+trap end_watch SIGINT
+
+if [ ! $PARAM ]; then
+  loop_logfile
+
+else
+  watch "head -n 2 $LOGFILE | tail -n 120 $LOGFILE | grep $PARAM"
+  cat $LOGFILE | grep $PARAM
+
+fi

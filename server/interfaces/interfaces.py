@@ -1,39 +1,34 @@
-import logging, time, threading, datetime
+import time
+import sys
+import datetime
 
 import modules.rm3json as rm3json
-import modules.rm3config as rm3config
+import modules.rm3presets as rm3presets
 import modules.rm3ping as rm3ping
-import modules.rm3stage as rm3stage
+from modules.rm3classes import RemoteThreadingClass
 
 
-class Connect(threading.Thread):
+class Connect(RemoteThreadingClass):
     """
     class to control all interfaces including a continuous check if interfaces still available
     """
 
-    def __init__(self, configFiles):
+    def __init__(self, config):
         """
-        Initialize Interfaces
+        Constructor to initialize interfaces
+
+        Args:
+            config (modules.pm3cache.ConfigCache): config handler
         """
-        threading.Thread.__init__(self)
+        RemoteThreadingClass.__init__(self, "api", "API Device Controller")
+
+        self.config = config
 
         self.api = {}
+        self.api_first_load = True
         self.api_device_list = {}
         self.api_device_settings = {}
-        self.available = {}
-        self.name = "deviceInterfaces"
-        self.stopProcess = False
-        self.wait = 15  # seconds to check connection
-        self.checking_interval = rm3config.refresh_device_connection
-        self.checking_last = 0
-        self.configFiles = configFiles
-        self.check_error = time.time()
-        self.last_message = ""
-        self.methods = {
-            "send": "Send command via API (send)",
-            "record": "Record per device (record)",
-            "query": "Request per API (query)"
-        }
+        self.api_request_reconnect = {}
         self.api_modules = {
             "KODI": "api_kodi",
             "SONY": "api_sony",
@@ -41,88 +36,65 @@ class Connect(threading.Thread):
             "MAGIC-HOME": "api_magichome",
             "TAPO-P100": "api_p100",
             "BROADLINK": "api_broadlink",
-            "EISCP-ONKYO": "api_eiscp"
+            "EISCP-ONKYO": "api_eiscp",
+            "ZIGBEE2MQTT": "api_zigbee"
         }
+        self.api_configuration = {
+            "API-Description": "",
+            "API-Info": "",
+            "API-Source": "",
+            "API-Devices": {}
+            }
+        self.methods = {
+            "send": "Send command via API (send)",
+            "record": "Record per device (record)",
+            "query": "Request per API (query)"
+        }
+        self.available = {}
 
-        self.logging = logging.getLogger("api")
-        self.logging.setLevel = rm3stage.log_set2level
+        self.checking_interval = rm3presets.refresh_device_connection
+        self.checking_last = 0
+        self.check_error = time.time()
+        self.last_message = ""
 
-        if rm3stage.log_apidata == "NO":
+        if rm3presets.log_api_data == "NO":
             self.log_commands = False
         else:
             self.log_commands = True
+
+        self.thread_priority(2)
 
     def run(self):
         """
         Initialize APIs and loop to check connection status
         """
-
         self.logging.info("Starting " + self.name)
 
-        try:
-            active_devices = self.configFiles.read_status()
-        except Exception as e:
-            self.logging.error("Error while requesting information from " + rm3config.active_devices + ".json: " + str(e))
-            return
-
-        self.logging.info(".................... 1st CONNECT OF INTERFACES ....................")
-        for device in active_devices:
-            self.logging.debug("Load API for device " + device + " ...")
-            api = active_devices[device]["config"]["interface_api"]
-            dev = active_devices[device]["config"]["interface_dev"]
-
-            if api + "_" + dev not in self.api_device_list:
-                self.api_device_list[api+"_"+dev] = []
-                self.api_device_settings[api+"_"+dev] = {}
-
-            self.api_device_list[api+"_"+dev].append(device)
-            self.api_device_settings[api + "_" + dev][device] = active_devices[device]
-
-            dev_config = {}
-            if rm3json.if_exist(rm3config.commands + api + "/00_interface"):
-                api_config = self.configFiles.read(rm3config.commands + api + "/00_interface")
-                if "Devices" in api_config and dev in api_config["Devices"]:
-                    dev_config = api_config["Devices"][dev]
-                elif "Devices" in api_config and "default" in api_config["Devices"]:
-                    dev_config = api_config["Devices"]["default"]
-                else:
-                    self.logging.warning(
-                        "Error in config-file - device not defined / no default device: " + rm3config.commands + api + "/00_interface.json")
-
-            if dev_config != {}:
-                api_dev = api + "_" + dev
-
-                if api in self.api_modules and api_dev not in self.api:
-                    cmd_import = "import interfaces." + self.api_modules[api]
-                    cmd_connect = "interfaces." + self.api_modules[
-                        api] + ".ApiControl(api,dev,dev_config,self.log_commands)"
-                    try:
-                        exec(compile(cmd_import, "string", "exec"))
-                        self.api[api_dev] = eval(cmd_connect)
-                    except ModuleNotFoundError:
-                        self.logging.error("Could not connect API: Module '" + self.api_modules[
-                            api] + ".py' not found (" + api_dev + ")")
-                    except Exception as e:
-                        self.logging.error("Could not connect API: " + str(e) + " (" + api_dev + ")")
-                    except:
-                        self.logging.error("Could not connect API: Unknown reason (" + api_dev + ")")
-
-            else:
-                self.logging.error(
-                    "Could not connect to " + api + " - Error in config file (" + rm3config.commands + api + "/00_interface.json)")
-
-        for key in self.api:
-            dev_key = key.split("_")[1]
-            self.available[key] = self.api[key].api_description + " [" + dev_key + "]"
-
+        api_load = self.load_api_connectors()
         time.sleep(5)
-        while not self.stopProcess:
+        self.config.interfaces_identify()
+
+        if not api_load:
+            self.logging.error("First load of API connectors didn't work. Try again ...")
+            if not self.load_api_connectors():
+                self.logging.critical("Could not load any API Connector! " +
+                                      "Check your basic API and DEVICE configuration.")
+                sys.exit()
+            else:
+                self.logging.info("Loading API connectors OK.")
+
+        while self._running:
             if self.checking_last + self.checking_interval < time.time():
                 self.checking_last = time.time()
                 self.check_connection()
                 self.check_activity()
-            else:
-                time.sleep(1)
+
+            self.thread_wait()
+
+            if self.api_request_reconnect != {}:
+                for key in self.api_request_reconnect:
+                    self.api_reconnect(key)
+                self.api_request_reconnect = {}
 
         self.logging.info("Exiting " + self.name)
 
@@ -130,58 +102,273 @@ class Connect(threading.Thread):
         """
         check IP connection and try reconnect if IP connection exists and status is not "Connected"
         """
-        self.logging.info("..................... CHECK CONNECTION (" + str(self.checking_interval) +
-                          "s) .....................")
+        self.logging.debug(".................... CHECK CONNECTION (" + str(self.checking_interval) +
+                           "s) ....................")
+        self.logging.debug("Check Interface configuration: " + str(self.config.interface_configuration))
+
+        connected = []
+        not_connected = []
+        start_time = time.time()
+        device_status = self.config.read(rm3presets.active_devices)
 
         # check API status
         for key in self.api:
-            if "IPAddress" in self.api[key].api_config:
+            [api, dev] = key.split("_")
+            if api in self.config.interface_configuration and "active" in self.config.interface_configuration[api]:
+                api_active = self.config.interface_configuration[api]["active"]
+            else:
+                self.logging.warning("API not yet in config file: " + api)
+                api_active = True
+
+            api_device_power = True
+            if "PowerDevice" in self.config.interface_configuration[api]["devices"][dev]:
+                power_device = self.config.interface_configuration[api]["devices"][dev]["PowerDevice"]
+                if "_" in power_device:
+                    [power_api, power_dev] = power_device.split("_")
+                    check_devices = {}
+                    check_devices_last_key = ""
+                    for device in device_status:
+                        if (device_status[device]["config"]["api_key"] == power_api
+                                and device_status[device]["config"]["api_device"] == power_dev
+                                and "power" in device_status[device]["status"]):
+                            check_devices_last_key = power_api+"_"+power_dev+"_"+device
+                            check_devices[check_devices_last_key] = device_status[device]["status"]["power"]
+                    if len(check_devices) == 1:
+                        if "OFF" in check_devices[check_devices_last_key].upper():
+                            api_device_power = False
+
+            if not api_active:
+                self.logging.debug("API '" + key + "' is disabled.")
+                self.api[key].status = "DISABLED (" + api + ")"
+
+            elif (dev in self.config.interface_configuration[api]["devices_active"] and
+                  not self.config.interface_configuration[api]["devices_active"][dev]):
+                self.logging.debug("API-Interface '" + key + "' is disabled.")
+                self.api[key].status = "DISABLED (" + key + ")"
+
+            elif "ERROR" in self.api[key].api_device_available(key):
+                self.logging.debug("API Device for '" + key + "' not found at the server.")
+                self.api[key].status = self.api[key].api_device_available(key)
+
+            elif not api_device_power:
+                self.logging.debug("API-Interface '" + key + "' is switched off.")
+                self.api[key].status = "OFF (PowerDevice)"
+
+            elif "IPAddress" in self.api[key].api_config:
                 connect = rm3ping.ping(self.api[key].api_config["IPAddress"])
-                self.logging.info(" * " + key + " : " + str(self.api_device_list[key]))
-                self.logging.info("   -> IP: " + self.api[key].api_config["IPAddress"] + " / connect = " +
-                                  str(connect).upper())
+                if key in self.api_device_list:
+                    self.logging.debug(" * " + key + ": " + str(self.api_device_list[key]))
+                else:
+                    self.logging.debug(" * " + key + ": no devices connected yet.")
+                self.logging.debug("   -> IP: " + self.api[key].api_config["IPAddress"] + " / connect = " +
+                                   str(connect).upper())
+                if dev in self.config.interface_configuration[api]["devices_active"]:
+                    self.logging.debug("   -> API Active: " + str(self.config.interface_configuration[api]["active"]) +
+                                       "  / API-Device Active: " +
+                                       str(self.config.interface_configuration[api]["devices_active"][dev]))
 
                 if not connect:
                     connect = rm3ping.ping(self.api[key].api_config["IPAddress"])
                     if not connect:
-                        self.api[key].status = self.api[key].not_connected + " ... PING"
-                        self.logging.info("   -> " + self.api[key].status)
+                        self.api[key].status = (self.api[key].not_connected + " ... PING " +
+                                                self.api[key].api_config["IPAddress"])
+                        self.logging.debug("   -> " + self.api[key].status)
 
                 if connect:
-                    self.api_reconnect(key)
+                    if self.api[key].status != "Connected":
+                        self.api[key].connect()
+                    #self.api_reconnect(key)
+
+                if not connect or self.api[key].status != "Connected":
+                    not_connected.append(key.replace("_default", ""))
+                else:
+                    connected.append(key.replace("_default", ""))
+
+        self.logging.info("Checked device connections (duration=" + str(round(time.time() - start_time, 1)) +
+                          "s / interval=" + str(self.checking_interval) + "s) ...")
+        if len(connected) > 0:
+            self.logging.info("-> CONNECTION OK: " + ", ".join(connected))
+        if len(not_connected) > 0:
+            self.logging.info("-> NO CONNECTION: " + ", ".join(not_connected))
 
     def check_activity(self):
         """
         check when the last command was send and if an auto-off has to be reflected in the system status
         """
-        self.logging.info("..................... CHECK ACTIVITY (" + str(self.checking_interval) +
-                          "s) .....................")
+        self.logging.debug(".................... CHECK ACTIVITY (" + str(self.checking_interval) +
+                           "s) ....................")
+
+        active = []
+        inactive = []
+        auto_off = []
 
         for key in self.api:
+            if key not in self.api_device_list:
+                self.logging.warning("Device Activity: Could not find list of devices for '" + key + "'; " +
+                                     "Assumption: no devices connected yet.")
+                continue
+
             device_list = self.api_device_list[key]
-            self.logging.info(" * " + key + " : " + str(device_list))
+            self.logging.debug(" * " + key + " : " + str(device_list))
             if self.api[key].last_action > 0:
-                self.logging.info("   -> " + str(round((time.time() - self.api[key].last_action)*10)/10) +
-                                  "s  (" + self.api[key].last_action_cmd + ")")
+                self.logging.debug("   -> " + str(round((time.time() - self.api[key].last_action)*10)/10) +
+                                   "s  (" + self.api[key].last_action_cmd + ")")
+                active.append(key.replace("_default", "") +
+                              " (" + str(round((time.time() - self.api[key].last_action)*10)/10) + "s)")
             else:
-                self.logging.info("   -> INACTIVE since server start")
+                self.logging.debug("   -> INACTIVE since server start")
+                inactive.append(key.replace("_default", ""))
 
             for device in device_list:
                 auto_power_off = self.device_auto_power_off(device)
                 if auto_power_off != -1:
-                    self.logging.info("   -> " + device + " - auto-off: " + str(auto_power_off))
+                    self.logging.debug("   -> " + device + " - auto-off: " + str(auto_power_off))
                     if auto_power_off["switch_off"]:
                         self.device_save_status(device, button="power", status="OFF")
 
-    def api_reconnect(self, interface=""):
+        self.logging.info("Checked device activity (interval=" + str(self.checking_interval) + "s) ...")
+        if len(active) > 0:
+            self.logging.info("-> ACTIVITY: " + ", ".join(active))
+        if len(inactive) > 0:
+            self.logging.info("-> INACTIVE: " + ", ".join(inactive))
+
+    def load_api_connectors(self):
+        """
+        load API connectors
+        """
+        config_dev = self.config.read(rm3presets.active_devices)
+        config_api = self.config.read(rm3presets.active_apis)
+
+        if self.api_first_load:
+            self.logging.info(".................... 1st CONNECT OF INTERFACES ....................")
+            self.api_first_load = False
+        else:
+            self.logging.info(".................... RECONNECT OF INTERFACES ....................")
+
+        api_devices = []
+        for device in config_dev:
+            api = config_dev[device]["config"]["api_key"]
+            dev = config_dev[device]["config"]["api_device"]
+            api_dev = api + "_" + dev
+            if api_dev not in api_devices:
+                api_devices.append(api_dev)
+            if api_dev not in self.api_device_list:
+                self.api_device_list[api_dev] = []
+            self.api_device_list[api_dev].append(device)
+
+        self.logging.debug("---> api_device_list: " + str(self.api_device_list))
+
+        if config_api != {}:
+            for api in config_api:
+                if api not in self.api_modules:
+                    self.logging.error("API Connector for '" + api + "' not available.")
+                    continue
+                for api_device in config_api[api]["devices"]:
+                    api_dev = api + "_" + api_device
+                    api_device_config = config_api[api]["devices"][api_device]
+                    self.logging.debug("Loading API connector for '" + api_dev + "' ...")
+
+                    cmd_import = "import interfaces." + self.api_modules[api]
+                    cmd_connect = ("interfaces." + self.api_modules[api] +
+                                   ".ApiControl(api, api_device, api_device_config, self.log_commands, self.config)")
+
+                    try:
+                        exec(compile(cmd_import, "string", "exec"))
+                        self.api[api_dev] = eval(cmd_connect)
+                        self.logging.debug("- OK")
+
+                        if api in config_api:
+                            self.available[api_dev] = api_dev + " (" + config_api[api]["description"] + ")"
+                    except ModuleNotFoundError:
+                        self.logging.error("Could not connect API: Module '" +
+                                           self.api_modules[api] + ".py' not found (" + api_dev + ")")
+                        self.logging.error("... if exist, check if all required modules are installed, " +
+                                           "that are to be imported in this module.")
+                    except Exception as e:
+                        self.logging.error("Could not connect API: " + str(e) + " (" + api_dev + ")")
+                    except:
+                        self.logging.error("Could not connect API: Unknown reason (" + api_dev + ")")
+            return True
+
+        elif config_dev != {}:
+            for api_dev in api_devices:
+                api, api_device = api_dev.split("_")
+                api_device_config = {}
+
+                if rm3json.if_exist(rm3presets.commands + api + "/00_interface"):
+                    api_config = self.config.read(rm3presets.commands + api + "/00_interface")
+                    if "API-Devices" in api_config and api_device in api_config["API-Devices"]:
+                        api_device_config = api_config["API-Devices"][api_device]
+                    elif "API-Devices" in api_config and "default" in api_config["API-Devices"]:
+                        api_device_config = api_config["API-Devices"]["default"]
+                    else:
+                        self.logging.warning("Error in config-file - device not defined / no default device: " +
+                                             rm3presets.commands + api + "/00_interface.json")
+                else:
+                    self.logging.error("Error: no configuration file '00_interface.json' available for API '" +
+                                       api_dev + "'.")
+
+                if api_device_config != {}:
+                    self.logging.debug("Loading API for device " + api_dev + " ...")
+
+                    cmd_import = "import interfaces." + self.api_modules[api]
+                    cmd_connect = ("interfaces." + self.api_modules[api] +
+                                   ".ApiControl(api, api_device, api_device_config, self.log_commands, self.config)")
+
+                    try:
+                        exec(compile(cmd_import, "string", "exec"))
+                        self.api[api_dev] = eval(cmd_connect)
+                        self.logging.debug("- OK")
+                        if api in config_api:
+                            self.available[api_dev] = api_device + " (" + config_api[api]["description"] + ")"
+                    except ModuleNotFoundError:
+                        self.logging.error("Could not connect API: Module '" +
+                                           self.api_modules[api] + ".py' not found (" + api_dev + ")")
+                        self.logging.error("... if exist, check if all required modules are installed, " +
+                                           "that are to be imported in this module.")
+                    except Exception as e:
+                        self.logging.error("Could not connect API: " + str(e) + " (" + api_dev + ")")
+                    except:
+                        self.logging.error("Could not connect API: Unknown reason (" + api_dev + ")")
+
+            return True
+        else:
+            return False
+
+    def api_reconnect(self, interface="", reread_config=False):
         """
         reconnect single device or all devices if status is not "Connected"
+
+        Args:
+            interface (str): interface id (<api>_<api_device>)
+            reread_config (bool): reread configuration data
         """
+        config = {}
+        if reread_config or interface == "all":
+            config = self.config.interfaces_identify()
+            if interface != "all":
+                api, api_device = interface.split("_")
+                self.api[interface].config_set(config[api]["devices"][api_device])
+
+        ip_address = ""
+        if "_" in interface:
+            api, api_device = interface.split("_")
+            ip_address = self.config.interface_configuration[api]["devices"][api_device]["IPAddress"]
+
+        self.logging.debug("API (re)connect '" + str(interface) + "' (reread_config=" + str(reread_config) +
+                           ";IPAddress=" + ip_address + ") ...")
 
         if interface == "":
             for key in self.api:
                 if self.api[key].status != "Connected":
                     self.api[key].connect()
+
+        elif interface == "all":
+            for api_dev in self.api:
+                api, api_device = api_dev.split("_")
+                self.api[api_dev].config_set(config[api]["devices"][api_device])
+                self.api[api_dev].connect()
+
         else:
             self.api[interface].connect()
 
@@ -199,6 +386,11 @@ class Connect(threading.Thread):
     def api_method(self, device=""):
         """
         return method of interface
+
+        Args:
+            device (str): device id
+        Returns:
+            str|dict: interface status or error message
         """
 
         api_dev = self.device_api_string(device)
@@ -210,6 +402,12 @@ class Connect(threading.Thread):
     def api_get_status(self, interface="", device=""):
         """
         return status of all devices or a selected device
+
+        Args:
+            interface (str): interface id
+            device (str): device id
+        Returns:
+            str|dict: interface status or error message
         """
 
         status_all_interfaces = {}
@@ -221,7 +419,10 @@ class Connect(threading.Thread):
             status_all_interfaces[key] = self.api[key].status
 
         if interface == "":
-            return status_all_interfaces
+            interface_config = {"connect": status_all_interfaces, "active": {}}
+            for key in self.config.interface_configuration:
+                interface_config["active"][key] = self.config.interface_configuration[key]["active"]
+            return interface_config
         elif api_dev in self.api:
             return self.api[api_dev].status
         else:
@@ -268,7 +469,8 @@ class Connect(threading.Thread):
         else:
             self.api[api_dev].count_success += 1
 
-        self.logging.debug("ERROR RATE ... error:" + str(is_error))
+        if self.api[api_dev].count_error > 0:
+            self.logging.debug("ERROR RATE ... error: " + str(is_error) +  " / " + str(self.api[api_dev].count_error))
 
     def api_send_directly(self, device, command):
         """
@@ -276,19 +478,32 @@ class Connect(threading.Thread):
         """
         answer = "N/A"
         power = "N/A"
-        api_dev = self.device_api_string(device)
-        method = self.api_method(device)
-        self.logging.info("__SEND DIRECTLY: " + api_dev + "/" + device + " | " + command)
 
-        if self.api[api_dev].status == "Connected":
-            answer = self.api[api_dev].query(device, command)
-            power = self.device_status(device)["status"]["power"]
+        if device in self.api:
+            command_string = self.command_api_get(device, command)
+            self.logging.info("__SEND API: " + device + " | " + command + " (" + command_string + ")")
+            answer = self.api[device].send_api(command_string)
+            return_msg = {
+                "connect": self.api[device].status,
+                "command": command_string,
+                "answer": answer
+                }
+        else:
+            api_dev = self.device_api_string(device)
+            device_id = self.device_id_get(device)
+            method = self.api_method(device)
+            self.logging.info("__SEND DIRECTLY: " + api_dev + "/" + device + " | " + command)
 
-        return_msg = {
-            "connect": self.api[api_dev].status,
-            "power": power,
-            "answer": answer
-            }
+            if self.api[api_dev].status == "Connected":
+                answer = self.api[api_dev].query(device, device_id, command)
+                power = self.device_status(device)["status"]["power"]
+
+            return_msg = {
+                "connect": self.api[api_dev].status,
+                "command": command,
+                "power": power,
+                "answer": answer
+                }
 
         return return_msg
 
@@ -297,7 +512,14 @@ class Connect(threading.Thread):
         send command if connected
         """
         api_dev = self.device_api_string(device)
+
+        if api_dev not in self.api:
+            self.logging.warning("Could not send command, API not (yet) loaded: " + api_dev)
+            return
+
+        device_id = self.device_id_get(device)
         method = self.api_method(device)
+        return_msg = ""
         self.api_errors(device)
         self.logging.info("__SEND: " + api_dev + " / " + device + "_" + button + ":" + str(value) +
                           " (" + self.api[api_dev].status + ")")
@@ -307,9 +529,10 @@ class Connect(threading.Thread):
             self.device_save_status(device, button=button, status=value)
 
         elif self.api[api_dev].status == "Connected":
+
             if button.startswith("send-"):
 
-                button = button.split("-")[1]
+                button = button.replace("send-", "")
                 if method == "query" and value != "":
                     try:
                         button_code = self.command_get(call_api, "send-data", device, button)
@@ -324,10 +547,9 @@ class Connect(threading.Thread):
                     self.logging.error(button_code)
 
                 if self.log_commands:
-                    self.logging.info("...... SEND-DATA " + api_dev + " / " + button +
+                    self.logging.info("__SEND-DATA " + api_dev + " / " + button +
                                       " ('" + str(value) + "'/" + method + ")")
-                if self.log_commands:
-                    self.logging.info("...... " + str(button_code))
+                    self.logging.debug("            " + str(button_code))
 
             else:
                 if method == "record":
@@ -338,14 +560,13 @@ class Connect(threading.Thread):
                     button_code = self.command_create(call_api, device, button, value)
 
                 if self.log_commands:
-                    self.logging.info("...... SEND " + api_dev + " / " + button +
+                    self.logging.info("__SEND " + api_dev + " / " + button +
                                       " ('" + str(value) + "'/" + method + ")")
-                if self.log_commands:
-                    self.logging.info("...... " + str(button_code))
+                    self.logging.debug("       " + str(button_code))
 
             # send if not error
             if api_dev in self.api and "ERROR" not in button_code:
-                return_msg = self.api[api_dev].send(device, button_code)
+                return_msg = self.api[api_dev].send(device, device_id, button_code)
             elif "ERROR" in button_code:
                 return_msg = "ERROR: could not read/create command from button code (send/" + \
                              device + "/" + button + "); " + button_code
@@ -389,18 +610,19 @@ class Connect(threading.Thread):
 
         return_msg = ""
         api_dev = self.device_api_string(device)
+        device_id = self.device_id_get(device)
         self.api_errors(call_api, device)
 
-        self.logging.debug("__RECORD: " + api_dev + " (" + self.api[api_dev].status + ")")
+        self.logging.debug("__RECORD " + api_dev + " (" + self.api[api_dev].status + ")")
 
         if self.api[api_dev].status == "Connected":
             if api_dev in self.api:
-                return_msg = self.api[api_dev].record(device, button)
+                return_msg = self.api[api_dev].record(device, button, device_id)
             else:
                 return_msg = "ERROR: API not available (" + api_dev + ")"
 
             if self.log_commands:
-                self.logging.info("...... " + str(return_msg))
+                self.logging.debug("...... " + str(return_msg))
 
         else:
             return_msg = self.api[api_dev].status
@@ -419,13 +641,13 @@ class Connect(threading.Thread):
         """
         query an information from device via API
         """
-
         return_msg = ""
         button_code = ""
         api_dev = self.device_api_string(device)
+        device_id = self.device_id_get(device)
         # self.check_errors(call_api, device)  #### -> leads to an error for some APIs
 
-        self.logging.debug("__QUERY: " + api_dev + " (" + device +"," + button +";" + self.api[api_dev].status + ")")
+        self.logging.debug("__QUERY " + api_dev + " (" + device + "," + button + ";" + self.api[api_dev].status + ")")
 
         if api_dev in self.api and self.api[api_dev].status == "Connected":
 
@@ -439,12 +661,13 @@ class Connect(threading.Thread):
                 return_msg = "ERROR: could not read/create command from button code (query/" + device + "/" + button + \
                              "); " + button_code
             elif api_dev in self.api:
-                return_msg = self.api[api_dev].query(device, button_code)
+                return_msg = self.api[api_dev].query(device, device_id, button_code)
             else:
                 return_msg = "ERROR: API not available (" + str(api_dev) + ")"
 
             if self.log_commands:
-                self.logging.info("...... " + str(return_msg))
+                self.logging.debug("__QUERY " + api_dev + " / " + button + " ('" + button_code + ")")
+                self.logging.debug("        " + str(return_msg))
 
         else:
             return_msg = self.api[api_dev].status
@@ -471,7 +694,7 @@ class Connect(threading.Thread):
         """
         save status of button to active.json
         """
-        active = self.configFiles.read_status()
+        active = self.config.read_status()
 
         if button == "on" or button == "off" or button == "on-off":
             param = "power"
@@ -487,26 +710,19 @@ class Connect(threading.Thread):
             active[device]["status"]["api-last-send"] = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')
             active[device]["status"]["api-last-send-tc"] = int(time.time())
 
-            #power_auto_off = self.device_auto_power_off(device)
-            #if power_auto_off != 1:
-            #    active[device]["status"]["auto-power-off"] = power_auto_off["auto_off"]
-
-            return_msg = "OK"
+            return self.config.device_set_values(device, "status", active[device]["status"])
 
         else:
-            return_msg = "ERROR record_status: device not found"
-
-        self.configFiles.write_status(active, "save_status " + device + "/" + button)
-        return return_msg
+            return "ERROR record_status: device not found"
 
     def device_api_string(self, device):
         """
         return short api_dev
         """
         try:
-            active_devices = self.configFiles.read_status()
-            api = active_devices[device]["config"]["interface_api"]
-            dev = active_devices[device]["config"]["interface_dev"]
+            active_devices = self.config.read_status()
+            api = active_devices[device]["config"]["api_key"]
+            dev = active_devices[device]["config"]["api_device"]
             return api + "_" + dev
 
         except:
@@ -516,22 +732,27 @@ class Connect(threading.Thread):
         """
         get status for a specific device
         """
-        active_devices = self.configFiles.read_status()
+        active_devices = self.config.read_status()
         if device in active_devices:
             return active_devices[device]
         else:
             return {"ERROR":  device}
 
-    def device_configuration(self, device) -> dict:
+    def device_configuration(self, device):
         """
         return configuration file of a device
+
+        Args:
+            device (str): device id
+        Returns:
+            dict: return message
         """
-        active = self.configFiles.read_status()
+        active = self.config.read_status()
         if device in active:
             device_code = active[device]["config"]["device"]
-            device_api = active[device]["config"]["interface_api"]
-            device_config = self.configFiles.read(rm3config.commands + device_api + "/" + device_code)
-            return device_config
+            device_api = active[device]["config"]["api_key"]
+            device_config = self.config.read(rm3presets.commands + device_api + "/" + device_code)
+            return device_config.copy()
         else:
             return {"ERROR": "Device configuration doesn't exist."}
 
@@ -572,13 +793,57 @@ class Connect(threading.Thread):
             self.logging.warning("Configuration file for device '" + device + "' isn't correct.")
             return -1
 
+    def device_id_get(self, device):
+        """
+        identify unique device ID if define in device configuration
+
+        Args:
+            device (str): internal device ID
+        Returns:
+            str: external device ID, if defined; otherwise absolute internal ID <API>_<API-Device>_<device>
+        """
+        active = self.config.read_status()
+        if device in active and "device_id" in active[device]["config"]:
+            d_id = active[device]["config"]["device_id"]
+        else:
+            d_id = active[device]["config"]["api_key"]+"_" + active[device]["config"]["api_device"]+"_"+device
+        return d_id
+
+    def devices_available(self, interface):
+        """
+        get all available devices of this interface, if supported
+
+        Args:
+            interface (str): interface id
+        Returns:
+            dict: available devices with following parameters: id, name, supported, disabled, description
+        """
+        if interface in self.api:
+            result = self.api[interface].devices_available()
+            return result
+        else:
+            self.logging.warning("devices_available() ... API for '" + interface + "' not loaded.")
+            return {}
+
+    def device_listen(self, interface, active):
+        """
+        activate / disable listen mode new ZigBee devices
+
+        Args:
+            interface (str): interface id
+            active (bool): True to activate, False to disable
+        """
+        if interface in self.api:
+            return self.api[interface].devices_listen(active)
+        else:
+            self.logging.warning("devices_listen() ... API for '" + interface + "' not loaded.")
+            return {}
+
     def command_get(self, dev_api, button_query, device, button):
         """
         translate device and button to command for the specific device
         """
-        buttons_default = {"data": {}}
-        value_list = ["buttons", "queries", "commands", "values", "send-data"]
-        active = self.configFiles.read_status()
+        active = self.config.read_status()
         api = dev_api.split("_")[0]
 
         if button_query == "queries":
@@ -590,15 +855,27 @@ class Connect(threading.Thread):
 
         if device in active:
             device_code = active[device]["config"]["device"]
+            if "device_id" in active[device]["config"]:
+                device_id = active[device]["config"]["device_id"]
+            else:
+                device_id = "N/A"
+            device_file = rm3presets.commands + api + "/" + device_code
             buttons_device = self.device_configuration(device)
-
-            if self.log_commands:
-                self.logging.info("...... button-file: " + api + "/" + device_code + ".json")
-
-            if rm3json.if_exist(rm3config.commands + api + "/00_default"):
-                buttons_default = self.configFiles.read(rm3config.commands + api + "/00_default")
+            if rm3json.if_exist(device_file):
                 if self.log_commands:
-                    self.logging.info("...... button-default-file: " + api + "/00_default.json")
+                    self.logging.debug("...... button-file: " + device_file + ".json")
+                    self.logging.debug("...... " + str(buttons_device))
+            else:
+                return "ERROR: device configuration isn't correct: " + device_file + " / " + str(buttons_device)
+
+            device_default = rm3presets.commands + api + "/00_default"
+            if rm3json.if_exist(device_default):
+                buttons_default = self.config.read(device_default)
+                if self.log_commands:
+                    self.logging.debug("...... button-default-file: " + device_default + ".json")
+                    self.logging.debug("...... " + str(buttons_default))
+            else:
+                return "ERROR: not default configuration defined: " + device_default
 
             # check for errors or return button code
             if "ERROR" in buttons_device or "ERROR" in active:
@@ -612,16 +889,34 @@ class Connect(threading.Thread):
                     and type_new in buttons_default["data"]["commands"][button]:
                 return buttons_default["data"]["commands"][button][type_new]
 
-            elif button in buttons_device["data"][button_query]:
+            # -> check if still required for some device configurations ->
+            elif button_query in buttons_device["data"] and button in buttons_device["data"][button_query]:
                 return buttons_device["data"][button_query][button]
 
-            elif button in buttons_default["data"][button_query]:
+            elif button_query in buttons_default["data"] and button in buttons_default["data"][button_query]:
                 return buttons_default["data"][button_query][button]
 
             else:
-                return "ERROR get_command: button not defined (" + device + "_" + button + ")"
+                return ("ERROR get_command: button not defined (" + dev_api + "," + button_query +
+                        ": " + device + "_" + button + ")")
+
         else:
-            return "ERROR get_command: device not found (" + device + ")"
+            return "ERROR get_command: device not found (" + dev_api + ": " + device + ")"
+
+    def command_api_get(self, api_dev, command):
+        """
+        get command string for API command
+        """
+        self.logging.info("command_api_get: " + api_dev + "::" + command)
+
+        api, api_device = api_dev.split("_")
+        config = self.config.read(rm3presets.commands + api + "/00_default")
+        self.logging.debug("command_api_get: " + str(config))
+
+        if "data" in config and "api_commands" in config["data"] and command in config["data"]["api_commands"]:
+            return config["data"]["api_commands"][command]
+        else:
+            return ""
 
     def command_create(self, dev_api, device, button, value):
         """
@@ -629,7 +924,7 @@ class Connect(threading.Thread):
         """
 
         # read data -> to be moved to cache?!
-        active = self.configFiles.read_status()
+        active = self.config.read_status()
         api = dev_api.split("_")[0]
 
         if device in active:
@@ -637,8 +932,8 @@ class Connect(threading.Thread):
             buttons = self.device_configuration(device)
 
             # add button definitions from default.json if exist
-            if rm3json.if_exist(rm3config.commands + api + "/00_default"):
-                buttons_default = self.configFiles.read(rm3config.commands + api + "/00_default")
+            if rm3json.if_exist(rm3presets.commands + api + "/00_default"):
+                buttons_default = self.config.read(rm3presets.commands + api + "/00_default")
 
                 key_list = ["buttons", "queries", "commands", "values", "send-data"]
                 for key in key_list:

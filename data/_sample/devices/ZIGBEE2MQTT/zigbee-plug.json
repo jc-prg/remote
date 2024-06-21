@@ -1,0 +1,44 @@
+{
+    "data": {
+        "buttons": {
+            "off": "set={'state': 'OFF'}",
+            "on": "set={'state': 'ON'}",
+            "toggle": "set={'state': 'TOGGLE'}"
+        },
+        "commands": {
+            "current": {
+                "cmd": [
+                    "get"
+                ],
+                "get": "get=current"
+            },
+            "e-current": {
+                "cmd": [
+                    "get"
+                ],
+                "get": "get=current"
+            },
+            "e-energy": {
+                "cmd": [
+                    "get"
+                ],
+                "get": "get=energy"
+            },
+            "e-power": {
+                "cmd": [
+                    "get"
+                ],
+                "get": "get=power"
+            },
+            "e-voltage": {
+                "cmd": [
+                    "get"
+                ],
+                "get": "get=voltage"
+            }
+        },
+        "description": "ZigBee Plug",
+        "method": "query"
+    },
+    "info": "jc://remote/ - In this files the device-specific commands and buttons are defined."
+}
