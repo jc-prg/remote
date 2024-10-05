@@ -49,9 +49,9 @@
 
 @media only screen and (device-width : 402px) and (device-height : 874px) and (orientation : portrait) {
 
-    .remote           { width  : 100%;  }
-    .setting_bg       { width  : 100%; }
-    .setting_bg.wide  { width  : 100%; }
+    .remote           { width  : 96%; margin: 2%; }
+    .setting_bg       { width  : 96%; margin: 2%; }
+    .setting_bg.wide  { width  : 96%; margin: 2%; }
     }
 @media only screen and (device-width : 402px) and (device-height : 874px) and (orientation : landscape) {
 
