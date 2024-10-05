@@ -5,8 +5,6 @@
 
 
 @media only screen and (device-width : 402px) and (device-height : 874px) and (orientation : portrait) {
-    .rm-toggle-button     { width  :  76px; }
-    .rm-toggle-label.long { width  : 265px; }
     }
 
 @media only screen and (device-width : 402px) and (device-height : 874px) and (orientation : landscape) {
@@ -15,9 +13,6 @@
     .remote           { width  : 43%; margin : 2%; }
     .setting_bg       { width  : 43%; margin : 2%; }
     .setting_bg.wide  { width  : 90%; margin : 2%; }
-
-    .rm-toggle-button     { width  :  76px; }
-    .rm-toggle-label.long { width  : 265px; }
     }
 
 
@@ -28,10 +23,7 @@
   #audio1 		    { right: 140px; }
   #audio2 		    { right: 140px; }
   #audio3 		    { right: 45px; }
-
-  .rm-toggle-button     { width  :  76px; }
-  .rm-toggle-label.long { width  : 242px; }
-}
+  }
 
 @media only screen and (device-width : 375px) and (device-height : 812px) and (orientation : landscape)
   {
@@ -42,7 +34,4 @@
   .app_content      { margin :  0%; padding : 2%; }
   .remote           { width  : 43%; margin : 2%; }
   .setting_bg       { width  : 43%; margin : 2%; }
-
-  .rm-toggle-button     { width  :  74px; }
-  .rm-toggle-label.long { width  : 240px; }
 }
