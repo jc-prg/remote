@@ -171,7 +171,7 @@ ul.help ul li {
 
 /* adaptive sizes for smart phones */
 
-@media (min-width : 320px) and (max-width: 720px) {
+@media (min-width : 350px) and (max-width: 720px) {
     .app_content      { width  : 100%; margin : 0%; padding: 2%; }
     .remote           { width  :  90%; margin : 2%; }
     .setting_bg       { width  :  90%; margin : 2%; }
