@@ -394,7 +394,7 @@ function rmSettings (name) {	// IN PROGRESS
 		var d_height = screen.height;
 		set_temp += this.tab.row( 	"Screen:",
 						"<div id='default_display'>default screen</div>" +
-						//"<div id='big_display'>big screen</div>" +
+						"<div id='big_display'>big screen</div>" +
 						"<div id='iphone_se1_portrait'>iPhone 5/SE1 (portrait)</div>" +
 						"<div id='iphone_se1_landscape'>iPhone 5/SE1 (landscape)</div>" +
 						"<div id='iphone_se3_portrait'>iPhone 6/7/8/SE2/SE3 (portrait)</div>" +

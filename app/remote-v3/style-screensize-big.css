@@ -1,15 +1,14 @@
 /* format for bigger devices, except iPad */
 
-.screen_default { display : block; }
-.screen_big     { display : none; }
+#big_display     { display : none; }
 
 @media (min-width: 730px) 
 {
 
-  .screen_big       { display : block; }
-  .screen_default   { display : none; }
+  #big_display      { display : block; }
+  #default_display  { display : none; }
 
-  .display                                                      { font-size : 10px; }
+  .display          { font-size : 10px; }
 
   #audio1         	{ right  : 145px; }
   #audio2         	{ right  : 145px; }

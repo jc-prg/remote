@@ -6,7 +6,7 @@
 
 @media only screen and (device-width : 402px) and (device-height : 874px) and (orientation : portrait) {
 
-    .app_content      { margin :  0%; padding : 0%; }
+    .app_content      { margin :  0%; padding : 2%; }
     .remote           { width  : 90%; margin : 2%; }
     .setting_bg       { width  : 90%; margin : 2%; }
     .setting_bg.wide  { width  : 90%; margin : 2%; }
@@ -34,10 +34,10 @@
   #audio2 		    { right: 140px; }
   #audio3 		    { right: 45px; }
 
-    .app_content      { margin :  0%; padding : 0%; }
-    .remote           { width  : 90%; margin : 2%; }
-    .setting_bg       { width  : 90%; margin : 2%; }
-    .setting_bg.wide  { width  : 90%; margin : 2%; }
+  .app_content      { margin :  0%; padding : 2%; }
+  .remote           { width  : 90%; margin : 2%; }
+  .setting_bg       { width  : 90%; margin : 2%; }
+  .setting_bg.wide  { width  : 90%; margin : 2%; }
 
   .rm-toggle-button     { width  :  76px; }
   .rm-toggle-label.long { width  : 242px; }
@@ -49,10 +49,9 @@
   #audio2 		    { right: 125px; }
   #audio3 		    { right: 45px; }
 
-    .app_content      { margin :  0%; padding : 2%; }
-    .remote           { width  : 43%; margin : 2%; }
-    .setting_bg       { width  : 43%; margin : 2%; }
-    .settin
+  .app_content      { margin :  0%; padding : 2%; }
+  .remote           { width  : 43%; margin : 2%; }
+  .setting_bg       { width  : 43%; margin : 2%; }
 
   .rm-toggle-button     { width  :  74px; }
   .rm-toggle-label.long { width  : 240px; }
