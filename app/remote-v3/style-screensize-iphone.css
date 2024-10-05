@@ -1,14 +1,34 @@
+/* list of resolutions: https://iosref.com/res */
 /* format for iphone XS, 11pro, 12/13mini - 375x812 & iPhone SE 2nd Gen - 375x667 */
 
-.screen_iphone              { display : none; }
-.screen_iphone_landscape    { display : none; }
+.screen_iphoneXS               { display : none; }
+.screen_iphoneXS_landscape     { display : none; }
+.screen_iphone16p              { display : none; }
+.screen_iphone16p_landscape    { display : none; }
 
-@media only screen 
+
+@media only screen and (device-width : 375px) and (device-height : 812px) and (orientation : portrait) {
+    .screen_iphoneXS               { display : block; }
+    .screen_default                { display : none; }
+    }
+@media only screen and (device-width : 375px) and (device-height : 812px) and (orientation : landscape) {
+    .screen_iphoneXS_landscape     { display : block; }
+    .screen_default                { display : none; }
+    }
+@media only screen and (device-width : 402px) and (device-height : 874px) and (orientation : portrait) {
+    .screen_iphone16p              { display : block; }
+    .screen_default                { display : none; }
+    }
+@media only screen and (device-width : 402px) and (device-height : 874px) and (orientation : landscape) {
+    .screen_iphone16p_landscape    { display : block; }
+    .screen_default                { display : none; }
+    }
+
+/* ---------------------------------------------------------------------- */
+
+@media only screen
   and (device-width : 375px) and (orientation : portrait)
   {
-  .screen_iphone    { display : block; }
-  .screen_default   { display : none; }
-
   #audio1 		    { right: 140px; }
   #audio2 		    { right: 140px; }
   #audio3 		    { right: 45px; }

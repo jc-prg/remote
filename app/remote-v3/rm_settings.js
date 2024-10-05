@@ -395,8 +395,10 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.row( 	"Screen:",
 						"<div class='screen_default'>default screen</div>" +
 						"<div class='screen_big'>big screen</div>" +
-						"<div class='screen_iphone'>iPhone screen (portrait)</div>" +
-						"<div class='screen_iphone_landscape'>iPhone screen (landscape)</div>" +
+						"<div class='screen_iphoneXS'>iPhone X/XS/11/12m/13m (portrait)</div>" +
+						"<div class='screen_iphoneXS_landscape'>iPhone X/XS/11/12m/13m (landscape)</div>" +
+						"<div class='screen_iphone16p'>iPhone 16pro (portrait)</div>" +
+						"<div class='screen_iphone16p_landscape'>iPhone 16pro (landscape)</div>" +
 						"<div class='screen_ipad'>iPad screen (portrait)</div>" +
 						"<div class='screen_ipad_landscape'>iPad screen (landscape)</div>" +
 						"");
