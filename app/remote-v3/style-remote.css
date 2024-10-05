@@ -66,7 +66,7 @@ ul.help ul li {
 }
 
 /* default size for boxes and buttons = iPhone 5c */
-/* boxes for remote controlls */
+/* boxes for remote controls */
 
 .remote {
    position         : relative;
@@ -82,11 +82,22 @@ ul.help ul li {
    z-index          : 60;
 }
 
-@media (min-width : 320px) and (max-width: 720px) {
-    .app_content      { width  : 100%; margin: 0%; padding: 2%; }
-    .remote           { width  :  90%; margin: 2%; }
-    .setting_bg       { width  :  90%; margin : 2%; }
-    .setting_bg.wide  { width  :  90%; margin : 2%; }
+.setting_bg {
+   font-family      : sans-serif;
+   width            : 290px;
+   margin           : 4px;
+   padding          : 5px;
+   float            : left;
+   border-radius    : 5px;
+   background-color : #444444;
+   color            : white;
+   font-size        : 14px;
+   opacity          : 0.9;
+}
+
+.setting_bg.wide {
+   background       : #dddddd;
+   width            : 290px;
 }
 
 .remote_edit {
@@ -128,7 +139,6 @@ ul.help ul li {
 	}
 
 .remote_group_header:hover {
-
 	color           : yellow;
 	}
 
@@ -159,24 +169,13 @@ ul.help ul li {
     clear		    : left;
     }
 
-/* setting frames */
+/* adaptive sizes for smart phones */
 
-.setting_bg {
-   font-family      : sans-serif;
-   width            : 290px;
-   margin           : 4px;
-   padding          : 5px;
-   float            : left;
-   border-radius    : 5px;
-   background-color : #444444;
-   color            : white;
-   font-size        : 14px;
-   opacity          : 0.9;
-}
-
-.setting_bg.wide {
-   background       : #dddddd;
-   width            : 290px;
+@media (min-width : 320px) and (max-width: 720px) {
+    .app_content      { width  : 100%; margin : 0%; padding: 2%; }
+    .remote           { width  :  90%; margin : 2%; }
+    .setting_bg       { width  :  90%; margin : 2%; }
+    .setting_bg.wide  { width  :  90%; margin : 2%; }
 }
 
 /* entries for channel lists */
