@@ -76,8 +76,8 @@
 /* ---------------------------------------- */
 
 @media (min-width : 320px) and (max-width: 720px) {
-    .rm-toggle-button     { width  : 15%; }
-    .rm-toggle-label.long { width  : 80%; }
+    .rm-toggle-button     { width  : 20%; }
+    .rm-toggle-label.long { width  : 75%; }
 }
 
 /* ---------------------------------------- */
