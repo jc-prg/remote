@@ -3,6 +3,10 @@
 
 .screen_iphoneXS               { display : none; }
 .screen_iphoneXS_landscape     { display : none; }
+.screen_iphoneSE1              { display : none; }
+.screen_iphoneSE1_landscape    { display : none; }
+.screen_iphoneSE3              { display : none; }
+.screen_iphoneSE3_landscape    { display : none; }
 .screen_iphone16p              { display : none; }
 .screen_iphone16p_landscape    { display : none; }
 
@@ -13,6 +17,22 @@
     }
 @media only screen and (device-width : 375px) and (device-height : 812px) and (orientation : landscape) {
     .screen_iphoneXS_landscape     { display : block; }
+    .screen_default                { display : none; }
+    }
+@media only screen and (device-width : 320px) and (device-height : 568px) and (orientation : portrait) {
+    .screen_iphoneSE1               { display : block; }
+    .screen_default                { display : none; }
+    }
+@media only screen and (device-width : 320px) and (device-height : 568px) and (orientation : landscape) {
+    .screen_iphoneSE1_landscape     { display : block; }
+    .screen_default                { display : none; }
+    }
+@media only screen and (device-width : 375px) and (device-height : 667px) and (orientation : portrait) {
+    .screen_iphoneSE3               { display : block; }
+    .screen_default                { display : none; }
+    }
+@media only screen and (device-width : 375px) and (device-height : 667px) and (orientation : landscape) {
+    .screen_iphoneSE3_landscape     { display : block; }
     .screen_default                { display : none; }
     }
 @media only screen and (device-width : 402px) and (device-height : 874px) and (orientation : portrait) {
