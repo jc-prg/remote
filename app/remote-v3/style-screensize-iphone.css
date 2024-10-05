@@ -44,7 +44,21 @@
     .screen_default                { display : none; }
     }
 
-/* ---------------------------------------------------------------------- */
+/* iPhone 16pro ------------------------------------------------------------------- */
+
+
+@media only screen and (device-width : 402px) and (device-height : 874px) and (orientation : portrait) {
+
+    .remote           { width  : 100%;  }
+    .setting_bg       { width  : 100%; }
+    .setting_bg.wide  { width  : 100%; }
+    }
+@media only screen and (device-width : 402px) and (device-height : 874px) and (orientation : landscape) {
+
+    }
+
+
+/* iPhone XS ---------------------------------------------------------------------- */
 
 @media only screen
   and (device-width : 375px) and (orientation : portrait)
@@ -61,8 +75,7 @@
   .rm-toggle-label.long { width  : 242px; }
 }
 
-
-@media only screen 
+@media only screen
   and (device-width : 375px) and (device-height : 812px) and (orientation : landscape)
   {
   .screen_iphone_landscape  { display : block; }
