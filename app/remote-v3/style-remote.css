@@ -82,6 +82,13 @@ ul.help ul li {
    z-index          : 60;
 }
 
+@media (min-width : 320px) and (max-width: 720px) {
+    .app_content      { width  : 100%; margin: 0%; padding: 2%; }
+    .remote           { width  :  90%; margin: 2%; }
+    .setting_bg       { width  :  90%; margin : 2%; }
+    .setting_bg.wide  { width  :  90%; margin : 2%; }
+}
+
 .remote_edit {
    position         : absolute;
    bottom           : 0px;
