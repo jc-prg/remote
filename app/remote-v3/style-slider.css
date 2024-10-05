@@ -75,6 +75,13 @@
 
 /* ---------------------------------------- */
 
+@media (min-width : 320px) and (max-width: 720px) {
+    .rm-toggle-button     { width  : 25%; }
+    .rm-toggle-label.long { width  : 75%; }
+}
+
+/* ---------------------------------------- */
+
 .rm-slidecontainer {
     z-index       : 99;
     width         : 100%;

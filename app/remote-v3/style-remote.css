@@ -176,9 +176,6 @@ ul.help ul li {
     .remote           { width  :  90%; margin : 2%; }
     .setting_bg       { width  :  90%; margin : 2%; }
     .setting_bg.wide  { width  :  90%; margin : 2%; }
-
-    .rm-toggle-button     { width  :  25%; }
-    .rm-toggle-label.long { width  : 100%; }
 }
 
 /* entries for channel lists */
