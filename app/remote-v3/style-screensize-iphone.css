@@ -13,6 +13,10 @@
     }
 @media only screen and (device-width : 402px) and (device-height : 874px) and (orientation : landscape) {
 
+    .app_content      { margin :  0%; padding : 2%; }
+    .remote           { width  : 43%; margin : 2%; }
+    .setting_bg       { width  : 43%; margin : 2%; }
+    .setting_bg.wide  { width  : 90%; margin : 2%; }
     }
 
 
