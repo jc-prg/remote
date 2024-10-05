@@ -404,9 +404,9 @@ function rmSettings (name) {	// IN PROGRESS
 						"<div id='iphone_16p_portrait'>iPhone 16pro (portrait)</div>" +
 						"<div id='iphone_16p_landscape'>iPhone 16pro (landscape)</div>" +
 						"<div id='ipad_portrait'>iPad 7/8/9 (portrait)</div>" +
-						"<div class='ipad_landscape'>iPad 7/8/9 (landscape)</div>" +
+						"<div id='ipad_landscape'>iPad 7/8/9 (landscape)</div>" +
 						"<div id='ipad_air_portrait'>iPad Air 4/5 (portrait)</div>" +
-						"<div class='ipad_air_landscape'>iPad Air 4/5 (landscape)</div>" +
+						"<div id='ipad_air_landscape'>iPad Air 4/5 (landscape)</div>" +
 						"");
 		set_temp += this.tab.row( 	"Device:", 		d_width + "x" + d_height );
 		set_temp += this.tab.row( 	"Window:", 		window.innerWidth + "x" + window.innerHeight );
