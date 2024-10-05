@@ -6,10 +6,13 @@
 
 @media only screen and (device-width : 402px) and (device-height : 874px) and (orientation : portrait) {
 
-    .app_content      { margin :  0%; padding : 2%; }
+    .app_content      { margin :  0%; padding : 0%; }
     .remote           { width  : 90%; margin : 2%; }
     .setting_bg       { width  : 90%; margin : 2%; }
     .setting_bg.wide  { width  : 90%; margin : 2%; }
+
+    .rm-toggle-button     { width  :  76px; }
+    .rm-toggle-label.long { width  : 265px; }
     }
 @media only screen and (device-width : 402px) and (device-height : 874px) and (orientation : landscape) {
 
@@ -17,6 +20,9 @@
     .remote           { width  : 43%; margin : 2%; }
     .setting_bg       { width  : 43%; margin : 2%; }
     .setting_bg.wide  { width  : 90%; margin : 2%; }
+
+    .rm-toggle-button     { width  :  76px; }
+    .rm-toggle-label.long { width  : 265px; }
     }
 
 
