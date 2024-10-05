@@ -1,14 +1,9 @@
 /* format for iPad Air (3rd) */
-
-.screen_ipad { display : none; }
-.screen_ipad_landscape { display : none; }
+/* see also app framework -> style-main-iphone.css */
 
 @media only screen 
   and (device-width : 834px) and (device-height : 1112px) and (orientation : portrait)
   {
-
-  .screen_ipad      { display : block; }
-  .screen_default   { display : none; }
 
   .remote           { width  : 290px; }
   .setting_bg       { width  : 290px; }
@@ -29,9 +24,6 @@
 @media only screen 
   and (device-width : 834px) and (device-height : 1112px) and (orientation : landscape)
   {
-  
-  .screen_ipad_landscape { display : block; }
-  .screen_default { display : none; }
 
   #audio2 		{ right: 125px; }
 }

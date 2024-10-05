@@ -1,58 +1,15 @@
-/* list of resolutions: https://iosref.com/res */
 /* format for iphone XS, 11pro, 12/13mini - 375x812 & iPhone SE 2nd Gen - 375x667 */
-
-.screen_iphoneXS               { display : none; }
-.screen_iphoneXS_landscape     { display : none; }
-.screen_iphoneSE1              { display : none; }
-.screen_iphoneSE1_landscape    { display : none; }
-.screen_iphoneSE3              { display : none; }
-.screen_iphoneSE3_landscape    { display : none; }
-.screen_iphone16p              { display : none; }
-.screen_iphone16p_landscape    { display : none; }
-
-
-@media only screen and (device-width : 375px) and (device-height : 812px) and (orientation : portrait) {
-    .screen_iphoneXS               { display : block; }
-    .screen_default                { display : none; }
-    }
-@media only screen and (device-width : 375px) and (device-height : 812px) and (orientation : landscape) {
-    .screen_iphoneXS_landscape     { display : block; }
-    .screen_default                { display : none; }
-    }
-@media only screen and (device-width : 320px) and (device-height : 568px) and (orientation : portrait) {
-    .screen_iphoneSE1               { display : block; }
-    .screen_default                { display : none; }
-    }
-@media only screen and (device-width : 320px) and (device-height : 568px) and (orientation : landscape) {
-    .screen_iphoneSE1_landscape     { display : block; }
-    .screen_default                { display : none; }
-    }
-@media only screen and (device-width : 375px) and (device-height : 667px) and (orientation : portrait) {
-    .screen_iphoneSE3               { display : block; }
-    .screen_default                { display : none; }
-    }
-@media only screen and (device-width : 375px) and (device-height : 667px) and (orientation : landscape) {
-    .screen_iphoneSE3_landscape     { display : block; }
-    .screen_default                { display : none; }
-    }
-@media only screen and (device-width : 402px) and (device-height : 874px) and (orientation : portrait) {
-    .screen_iphone16p              { display : block; }
-    .screen_default                { display : none; }
-    }
-@media only screen and (device-width : 402px) and (device-height : 874px) and (orientation : landscape) {
-    .screen_iphone16p_landscape    { display : block; }
-    .screen_default                { display : none; }
-    }
+/* see also app framework -> style-main-iphone.css */
 
 /* iPhone 16pro ------------------------------------------------------------------- */
 
 
 @media only screen and (device-width : 402px) and (device-height : 874px) and (orientation : portrait) {
 
-    .app_content      { padding : 2%; }
-    .remote           { width  : 92%; margin: 2%; }
-    .setting_bg       { width  : 92%; margin: 2%; }
-    .setting_bg.wide  { width  : 92%; margin: 2%; }
+    .app_content      { margin :  0%; padding : 2%; }
+    .remote           { width  : 92%; margin : 2%; }
+    .setting_bg       { width  : 92%; margin : 2%; }
+    .setting_bg.wide  { width  : 92%; margin : 2%; }
     }
 @media only screen and (device-width : 402px) and (device-height : 874px) and (orientation : landscape) {
 
@@ -61,8 +18,7 @@
 
 /* iPhone XS ---------------------------------------------------------------------- */
 
-@media only screen
-  and (device-width : 375px) and (orientation : portrait)
+@media only screen and (device-width : 375px) and (orientation : portrait)
   {
   #audio1 		    { right: 140px; }
   #audio2 		    { right: 140px; }
@@ -76,12 +32,8 @@
   .rm-toggle-label.long { width  : 242px; }
 }
 
-@media only screen
-  and (device-width : 375px) and (device-height : 812px) and (orientation : landscape)
+@media only screen and (device-width : 375px) and (device-height : 812px) and (orientation : landscape)
   {
-  .screen_iphone_landscape  { display : block; }
-  .screen_default           { display : none; }
-  
   #audio1 		    { right: 125px; }
   #audio2 		    { right: 125px; }
   #audio3 		    { right: 45px; }
@@ -93,4 +45,3 @@
   .rm-toggle-button     { width  :  74px; }
   .rm-toggle-label.long { width  : 240px; }
 }
-
