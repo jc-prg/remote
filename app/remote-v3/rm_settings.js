@@ -390,27 +390,10 @@ function rmSettings (name) {	// IN PROGRESS
 
 		// sceen & display
 		set_temp  = this.tab.start();
-		var d_width  = screen.width;
-		var d_height = screen.height;
-		set_temp += this.tab.row( 	"Screen:",
-						"<div id='default_display'>default screen</div>" +
-						"<div id='big_display'>big screen</div>" +
-						"<div id='iphone_se1_portrait'>iPhone 5/SE1 (portrait)</div>" +
-						"<div id='iphone_se1_landscape'>iPhone 5/SE1 (landscape)</div>" +
-						"<div id='iphone_se3_portrait'>iPhone 6/7/8/SE2/SE3 (portrait)</div>" +
-						"<div id='iphone_se3_landscape'>iPhone 6/7/8/SE2/SE3 (landscape)</div>" +
-						"<div id='iphone_xs_portrait'>iPhone X/XS/11/12m/13m (portrait)</div>" +
-						"<div id='iphone_xs_landscape'>iPhone X/XS/11/12m/13m (landscape)</div>" +
-						"<div id='iphone_16p_portrait'>iPhone 16pro (portrait)</div>" +
-						"<div id='iphone_16p_landscape'>iPhone 16pro (landscape)</div>" +
-						"<div id='ipad_portrait'>iPad 7/8/9 (portrait)</div>" +
-						"<div id='ipad_landscape'>iPad 7/8/9 (landscape)</div>" +
-						"<div id='ipad_air_portrait'>iPad Air 4/5 (portrait)</div>" +
-						"<div id='ipad_air_landscape'>iPad Air 4/5 (landscape)</div>" +
-						"");
-		set_temp += this.tab.row( 	"Device:", 		d_width + "x" + d_height );
-		set_temp += this.tab.row( 	"Window:", 		window.innerWidth + "x" + window.innerHeight );
-		set_temp += this.tab.row(	"Position:",		"<div id='scrollPosition'>0 px</div>" );
+		set_temp += this.tab.row( 	"Screen:",      print_display_definition());
+		set_temp += this.tab.row( 	"Device:", 		"<div id='screenWidth'>"+screen.width+"x"+screen.height+"</div>" );
+		set_temp += this.tab.row( 	"Window:", 		"<div id='windowWidth'>"+window.innerWidth+"x"+window.innerHeight+"</div>" );
+		set_temp += this.tab.row(	"Position:",    "<div id='scrollPosition'>0 px</div>" );
 		set_temp += this.tab.row( 	"Theme:", 		appTheme );
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_display","Screen &amp; Display",set_temp,false);
