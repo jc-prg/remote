@@ -13,15 +13,15 @@
 @media only screen and (((device-width : 402px) and (device-height : 874px) and (orientation : landscape)) or
                        ((device-height : 402px) and (device-width : 874px))) {
 
-  .app_content      { margin :  0%;  padding : 5px; }
+  .app_content      { margin :  0%;  padding : 5px; padding-top: 0px;}
   .remote           { width  : 280px; margin : 5px; }
   .setting_bg       { width  : 280px; margin : 5px; }
   .setting_bg.wide  { width  : 580px; margin : 5px; }
 
   #navi          { display : none; }
   #remote_nav    { display : block; }
-  .remote_nav    { width : 134px; max-width : 134px; min-width : 134px; }
-  .remote_nav ul { width : 130px; max-width : 130px; min-width : 130px; }
+  .remote_nav    { width : 134px; max-width : 134px; min-width : 134px; margin-right : 5px; }
+  .remote_nav ul { width : 130px; max-width : 130px; min-width : 130px; margin-right : 5px; }
 
   .rm-toggle-button     { width  : 25%; }
   .rm-toggle-label.long { width  : 65%; }
