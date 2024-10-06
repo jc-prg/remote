@@ -16,6 +16,7 @@ var app_loading_image   = "";
 var app_status_commands = "";
 var appAutoLoad         = false;
 
+
 //--------------------------------	
 // create menu entries
 //--------------------------------
@@ -68,7 +69,7 @@ function app_force_reload(data) {
 //--------------------------------
 
 function app_initialize(data) {
-	}
+    }
 
 //--------------------------------
 // add code when theme changed

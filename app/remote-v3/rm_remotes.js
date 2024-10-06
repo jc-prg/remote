@@ -17,6 +17,7 @@ function rmRemote(name) {
 
 	this.frames_edit    = ["frame1","frame2"];
 	this.frames_remote  = ["frame3","frame4","frame5"];
+	this.frames_notouch = true;
 	
 	this.basic          = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
 	this.button         = new rmRemoteButtons(name);			// rm_remotes-elements.js
@@ -34,7 +35,7 @@ function rmRemote(name) {
 
 	// load data with devices (deviceConfig["devices"])
 	this.init                       = function (data) {
-	
+
 		if (data["CONFIG"]) {
 			this.data           = data;
 			this.button.data    = data;
@@ -82,6 +83,15 @@ function rmRemote(name) {
 		// format frame1, frame2 for edit mode
 		document.getElementById(this.frames_edit[0]).className = "setting_bg";
 		document.getElementById(this.frames_edit[1]).className = "setting_bg";
+
+        // disable touch-action on remotes
+        if (this.frames_notouch) {
+            document.getElementById("frame1").style.touchAction = "none";
+            document.getElementById("frame2").style.touchAction = "none";
+            document.getElementById("frame3").style.touchAction = "none";
+            document.getElementById("frame4").style.touchAction = "none";
+            document.getElementById("frame5").style.touchAction = "none";
+            }
 
 		// set active remote (type, id)
 		this.active_name    = rm_id;
