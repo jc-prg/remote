@@ -169,14 +169,7 @@ ul.help ul li {
     clear		    : left;
     }
 
-/* adaptive sizes for smart phones */
-
-@media (min-width : 350px) and (max-width: 720px) {
-    .app_content      { width  : 100%; margin : 0%; padding: 2%; }
-    .remote           { width  :  90%; margin : 2%; }
-    .setting_bg       { width  :  90%; margin : 2%; }
-    .setting_bg.wide  { width  :  90%; margin : 2%; }
-}
+/* adaptive sizes for smart phones -> see style-screensize-big.css */
 
 /* entries for channel lists */
 
@@ -195,9 +188,9 @@ ul.help ul li {
     }
 
 .channel-entry:hover {
-    color		: black;
-    background-color	: #dddddd;
-    box-shadow		: 0 8px 8px 0 rgba(0,0,0,0.24), 0 8px 8px 0 rgba(0,0,0,0.19);
+    color		     : black;
+    background-color : #dddddd;
+    box-shadow		 : 0 8px 8px 0 rgba(0,0,0,0.24), 0 8px 8px 0 rgba(0,0,0,0.19);
     }
 
 #show_hide_not_used {
