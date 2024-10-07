@@ -999,8 +999,9 @@ function statusCheck_displayValues(data={}) {
 							console.debug("--------------------");
 							//console.debug(replace_value_org);
 							console.debug(replace_value);
-							eval ("var replace_content = JSON.parse(replace_value);");	  // refactor with let (otherwise security issue)
-							eval ("var replace_value = replace_content"+replace_index);	  // refactor with let (otherwise security issue)
+							var replace_content = replace_value;
+							eval ("replace_content = JSON.parse(replace_value);");	  // refactor with let (otherwise security issue)
+							eval ("replace_value = replace_content"+replace_index);	  // refactor with let (otherwise security issue)
 							}
 						}
 					}
