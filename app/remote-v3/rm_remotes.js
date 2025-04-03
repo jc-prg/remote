@@ -17,7 +17,7 @@ function rmRemote(name) {
 
 	this.frames_edit    = ["frame1","frame2"];
 	this.frames_remote  = ["frame3","frame4","frame5"];
-	this.frames_notouch = true;
+	this.frames_notouch = false;
 	
 	this.basic          = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
 	this.button         = new rmRemoteButtons(name);			// rm_remotes-elements.js
@@ -1225,7 +1225,15 @@ function rmRemote(name) {
 
 		if (image && image != "") {
 			var image_html = "<button class='rm-button header_image' style='background-image:url("+rm3scene_dir+image+")'>";
-			image_html    += " <div class='header_image_toggle_container' id='toggle_place_"+id+"'>"+toggle_html+"</div>";
+
+            this.tooltip.settings("onmouseover","100px","50px","50px");
+			toggle_html = this.tooltip.create_inside(" "+toggle_html, test, 1);
+			// ---------------------------------------------------------- TOOLTIP IN PROGRESS
+			// - activate for a few seconds, if toggle is off (and hint is activated)
+			// - place below the toggle
+			// - ensure the triangle is visible
+
+            image_html    += " <div class='header_image_toggle_container' id='toggle_place_"+id+"'>"+toggle_html+"</div>";
 			image_html    += " <div class='header_image_fade'>";
 			image_html    += "  <div class='header_image_text'>&nbsp;<br/>&nbsp;<br/>"+label+"</div>";
 			image_html    += " </div>";

@@ -2,19 +2,21 @@
 // config menu and main functions
 //--------------------------------
 
-var app_frame_count   = 5;
-var app_frame_style   = "remote";
-var app_setting_count = 6;
-var app_setting_style = "setting_bg";
-var app_last_load     = 0;
-var app_title         = "jc://remote/";
-var app_version       = "v2.9.9";
-var app_api_dir       = "api/";
-var app_api_status    = "list";
+var app_frame_count             = 5;
+var app_frame_style             = "remote";
+var app_setting_count           = 6;
+var app_setting_style           = "setting_bg";
+var app_setting_style_header    = "setting_bg header";
 
-var app_loading_image   = "";
-var app_status_commands = "";
-var appAutoLoad         = false;
+var app_last_load               = 0;
+var app_title                   = "jc://remote/";
+var app_version                 = "v2.9.9";
+var app_api_dir                 = "api/";
+var app_api_status              = "list";
+
+var app_loading_image           = "";
+var app_status_commands         = "";
+var appAutoLoad                 = false;
 
 
 //--------------------------------	
@@ -99,6 +101,24 @@ function app_connection_lost(error=false) {
     }
     app_connection_error = error;
 }
+
+//--------------------------------
+// function to configure setting entries
+//--------------------------------
+
+function app_setting_entries() {
+    // add your setting entries here
+    // appSettings.add_entry(id, title, icon, call_function, show_header=true);
+    // leave 'icon' empty to work just with text
+    // leave 'call_function' empty to create an information tile that's not clickable
+
+    appSettings.icon_dir = "";
+    appSettings.add_entry("INTRO",  appTitle,           "icon/remote_ctrl",          "");
+    appSettings.add_entry("INFO",   lang("INFORMATION"), "icon/info2",         "appSettings.default_entry_info();");
+    appSettings.add_entry("DEMO",   lang("DEMO"),       "icon/search",         "appSettings.default_entry_demo();");
+    appSettings.add_entry("HELP",   lang("QUESTION"),   "icon/question",     "appMsg.alert('Not implemented.');",    false);
+    }
+
 
 //----------------------------------
 // Theme detection and color settings

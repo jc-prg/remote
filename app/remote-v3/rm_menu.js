@@ -65,10 +65,10 @@ function rmMenu(name, menu) {
     }
 
     this.menu_height	     = function() {
-		document.getElementById("remote_nav").style.maxHeight = "100px";
-	        var height = pageHeight();
-	        height -= 50;
-   		document.getElementById("remote_nav").style.maxHeight = height+ "px"; // window.innerHeight + "px"; // 
+        document.getElementById("remote_nav").style.maxHeight = "100px";
+            var height = pageHeight();
+            height -= 50;
+            document.getElementById("remote_nav").style.maxHeight = height+ "px"; // window.innerHeight + "px"; //
         	}
 
 	// add links to devices to drop down menu
@@ -164,10 +164,9 @@ function rmMenu(name, menu) {
 
 	// add links to scenes to drop down menu
 	this.add_link             = function(link,label) {
-
-    		var menu = this.readMenu();
-		menu += menuEntry(link,label);
-    		this.writeMenu(menu);
+        var menu = this.readMenu();
+        menu += menuEntry(link,label);
+        this.writeMenu(menu);
 		}
 
 	// menu entries

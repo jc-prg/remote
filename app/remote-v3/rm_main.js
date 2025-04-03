@@ -171,6 +171,7 @@ function remoteDropDown(data) {
 	rm3menu.add_scenes(  data["CONFIG"]["scenes"] );
 	rm3menu.add_devices( data["CONFIG"]["devices"] );
 	rm3menu.add_script( "rm3settings.create('index');", lang("SETTINGS"));
+	rm3menu.add_script( "appSettings.create();", lang("SETTINGS")+"2");
     }
 
 

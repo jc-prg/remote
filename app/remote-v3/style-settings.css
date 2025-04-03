@@ -32,30 +32,30 @@ nav-title {
     }
 
 #error_log {
-        font-size  : 12px;
-        text-align : left;
-        overflow   : auto;
+    font-size  : 12px;
+    text-align : left;
+    overflow   : auto;
 
-        width      : 97%;
-        height     : 200px;
-        float      : left;
-        margin     : 2px;
-        padding    : 2px;
+    width      : 97%;
+    height     : 200px;
+    float      : left;
+    margin     : 2px;
+    padding    : 2px;
 
-	font-face	: sanserif;
-	font-size	: 10px;
-	color		: black;
+    font-face	: sanserif;
+    font-size	: 10px;
+    color		: black;
 
-        border          : red;
-        border-radius   : 5px;   
-        border-style    : solid;
-        border-width    : 1px;
-        background-color: khaki;
-        opacity         : 0.9;
-        z-index         : 80;
+    border          : red;
+    border-radius   : 5px;
+    border-style    : solid;
+    border-width    : 1px;
+    background-color: khaki;
+    opacity         : 0.9;
+    z-index         : 80;
 
-	position: relative;
-	top: 0px;
+    position: relative;
+    top: 0px;
 }
 
 
