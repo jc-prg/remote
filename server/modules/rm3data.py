@@ -89,17 +89,21 @@ class RemotesData(RemoteThreadingClass):
                 connection[api]["api_devices"][api_device] = api_device_infos
 
         for device in status_devices:
-            dev_api = status_devices[device]["config"]["api_key"]
-            dev_api_device = status_devices[device]["config"]["api_device"]
-            if dev_api in connection and dev_api_device in connection[dev_api]["api_devices"]:
-                connection[dev_api]["api_devices"][dev_api_device]["devices"][device] = status_devices[device]["status"]
-                key_device = dev_api + "_" + dev_api_device + "_" + device
-                key_api_device = dev_api + "_" + dev_api_device
-                if "power" in status_devices[device]["status"]:
-                    status_devices_power[key_device] = status_devices[device]["status"]["power"]
-                    if "multi_device" in connection[dev_api]["api_devices"][dev_api_device] \
-                            and connection[dev_api]["api_devices"][dev_api_device]["multi_device"] is False:
-                        status_devices_power[key_api_device] = status_devices[device]["status"]["power"]
+            if "api_key" in status_devices[device]["config"]:
+                dev_api = status_devices[device]["config"]["api_key"]
+                dev_api_device = status_devices[device]["config"]["api_device"]
+                if dev_api in connection and dev_api_device in connection[dev_api]["api_devices"]:
+                    connection[dev_api]["api_devices"][dev_api_device]["devices"][device] = status_devices[device]["status"]
+                    key_device = dev_api + "_" + dev_api_device + "_" + device
+                    key_api_device = dev_api + "_" + dev_api_device
+                    if "power" in status_devices[device]["status"]:
+                        status_devices_power[key_device] = status_devices[device]["status"]["power"]
+                        if "multi_device" in connection[dev_api]["api_devices"][dev_api_device] \
+                                and connection[dev_api]["api_devices"][dev_api_device]["multi_device"] is False:
+                            status_devices_power[key_api_device] = status_devices[device]["status"]["power"]
+            else:
+                self.logging.warning("Device has no API defined (" + device + ")")
+                self.logging.warning(device + ": " + str(status_devices[device]["config"]))
 
         for api in connection:
             for api_device in connection[api]["api_devices"]:
