@@ -175,7 +175,7 @@ function rmSettings (name) {	// IN PROGRESS
 	    var setting_modules = {
 	        "SETTINGS_DEVICES": ["remote",      "rm3settings.create('edit_devices');"],
 	        "SETTINGS_SCENES":  ["cinema",      "rm3settings.create('edit_scenes');"],
-	        "SETTINGS_TIMER":   ["timer",       "rm3settings.create('edit_timer');"]
+	        "SETTINGS_TIMER":   ["timer",       "rm3settings.create('edit_timer');"],
 	        "INFORMATION":      ["info2",       "rm3settings.create('info');"],
 	        "SETTINGS_API":     ["plug2",       "rm3settings.create('edit_interfaces');"],
 	        "SETTINGS_GENERAL": ["settings2",   "rm3settings.create('general');"],
