@@ -66,11 +66,19 @@ def get_env(var_name):
 
 
 def error_message(code):
+    """
+    Returns:
+        error message for given code
+    """
     m = error_messages
     return m[code]
 
 
 def time_since_start():
+    """
+    Returns:
+        time elapsed since server started
+    """
     current_time = time.time()
     time_info = int((current_time - start_time))
     return "  (" + str(time_info) + "s)"
@@ -144,6 +152,10 @@ def set_logging(set_name, set_log_level=None):
 
 
 def get_git_branch_from_head():
+    """
+    Returns:
+        str: name of current git branch or None if not in git repository or not a git repository at all
+    """
     # Start from the current working directory
     current_dir = os.path.join(os.getcwd(), "..")
 
@@ -189,6 +201,7 @@ try:
     icons_dir = get_env('REMOTE_DIR_ICONS')
     scene_img_dir = get_env('REMOTE_DIR_SCENES')
     app_language = get_env('REMOTE_LANGUAGE')
+    timezone_offset = int(get_env('REMOTE_TIMEZONE_OFFSET'))
 
     log_level = get_env('REMOTE_LOG_LEVEL')  # set log level: INFO, DEBUG, WARNING, ERROR
     log_to_file = get_env('REMOTE_LOG_TO_FILE')  # shall logging done into a logfile: YES, NO

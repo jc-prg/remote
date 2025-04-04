@@ -41,7 +41,7 @@ function statusCheck(data={}) {
 	statusCheck_deviceIdle(data);
     statusCheck_health(data);
 
-    setTextById("current_server_time", data["REQUEST"]["server-time"]);
+    setTextById("current_server_time", data["REQUEST"]["server-time-local"]);
 
     var duration = Date.now() - start;
 	console.log("statusCheck: Updated all status elements ("+duration+"ms)");

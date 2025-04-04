@@ -4,7 +4,7 @@ import modules.rm3presets as rm3presets
 import modules.rm3json as rm3json
 from modules.rm3classes import RemoteThreadingClass
 from pathlib import Path
-
+from datetime import datetime, timezone, timedelta
 
 class ConfigInterfaces(RemoteThreadingClass):
     """
@@ -613,3 +613,31 @@ class ConfigCache(RemoteThreadingClass):
         self.interface_configuration = interface_config.copy()
         return "OK"
 
+    def local_time(self, day="today"):
+        """
+        return time that includes the current timezone (day="today")
+        other values: yesterday,
+
+        Returns:
+            datetime: local time for the current timezone
+        """
+        date_tz_info = datetime.now(timezone(timedelta(hours=rm3presets.timezone_offset)))
+        date_tz_info_1 = datetime.now(timezone(timedelta(hours=rm3presets.timezone_offset) - timedelta(days=1)))
+        self.logging.debug("Local time: " + str(date_tz_info) + " / " + str(date_tz_info_1))
+
+        if day == "yesterday":
+            return date_tz_info_1
+        else:
+            return date_tz_info
+
+    def local_date(self, days=0):
+        """
+        get current date in format YYYYMMDD with an offset of days (1 = yesterday, 2 = 2 days ago, ...)
+
+        Returns:
+            str: date in format YYYYMMDD
+        """
+        today = datetime.now()
+        target_date = today - timedelta(days=days)
+        self.logging.debug("Target date: " + str(target_date))
+        return target_date.strftime('%Y%m%d')

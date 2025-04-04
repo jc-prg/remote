@@ -135,7 +135,8 @@ class ScheduleTimer(RemoteThreadingClass):
         """
         check if there are events to be started
         """
-        now = datetime.now().strftime("%Y-%m-%d-%H-%M-%w")
+        #now = datetime.now().strftime("%Y-%m-%d-%H-%M-%w")
+        now = self.config.local_time().strftime("%Y-%m-%d-%H-%M-%w")
         if now == self.last_execute:
             return
 
