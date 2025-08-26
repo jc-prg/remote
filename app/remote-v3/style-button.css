@@ -185,9 +185,8 @@ button {
 
 
 .rm-button_setting_index {
-    width       :   48%;
-    max-width   :   48%;
-    margin      :    1%;
+    width       :   calc(100%/2 - 10px);
+    margin      :    5px;
     height      : 140px;
     padding     :  10px;
     float       :  left;

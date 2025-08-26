@@ -1,0 +1,51 @@
+:root {
+}
+
+/* setting frames depending on screen size */
+
+#setting_ext_top_frame {
+  position: absolute;
+  width: var(--app-frame-width-100);
+}
+
+#setting_ext_frames {
+  position: absolute;
+  width: var(--app-frame-width-100);
+}
+
+
+@media (min-width: 705px) {
+
+  #device_frame0 {
+    width : calc(100% - 225px);
+  }
+  #setting_ext_top_frame  {
+    width: calc(100% - 210px);
+    left : 180px;
+  }
+  #setting_ext_frames     {
+    width: calc(100% - 210px);
+    left : 180px;
+  }
+}
+
+
+/* setting button size depending on screen size */
+
+@media (max-width: 300px) {
+    .rm-button_setting_index {
+        width       :   calc(100% - 10px);
+        }
+    }
+
+@media (min-width: 900px) {
+    .rm-button_setting_index {
+        width       :   calc(100%/3 - 10px);
+        }
+    }
+
+@media (min-width: 1200px) {
+    .rm-button_setting_index {
+        width       :   calc(100%/4 - 10px);
+        }
+    }

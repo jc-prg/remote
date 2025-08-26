@@ -57,7 +57,7 @@ function rmSettings (name) {	// IN PROGRESS
         if (selected_mode == "index") {
             setNavTitle(lang('SETTINGS'));
             this.settings_ext_reset();
-            this.settings_ext_append(1, lang("SETTINGS"), this.module_index());
+            this.settings_ext_append(1, lang("SETTINGS"), this.module_index(), "", false, true);
             this.settings_ext_append(2, lang("QUICK_ACCESS"), "&nbsp;<br/>" + this.module_index_quick(true, true));
             this.create_show_ext();
 
@@ -1172,7 +1172,7 @@ function rmSettings (name) {	// IN PROGRESS
         setTextById("setting_ext_frames", "");
         }
 
-	this.settings_ext_append    = function (nr, label="", text="", style="", top=false) {
+	this.settings_ext_append    = function (nr, label="", text="", style="", top=false, index=false) {
 	    var frame_content = getTextById("setting_ext_frames");
 
 		if (label != "") {
@@ -1183,13 +1183,19 @@ function rmSettings (name) {	// IN PROGRESS
 			}
 
         if (top) {
-            var device_frame = "<div id='device_frame" + nr + "' class='setting_bg wide' style='display:block;"+style+"'>";
+            var device_frame = "";
+            device_frame += "<div id='device_frame" + nr + "' class='setting_bg wide' style='display:block;"+style+"'>";
             device_frame += text;
 	        device_frame += "</div>";
 	        setTextById("setting_ext_top_frame", frame_content + device_frame);
 	        }
         else {
-            var device_frame = "<div id='device_frame" + nr + "' class='setting_bg' style='display:block;"+style+"'>";
+            var frame_empty = "<div id='device_frame0' class='setting_bg header empty' style='display:block;zindex:1;'></div>";
+            var device_frame = "";
+            if (frame_content == "" && index == false) {
+                device_frame += frame_empty;
+                }
+            device_frame += "<div id='device_frame" + nr + "' class='setting_bg' style='display:block;"+style+"'>";
             device_frame += text;
 	        device_frame += "</div>";
 	        setTextById("setting_ext_frames", frame_content + device_frame);
