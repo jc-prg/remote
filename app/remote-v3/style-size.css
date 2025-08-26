@@ -5,12 +5,12 @@
 
 #setting_ext_top_frame {
   position: absolute;
-  width: var(--app-frame-width-100);
+  width: calc(100% - 32px);
 }
 
 #setting_ext_frames {
   position: absolute;
-  width: var(--app-frame-width-100);
+  width: calc(100% - 32px);
 }
 
 
