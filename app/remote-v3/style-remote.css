@@ -116,7 +116,8 @@ ul.help ul li {
 
 .setting_bg {
    font-family      : sans-serif;
-   width            : 290px;
+   //width            : 290px;
+   width            : calc(100% - 18px);
    margin           : 4px;
    padding          : 5px;
    float            : left;
@@ -129,7 +130,7 @@ ul.help ul li {
 
 .setting_bg.wide {
    background       : #dddddd;
-   width            : 290px;
+   width            : calc(100% - 18px);
 }
 
 .remote_edit {

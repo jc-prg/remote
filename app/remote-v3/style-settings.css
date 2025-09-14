@@ -95,10 +95,10 @@ nav-title {
     background-color        : #eeeeaa;
     border-color            : blue;
     border-radius           : 5px;
-    overflow-y              : auto;
-    overflow-x              : hidden;
+    overflow                : auto;
     white-space             : nowrap;
     font-family             : Consolas, "Courier New", monospace;
+    font-size               : 12px;
 }
 
 .server_logging.queue {

@@ -516,6 +516,7 @@ function rmRemote(name) {
         else                { elementHidden(id,"remote_edit_json"); return; }
 
         var device_config = this.data["CONFIG"]["devices"][device];
+        var device_macros = this.data["CONFIG"]["macros"];
         if (this.data["STATUS"]["config_errors"]["devices"][device] || !device_config || !device_config["remote"]) {
             setTextById(id,"");
             return;
@@ -718,7 +719,19 @@ function rmRemote(name) {
 		                                                                        "<br/>" + lang("MANUAL_REMOTE"),false);
 		remote += this.basic.container("display_json",  lang("JSON_DISPLAY"),   this.json.textarea( "remote_json_display", remote_display ) +
 		                                                                        "<br/>" + lang("MANUAL_DISPLAY"),false);
-		
+
+        var macro_on, macro_off = "";
+        var device_macros = this.data["CONFIG"]["macros"];
+        if (device in device_macros["device-on"])  { macro_on  = JSON.stringify(device_macros["device-on"][device]); }  else { macro_on = "[]"; }
+        if (device in device_macros["device-off"]) { macro_off = JSON.stringify(device_macros["device-off"][device]); } else { macro_off = "[]"; }
+
+		remote += this.basic.container("macros_json",  lang("JSON_REMOTE_MACROS"),
+		                                               "Information - edit in the <u style='cursor:pointer;' onclick='rm3settings.create(\"edit_scenes\");'>scene settings</u> ..." +
+		                                               lang("MACRO") + " ON:<br/>" + this.basic.input("remote_macro_on", macro_on) + "<br/>" +
+				                                       lang("MACRO") + " OFF:<br/>" + this.basic.input("remote_macro_off",   macro_off) + "<br/>",
+				                                       false);
+
+
         this.button.width = "23%";
         remote += "<br/>";
 		remote += this.basic.edit_line();

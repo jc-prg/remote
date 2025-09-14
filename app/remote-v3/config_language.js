@@ -140,11 +140,13 @@ var language_app = {
 		"JSON_REMOTE"			: "JSON remote control",
 		"JSON_SCENE_MACROS"		: "JSON scene macros",
 		"JSON_DEVICE_MACROS"	: "JSON device macros",
+		"JSON_REMOTE_MACROS"    : "JSON macros (ON|OFF)",
 
 		"LABEL"                 : "Label",
 		
 		"LOAD_TEMPLATE"         : "Load template",
-		
+
+		"MACRO"                 : "Macro",
 		"MACRO_PLEASE_WAIT"     : "Executing commands, please wait a few seconds!",
 		
 		"MANUAL"                : "manual",
