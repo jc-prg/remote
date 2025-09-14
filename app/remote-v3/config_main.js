@@ -113,10 +113,14 @@ function app_setting_entries() {
     // leave 'call_function' empty to create an information tile that's not clickable
 
     appSettings.icon_dir = "";
-    appSettings.add_entry("INTRO",  appTitle,           "icon/remote_ctrl",          "");
-    appSettings.add_entry("INFO",   lang("INFORMATION"), "icon/info2",         "appSettings.default_entry_info();");
-    appSettings.add_entry("DEMO",   lang("DEMO"),       "icon/search",         "appSettings.default_entry_demo();");
-    appSettings.add_entry("HELP",   lang("QUESTION"),   "icon/question",     "appMsg.alert('Not implemented.');",    false);
+
+    //appSettings.add_entry("INTRO",  appTitle,           "icon/remote_ctrl",          "");
+    appSettings.add_entry("SETTINGS_DEVICES",  lang("SETTINGS_DEVICES"), "icon/remote_ctrl",   "rm3settings.create('edit_devices');");
+    appSettings.add_entry("SETTINGS_SCENES",   lang("SETTINGS_SCENES"), "icon/cinema",    "rm3settings.create('edit_scenes');");
+    appSettings.add_entry("SETTINGS_TIMER",    lang("SETTINGS_TIMER"), "icon/timer",      "rm3settings.create('edit_timer');");
+    appSettings.add_entry("INFORMATION",       lang("INFORMATION"), "icon/info2",         "rm3settings.create('info');");
+    appSettings.add_entry("SETTINGS_API",      lang("INFORMATION"), "icon/plug2",         "rm3settings.create('edit_interfaces');");
+    appSettings.add_entry("SETTINGS_GENERAL",  lang("INFORMATION"), "icon/settings2",     "rm3settings.create('general');");
     }
 
 

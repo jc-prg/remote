@@ -50,11 +50,14 @@ function rmSettings (name) {	// IN PROGRESS
     this.create			        = function (selected_mode="", direct_cmd="", direct_data="") {
 
         this.header_title = getTextById("header_title");
+        elementVisible("setting_ext_top_frame");
+        elementVisible("setting_ext_frames");
 
         if (selected_mode != "")   { this.mode = selected_mode; }
         else if (this.mode != "")  { selected_mode = this.mode; }
 
         if (selected_mode == "index") {
+
             setNavTitle(lang('SETTINGS'));
             this.settings_ext_reset();
             this.settings_ext_append(1, lang("SETTINGS"), this.module_index(), "", false, true);
@@ -163,7 +166,15 @@ function rmSettings (name) {	// IN PROGRESS
 
         elementVisible("setting_frames");
         for (var i=0; i<this.e_settings.length; i++) { elementHidden(this.e_settings[i]); }
+
+
         elementVisible(this.e_settings[this.e_settings.length-1]);
+
+        var element = document.getElementById(this.e_settings[this.e_settings.length-1]);
+        element.className = "setting_bg main";
+        document.getElementById("setting_ext_frames").style.display = "contents";
+        document.getElementById("setting_frames").style.display = "contents";
+        //var content = element.innerHTML;
         }
 
     this.module_index           = function (small=false, selected="") {
@@ -1215,7 +1226,7 @@ function rmSettings (name) {	// IN PROGRESS
             if (frame_content == "" && index == false) {
                 device_frame += frame_empty;
                 }
-            device_frame += "<div id='device_frame" + nr + "' class='setting_bg' style='display:block;"+style+"'>";
+            device_frame += "<div id='device_frame" + nr + "' class='setting_bg main' style='display:block;"+style+"'>";
             device_frame += text;
 	        device_frame += "</div>";
 	        setTextById("setting_ext_frames", frame_content + device_frame);

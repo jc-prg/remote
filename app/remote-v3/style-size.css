@@ -1,10 +1,55 @@
+/* overwrite settings from app-framework */
+
+.setting_bg.header.empty {
+    height : 49px;
+    }
+
 :root {
+    --app-frame-width-default: 300px;
+
+    --app-frame-width-100: calc(100% - 0px);
+    --app-frame-width-50: calc(100% / 2 - 22px);
+    --app-frame-width-30: calc(100% / 3 - 22px);
+
+    --app-frame-width-100-menu: calc(100% - 163px - 16px);
+    --app-frame-width-100-menu2: calc(100% - 163px - 16px);
+    --app-frame-width-50-menu: calc((100% - 163px) / 2 - 16px);
+    --app-frame-width-30-menu: calc((100% - 163px) / 3 - 16px);
 }
+
+@media (min-width: 705px) {
+  .setting_bg.wide          { width  : var(--app-frame-width-100); }
+  .setting_bg.main          { width  : var(--app-frame-width-100); }
+  .setting_bg.header        { width  : var(--app-frame-width-100); }
+  .setting_bg.header.empty  { width  : var(--app-frame-width-100); }
+  .settings_button_index    { width  : calc(33% - 8px); height : 140px; }
+  .settings_icon_big        { max-width : 120px; max-height : 60px; }
+  .frame_block_content      { width  : var(--app-frame-width-100-menu); }
+  }
+
+@media (min-width: 850px) {
+  .remote                   { width  : var(--app-frame-width-50); }
+  .setting_bg               { width  : var(--app-frame-width-50); }
+}
+
+/* adapted format for Laptop & Bigger - 3 columns incl. menu*/
+
+@media (min-width: 1250px) {
+  .remote                   { width  : var(--app-frame-width-30); }
+  .setting_bg               { width  : var(--app-frame-width-30); }
+  .setting_bg.wide          { width  : var(--app-frame-width-100); }
+  .setting_bg.main          { width  : var(--app-frame-width-100); }
+  .setting_bg.header        { width  : var(--app-frame-width-100); }
+  .setting_bg.header.empty  { width  : var(--app-frame-width-100); }
+  .settings_button_index    { width  : calc(25% - 10px); height : 150px; }
+  .settings_icon_big        { max-width : 120px; max-height : 80px; }
+  .frame_block_content      { width  : var(--app-frame-width-100-menu); }
+  }
 
 /* setting frames depending on screen size */
 
 #setting_ext_top_frame {
-  position: absolute;
+  position: fixed;
   width: calc(100% - 32px);
 }
 
@@ -16,14 +61,14 @@
 @media (min-width: 705px) {
 
   #device_frame0 {
-    width : calc(100% - 225px);
+    width : 100%;
   }
   #setting_ext_top_frame  {
-    width: calc(100% - 210px);
+    width: calc(100% - 227px);
     left : 180px;
   }
   #setting_ext_frames     {
-    width: calc(100% - 210px);
+    width: calc(100% - 197px);
     left : 180px;
   }
 }

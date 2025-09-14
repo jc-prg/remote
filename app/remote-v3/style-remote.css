@@ -56,7 +56,8 @@ ul.help ul li {
 }
 
 .app_content {
-   width            : 100%;
+   //width            : 100%;
+   width            : calc(100% - 30px);
    position         : absolute;
    left             : 0px;
    top              : 0px;
@@ -65,13 +66,37 @@ ul.help ul li {
    margin           : 0px;
 }
 
+/* frames */
+
+.frame_block_nav {
+    min-height  : 100%;
+    margin      : 0px;
+    padding     : 0px;
+    float       : left;
+    //border      : 1px solid yellow;
+}
+
+.frame_block_content {
+    display         : flex;
+    flex-direction  : column;
+    gap             : 0px;
+
+    min-height  : 100%;
+    margin      : 0px;
+    padding     : 0px;
+    float       : left;
+    //border      : 1px solid yellow;
+}
+
+
 /* default size for boxes and buttons = iPhone 5c */
 /* boxes for remote controls */
+
 
 .remote {
    position         : relative;
    float            : left;
-   width            : 290px;
+   width            : var(--app-frame-width-100);
    margin           : 4px;
    padding          : 5px;
    border-radius	: 5px;   
@@ -124,7 +149,7 @@ ul.help ul li {
    }
    
 .remote_group {
-	width           : 96%;
+	width           : calc(100% - 16px);
 	background      : gray;
 	padding         : 5px;
 	border-radius   : 5px;

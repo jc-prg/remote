@@ -112,6 +112,8 @@ function rmRemote(name) {
 		    rm3settings.create("index_small");
 		    elementVisible(this.frames_edit[0]);
 		    elementVisible(this.frames_edit[1]);
+		    elementHidden("setting_ext_top_frame");
+		    elementHidden("setting_ext_frames");
 		    }
 		else {
 		    rm3settings.settings_ext_reset();

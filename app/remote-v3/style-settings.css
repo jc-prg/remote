@@ -104,3 +104,9 @@ nav-title {
 .server_logging.queue {
     background-color        : #ddddff;
 }
+
+@media (max-width: 730px) {
+    .server_logging {
+        width : calc(100% - 20px);
+    }
+}
