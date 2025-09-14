@@ -111,11 +111,11 @@
         loadScripts("/modules/",   modules_js);
         loadCss("/modules/",       modules_css);
 
-        loadCss("/remote-v3/",     remote_css);
-        loadScripts("/remote-v3/", remote_js);
-
         loadScripts("/framework/", app_js);
         loadCss("/framework/",     app_css);
+
+        loadCss("/remote-v3/",     remote_css);
+        loadScripts("/remote-v3/", remote_js);
 
         setTimeout( function() {
             startApp();

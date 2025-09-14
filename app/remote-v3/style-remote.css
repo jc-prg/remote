@@ -88,6 +88,13 @@ ul.help ul li {
     //border      : 1px solid yellow;
 }
 
+#frames {
+    display             : flex;
+    flex-wrap           : wrap;
+    align-items    : flex-start;
+}
+
+
 
 /* default size for boxes and buttons = iPhone 5c */
 /* boxes for remote controls */

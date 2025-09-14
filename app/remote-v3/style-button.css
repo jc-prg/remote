@@ -280,19 +280,19 @@ canvas {
     );
 }
 
+
 .image_list {
-    margin              : 3px;
+    margin-bottom       : 7px;
     background-color    : blue;
     border              : 1px solid white;
     border-radius       : 3px;
-    height              : 30px;
-    width               : 44px;
+    height              : 40px;
+    width               : 10%;
     float               : left;
     justify-content     : center;
 }
 .image_list.key {
-    max-width           : 50;
-    width               : 50;
+    min-width           : 10%;
     background-color    : gray;
     color               : white;
     border              : 0px;
