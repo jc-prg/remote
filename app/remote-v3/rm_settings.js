@@ -173,7 +173,8 @@ function rmSettings (name) {	// IN PROGRESS
         element.className = "setting_bg main";
         document.getElementById("setting_ext_frames").style.display = "contents";
         document.getElementById("setting_frames").style.display = "contents";
-        document.getElementById("frame_block_content").style.width = "calc(100% + 16px)";
+        if (document.documentElement.clientWidth < 705) { document.getElementById("frame_block_content").style.width = "calc(100% + 16px)"; }
+        else                                            { document.getElementById("frame_block_content").style.width = "calc(100% - 172px)"; }
         }
 
     this.module_index           = function (small=false, selected="") {

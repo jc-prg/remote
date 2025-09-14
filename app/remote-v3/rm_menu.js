@@ -41,9 +41,9 @@ function rmMenu(name, menu) {
             document.getElementById("menuItems2").style.maxHeight = height + "px";
             rm3menu.menu_height();
 
-            if (width > rmMenu_visibleWidth) {
-                document.getElementById("menuItems").style.visibility = "hidden";
-                }
+        if (document.getElementById("remote_nav").style.display != "block") {
+            document.getElementById("menuItems").style.visibility = "hidden";
+            }
         }
 
     height = (window.innerHeight - 70);
@@ -53,15 +53,9 @@ function rmMenu(name, menu) {
     }
 
     this.click_menu          = function() {
-            height       = (window.innerHeight - 70);
-            width        = window.innerWidth;
-            menuDropDown = document.getElementById("menuItems");
-
-        if (width < rmMenu_visibleWidth) {
-            if (menuDropDown.style.visibility == "hidden")   { menuDropDown.style.visibility = "visible"; }
-            else                                             { menuDropDown.style.visibility = "hidden"; }
+        if (document.getElementById("remote_nav").style.display != "block") {
+            document.getElementById("menuItems").style.visibility = "hidden";
             }
-        else                                                 { menuDropDown.style.visibility = "hidden"; }
     }
 
     this.menu_height	     = function() {
