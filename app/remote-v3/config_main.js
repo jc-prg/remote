@@ -10,7 +10,7 @@ var app_setting_style_header    = "setting_bg header";
 
 var app_last_load               = 0;
 var app_title                   = "jc://remote/";
-var app_version                 = "v2.9.9";
+var app_version                 = "v3.0.0";
 var app_api_dir                 = "api/";
 var app_api_status              = "list";
 
