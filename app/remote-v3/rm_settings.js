@@ -113,6 +113,7 @@ function rmSettings (name) {	// IN PROGRESS
             this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_API"), "", true);
             this.module_interface_edit();
             this.settings_ext_append(1, "", this.module_interface_info());
+            this.settings_ext_append(2, "", this.module_interface_logging());
             this.create_show_ext();
             apiGetConfig_showInterfaceData(this.module_interface_edit_info);
             statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
@@ -284,7 +285,7 @@ function rmSettings (name) {	// IN PROGRESS
 	        html += "<li id='"+scene+"'>";
 	        html += "<div class='slist_li_content"+style+"'>" + scenes[scene]["settings"]["label"] + "<br/>";
 	        html += "<font style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>"+scene+"</rm-id></font></div>";
-	        html += "<div class='slist_li_edit;'>" + this.module_remote_edit("scene", scene, scenes[scene]["settings"]["visible"]) + "</div>";
+	        html += "<div class='slist_li_edit'>" + this.module_remote_edit("scene", scene, scenes[scene]["settings"]["visible"]) + "</div>";
 	        html += "</li>";
 	    }
 
@@ -307,7 +308,7 @@ function rmSettings (name) {	// IN PROGRESS
 	        html += "<li id='"+device+"'>";
 	        html += "<div class='slist_li_content"+style+"'>" + devices[device]["settings"]["label"] + "<br/>";
 	        html += "<font style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>"+device+"</rm-id></font></div>";
-	        html += "<div class='slist_li_edit;'>" + this.module_remote_edit("device", device, devices[device]["settings"]["visible"]) + "</div>";
+	        html += "<div class='slist_li_edit'>" + this.module_remote_edit("device", device, devices[device]["settings"]["visible"]) + "</div>";
 	        html += "</li>";
 	    }
 
@@ -666,6 +667,25 @@ function rmSettings (name) {	// IN PROGRESS
 		setting  += set_temp;
 		setting  += "</div>";
 
+		return setting;
+    	}
+
+	this.module_interface_logging  = function () {
+		var setting = "<b>&nbsp;API logging</b><text style='font-size:25px;'>&nbsp;</text>";
+		setting    += " [<text onclick='apiLoggingLoad();' style='cursor:pointer;'>reload</text>]";
+		setting    += "<hr style='border:1px lightgray solid;' />";
+		setting    += "<div style='padding:5px;padding-bottom:6px;'>";
+
+		var set_temp = "";
+		set_temp += "<div class='server_logging queue' id='logging_queue_send'></div>";
+		set_temp += "<div class='server_logging' id='logging_api_send'></div>";
+		set_temp += "<div class='server_logging queue' id='logging_queue_query'></div>";
+		set_temp += "<div class='server_logging' id='logging_api_query'></div>";
+
+		setting  += set_temp;
+		setting  += "</div>";
+
+		apiLoggingLoad();
 		return setting;
     	}
 

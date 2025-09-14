@@ -679,3 +679,27 @@ function apiReconnectInterface( interface ) {
     var send_cmd    = ["reconnect", interface];
 	appFW.requestAPI( "POST", send_cmd, "", apiAlertReturn );
 }
+
+// load logging information from API
+function apiLoggingLoad() {
+    var send_cmd = ["log_queue"];
+	console.debug("apiLoggingLoad");
+	appFW.requestAPI( "GET", send_cmd, "", apiLoggingWrite );
+}
+
+function apiLoggingWrite(data) {
+    var log_data = data["DATA"];
+    if (!log_data) {
+        console.error("apiLoggingWrite: got no logging data!");
+        return;
+        }
+    title    = "<b>API Send</b><hr/>";
+    setTextById("logging_api_send",     title + log_data["log_api"]["send"].join("<br/>"));
+    title    = "<b>QUEUE Send</b><hr/>";
+    setTextById("logging_queue_send",   title + log_data["log_send"].join("<br/>"));
+
+    title    = "<b>API Query</b><hr/>";
+    setTextById("logging_api_query",     title + log_data["log_api"]["query"].join("<br/>"));
+    title    = "<b>QUEUE Query</b><hr/>";
+    setTextById("logging_queue_query",   title + log_data["log_query"].join("<br/>"));
+}

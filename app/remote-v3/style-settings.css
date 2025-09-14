@@ -84,3 +84,23 @@ nav-title {
     -moz-border-radius      : 5px;
      border-radius          : 5px !important;
 }
+
+.server_logging {
+    float                   : left;
+    height                  : 300px;
+    width                   : calc(50% - 20px);
+    margin                  : 5px;
+    padding                 : 5px;
+    color                   : #000044;
+    background-color        : #eeeeaa;
+    border-color            : blue;
+    border-radius           : 5px;
+    overflow-y              : auto;
+    overflow-x              : hidden;
+    white-space             : nowrap;
+    font-family             : Consolas, "Courier New", monospace;
+}
+
+.server_logging.queue {
+    background-color        : #ddddff;
+}
