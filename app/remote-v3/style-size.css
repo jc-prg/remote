@@ -70,6 +70,7 @@
   #setting_ext_top_frame  {
     width: calc(100% - 212px);
     left : 180px;
+    top  : 45px;
   }
   #setting_ext_frames     {
     width: calc(100% - 182px);
