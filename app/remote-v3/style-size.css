@@ -27,7 +27,7 @@
   .frame_block_content      { width  : var(--app-frame-width-100-menu); }
   }
 
-@media (min-width: 850px) {
+@media (min-width: 880px) {
   .remote                   { width  : var(--app-frame-width-50); }
   .setting_bg               { width  : var(--app-frame-width-50); }
 }
