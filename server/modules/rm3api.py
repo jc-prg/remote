@@ -699,6 +699,22 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._end(data, ["no-config", "no-status"])
         return data
 
+    def get_queue_log(self):
+        """
+        return queue log for an API request
+
+        Return:
+            dict: API response
+        """
+        data = self._start()
+        data["REQUEST"]["Return"] = "OK: Returned list and status data."
+        data["REQUEST"]["Command"] = "List"
+        data["DATA"]["log_query"] = self.queue.get_query_log()
+        data["DATA"]["log_send"] = self.queue_send.get_query_log()
+        data["DATA"]["log_api"] = self.apis.get_query_log()
+        data = self._end(data, ["no-config", "no-status"])
+        return data
+
     def edit_timer(self, timer_id, timer_config):
         """
         edit data of a timer event
@@ -1101,6 +1117,7 @@ class RemoteAPI(RemoteDefaultClass):
         commands_dont_exist = []
         return_msg = ""
 
+        self.queue_send.add2log("macro", "START")
         self.logging.debug("Decoded macro-string 1st: " + str(commands_1st))
 
         # decode macros: scene-on/off
@@ -1261,6 +1278,9 @@ class RemoteAPI(RemoteDefaultClass):
         self._refresh()
         if return_msg != "":
             data["REQUEST"]["Return"] = return_msg
+
+        self.queue_send.add2log("macro", commands_4th)
+        self.queue_send.add2log("macro", "END")
 
         data["REQUEST"]["decoded_macro"] = ", ".join(str(e) for e in commands_4th)
         if len(commands_dont_exist) > 0:

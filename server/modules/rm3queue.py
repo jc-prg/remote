@@ -25,6 +25,8 @@ class QueueApiCalls(RemoteThreadingClass):
         self.last_button = "<none>"
         self.config = config
         self.query_send = query_send
+        self.query_log = []
+        self.query_log_length = 100
         self.reload = False
         self.reload_time = time.time()
         self.exec_times = {}
@@ -204,8 +206,30 @@ class QueueApiCalls(RemoteThreadingClass):
 
         # or add command to queue
         for command in commands:
+            self.add2log("add2Q", command)
             if "," in str(command):
                 command.append(time.time())  # add element to array
             self.queue.append(command)       # add command array to queue
 
         return "OK: Added command(s) to the queue '" + self.name + "': " + str(commands)
+
+    def add2log(self, source, commands):
+        """
+        add an entry to the internal temporary logging which can be requested using an API command
+
+        Args:
+            source (str): query type values - send, send_makro, request (tbc.)
+            commands (list): list of parameters
+        """
+        log_time = self.config.local_time().strftime("%H:%M:%S.%f")
+        log_name = self.name.replace("queue", "")
+
+        self.query_log.insert(0,log_time + "  " + source + "  " + str(commands))
+        if len(self.query_log) > self.query_log_length:
+            self.query_log.pop()
+
+    def get_query_log(self):
+        """
+        return query log for API call
+        """
+        return self.query_log

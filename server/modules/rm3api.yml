@@ -77,6 +77,25 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
 
+  /log_queue/:
+    get:
+      operationId: __main__.remoteAPI.get_queue_log
+      tags:
+        - queue log
+      summary: returns a logging of api requests
+      description: returns a logging of api requests handled using the que
+      responses:
+        200:
+          description: Successfully status data
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
   /config/device/{device}/:
     get:
       operationId: __main__.remoteAPI.get_config_device

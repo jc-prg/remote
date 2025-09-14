@@ -45,6 +45,8 @@ class Connect(RemoteThreadingClass):
             "API-Source": "",
             "API-Devices": {}
             }
+        self.api_log = {"send": [], "query": [], "record": []}
+        self.api_log_length = 100
         self.methods = {
             "send": "Send command via API (send)",
             "record": "Record per device (record)",
@@ -523,6 +525,7 @@ class Connect(RemoteThreadingClass):
         self.api_errors(device)
         self.logging.info("__SEND: " + api_dev + " / " + device + "_" + button + ":" + str(value) +
                           " (" + self.api[api_dev].status + ")")
+        self.add2log("send", [api_dev, device, button, str(value), self.api[api_dev].status])
 
         if value.startswith("set-") and method == "record":
             value = value.replace("set-", "")
@@ -614,6 +617,7 @@ class Connect(RemoteThreadingClass):
         self.api_errors(call_api, device)
 
         self.logging.debug("__RECORD " + api_dev + " (" + self.api[api_dev].status + ")")
+        self.add2log("record", [api_dev, device, button, "", self.api[api_dev].status])
 
         if self.api[api_dev].status == "Connected":
             if api_dev in self.api:
@@ -648,6 +652,7 @@ class Connect(RemoteThreadingClass):
         # self.check_errors(call_api, device)  #### -> leads to an error for some APIs
 
         self.logging.debug("__QUERY " + api_dev + " (" + device + "," + button + ";" + self.api[api_dev].status + ")")
+        self.add2log("query", [api_dev, device, button, self.api[api_dev].status])
 
         if api_dev in self.api and self.api[api_dev].status == "Connected":
 
@@ -967,3 +972,25 @@ class Connect(RemoteThreadingClass):
                 return "ERROR create_command: command not defined (" + device + ", " + button + ")"
         else:
             return "ERROR create_command: device not found (" + button + ")"
+
+    def add2log(self, source, commands):
+        """
+        add an entry to the internal temporary logging which can be requested using an API command
+
+        Args:
+            source (str): query type values - send, send_makro, request (tbc.)
+            commands (list): list of parameters
+        """
+        log_time = self.config.local_time().strftime("%H:%M:%S.%f")
+
+        if source not in self.api_log:
+            self.api_log[source] = []
+        self.api_log[source].insert(0, log_time + "  " + str(commands))
+        if len(self.api_log) > self.api_log_length:
+            self.api_log.pop()
+
+    def get_query_log(self):
+        """
+        return query log for API call
+        """
+        return self.api_log
