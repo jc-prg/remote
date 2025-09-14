@@ -726,7 +726,7 @@ function rmRemote(name) {
         if (device in device_macros["device-off"]) { macro_off = JSON.stringify(device_macros["device-off"][device]); } else { macro_off = "[]"; }
 
 		remote += this.basic.container("macros_json",  lang("JSON_REMOTE_MACROS"),
-		                                               "Information - edit in the <u style='cursor:pointer;' onclick='rm3settings.create(\"edit_scenes\");'>scene settings</u> ..." +
+		                                               "Information - edit in the <u style='cursor:pointer;' onclick='rm3settings.create(\"edit_scenes\");'>scene settings</u> ...<br/>" +
 		                                               lang("MACRO") + " ON:<br/>" + this.basic.input("remote_macro_on", macro_on) + "<br/>" +
 				                                       lang("MACRO") + " OFF:<br/>" + this.basic.input("remote_macro_off",   macro_off) + "<br/>",
 				                                       false);
