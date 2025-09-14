@@ -166,15 +166,14 @@ function rmSettings (name) {	// IN PROGRESS
 
         elementVisible("setting_frames");
         for (var i=0; i<this.e_settings.length; i++) { elementHidden(this.e_settings[i]); }
-
-
         elementVisible(this.e_settings[this.e_settings.length-1]);
 
+        // change display to contents that log is displayed below other setting frames, requires adjustment of parent elements width
         var element = document.getElementById(this.e_settings[this.e_settings.length-1]);
         element.className = "setting_bg main";
         document.getElementById("setting_ext_frames").style.display = "contents";
         document.getElementById("setting_frames").style.display = "contents";
-        //var content = element.innerHTML;
+        document.getElementById("frame_block_content").style.width = "calc(100% + 16px)";
         }
 
     this.module_index           = function (small=false, selected="") {

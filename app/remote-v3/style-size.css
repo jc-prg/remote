@@ -1,7 +1,7 @@
 /* overwrite settings from app-framework */
 
 .setting_bg.header.empty {
-    height : 49px;
+    height : 47px;
     }
 
 :root {
@@ -50,12 +50,16 @@
 
 #setting_ext_top_frame {
   position: fixed;
-  width: calc(100% - 32px);
+  width: calc(100% - 14px);
 }
 
 #setting_ext_frames {
   position: absolute;
-  width: calc(100% - 32px);
+  width: calc(100% - 0px);
+}
+
+#frames {
+  width: calc(100% - 0px);
 }
 
 @media (min-width: 705px) {
@@ -64,11 +68,11 @@
     width : 100%;
   }
   #setting_ext_top_frame  {
-    width: calc(100% - 227px);
+    width: calc(100% - 212px);
     left : 180px;
   }
   #setting_ext_frames     {
-    width: calc(100% - 197px);
+    width: calc(100% - 182px);
     left : 180px;
   }
 }
