@@ -1,8 +1,8 @@
 import time
 import logging
-import modules.rm3presets as rm3presets
-import modules.rm3json as rm3json
-from modules.rm3classes import RemoteDefaultClass, RemoteThreadingClass
+import server.modules.rm3presets as rm3presets
+import server.modules.rm3json as rm3json
+from server.modules.rm3classes import RemoteDefaultClass, RemoteThreadingClass
 
 
 class RemotesData(RemoteThreadingClass):

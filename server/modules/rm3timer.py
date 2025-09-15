@@ -1,8 +1,8 @@
 import time
 import re
-import modules.rm3presets as rm3presets
+import server.modules.rm3presets as rm3presets
 from datetime import datetime
-from modules.rm3classes import RemoteThreadingClass
+from server.modules.rm3classes import RemoteThreadingClass
 
 
 class ScheduleTimer(RemoteThreadingClass):

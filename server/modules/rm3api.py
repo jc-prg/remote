@@ -1,6 +1,6 @@
 import time
-import modules.rm3presets as rm3presets
-from modules.rm3classes import RemoteDefaultClass
+import server.modules.rm3presets as rm3presets
+from server.modules.rm3classes import RemoteDefaultClass
 from datetime import datetime
 
 

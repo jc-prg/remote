@@ -1,9 +1,9 @@
 import time
-import modules.rm3json as rm3json
-import modules.rm3presets as rm3config
-import modules.rm3ping as rm3ping
-from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
-import interfaces.eiscp as eiscp
+import server.modules.rm3json as rm3json
+import server.modules.rm3presets as rm3config
+import server.modules.rm3ping as rm3ping
+from server.modules.rm3classes import RemoteDefaultClass, RemoteApiClass
+import server.interfaces.eiscp as eiscp
 
 
 shorten_info_to = rm3config.shorten_info_to

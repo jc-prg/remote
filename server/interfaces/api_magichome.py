@@ -1,16 +1,10 @@
-# -----------------------------------
-# API integration for jc://remote/ MAGIC HOME
-# -----------------------------------
-# (c) Christoph Kloth
-# -----------------------------------
-
 import logging
 import time
-import modules.rm3json as rm3json
-import modules.rm3presets as rm3config
-import modules.rm3ping as rm3ping
-from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
-import interfaces.magichome.magichome as mh_device
+import server.modules.rm3json as rm3json
+import server.modules.rm3presets as rm3config
+import server.modules.rm3ping as rm3ping
+from server.modules.rm3classes import RemoteDefaultClass, RemoteApiClass
+import server.interfaces.magichome.magichome as mh_device
 
 # ######## to be solved:
 #  Error during requesting data: [Errno 9] Bad file descriptor

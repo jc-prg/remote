@@ -1,7 +1,7 @@
 import logging
 import time
 import threading
-import modules.rm3presets as rm3presets
+import server.modules.rm3presets as rm3presets
 
 
 class RemoteDefaultClass(object):

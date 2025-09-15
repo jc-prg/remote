@@ -1,7 +1,7 @@
 import time
-import modules.rm3json as rm3json
-import modules.rm3presets as rm3config
-from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
+import server.modules.rm3json as rm3json
+import server.modules.rm3presets as rm3config
+from server.modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 
 # import sampleAPI as sample
 

@@ -1,8 +1,8 @@
 import time
 import os
-import modules.rm3presets as rm3presets
-import modules.rm3json as rm3json
-from modules.rm3classes import RemoteThreadingClass
+import server.modules.rm3presets as rm3presets
+import server.modules.rm3json as rm3json
+from server.modules.rm3classes import RemoteThreadingClass
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
 

@@ -1,4 +1,4 @@
-import modules.rm3presets as rm3presets
+import server.modules.rm3presets as rm3presets
 import json
 import codecs
 import time

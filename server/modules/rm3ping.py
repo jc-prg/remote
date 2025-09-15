@@ -1,5 +1,5 @@
 import pythonping
-import modules.rm3presets as rm3presets
+import server.modules.rm3presets as rm3presets
 
 
 ping_logger = rm3presets.set_logging("ping")

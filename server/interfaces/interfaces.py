@@ -1,11 +1,12 @@
 import time
 import sys
 import datetime
+import importlib
 
-import modules.rm3json as rm3json
-import modules.rm3presets as rm3presets
-import modules.rm3ping as rm3ping
-from modules.rm3classes import RemoteThreadingClass
+import server.modules.rm3json as rm3json
+import server.modules.rm3presets as rm3presets
+import server.modules.rm3ping as rm3ping
+from server.modules.rm3classes import RemoteThreadingClass
 
 
 class Connect(RemoteThreadingClass):
@@ -268,28 +269,30 @@ class Connect(RemoteThreadingClass):
                 for api_device in config_api[api]["devices"]:
                     api_dev = api + "_" + api_device
                     api_device_config = config_api[api]["devices"][api_device]
-                    self.logging.debug("Loading API connector for '" + api_dev + "' ...")
 
-                    cmd_import = "import interfaces." + self.api_modules[api]
-                    cmd_connect = ("interfaces." + self.api_modules[api] +
-                                   ".ApiControl(api, api_device, api_device_config, self.log_commands, self.config)")
+                    self.logging.debug("Loading API connector for '" + api_dev + "' ...")
+                    cmd_interface_mod = "server.interfaces." + self.api_modules[api]
 
                     try:
-                        exec(compile(cmd_import, "string", "exec"))
-                        self.api[api_dev] = eval(cmd_connect)
-                        self.logging.debug("- OK")
+                        self.logging.debug("Try to import module '" + cmd_interface_mod + "'")
+                        module = importlib.import_module(cmd_interface_mod)
+                        self.api[api_dev] = module.ApiControl(api, api_device, api_device_config, self.log_commands, self.config)
 
                         if api in config_api:
                             self.available[api_dev] = api_dev + " (" + config_api[api]["description"] + ")"
+                        self.logging.info("OK: Import module '" + cmd_interface_mod + "'")
+
                     except ModuleNotFoundError:
-                        self.logging.error("Could not connect API: Module '" +
+                        self.logging.error("Could not connect API (0): Module '" +
                                            self.api_modules[api] + ".py' not found (" + api_dev + ")")
                         self.logging.error("... if exist, check if all required modules are installed, " +
                                            "that are to be imported in this module.")
+                    except AttributeError:
+                        self.logging.error(f"Could not connect API (1): Class or function not found")
                     except Exception as e:
-                        self.logging.error("Could not connect API: " + str(e) + " (" + api_dev + ")")
+                        self.logging.error("Could not connect API (2): " + str(e) + " (" + api_dev + ")")
                     except:
-                        self.logging.error("Could not connect API: Unknown reason (" + api_dev + ")")
+                        self.logging.error("Could not connect API (3): Unknown reason (" + api_dev + ")")
             return True
 
         elif config_dev != {}:
@@ -324,14 +327,14 @@ class Connect(RemoteThreadingClass):
                         if api in config_api:
                             self.available[api_dev] = api_device + " (" + config_api[api]["description"] + ")"
                     except ModuleNotFoundError:
-                        self.logging.error("Could not connect API: Module '" +
+                        self.logging.error("Could not connect API (4): Module '" +
                                            self.api_modules[api] + ".py' not found (" + api_dev + ")")
                         self.logging.error("... if exist, check if all required modules are installed, " +
                                            "that are to be imported in this module.")
                     except Exception as e:
-                        self.logging.error("Could not connect API: " + str(e) + " (" + api_dev + ")")
+                        self.logging.error("Could not connect API (5): " + str(e) + " (" + api_dev + ")")
                     except:
-                        self.logging.error("Could not connect API: Unknown reason (" + api_dev + ")")
+                        self.logging.error("Could not connect API (6): Unknown reason (" + api_dev + ")")
 
             return True
         else:

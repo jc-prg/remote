@@ -7,13 +7,13 @@ import traceback
 import connexion
 from flask_cors import CORS
 
-import modules.rm3config as rm3cache
-import modules.rm3data as rm3data
-import modules.rm3queue as rm3queue
-import modules.rm3presets as rm3presets
-import modules.rm3api as rm3api
-import modules.rm3timer as rm3timer
-import interfaces
+import server.modules.rm3config as rm3cache
+import server.modules.rm3data as rm3data
+import server.modules.rm3queue as rm3queue
+import server.modules.rm3presets as rm3presets
+import server.modules.rm3api as rm3api
+import server.modules.rm3timer as rm3timer
+import server.interfaces as interfaces
 
 
 def on_exception(exc_type, value, trace_back):
