@@ -82,6 +82,9 @@ class RemoteApiClass(RemoteDefaultClass):
         self.last_action = 0
         self.last_action_cmd = ""
 
+        if "Description" in self.api_config:
+            self.api_description = self.api_config["Description"]
+
         self.logging.info("_INIT: " + str(self.api_name) + " - " + str(self.api_description) +
                           " (" + str(self.api_config["IPAddress"]) + ")")
 

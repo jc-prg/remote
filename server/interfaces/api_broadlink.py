@@ -1,11 +1,11 @@
 import time
 import codecs
 import netaddr
-import modules.rm3json as rm3json
-import modules.rm3presets as rm3config
-import modules.rm3ping as rm3ping
-from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
-import interfaces.broadlink.broadlink as broadlink
+import server.modules.rm3json as rm3json
+import server.modules.rm3presets as rm3config
+import server.modules.rm3ping as rm3ping
+from server.modules.rm3classes import RemoteDefaultClass, RemoteApiClass
+import broadlink
 
 
 shorten_info_to = rm3config.shorten_info_to
@@ -21,18 +21,19 @@ check_on_startup_commands = [
 
 class ApiControl(RemoteApiClass):
     """
-    Integration of BROADLINK API to be use by jc://remote/
+    Integration of BROADLINK API to be used by jc://remote/
     """
 
     def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """
         Initialize API / check connect to device
         """
-        self.api_description = "API for Infrared Broadlink RM3"
+        self.api_description = "API for Broadlink RM Controller"
         RemoteApiClass.__init__(self, "api.RM3", api_name, "record",
                                 self.api_description, device, device_config, log_command, config)
 
         self.config_add_key("MACAddress", "")
+        self.config_add_key("DeviceType", "")
         self.config_set_methods(["send", "record"])
 
     def connect(self):
@@ -40,6 +41,7 @@ class ApiControl(RemoteApiClass):
         Connect / check connection
         """
         self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
+        self.last_action = time.time()
 
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
@@ -47,17 +49,31 @@ class ApiControl(RemoteApiClass):
             self.logging.warning(self.status)
             return self.status
 
+        """
+        STATUS: it works, a few things are still open
+        TODO:
+        - check how to include 2 or more RM devices (compare with TAPO) - and include into description
+            - 2 configs works, if RM3mini is disabled in the _ACTIVE-APIS.json; how to enable both?
+        """
+
         self.count_error = 0
         self.count_success = 0
 
         try:
             self.logging.debug("Configuration: " + str(self.api_config))
-            self.api = broadlink.rm((self.api_config["IPAddress"], int(self.api_config["Port"])),
-                                    netaddr.EUI(self.api_config["MACAddress"]))
-            if self.api.auth():
-                self.status = "Connected"
-            else:
-                self.status = self.not_connected + " ... CONNECT not found or no access"
+
+            mac_address = str(self.api_config["MACAddress"]).replace(":","")
+            self.api = broadlink.gendevice(
+                        dev_type=int(self.api_config["DeviceType"]),
+                        host=(self.api_config["IPAddress"], int(self.api_config["Port"])),
+                        mac=bytearray.fromhex(mac_address)
+                        )
+
+            self.api.auth()
+            self.status = "Connected"
+
+        except broadlink.exceptions.AuthenticationError:
+            self.status = self.not_connected + " ... CONNECT not found or no access, check with the Broadlink app if the device isn't locked."
 
         except Exception as e:
             self.status = self.not_connected + " ... CONNECT " + str(e)

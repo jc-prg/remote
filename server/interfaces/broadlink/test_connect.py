@@ -1,18 +1,3 @@
-# API Description: BROADLINK
-
-## Source
-
-* Python sources: [mjg59/python-broadlink](https://github.com/mjg59/python-broadlink) v0.19.0.
-  
-## How to install a Broadlink RM controller
-
-
-1. Load the Broadlink App for your mobile device
-2. Connect the Broadlink device to your wifi network as described in the Quick Setup Guide: [https://www.ibroadlink.com/downloads](https://www.ibroadlink.com/downloads)
-3. Unlock the device using the app in the device settings for RM4 mini
-4. Check the connection and identify data required for configuration using the [test_connect.py](test_connect.py):
-
-```python
 import broadlink
 
 # Step 1: Discover devices on the local network
@@ -60,12 +45,3 @@ for device in devices:
 
 print("")
 print("Done.")
-```
-5. Configure the broadlink device in jc://remote/ 
-    * Option 1: change settings using the app in "Settings > API Settings > API: BROADLINK" and reconnect. 
-      Hint: there you only can change the configuration but not add another device.
-    * Option 2: edit the file [data/devices/BROADLINK/00_interfaces.json](BROADLINK.json)
-
-## Additional jc://remote/ API Commands
-
-This device has no REST API that can be use to request information and there are no jc://remote/ API commands defined at the moment.

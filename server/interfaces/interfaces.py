@@ -280,7 +280,7 @@ class Connect(RemoteThreadingClass):
 
                         if api in config_api:
                             self.available[api_dev] = api_dev + " (" + config_api[api]["description"] + ")"
-                        self.logging.info("OK: Import module '" + cmd_interface_mod + "'")
+                        self.logging.debug("OK: Import module '" + cmd_interface_mod + "'")
 
                     except ModuleNotFoundError:
                         self.logging.error("Could not connect API (0): Module '" +
