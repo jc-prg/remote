@@ -1218,13 +1218,13 @@ function rmSettings (name) {	// IN PROGRESS
 		//set_temp += this.tab.row( "Device-Type:"+asterix,       this.input("add_device", onchange, onchange, device_data["device_name"]) );
 		set_temp += this.tab.row( "ID*:",                       "<span id='text_add_device_id'>" + lang("SELECT_DEV_FIRST") + "</span>" +
 		                                                        "<span style='display:none;'>" + this.input("add_device_id", onchange, onchange + "apiDeviceAddCheckID(this);", device_data["id"]) +"</span>");
-		set_temp += this.tab.row( "Device-Name:"+asterix,       this.input("add_device_descr", "", onchange, device_data["description"]) );
-		set_temp += this.tab.row( "Device-Type:"+asterix,       this.select("add_device", "device type", device_types, onchange3, "") );
+		set_temp += this.tab.row( "Device name:"+asterix,       this.input("add_device_descr", "", onchange, device_data["description"]) );
+		set_temp += this.tab.row( "Device type:"+asterix,       this.select("add_device", "device type", device_types, onchange3, "") );
         this.input_width = "180px";
 		set_temp += this.tab.row( "Interface:"+asterix,         this.select("add_device_api","interface", this.data["CONFIG"]["apis"]["list_description"], onchange, device_data["api_device"]) );
 		set_temp += this.tab.line();
 		set_temp += this.tab.row( icon_container,               rm3remotes.button_image_select("edit_image") );
-		set_temp += this.tab.row( "Label:"+asterix,             this.input("add_device_label", "", onchange, device_data["label"]) );
+		set_temp += this.tab.row( "Label in menua:"+asterix,             this.input("add_device_label", "", onchange, device_data["label"]) );
 		set_temp += this.tab.row( "External ID:",               this.input("add_device_id_external", "", "", device_data["external_id"]) );
 		set_temp += this.tab.line();
         this.input_width = "100px";
