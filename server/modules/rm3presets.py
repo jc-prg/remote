@@ -263,6 +263,7 @@ buttons = "buttons/"  # button configuration files
 active = "_active"  # overview file name
 
 active_devices = "_ACTIVE-DEVICES"
+active_device_types = "_DEVICE-TYPES"
 active_scenes = "_ACTIVE-SCENES"
 active_macros = "_ACTIVE-MACROS"
 active_apis = "_ACTIVE-APIS"

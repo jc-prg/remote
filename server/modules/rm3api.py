@@ -41,10 +41,17 @@ class RemoteAPI(RemoteDefaultClass):
             dict: information for "CONFIG" section
         """
         templates = self.data.templates_read()
+        remotes = self.data.remotes_read()
         apis = self.data.devices_read_api_structure()
         apis_commands = self.data.devices_read_api_commands(apis)
+        apis_dev_configs = self.data.api_config_read()
         apis_detect = self.data.devices_read_api_new_devices()
         macros = self.data.macros_read()
+        device_types = self.config.read(rm3presets.data_dir + "/" + rm3presets.active_device_types)
+        if "data" in device_types:
+            device_types = device_types["data"]
+        else:
+            device_types = []
 
         config = {
             "apis": {
@@ -53,9 +60,11 @@ class RemoteAPI(RemoteDefaultClass):
                 "list_description":     self.apis.available,
                 "list_detect":          apis_detect,
                 "list_api_commands":    apis_commands,
+                "list_api_configs":     apis_dev_configs,
                 "structure":            apis
                 },
             "devices":                  self.data.devices_read_config(),
+            "device_types":             device_types,
             "elements": {
                 "button_images":        self.config.read(rm3presets.icons_dir + "/index"),
                 "button_colors":        self.config.read(rm3presets.buttons + "button_colors"),
@@ -68,6 +77,7 @@ class RemoteAPI(RemoteDefaultClass):
             },
             "main-audio":               "NONE",
             "methods":                  self.apis.methods,
+            "remotes":                  remotes,
             "scenes":                   self.data.scenes_read(None, True),
             "templates": {
                 "definition":           templates["templates"],

@@ -1,4 +1,5 @@
 import time
+import re
 import logging
 import server.modules.rm3presets as rm3presets
 import server.modules.rm3json as rm3json
@@ -663,6 +664,62 @@ class RemotesData(RemoteThreadingClass):
                             data["template_list"][template] = data["templates"][template]["description"]
                         else:
                             data["template_list"][template] = template_key
+
+        return data
+
+    def remotes_read(self, selected=None):
+        """
+        read config data for existing remotes
+        """
+        if selected is None:
+            selected = []
+        data = {"list": {}, "list_error": []}
+
+        files = rm3json.available(rm3presets.remotes)
+
+        for file in files:
+            keys = file.split("/")
+            key = keys[len(keys) - 1]
+            file_data = self.config.read(rm3presets.remotes + key)
+
+            logging.debug(rm3presets.remotes + key)
+
+            if "ERROR" in file_data:
+                data["list_error"].append(key)
+            elif "data" in file_data and "description" in file_data["data"]:
+                data["list"][key] = file_data["data"]["description"]
+            else:
+                data["list"][key] = key
+
+        return data
+
+    def api_config_read(self, selected=None):
+        """
+        read config data for existing remotes
+        """
+        if selected is None:
+            selected = []
+        data = {"list": {}, "list_error": []}
+
+        files = rm3json.available(rm3presets.devices)
+
+        for file in files:
+            keys = file.split("/")
+            key = keys[len(keys) - 2] + "/" + keys[len(keys) - 1]
+            file_data = self.config.read(rm3presets.devices + key)
+
+            logging.debug(rm3presets.remotes + key)
+            api, dev = key.split("/")
+            if api not in data["list"]:
+                data["list"][api] = {}
+
+            if not re.search(r'/\d{2}_', key):
+                if "ERROR" in file_data:
+                    data["list_error"].append(key)
+                elif "data" in file_data and "description" in file_data["data"]:
+                    data["list"][api][dev] = file_data["data"]["description"]
+                else:
+                    data["list"][api][dev] = key
 
         return data
 

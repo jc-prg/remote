@@ -429,7 +429,7 @@ function rmRemote(name) {
 				"<input id='remote_visibility' value='"+remote_visible+"' style='display:none;'>"+
 				this.button.edit("apiRemoteChangeVisibility('device','"+device+"','remote_visibility');",lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
 				this.button.edit("apiDeviceEdit('"+device+"','edit','description,label,interface,method,device_id,image');",lang("BUTTON_T_SAVE")) + "&nbsp;" +
-				this.button.edit("apiDeviceDelete_exe('"+device+"');","delete") + "</center>"
+				this.button.edit("apiDeviceDelete('"+device+"');","delete") + "</center>"
 				);		
 		edit    += this.tab.line();
 		edit    += this.tab.end();
@@ -446,11 +446,35 @@ function rmRemote(name) {
 		remote  += this.basic.container("remote_main","Main settings",edit,true);
 
 		// API Information
-		edit     = "<p><b>"+lang("API_INTERFACE")+":</b><br/>"+		    device_config["interface"]["api"].replace("_", " / ");
-		//edit    += "<p><b>"+lang("CONFIG_INTERFACE")+":</b><br/>"+   	JSON.stringify(device_config["interface"]["files"]).replace( /,/g, ", ");
-		edit    += "<p><b>"+lang("CONFIG_INTERFACE")+":</b><br/>"+ 		device_config["interface"]["device"]+".json";
-		edit    += "<p><b>"+lang("CONFIG_REMOTE")+":</b><br/>"+ 		device_config["interface"]["remote"]+".json";
+        var select        = function (id, title, data, onchange="", value="") {
+            var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
+            item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
+            for (var key in data) {
+                var selected = "";
+                if (key == value) { selected = "selected"; }
+                if (key != "default") {
+                    item += "<option value=\"" + key + "\" " + selected+ ">" + data[key] + "</option>";
+                    }
+                }
+            item     += "</select>";
+            return item;
+            }
+		var on_change1    = "setTextById('edit_dev_api_field', this.value);";
+		var on_change2    = "setTextById('edit_dev_config_field', this.value + '.json');";
+		var on_change3    = "setTextById('edit_dev_rm_field', this.value + '.json');";
+        var api_key       = device_config["interface"]["api"].split("_")[0];
+    	var api_interface = select("edit_dev_api","interface", this.data["CONFIG"]["apis"]["list_description"], on_change1, device_config["interface"]["api"]);
+        var dev_config    = select("edit_dev_config","device config", this.data["CONFIG"]["apis"]["list_api_configs"]["list"][api_key], on_change2, device_config["interface"]["device"]);
+        var rm_definition = select("edit_dev_rm","remote definition", this.data["CONFIG"]["remotes"]["list"], on_change3, device_config["interface"]["remote"]);
+
+		edit     = "<p><b>"+lang("API_INTERFACE")+":</b><br/>"+		    api_interface;
+        edit    += "<br>&nbsp;<text id='edit_dev_api_field'>" +         device_config["interface"]["api"] + "</text>";
+		edit    += "<p><b>"+lang("CONFIG_INTERFACE")+":</b><br/>"+ 		dev_config;
+		edit    += "<br/>&nbsp;<text id='edit_dev_config_field'>" +     device_config["interface"]["device"]+".json" + "</text>";
+		edit    += "<p><b>"+lang("CONFIG_REMOTE")+":</b><br/>"+ 		rm_definition;
+        edit    += "<br/>&nbsp;<text id='edit_dev_rm_field'>"+          device_config["interface"]["remote"]+".json" + "</text>";
 		edit    += "<p><b>"+lang("METHOD")+":</b><br/>"+		        device_config["interface"]["method"]; //device_data["interface"]["remote"]+".json" );
+		edit    += "<hr/><center>" + this.button.edit("alert('not implemented yet');",lang("BUTTON_T_SAVE")) + "</center>";
 		remote  += this.basic.container("remote_api01",lang("API_INFORMATION"),edit,false);
 
 		// API details

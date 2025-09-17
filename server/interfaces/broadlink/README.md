@@ -65,6 +65,7 @@ print("Done.")
     * Option 1: change settings using the app in "Settings > API Settings > API: BROADLINK" and reconnect. 
       Hint: there you only can change the configuration but not add another device.
     * Option 2: edit the file [data/devices/BROADLINK/00_interfaces.json](BROADLINK.json)
+6. Ensure on your router that your Broadlink device keeps the same IPv4 address everytime.
 
 ## Additional jc://remote/ API Commands
 

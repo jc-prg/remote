@@ -274,16 +274,19 @@ function statusCheck_apiConnection(data) {
             }
 
         if (document.getElementById("onoff_"+key.toLowerCase())) {
-            var button = document.getElementById("onoff_"+key.toLowerCase());
+            var button  = document.getElementById("onoff_"+key.toLowerCase());
+            var button2 = document.getElementById("reconnect_"+key.toLowerCase());
             var [api, dev] = key.split("_");
 
-            var connect_status_api  = data["STATUS"]["interfaces"]["active"][api];
-            var connect_status      = data["STATUS"]["interfaces"]["connect"][key];
+            var connect_status_api      = data["STATUS"]["interfaces"]["active"][api];
+            var connect_status          = data["STATUS"]["interfaces"]["connect"][key];
+            var devices_per_interface   = data["CONFIG"]["apis"]["structure"];
+            var connected_devices       = devices_per_interface[api][dev].length;
             var value = "";
 
             //if (api == "TEST") { alert(api+":"+connect_status_api); }
 
-            if (connect_status_api == false)                  { value = "N/A"; }
+            if (connect_status_api == false || connected_devices == 0) { value = "N/A"; }
             else if (connect_status.indexOf("OFF") > -1)      { value = "OFF"; }
             else if (connect_status.indexOf("DISABLED") > -1) { value = "OFF"; }
             else if (connect_status.indexOf("ERROR") > -1)    { value = "ERROR"; }
@@ -293,7 +296,7 @@ function statusCheck_apiConnection(data) {
             if (value == "ON")          { button.style.backgroundColor = colors_power["ON"];     button.disabled = false; }
             else if (value == "OFF")    { button.style.backgroundColor = colors_power["OFF"];    button.disabled = false; }
             else if (value == "ERROR")  { button.style.backgroundColor = colors_power["ERROR"];  button.disabled = false; }
-            else if (value == "N/A")    { button.style.backgroundColor = "";                     button.disabled = true; }
+            else if (value == "N/A")    { button.style.backgroundColor = "";                     button.disabled = true; button2.disabled = true; }
             }
 		}			
 

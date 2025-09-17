@@ -254,6 +254,7 @@ var language_app = {
 		"SEND_DATA"                    : "Send data",
 		"SELECT_DEV_MACRO"             : "select device or macro",
 		"SELECT_DEV_FIRST"             : "select device first",
+		"SELECT_API_FIRST"             : "select interface first",
 		"SERVER_SETTINGS"              : "Server &amp; client settings",
 		"SETTINGS"                     : "Settings",
 		"SETTINGS_GENERAL"             : "General settings",

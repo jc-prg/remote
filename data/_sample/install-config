@@ -6,6 +6,7 @@ echo "------------------------------"
 echo
 
 cp _ACTIVE* ../
+cp _DEVICE* ../
 
 mkdir ../remotes
 cp -r ./remotes/* ../remotes/

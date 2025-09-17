@@ -823,7 +823,8 @@ function rmSettings (name) {	// IN PROGRESS
         this.basic     = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
 
     	this.list      = function (interface, data) {
-            var text = "";
+            var text  = "";
+            var count = 0;
             var devices_per_interface = dataAll["CONFIG"]["apis"]["structure"];
 
             //for (var interface in devices_per_interface) {
@@ -876,6 +877,7 @@ function rmSettings (name) {	// IN PROGRESS
             var [count, overview] = this.list(key, data);
             var container_title = "</b>Connected devices";
             if (count == 0) { container_title += " (empty)"; }
+            else            { container_title += " ("+count+")"; }
             setting += this.basic.container("details_"+key+"_overview", container_title, overview, false);
 
             for (var dev in interface["API-Devices"]) {
@@ -889,6 +891,9 @@ function rmSettings (name) {	// IN PROGRESS
                 information += "<div id='api_status_data_"+key+"_"+dev+"' style='display:block'>";
                 information += "<textarea id=\"api_status_edit_"+key+"_"+dev+"\" style=\"width:95%;height:150px;\" disabled>" + edit_json + "</textarea>";
                 information += "</div>";
+
+                var devices_per_interface = dataAll["CONFIG"]["apis"]["structure"];
+                var connected_devices     = devices_per_interface[key][dev].length;
 
                 var api_dev        = key.toLowerCase() + "_" + dev.toLowerCase();
                 var link_save      = "apiSetConfig_InterfaceData( \""+key+"_"+dev+"\", \"api_status_edit_"+key+"_"+dev+"\" );"
@@ -907,15 +912,15 @@ function rmSettings (name) {	// IN PROGRESS
                 if (!connect_status) { connect_status = "NO DEVICE connected yet."; }
 
                 var on_off_status = "";
-                if (connect_status_api == false)                { on_off_status = "N/A"; }
-                else if (connect_status.indexOf("OFF") > -1)    { on_off_status = "OFF"; }
-                else if (connect_status.indexOf("ERROR") > -1)  { on_off_status = "ERROR"; }
-                else                                            { on_off_status = "ON"; }
+                if (connect_status_api == false || connected_devices == 0)  { on_off_status = "N/A"; }
+                else if (connect_status.indexOf("OFF") > -1)                { on_off_status = "OFF"; }
+                else if (connect_status.indexOf("ERROR") > -1)              { on_off_status = "ERROR"; }
+                else                                                        { on_off_status = "ON"; }
 
                 buttons      += this.btn.sized("onoff_"+api_dev,      on_off_status,    "",  link_on_off);
+                buttons      += this.btn.sized("reconnect_"+api_dev,  lang("RECONNECT"),"",  link_reconnect);
                 buttons      += this.btn.sized("edit_"+api_dev,       lang("EDIT"),     "",  link_edit)
                 buttons      += this.btn.sized("save_"+api_dev,       lang("SAVE"),     "hidden",  link_save);
-                buttons      += this.btn.sized("reconnect_"+api_dev,  lang("RECONNECT"),"",  link_reconnect);
                 buttons      += this.btn.sized("info_"+api_dev,       lang("API_INFO"), "",  link_api_info);
 
                 if (dataAll["CONFIG"]["apis"]["list_api_commands"][key+"_"+dev] && dataAll["CONFIG"]["apis"]["list_api_commands"][key+"_"+dev].length > 0) {
@@ -933,6 +938,7 @@ function rmSettings (name) {	// IN PROGRESS
                     temp    += this.tab.row("Power: ", use_color(interface["API-Devices"][dev]["PowerDevice"] +
                                                        "<text id='power_status_"+key+"_"+dev+"'></text>", "VALUE"));
                     }
+                temp    += this.tab.row("Devices:", use_color(connected_devices, "VALUE"));
                 temp    += this.tab.row("Status:", "<text id='api_status_"+key+"_"+dev+"'></text>");
                 temp    += this.tab.row(information);
                 temp    += this.tab.row("<div style='width:100%;text-align:center;'>" + buttons + "</div>");
@@ -1135,12 +1141,66 @@ function rmSettings (name) {	// IN PROGRESS
     this.modules_add_remote_dialog = function(device_data_start={}) {
 		var setting        = "";
 		var set_temp       = "";
-		var onchange       = this.app_name + ".edit_filenames();";
+		var onchange       = this.app_name + ".on_change_api(this.value);";
 		var onchange2      = this.app_name + ".edit_filenames";
+		var onchange3      = this.app_name + ".on_change_dev_type(this.value);";
 		var add_command    = "apiDeviceAdd([#add_device_id#,#add_device_descr#,#add_device_label#,#add_device_api#,#add_device#,#add_device_device#,#add_device_remote#,#add_device_id_external#,#edit_image#],"+onchange2+");";
 		add_command       += "remoteToggleEditMode(true);";
 		var width          = this.input_width;
 		var icon_container = "<button class='button device_off' style='width:50px;height:40px;'><div id='device_edit_button_image'></div></button>";
+        var device_types   = this.data["CONFIG"]["device_types"];
+
+        this.on_change_api = function(value) {
+            var api               = value.split("_")[0];
+            var device_config     = this.data["CONFIG"]["devices"][api];
+            var api_config        = this.data["CONFIG"]["apis"]["list_api_configs"]["list"];
+            var remote_config     = this.data["CONFIG"]["remotes"]["list"];
+
+            if (value == "") {
+                var dev_config     = lang("SELECT_API_FIRST");
+                var rm_definition  = lang("SELECT_API_FIRST");
+                elementHidden("txt_add_device_device_2");
+                elementHidden("txt_add_device_remote_2");
+                }
+            else {
+                var on_change_1    = "if (this.value == 'other') { " + this.app_name + ".edit_filenames(1); } ";
+                on_change_1       += "else                       { setValueById('add_device_device', this.value); }"
+                var on_change_2    = "if (this.value == 'other') { " + this.app_name + ".edit_filenames(2); } ";
+                on_change_2       += "else                       { setValueById('add_device_remote', this.value); }"
+
+                api_config[api]["other"] = "__new file__";
+                remote_config["other"]   = "__new file__";
+                var dev_config     = this.select("edit_dev_config","device config", api_config[api], on_change_1, "");
+                var rm_definition  = this.select("edit_dev_rm","remote definition", remote_config, on_change_2, "");
+                setTextById("txt_add_device_device", dev_config);
+                setTextById("txt_add_device_remote", rm_definition);
+                elementVisible("txt_add_device_device_2");
+                elementVisible("txt_add_device_remote_2");
+                }
+            }
+        this.on_change_dev_type = function(device_type) {
+
+            // Check if "devices" and device_type exist in this.data
+            const devices = this.data?.CONFIG?.devices || {};
+
+            // If device_type is not a key in devices, return it as-is
+            if (!(device_type in devices)) {
+                setValueById("add_device_id", device_type);
+                setTextById("text_add_device_id", device_type);
+                return;
+                }
+
+            // Find the next available ID like device_type1, device_type2, ...
+            let counter = 2;
+            let newId = `${device_type}${counter}`;
+
+            while (newId in devices) {
+                counter++;
+                newId = `${device_type}${counter}`;
+                }
+            setValueById("add_device_id", newId);
+            setTextById("text_add_device_id", newId);
+            }
 
 		var device_data = {
 		    "id": "",
@@ -1155,19 +1215,24 @@ function rmSettings (name) {	// IN PROGRESS
         var asterix = "<sup>*</sup>";
 		this.input_width   = "150px";
         set_temp  = this.tab.start();
-		set_temp += this.tab.row( "ID*:",                       this.input("add_device_id", onchange, onchange + "apiDeviceAddCheckID(this);", device_data["id"]) );
-		set_temp += this.tab.row( "Device-Type:"+asterix,       this.input("add_device", onchange, onchange, device_data["device_name"]) );
+		//set_temp += this.tab.row( "Device-Type:"+asterix,       this.input("add_device", onchange, onchange, device_data["device_name"]) );
+		set_temp += this.tab.row( "ID*:",                       "<span id='text_add_device_id'>" + lang("SELECT_DEV_FIRST") + "</span>" +
+		                                                        "<span style='display:none;'>" + this.input("add_device_id", onchange, onchange + "apiDeviceAddCheckID(this);", device_data["id"]) +"</span>");
+		set_temp += this.tab.row( "Device-Name:"+asterix,       this.input("add_device_descr", "", onchange, device_data["description"]) );
+		set_temp += this.tab.row( "Device-Type:"+asterix,       this.select("add_device", "device type", device_types, onchange3, "") );
         this.input_width = "180px";
-		set_temp += this.tab.row( "Interface:"+asterix,         this.select("add_device_api","Select interface", this.data["CONFIG"]["apis"]["list_description"], onchange, device_data["api_device"]) );
+		set_temp += this.tab.row( "Interface:"+asterix,         this.select("add_device_api","interface", this.data["CONFIG"]["apis"]["list_description"], onchange, device_data["api_device"]) );
 		set_temp += this.tab.line();
 		set_temp += this.tab.row( icon_container,               rm3remotes.button_image_select("edit_image") );
 		set_temp += this.tab.row( "Label:"+asterix,             this.input("add_device_label", "", onchange, device_data["label"]) );
-		set_temp += this.tab.row( "Description:",               this.input("add_device_descr", "", onchange, device_data["description"]) );
 		set_temp += this.tab.row( "External ID:",               this.input("add_device_id_external", "", "", device_data["external_id"]) );
 		set_temp += this.tab.line();
         this.input_width = "100px";
-		set_temp += this.tab.row( "Device-Config:"+asterix,	    this.input("add_device_device")+".json" );
-		set_temp += this.tab.row( "Remote-Config:"+asterix,	    this.input("add_device_remote")+".json" );
+		set_temp += this.tab.row( "Device-Config:"+asterix,	    "<span id='txt_add_device_device'>"+lang("SELECT_API_FIRST")+"</span> " +
+		                                                        "<span id='txt_add_device_device_2' style='display:none;'>" + this.input("add_device_device")+".json</span>" );
+
+		set_temp += this.tab.row( "Remote-Config:"+asterix,	    "<span id='txt_add_device_remote'>"+lang("SELECT_API_FIRST")+"</span>" +
+		                                                        "<span id='txt_add_device_remote_2' style='display:none;'>" + this.input("add_device_remote")+".json</span>" );
 		set_temp += this.tab.end();
 
         this.input_width = width;
@@ -1298,7 +1363,7 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
     // show devices in containers
-	this.edit_filenames	        = function () {
+	this.edit_filenames	        = function (field) {
 
 		replace_minus   = [" ","/","\\",":","&","#","?"];
 
@@ -1307,17 +1372,18 @@ function rmSettings (name) {	// IN PROGRESS
 		api     = document.getElementById("add_device_api").value;
 		device  = document.getElementById("add_device").value;
 
-		device_file	 = device.toLowerCase();
+		device_file	 = device.toLowerCase() + "-" + label.toLowerCase();
 		device_file  = device_file.replaceAll("_","-");
-		//device_file += "_" + device.toLowerCase();
+		device_file  = device_file.replaceAll(" ","-");
 
 		for (var i=0;i<replace_minus.length;i++) { for (var j=0;j<5;j++) { device_file = device_file.replace(replace_minus[i], "-" ); } }
 
 		remote_file  = device_file + "_" + id.toLowerCase();
 		remote_file  = remote_file.replaceAll("_","-");
+		remote_file  = remote_file.replaceAll(" ","-");
 
-		document.getElementById("add_device_device").value = device_file;
-		document.getElementById("add_device_remote").value = remote_file;
+        if (field == 0 || field == 1) { document.getElementById("add_device_device").value = "cfg-" + device_file; }
+        if (field == 0 || field == 2) { document.getElementById("add_device_remote").value = "rmc-" + remote_file; }
 		}
 
 	this.device_list		    = function (id,onchange="") {
@@ -1454,26 +1520,37 @@ function rmSettings (name) {	// IN PROGRESS
 		this.show();		// recreate settings page
 		}
 
-	this.input			        = function (id, onclick="", oninput="", value="") {
+	this.input                  = function (id, onclick="", oninput="", value="") {
 		
 		text = "<input id=\"" + id + "\" oninput=\""+oninput+"\" style='width:" + this.input_width + ";margin:1px;' value='" + value + "'>";
 		if (onclick != "") {
 			text += "<button onclick=\""+onclick+"\" class='rm-button calculate_values'>&gt;&gt;</button>";
 			}
-			
 		return text;
 		}
 
-	this.select			        = function (id, title, data, onchange="", value="") {
+	this.select                 = function (id, title, data, onchange="", value="") {
 		var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
 		item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
-		for (var key in data) {
-		    var selected = "";
-		    if (key == value) { selected = "selected"; }
-			if (key != "default") {
-				item += "<option value=\"" + key + "\" " + selected+ ">" + data[key] + "</option>";
-			    }
-			}
+		if (Array.isArray(data)) {
+            for (var i=0;i<data.length;i++) {
+                var selected = "";
+                var key = data[i];
+                if (key == value) { selected = "selected"; }
+                if (key != "default") {
+                    item += "<option value=\"" + key + "\" " + selected+ ">" + key + "</option>";
+                    }
+                }
+            }
+		else {
+            for (var key in data) {
+                var selected = "";
+                if (key == value) { selected = "selected"; }
+                if (key != "default") {
+                    item += "<option value=\"" + key + "\" " + selected+ ">" + data[key] + "</option>";
+                    }
+                }
+            }
 		item     += "</select>";
 		return item;
 		}
