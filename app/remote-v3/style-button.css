@@ -224,7 +224,7 @@ canvas {
 
     border             : #dddddd solid 3px;
     background-repeat  : no-repeat;
-    background-size    : contain;
+    background-size    : cover;
     background-position: center;
     //background-size    : 100%;
     //background-position: center center;
