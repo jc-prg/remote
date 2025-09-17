@@ -1190,18 +1190,18 @@ class RemotesEdit(RemoteDefaultClass):
         """
         devices = {}
         active_json = self.config.read_status()
-        interface = active_json[device]["config"]["api_key"]
-        device_code = active_json[device]["config"]["device"]
         device_remote = active_json[device]["config"]["remote"]
         file_device_remote = rm3presets.remotes + device_remote
-        file_interface_remote = rm3presets.commands + interface + "/" + device_code
+        #interface = active_json[device]["config"]["api_key"]
+        #device_code = active_json[device]["config"]["device"]
+        #file_interface_remote = rm3presets.commands + interface + "/" + device_code
 
         if "ERROR" in active_json:
             return "ERROR: Could not read ACTIVE_JSON (active)."
         if device not in active_json:
             return "ERROR: Device " + device + " doesn't exists (active)."
-        if not rm3json.if_exist(rm3presets.commands + interface + "/" + device_code):
-            return "ERROR: Device " + device + " doesn't exists (commands)."
+        #if not rm3json.if_exist(rm3presets.commands + interface + "/" + device_code):
+        #    return "ERROR: Device " + device + " doesn't exists (commands)."
         if not rm3json.if_exist(rm3presets.remotes + device_remote):
             return "ERROR: Device " + device + " doesn't exists (remotes)."
 
@@ -1210,7 +1210,7 @@ class RemotesEdit(RemoteDefaultClass):
             return message
 
         msg1 = self.config.delete(file_device_remote)
-        msg2 = self.config.delete(file_interface_remote)
+        #msg2 = self.config.delete(file_interface_remote)
 
         if "OK:" in msg1 and "OK:" in msg2:
             message = "OK: Device '" + device + "' deleted."
