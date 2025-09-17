@@ -10,7 +10,7 @@ function rmSettings (name) {	// IN PROGRESS
 	this.app_name     = name;
 	this.e_settings   = ["setting1","setting2","setting3","setting4","setting5","setting6"];
 	this.e_remotes    = ["frame3","frame4","frame5","frame1","frame2"];
-	this.input_width  = "110px";
+	this.input_width  = "140px";
 	this.initial_load = true;
 	this.edit_mode    = false;
 	this.manual_mode  = false;
@@ -1170,8 +1170,8 @@ function rmSettings (name) {	// IN PROGRESS
 
                 api_config[api]["other"] = "__new file__";
                 remote_config["other"]   = "__new file__";
-                var dev_config     = this.select("edit_dev_config","device config", api_config[api], on_change_1, "");
-                var rm_definition  = this.select("edit_dev_rm","remote definition", remote_config, on_change_2, "");
+                var dev_config     = this.select("edit_dev_config","config file", api_config[api], on_change_1, "");
+                var rm_definition  = this.select("edit_dev_rm","config file", remote_config, on_change_2, "");
                 setTextById("txt_add_device_device", dev_config);
                 setTextById("txt_add_device_remote", rm_definition);
                 elementVisible("txt_add_device_device_2");
@@ -1224,14 +1224,14 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.row( "Interface:"+asterix,         this.select("add_device_api","interface", this.data["CONFIG"]["apis"]["list_description"], onchange, device_data["api_device"]) );
 		set_temp += this.tab.line();
 		set_temp += this.tab.row( icon_container,               rm3remotes.button_image_select("edit_image") );
-		set_temp += this.tab.row( "Label in menu:"+asterix,             this.input("add_device_label", "", onchange, device_data["label"]) );
+		set_temp += this.tab.row( "Label in menu:"+asterix,     this.input("add_device_label", "", onchange, device_data["label"]) );
 		set_temp += this.tab.row( "External ID:",               this.input("add_device_id_external", "", "", device_data["external_id"]) );
 		set_temp += this.tab.line();
         this.input_width = "100px";
-		set_temp += this.tab.row( "Device-Config:"+asterix,	    "<span id='txt_add_device_device'>"+lang("SELECT_API_FIRST")+"</span> " +
+		set_temp += this.tab.row( "Device config:"+asterix,	    "<span id='txt_add_device_device'>"+lang("SELECT_API_FIRST")+"</span> " +
 		                                                        "<span id='txt_add_device_device_2' style='display:none;'>" + this.input("add_device_device")+".json</span>" );
 
-		set_temp += this.tab.row( "Remote-Config:"+asterix,	    "<span id='txt_add_device_remote'>"+lang("SELECT_API_FIRST")+"</span>" +
+		set_temp += this.tab.row( "Remote config:"+asterix,	    "<span id='txt_add_device_remote'>"+lang("SELECT_API_FIRST")+"</span>" +
 		                                                        "<span id='txt_add_device_remote_2' style='display:none;'>" + this.input("add_device_remote")+".json</span>" );
 		set_temp += this.tab.end();
 
