@@ -1224,7 +1224,7 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.row( "Interface:"+asterix,         this.select("add_device_api","interface", this.data["CONFIG"]["apis"]["list_description"], onchange, device_data["api_device"]) );
 		set_temp += this.tab.line();
 		set_temp += this.tab.row( icon_container,               rm3remotes.button_image_select("edit_image") );
-		set_temp += this.tab.row( "Label in menua:"+asterix,             this.input("add_device_label", "", onchange, device_data["label"]) );
+		set_temp += this.tab.row( "Label in menu:"+asterix,             this.input("add_device_label", "", onchange, device_data["label"]) );
 		set_temp += this.tab.row( "External ID:",               this.input("add_device_id_external", "", "", device_data["external_id"]) );
 		set_temp += this.tab.line();
         this.input_width = "100px";
