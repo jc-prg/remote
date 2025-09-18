@@ -301,9 +301,11 @@ function rmRemote(name) {
 		if (url) { descr = "<a href=\""+url+"\" target='_blank'>"+descr+"</a>"; }
 		
 		var str = "";
+		str    += "<div class='rm-info'>";
 		str    += "<media-info id='media_info'></media-info>";
 		str    += "<center>" + label + ": " + descr + "</center>";
-		
+		str    += "</div>";
+
 		setTextById(id,str);
 		}
 

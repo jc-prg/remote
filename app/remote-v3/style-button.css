@@ -11,25 +11,36 @@ button {
 
 /* REDEFINE buttons for remote-control */
 
+.rm-info {
+   font-size       : 3vw;
+   margin          : 0.5vw;
+}
+
 .rm-button {
    width           :  23%;
    max-width       :  23%;
    margin          :   1%;
    color           : white;
+
+   height          :  auto;
+   max-height      :  none;
+   aspect-ratio    : 4 / 2;
+/*
    height          :  40px;
    max-height      :  40px;
+*/
 
    padding         :   2px;
    border-style    : solid 0px #111111;
    border-radius   :   6px;
    background-color: #111111;
-   font-size       : 13px;
+   font-size       : 4vw;
    overflow        : hidden;
    float           : left;
 }
 
 .rm-button:hover {
-    color            : yellow;
+   color            : yellow;
    background-color : #555555;
    box-shadow       : 0 4px 4px 0 rgba(0,0,0,0.24), 0 4px 4px 0 rgba(0,0,0,0.19);
 }
@@ -93,6 +104,12 @@ button {
     border           	: blue solid 2px;
 }
 
+.rm-button-image {
+    height          : 55%;
+    width           : auto;
+    margin          : 0px;
+    padding         : 0px;
+}
 
 /* other buttons */
 
@@ -252,8 +269,6 @@ canvas {
 .header_image_toggle_container {
     height      : 40px;
     width       : 100%;
-//    position    : relative;
-//    top         : 0px;
     color       : black;
     text-align  : right;
     padding     : 5px;
@@ -277,10 +292,6 @@ canvas {
     font-size   : 30px;
     font-weight : bold;
     color       : black;
-
-//    position    : relative;
-//    bottom      : 0px;
-
     background: -webkit-linear-gradient(top,
                 rgba(221,221,221,0) 0%,
                 rgba(221,221,221,0) 40%,
@@ -305,6 +316,7 @@ canvas {
     float               : left;
     justify-content     : center;
 }
+
 .image_list.key {
     min-width           : 10%;
     background-color    : gray;
