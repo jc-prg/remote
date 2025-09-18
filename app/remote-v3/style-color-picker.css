@@ -2,18 +2,17 @@
 
 .color-picker {
    width           :  98%;
-   //height          :  300px;
    height          :  auto;
    margin          :   1%;
    padding         :   2px;
    padding-top     :   4px;
    padding-bottom  :   4px;
 
-   color           : yellow;
+   color           : var(--rm-color-colorpicker-text);
    font-size       :   9px;
    border-radius   :   6px; 
-   border-color    : #BBBBBB;
-   background-color: #CCCCCC;
+   border          : solid 1px var(--rm-color-colorpicker-border);
+   background-color: var(--rm-color-colorpicker);
    overflow        : hidden;
    float           : left;
    display         : inline-block;
@@ -21,12 +20,12 @@
 }
 
 .color-picker img {
-   opacity : 1.0;
+   opacity          : var(--rm-opacity-image-fix);
 }
 
 #colorpicker_demo {
-    margin-top    : 10px;
-    border-radius : 5px;
-    height        : 10px;
-    width         : 120px;
+    margin-top      : 10px;
+    border-radius   : 5px;
+    height          : 10px;
+    width           : 120px;
 }

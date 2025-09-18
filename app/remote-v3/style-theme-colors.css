@@ -1,0 +1,185 @@
+:root {
+    --rm-color-body: white;
+    --rm-color-hr: #aaaaaa;
+
+    --rm-color-font-default: black;
+    --rm-color-font-error: red;
+    --rm-color-font-ok: green;
+    --rm-color-font-data: cyan;
+
+    --rm-color-button-default: #000044;
+    --rm-color-button-default-text: white;
+    --rm-color-button: #111111;
+    --rm-color-button-text: white;
+    --rm-color-button-border: white;
+    --rm-color-button-active: #111111;
+    --rm-color-button-empty: #DDDDDD;
+    --rm-color-button-active-hover: #555555;
+    --rm-color-button-active-hover-text: yellow;
+    --rm-color-button-disabled: #DDDDDD;
+    --rm-color-button-disabled-text: #555555;
+    --rm-color-button-disabled-border: black;
+    --rm-color-button-not-found: #000055;
+    --rm-color-button-not-found-text: yellow;
+    --rm-color-button-not-found-border: red;
+    --rm-color-button-not-found-disabled: #777777;
+    --rm-color-button-setting: #333399;
+    --rm-color-button-setting-border: #5555AA;
+    --rm-color-button-setting-border-select: #8888AA;
+    --rm-color-button-edit-border: blue;
+    --rm-color-button-calculate: #555555;
+    --rm-color-button-hover-shadow: 0 4px 4px 0 rgba(0,0,0,0.24), 0 4px 4px 0 rgba(0,0,0,0.19);
+    --rm-color-button-channel: #333333;
+    --rm-color-button-channel-text: white;
+    --rm-color-button-channel-border: gray;
+    --rm-color-button-channel-hover: #DDDDDD;
+    --rm-color-button-channel-hover-text: black;
+    --rm-color-button-show-unused: #555555;
+    --rm-color-button-show-unused-text: white;
+    --rm-color-button-show-unused-border: #333333;
+    --rm-color-button-device-off: #999999;
+
+    --rm-color-button-power-off: red;
+    --rm-color-button-power-on: green;
+    --rm-color-button-power-partly-on: cyan;
+    --rm-color-button-power-no-connect: pink;
+
+    --rm-color-button-red: #FF0000;
+    --rm-color-button-green: #00FF00;
+    --rm-color-button-blue: #0000FF;
+    --rm-color-button-orange: orange;
+    --rm-color-button-cyan: cyan;
+    --rm-color-button-pink: #FF00FF;
+    --rm-color-button-yellow: #FFFF00;
+    --rm-color-button-black: #000000;
+    --rm-color-button-white: #FFFFFF;
+    --rm-color-button-white-warm: #FFEEDD;
+    --rm-color-button-white-warmest: #FFDDAA;
+    --rm-color-button-white-cool: #DDDDFF;
+    --rm-color-button-white-coolest: #BBBBFF;
+
+    --rm-color-header-text: black;
+    --rm-color-header-border: #DDDDDD;
+    --rm-color-header-fade: -webkit-linear-gradient(top,
+        rgba(221,221,221,0) 0%,
+        rgba(221,221,221,0) 20%,
+        rgba(221,221,221,0.7) 60%,
+        rgba(221,221,221,1) 100%);
+
+    --rm-color-image-list: blue;
+    --rm-color-image-list-border: white;
+    --rm-color-image-list-key: gray;
+    --rm-color-image-list-text: white;
+
+    --rm-color-audio-text : white;
+    --rm-color-audio-vol-text : gray:
+
+    --rm-color-tooltip: lightyellow;
+    --rm-color-tooltip-border: gray;
+    --rm-color-tooltip-text: black;
+
+    --rm-color-keyboard: darkgray;
+    --rm-color-keyboard-text: white;
+    --rm-color-keyboard-border: black;
+
+    --rm-color-edit-cmd: #111111;
+    --rm-color-edit-cmd-text: #FFFF88;
+    --rm-color-edit-cmd-border: #222222;
+
+    --rm-color-display-default: #000044;
+    --rm-color-display-default-text: yellow;
+    --rm-color-display-error: #660000;
+    --rm-color-display-error-text: yellow;
+    --rm-color-display-off: #000033;
+    --rm-color-display-off-text: yellow;
+    --rm-color-display-manual: #000044;
+    --rm-color-display-manual-text: lightgray;
+    --rm-color-display-element: white;
+
+    --rm-color-line: red;
+    --rm-color-line-text: red;
+
+    --rm-color-colorpicker: #CCCCCC;
+    --rm-color-colorpicker-text: yellow;
+    --rm-color-colorpicker-border: #BBBBBB;
+
+    --rm-color-frame-remote: #DDDDDD;
+    --rm-color-frame-remote-border: #DDDDDD;
+    --rm-color-frame-remote-text: black;
+    --rm-color-frame-remote-edit: #EEEEEE;
+    --rm-color-frame-setting: #777777;
+    --rm-color-frame-setting-text: white;
+    --rm-color-frame-line: white;
+    --rm-color-frame-line-text: #333333;
+    --rm-color-frame-group: gray;
+    --rm-color-frame-group-text: white;
+    --rm-color-frame-group-text-hover: yellow;
+
+    --rm-color-slider: darkgray;
+    --rm-color-slider-container: #DDDDEE;
+    --rm-color-slider-border: #777777;
+    --rm-color-slider-text: black;
+
+    --rm-opacity-button-var: 1.0;
+    --rm-opacity-button-fix: 1.0;
+    --rm-opacity-button-device-off: 0.4;
+    --rm-opacity-image-var: 1.0;
+    --rm-opacity-image-fix: 1.0;
+    --rm-opacity-frame-var: 0.9;
+    --rm-opacity-frame-fix: 0.9;
+    --rm-opacity-display-fix: 1.0;
+    --rm-opacity-display-var: 1.0;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --rm-color-body: #111111;
+        --rm-color-hr: #444444;
+
+        --rm-color-button-default: #333333;
+        --rm-color-button-default-text: #DDDDDD;
+        --rm-color-button: #333333;
+        --rm-color-button-text: #DDDDDD;
+        --rm-color-button-border: #999999;
+        --rm-color-button-disabled: #000000;
+        --rm-color-button-disabled-border: #444444;
+        --rm-color-button-empty: #000000;
+        --rm-color-button-not-found-border: #990000;
+        --rm-color-button-not-found-disabled: #221111;
+        --rm-color-button-device-off: #0a0a0a;
+
+        --rm-color-frame-setting: #444444;
+        --rm-color-frame-setting-text: white;
+
+        --rm-color-frame-remote: #000000;
+        --rm-color-frame-remote-border: #333333;
+        --rm-color-frame-remote-text: #AAAAAA;
+        --rm-color-frame-line-text: #AAAAAA;
+
+        --rm-color-header-text: white;
+        --rm-color-header-border: #000000;
+        --rm-color-header-fade: -webkit-linear-gradient(top,
+                rgba(0,0,0,0) 0%,
+                rgba(0,0,0,0.5) 40%,
+                rgba(0,0,0,0.8) 60%,
+                rgba(0,0,0,1) 80%,
+                rgba(0,0,0,1) 100% );
+
+        --rm-color-colorpicker: #000000;
+        --rm-color-colorpicker-text: yellow;
+        --rm-color-colorpicker-border: #222222;
+
+        --rm-color-keyboard: darkgray;
+        --rm-color-keyboard-border: white;
+
+        --rm-color-slider: #666666;
+        --rm-color-slider-container: #DDDDEE;
+        --rm-color-slider-border: black;
+        --rm-color-slider-text: #DDDDDD;
+
+        --rm-opacity-button-var: 0.8;
+        --rm-opacity-image-var: 0.8;
+        --rm-opacity-frame-var: 0.8;
+        --rm-opacity-display-var: 0.7;
+        }
+    }

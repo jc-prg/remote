@@ -1,41 +1,42 @@
 /* display information within the remote control */
 
 .display {
-   width           :  48%;
-   margin          :   1%;
-   height          :  40px;
-   color           : yellow;
-   padding         :   2px;
-   font-size       :   9px;
-   border-radius   :   6px; 
-   background-color: #000044;
-   overflow        : hidden;
    float           : left;
+   width           : 48%;
+   margin          : 1%;
+   height          : 40px;
+   padding         : 2px;
+   font-size       : 2.5vw;
+   border-radius   : 6px;
+   background-color: var(--rm-color-display-default);
+   color           : var(--rm-color-display-default-text);
+   overflow        : hidden;
    display         : inline-block;
    vertical-align  : top;
+   opacity         : var(--rm-opacity-display-var);
 }
 
 .display.right  { float  : right; }
 .display.edit   { opacity: 1; }
 
-.display.small  { width  : 48%;   height  :  40px; }
-.display.middle { width  : 48%;   height  :  88px; }
-.display.big    { width  : 98%;   height  :  88px; }
+.display.small  { width  : 48%;   height  :  auto;  aspect-ratio: 8 / 1.19; }
+.display.middle { width  : 48%;   height  :  auto;  aspect-ratio: 4 / 2.05; }
+.display.big    { width  : 98%;   height  :  auto;  aspect-ratio: 4 / 2; }
 
-.display.h1w4   { width  : 98%;   height  :  40px; }
-.display.h1w2   { width  : 48%;   height  :  40px; }
-.display.h2w2   { width  : 48%;   height  :  88px; }
-.display.h2w3   { width  : 72%;   height  :  88px; }
-.display.h2w4   { width  : 98%;   height  :  88px; }
-.display.h3w2   { width  : 48%;   height  :  136px; }
-.display.h4w2   { width  : 48%;   height  :  184px; }
+.display.h1w4   { width  : 98%;   height  :  auto;  aspect-ratio: 16 / 2; }
+.display.h1w2   { width  : 48%;   height  :  auto;  aspect-ratio: 8 / 1.9;  }
+.display.h2w2   { width  : 48%;   height  :  auto;  aspect-ratio: 4 / 2.05; }
+.display.h2w3   { width  : 73%;   height  :  auto;  aspect-ratio: 6 / 2.05;}
+.display.h2w4   { width  : 98%;   height  :  auto;  aspect-ratio: 8 / 2; }
+.display.h3w2   { width  : 48%;   height  :  auto;  aspect-ratio: 6 / 4.81; }
+.display.h4w2   { width  : 48%;   height  :  auto;  aspect-ratio: 2 / 2.15; }
 
 .display-element {
    width	: 56px;
    margin	: 2px;
    padding	: 0px;
    float	: left;
-   color	: white;
+   color	: var(--rm-color-display-element);
    text-align   : left;
 }
 
@@ -74,8 +75,8 @@
    width        : 62%;
    max-width    : 62%;
 
-   white-space: nowrap;
-   overflow: hidden;
+   white-space  : nowrap;
+   overflow     : hidden;
    text-overflow: ellipsis;
 }
 
@@ -85,15 +86,17 @@
 }
 
 .display.display_off {
-   background	: #000033;
+   background   : var(--rm-color-display-off);
+   color        : var(--rm-color-display-off-text);
 }
 
 .display.display_error {
-   background	: #660000;
+   background   : var(--rm-color-display-error);
+   color        : var(--rm-color-display-error-text);
 }
 
 .display.display_manual {
-   background	: #222244;
-   color	: lightgray;
+   background   : var(--rm-color-display-manual);
+   color        : var(--rm-color-display-manual-text);
 }
 
