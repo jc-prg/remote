@@ -56,11 +56,12 @@ button {
 
 .rm-button.big, .rm-button.big_edit {
     width  		    : 31.3%;
-    max-width       : 31.3%;
     margin          : 1%;
-    height 		    : 66px;
-    max-height      : 66px;
-    background-size : 100% 100%;
+    aspect-ratio    : 3 / 2;
+    height          : auto;
+    max-height      : none;
+    background-position: center;
+    background-size    : cover;
 }
 
 .rm-button.big_edit {
@@ -217,19 +218,28 @@ canvas {
 .rm-button.header_image {
     width              : 98%;
     max-width          : 98%;
-    margin             :  1%;
 
+    aspect-ratio       : 16 / 9;
+    height             : auto;
+    max-height         : none;
+
+    margin-bottom      : 10px;
+    margin             :  1%;
+    padding            : 0px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+/*
     height             : 180px;
     max-height         : 180px;
+*/
 
     border             : #dddddd solid 3px;
     background-repeat  : no-repeat;
     background-size    : cover;
     background-position: center;
-    //background-size    : 100%;
-    //background-position: center center;
-    padding            : 0px;
-    margin-bottom      : 10px;
 }
 
 .rm-button.header_image:hover {
@@ -242,6 +252,8 @@ canvas {
 .header_image_toggle_container {
     height      : 40px;
     width       : 100%;
+//    position    : relative;
+//    top         : 0px;
     color       : black;
     text-align  : right;
     padding     : 5px;
@@ -255,14 +267,8 @@ canvas {
     padding-bottom  : 0px;
     padding-right   : 5px;
     float           : right;
-    //background    : black;
     //box-shadow    : 0 3px 3px 0 rgba(0,0,0,0.24), 0 3px 3px 0 rgba(0,0,0,0.19);
     border-radius   :   19px;
-}
-
-.header_image_text {
-    width       : 100%;
-    height      : 40px;
 }
 
 .header_image_fade {
@@ -272,8 +278,8 @@ canvas {
     font-weight : bold;
     color       : black;
 
-    position    : relative;
-    top         : 0px;
+//    position    : relative;
+//    bottom      : 0px;
 
     background: -webkit-linear-gradient(top,
                 rgba(221,221,221,0) 0%,
@@ -281,6 +287,11 @@ canvas {
                 rgba(221,221,221,1) 90%,
                 rgba(221,221,221,1) 100%
     );
+}
+
+.header_image_text {
+    width       : 100%;
+    height      : 40px;
 }
 
 
