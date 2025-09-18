@@ -14,7 +14,7 @@
     --rm-color-button-border: white;
     --rm-color-button-active: #111111;
     --rm-color-button-empty: #DDDDDD;
-    --rm-color-button-active-hover: #555555;
+    --rm-color-button-active-hover: #000022;
     --rm-color-button-active-hover-text: yellow;
     --rm-color-button-disabled: #DDDDDD;
     --rm-color-button-disabled-text: #555555;
@@ -28,7 +28,8 @@
     --rm-color-button-setting-border-select: #8888AA;
     --rm-color-button-edit-border: blue;
     --rm-color-button-calculate: #555555;
-    --rm-color-button-hover-shadow: 0 4px 4px 0 rgba(0,0,0,0.24), 0 4px 4px 0 rgba(0,0,0,0.19);
+    //--rm-color-button-hover-shadow: 0 4px 4px 0 rgba(0,0,0,0.24), 0 4px 4px 0 rgba(0,0,0,0.19);
+    --rm-color-button-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     --rm-color-button-channel: #333333;
     --rm-color-button-channel-text: white;
     --rm-color-button-channel-border: gray;
@@ -138,7 +139,8 @@
 
         --rm-color-button-default: #333333;
         --rm-color-button-default-text: #DDDDDD;
-        --rm-color-button: #333333;
+        --rm-color-button: #222222;
+        --rm-color-button-active-hover: #333366;
         --rm-color-button-text: #DDDDDD;
         --rm-color-button-border: #999999;
         --rm-color-button-disabled: #000000;
@@ -147,6 +149,7 @@
         --rm-color-button-not-found-border: #990000;
         --rm-color-button-not-found-disabled: #221111;
         --rm-color-button-device-off: #0a0a0a;
+        --rm-color-button-hover-shadow: 0 8px 8px 0 rgba(1,1,1,0.5), 0 8px 8px 0 rgba(1,1,1,0.19);
 
         --rm-color-frame-setting: #444444;
         --rm-color-frame-setting-text: white;

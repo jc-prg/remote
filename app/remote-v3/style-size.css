@@ -37,7 +37,8 @@
 @media (min-width: 880px) {
   .remote                   { width  : var(--app-frame-width-50); }
   .setting_bg               { width  : var(--app-frame-width-50); }
-  .rm-button, .rm-info, .display { font-size: 1.5vw; }
+  .rm-button, .rm-info      { font-size: 1.5vw; }
+  .display                  { font-size: 1.1vw; }
 }
 
 /* adapted format for Laptop & Bigger - 3 columns incl. menu*/
@@ -52,7 +53,8 @@
   .settings_button_index    { width  : calc(25% - 10px); height : 150px; }
   .settings_icon_big        { max-width : 120px; max-height : 80px; }
   .frame_block_content      { width  : var(--app-frame-width-100-menu); }
-  .rm-button, .rm-info, .display { font-size: 1vw; }
+  .rm-button, .rm-info      { font-size: 1vw; }
+  .display                  { font-size: 0.8vw; }
   }
 
 /* setting frames depending on screen size */
