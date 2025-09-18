@@ -1861,6 +1861,10 @@ function rmRemote(name) {
 
 	}
 
+function image(file) {
+        return "<img src='icon/"+file+"' class='rm-button-image' alt='"+file+"' />";
+        }
+
 
 //--------------------------------
 // EOF
