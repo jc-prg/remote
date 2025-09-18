@@ -4,6 +4,15 @@
     height : 47px;
     }
 
+/* ---> move to the right place" ---> */
+.channel-entry {
+    font-size: 4vw;
+    padding: 8px;
+    height: auto;
+    max-height: none;
+    overflow: hidden;
+}
+
 :root {
     --app-frame-width-default: 300px;
 
@@ -30,7 +39,7 @@
   .settings_button_index    { width  : calc(33% - 8px); height : 140px; }
   .settings_icon_big        { max-width : 120px; max-height : 60px; }
   .frame_block_content      { width  : var(--app-frame-width-100-menu); }
-  .rm-button                { font-size: 3vw; }
+  .rm-button, .channel-entry { font-size: 3vw; }
   .rm-info, .display        { font-size: 2vw; }
   }
 
@@ -38,7 +47,7 @@
   .remote                   { width  : var(--app-frame-width-50); }
   .setting_bg               { width  : var(--app-frame-width-50); }
   .rm-button, .rm-info      { font-size: 1.5vw; }
-  .display                  { font-size: 1.1vw; }
+  .display , .channel-entry { font-size: 1.1vw; }
 }
 
 /* adapted format for Laptop & Bigger - 3 columns incl. menu*/
@@ -54,7 +63,7 @@
   .settings_icon_big        { max-width : 120px; max-height : 80px; }
   .frame_block_content      { width  : var(--app-frame-width-100-menu); }
   .rm-button, .rm-info      { font-size: 1vw; }
-  .display                  { font-size: 0.8vw; }
+  .display, channel-entry   { font-size: 0.6vw; }
   }
 
 /* setting frames depending on screen size */
