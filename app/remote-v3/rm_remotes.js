@@ -891,7 +891,7 @@ function rmRemote(name) {
 																		
 			if (button[0] == "LINE")                     { next_button = this.basic.line(""); }
 			else if (button[0].indexOf("LINE||") == 0)   { next_button = this.basic.line(button[0].split("||")[1]); }
-			else if (button[0] == ".")                   { next_button = this.button.device( scene+i, ".", scene_label, "", "", "disabled" ); }
+			else if (button[0] == ".")                   { next_button = this.button.device( scene+i, ".", scene_label, "empty", "", "disabled" ); }
 			else if (button[0] == "macro")               { next_button = this.button.macro(  cmd, button[1], scene_label, "", macros[button[1]], "" );
 									                       this.active_buttons.push(cmd); }
 			else if (button[0] == "scene-on")            { next_button = this.button.macro( "scene_on_"+button[1], "on", scene_label,"", scene_macros["scene-on"], "" );
@@ -984,7 +984,9 @@ function rmRemote(name) {
 		var descr      = scene_info["description"];
 		var url        = scene_info["url"];
 		if (url) { descr = "<a href=\""+url+"\" target='_blank'>"+descr+"</a>"; }
-		var str   = "<center>" + label + ": " + descr + "</center>";
+		var str = "<div class='rm-info'>";
+		str     += "<center>" + label + ": " + descr + "</center>";
+		str     += "</div>";
 		setTextById(id,str);
 		}
 
@@ -1860,10 +1862,6 @@ function rmRemote(name) {
 		}
 
 	}
-
-function image(file) {
-        return "<img src='icon/"+file+"' class='rm-button-image' alt='"+file+"' />";
-        }
 
 
 //--------------------------------

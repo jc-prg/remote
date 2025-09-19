@@ -46,8 +46,8 @@ function dictCopy(dict) {
     }
 
 function use_color (value, color="VALUE") {
-    if (!function_colors[color]) { return value; }
-    return "<font color='" + function_colors[color] + "'>" + value + "</font>";
+
+    return "<font style='color:var(--rm-color-signal-value-"+color.toLowerCase()+");'>" + value + "</font>";
     }
 
 function scrollTop() {

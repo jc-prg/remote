@@ -917,11 +917,11 @@ function statusCheck_displayValues(data={}) {
 					}
 									
 				if (status && value_key == "power") {
-					if (connected != "connected")                         { status = "<b style='color:red;'>Connection Error:</b><br/>"+connected; }
-					else if (online_status && online_status == "offline") { status = "<b style='color:gold;'>Offline</b><br/>"; }
-			        else if (status.toUpperCase().indexOf("ON") >= 0)     { status = "<b style='color:lightgreen;'>Power On<b/>"; }
-					else if (status.toUpperCase().indexOf("OFF") >= 0)    { status = "<b style='color:gold;'>Power Off<b/>"; }
-                    else                                                  { status = "<b style='color:red;'>Unknown Error:</b> "+status; }
+					if (connected != "connected")                         { status = use_color("<b>Connection Error:</b><br/>","error")+connected; }
+					else if (online_status && online_status == "offline") { status = use_color("<b>Offline</b><br/>","hint"); }
+			        else if (status.toUpperCase().indexOf("ON") >= 0)     { status = use_color("<b>Power On<b/>","on"); }
+					else if (status.toUpperCase().indexOf("OFF") >= 0)    { status = use_color("<b>Power Off<b/>","hint"); }
+                    else                                                  { status = use_color("<b>Unknown Error:</b> ","error")+status; }
 					}
 				if (status && element)  { element.innerHTML  = status; }
 				if (status && element2) { element2.innerHTML = status.replace(/,/g,"; "); }
@@ -953,10 +953,11 @@ function statusCheck_displayValues(data={}) {
 				status          = syntaxHighlightJSON(status);
 
 				if (status && value_key == "power") {
-					if (connected != "connected")                                       { status = "<b style='color:red;'>Connection Error:</b><br/>"+connected; }
-					else if (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)	{ status = "<b style='color:lightgreen;'>Connected<b/>"; }
-					else if (status.indexOf("OFF") >= 0 || status.indexOf("off") >= 0)	{ status = "<b style='color:gold;'>Connected: Power Off<b/>"; }
-        			else 									                            { status = "<b style='color:red;'>Unknown Error:</b> "+status; }
+
+					if (connected != "connected")                                       { status = use_color("<b>Connection Error:</b><br/>","error")+connected; }
+					else if (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)	{ status = use_color("<b'>Connected<b/>","on"); }
+					else if (status.indexOf("OFF") >= 0 || status.indexOf("off") >= 0)	{ status = use_color("<b'>Connected: Power Off<b/>","hint"); }
+        			else 									                            { status = use_color("<b>Unknown Error:</b> ","error")+status; }
 					}
 				else if (status && value_key == "api-status") {
 					status = device_api_status;

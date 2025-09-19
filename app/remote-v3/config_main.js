@@ -142,12 +142,6 @@ var colors_power            = {
 				"OTHER"	    : "darkcyan",
 				"ERROR"	    : "blueviolet",
 				}
-var function_colors         = {
-                "ON"        : "#33FF33",
-                "OFF"       : "FF3333",
-                "ERROR"     : "FF3333",
-                "VALUE"     : "#66FFFF"
-                }
 
 var sign_ok       = "&#10003;";       // &#9745;
 var sign_error    = "&#10008;";       // &#9746;

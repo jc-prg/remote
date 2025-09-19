@@ -210,7 +210,7 @@ ul.help ul li {
     float		    : left;
     background-color: var(--rm-color-frame-remote);
     color		    : var(--rm-color-frame-line-text);
-    font-size		: 10px;
+    font-size       : var(--rm-size-remote-line-text);
     clear		    : left;
     }
 
@@ -221,9 +221,13 @@ ul.help ul li {
 .channel-entry {
     width           : 48%;
     margin          :  1%;
-    height          :  28px;
-    padding         :   0px;
-    font-size       : 15px;
+    height          : auto;
+    max-height      : none;
+    overflow        : hidden;
+    padding         : 0px;
+    padding-top     : 8px;
+    padding-bottom  : 8px;
+    font-size       : var(--rm-size-remote-channel-text);
     color           : var(--rm-color-button-channel-text);
     border          : var(--rm-color-button-channel-border);
     background-color: var(--rm-color-button-channel);

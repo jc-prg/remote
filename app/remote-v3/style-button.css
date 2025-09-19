@@ -12,7 +12,7 @@ button {
 /* REDEFINE buttons for remote-control */
 
 .rm-info {
-   font-size       : 3vw;
+   font-size       : var(--rm-size-remote-info-text);
    margin          : 0.5vw;
 }
 
@@ -29,7 +29,7 @@ button {
    border          : solid 0.5px var(--rm-color-button-border);
    background-color: var(--rm-color-button);
    color           : var(--rm-color-button-text);
-   font-size       : 4vw;
+   font-size       : var(--rm-size-remote-button-text);
    padding         : 2px;
    overflow        : hidden;
 }

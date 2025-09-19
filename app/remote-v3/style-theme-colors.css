@@ -28,8 +28,7 @@
     --rm-color-button-setting-border-select: #8888AA;
     --rm-color-button-edit-border: blue;
     --rm-color-button-calculate: #555555;
-    //--rm-color-button-hover-shadow: 0 4px 4px 0 rgba(0,0,0,0.24), 0 4px 4px 0 rgba(0,0,0,0.19);
-    --rm-color-button-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --rm-color-button-hover-shadow: 0 4px 4px 0 rgba(0,0,0,0.24), 0 4px 4px 0 rgba(0,0,0,0.19);
     --rm-color-button-channel: #333333;
     --rm-color-button-channel-text: white;
     --rm-color-button-channel-border: gray;
@@ -89,6 +88,7 @@
 
     --rm-color-display-default: #000044;
     --rm-color-display-default-text: yellow;
+    --rm-color-display-default-border: white;
     --rm-color-display-error: #660000;
     --rm-color-display-error-text: yellow;
     --rm-color-display-off: #000033;
@@ -115,6 +115,17 @@
     --rm-color-frame-group: gray;
     --rm-color-frame-group-text: white;
     --rm-color-frame-group-text-hover: yellow;
+
+    --rm-color-signal-power-on: darkgreen;
+    --rm-color-signal-power-off: darkred;
+    --rm-color-signal-power-other: darkcyan;
+    --rm-color-signal-power-error: blueviolet;
+    --rm-color-signal-value-on: #22BB22;
+    --rm-color-signal-value-ok: #22BB22;
+    --rm-color-signal-value-off: #FF3333;
+    --rm-color-signal-value-error: #FF3333;
+    --rm-color-signal-value-hint: gold;
+    --rm-color-signal-value-value: #33AAAA;
 
     --rm-color-slider: darkgray;
     --rm-color-slider-container: #DDDDEE;
@@ -174,6 +185,17 @@
 
         --rm-color-keyboard: darkgray;
         --rm-color-keyboard-border: white;
+
+        --rm-color-signal-power-on: darkgreen;
+        --rm-color-signal-power-off: darkred;
+        --rm-color-signal-power-other: darkcyan;
+        --rm-color-signal-power-error: blueviolet;
+        --rm-color-signal-value-ok: lightgreen;
+        --rm-color-signal-value-on: lightgreen;
+        --rm-color-signal-value-off: #FF3333;
+        --rm-color-signal-value-hint: gold;
+        --rm-color-signal-value-error: #ee6666;
+        --rm-color-signal-value-value: #66FFFF;
 
         --rm-color-slider: #666666;
         --rm-color-slider-container: #DDDDEE;

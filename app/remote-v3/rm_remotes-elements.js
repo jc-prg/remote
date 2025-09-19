@@ -1,10 +1,6 @@
 //--------------------------------
 // jc://remote/
 //--------------------------------
-// (c) Christoph Kloth
-// Build standard Remote Controls
-//-----------------------------
-
 
 function rmRemoteBasic(name) {
 
@@ -298,7 +294,7 @@ function rmRemoteButtons(name) {
 
 		// if image available set image
 		var button_img   = [];
-		for (var key in button_img2) { button_img[key] = image(button_img2[key]); }
+		for (var key in button_img2) { button_img[key] = rmImage(button_img2[key]); }
 
 		// check label
         	if (label in button_color)    { style = style + " bg" + label + " "; }
@@ -430,34 +426,87 @@ function rmRemoteDisplays(name) {
 	// show display with information
 	this.default		= function (id, device, type="devices", style="", display_data={}) {
 
+	    this.check_connection_remote = function(device) {
+
+            var error         = "";
+            var power_device  = "";
+	        var connected     = "";
+
+            var remote_data	  = this.data["CONFIG"]["devices"][device]["remote"];
+            var status_data	  = this.data["STATUS"]["devices"][device];
+            var connection_1  = this.data["STATUS"]["connections"][status_data["api"].split("_")[0]];
+
+            var connection_2  = connection_1["api_devices"][status_data["api"].split("_")[1]];
+
+            if (!status_data)                   { error = "Error building display: no status data for " + device + " (" + type + ")"; }
+            else if (!status_data["power"])     { error = "Error building display: no status_power data for " + device + " (" + type + ")"; status_data["power"] = "ERROR"; }
+            else if (!remote_data)              { error = "Error building display: no remote definition for " + device + " (" + type + ")"; }
+            else if (!connection_1)             { error = "Error building display: no API definition for " + status_data["api"].split("_")[0]; }
+            else if (!connection_2)             { error = "Error building display: no API device definition for " + status_data["api"]; }
+            if (error != "")                    { console.error(error); }
+
+            if ("power" in connection_2) { var connection_3  = connection_2["power"]; }
+            var connection_4  = this.data["STATUS"]["devices"][device]["api-status"].toLowerCase();
+
+            if (!connection_1["active"])                                    { connected = "API " + status_data["api"].split("_")[0] + " disabled."; }
+            else if (!connection_2["active"])                               { connected = "API Device " + status_data["api"] + " disabled."; }
+            else if (connection_3 != "ON")                                  { connected = "API Device " + status_data["api"] + " OFF ("+connection_2["connect"]+")."; }
+            else if (connection_2["connect"].toLowerCase() != "connected")  { connected = "API Device " + status_data["api"] + " not connected ("+connection_2["connect"]+")."; }
+            else if (connection_4.toLowerCase() != "connected")             { connected = "Device " + device + " not connected ("+connection_4+")."; }
+            else                                                            { connected = "connected"; }
+
+            return connected;
+	        }
+	    this.check_connection_scene  = function(scene) {
+
+            var connected               = "";
+	        var scene_data              = this.data["STATUS"]["scenes"][scene];
+	        var scene_devices           = scene_data.length;
+	        var connected_devices       = 0;
+	        var not_connected           = [];
+	        var not_connected_details   = [];
+
+	        for (var i=0;i<scene_devices;i++) {
+                var device  = scene_data[i];
+                var connect = this.check_connections_remote(device);
+                if (connect = "connected")  { connected_devices += 1; }
+                else                        { not_connected.push(device); not_connected_details.push(connect); }
+	            }
+
+	        if (connected_devices == scene_devices) { connected = "connected"; }
+	        else if (connected_devices == 0)        { connected = "no device connected"; }
+	        else                                    { connected = "devices not connected: " + not_connected.join(", "); }
+
+	        return connected;
+	        }
+
 		if (!this.data["CONFIG"][type]) {
 			this.logging.error(this.app_name+".display() - type not supported ("+type+")");
 			return;
 			}
 
-		var remote_data	= this.data["CONFIG"][type][device]["remote"];
-		var status_data	= this.data["STATUS"][type][device];
+        var text          = "";
+        var status        = "";
+        var remote_data	  = this.data["CONFIG"]["devices"][device]["remote"];
+        var status_data	  = this.data["STATUS"]["devices"][device];
 
-		if (!status_data)           { console.error("Error building display: no status data for " + device + " (" + type + ")"); }
-		if (!status_data["power"])  { console.error("Error building display: no status_power data for " + device + " (" + type + ")"); status_data["power"] = "ERROR"; }
-		if (!remote_data)           { console.error("Error building display: no remote definition for " + device + " (" + type + ")"); }
+        // check connection
+		if (type == "devices")  { var connected = this.check_connection_remote(device); }
+		else                    { var connected = this.check_connection_scene(device); }
 
-		if (type == "devices") { var connected = this.data["STATUS"]["devices"][device]["api-status"].toLowerCase(); }
-		else                   { var connected = "unknown"; status_data = {}; }
-
+        // check display definition
 		if (display_data != {})             {}
 		else if (remote_data["display"])    { display_data          = remote_data["display"]; }
 		else                                { display_data["Error"] = "No display defined"; }
 
-        var text    = "";
-        var status  = "";
-
+        // create link for details (for scenes not defined yet)
 		if (type == "devices")      { var onclick = "onclick=\"" + this.app_name + ".alert('"+id+"','"+device+"','"+type+"','##STYLE##');\""; }
 		else                        { var onclick = "disabled"; }
 
         var display_start = "<button id=\"display_"+device+"_##STATUS##\" class=\"display ##STYLE##\" style=\"display:##DISPLAY##\" "+onclick+">";
         var display_end   = "</button>";
 
+        // set overarching status to activate the right display
 		if (this.edit_mode)                                                     { status = "EDIT_MODE"; }
 		else if (type == "scenes")                                              { status = "ON"; }
 		else if (connected.indexOf("off") > -1)                                 { status = "OFF"; }
@@ -490,7 +539,7 @@ function rmRemoteDisplays(name) {
             else                                            { text  = text.replace( /##DISPLAY##/g, "none" ); }
             if (status_data["power"] == undefined)          { status_data["power"] = "N/A"; }
             text += "<center><b>Connection Error</b>:</center>"; //<br/>";
-            text += "<center><i>"+connected+" :: Power-Status: "+status_data["power"].toUpperCase()+"</i></center>";
+            text += "<center><i>"+connected+"</i></center>";
             text += display_end;
 
             // display if ON
@@ -673,6 +722,13 @@ function rmRemoteDisplays(name) {
 		}
 
 	}
+
+
+function rmImage(file) {
+        return "<img src='icon/"+file+"' class='rm-button-image' alt='"+file+"' />";
+        }
+
+
 
 
 //----------------------------------

@@ -5,11 +5,12 @@
    width           : 48%;
    margin          : 1%;
    height          : 40px;
-   padding         : 2px;
-   font-size       : 2.5vw;
+   padding         : 0.5vw;
    border-radius   : 6px;
+   border          : solid 0.5px var(--rm-color-display-default-border);
    background-color: var(--rm-color-display-default);
    color           : var(--rm-color-display-default-text);
+   font-size       : var(--rm-size-remote-display-text);
    overflow        : hidden;
    display         : inline-block;
    vertical-align  : top;
