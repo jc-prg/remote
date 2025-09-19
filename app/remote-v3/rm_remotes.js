@@ -933,7 +933,17 @@ function rmRemote(name) {
 				else if (button[0].indexOf("DISPLAY") == 0)         { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
 				else                                                { this.tooltip.settings(this.tooltip_mode,this.tooltip_width,this.tooltip_height,this.tooltip_distance); }
 
-				next_button = this.tooltip.create_inside( next_button, context_menu, i );
+                next_button = this.tooltip.create_inside( next_button, context_menu, i );
+
+                // adapt tooltip placement for header image in edit mode (not perfect yet but better ;-))
+                if (button[0].indexOf("HEADER-IMAGE") == 0 || remote.indexOf("TOOL-TIPP-PLACEHOLDER") > 0)    {
+                    var splitter = "<span class='jc_tooltip";
+                    tooltip      = splitter + next_button.split("<!--END-->"+splitter)[1];
+                    tooltip      = tooltip.replace("</button>","");
+                    next_button  = next_button.replace(tooltip, "");
+                    remote       = remote.replace("<!--TOOL-TIPP-PLACEHOLDER-->", tooltip);
+                    console.error(tooltip);
+                    }
 				}
 
 			remote += next_button;
@@ -1277,6 +1287,7 @@ function rmRemote(name) {
 			// - ensure the triangle is visible
 
             image_html    += " <div class='header_image_toggle_container' id='toggle_place_"+id+"'>"+toggle_html+"</div>";
+            image_html    += " <div id='header_tooltip' style='none'><!--TOOL-TIPP-PLACEHOLDER--></div>";
 			image_html    += " <div class='header_image_fade'>";
 			image_html    += "  <div class='header_image_text'>&nbsp;<br/>&nbsp;<br/>"+label+"</div>";
 			image_html    += " </div>";
