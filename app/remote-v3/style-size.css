@@ -16,25 +16,19 @@
     --app-frame-width-50-menu   : calc((100% - 163px) / 2 - 16px);
     --app-frame-width-30-menu   : calc((100% - 163px) / 3 - 16px);
 
-    --rm-size-remote-button-text    : 4vw;
-    --rm-size-remote-info-text      : 3vw;
-    --rm-size-remote-channel-text   : 3vw;
-    --rm-size-remote-label-text     : 3vw;
-    --rm-size-remote-display-text   : 3vw;
-    --rm-size-remote-line-text      : 2vw;
+    --rm-size-remote-header-text    : 30px;
+    --rm-size-remote-button-text    : 3cqw;
+    --rm-size-remote-info-text      : 3cqw;
+    --rm-size-remote-channel-text   : 3cqw;
+    --rm-size-remote-label-text     : 2.5cqw;
+    --rm-size-remote-display-text   : 2cqw;
+    --rm-size-remote-line-text      : 1.4cqw;
 }
 
 @media (min-width: 705px) {
 
   :root {
     --app-frame-width-100           : calc(100% - 16px);
-
-    --rm-size-remote-button-text    : 2.5vw;
-    --rm-size-remote-channel-text   : 2.5vw;
-    --rm-size-remote-label-text     : 2.5vw;
-    --rm-size-remote-display-text   : 2.5vw;
-    --rm-size-remote-info-text      : 2vw;
-    --rm-size-remote-line-text      : 1.5vw;
   }
 
   .setting_bg.wide           { width  : var(--app-frame-width-100); }
@@ -48,32 +42,51 @@
 
 @media (min-width: 880px) {
   :root {
-    --rm-size-remote-button-text    : 1.5vw;
-    --rm-size-remote-info-text      : 1.5vw;
-    --rm-size-remote-label-text     : 1.5vw;
-    --rm-size-remote-channel-text   : 1.1vw;
-    --rm-size-remote-display-text   : 1.1vw;
-    --rm-size-remote-line-text      : 1.2vw;
+    --rm-size-remote-button-text    : 1.8cqw;
+    --rm-size-remote-channel-text   : 1.5cqw;
+    --rm-size-remote-display-text   : 1.2cqw;
+
+    --rm-size-remote-info-text      : 18px;
+    --rm-size-remote-line-text      : 12px;
+    --rm-size-remote-label-text     : 18px;
   }
 
-  .remote                    { width  : var(--app-frame-width-50); }
-  .setting_bg                { width  : var(--app-frame-width-50); }
+  /* remote control in 2 columns */
+  #frames {
+    display: block;
+    column-count: 2;
+    column-gap: 20px;
+    width: 100%
+  }
+  .remote, .setting_bg {
+    break-inside: avoid;
+    width: 100%
+  }
+
+  /* remote control editing in 2 columns */
+  .slist {
+    column-count: 2;
+    column-gap: 10px;
+    list-style-type: none;
+    padding: 0px;
+  }
+  .slist li {
+    break-inside: avoid-column;
+    margin-top: 0px;
+  }
+  .slist_number {
+    display: block;
+  }
 }
 
 /* adapted format for Laptop & Bigger - 3 columns incl. menu*/
 
 @media (min-width: 1250px) {
   :root {
-    --rm-size-remote-button-text    : 1vw;
-    --rm-size-remote-info-text      : 1vw;
-    --rm-size-remote-channel-text   : 1vw;
-    --rm-size-remote-label-text     : 1.1vw;
-    --rm-size-remote-display-text   : 0.6vw;
-    --rm-size-remote-line-text      : 0.8vw;
+    --rm-size-remote-button-text    : 16px;
+    --rm-size-remote-channel-text   : 16px;
+    --rm-size-remote-display-text   : 16px;
   }
-
-  .remote                   { width  : var(--app-frame-width-30); }
-  .setting_bg               { width  : var(--app-frame-width-30); }
   .setting_bg.wide          { width  : var(--app-frame-width-100); }
   .setting_bg.main          { width  : var(--app-frame-width-100); }
   .setting_bg.header        { width  : var(--app-frame-width-100); }
@@ -81,6 +94,11 @@
   .settings_button_index    { width  : calc(25% - 10px); height : 150px; }
   .settings_icon_big        { max-width : 120px; max-height : 80px; }
   .frame_block_content      { width  : var(--app-frame-width-100-menu); }
+
+  /* remote control in 3 columns */
+  #frames {
+    column-count: 3;
+    }
   }
 
 /* setting frames depending on screen size */
@@ -95,12 +113,10 @@
   width: calc(100% - 0px);
 }
 
-#frames {
-  width: calc(100% - 0px);
-}
+
+/* format settings frame when menu is visible */
 
 @media (min-width: 705px) {
-
   #device_frame0 {
     width : 100%;
   }

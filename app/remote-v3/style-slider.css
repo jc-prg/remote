@@ -53,14 +53,13 @@
    border          : 1px solid var(--rm-color-slider2-label-border);
    background-color: var(--rm-color-slider2-label);
    color           : var(--rm-color-slider2-label-text);
-   font-size       :   9px;
+   font-size       : var(--rm-size-remote-label-text);
 
    overflow        : hidden;
    float           : left;
    display         : inline-block;
    vertical-align  : top;
    text-align      : left;
-   font-size       : 12px;
 }
 
 /* ---------------------------------------- */

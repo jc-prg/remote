@@ -4,6 +4,7 @@
     padding     : 0;
     margin      : 0;
 }
+
 .slist li {
     display         : flex;
     justify-content : flex-start;
@@ -46,13 +47,23 @@
 
 /* DRAG HANDLE STYLES */
 .slist_handle {
+    float           : left;
     cursor          : grab;
     color           : #ff6666;
     margin-left     : 5px;
     margin-right    : 10px;
     width           : 20px;
     max-width       : 20px;
+}
+
+.slist_number {
     float           : left;
+    color           : #ff6666;
+    margin-left     : -5px;
+    margin-right    : 5px;
+    width           : 25px;
+    max-width       : 25px;
+    display         : none;
 }
 
 .slist_li_edit {
@@ -80,5 +91,5 @@
     nav-title         { max-width : 100px; }
     .slist_li_edit    { width     : 30%; }
     .slist_li_content { width     : 60%; }
-    }
 }
+

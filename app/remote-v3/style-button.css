@@ -30,6 +30,7 @@ button {
    background-color: var(--rm-color-button);
    color           : var(--rm-color-button-text);
    font-size       : var(--rm-size-remote-button-text);
+//   font-size       : 2cqw;
    padding         : 2px;
    overflow        : hidden;
 }
@@ -301,7 +302,7 @@ canvas {
 .header_image_fade {
     height          : 140px;
     width           : 100%;
-    font-size       : 30px;
+    font-size       : var(--rm-size-remote-header-text);
     font-weight     : bold;
     color           : var(--rm-color-header-text);
     background      : var(--rm-color-header-fade);
