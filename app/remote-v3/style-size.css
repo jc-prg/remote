@@ -22,7 +22,7 @@
     --rm-size-remote-info-text      : 3cqw;
     --rm-size-remote-channel-text   : 3cqw;
     --rm-size-remote-label-text     : 4cqw;
-    --rm-size-remote-line-text      : 1.4cqw;
+    --rm-size-remote-line-text      : 10px;
 }
 
 @media (min-width: 600px) {

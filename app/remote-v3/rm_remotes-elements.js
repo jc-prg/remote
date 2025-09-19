@@ -437,7 +437,6 @@ function rmRemoteDisplays(name) {
             var remote_data	  = this.data["CONFIG"]["devices"][device]["remote"];
             var status_data	  = this.data["STATUS"]["devices"][device];
             var connection_1  = this.data["STATUS"]["connections"][status_data["api"].split("_")[0]];
-
             var connection_2  = connection_1["api_devices"][status_data["api"].split("_")[1]];
 
             if (!status_data)                   { error = "Error building display: no status data for " + device + " (" + type + ")"; }
@@ -450,11 +449,15 @@ function rmRemoteDisplays(name) {
             if ("power" in connection_2) { var connection_3  = connection_2["power"]; }
             var connection_4  = this.data["STATUS"]["devices"][device]["api-status"].toLowerCase();
 
+            var dev_name  = device;
+            var dev_infos = this.data["CONFIG"]["devices"][device];
+            if (dev_infos)  { dev_name = dev_infos["settings"]["label"]; }
+
             if (!connection_1["active"])                                    { connected = "API " + status_data["api"].split("_")[0] + " disabled."; }
             else if (!connection_2["active"])                               { connected = "API Device " + status_data["api"] + " disabled."; }
-            else if (connection_3 != "ON")                                  { connected = "API Device " + status_data["api"] + " OFF ("+connection_2["connect"]+")."; }
-            else if (connection_2["connect"].toLowerCase() != "connected")  { connected = "API Device " + status_data["api"] + " not connected ("+connection_2["connect"]+")."; }
-            else if (connection_4.toLowerCase() != "connected")             { connected = "Device " + device + " not connected ("+connection_4+")."; }
+            else if (connection_3 != "ON")                                  { connected = "API Device " + status_data["api"] + " OFF."; }
+            else if (connection_2["connect"].toLowerCase() != "connected")  { connected = "API Device " + status_data["api"] + " not connected."; }
+            else if (connection_4.toLowerCase() != "connected")             { connected = "Device " + dev_name + " not connected."; }
             else                                                            { connected = "connected"; }
 
             return connected;
@@ -481,7 +484,7 @@ function rmRemoteDisplays(name) {
 	            }
 
 	        if (connected_devices == scene_devices) { connected = lang("CONNECTED"); }
-	        else if (connected_devices == 0)        { connected = lang("NO_DEVICE_CONNECTED)"); }
+	        else if (connected_devices == 0)        { connected = lang("NO_DEVICE_CONNECTED"); }
 	        else                                    { connected = lang("DEVICES_NOT_CONNECTED")+":<br/>" + not_connected.join(", "); }
 	        return connected;
 	        }
