@@ -487,8 +487,8 @@ function rmRemoteDisplays(name) {
 
         var text          = "";
         var status        = "";
-        var remote_data	  = this.data["CONFIG"]["devices"][device]["remote"];
-        var status_data	  = this.data["STATUS"]["devices"][device];
+        var remote_data	  = this.data["CONFIG"][type][device]["remote"];
+        var status_data	  = this.data["STATUS"][type][device];
 
         // check connection
 		if (type == "devices")  { var connected = this.check_connection_remote(device); }
