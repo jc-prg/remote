@@ -196,8 +196,8 @@ ul.help ul li {
     width		    : 96%;
     height		    : 15px;
     overflow		: hidden;
-    margin-top		: 10px;
-    margin-bottom	: 6px;
+    margin-top		: 1.2cqw;
+    margin-bottom	: 1cqw;
     margin-left	    : 2%;
     margin-right	: 2%;
     border-color    : var(--rm-color-frame-line);
