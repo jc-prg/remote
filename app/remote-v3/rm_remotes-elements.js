@@ -185,8 +185,10 @@ function rmRemoteButtons(name) {
             onClick    = onClick.replaceAll("#", "\"");
             onClick    = onClick.replaceAll("{{!!}}", "#");
             }
-	
-        if (style != "") { style = " " + style; }
+
+        if (!isNaN(label)) { label = "<big>" + label + "</big>"; }
+        if (style != "")   { style = " " + style; }
+
         var button = "<button id='" + id.toLowerCase() + "' class='rm-button" + style + "' " + btnstyle + " " +
                      onClick + " " + onContext + " " + disabled + " >" + label + "</button>"; // style='float:left;'
         return button;
