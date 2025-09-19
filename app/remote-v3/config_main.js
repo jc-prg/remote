@@ -188,7 +188,7 @@ var deactivateButton = false;   // default: deactivate buttons if device is not 
 
 
 const appleIcon1 = document.querySelector("link[rel='apple-touch-icon']");
-const appleIcon2 = document.querySelector("link[rel='apple-touch-icon-compressed']");
+const appleIcon2 = document.querySelector("link[rel='apple-touch-icon-precomposed']");
 
 // change its href
 if (appleIcon) {
