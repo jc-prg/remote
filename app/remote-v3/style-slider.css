@@ -27,7 +27,7 @@
    color           : #222222;
    font-size       :   9px;
 
-   width           :  64px;
+   width           :  70px;
    height          :  40px;
    padding         :   2px;
    margin          :   4px;
@@ -46,7 +46,7 @@
    color           : #222222;
    font-size       :   9px;
 
-   width           :  204px;
+   width           :  calc(100% - 95px);
    height          :  40px;
    padding         :   2px;
    padding-left    :  10px;
@@ -63,21 +63,6 @@
    vertical-align  : top;
    text-align      : left;
    font-size       : 12px;
-}
-
-.rm-toggle-label.long {
-   width           :  204px;
-}
-
-.rm-toggle-label.short {
-   width           :  64px;
-}
-
-/* ---------------------------------------- */
-
-@media (min-width : 350px) and (max-width: 720px) {
-    .rm-toggle-button     { width  : 20%; }
-    .rm-toggle-label.long { width  : 75%; }
 }
 
 /* ---------------------------------------- */
