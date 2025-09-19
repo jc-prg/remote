@@ -1,4 +1,4 @@
-/* overwrite settings from app-framework */
+/* default sizes */
 
 .setting_bg.header.empty {
     height : 47px;
@@ -17,13 +17,23 @@
     --app-frame-width-30-menu   : calc((100% - 163px) / 3 - 16px);
 
     --rm-size-remote-header-text    : 30px;
-    --rm-size-remote-button-text    : 3cqw;
+    --rm-size-remote-button-text    : 4cqw;
+    --rm-size-remote-display-text   : 3cqw;
     --rm-size-remote-info-text      : 3cqw;
     --rm-size-remote-channel-text   : 3cqw;
-    --rm-size-remote-label-text     : 2.5cqw;
-    --rm-size-remote-display-text   : 2cqw;
+    --rm-size-remote-label-text     : 4cqw;
     --rm-size-remote-line-text      : 1.4cqw;
 }
+
+@media (min-width: 600px) {
+  :root {
+    --rm-size-remote-label-text     : 16px;
+    --rm-size-remote-info-text      : 16px;
+    --rm-size-remote-line-text      : 12px;
+  }
+}
+
+/* size when menu gets visible */
 
 @media (min-width: 705px) {
 
@@ -40,15 +50,13 @@
   .frame_block_content       { width  : var(--app-frame-width-100-menu); }
   }
 
+/* size when columns > 340px even with menu visible; switch to 2 columns */
+
 @media (min-width: 880px) {
   :root {
-    --rm-size-remote-button-text    : 1.8cqw;
+    --rm-size-remote-button-text    : 2cqw;
     --rm-size-remote-channel-text   : 1.5cqw;
     --rm-size-remote-display-text   : 1.2cqw;
-
-    --rm-size-remote-info-text      : 18px;
-    --rm-size-remote-line-text      : 12px;
-    --rm-size-remote-label-text     : 18px;
   }
 
   /* remote control in 2 columns */
@@ -79,7 +87,7 @@
   }
 }
 
-/* adapted format for Laptop & Bigger - 3 columns incl. menu*/
+/* format for Laptop & bigger screen with 3 columns incl. menu */
 
 @media (min-width: 1250px) {
   :root {
