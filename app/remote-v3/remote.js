@@ -28,16 +28,9 @@ remote_css = [
     "style-remote.css",
     "style-button.css",
     "style-slider.css",
-    "style-slider-dark.css",
     "style-settings.css",
     "style-display.css",
     "style-color-picker.css",
     "style-sort-list.css",
     "style-size.css",
     ];
-
-/*
-    "style-screensize-big.css",
-    "style-screensize-iphone.css",
-    "style-screensize-ipad.css",
-*/
