@@ -471,14 +471,16 @@ function rmRemoteDisplays(name) {
                 var connect = this.check_connection_remote(device);
                 if (connect == "connected")  { connected_devices += 1; }
                 else {
-                    not_connected.push(device);
+                    var dev_infos = this.data["CONFIG"]["devices"][device];
+                    if (dev_infos)  { not_connected.push(dev_infos["settings"]["label"]); }
+                    else            { not_connected.push(device); }
                     not_connected_details.push(connect);
                     }
 	            }
 
-	        if (connected_devices == scene_devices) { connected = "connected"; }
-	        else if (connected_devices == 0)        { connected = "no device connected"; }
-	        else                                    { connected = "devices not connected: " + not_connected.join(", "); }
+	        if (connected_devices == scene_devices) { connected = lang("CONNECTED"); }
+	        else if (connected_devices == 0)        { connected = lang("NO_DEVICE_CONNECTED)"); }
+	        else                                    { connected = lang("DEVICES_NOT_CONNECTED")+":<br/>" + not_connected.join(", "); }
 	        return connected;
 	        }
 

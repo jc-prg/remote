@@ -8,6 +8,7 @@
 
 var language_app = {
 	"DE" : {
+		"CONNECTION_ERROR"      : "Verbindungsproblem",
 		"RESET_SWITCH_OFF"      : "Reset Devices:<br/>vorher alle Geräte ausschalten.",
 		"RESET_VOLUME_TO_ZERO"  : "Reset Audio Settings:<br/>vorher alle Receiver mit Audio auf Mininum (0) einstellen.",
 		},
@@ -28,7 +29,9 @@ var language_app = {
 		"API_INFORMATION"       : "API information",
 		"API_SELECT_CMD"        : "API command or use your own ...",
 		"API_INFO"              : "API Info",
-		
+		"API_DEVICE_NOT_CONNECTED"   : "API device {0} not connected",
+		"API_NOT_CONNECTED"          : "API {1} not connected",
+
 		"BUTTON_ASK_DELETE"     : "Do you really want to delete the button '{0}' from '{1}'?",
 		"BUTTON_ASK_DELETE_NUMBER" : "Do you really want to delete the button number [{0}] from '{1}'?",
 		"BUTTON_INSERT_NAME"    : "Please insert name for button.",
@@ -75,6 +78,9 @@ var language_app = {
 		"CHANGE_ORDER_DEVICES"  : "Change order of devices",
 		"CHANGE_MODES"          : "Change working modes",
 
+		"CONNECTION_ERROR"      : "Connection Error",
+		"CONNECTED"             : "connected",
+
 		"COLORPICKER_SELECT_CMD" : "Select command, to insert color picker.",
 		"COLORPICKER_N/A"       : "Color picker not supported",
 		
@@ -101,7 +107,8 @@ var language_app = {
 		"DEVICE_SELECT_API"     : "Please select API for device.",
 		"DEVICE_SELECT_TEMPLATE"  : "Please select template to create remote for device.",
 		"DEVICE_SELECT_VISIBLITY" : "Please select if device should be visible or hidden.",
-		
+		"DEVICES_NOT_CONNECTED"   : "Devices not connected",
+
 		"DISPLAY_EXISTS"         : "Display already exists, only one display is supported.",
 		"DISPLAY_LABEL_SELECT"   : "Select label to be deleted in the display.",
 		"DISPLAY_LABEL_DONT_EXIST" : "Selected label doesn't exist in display definition.",
@@ -121,6 +128,7 @@ var language_app = {
 		"EDIT_INTERFACES"        : "Edit interfaces",
 		"EDIT_INTERFACE"         : "Edit interface configuration for {0}",
 		"EXTERNAL_ID"            : "External ID",
+		"ERROR_UNKNOWN"          : "Unknown error",
 
 		"FORMAT_INCORRECT"       : "format is not correct",
 		
@@ -222,6 +230,9 @@ var language_app = {
 		"MSG_ONLY_ONE_COLOR_PICKER"    : "This color picker already exists in the remote control, only one is possible.",
 		
 		"NOT_USED"                     : "not used in remote control",
+		"NO_DEVICE_CONNECTED"          : "no device connected",
+
+        "OFFLINE"                      : "Offline",
 
 		"PLEASE_WAIT"                  : "Please wait ... .",
 		
