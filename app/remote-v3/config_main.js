@@ -187,5 +187,14 @@ var showButton       = false;   // default: show pressed button in headline
 var deactivateButton = false;   // default: deactivate buttons if device is not ON
 
 
+const appleIcon = document.querySelector("link[rel='apple-touch-icon']");
+
+// change its href
+if (appleIcon) {
+  appleIcon.setAttribute("href", "favicon_light2.png");
+}
+
+
+
 //--------------------------------------
 //EOF

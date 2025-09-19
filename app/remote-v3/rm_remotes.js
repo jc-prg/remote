@@ -2,14 +2,6 @@
 // jc://remote/
 //--------------------------------
 
-const appleIcon = document.querySelector("link[rel='apple-touch-icon']");
-
-// change its href
-if (appleIcon) {
-  appleIcon.setAttribute("href", "favicon_light2.png");
-}
-
-
 function rmRemote(name) {
 
 	this.data           = {};
