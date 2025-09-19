@@ -935,14 +935,21 @@ function rmRemote(name) {
 
                 next_button = this.tooltip.create_inside( next_button, context_menu, i );
 
-                // adapt tooltip placement for header image in edit mode (not perfect yet but better ;-))
+                // adapt tooltip placement for header image in edit mode
                 if (button[0].indexOf("HEADER-IMAGE") == 0 || remote.indexOf("TOOL-TIPP-PLACEHOLDER") > 0)    {
+
+                    console.error("-----");
+                    console.error(next_button);
+
                     var splitter = "<span class='jc_tooltip";
-                    tooltip      = splitter + next_button.split("<!--END-->"+splitter)[1];
+                    tooltip      = splitter + next_button.split("<!--X-->"+splitter)[1];
                     tooltip      = tooltip.replace("</button>","");
+
                     next_button  = next_button.replace(tooltip, "");
-                    remote       = remote.replace("<!--TOOL-TIPP-PLACEHOLDER-->", tooltip);
+                    next_button  = next_button.replace("<!--TOOL-TIPP-PLACEHOLDER-->", tooltip);
+
                     console.error(tooltip);
+                    console.error(next_button);
                     }
 				}
 
@@ -1287,11 +1294,11 @@ function rmRemote(name) {
 			// - ensure the triangle is visible
 
             image_html    += " <div class='header_image_toggle_container' id='toggle_place_"+id+"'>"+toggle_html+"</div>";
-            image_html    += " <div id='header_tooltip' style='none'><!--TOOL-TIPP-PLACEHOLDER--></div>";
+            image_html    += " <div id='header_tooltip' style='display:block;'><!--TOOL-TIPP-PLACEHOLDER--></div>";
 			image_html    += " <div class='header_image_fade'>";
 			image_html    += "  <div class='header_image_text'>&nbsp;<br/>&nbsp;<br/>"+label+"</div>";
 			image_html    += " </div>";
-			image_html    += "</button>";
+			image_html    += "<!--X--></button>";
 			return image_html;
 			}
 		}
