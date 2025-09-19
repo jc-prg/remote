@@ -132,6 +132,34 @@
     --rm-color-slider-border: #777777;
     --rm-color-slider-text: black;
 
+    --rm-color-slider2: #CCCCCC;
+    --rm-color-slider2-text: #222222;
+    --rm-color-slider2-border: #BBBBBB;
+    --rm-color-slider2-button-border: #DDDDDD;
+    --rm-color-slider2-button: #DDDDDD;
+    --rm-color-slider2-label: #DDDDDD;
+    --rm-color-slider2-label-border: #DDDDDD;
+    --rm-color-slider2-label-text: black;
+    --rm-color-slider2-value: #DDDDDD;
+    --rm-color-slider2-value-border: #777777;
+    --rm-color-slider2-value-text: #222222;
+
+    --rm-color-slider2-handle-default: #223322;
+    --rm-color-slider2-handle-default-track: #332222;
+    --rm-color-slider2-handle-default-border: #777777;
+    --rm-color-slider2-handle-device_on: green;
+    --rm-color-slider2-handle-device_on-border: #00cc00;
+    --rm-color-slider2-handle-device_off: darkred;
+    --rm-color-slider2-handle-device_off-border: #cc0000;
+    --rm-color-slider2-handle-device_disabled: #3333AA;
+    --rm-color-slider2-handle-device_disabled-border: #5555AA;
+    --rm-color-slider2-handle-device_active: #6666DD;
+    --rm-color-slider2-handle-device_active-border: #8888ff;
+    --rm-color-slider2-handle-device_undef: gray;
+    --rm-color-slider2-handle-device_undef-border: #cccccc;
+    --rm-color-slider2-handle-device_set: darkcyan;
+    --rm-color-slider2-handle-device_set-border: cyan;
+
     --rm-opacity-button-var: 1.0;
     --rm-opacity-button-fix: 1.0;
     --rm-opacity-button-device-off: 0.4;
@@ -201,6 +229,18 @@
         --rm-color-slider-container: #DDDDEE;
         --rm-color-slider-border: black;
         --rm-color-slider-text: #DDDDDD;
+
+        --rm-color-slider2: #222222;
+        --rm-color-slider2-text: #222222;
+        --rm-color-slider2-border: #222222;
+        --rm-color-slider2-button-border: #000000;
+        --rm-color-slider2-button: #000000;
+        --rm-color-slider2-label: #000000;
+        --rm-color-slider2-label-border: #000000;
+        --rm-color-slider2-label-text: white;
+        --rm-color-slider2-value: #222222;
+        --rm-color-slider2-value-border: #777777;
+        --rm-color-slider2-value-text: #DDDDDD;
 
         --rm-opacity-button-var: 0.8;
         --rm-opacity-image-var: 0.8;
