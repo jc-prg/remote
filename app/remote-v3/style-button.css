@@ -130,6 +130,11 @@ button {
 
 /* other buttons */
 
+.rm-button.settings {
+    font-size   : 14px;
+    margin      : 3px;
+}
+
 .rm-button.calculate_values {
     width       : 24px;
     height      : 24px;
@@ -174,24 +179,6 @@ button {
 .rm-button.bgwhite-cool     { --rm-button-color: var(--rm-color-button-white-cool); }
 .rm-button.bgwhite-coolest  { --rm-button-color: var(--rm-color-button-white-coolest); }
 .rm-button.bgwhite-neutral  { --rm-button-color: var(--rm-color-button-white); }
-
-/*
-.rm-button.bgred               { background-color: var(--rm-color-button-red);     color: var(--rm-color-button-red); }
-.rm-button.bgyellow            { background-color: var(--rm-color-button-yellow);  color: var(--rm-color-button-yellow); }
-.rm-button.bgblue              { background-color: var(--rm-color-button-blue);    color: var(--rm-color-button-blue); }
-.rm-button.bggreen             { background-color: var(--rm-color-button-green);   color: var(--rm-color-button-green); }
-.rm-button.bgwhite             { background-color: var(--rm-color-button-white);   color: var(--rm-color-button-white); }
-.rm-button.bgorange            { background-color: var(--rm-color-button-orange);  color: var(--rm-color-button-orange); }
-.rm-button.bgpink              { background-color: var(--rm-color-button-pink);    color: var(--rm-color-button-pink); }
-.rm-button.bgcyan              { background-color: var(--rm-color-button-cyan);    color: var(--rm-color-button-cyan); }
-.rm-button.bgblack             { background-color: var(--rm-color-button-black);   color: var(--rm-color-button-black); }
-
-.rm-button.bgwhite-warm        { background-color: var(--rm-color-button-white-warm);    color: var(--rm-color-button-white-warm);    max-width: 18%; margin: 1%; }
-.rm-button.bgwhite-warmest     { background-color: var(--rm-color-button-white-warmest); color: var(--rm-color-button-white-warmest); max-width: 18%; margin: 1%; }
-.rm-button.bgwhite-cool        { background-color: var(--rm-color-button-white-cool);    color: var(--rm-color-button-white-cool);    max-width: 18%; margin: 1%; }
-.rm-button.bgwhite-coolest     { background-color: var(--rm-color-button-white-coolest); color: var(--rm-color-button-white-coolest); max-width: 18%; margin: 1%; }
-.rm-button.bgwhite-neutral     { background-color: var(--rm-color-button-white);         color: var(--rm-color-button-white);         max-width: 18%; margin: 1%; }
-*/
 
 /* set opacity for .rm-button.bg*(color) */
 
