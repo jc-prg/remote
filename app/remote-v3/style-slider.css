@@ -48,6 +48,7 @@
    font-size       :   9px;
 
    width           :  calc(100% - 95px);
+   min-width       :  60%;
    height          :  40px;
    padding         :   2px;
    padding-left    :  10px;
