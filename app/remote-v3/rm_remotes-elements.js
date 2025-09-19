@@ -424,7 +424,7 @@ function rmRemoteDisplays(name) {
 	// create display
 	//--------------------------------
 	// show display with information
-	this.default		= function (id, device, type="devices", style="", display_data={}) {
+	this.default		= function (id, device, rm_type="devices", style="", display_data={}) {
 
 	    this.check_connection_remote = function(device) {
 
@@ -468,31 +468,33 @@ function rmRemoteDisplays(name) {
 
 	        for (var i=0;i<scene_devices;i++) {
                 var device  = scene_data[i];
-                var connect = this.check_connections_remote(device);
-                if (connect = "connected")  { connected_devices += 1; }
-                else                        { not_connected.push(device); not_connected_details.push(connect); }
+                var connect = this.check_connection_remote(device);
+                if (connect == "connected")  { connected_devices += 1; }
+                else {
+                    not_connected.push(device);
+                    not_connected_details.push(connect);
+                    }
 	            }
 
 	        if (connected_devices == scene_devices) { connected = "connected"; }
 	        else if (connected_devices == 0)        { connected = "no device connected"; }
 	        else                                    { connected = "devices not connected: " + not_connected.join(", "); }
-
 	        return connected;
 	        }
 
-		if (!this.data["CONFIG"][type]) {
-			this.logging.error(this.app_name+".display() - type not supported ("+type+")");
+		if (!this.data["CONFIG"][rm_type]) {
+			this.logging.error(this.app_name+".display() - type not supported ("+rm_type+")");
 			return;
 			}
 
         var text          = "";
         var status        = "";
-        var remote_data	  = this.data["CONFIG"]["scenes"][device]["remote"];
-        var status_data	  = this.data["STATUS"]["scenes"][device];
+        var remote_data	  = this.data["CONFIG"][rm_type][device]["remote"];
+        var status_data	  = this.data["STATUS"][rm_type][device];
 
         // check connection
-		if (type == "devices")  { var connected = this.check_connection_remote(device); }
-		else                    { var connected = this.check_connection_scene(device); }
+		if (rm_type == "devices")  { var connected = this.check_connection_remote(device); }
+		else                       { var connected = this.check_connection_scene(device); }
 
         // check display definition
 		if (display_data != {})             {}
@@ -500,7 +502,7 @@ function rmRemoteDisplays(name) {
 		else                                { display_data["Error"] = "No display defined"; }
 
         // create link for details (for scenes not defined yet)
-		if (type == "devices")      { var onclick = "onclick=\"" + this.app_name + ".alert('"+id+"','"+device+"','"+type+"','##STYLE##');\""; }
+		if (rm_type == "devices")      { var onclick = "onclick=\"" + this.app_name + ".alert('"+id+"','"+device+"','"+rm_type+"','##STYLE##');\""; }
 		else                        { var onclick = "disabled"; }
 
         var display_start = "<button id=\"display_"+device+"_##STATUS##\" class=\"display ##STYLE##\" style=\"display:##DISPLAY##\" "+onclick+">";
@@ -508,7 +510,7 @@ function rmRemoteDisplays(name) {
 
         // set overarching status to activate the right display
 		if (this.edit_mode)                                                     { status = "EDIT_MODE"; }
-		else if (type == "scenes")                                              { status = "ON"; }
+		else if (rm_type == "scenes")                                              { status = "ON"; }
 		else if (connected.indexOf("off") > -1)                                 { status = "OFF"; }
 		else if (connected != "connected")                                      { status = "ERROR"; }
 		else if (status_data["power"].toUpperCase().indexOf("ON") >= 0)         { status = "ON"; }
@@ -722,7 +724,6 @@ function rmRemoteDisplays(name) {
 		}
 
 	}
-
 
 function rmImage(file) {
         return "<img src='icon/"+file+"' class='rm-button-image' alt='"+file+"' />";
