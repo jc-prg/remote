@@ -547,7 +547,7 @@ class RemotesData(RemoteThreadingClass):
 
         # add entries to queue if some in the list
         if len(queue_entries) > 0:
-            self.logging.info("Request device status information: " + str(len(queue_entries)) + " entries ...")
+            self.logging.info("devices_get_status: Request device status information: " + str(len(queue_entries)) + " entries ...")
             if read_api:
                 self.queue.add2queue(["START_OF_RELOAD"])
 
@@ -557,7 +557,7 @@ class RemotesData(RemoteThreadingClass):
             if read_api:
                 self.queue.add2queue(["END_OF_RELOAD"])
         else:
-            self.logging.info("NO DEVICE STATUS REQUEST")
+            self.logging.debug("devices_get_status: NO DEVICE STATUS REQUEST")
 
         # mark API update as done
         self.interfaces.cache_update_api = False
