@@ -30,7 +30,8 @@
           }
       },
     "timing" : {
-      "5" : ["power"]
+      "5" : ["power"],
+      "300" : ["location", "model", "type"]
       },
     "timing_default" : 30
    }
