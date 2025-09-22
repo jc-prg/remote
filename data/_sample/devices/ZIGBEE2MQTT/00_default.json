@@ -50,9 +50,9 @@
           }
       },
       "timing" : {
-        "5": ["power"]
+        "5" : ["power"]
         },
-      "timing_default": 30,
+      "timing_default" : 30,
       "description" : "API for ZigBee Devices",
       "method" : "query"
   },
