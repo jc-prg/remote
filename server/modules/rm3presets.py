@@ -242,7 +242,7 @@ initial_stage = ""
 api_modules = []
 DEBUG = False
 
-refresh_config_sleep = 5 * 60
+refresh_config_sleep = 3 * 60
 refresh_config_cache = 60
 refresh_device_status = 10
 refresh_device_connection = 60

@@ -1,5 +1,5 @@
 {
-    "data": {
+  "data": {
 	"description" : "API to SONY devices",
 	"method" : "query",
 	"buttons" : {
@@ -7,6 +7,10 @@
 	"commands" : {
        	},
 	"display" : {
-       	}
-   }
+       	},
+    "timing" : {
+        "5": ["power"]
+        },
+    "timing_default" : 30
+  }
 }

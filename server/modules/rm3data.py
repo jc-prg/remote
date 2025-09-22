@@ -30,7 +30,10 @@ class RemotesData(RemoteThreadingClass):
         self.queue = queue
         self.apis = apis
         self.errors = {}
-        self.thread_priority(6)
+        self.thread_priority(2)
+        self.first_device_get_status = time.time()
+        self.get_status_last_run = {}
+        self.get_status_default = 15
 
     def run(self):
         """
@@ -124,7 +127,7 @@ class RemotesData(RemoteThreadingClass):
         Return:
             dict: device configuration
         """
-        config_keys = ["buttons", "commands", "url", "method"]
+        config_keys = ["buttons", "commands", "url", "method", "timing", "timing_default"]
         data = self.config.read_status()
         devices = self.devices_read()
         data_config = {}
@@ -212,6 +215,8 @@ class RemotesData(RemoteThreadingClass):
                 data_config[device]["commands"]["definition"] = {}
                 data_config[device]["commands"]["get"] = []
                 data_config[device]["commands"]["set"] = []
+                #data_config[device]["commands"]["timing"] = {}
+                #data_config[device]["commands"]["timing_default"] = self.get_status_default
 
                 # check get and set definitions
                 if "commands" in interface_def_combined:
@@ -238,6 +243,11 @@ class RemotesData(RemoteThreadingClass):
                         if ("get" not in interface_def_combined["commands"][key]
                                 and "set" not in interface_def_combined["commands"][key]):
                             data_config[device]["commands"]["get"].append(key)
+
+                data_config[device]["commands"]["timing"] = interface_def_combined.get("timing", {})
+                data_config[device]["commands"]["timing_default"] = interface_def_combined.get("timing_default")
+                if data_config[device]["commands"]["timing_default"] == {}:
+                    data_config[device]["commands"]["timing_default"] = self.get_status_default
 
                 for key in data_config[device]["commands"]["definition"]:
                     if "str" not in str(type(data_config[device]["commands"]["definition"][key])):
@@ -481,12 +491,7 @@ class RemotesData(RemoteThreadingClass):
         """
         devices = self.devices_read(None, True)
         config = self.devices_read_config()
-
-        # set reload status
-        if read_api:
-            self.queue.add2queue([0.5])
-            self.queue.add2queue(["START_OF_RELOAD"])
-            self.logging.info("Request device status information ...")
+        queue_entries = []
 
         # read status of all devices
         for device in devices:
@@ -516,13 +521,43 @@ class RemotesData(RemoteThreadingClass):
 
                     # request update for devices with API query
                     if method == "query" and read_api:
+                        self.logging.info(f"devices_get_status: check device {device}")
 
-                        #self.queue.add2queue([0.1])
-                        self.queue.add2queue([[interface, device, config[device]["commands"]["get"], ""]])
+                        now = time.time()
+                        interval_default = config[device]["commands"].get("timing_default", self.get_status_default)
+                        intervals = config[device]["commands"].get("timing", {})
+                        cmds_all = config[device]["commands"].get("get", [])
+                        cmds_now = []
 
-        # set reload status
-        if read_api:
-            self.queue.add2queue(["END_OF_RELOAD"])
+                        # Mapping command -> interval (int in seconds)
+                        cmd_intervals = {cmd: interval_default for cmd in cmds_all}
+                        for interval, cmd_list in intervals.items():
+                            for cmd in cmd_list:
+                                cmd_intervals[cmd] = int(interval)
+
+                        for cmd, interval in cmd_intervals.items():
+                            key = (device, cmd)
+                            if key not in self.get_status_last_run or now - self.get_status_last_run[key] >= interval:
+                                self.logging.info(f"devices_get_status: add2queue -> {cmd} on {device} (every {interval}s)")
+                                cmds_now.append(cmd)
+                                self.get_status_last_run[key] = now
+
+                        if len(cmds_now) > 0:
+                            queue_entries.append([[interface, device, cmds_now, ""]])
+
+        # add entries to queue if some in the list
+        if len(queue_entries) > 0:
+            self.logging.info("Request device status information: " + str(len(queue_entries)) + " entries ...")
+            if read_api:
+                self.queue.add2queue(["START_OF_RELOAD"])
+
+            for entry in queue_entries:
+                self.queue.add2queue(entry)
+
+            if read_api:
+                self.queue.add2queue(["END_OF_RELOAD"])
+        else:
+            self.logging.info("NO DEVICE STATUS REQUEST")
 
         # mark API update as done
         self.interfaces.cache_update_api = False

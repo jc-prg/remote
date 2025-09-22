@@ -84,7 +84,11 @@
 		"text" : { "set" : "Input.SendText(text='{DATA}',done=False)" },
 		"text-enter" : { "set" : "Input.SendText(text='{DATA}',done=True)" }
 	},
-	"queries"     : {},
+    "timing" : {
+        "5": ["power", "vol", "mute"]
+        },
+    "timing_default" : 30,
+	"queries" : {},
 	"send-data" : {}
 
    }
