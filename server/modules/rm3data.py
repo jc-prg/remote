@@ -521,7 +521,7 @@ class RemotesData(RemoteThreadingClass):
 
                     # request update for devices with API query
                     if method == "query" and read_api:
-                        self.logging.info(f"devices_get_status: check device {device}")
+                        self.logging.debug(f"devices_get_status: check device {device}")
 
                         now = time.time()
                         interval_default = config[device]["commands"].get("timing_default", self.get_status_default)
@@ -538,7 +538,7 @@ class RemotesData(RemoteThreadingClass):
                         for cmd, interval in cmd_intervals.items():
                             key = (device, cmd)
                             if key not in self.get_status_last_run or now - self.get_status_last_run[key] >= interval:
-                                self.logging.info(f"devices_get_status: add2queue -> {cmd} on {device} (every {interval}s)")
+                                self.logging.debug(f"devices_get_status: add2queue -> {cmd} on {device} (every {interval}s)")
                                 cmds_now.append(cmd)
                                 self.get_status_last_run[key] = now
 
