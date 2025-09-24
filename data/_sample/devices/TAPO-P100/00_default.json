@@ -1,5 +1,5 @@
 {
-    "data": {
+  "data": {
 	"description" : "PyP100 API",
 	"method" : "query",
 	"buttons" : {
@@ -28,11 +28,13 @@
        "type": {
           "get" : "jc.get_info('type')"
           }
-      },
-    "timing" : {
-      "5" : ["power"],
-      "300" : ["location", "model", "type"]
-      },
-    "timing_default" : 30
-   }
+       },
+    "query" : {
+        "load_intervals" : {
+          "10": ["power"]
+        },
+        "load_default" : 30,
+        "load_after" : ["on", "off"]
+        }
+    }
 }

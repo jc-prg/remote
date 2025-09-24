@@ -38,7 +38,7 @@ The following interfaces are integrated at the moment.
 ## How to create the configuration files
 
 * create a directory (capital letters) for your device in the directory [/data/devices/](../../data/devices/)
-* create the file **00_default.json** in this directory that defines commands for all devices controlled by this API using the following format :
+* create the file **00_default.json** in this directory that defines commands for all devices controlled by this API using the following format:
 
 ```json
 {
@@ -46,15 +46,34 @@ The following interfaces are integrated at the moment.
     "description" : "",
     "method" : "query",
     "buttons" : {
-      "name": "api_command"
-      },
+      "btn_name_1": "api_command",
+      "btn_name_2": "api_command"
+    },
     "commands" : {
-      "name": "api_command"
+      "cmd_name_3": {
+        "get": "api_command",
+        "set": "api_command",
+        "type": "datatype (integer,boolean,...)",
+        "param": [],
+        "values": []
+      },
+      "cmd_name_4": {
+        "get": "api_command",
+        "set": "api_command",
+        "type": "datatype (integer,boolean,...)",
+        "param": [],
+        "values": []
       }
+    },
+    "query" : {
+      "load_interval": { "5": ["cmd_name_3", "cmd_name_4"] }, 
+      "load_default": 30,
+      "load_after": ["btn_name_1","cmd_name_3"]
+    }
   }
 }
 ```
-
+* create a file with device specific buttons and commands using the same format
 * create the file **00_interface.json** in this directory that defines the connection to the devices controlled by this API (the content of the device definition might be different depending on the API, i.e., it might contain username and password):
 
 ```json
@@ -64,18 +83,20 @@ The following interfaces are integrated at the moment.
   "API-Source": "https://put-url-here/",
   "API-Devices" : {
     "device01" : {
+      "Description" : "",
       "IPAddress": "192.168.1.10",
-      "Port": "8080",
-      "Timeout": 5,
+      "MACAddress": "AA:BB:CC:DD:EE:FF",
       "Methods": ["send","query"],
-      "Description" : ""
+      "Port": "8080",
+      "Timeout": 5
       },
     "device02" : {
+      "Description": "",
       "IPAddress": "192.168.1.11",
-      "Port": "8080",
-      "Timeout": 5,
+      "MACAddress": "AA:BB:CC:DD:EE:FF",
       "Methods": ["send","query"],
-      "Description": ""
+      "Port": "8080",
+      "Timeout": 5
       }
     }
 }

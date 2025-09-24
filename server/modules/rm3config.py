@@ -83,6 +83,9 @@ class ConfigCache(RemoteThreadingClass):
         self.write_cache = False
         self.thread_priority(4)
 
+        self.load_after_update = {}
+        self.load_after = {}
+
     def run(self):
         """
         loop running in the background

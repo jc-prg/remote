@@ -98,6 +98,11 @@ class QueueApiCalls(RemoteThreadingClass):
                     self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')
                     self.logging.debug("send '" + interface + "/" + device + "/" + button + "=" + state + "': "+result)
 
+                    if device in self.config.load_after and button in self.config.load_after[device]:
+                        time.sleep(1)
+                        self.config.load_after_update[device] = True
+                        self.logging.debug("queue_execute: load_after activated - " + device + "_" + button)
+
                 except Exception as e:
                     result = "ERROR queue query_list (send," + interface + "," + device + "," +\
                              button + "=" + str(state) + "): " + str(e)
@@ -107,6 +112,7 @@ class QueueApiCalls(RemoteThreadingClass):
                 log_results = []
                 log_error = 0
                 log_time_start = time.time()
+
                 for value in button:
                     if log_error > 1:
                         continue

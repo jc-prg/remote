@@ -340,6 +340,11 @@ function statusCheck_audioMute(data) {
     var device_api          = data["STATUS"]["devices"][main_audio]["api"];
     var device_api_status   = data["STATUS"]["interfaces"]["connect"][device_api];
 
+    if (!data["STATUS"]["interfaces"]["connect"][device_api]) {
+        console.error("Error in device_api definition ("+device_api+").");
+        return;
+    }
+
 	// check audio status and show mut status in navigation bar
 	var power = devices[main_audio]["power"].toUpperCase();
 	if (device_api_status.toLowerCase() != "connected") { power = "OFF"; }

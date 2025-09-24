@@ -71,6 +71,13 @@
     width: 100%
   }
 
+  @-moz-document url-prefix() {
+   .remote, .setting_bg {
+        /* workaround for firefox bug */
+        break-inside: avoid-page;
+      }
+  }
+
   /* remote control editing in 2 columns */
   .slist {
     column-count: 2;
@@ -82,6 +89,7 @@
     break-inside: avoid-column;
     margin-top: 0px;
   }
+
   .slist_number {
     display: block;
   }

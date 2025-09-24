@@ -34,6 +34,15 @@ class RemotesData(RemoteThreadingClass):
         self.first_device_get_status = time.time()
         self.get_status_last_run = {}
         self.get_status_default = 15
+        self.query_default = {
+            "load_intervals": {},
+            "load_default": self.get_status_default,
+            "load_after": []
+        }
+        self.cache_devices = {}
+        self.cache_config = {}
+        self.cache_last = time.time()
+        self.cache_timeout = 5 * 60
 
     def run(self):
         """
@@ -127,7 +136,7 @@ class RemotesData(RemoteThreadingClass):
         Return:
             dict: device configuration
         """
-        config_keys = ["buttons", "commands", "url", "method", "timing", "timing_default"]
+        config_keys = ["buttons", "commands", "url", "method", "query"]
         data = self.config.read_status()
         devices = self.devices_read()
         data_config = {}
@@ -215,8 +224,6 @@ class RemotesData(RemoteThreadingClass):
                 data_config[device]["commands"]["definition"] = {}
                 data_config[device]["commands"]["get"] = []
                 data_config[device]["commands"]["set"] = []
-                #data_config[device]["commands"]["timing"] = {}
-                #data_config[device]["commands"]["timing_default"] = self.get_status_default
 
                 # check get and set definitions
                 if "commands" in interface_def_combined:
@@ -244,10 +251,9 @@ class RemotesData(RemoteThreadingClass):
                                 and "set" not in interface_def_combined["commands"][key]):
                             data_config[device]["commands"]["get"].append(key)
 
-                data_config[device]["commands"]["timing"] = interface_def_combined.get("timing", {})
-                data_config[device]["commands"]["timing_default"] = interface_def_combined.get("timing_default")
-                if data_config[device]["commands"]["timing_default"] == {}:
-                    data_config[device]["commands"]["timing_default"] = self.get_status_default
+                data_config[device]["commands"]["query"] = interface_def_combined.get("query", self.query_default)
+                if "load_default" not in data_config[device]["commands"]["query"] or data_config[device]["commands"]["query"]["load_default"] == -1:
+                    data_config[device]["commands"]["query"]["load_default"] = self.get_status_default
 
                 for key in data_config[device]["commands"]["definition"]:
                     if "str" not in str(type(data_config[device]["commands"]["definition"][key])):
@@ -256,10 +262,9 @@ class RemotesData(RemoteThreadingClass):
 
                         if "get" in data_config[device]["commands"]["definition"][key]:
                             data_config[device]["commands"]["definition"][key]["cmd"].append("get")
-                        #    del data_config[device]["commands"]["definition"][key]["get"]
+
                         if "set" in data_config[device]["commands"]["definition"][key]:
                             data_config[device]["commands"]["definition"][key]["cmd"].append("set")
-                        #    del data_config[device]["commands"]["definition"][key]["set"]
 
                 data_config[device]["url"] = interface_def_combined["url"]
 
@@ -489,9 +494,18 @@ class RemotesData(RemoteThreadingClass):
         Return:
             dict: device status data
         """
-        devices = self.devices_read(None, True)
-        config = self.devices_read_config()
         queue_entries = []
+
+        # read device config (from file or cache)
+        if self.cache_devices == {} or self.cache_last + self.cache_timeout < time.time():
+            devices = self.devices_read(None, True)
+            config = self.devices_read_config()
+            self.cache_devices = devices
+            self.cache_config = config
+            self.cache_last = time.time()
+        else:
+            devices = self.cache_devices
+            config = self.cache_config
 
         # read status of all devices
         for device in devices:
@@ -502,12 +516,10 @@ class RemotesData(RemoteThreadingClass):
             if "status" not in devices[device]:
                 devices[device]["status"] = {}
 
-            if (device in config and "interface" in config[device]
-                    and "method" in config[device]["interface"]):
+            if device in config and "interface" in config[device] and "method" in config[device]["interface"]:
 
                 interface = config[device]["interface"]["api_key"]
-                api_dev = (config[device]["interface"]["api_key"] + "_" +
-                           config[device]["interface"]["api_device"])
+                api_dev = config[device]["interface"]["api_key"] + "_" + config[device]["interface"]["api_device"]
                 method = config[device]["interface"]["method"]
 
                 # get status values from config files, if connected
@@ -524,23 +536,33 @@ class RemotesData(RemoteThreadingClass):
                         self.logging.debug(f"devices_get_status: check device {device}")
 
                         now = time.time()
-                        interval_default = config[device]["commands"].get("timing_default", self.get_status_default)
-                        intervals = config[device]["commands"].get("timing", {})
+                        interval_default = config[device]["commands"]["query"].get("load_default", self.get_status_default)
+                        intervals = config[device]["commands"]["query"].get("load_intervals", {})
                         cmds_all = config[device]["commands"].get("get", [])
+                        self.config.load_after[device] = config[device]["commands"]["query"].get("load_after", [])
+                        if device not in self.config.load_after_update:
+                            self.config.load_after_update[device] = False
                         cmds_now = []
 
-                        # Mapping command -> interval (int in seconds)
-                        cmd_intervals = {cmd: interval_default for cmd in cmds_all}
-                        for interval, cmd_list in intervals.items():
-                            for cmd in cmd_list:
-                                cmd_intervals[cmd] = int(interval)
+                        # load all data after send a specific command
+                        if self.config.load_after_update[device]:
+                            self.config.load_after_update[device] = False
+                            #self.queue.add2queue([1])
+                            cmds_now = config[device]["commands"]["query"].get("load_after_values", cmds_all)
 
-                        for cmd, interval in cmd_intervals.items():
-                            key = (device, cmd)
-                            if key not in self.get_status_last_run or now - self.get_status_last_run[key] >= interval:
-                                self.logging.debug(f"devices_get_status: add2queue -> {cmd} on {device} (every {interval}s)")
-                                cmds_now.append(cmd)
-                                self.get_status_last_run[key] = now
+                        # else load selected data based on defined intervals
+                        else:
+                            cmd_intervals = {cmd: interval_default for cmd in cmds_all}
+                            for interval, cmd_list in intervals.items():
+                                for cmd in cmd_list:
+                                    cmd_intervals[cmd] = int(interval)
+
+                            for cmd, interval in cmd_intervals.items():
+                                key = (device, cmd)
+                                if key not in self.get_status_last_run or now - self.get_status_last_run[key] >= interval:
+                                    self.logging.debug(f"devices_get_status: add2queue -> {cmd} on {device} (every {interval}s)")
+                                    cmds_now.append(cmd)
+                                    self.get_status_last_run[key] = now
 
                         if len(cmds_now) > 0:
                             queue_entries.append([[interface, device, cmds_now, ""]])

@@ -806,7 +806,7 @@
     },
     "rec2": {
         "config": {
-            "api_device": "ONKYP-TXNR686",
+            "api_device": "ONKYO-TXNR686",
             "api_key": "EISCP-ONKYO",
             "device": "receiver_onkyo-txnr686",
             "remote": "receiver_onkyo-txnr686_api"
@@ -869,7 +869,7 @@
         },
         "status": {
             "a-v-sync": "0",
-            "api": "EISCP-ONKYO_ONKYP-TXNR686",
+            "api": "EISCP-ONKYO_ONKYO-TXNR686",
             "api-last-query": "20:28:29 (06.05.2024)",
             "api-last-query-tc": 1715027309,
             "api-last-send": "18:29:24 (06.05.2024)",

@@ -1,6 +1,6 @@
 {
 	"API-Devices" : {
-		"ONKYP-TXNR686" : {
+		"ONKYO-TXNR686" : {
 			"IPAddress"   : "192.168.1.32",
 			"Timeout"     : 5,
 			"Methods"     : ["send","query"],
