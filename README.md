@@ -22,6 +22,7 @@ There are a few templates available to be used and modified.
 
 1. Broadlink Remote Controls  ... [API Info](./server/interfaces/broadlink/README.md)
 3. SONY devices with API ... [API Info](./server/interfaces/sonyapi/README.md)
+4. ONKYO devices with API ... [API Info](./server/interfaces/eiscp/README.md)
 4. KODI server  ... [API Info](./server/interfaces/kodi/README.md)
 5. Magic Home compatible LED strips  ... [API Info](./server/interfaces/magichome/README.md)
 6. Tapo SmartPlugs P100 ... [API Info](./server/interfaces/p100/README.md)
