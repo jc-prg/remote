@@ -1,4 +1,4 @@
-s# jc://remote/
+# jc://remote/
 
 With this software you can control several **home media devices** via Infrared and API with an app on your smartphone.
 It requires a small server such as a Raspberry Pi and can control the hardware listed below. 
