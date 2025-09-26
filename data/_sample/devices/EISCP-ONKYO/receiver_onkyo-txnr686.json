@@ -1,149 +1,164 @@
 {
-    "data": {
-        "buttons": {
-            "aux": "input-selector=aux1",
-            "bd": "input-selector=bd",
-            "bluetooth": "input-selector=bluetooth",
-            "cable-sat": "input-selector=cbl",
-            "dimmer": "dimmer-level=dim",
-            "display": "display-mode=toggle",
-            "down": "setup=down",
-            "enter": "setup=enter",
-            "exit": "setup=exit",
-            "game": "input-selector=game",
-            "game-mode": "listening-mode=game",
-            "home": "setup=home",
-            "left": "setup=left",
-            "movie-tv-mode": "listening-mode=movie",
-            "mute": "audio-muting=toggle",
-            "mute-off": "audio-muting=off",
-            "mute-on": "audio-muting=on",
-            "off": "system-power=off",
-            "on": "system-power=on",
-            "pc": "input-selector=pc",
-            "phono": "input-selector=phono",
-            "prg+": "tuning=up",
-            "prg-": "tuning=down",
-            "q": "setup=quick",
-            "radio": "input-selector=fm",
-            "right": "setup=right",
-            "settings": "setup=menu",
-            "timer": "sleep-set=up",
-            "tv": "input-selector=tv",
-            "up": "setup=up",
-            "usb": "input-selector=usb",
-            "vol+": "master-volume=level-up",
-            "vol-": "master-volume=level-down"
-        },
-        "commands": {
-            "a-v-sync": {
-                "cmd": [
-                    "get"
-                ],
-                "get": "a-v-sync=query"
-            },
-            "audio-info": {
-                "cmd": [
-                    "get"
-                ],
-                "get": "audio-information=query"
-            },
-            "audio-source": {
-                "cmd": [
-                    "get"
-                ],
-                "get": "audio-selector=query"
-            },
-            "current-playing": {
-                "cmd": [
-                    "get"
-                ],
-                "get": "jc.metadata('net-info')"
-            },
-            "dimmer": {
-                "cmd": [
-                    "get"
-                ],
-                "get": "dimmer-level=query"
-            },
-            "display": {
-                "cmd": [
-                    "get"
-                ],
-                "get": "display-mode=query"
-            },
-            "listening": {
-                "cmd": [
-                    "get"
-                ],
-                "get": "listening-mode=query"
-            },
-            "sleep-set": {
-                "cmd": [
-                    "get"
-                ],
-                "get": "sleep-set=qstn"
-            },
-            "source": {
-                "cmd": [
-                    "get"
-                ],
-                "get": "input-selector=query||[1]"
-            },
-            "temperature": {
-                "cmd": [
-                    "get"
-                ],
-                "get": "temperature-data=query||[4:]"
-            },
-            "timer": {
-                "cmd": [
-                    "get"
-                ],
-                "get": "sleep-set=qstn"
-            },
-            "tuning": {
-                "cmd": [
-                    "get"
-                ],
-                "get": "tuning=query||+' Hz'"
-            },
-            "usb-net-album": {
-                "cmd": [
-                    "get"
-                ],
-                "get": "dock.net-usb-album-name-info=query"
-            },
-            "usb-net-artist": {
-                "cmd": [
-                    "get"
-                ],
-                "get": "dock.net-usb-artist-name-info=query"
-            },
-            "usb-net-title": {
-                "cmd": [
-                    "get"
-                ],
-                "get": "dock.net-usb-title-name=query"
-            },
-            "video-info": {
-                "cmd": [
-                    "get"
-                ],
-                "get": "video-information=query"
-            }
-        },
-        "query" : {
-          "load_intervals" : {
-            "10": ["power", "vol"]
-          },
-          "load_default" : 55
-          },
-        "media-info" : {
-            "1": ["current-playing"],
-            "2": ["usb-net-album", "usb-net-artist", "usb-net-title"]
-        },
-
-        "description": "ONKYO TX-NR686B"
+  "data": {
+    "buttons": {
+      "aux": "input-selector=aux1",
+      "bd": "input-selector=bd",
+      "bluetooth": "input-selector=bluetooth",
+      "cable-sat": "input-selector=cbl",
+      "dimmer": "dimmer-level=dim",
+      "display": "display-mode=toggle",
+      "down": "setup=down",
+      "enter": "setup=enter",
+      "exit": "setup=exit",
+      "game": "input-selector=game",
+      "game-mode": "listening-mode=game",
+      "home": "setup=home",
+      "left": "setup=left",
+      "movie-tv-mode": "listening-mode=movie",
+      "mute": "audio-muting=toggle",
+      "mute-off": "audio-muting=off",
+      "mute-on": "audio-muting=on",
+      "off": "system-power=off",
+      "on": "system-power=on",
+      "pc": "input-selector=pc",
+      "phono": "input-selector=phono",
+      "prg+": "tuning=up",
+      "prg-": "tuning=down",
+      "q": "setup=quick",
+      "radio": "input-selector=fm",
+      "right": "setup=right",
+      "settings": "setup=menu",
+      "timer": "sleep-set=up",
+      "tv": "input-selector=tv",
+      "up": "setup=up",
+      "usb": "input-selector=usb",
+      "vol+": "master-volume=level-up",
+      "vol-": "master-volume=level-down"
+    },
+    "commands": {
+      "a-v-sync": {
+        "cmd": [
+          "get"
+        ],
+        "get": "a-v-sync=query"
+      },
+      "audio-info": {
+        "cmd": [
+          "get"
+        ],
+        "get": "audio-information=query"
+      },
+      "audio-source": {
+        "cmd": [
+          "get"
+        ],
+        "get": "audio-selector=query"
+      },
+      "current-playing": {
+        "cmd": [
+          "get"
+        ],
+        "get": "jc.metadata('current-playing')"
+      },
+      "dimmer": {
+        "cmd": [
+          "get"
+        ],
+        "get": "dimmer-level=query"
+      },
+      "display": {
+        "cmd": [
+          "get"
+        ],
+        "get": "display-mode=query"
+      },
+      "listening": {
+        "cmd": [
+          "get"
+        ],
+        "get": "listening-mode=query"
+      },
+      "sleep-set": {
+        "cmd": [
+          "get"
+        ],
+        "get": "sleep-set=qstn"
+      },
+      "source": {
+        "cmd": [
+          "get"
+        ],
+        "get": "input-selector=query"
+      },
+      "temperature": {
+        "cmd": [
+          "get"
+        ],
+        "get": "temperature-data=query||[4:]"
+      },
+      "timer": {
+        "cmd": [
+          "get"
+        ],
+        "get": "sleep-set=qstn"
+      },
+      "tuning": {
+        "cmd": [
+          "get"
+        ],
+        "get": "tuning=query||+' Hz'"
+      },
+      "usb-net-album": {
+        "cmd": [
+          "get"
+        ],
+        "get": "dock.net-usb-album-name-info=query"
+      },
+      "usb-net-artist": {
+        "cmd": [
+          "get"
+        ],
+        "get": "dock.net-usb-artist-name-info=query"
+      },
+      "usb-net-title": {
+        "cmd": [
+          "get"
+        ],
+        "get": "dock.net-usb-title-name=query"
+      },
+      "video-info": {
+        "cmd": [
+          "get"
+        ],
+        "get": "video-information=query"
+      }
+    },
+    "description": "ONKYO TX-NR686B",
+    "media-info": {
+      "1": [
+        "current-playing"
+      ],
+      "2": [
+        "usb-net-album",
+        "usb-net-artist",
+        "usb-net-title"
+      ]
+    },
+    "query": {
+      "load_intervals": {
+        "20": [
+          "current-playing"
+        ]
+      },
+      "load_commands": [
+        "audio-info",
+        "current-playing",
+        "mute",
+        "power",
+        "source",
+        "vol"
+      ],
+      "load_default": 55
     }
+  }
 }
