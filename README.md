@@ -20,7 +20,7 @@ There are a few templates available to be used and modified.
 
 ## Currently Supported Interfaces
 
-1. Broadlink RM 3 Mini (Infrared receiver/sender)  ... [API Info](./server/interfaces/broadlink/README.md)
+1. Broadlink Remote Controls  ... [API Info](./server/interfaces/broadlink/README.md)
 3. SONY devices with API ... [API Info](./server/interfaces/sonyapi/README.md)
 4. KODI server  ... [API Info](./server/interfaces/kodi/README.md)
 5. Magic Home compatible LED strips  ... [API Info](./server/interfaces/magichome/README.md)
@@ -55,6 +55,7 @@ Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 * color picker for RGB, CIE_1391, brightness and color temperature
 * RGB+CCT light templates
 * improved setting section and API configuration via app
+* improved adaptive layout plus additional icons and scene headers
 
 **Note:** The data structure changed: recreate configuration files by coping them from the 
 folder [_sample/devices](data/_sample/devices) to the productive folders and adjusting them to your needs.
