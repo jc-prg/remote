@@ -43,7 +43,7 @@ The following interfaces are integrated at the moment.
 ```json
 {
   "data": {
-    "description" : "",
+    "description" : "name or description of device or interface",
     "method" : "query",
     "buttons" : {
       "btn_name_1": "api_command",
@@ -63,12 +63,21 @@ The following interfaces are integrated at the moment.
         "type": "datatype (integer,boolean,...)",
         "param": [],
         "values": []
+      },
+      "cmd_name_5": {
+        "get": "api_command",
+        "set": "api_command",
+        "type": "datatype (integer,boolean,...)",
+        "param": [],
+        "values": []
       }
     },
     "query" : {
       "load_interval": { "5": ["cmd_name_3", "cmd_name_4"] }, 
       "load_default": 30,
-      "load_after": ["btn_name_1","cmd_name_3"]
+      "load_after": ["btn_name_1","cmd_name_3"],
+      "load_after_commands": ["cmd_name_3","cmd_name_4"]
+      "load_commands": ["cmd_name_1","cmd_name_2","cmd_name_3","cmd_name_4"]
     }
   }
 }

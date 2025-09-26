@@ -40,6 +40,7 @@ function statusCheck(data={}) {
 	statusCheck_apiConnection(data);
 	statusCheck_deviceIdle(data);
     statusCheck_health(data);
+    statusCheck_error(data);
 
     setTextById("current_server_time", data["REQUEST"]["server-time-local"]);
 
@@ -1039,3 +1040,34 @@ function statusShow_display(id, view) {
         }
 }
 
+// check if some fatal error occurred
+function statusCheck_error(data) {
+    var html = "";
+    var alert = "";
+    var count = 0;
+    var errors = data["STATUS"]["config_errors"];
+
+
+    Object.keys(errors["devices"]).forEach(key => {
+        if (errors["devices"][key] != {}) {
+            count += 1;
+            alert += "<b>DEVICE - " + key + "</b>:<br>" + JSON.stringify(errors["devices"][key]);
+            }
+        });
+    Object.keys(errors["scenes"]).forEach(key => {
+        if (errors["scenes"][key] != {}) {
+            count += 1;
+            alert += "SCENE - " + key + ": " + JSON.stringify(errors["scenes"][key]);
+            }
+        });
+
+    if (count > 0) {
+        alert = "<font style='color:var(--rm-color-font-error)'><b>Configuration Error:</b></font><br/>&nbsp;<br/>" + alert;
+        alert = alert.replaceAll('"','');
+        alert = alert.replaceAll('\'','');
+        alert = "appMsg.confirm(\""+alert+"\", \"\", 300);";
+        html = "<img src='icon/attention.png' onclick='"+alert+"' style='cursor:pointer;'>";
+        }
+
+    setTextById("attention", html);
+}

@@ -85,6 +85,7 @@ class ConfigCache(RemoteThreadingClass):
 
         self.load_after_update = {}
         self.load_after = {}
+        self.config_errors = {}
 
     def run(self):
         """

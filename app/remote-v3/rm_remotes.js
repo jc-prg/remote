@@ -183,7 +183,10 @@ function rmRemote(name) {
 		var remote	        = "<div id='remote_button' display='block'>";
 		var device_config   = this.data["CONFIG"]["devices"][device];
 		this.button.default_size();			
-		
+
+        var edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"device\",\""+device+"\");";
+		remote += "<div class='remote-edit-button' onclick='"+edit_cmd+"'><img src='icon/edit.png' style='height:20px;width:20px;'></div>";
+
 		if (device_config && device_config["remote"]) {
 			var remote_display_size = device_config["remote"]["display-size"];
 			var remote_label        = device_config["settings"]["label"];
@@ -792,6 +795,8 @@ function rmRemote(name) {
 		var scene_label             = scene_definition["settings"]["label"];
         this.display.edit_mode      = this.edit_mode;
 
+        var edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"scene\",\""+scene+"\");";
+		remote += "<div class='remote-edit-button' onclick='"+edit_cmd+"' style='top:17px;left:17px;'><img src='icon/edit.png' style='height:20px;width:20px;'></div>";
 
 		appCookie.set("remote","scene::"+scene+"::"+scene_label);
 
@@ -946,9 +951,6 @@ function rmRemote(name) {
 
                     next_button  = next_button.replace(tooltip, "");
                     next_button  = next_button.replace("<!--TOOL-TIPP-PLACEHOLDER-->", tooltip);
-
-                    console.error(tooltip);
-                    console.error(next_button);
                     }
 				}
 

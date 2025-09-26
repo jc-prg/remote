@@ -39,6 +39,7 @@
 
   :root {
     --app-frame-width-100           : calc(100% - 16px);
+    --rm-size-remote-display-text   : 2cqw;
   }
 
   .setting_bg.wide           { width  : var(--app-frame-width-100); }

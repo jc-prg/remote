@@ -34,6 +34,16 @@ hr         { border: solid 1px var(--rm-color-hr); }
   font-weight       : none;
 }
 
+#attention {
+  position  : absolute;
+  left      : 20px;
+  bottom    : 30px;
+}
+
+#attention img {
+  height   : 5cqw;
+}
+
 /* manual text */
 
 ul.help { 
@@ -159,7 +169,19 @@ ul.help ul li {
    width		: 90%;
    height		: 20px;
    }
-   
+
+.remote-edit-button {
+    position : relative;
+    top : 0px;
+    left : 0px;
+    height : 2px;
+    opacity : 0;
+}
+
+.remote-edit-button:hover {
+    opacity : 1;
+}
+
 .remote_group {
 	width           : calc(100% - 16px);
 	background      : var(--rm-color-frame-group);

@@ -87,9 +87,8 @@ class QueueApiCalls(RemoteThreadingClass):
             if device not in devices:
                 self.logging.error("ERROR: Could not find '" + device + "' in current configuration!")
 
-            #self.logging.debug("Queue: Execute - " + str(interface) + ":" + str(device) + ":" +
-            #                   str(button) + ":" + str(state) + ":" + str(request_time))
-            #self.logging.debug(str(command))
+                #self.logging.debug("Queue: Execute - " + str(interface) + ":" + str(device) + ":" + str(button) + ":" + str(state) + ":" + str(request_time))
+                #self.logging.debug(str(command))
 
             elif self.query_send == "send":
                 try:
@@ -131,8 +130,7 @@ class QueueApiCalls(RemoteThreadingClass):
                         log_results.append(value + "=" + str(result))
 
                     except Exception as e:
-                        result = "ERROR queue query_list (query," + str(interface) + "," + str(device) + "," + str(
-                            value) + "): " + str(e)
+                        result = "ERROR queue query_list (query," + str(interface) + "," + str(device) + "," + str(value) + "): " + str(e)
                         self.logging.error(result)
 
                     if "ERROR" not in str(result):

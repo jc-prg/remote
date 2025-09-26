@@ -48,12 +48,12 @@ class ApiControl(RemoteApiClass):
 
         try:
             self.api = eiscp.eISCP(self.api_ip)
+            self.api.command("system-power query")  # send a command to check if connected
             # self.api    = eiscp.Receiver(self.api_ip)
             # self.api.on_message = callback_method
 
         except Exception as e:
             self.status = "Error connecting to ONKYO device: " + str(e)
-            self.api.command("system-power query")  # send a command to check if connected
             self.logging.warning(self.status)
 
         try:
@@ -105,9 +105,9 @@ class ApiControl(RemoteApiClass):
             button_code = command.replace("=", " ")
             try:
                 self.api.command(button_code)
-                self.api.disconnect()
+                #self.api.disconnect()
             except Exception as e:
-                self.api.disconnect()
+                #self.api.disconnect()
                 self.working = False
                 return "ERROR " + self.api_name + " - send (" + button_code + "): " + str(e)
 
@@ -160,9 +160,9 @@ class ApiControl(RemoteApiClass):
                 self.logging.debug("Button-Code: " + button_code[:shorten_info_to] + "... (" + self.api_name + ")")
                 try:
                     result = self.api.command(button_code)
-                    self.api.disconnect()
+                    #self.api.disconnect()
                 except Exception as e:
-                    self.api.disconnect()
+                    #self.api.disconnect()
                     self.working = False
                     return "ERROR " + self.api_name + " - query (" + button_code + "): " + str(e)
 
@@ -216,7 +216,7 @@ class ApiControl(RemoteApiClass):
         try:
             self.api.command('power on')
             self.api.command('source pc')
-            self.api.disconnect()
+            #self.api.disconnect()
         except Exception as e:
             return "ERROR " + self.api_name + " test: " + str(e)
 
@@ -276,7 +276,7 @@ class APIaddOn(RemoteDefaultClass):
 
         input_device = self.api.command("input-selector=query")[1]
 
-        if tags == "net-info" and "net" in input_device:
+        if tags in ["net-info","current-playing"] and ("net" in input_device or "blu" in input_device):
             try:
                 artist = self.api.command("dock.net-usb-artist-name-info=query")[1]
                 title = self.api.command("dock.net-usb-title-name=query")[1]
@@ -287,11 +287,11 @@ class APIaddOn(RemoteDefaultClass):
                 else:
                     md = artist + ": " + title + " (Album: " + album + ")"
 
-                self.api.disconnect()
+                #self.api.disconnect()
                 self.logging.info(md)
 
             except Exception as e:
-                self.api.disconnect()
+                #self.api.disconnect()
 
                 error = "ERROR " + self.addon + " - metadata (" + tags + "): " + str(e)
                 self.logging.warning(error)

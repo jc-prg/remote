@@ -159,11 +159,10 @@ class RemotesData(RemoteThreadingClass):
             interface_def_default = self.config.read(rm3presets.commands + interface + "/00_default", True)
 
             if "ERROR" in interface_def_device or "ERROR" in interface_def_default:
-                self.logging.error("Error while reading configuration for device (" + device_key + ")")
+                error_msg = "Error while reading configuration for device (" + device_key + ")"
                 if "ERROR" in interface_def_device:
-                    self.logging.error("... " + str(interface_def_device["ERROR"]))
-                if "ERROR" in interface_def_default:
-                    self.logging.error("... " + str(interface_def_default["ERROR"]))
+                    error_msg += " ... " + str(interface_def_device["ERROR"])
+                self.logging.error(error_msg)
 
             else:
                 data_config[device] = {}
@@ -857,7 +856,6 @@ class RemotesData(RemoteThreadingClass):
         # <scene>_scene-off
 
         return decomposed_v3
-
 
 class RemotesEdit(RemoteDefaultClass):
     """

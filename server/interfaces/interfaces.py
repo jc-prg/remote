@@ -646,9 +646,12 @@ class Connect(RemoteThreadingClass):
 
     def api_query(self, call_api, device, button):
         """
-        query an information from device via API
+        Query an information from device via API.
+
+        Values are store in self.config.cache[active_devices_key][device_id][category][key] and written to the main
+        config file _ACTIVE-DEVICES.json via self.config.device_set_values(self, device_id, category, values).
+        They can be requested using self.config.read(rm3presets.active_devices)[device_id].
         """
-        return_msg = ""
         button_code = ""
         api_dev = self.device_api_string(device)
         device_id = self.device_id_get(device)
