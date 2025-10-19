@@ -572,21 +572,17 @@ function rmRemote(name) {
 		// Add elements
 		var link_template = this.app_name+".remote_import_templates('device','"+device+"','add_template','remote_json_buttons');";
 		var link_preview  = this.app_name+".device_remote_preview('"+device+"');"
-		
-		var edit = "";
-		edit    += this.tab.start();
 
         // Add GUI to add JSON elements
-        edit    += this.json_elements_add("button_line", id, device, preview_remote="", preview_display="", preview_display_size="");
-		edit    += this.tab.line();
-        edit    += this.json_elements_add("slider", id, device, preview_remote="", preview_display="", preview_display_size="");
-		edit    += this.tab.line();
-        edit    += this.json_elements_add("color_picker", id, device, preview_remote="", preview_display="", preview_display_size="");
-		edit    += this.tab.line();
-        edit    += this.json_elements_add("toggle", id, device, preview_remote="", preview_display="", preview_display_size="");
-		edit    += this.tab.line();
-        edit    += this.json_elements_add("default", id, device, preview_remote="", preview_display="", preview_display_size="");
+		var edit = "";
+		edit    += this.tab.start();
+        edit    += this.json_elements_add("button_line", id, device);
+        edit    += this.json_elements_add("slider", id, device);
+        edit    += this.json_elements_add("color_picker", id, device);
+        edit    += this.json_elements_add("toggle", id, device);
+        edit    += this.json_elements_add("default", id, device,line=false);
 		edit    += this.tab.end();
+
 		remote += this.basic.container("remote_edit_add",lang("ADD_ELEMENTS"),edit,false);
 
 		// Edit display
@@ -705,7 +701,7 @@ function rmRemote(name) {
 		}
 
     // add json elements
-    this.json_elements_add          = function (element, id, device, preview_remote="", preview_display="", preview_display_size="") {
+    this.json_elements_add          = function (element, id, device, line=true) {
 
         var edit = "";
         var device_config = this.data["CONFIG"]["devices"][device];
@@ -822,9 +818,9 @@ function rmRemote(name) {
                     );
             }
 
+        if (line) { edit += this.tab.line(); }
         return edit;
         }
-
 
 	// reread data from current definition and create preview
 	this.scene_remote_preview       = function (scene) {
@@ -995,8 +991,7 @@ function rmRemote(name) {
                 // adapt tooltip placement for header image in edit mode
                 if (button[0].indexOf("HEADER-IMAGE") == 0 || remote.indexOf("TOOL-TIPP-PLACEHOLDER") > 0)    {
 
-                    console.error("-----");
-                    console.error(next_button);
+                    console.debug(next_button);
 
                     var splitter = "<span class='jc_tooltip";
                     tooltip      = splitter + next_button.split("<!--X-->"+splitter)[1];
