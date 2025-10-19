@@ -255,7 +255,7 @@ function rmRemoteButtons(name) {
 		}		
 
 	// create button for multiple commands (macro)
-	this.macro           = function (id, label, scene, style, macro, disabled ) {	// ALT: ( id, macro, label, style, disabled ) {
+	this.macro           = function (id, label, scene, style, macro, disabled ) {
         if (macro) {
             var d = this.image( label, style );
             var macro_string = "";
@@ -278,6 +278,17 @@ function rmRemoteButtons(name) {
         else { return this.default( id, label, style+" notfound", "", "disabled" ); }
         }
 		
+	// create button for multiple commands (macro)
+	this.btn_group           = function (id, label, scene, style, group, disabled ) {
+        if (group) {
+            var d = this.image( label, style );
+            var b = this.default( id, d[0], d[1], 'apiGroupSend("'+group.join("_")+'","'+scene+'");', disabled );
+            this.logging.debug("button_macro - "+b);
+            return b;
+            }
+        else { return this.default( id, label, style+" notfound", "", "disabled" ); }
+        }
+
 	// create button for channel (macro)
 	this.channel         = function (id, label, scene, macro, style, disabled="") {
     		var macro_string = "";
@@ -337,48 +348,48 @@ function rmRemoteJSON(name) {
     // show json for buttons in text field
     this.json2text          = function ( id, json, format="" ) {
 		var text = "";
-        	if (format == "buttons") {
-	        	var x=0;
-	        	text += "[\n";
-        		for (var i=0;i<json.length;i++) {
-        			x++;
-        			text += "\""+json[i]+"\"";
-        			if (i+1 < json.length)						{ text += ", "; }
-        			if (Number.isInteger((x)/4))   				{ text += "\n\n"; x = 0; }
-        			if (json.length > i+1 && json[i+1].includes("LINE") && x > 0) { text += "\n\n"; x = 0; }
-        			if (json[i].includes("LINE"))                   { text += "\n\n"; x = 0; }
-        			if (json[i].includes("TOGGLE"))                 { text += "\n\n"; x = 0; }
-        			if (json[i].includes("HEADER-IMAGE"))           { text += "\n\n"; x = 0; }
-        			if (json[i].includes("SLIDER"))                 { text += "\n\n"; x = 0; }
-        			if (json[i].includes("COLOR-PICKER"))           { text += "\n\n"; x = 0; }
-        			}
-	        	text += "\n]";
-        		}
-        	else if (format == "channels") {
-        		json = JSON.stringify(json);
-        		json = json.replaceAll( "],", "],\n\n" );
-        		json = json.replaceAll( ":", ":\n   " );
-        		json = json.replaceAll( "{", "{\n" );
-        		json = json.replaceAll( "}", "\n}" );
-        		text += json;
-        		}
-        	else if (format == "macros") {
-        		json = JSON.stringify(json);
-        		json = json.replaceAll( "],", "],\n\n" );
-        		json = json.replaceAll( ":", ":\n" );
-        		json = json.replaceAll( "{", "{\n" );
-        		json = json.replaceAll( "}", "\n}" );
-        		text += json;
-        		}
-        	else if (json != undefined) {
-        		json = JSON.stringify(json);
-        		json = json.replaceAll( ",", ",\n" );
-        		json = json.replaceAll( "{", "{\n" );
-        		json = json.replaceAll( "}", "\n}" );
-        		text += json;
-        		}
-        	return text;
-        	}
+        if (format == "buttons") {
+            var x=0;
+            text += "[\n";
+            for (var i=0;i<json.length;i++) {
+                x++;
+                text += "\""+json[i]+"\"";
+                if (i+1 < json.length)						{ text += ", "; }
+                if (Number.isInteger((x)/4))   				{ text += "\n\n"; x = 0; }
+                if (json.length > i+1 && json[i+1].includes("LINE") && x > 0) { text += "\n\n"; x = 0; }
+                if (json[i].includes("LINE"))                   { text += "\n\n"; x = 0; }
+                if (json[i].includes("TOGGLE"))                 { text += "\n\n"; x = 0; }
+                if (json[i].includes("HEADER-IMAGE"))           { text += "\n\n"; x = 0; }
+                if (json[i].includes("SLIDER"))                 { text += "\n\n"; x = 0; }
+                if (json[i].includes("COLOR-PICKER"))           { text += "\n\n"; x = 0; }
+                }
+            text += "\n]";
+            }
+        else if (format == "channels") {
+            json = JSON.stringify(json);
+            json = json.replaceAll( "],", "],\n\n" );
+            json = json.replaceAll( ":", ":\n   " );
+            json = json.replaceAll( "{", "{\n" );
+            json = json.replaceAll( "}", "\n}" );
+            text += json;
+            }
+        else if (format == "macros") {
+            json = JSON.stringify(json);
+            json = json.replaceAll( "],", "],\n\n" );
+            json = json.replaceAll( ":", ":\n" );
+            json = json.replaceAll( "{", "{\n" );
+            json = json.replaceAll( "}", "\n}" );
+            text += json;
+            }
+        else if (json != undefined) {
+            json = JSON.stringify(json);
+            json = json.replaceAll( ",", ",\n" );
+            json = json.replaceAll( "{", "{\n" );
+            json = json.replaceAll( "}", "\n}" );
+            text += json;
+            }
+        return text;
+        }
         	
     // convert text 2 json ...
     this.text2json          = function ( json_text, id="" ) {

@@ -514,9 +514,9 @@ function apiMacroChange(data=[]) {
 
 	send_data = {};
 	for (var i=0;i<data.length;i++) {
-		var key            = data[i];
-        try		{ send_data[key] = JSON.parse(getValueById(key)); }
-        catch(e)	{ appMsg.alert("<b>JSON Macro " + key + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+		var key     = data[i];
+        try         { send_data[key] = JSON.parse(getValueById(key)); }
+        catch(e)    { appMsg.alert("<b>JSON Macro " + key + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 		}
 
 	appFW.requestAPI("PUT",["macro"], send_data, apiAlertReturn);
@@ -583,6 +583,29 @@ function apiMacroSend( macro, device="", content="" ) {  // SEND -> FEHLER? obwo
 
 function apiMacroSend_return( data ) {
 	console.log("Send macro return :");
+	console.log(data);
+	if (data["REQUEST"]["macro_error"] && data["REQUEST"]["macro_error"] != "") {
+	    appMsg.info("<b>Macro Error:</b> " + data["REQUEST"]["macro_error"], "error");
+	    }
+	if (showButton) {
+	    appMsg.info("<b>Macro Queue:</b> " + data["REQUEST"]["decoded_macro"]);
+	    }
+	}
+
+// separate macro into single commands and send commands
+function apiGroupSend( macro, device="", content="" ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
+    console.debug("apiGroupSend: " + macro);
+	dc = [ "macro", macro ];
+	appFW.requestAPI( "GET", dc, "", apiGroupSend_return );
+	device_media_info[device] = content;
+
+	if (showButton) {
+	    appMsg.info("<b>Request Group:</b> " + dc);
+	    }
+	}
+
+function apiGroupSend_return( data ) {
+	console.log("Send group return :");
 	console.log(data);
 	if (data["REQUEST"]["macro_error"] && data["REQUEST"]["macro_error"] != "") {
 	    appMsg.info("<b>Macro Error:</b> " + data["REQUEST"]["macro_error"], "error");

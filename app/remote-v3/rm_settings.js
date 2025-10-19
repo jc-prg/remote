@@ -1027,14 +1027,15 @@ function rmSettings (name) {	// IN PROGRESS
 	    this.btn.width = "100px";
 
 		setting   = "";
-		setting  += this.basic.container("setting_macros1","JSON macros [global]",		this.json.textarea("macro",   this.data["CONFIG"]["macros"]["global"], "macros"),false);
-		setting  += this.basic.container("setting_macros2","JSON macros [device ON]",	this.json.textarea("dev-on",  this.data["CONFIG"]["macros"]["device-on"], "macros"),false);
-		setting  += this.basic.container("setting_macros3","JSON macros [device OFF]",	this.json.textarea("dev-off", this.data["CONFIG"]["macros"]["device-off"], "macros"),false);
+		setting  += this.basic.container("setting_macros0","JSON groups",               this.json.textarea("groups",  this.data["CONFIG"]["macros"]["groups"], "macros"),false);
+		setting  += this.basic.container("setting_macros1","JSON macros [global]",      this.json.textarea("macro",   this.data["CONFIG"]["macros"]["global"], "macros"),false);
+		setting  += this.basic.container("setting_macros2","JSON macros [device ON]",   this.json.textarea("dev-on",  this.data["CONFIG"]["macros"]["device-on"], "macros"),false);
+		setting  += this.basic.container("setting_macros3","JSON macros [device OFF]",  this.json.textarea("dev-off", this.data["CONFIG"]["macros"]["device-off"], "macros"),false);
 		setting  += this.basic.container("setting_macros_manual","JSON macros - manual",lang("MANUAL_MACROS"),false);
 
 		setting  += "<div style='width:100%;align:center;'><center><br/>";
 //		setting  += this.btn.sized("apiMacroChange(['macro','scene-on','scene-off','dev-on','dev-off']);",lang("BUTTON_T_SAVE"),"");
-		setting  += this.btn.sized(id="add_scene",label=lang("BUTTON_T_SAVE"),style="settings","apiMacroChange([#macro#,#dev-on#,#dev-off#]);","");
+		setting  += this.btn.sized(id="add_scene",label=lang("BUTTON_T_SAVE"),style="settings","apiMacroChange([#groups#,#macro#,#dev-on#,#dev-off#]);","");
 		setting  += "<br/></center></div>";
 		return setting;
 	    }

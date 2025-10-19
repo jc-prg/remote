@@ -71,9 +71,10 @@ class RemoteAPI(RemoteDefaultClass):
                 "scene_images":         self.config.read(rm3presets.scene_img_dir + "/index")
                 },
             "macros": {
-                "device-on":            macros["dev-on"],
-                "device-off":           macros["dev-off"],
-                "global":               macros["macro"]
+                "device-on":            macros.get("dev-on", {}),
+                "device-off":           macros.get("dev-off", {}),
+                "global":               macros.get("macro", {}),
+                "groups":               macros.get("groups", {})
             },
             "main-audio":               "NONE",
             "methods":                  self.apis.methods,
@@ -1103,6 +1104,121 @@ class RemoteAPI(RemoteDefaultClass):
 
     def send_macro_buttons(self, macro):
         """
+        decompose macro incl. groups and execute commands that exist (others are ignored)
+
+        Args:
+            macro (str): string, list of button or macro IDs separated by the substring '::'
+        Return:
+            dict: API response
+        """
+
+        start_time = time.time()
+
+        data = self._start()
+        data["REQUEST"]["Button"] = macro
+        data["REQUEST"]["Return"] = "ERROR: Started but not finished..."  # self.apis.send(interface,device,button)
+        data["REQUEST"]["Command"] = "Macro"
+
+        return_msg = ""
+        commands_exist = []
+        commands_dont_exist = []
+
+        if "::" in macro:
+            commands = macro.split("::")
+        else:
+            commands = [macro]
+        decomposed = self.data.macro_decode_new(commands)
+
+        # check if buttons exist
+        for command in decomposed:
+            command_str = str(command)
+            if not command_str.isnumeric() and "_" in command:
+                device, button_status = command.split("_")
+                if "||" in button_status:
+                    button, status = button_status.split("||")
+                else:
+                    button = button_status
+                if device not in data["CONFIG"]["devices"]:
+                    commands_dont_exist.append(command + " (device '"+device+"' not found)")
+
+                elif device in data["CONFIG"]["devices"] and button not in data["CONFIG"]["devices"][device]["buttons"]:
+                    commands_dont_exist.append(command + " (button '"+button+"' for '" + device + "' not found)")
+                else:
+                    commands_exist.append(command)
+            elif not command_str.isnumeric() and "WAIT-" not in command_str:
+                commands_dont_exist.append(command)
+            elif "WAIT-" in command_str:
+                pass
+            else:
+                commands_exist.append(command)
+
+        # execute existing buttons
+        for command in commands_exist:
+            command_str = str(command)
+            if not command_str.isnumeric() and "_" in command:
+
+                status = ""
+                power_buttons = ["on", "on-off", "off"]
+                device, button_status = command.split("_", 1)  # split device and button
+
+                if device not in data["CONFIG"]["devices"]:
+                    error_msg = "; ERROR: Device defined in macro not found (" + device + ")"
+                    return_msg += error_msg
+                    self.logging.error(error_msg)
+                    continue
+
+                interface = data["CONFIG"]["devices"][device]["interface"]["api_key"]  # get interface / API
+
+                # check if future state defined
+                if "||" in button_status:
+                    button, status = button_status.split("||", 1)  # split button and future state
+                    if "-" not in status:
+                        status = status.upper()
+                else:
+                    button = button_status
+
+                if button in power_buttons:
+                    status_var = "power"
+                else:
+                    status_var = button
+
+                # if future state not already in place add command to queue
+                self.logging.debug(" ...i:" + interface + " ...d:" + device + " ...b:" + button + " ...s:" + status)
+
+                if device in data["STATUS"]["devices"] and status_var in data["STATUS"]["devices"][device]:
+                    self.logging.debug(" ...y:" + status_var + "=" +
+                                       str(data["STATUS"]["devices"][device][status_var]) + " -> " + status)
+
+                    if data["STATUS"]["devices"][device][status_var] != status:
+                        return_msg += ";" + self.queue_send.add2queue([[interface, device, button, status]])
+
+                # if no future state is defined just add command to queue
+                elif status == "":
+                    return_msg += ";" + self.queue_send.add2queue([[interface, device, button, ""]])
+
+            # if command is numeric, add to queue directly (time to wait)
+            elif command_str.isnumeric():
+                return_msg += ";" + self.queue_send.add2queue([float(command)])
+
+        self._refresh()
+        if return_msg != "":
+            data["REQUEST"]["Return"] = return_msg
+
+        self.queue_send.add2log("macro", decomposed)
+        self.queue_send.add2log("macro", "END")
+
+        data["REQUEST"]["decoded_macro"] = ", ".join(str(e) for e in decomposed)
+        if len(commands_dont_exist) > 0:
+            data["REQUEST"]["macro_error"] = ", ".join(str(e) for e in commands_dont_exist)
+
+        duration = round(time.time() - start_time, 4)
+        self.logging.info(f"SEND MACRO: {duration}s ... {decomposed}.")
+
+        data = self._end(data, ["no-config", "no-data", "no-status"])
+        return data
+
+    def send_macro_buttons_org(self, macro):
+        """
         execute macro (list of commands)
 
         Args:
@@ -1124,6 +1240,7 @@ class RemoteAPI(RemoteDefaultClass):
         commands_2nd = []
         commands_3rd = []
         commands_4th = []
+        commands_5th = []
         commands_dont_exist = []
         return_msg = ""
 
@@ -1213,9 +1330,23 @@ class RemoteAPI(RemoteDefaultClass):
 
         self.logging.debug("Decoded macro-string 4th: " + str(commands_4th))
 
+        # decode groups
+        for command in commands_4th:
+            command_str = str(command)
+            if not command_str.isnumeric() and "group_" in command:
+                groups, group, button = command.split("_", 2)
+                if group in data["CONFIG"]["macros"]["groups"]:
+                    for device in data["CONFIG"]["macros"]["groups"][group]["devices"]:
+                        commands_4th.extend([device + "_" + button])
+                else:
+                    return_msg += "; ERROR: group " + group + " not defined (" + command + ")"
+                    commands_dont_exist.append(command + " (no such group defined)")
+            else:
+                commands_5th.extend([command])
+
         # check if buttons exist ...
         commands_exist = []
-        for command in commands_4th:
+        for command in commands_5th:
             command_str = str(command)
             if not command_str.isnumeric() and "_" in command:
                 device, button_status = command.split("_")
@@ -1289,7 +1420,7 @@ class RemoteAPI(RemoteDefaultClass):
         if return_msg != "":
             data["REQUEST"]["Return"] = return_msg
 
-        self.queue_send.add2log("macro", commands_4th)
+        self.queue_send.add2log("macro", commands_5th)
         self.queue_send.add2log("macro", "END")
 
         data["REQUEST"]["decoded_macro"] = ", ".join(str(e) for e in commands_4th)

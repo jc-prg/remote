@@ -675,7 +675,7 @@ class RemotesData(RemoteThreadingClass):
         """
         write config data for scenes and remove temp parameter required e.g. for REST API
         """
-        var_relevant = ["description", "macro", "dev-on", "dev-off", "scene-on", "scene-off"]
+        var_relevant = ["description", "groups", "macro", "dev-on", "dev-off", "scene-on", "scene-off"]
         var_delete = []
 
         for key in data:
@@ -779,9 +779,68 @@ class RemotesData(RemoteThreadingClass):
 
         return data
 
+    def macro_decode_inside(self, commands):
+        """
+        decompose macros in the commands list and return decomposed list
+
+        Args:
+            commands(list): list of buttons and macros
+        Returns:
+            list: list of buttons and macros
+        """
+        decomposed = []
+        act_devices = self.config.read(rm3presets.active_devices)
+        act_macros = self.config.read(rm3presets.active_macros)
+        act_scenes = self.config.read(rm3presets.active_scenes)
+
+        for command in commands:
+            command_str = str(command)
+            if not command_str.isnumeric():
+                if "_" not in str(command):
+                    decomposed.append(command)
+                    continue
+                parts = command.split("_")
+                if parts[0] in act_devices:
+                    decomposed.append(command)
+                elif parts[0] == "global" or parts[0] == "macro":
+                    global_macro = command.replace("global_", "").replace("macro_", "")
+                    decomposed.extend(act_macros["macro"][global_macro])
+                elif parts[0] == "group":
+                    groups, group, button = command.split("_")
+                    if group in act_macros["groups"]:
+                        devices = act_macros["groups"][group].get("devices", [])
+                        for device in devices:
+                            decomposed.append(device + "_" + button)
+                elif parts[0] == "dev-on" or parts[0] == "dev-off":
+                    global_macro = command.replace(parts[0]+"_", "")
+                    decomposed.extend(act_macros[parts[0]][global_macro])
+                elif parts[0] in act_scenes and "macro-scene" in act_scenes[parts[0]]["remote"]:
+                    macro_key = command.replace(parts[0] + "_", "")
+                    decomposed.extend(act_scenes[parts[0]]["remote"]["macro-scene"][macro_key])
+                else:
+                    decomposed.append(command)
+            else:
+                decomposed.append(command)
+
+        return decomposed
+
+    def macro_decode_new(self, macro):
+        """
+        decompose macro down to device commands (at the moment only used in rm3timer.py)
+
+        Args:
+            macro (list): list of buttons and macros
+        Returns:
+            list: list of device strings
+        """
+        decomposed = self.macro_decode_inside(macro.copy())
+        decomposed = self.macro_decode_inside(decomposed.copy())
+        decomposed = self.macro_decode_inside(decomposed.copy())
+        return decomposed
+
     def macro_decode(self, macro):
         """
-        decompose macro down to device commands
+        decompose macro down to device commands (at the moment only used in rm3timer.py)
 
         Args:
             macro (list): list of buttons and macros
@@ -791,6 +850,7 @@ class RemotesData(RemoteThreadingClass):
         decomposed_v1 = []
         decomposed_v2 = []
         decomposed_v3 = []
+        decomposed_v4 = []
         act_devices = self.config.read(rm3presets.active_devices)
         act_macros = self.config.read(rm3presets.active_macros)
         act_scenes = self.config.read(rm3presets.active_scenes)
@@ -799,7 +859,9 @@ class RemotesData(RemoteThreadingClass):
         # global_*
         # device-on_*
         # device-off_*
+        # group_* ... not yet implemented
 
+        # decode global, dev-on/off and scene macros (first layer)
         for command in macro:
             if "_" not in str(command):
                 decomposed_v1.append(command)
@@ -819,6 +881,7 @@ class RemotesData(RemoteThreadingClass):
             else:
                 decomposed_v1.append(command)
 
+        # decode global and dev-on/off  macros (second layer)
         for command in decomposed_v1:
             if "_" in str(command):
                 parts = command.split("_")
@@ -835,6 +898,7 @@ class RemotesData(RemoteThreadingClass):
             else:
                 decomposed_v2.append(command)
 
+        # decode global and dev-on/off  macros (third layer)
         for command in decomposed_v2:
             if "_" in str(command):
                 parts = command.split("_")
@@ -851,11 +915,15 @@ class RemotesData(RemoteThreadingClass):
             else:
                 decomposed_v3.append(command)
 
+        for command in decomposed_v3:
+            # groups not yet implemented
+            decomposed_v4.append(command)
+
         # <scene>_*
         # <scene>_scene-on
         # <scene>_scene-off
 
-        return decomposed_v3
+        return decomposed_v4
 
 class RemotesEdit(RemoteDefaultClass):
     """
@@ -1759,14 +1827,14 @@ class RemotesEdit(RemoteDefaultClass):
 
     def remote_edit_macros(self, macros):
         """
-        check if format is correct and save macros
+        check if format is correct and save macros or groups
 
         Args:
             macros (dict): macro information
         Returns:
             str: success or error message
         """
-        macro_keys = ["macro", "dev-on", "dev-off", "scene-on", "scene-off"]
+        macro_keys = ["groups", "macro", "dev-on", "dev-off", "scene-on", "scene-off"]
 
         if not isinstance(macros, dict):
             return "ERROR: wrong data format - not a dict."
@@ -1776,14 +1844,15 @@ class RemotesEdit(RemoteDefaultClass):
                 return "ERROR: wrong data format - not a dict (" + str(key) + ")."
             if key not in macro_keys:
                 return "ERROR: wrong data format - unknown key (" + str(key) + ")"
-            for key2 in macros[key]:
-                if not isinstance(macros[key][key2], list):
-                    return "ERROR: wrong data format - macro is not a list (" + str(key) + "/" + str(key2) + ")"
-                for list_key in macros[key][key2]:
-                    if not (isinstance(list_key, float) or isinstance(list_key, int)) and not isinstance(list_key, str):
-                        return "ERROR: wrong data format - list entry is not a number or string (" + str(
-                            key) + "/" + str(
-                            key2) + "/" + str(list_key) + ")"
+            if key != "groups":
+                for key2 in macros[key]:
+                    if not isinstance(macros[key][key2], list):
+                        return "ERROR: wrong data format - macro is not a list (" + str(key) + "/" + str(key2) + ")"
+                    for list_key in macros[key][key2]:
+                        if not (isinstance(list_key, float) or isinstance(list_key, int)) and not isinstance(list_key, str):
+                            return "ERROR: wrong data format - list entry is not a number or string (" + str(
+                                key) + "/" + str(
+                                key2) + "/" + str(list_key) + ")"
 
         macro_file = self.data.macros_read()
         for key in macros:

@@ -826,6 +826,7 @@ function rmRemote(name) {
         // prepare macros
         var scene_macros     = {}
 		var macros           = this.data["CONFIG"]["macros"]["global"];
+		var groups           = this.data["CONFIG"]["macros"]["groups"];
 		var macros_deviceOn  = this.data["CONFIG"]["macros"]["device-on"];
 		var macros_deviceOff = this.data["CONFIG"]["macros"]["device-off"];
 
@@ -892,10 +893,12 @@ function rmRemote(name) {
 				             context_menu += this.button.edit( link_move_right + link_preview, "&gt;",""); }
 				context_menu += input_add_button;
 				}
-																		
+
 			if (button[0] == "LINE")                     { next_button = this.basic.line(""); }
 			else if (button[0].indexOf("LINE||") == 0)   { next_button = this.basic.line(button[0].split("||")[1]); }
 			else if (button[0] == ".")                   { next_button = this.button.device( scene+i, ".", scene_label, "empty", "", "disabled" ); }
+			else if (button[0] == "group")               { next_button = this.button.btn_group(  cmd, button[2], scene_label, "", button, "" );
+									                       this.active_buttons.push(cmd); }
 			else if (button[0] == "macro")               { next_button = this.button.macro(  cmd, button[1], scene_label, "", macros[button[1]], "" );
 									                       this.active_buttons.push(cmd); }
 			else if (button[0] == "scene-on")            { next_button = this.button.macro( "scene_on_"+button[1], "on", scene_label,"", scene_macros["scene-on"], "" );
