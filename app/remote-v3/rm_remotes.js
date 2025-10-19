@@ -575,115 +575,18 @@ function rmRemote(name) {
 		
 		var edit = "";
 		edit    += this.tab.start();
-		edit    += this.tab.row(
-				this.basic.select_array("add_button_select","defined button", device_config["buttons"], "", ""),
-				this.button.edit(this.app_name+".remote_add_button('device','"+device+"','add_button_select','remote_json_buttons');", lang("BUTTON_T"),"")
-				);
-		edit    += this.tab.row(
-				this.basic.input("add_button"),
-				this.button.edit(this.app_name+".remote_add_button('device','"+device+"','add_button',        'remote_json_buttons');", lang("BUTTON_T_OTHER"),"")
-				);
-		edit    += this.tab.row(
-				this.basic.input("add_line_text"),
-				this.button.edit(this.app_name+".remote_add_line('device',  '"+device+"','add_line_text',     'remote_json_buttons');", lang("BUTTON_T_LINE_TEXT"),"")
-				);
+
+        // Add GUI to add JSON elements
+        edit    += this.json_elements_add("button_line", id, device, preview_remote="", preview_display="", preview_display_size="");
 		edit    += this.tab.line();
-		if (device_config["commands"]["set"].length > 0 || device_config["commands"]["get"] > 0) {
-			var onchange_slider_param = this.app_name+".remote_prepare_slider('device','"+device+"','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax','remote_json_buttons');";
-
-			edit    += this.tab.row(
-			        this.basic.select_array("add_slider_cmd",lang("BUTTON_T_SEND"), device_config["commands"]["set"], "", ""),
-				    this.button.edit("","","disabled")
-				    );
-			edit    += this.tab.row( 
-				    this.basic.select_array("add_slider_param",lang("BUTTON_T_PARAMETER"), device_config["commands"]["get"], onchange_slider_param, ""),
-				    this.button.edit("","","disabled")
-                    );
-			edit    += this.tab.row( 
-                    this.basic.input("add_slider_descr", lang("BUTTON_T_DESCRIPTION")),
-                    this.button.edit("","","disabled")
-                    );
-			edit    += this.tab.row( 
-                    this.basic.input("add_slider_minmax",lang("BUTTON_T_MINMAX")),
-                    this.button.edit(this.app_name+".remote_add_slider('device','"+device+"','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax','remote_json_buttons');", "slider","")
-                    );
-			edit    += this.tab.line();
-			}
-		else {
-			edit    += this.tab.row( 
-                    lang("SLIDER_N/A"),
-                    this.button.edit("N/A","","disabled")
-                    );
-			}
-
-        var select_color_values = [];
-        for (var i=0;i<device_config["commands"]["set"].length;i++) {
-            var key = device_config["commands"]["set"][i];
-            if (device_config["commands"]["definition"][key] != undefined && device_config["commands"]["definition"][key]["values"] != undefined &&
-                device_config["commands"]["definition"][key]["values"]["min"] != undefined && device_config["commands"]["definition"][key]["values"]["max"] != undefined) {
-                select_color_values.push(key);
-            }
-            else if (device_config["commands"]["definition"][key] != undefined && device_config["commands"]["definition"][key]["type"] == "list") {
-                select_color_values.push(key);
-            }
-        }
-
-		if (select_color_values.length > 0) {
-		    var color_models = ["Brightness", "Color RGB", "Color CIE_1931", "Color RGB (small)",  "Color CIE_1931 (small)", "Color temperature"];
-
-			edit    += this.tab.row(
-                    this.basic.select_array("add_colorpicker_cmd",lang("BUTTON_T_SEND"), select_color_values, "", ""),
-                    this.button.edit("","","disabled")
-                    );
-			edit    += this.tab.row(
-                    this.basic.select_array("add_colorpicker_model", lang("BUTTON_T_COLOR"), color_models),
-                    this.button.edit(this.app_name+".remote_add_colorpicker('device','"+device+"','add_colorpicker_cmd','remote_json_buttons');", lang("BUTTON_T_COLORPICKER"),"")
-                    );
-			}
-		else {
-			edit    += this.tab.row( 
-                    lang("COLORPICKER_N/A"),
-                    this.button.edit("N/A","","disabled")
-                    );
-			}
-
-        // ....
-
-        var select_toggle_values = [];
-
-        // .... .remote_add_toggle
-
+        edit    += this.json_elements_add("slider", id, device, preview_remote="", preview_display="", preview_display_size="");
 		edit    += this.tab.line();
-		edit    += this.tab.row(
-		           this.basic.input("add_toggle_descr", "toggle description"),
-                   this.button.edit("","","disabled")
-		           );
-		edit    += this.tab.row(
-                   this.basic.select_array("add_toggle_value", "value (boolean)", device_config["commands"]["get"], "", ""),
-                   this.button.edit("","","disabled")
-		           );
-		edit    += this.tab.row(
-                   this.basic.select_array("add_toggle_on","button ON", device_config["buttons"], "", ""),
-                   this.button.edit("","","disabled")
-		           );
-		edit    += this.tab.row(
-                   this.basic.select_array("add_toggle_off","button OFF", device_config["buttons"], "", ""),
-                   this.button.edit(this.app_name+".remote_add_toggle('device','"+device+"','add_toggle_descr','add_toggle_value','add_toggle_on','add_toggle_off','remote_json_buttons');", "toggle","")
-		           );
-		           //device_config["buttons"]
-
-		this.button.width = "90px";
-
+        edit    += this.json_elements_add("color_picker", id, device, preview_remote="", preview_display="", preview_display_size="");
 		edit    += this.tab.line();
-		edit    += this.tab.row("<center>"+
-				this.button.edit(this.app_name+".remote_add_button( 'device','"+device+"','.',      'remote_json_buttons');", lang("BUTTON_T_EMPTY"),"") + "&nbsp; " +
-				this.button.edit(this.app_name+".remote_add_button( 'device','"+device+"','LINE',   'remote_json_buttons');", lang("BUTTON_T_LINE"),"") + "&nbsp; " +
-				this.button.edit(this.app_name+".remote_add_display('device','"+device+"','DISPLAY','remote_json_buttons');", lang("BUTTON_T_DISPLAY"),"") + "&nbsp; "+
-				"</center>",
-				false
-				);
+        edit    += this.json_elements_add("toggle", id, device, preview_remote="", preview_display="", preview_display_size="");
+		edit    += this.tab.line();
+        edit    += this.json_elements_add("default", id, device, preview_remote="", preview_display="", preview_display_size="");
 		edit    += this.tab.end();
-
 		remote += this.basic.container("remote_edit_add",lang("ADD_ELEMENTS"),edit,false);
 
 		// Edit display
@@ -800,6 +703,128 @@ function rmRemote(name) {
 		setTextById(id,remote);
 		//return remote;
 		}
+
+    // add json elements
+    this.json_elements_add          = function (element, id, device, preview_remote="", preview_display="", preview_display_size="") {
+
+        var edit = "";
+        var device_config = this.data["CONFIG"]["devices"][device];
+        var device_macros = this.data["CONFIG"]["macros"];
+		var device_info   = device_config["settings"];
+		var display_sizes = this.display.sizes();
+
+        if (element == "toggle") {
+
+            edit    += this.tab.row(
+                       this.basic.input("add_toggle_descr", "toggle description"),
+                       this.button.edit("","","disabled")
+                       );
+            edit    += this.tab.row(
+                       this.basic.select_array("add_toggle_value", "value (boolean)", device_config["commands"]["get"], "", "power"),
+                       this.button.edit("","","disabled")
+                       );
+            edit    += this.tab.row(
+                       this.basic.select_array("add_toggle_on","button ON", device_config["buttons"], "", "on"),
+                       this.button.edit("","","disabled")
+                       );
+            edit    += this.tab.row(
+                       this.basic.select_array("add_toggle_off","button OFF", device_config["buttons"], "", "off"),
+                       this.button.edit(this.app_name+".remote_add_toggle('device','"+device+"','add_toggle_descr','add_toggle_value','add_toggle_on','add_toggle_off','remote_json_buttons');", "toggle","")
+                       );
+            }
+        else if (element == "color_picker") {
+
+            var select_color_values = [];
+            for (var i=0;i<device_config["commands"]["set"].length;i++) {
+                var key = device_config["commands"]["set"][i];
+                if (device_config["commands"]["definition"][key] != undefined && device_config["commands"]["definition"][key]["values"] != undefined &&
+                    device_config["commands"]["definition"][key]["values"]["min"] != undefined && device_config["commands"]["definition"][key]["values"]["max"] != undefined) {
+                    select_color_values.push(key);
+                }
+                else if (device_config["commands"]["definition"][key] != undefined && device_config["commands"]["definition"][key]["type"] == "list") {
+                    select_color_values.push(key);
+                }
+            }
+
+            if (select_color_values.length > 0) {
+                var color_models = ["Brightness", "Color RGB", "Color CIE_1931", "Color RGB (small)",  "Color CIE_1931 (small)", "Color temperature"];
+
+                edit    += this.tab.row(
+                        this.basic.select_array("add_colorpicker_cmd",lang("BUTTON_T_SEND"), select_color_values, "", ""),
+                        this.button.edit("","","disabled")
+                        );
+                edit    += this.tab.row(
+                        this.basic.select_array("add_colorpicker_model", lang("BUTTON_T_COLOR"), color_models),
+                        this.button.edit(this.app_name+".remote_add_colorpicker('device','"+device+"','add_colorpicker_cmd','remote_json_buttons');", lang("BUTTON_T_COLORPICKER"),"")
+                        );
+                }
+            else {
+                edit    += this.tab.row(
+                        lang("COLORPICKER_N/A"),
+                        this.button.edit("N/A","","disabled")
+                        );
+                }
+            }
+        else if (element == "slider") {
+
+            if (device_config["commands"]["set"].length > 0 || device_config["commands"]["get"] > 0) {
+                var onchange_slider_param = this.app_name+".remote_prepare_slider('device','"+device+"','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax','remote_json_buttons');";
+
+                edit    += this.tab.row(
+                        this.basic.select_array("add_slider_cmd",lang("BUTTON_T_SEND"), device_config["commands"]["set"], "", ""),
+                        this.button.edit("","","disabled")
+                        );
+                edit    += this.tab.row(
+                        this.basic.select_array("add_slider_param",lang("BUTTON_T_PARAMETER"), device_config["commands"]["get"], onchange_slider_param, ""),
+                        this.button.edit("","","disabled")
+                        );
+                edit    += this.tab.row(
+                        this.basic.input("add_slider_descr", lang("BUTTON_T_DESCRIPTION")),
+                        this.button.edit("","","disabled")
+                        );
+                edit    += this.tab.row(
+                        this.basic.input("add_slider_minmax",lang("BUTTON_T_MINMAX")),
+                        this.button.edit(this.app_name+".remote_add_slider('device','"+device+"','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax','remote_json_buttons');", "slider","")
+                        );
+                }
+            else {
+                edit    += this.tab.row(
+                        lang("SLIDER_N/A"),
+                        this.button.edit("N/A","","disabled")
+                        );
+                }
+            }
+        else if (element == "button_line") {
+
+            edit    += this.tab.row(
+                    this.basic.select_array("add_button_select","defined button", device_config["buttons"], "", ""),
+                    this.button.edit(this.app_name+".remote_add_button('device','"+device+"','add_button_select','remote_json_buttons');", lang("BUTTON_T"),"")
+                    );
+            edit    += this.tab.row(
+                    this.basic.input("add_button"),
+                    this.button.edit(this.app_name+".remote_add_button('device','"+device+"','add_button',        'remote_json_buttons');", lang("BUTTON_T_OTHER"),"")
+                    );
+            edit    += this.tab.line();
+            edit    += this.tab.row(
+                    this.basic.input("add_line_text"),
+                    this.button.edit(this.app_name+".remote_add_line('device',  '"+device+"','add_line_text',     'remote_json_buttons');", lang("BUTTON_T_LINE_TEXT"),"")
+                    );
+            }
+        else if (element == "default") {
+
+            this.button.width = "90px";
+            edit    += this.tab.row("<center>"+
+                    this.button.edit(this.app_name+".remote_add_button( 'device','"+device+"','.',      'remote_json_buttons');", lang("BUTTON_T_EMPTY"),"") + "&nbsp; " +
+                    this.button.edit(this.app_name+".remote_add_button( 'device','"+device+"','LINE',   'remote_json_buttons');", lang("BUTTON_T_LINE"),"") + "&nbsp; " +
+                    this.button.edit(this.app_name+".remote_add_display('device','"+device+"','DISPLAY','remote_json_buttons');", lang("BUTTON_T_DISPLAY"),"") + "&nbsp; "+
+                    "</center>",
+                    false
+                    );
+            }
+
+        return edit;
+        }
+
 
 	// reread data from current definition and create preview
 	this.scene_remote_preview       = function (scene) {
