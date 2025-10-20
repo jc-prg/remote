@@ -1,0 +1,136 @@
+.sheet-box {
+    color: black;
+    width: 100%;
+    max-width: 700px;
+    min-height: 300px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .sheet-box:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Tab-Bar Wrapper mit Pfeilen rechts */
+  .tab-bar-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: gray;
+    border-bottom: 1px solid #ccc;
+    position: relative;
+    padding-right: 45px; /* Platz für Pfeile */
+    flex-shrink: 0;
+  }
+
+  .tab-bar {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+    flex: 1;
+  }
+
+  .tab-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    flex-shrink: 0;
+    padding: 5px 8px;
+    background-color: #57606f;
+    color: white;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    user-select: none;
+    font-weight: 500;
+    border-radius: 4px 4px 0 0;
+    margin-right: 2px;
+  }
+
+  .tab:hover {
+    background-color: #747d8c;
+    transform: translateY(-1px);
+  }
+
+  .tab.active {
+    background-color: #ccc;
+    color: #2f3542;
+    font-weight: bold;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 3;
+    border-bottom: 1px solid #f1f2f6;
+  }
+
+  /* Pfeile rechts nebeneinander */
+  .tab-scroll-right {
+    display: flex;
+    position: absolute;
+    right: 0;
+    gap: 2px;
+    height: 100%;
+    align-items: center;
+    background-color: #2f3542;
+    padding: 0 6px;
+  }
+
+  .tab-scroll-btn {
+    background: #2f3542;
+    border: none;
+    color: #fff;
+    font-size: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    height: 12px;
+    width: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tab-scroll-btn:hover {
+    background: #3c4353;
+  }
+
+  .sheet-content {
+    flex: 1;
+    background-color: #ccc;
+    padding: 8px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    border-radius: 0 0 4px 4px;
+    animation: fadeIn 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sheet-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 8px 12px;
+    overflow: hidden;
+  }
+
+  .sheet-panel.scrollable {
+    overflow-y: auto;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }

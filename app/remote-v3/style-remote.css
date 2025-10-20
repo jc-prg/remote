@@ -307,7 +307,7 @@ ul.help ul li {
     color           : var(--rm-color-edit-cmd-text);
     padding         : 6px;
     width           : 95%;
-    height          : 200px;
+    height          : 150px;
     overflow-y      : scroll;
     text-align      : left;
     font-size       : 11px;

@@ -743,10 +743,133 @@ function rmRemoteDisplays(name) {
 
 	}
 
+
 function rmImage(file) {
+
         return "<img src='icon/"+file+"' class='rm-button-image' alt='"+file+"' />";
         }
 
+
+class rmSheetBox {
+  constructor(containerId, height = "300px", scroll = false) {
+    this.container = document.getElementById(containerId);
+    this.sheets = [];
+    this.activeIndex = 0;
+    this.scroll = scroll;
+
+    // Hauptstruktur
+    this.box = document.createElement("div");
+    this.box.className = "sheet-box";
+    this.box.style.minHeight = height;
+    this.box.style.display = "flex";
+    this.box.style.flexDirection = "column";
+
+    // Tab-Leiste Wrapper
+    this.tabWrapper = document.createElement("div");
+    this.tabWrapper.className = "tab-bar-wrapper";
+
+    // Scrollbare Tab-Bar
+    this.tabBar = document.createElement("div");
+    this.tabBar.className = "tab-bar";
+
+    // Pfeile rechts
+    this.arrowContainer = document.createElement("div");
+    this.arrowContainer.className = "tab-scroll-right";
+
+    this.btnLeft = document.createElement("button");
+    this.btnLeft.className = "tab-scroll-btn";
+    this.btnLeft.innerHTML = "&#10094;";
+    this.btnLeft.addEventListener("click", () => this.scrollTabs(-150));
+
+    this.btnRight = document.createElement("button");
+    this.btnRight.className = "tab-scroll-btn";
+    this.btnRight.innerHTML = "&#10095;";
+    this.btnRight.addEventListener("click", () => this.scrollTabs(150));
+
+    this.arrowContainer.appendChild(this.btnLeft);
+    this.arrowContainer.appendChild(this.btnRight);
+
+    this.tabWrapper.appendChild(this.tabBar);
+    this.tabWrapper.appendChild(this.arrowContainer);
+
+    // Inhaltsbereich
+    this.contentArea = document.createElement("div");
+    this.contentArea.className = "sheet-content";
+    this.contentArea.style.position = "relative";
+
+    this.box.appendChild(this.tabWrapper);
+    this.box.appendChild(this.contentArea);
+    this.container.appendChild(this.box);
+
+    window.addEventListener("resize", () => this.updateArrowVisibility());
+  }
+
+  addSheet(title, content) {
+    const index = this.sheets.length;
+
+    // Tab erstellen
+    const tab = document.createElement("div");
+    tab.className = "tab";
+    tab.textContent = title;
+    tab.addEventListener("click", () => this.setActiveSheet(index));
+
+    // Sheet-Container erstellen
+    const sheetDiv = document.createElement("div");
+    sheetDiv.className = "sheet-panel";
+    sheetDiv.innerHTML = content;
+    sheetDiv.style.display = "none"; // inaktiv = unsichtbar
+    sheetDiv.style.position = "absolute";
+    sheetDiv.style.top = "0";
+    sheetDiv.style.left = "0";
+    sheetDiv.style.right = "0";
+    sheetDiv.style.bottom = "0";
+
+    // Scrollbar nur für das Sheet selbst
+    if (this.scroll) {
+      sheetDiv.style.overflowY = "auto";
+    }
+
+    // Immer im DOM, auch inaktiv
+    this.contentArea.appendChild(sheetDiv);
+
+    this.sheets.push({ title, tab, sheetDiv });
+    this.tabBar.appendChild(tab);
+
+    // Erstes Sheet aktivieren
+    if (index === 0) this.setActiveSheet(0);
+
+    this.updateArrowVisibility();
+  }
+
+  setActiveSheet(index) {
+    this.activeIndex = index;
+
+    this.sheets.forEach((sheet, i) => {
+      const active = i === index;
+      sheet.tab.classList.toggle("active", active);
+      sheet.sheetDiv.style.display = active ? "block" : "none"; // inaktiv = display:none
+
+      if (active) {
+        sheet.tab.scrollIntoView({ behavior: "smooth", inline: "center" });
+      }
+    });
+  }
+
+  scrollTabs(offset) {
+    this.tabBar.scrollBy({ left: offset, behavior: "smooth" });
+    setTimeout(() => this.updateArrowVisibility(), 200);
+  }
+
+  updateArrowVisibility() {
+    const { scrollWidth, clientWidth } = this.tabBar;
+    this.arrowContainer.style.display = scrollWidth > clientWidth ? "flex" : "none";
+  }
+
+  getSheetContent(index) {
+    // Zugriff auf die Inhalte auch wenn sie gerade unsichtbar sind
+    return this.sheets[index]?.sheetDiv || null;
+  }
+}
 
 
 

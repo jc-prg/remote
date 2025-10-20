@@ -67,7 +67,7 @@ var language_app = {
 		"BUTTON_T_SLIDER"       : "slider",
 		"BUTTON_T_TEMPLATE"     : "template",
 		"BUTTON_T_OTHER"        : "other button",
-		"BUTTON_T_PARAMETER"    : "paremter",
+		"BUTTON_T_PARAMETER"    : "parameter",
 		"BUTTON_T_PREVIEW"      : "preview",
 		"BUTTON_T_VALUE"        : "add value",
 		"BUTTON_T_TRY"          : "try",
@@ -109,7 +109,7 @@ var language_app = {
 		"DEVICE_SELECT_VISIBLITY" : "Please select if device should be visible or hidden.",
 		"DEVICES_NOT_CONNECTED"   : "Devices not connected",
 
-		"DISPLAY_EXISTS"         : "Display already exists, only one display is supported.",
+		"DISPLAY_EXISTS"         : "Display active for this remote.",
 		"DISPLAY_LABEL_SELECT"   : "Select label to be deleted in the display.",
 		"DISPLAY_LABEL_DONT_EXIST" : "Selected label doesn't exist in display definition.",
 		"DISPLAY_VALUE_SELECT"   : "Select device and value to be added in the display.",
@@ -119,11 +119,13 @@ var language_app = {
 		
 		"EDIT_DEVICE"            : "Edit device",
 		"EDIT_DEVICES"           : "Edit devices",
+		"EDIT_ELEMENTS"          : "Edit elements",
 		"EDIT_REMOTE"            : "Edit remote",
 		"EDIT_REMOTES"           : "Edit remotes",
 		"EDIT_SCENE"             : "Edit scene",
 		"EDIT_SCENES"            : "Edit scenes",
 		"EDIT_DISPLAY"           : "Edit display",
+		"EDIT_ADD_DISPLAY"       : "Add and edit display",
 		"EDIT_MACROS"            : "Edit macros",
 		"EDIT_INTERFACES"        : "Edit interfaces",
 		"EDIT_INTERFACE"         : "Edit interface configuration for {0}",
@@ -142,6 +144,7 @@ var language_app = {
 		"INTERFACES"             : "Interfaces",
 		"INTERFACE_STATUS"       : "Interface Status",
 
+		"JSON_EDIT"  			: "Edit JSON data",
 		"JSON_CHANNEL"			: "JSON channel macros",
 		"JSON_DISPLAY"			: "JSON display information",
 		"JSON_DEVICE"			: "JSON required devices",
@@ -158,7 +161,10 @@ var language_app = {
 		"MACRO_PLEASE_WAIT"     : "Executing commands, please wait a few seconds!",
 		
 		"MANUAL"                : "manual",
-		
+
+		"MANUAL_ADD_ELEMENTS"   : "<h3>Add elements</h3><p>Here you can add different new elements to the remote control. All new elements will be added at the end of the remote control and can be moved up using the tool tip.</p>",
+		"MANUAL_ADD_TEMPLATE"   : "<h3>Load template</h3><p>By loading a template you will overwrite the existing remote definition.</p>",
+
 		"MANUAL_CHANNEL"        : "<i>Edit Channels:</i><br/><br/><ul class='help'>" +
 		                          "<li>Fill dict for channel definition using the JSON format: " +
 		                          "<i>&quot;Channel Name&quot; : [ &quot;button&quot;, &quot;button&quot;, &quot;macro&quot;]</i></li>" +

@@ -32,5 +32,6 @@ remote_css = [
     "style-display.css",
     "style-color-picker.css",
     "style-sort-list.css",
+    "style-sheet-box.css",
     "style-size.css",
     ];
