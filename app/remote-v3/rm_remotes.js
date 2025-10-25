@@ -518,11 +518,12 @@ function rmRemote(name) {
 		this.logging.default(device_config);
 		setTextById(id,remote);
 
-        const myBox = new rmSheetBox("remote-edit-main", height="380px", scroll=true);
-        myBox.addSheet("Main",          edit_main);
-        myBox.addSheet("API Settings",      edit_info);
-        myBox.addSheet("API Commands",  edit_cmd);
+        // create sheet box
 
+        const myBox = new rmSheetBox("remote-edit-main", height="380px", scroll=true, scroll_view=false, keep_open=false);
+        myBox.addSheet("Main",          edit_main);
+        myBox.addSheet("API Settings",  edit_info);
+        myBox.addSheet("API Commands",  edit_cmd);
         if (device_method == "query") {
             myBox.addSheet("API Test",      edit_test);
             }
@@ -569,6 +570,14 @@ function rmRemote(name) {
 		this.button.width = "100px";
 		var display_sizes = this.display.sizes();
 		var device_info   = device_config["settings"];
+
+        // check if color values exist
+        var select_color_values = false;
+        for (var i=0;i<device_config["commands"]["set"].length;i++) {
+            var key = device_config["commands"]["set"][i];
+            if (key.indexOf("color") >= 0) { select_color_values = true; }
+            if (key.indexOf("bright") >= 0) { select_color_values = true; }
+        }
 
         // check data for preview
 		if (preview_remote == "")             { remote_definition  = device_config["remote"]["remote"]; }
@@ -644,228 +653,27 @@ function rmRemote(name) {
 
         const myBox = new rmSheetBox("remote-edit-add", height="280px", scroll=false);
         myBox.addSheet("Info",          lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") +
-                                        this.tab.start() + this.json_elements_add("template", id, device, preview_remote, preview_display, preview_display_size, line=false) + this.tab.end());
-        myBox.addSheet("Buttons",       this.tab.start() + this.json_elements_add("button_line", id, device, preview_remote, preview_display, preview_display_size, line=false) + this.tab.end() );
-        myBox.addSheet("Display",       this.tab.start() + this.json_elements_add("display", id, device, preview_remote, preview_display, preview_display_size, line=false) + this.tab.end() );
-        myBox.addSheet("Toggle",        this.tab.start() + this.json_elements_add("toggle", id, device, preview_remote, preview_display, preview_display_size, line=false) + this.tab.end() );
-        myBox.addSheet("Slider",        this.tab.start() + this.json_elements_add("slider", id, device, preview_remote, preview_display, preview_display_size, line=false) + this.tab.end() );
-        myBox.addSheet("Color Picker",  this.tab.start() + this.json_elements_add("color_picker", id, device, preview_remote, preview_display, preview_display_size, line=false) + this.tab.end() );
-        myBox.addSheet("Delete",        this.tab.start() + this.json_elements_add("delete", id, device, preview_remote, preview_display, preview_display_size, line=false) + this.tab.end() );
+                                        this.tab.start() + this.dialog_edit_elements("remote", "template", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end());
+        myBox.addSheet("Buttons",       this.tab.start() + this.dialog_edit_elements("remote", "button_line", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
+        myBox.addSheet("Display",       this.tab.start() + this.dialog_edit_elements("remote", "display", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
+        myBox.addSheet("Toggle",        this.tab.start() + this.dialog_edit_elements("remote", "toggle", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
+        if (device_config["commands"]["set"].length > 0 || device_config["commands"]["get"] > 0) {
+            myBox.addSheet("Slider",        this.tab.start() + this.dialog_edit_elements("remote", "slider", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
+            }
+        if (select_color_values) {
+            myBox.addSheet("Color Picker",  this.tab.start() + this.dialog_edit_elements("remote", "color_picker", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
+            }
+        myBox.addSheet("Delete",        this.dialog_edit_elements("remote", "delete", id, device, preview_remote, preview_display, preview_display_size));
 
         const myJson = new rmSheetBox("remote-edit-json", height="350px", scroll=true);
-        myJson.addSheet("remote",       "<h3>"+lang("JSON_REMOTE")+"</h3>" +  this.json.textarea( "remote_json_buttons", remote_definition, "buttons" ) + "<br/>" + lang("MANUAL_REMOTE") );
-        myJson.addSheet("display",      "<h3>"+lang("JSON_DISPLAY")+"</h3>" + this.json.textarea( "remote_json_display", remote_display ) + "<br/>" + lang("MANUAL_DISPLAY") );
-        myJson.addSheet("macros",       "<h3>"+lang("JSON_REMOTE_MACROS")+"</h3>" + macro_edit );
+        myJson.addSheet("Remote",       "<h3>"+lang("JSON_REMOTE")+"</h3>" +  this.json.textarea( "remote_json_buttons", remote_definition, "buttons" ) + "<br/>" + lang("MANUAL_REMOTE") );
+        myJson.addSheet("Display",      "<h3>"+lang("JSON_DISPLAY")+"</h3>" + this.json.textarea( "remote_json_display", remote_display ) + "<br/>" + lang("MANUAL_DISPLAY") );
+        myJson.addSheet("Macros",       "<h3>"+lang("JSON_REMOTE_MACROS")+"</h3>" + macro_edit );
 		}
-
-    // add json elements
-    this.json_elements_add          = function (element, id, device, preview_remote="", preview_display="", preview_display_size="", line=true) {
-
-        // set vars
-        var edit = "";
-        var device_config = this.data["CONFIG"]["devices"][device];
-        var device_macros = this.data["CONFIG"]["macros"];
-		var device_info   = device_config["settings"];
-		var display_sizes = this.display.sizes();
-		var link_template = this.app_name+".remote_import_templates('device','"+device+"','add_template','remote_json_buttons');";
-		var link_preview  = this.app_name+".device_remote_preview('"+device+"');"
-
-        // create elements editing
-        if (element == "toggle") {
-
-            edit    += this.tab.row(
-                       "Description:",
-                       this.basic.input("add_toggle_descr", "")
-                       );
-            edit    += this.tab.row(
-                       "Value:",
-                       this.basic.select_array("add_toggle_value", "value (boolean)", device_config["commands"]["get"], "", "power")
-                       );
-            edit    += this.tab.row(
-                       "Button ON:",
-                       this.basic.select_array("add_toggle_on","button ON", device_config["buttons"], "", "on")
-                       );
-            edit    += this.tab.row(
-                       "Button OFF:",
-                       this.basic.select_array("add_toggle_off","button OFF", device_config["buttons"], "", "off")
-                       );
-            edit    += this.tab.line();
-            edit    += this.tab.row(
-                       this.button.edit(this.app_name+".remote_add_toggle('device','"+device+"','add_toggle_descr','add_toggle_value','add_toggle_on','add_toggle_off','remote_json_buttons');",  lang("BUTTON_T_ADD"),"")
-                       );
-            }
-        else if (element == "color_picker") {
-
-            var select_color_values = [];
-            for (var i=0;i<device_config["commands"]["set"].length;i++) {
-                var key = device_config["commands"]["set"][i];
-                if (device_config["commands"]["definition"][key] != undefined && device_config["commands"]["definition"][key]["values"] != undefined &&
-                    device_config["commands"]["definition"][key]["values"]["min"] != undefined && device_config["commands"]["definition"][key]["values"]["max"] != undefined) {
-                    select_color_values.push(key);
-                }
-                else if (device_config["commands"]["definition"][key] != undefined && device_config["commands"]["definition"][key]["type"] == "list") {
-                    select_color_values.push(key);
-                }
-            }
-
-            if (select_color_values.length > 0) {
-                var color_models = ["Brightness", "Color RGB", "Color CIE_1931", "Color RGB (small)",  "Color CIE_1931 (small)", "Color temperature"];
-
-                edit    += this.tab.row(
-                        "Send command:",
-                        this.basic.select_array("add_colorpicker_cmd",lang("BUTTON_T_SEND"), select_color_values, "", ""),
-                        );
-                edit    += this.tab.row(
-                        "Color model:",
-                        this.basic.select_array("add_colorpicker_model", lang("BUTTON_T_COLOR"), color_models),
-                        );
-                edit    += this.tab.line();
-                edit    += this.tab.row(
-                        this.button.edit(this.app_name+".remote_add_colorpicker('device','"+device+"','add_colorpicker_cmd','remote_json_buttons');",  lang("BUTTON_T_ADD"),"")
-                        );
-                }
-            else {
-                edit    += this.tab.row(
-                        lang("COLORPICKER_N/A"),
-                        this.button.edit("N/A","","disabled")
-                        );
-                }
-            }
-        else if (element == "slider") {
-
-            if (device_config["commands"]["set"].length > 0 || device_config["commands"]["get"] > 0) {
-                var onchange_slider_param = this.app_name+".remote_prepare_slider('device','"+device+"','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax','remote_json_buttons');";
-
-                edit    += this.tab.row(
-                        "Send command:",
-                        this.basic.select_array("add_slider_cmd",lang("BUTTON_T_SEND"), device_config["commands"]["set"], "", "")
-                        );
-                edit    += this.tab.row(
-                        "Parameter:",
-                        this.basic.select_array("add_slider_param",lang("BUTTON_T_PARAMETER"), device_config["commands"]["get"], onchange_slider_param, "")
-                        );
-                edit    += this.tab.row(
-                        "Description:",
-                        this.basic.input("add_slider_descr", lang("BUTTON_T_DESCRIPTION"))
-                        );
-                edit    += this.tab.row(
-                        "Min and max values:",
-                        this.basic.input("add_slider_minmax",lang("BUTTON_T_MINMAX"))
-                        );
-                edit    += this.tab.line();
-                edit    += this.tab.row(
-                        this.button.edit(this.app_name+".remote_add_slider('device','"+device+"','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax','remote_json_buttons');", lang("BUTTON_T_ADD"),"")
-                        );
-                }
-            else {
-                edit    += this.tab.row(
-                        lang("SLIDER_N/A"),
-                        this.button.edit("N/A","","disabled")
-                        );
-                }
-            }
-        else if (element == "button_line") {
-
-            edit    += this.tab.row(
-                    this.basic.select_array("add_button_select","defined button", device_config["buttons"], "", ""),
-                    this.button.edit(this.app_name+".remote_add_button('device','"+device+"','add_button_select','remote_json_buttons');", lang("BUTTON_T"),"")
-                    );
-            edit    += this.tab.row(
-                    this.basic.input("add_button"),
-                    this.button.edit(this.app_name+".remote_add_button('device','"+device+"','add_button',        'remote_json_buttons');", lang("BUTTON_T_OTHER"),"")
-                    );
-            edit    += this.tab.line();
-            edit    += this.tab.row(
-                    "Add simple line",
-                    this.button.edit(this.app_name+".remote_add_button( 'device','"+device+"','LINE',   'remote_json_buttons');", lang("BUTTON_T_LINE"),"")
-                    );
-            edit    += this.tab.row(
-                    this.basic.input("add_line_text"),
-                    this.button.edit(this.app_name+".remote_add_line('device',  '"+device+"','add_line_text',     'remote_json_buttons');", lang("BUTTON_T_LINE_TEXT"),"")
-                    );
-            edit    += this.tab.line();
-            edit    += this.tab.row(
-                    "Add empty field",
-                    this.button.edit(this.app_name+".remote_add_button( 'device','"+device+"','.',      'remote_json_buttons');", lang("BUTTON_T_EMPTY"),"")
-                    );
-            }
-        else if (element == "default") {
-
-            this.button.width = "90px";
-            edit    += this.tab.row("<center>"+
-                    this.button.edit(this.app_name+".remote_add_button( 'device','"+device+"','.',      'remote_json_buttons');", lang("BUTTON_T_EMPTY"),"") + "&nbsp; " +
-                    this.button.edit(this.app_name+".remote_add_button( 'device','"+device+"','LINE',   'remote_json_buttons');", lang("BUTTON_T_LINE"),"") + "&nbsp; " +
-                    this.button.edit(this.app_name+".remote_add_display('device','"+device+"','DISPLAY','remote_json_buttons');", lang("BUTTON_T_DISPLAY"),"") + "&nbsp; "+
-                    "</center>",
-                    false
-                    );
-            }
-        else if (element == "display") {
-
-            var check_display   = JSON.stringify(remote_definition);
-            var display_add_cmd = this.app_name+".display_add_value('device','"+device+"','add_display_device','remote_display_value','remote_display_label','remote_json_display','remote_display_size')";
-            var display_del_cmd = this.app_name+".display_delete_value('device','"+device+"','remote_json_display','remote_display_delete')";
-
-            edit    = this.tab.start();
-            if (check_display.indexOf("DISPLAY") < 0) {
-                edit   += this.tab.row(
-                        lang("DISPLAY_NOT_ADDED"),
-                        this.button.edit(this.app_name+".remote_add_display('device','"+device+"','DISPLAY',        'remote_json_buttons');", lang("BUTTON_T_DISPLAY"),"")
-                        );
-                }
-            else {
-                edit   += this.tab.row(
-                        lang("DISPLAY_EXISTS"),
-                        this.button.edit("","","disabled")
-                        );
-                }
-            edit   += this.tab.row(
-                    this.basic.select("remote_display_size","display size", display_sizes, "", remote_display_size),
-                    this.button.edit(this.app_name+".device_remote_preview('"+device+"');",lang("BUTTON_T_PREVIEW"))
-                    );
-            edit   += this.tab.line();
-            edit   += this.tab.row(
-                    "<input id='add_display_device' style='display:none;' value='X'>"+
-                    this.device_display_select(device,'remote_display_value'),
-                    this.button.edit("N/A","","disabled")
-                    );
-            edit   += this.tab.row(
-                    this.basic.input("remote_display_label",lang("LABEL")),
-                    this.button.edit(display_add_cmd,lang("BUTTON_T_VALUE"))
-                    );
-            edit   += this.tab.line();
-            edit   += this.tab.row(
-                    this.basic.select_array("remote_display_delete",lang("BUTTON_T_DISPLAY_VALUE"), Object.keys(remote_display),"",""),
-                    this.button.edit(display_del_cmd,lang("BUTTON_T_DEL_VALUE"))
-                    );
-            edit   += this.tab.end();
-            }
-        else if (element == "template") {
-
-            var templates = this.template_list("device");
-            edit     = this.tab.start();
-            edit    += this.tab.row(
-                        this.template_select("add_template",lang("BUTTON_T_TEMPLATE"),templates),
-                        this.button.edit(link_template,lang("BUTTON_T_CLONE"),"")
-                        );
-            edit    += this.tab.end();
-            }
-        else if (element == "delete") {
-            edit     = this.tab.start();
-            edit    += this.tab.row(
-                    this.button_select("del_button",device,remote_definition),
-                    this.button.edit(this.app_name+".remote_delete_button('device','"+device+"','del_button','remote_json_buttons');", lang("BUTTON_T_DELETE"),"")
-                    );
-            edit    += this.tab.end();
-            }
-
-        if (line) { edit += this.tab.line(); }
-        return edit;
-        }
 
 	// reread data from current definition and create preview
 	this.scene_remote_preview       = function (scene) {
-		this.scene_edit_json( id=this.frames_edit[0], scene=scene, preview_remote='json::remote', preview_channel='json::macro-channel', preview_display='json::display', preview_display_size='json::display-size');
+		this.scene_edit_json( id=this.frames_edit[1],   scene=scene, preview_remote='json::remote', preview_channel='json::macro-channel', preview_display='json::display', preview_display_size='json::display-size');
 		this.scene_remote(    id=this.frames_remote[0], scene=scene, preview_remote='json::remote', preview_display='json::display', preview_display_size='json::display-size');
 		this.scene_channels(  id=this.frames_remote[2], scene=scene, preview_channel='json::macro-channel');
 		}
@@ -1115,40 +923,50 @@ function rmRemote(name) {
 		var remote_info   = this.data["CONFIG"]["devices"];
 		var remote        = "";
 
-		remote  += "<center class='remote_edit_headline'><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
-		remote  += this.basic.edit_line();
+		this.dialog_edit_main = function () {
+            // main settings for the scene
+            var edit = "";
+            edit   += this.tab.start();
+            edit   += this.tab.row( "ID:",                 scene );
+            edit   += this.tab.row( "Label:",              this.basic.input("edit_label",        scene_info["label"]) );
+            edit   += this.tab.row( "Description:&nbsp;",  this.basic.input("edit_description",  scene_info["description"]));
+            edit   += this.tab.row( "Scene Image:&nbsp;",  this.image_select("edit_image",       scene_info["image"]) );
+            edit   += this.tab.line();
+            edit   += this.tab.row("<div id='scene_edit_header_image' style='align:center;'></div>","");
+            edit   += this.tab.line();
+            edit   += this.tab.row("<center>"+
+                      "<input id='scene_visibility' value='"+scene_info["visible"]+"' style='display:none;'>"+
+                      this.button.edit("apiRemoteChangeVisibility('scene','"+scene+"','scene_visibility');",lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
+                      this.button.edit("apiSceneEdit('"+scene+"','edit','description,label,image');","save","") + "&nbsp;" +
+                      this.button.edit("apiSceneDelete('"+scene+"');","delete","") + "</center>"
+                      );
+            edit   += this.tab.end();
+            return edit;
+            }
+        this.dialog_edit_api  = function () {
+            // file information
+            edit    = this.tab.start();
+            edit   += this.tab.row("Remote:&nbsp;&nbsp;",  this.data["CONFIG"]["scenes"][scene]["config"]["remote"]+".json" );
+            edit   += this.tab.row("Devices:",             JSON.stringify(this.data["CONFIG"]["scenes"][scene]["remote"]["devices"]).replace(/,/g, ", "));
+            edit   += this.tab.end();
+            var edit_info = edit;
+            return edit;
+            }
 
-		// main settings for the scene
-		var edit = "";
-		edit   += this.tab.start();
-		edit   += this.tab.row( "ID:",                 scene );
-		edit   += this.tab.row( "Label:",              this.basic.input("edit_label",        scene_info["label"]) );
-		edit   += this.tab.row( "Description:&nbsp;",  this.basic.input("edit_description",  scene_info["description"]));
-		edit   += this.tab.row( "Scene Image:&nbsp;",  this.image_select("edit_image",       scene_info["image"]) );
-		edit   += this.tab.line();
-		edit   += this.tab.row("<div id='scene_edit_header_image' style='align:center;'></div>","");
-		edit   += this.tab.line();
-		edit   += this.tab.row("<center>"+
-		          "<input id='scene_visibility' value='"+scene_info["visible"]+"' style='display:none;'>"+
-		          this.button.edit("apiRemoteChangeVisibility('scene','"+scene+"','scene_visibility');",lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
-		          this.button.edit("apiSceneEdit('"+scene+"','edit','description,label,image');","save","") + "&nbsp;" +
-		          this.button.edit("apiSceneDelete('"+scene+"');","delete","") + "</center>"
-		          );
-		edit   += this.tab.end();
-		remote += this.basic.container("scene_main","Scene settings",edit,true);
-
-		// file information
-		edit    = this.tab.start();
-		edit   += this.tab.row("Remote:&nbsp;&nbsp;",  this.data["CONFIG"]["scenes"][scene]["config"]["remote"]+".json" );
-		edit   += this.tab.row("Devices:",             JSON.stringify(this.data["CONFIG"]["scenes"][scene]["remote"]["devices"]).replace(/,/g, ", "));
-		edit   += this.tab.end();
-		remote += this.basic.container("scene_info","Scene information",edit,false);
-		remote  += "<br/>";
-		
         if (this.edit_mode)     { elementVisible(id); }
         else                    { elementHidden(id,"device_edit"); return; }
 
+        // create frame
+		remote  += "<center class='remote_edit_headline'><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
+		remote  += this.basic.edit_line();
+		remote += this.basic.container("scene_main","Scene settings","<div id='scene-edit-main'></div>",true);
 		setTextById(id,remote);
+
+        // create sheet box
+        const myBox = new rmSheetBox("scene-edit-main", height="500px", scroll_bar=true, scroll_view=false, keep_open=false);
+        myBox.addSheet("Main",          this.dialog_edit_main());
+        myBox.addSheet("API Settings",  this.dialog_edit_api());
+
 		this.image_preview();
 		}
 
@@ -1166,25 +984,6 @@ function rmRemote(name) {
 		var scene_remote  	= this.data["CONFIG"]["scenes"][scene]["remote"];
 		var scene_info    	= this.data["CONFIG"]["scenes"][scene]["settings"];
 		var remote_info   	= this.data["CONFIG"]["devices"];
-		var display_sizes 	= this.display.sizes();
-	        
-		var link_template 	= this.app_name+".remote_import_templates('scene','"+scene+"','add_template','json::remote');";
-		var link_preview  	= this.app_name+".scene_remote_preview('"+scene+"');";
-	        
-        var device_display	= {};
-        var device_macro	= {};
-	        
-		for (key in this.data["CONFIG"]["devices"]) {
-			device_macro[key]   = "Device: "+remote_info[key]["settings"]["label"];
-			device_display[key] = remote_info[key]["settings"]["label"];
-			}
-		for (key in this.data["CONFIG"]["macros"])  {
-			if (key != "description") { device_macro[key] = "Macro: "+key; }
-			}
-		device_macro["scene"] = "Macro: " + scene;
-			
-		var device_macro_onchange   = this.app_name +".scene_button_select(div_id='add_button_device_input','add_button_value','add_button_device','"+scene+"');";
-		var device_display_onchange = this.app_name +".scene_display_select(div_id='add_display_input','add_display_value','add_display_device');";
 
         // prepare field values
 		var json_edit_fields        = ["remote", "devices", "display", "display-size", "macro-channel", "macro-scene-on", "macro-scene-off", "macro-scene"];
@@ -1199,7 +998,7 @@ function rmRemote(name) {
 		        "macro-scene-off": [],
 		        "macro-scene": {},
 		        };
-				
+
 		// check if preview
 		for (var i=0;i<json_edit_fields.length;i++) {
 		    var field = json_edit_fields[i];
@@ -1221,126 +1020,14 @@ function rmRemote(name) {
 		if (json_edit_values["macro-scene"] == "")            { json_edit_values["macro-scene"] = {}; }
 		if (json_edit_values["macro-channel"] == undefined)   { json_edit_values["macro-channel"] = {}; }
 
-		// header
-		this.button.width = "100px";
+//---------------------------
+		// frame
 		var remote = "";
-		remote    += "<center class='remote_edit_headline'><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
-		remote    += this.basic.edit_line();
-		
-		// add elements
-		edit    = this.tab.start();
-		edit   += this.tab.row(
-		          this.basic.select("add_button_device","device / macro", device_macro, device_macro_onchange),
-		          this.button.edit("N/A","","disabled")
-		          );
-		edit   += this.tab.row(
-		          "<input id='add_button_value' style='display:none;'/>" +
-		          "<div id='add_button_device_input'><i><small>-&gt; "+lang("SELECT_DEV_MACRO")+"</small></i></div>",
-		          this.button.edit(this.app_name+".remote_add_button('scene','"+scene+"','add_button_value','json::remote');", lang("BUTTON_T"),"")
-		          );
-
-		edit   += this.tab.row(
-		          this.basic.input("add_line_text"),
-		          this.button.edit(this.app_name+".remote_add_line(  'scene','"+scene+"','add_line_text',   'json::remote');", lang("BUTTON_T_LINE_TEXT"),"")
-		          );
-		edit   += this.tab.line();
-		this.button.width = "90px";
-		edit   += this.tab.row("<center>" +
-		          this.button.edit(this.app_name+".remote_add_header('scene','"+scene+"','HEADER-IMAGE',    'json::remote');", lang("BUTTON_T_HEADER"),"") + "&nbsp;" +
-		          this.button.edit(this.app_name+".remote_add_button('scene','"+scene+"','.',               'json::remote');", lang("BUTTON_T_EMPTY"),"") + "&nbsp;" +
-		          "</center>", false
-		          );
-		edit   += this.tab.end();
-		remote += this.basic.container("scene_add",lang("ADD_ELEMENTS"),edit,false);
-
-		// Edit display
-		var check_display   = JSON.stringify(json_edit_values["remote"]);
-		var display_add_cmd = this.app_name+".display_add_value('scene','"+scene+"',   'add_display_device','scene_display_value','scene_display_label','json::display','json::display-size')";
-		var display_del_cmd = this.app_name+".display_delete_value('scene','"+scene+"','json::display','scene_display_delete')";
-		
-		edit    = this.tab.start();
-		if (check_display.indexOf("DISPLAY") < 0) { 
-			edit   += this.tab.row(
-				lang("DISPLAY_NOT_ADDED"),
-				this.button.edit(this.app_name+".remote_add_display('scene','"+scene+"','DISPLAY','json::remote');", lang("BUTTON_T_DISPLAY"),"")
-				);
-			}
-		else {
-			edit   += this.tab.row(
-			          lang("DISPLAY_EXISTS"),
-			          this.button.edit("","","disabled")
-			          );
-			}
-
-		edit   += this.tab.row(
-		          //!this.basic.select("scene_display_size","display size", display_sizes, "", remote_display_size),
-		          this.basic.select("json::display-size","display size", display_sizes, "", json_edit_values["display-size"]),
-		          this.button.edit(this.app_name+".scene_remote_preview('"+scene+"');",lang("BUTTON_T_PREVEW"))
-		          );
-		edit   += this.tab.line();
-		edit   += this.tab.row(
-		          this.basic.select("add_display_device",lang("BUTTON_T_DEVICE"),device_display,device_display_onchange),
-		          this.button.edit("N/A","","disabled")
-		          );
-		edit   += this.tab.row(
-		          "<input id='add_display_value' style='display:none;'/>" +
-		          "<div id='add_display_input'><i><small>-&gt; "+lang("SELECT_DEV_FIRST")+"</small></i></div>",
-		          this.button.edit("N/A","","disabled")
-		          );
-		edit   += this.tab.row(
-		          this.basic.input("scene_display_label",lang("LABEL")),
-		          this.button.edit(display_add_cmd,lang("BUTTON_T_VALUE"))
-		          );
-		edit   += this.tab.line();
-		edit   += this.tab.row(
-		          this.basic.select_array("scene_display_delete","display value", Object.keys(json_edit_values["display"]),"",""),
-		          this.button.edit(display_del_cmd,lang("BUTTON_T_DEL_VALUE"))
-		          );
-
-		edit   += this.tab.end();
-		remote += this.basic.container("display_size",lang("EDIT_DISPLAY"),edit,false);
-
-
-		// load template
-		this.button.width = "100px";
-		edit    = this.tab.start();
-		edit   += this.tab.row(
-		          this.template_select("add_template",lang("BUTTON_T_TEMPLATE"),this.templates),
-		          this.button.edit(link_template,lang("BUTTON_T_CLONE"),"")
-		          );
-		edit   += this.tab.end();
-		remote += this.basic.container("scene_template",lang("LOAD_TEMPLATE"),edit,false);
-
-		// delete elements
-		edit    = this.tab.start();
-		edit   += this.tab.row(
-		          this.button_select("del_button",scene,json_edit_values["remote"]),
-		          this.button.edit(this.app_name+".remote_delete_button('scene','"+scene+"','del_button','json::remote');", lang("BUTTON_T_DEL"),"")
-		          );
-		edit   += this.tab.end();
-
-		remote += this.basic.container("scene_delete",lang("DELETE_ELEMENTS"),edit,false);
+		remote += "<center class='remote_edit_headline'><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
 		remote += this.basic.edit_line();
-
-		// edit JSON file
-		remote += this.basic.container("devices_definition",lang("JSON_DEVICE"), "Required Devices: &nbsp;"+this.basic.input("json::devices", JSON.stringify(scene_remote["devices"])) +
-		                                                    "<br/>&nbsp;<br/>" + lang("MANUAL_DEVICES"),false);
-		remote += this.basic.container("scene_json",        lang("JSON_REMOTE"), this.json.textarea( "json::remote", json_edit_values["remote"], "buttons" ) +
-		                                                    "&nbsp;<br/>" + lang("MANUAL_SCENE"),false);
-		remote += this.basic.container("display_definition",lang("JSON_DISPLAY"), this.json.textarea( "json::display", json_edit_values["display"] ) +
-		                                                    "&nbsp;<br/>" + lang("MANUAL_DISPLAY"),false);
-		remote += this.basic.container("channel_json",      lang("JSON_CHANNEL"), this.json.textarea( "json::macro-channel", json_edit_values["macro-channel"], "channels"  ) +
-		                                                    "&nbsp;<br/>" + lang("MANUAL_CHANNEL"),false);
-		remote += this.basic.container("macros_json",       lang("JSON_SCENE_MACROS"), "<i>" +
-		                                                    "Macro SCENE ON: &nbsp;"  +
-		                                                    this.json.textarea("json::macro-scene-on", json_edit_values["macro-scene-on"]) + "<br/>" +
-		                                                    "Macro SCENE OFF: &nbsp;" +
-		                                                    this.json.textarea("json::macro-scene-off", json_edit_values["macro-scene-off"]) + "<br/>" +
-		                                                    "Other SCENE macros: &nbsp;" +
-		                                                    this.json.textarea( "json::macro-scene", json_edit_values["macro-scene"] ) +
-		                                                    "</i>&nbsp;<br/>" + lang("MANUAL_MACROS_SCENE"),false);
+		remote += this.basic.container("edit_elements","Edit elements","<div id='scene-edit-elements'></div>",true);
+		remote += this.basic.container("edit_json_all","JSON edit","<div id='scene-edit-json'></div>",false);
 		remote += this.basic.edit_line();
-
         this.button.width = "23%";
 		remote += "<br/><center>" +
 		          this.button.edit(this.app_name+".scene_edit_json('"+id+"','"+scene+"');"+
@@ -1356,7 +1043,500 @@ function rmRemote(name) {
 				  "</center><br/>";
 
 		setTextById(id,remote);
+
+        // create sheet box elements
+        const myBox1 = new rmSheetBox("scene-edit-elements", height="300px", scroll=true);
+        myBox1.addSheet("Info",       lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") +
+                                      this.dialog_edit_elements("scene", "template", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
+        myBox1.addSheet("Buttons",    this.dialog_edit_elements("scene", "default", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
+        myBox1.addSheet("Header",    this.dialog_edit_elements("scene", "header", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
+        myBox1.addSheet("Slider",     "not implemented yet");
+        myBox1.addSheet("Toggle",     "not implemented yet");
+        myBox1.addSheet("Display",    this.dialog_edit_elements("scene", "display", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
+        myBox1.addSheet("Delete",     this.dialog_edit_elements("scene", "delete", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
+
+		// edit JSON file
+		var edit_json_required = "Required Devices: &nbsp;"+this.basic.input("json::devices", JSON.stringify(scene_remote["devices"])) + "<br/>&nbsp;<br/>" + lang("MANUAL_DEVICES");
+		var edit_json_remote   = this.json.textarea( "json::remote", json_edit_values["remote"], "buttons" ) + "&nbsp;<br/>" + lang("MANUAL_SCENE");
+		var edit_json_display  = this.json.textarea( "json::display", json_edit_values["display"] ) + "&nbsp;<br/>" + lang("MANUAL_DISPLAY");
+		var edit_json_channel  = this.json.textarea( "json::macro-channel", json_edit_values["macro-channel"], "channels"  ) + "&nbsp;<br/>" + lang("MANUAL_CHANNEL");
+		var edit_json_macros   = "<i>Macro SCENE ON: &nbsp;"  +
+                                this.json.textarea("json::macro-scene-on", json_edit_values["macro-scene-on"]) + "<br/>" +
+                                "Macro SCENE OFF: &nbsp;" +
+                                this.json.textarea("json::macro-scene-off", json_edit_values["macro-scene-off"]) + "<br/>" +
+                                "Other SCENE macros: &nbsp;" +
+                                this.json.textarea( "json::macro-scene", json_edit_values["macro-scene"] ) +
+                                "</i>&nbsp;<br/>" + lang("MANUAL_MACROS_SCENE");
+
+        // create sheet box JSON
+        const myBox2 = new rmSheetBox("scene-edit-json", height="400px", scroll=true);
+        myBox2.addSheet("Devices",   edit_json_required);
+        myBox2.addSheet("Remote",    edit_json_remote);
+        myBox2.addSheet("Display",   edit_json_display);
+        myBox2.addSheet("Channels",  edit_json_channel);
+        myBox2.addSheet("Macros",    edit_json_macros);
 		}
+
+    // add json elements
+    this.dialog_edit_elements          = function (type, element, id, device, preview_remote="", preview_display="", preview_display_size="", preview_channel="") {
+
+        // set vars
+        var edit = "";
+        var line = false;
+        this.button.width  = "90px";
+        this.button.height = "25px";
+
+        if (type == "remote") {
+            var device_config   = this.data["CONFIG"]["devices"][device];
+            var device_macros   = this.data["CONFIG"]["macros"];
+            var device_info     = device_config["settings"];
+            var display_sizes   = this.display.sizes();
+            var link_template   = this.app_name+".remote_import_templates('device','"+device+"','add_template','remote_json_buttons');";
+            var link_preview    = this.app_name+".device_remote_preview('"+device+"');"
+            }
+        else if (type == "scene") {
+            var scene           = device;
+            var scene_remote  	= this.data["CONFIG"]["scenes"][scene]["remote"];
+            var scene_info    	= this.data["CONFIG"]["scenes"][scene]["settings"];
+            var remote_info   	= this.data["CONFIG"]["devices"];
+            var display_sizes 	= this.display.sizes();
+            var link_template 	= this.app_name+".remote_import_templates('scene','"+scene+"','add_template','json::remote');";
+            var link_preview  	= this.app_name+".scene_remote_preview('"+scene+"');";
+            var device_display	= {};
+            var device_macro	= {};
+            var devices         = {};
+
+            for (key in this.data["CONFIG"]["devices"]) {
+                devices[key]        = "Device: "+remote_info[key]["settings"]["label"];
+                device_macro[key]   = "Device: "+remote_info[key]["settings"]["label"];
+                device_display[key] = remote_info[key]["settings"]["label"];
+                }
+            for (key in this.data["CONFIG"]["macros"])  {
+                if (key != "description") { device_macro[key] = "Macro: "+key; }
+                }
+            device_macro["scene"] = "Macro: " + scene;
+
+            var device_macro_onchange   = this.app_name +".scene_button_select(div_id='add_button_device_input','add_button_value','add_button_device','"+scene+"');";
+            var device_display_onchange = this.app_name +".scene_display_select(div_id='add_display_input','add_display_value','add_display_device');";
+
+            // prepare field values
+            var json_edit_fields        = ["remote", "devices", "display", "display-size", "macro-channel", "macro-scene-on", "macro-scene-off", "macro-scene"];
+            var json_edit_values        = {};
+            var json_preview_values     = {
+                    "remote": preview_remote,
+                    "devices": "",
+                    "display": preview_display,
+                    "display-size": preview_display_size,
+                    "macro-channel": preview_channel,
+                    "macro-scene-on": [],
+                    "macro-scene-off": [],
+                    "macro-scene": {},
+                    };
+
+            // check if preview
+            for (var i=0;i<json_edit_fields.length;i++) {
+                var field = json_edit_fields[i];
+                if (json_preview_values[field] == "") {
+                    json_edit_values[field] = scene_remote[field];
+                    }
+                else {
+                    json_edit_values[field] = this.json.get_value(json_preview_values[field], scene_remote[field]);
+                    // Error detected .... !
+                    preview = true;
+                    }
+                }
+
+            if (json_edit_values["display"] == undefined)         { json_edit_values["display"] = {}; }
+            if (json_edit_values["display-size"] == undefined)    { json_edit_values["display-size"] = "middle"; }
+            if (json_edit_values["macro-scene-on"] == undefined)  { json_edit_values["macro-scene-on"] = []; }
+            if (json_edit_values["macro-scene-off"] == undefined) { json_edit_values["macro-scene-off"] = []; }
+            if (json_edit_values["macro-scene"] == undefined)     { json_edit_values["macro-scene"] = {}; }
+            if (json_edit_values["macro-scene"] == "")            { json_edit_values["macro-scene"] = {}; }
+            if (json_edit_values["macro-channel"] == undefined)   { json_edit_values["macro-channel"] = {}; }
+            }
+
+        // create elements editing
+        if      (type == "remote" && element == "toggle") {
+
+            edit   += this.tab.start();
+            edit   += this.tab.row(
+                       "Description:",
+                       this.basic.input("add_toggle_descr", "")
+                       );
+            edit   += this.tab.row(
+                       "Value:",
+                       this.basic.select_array("add_toggle_value", "value (boolean)", device_config["commands"]["get"], "", "power")
+                       );
+            edit   += this.tab.row(
+                       "Button ON:",
+                       this.basic.select_array("add_toggle_on","button ON", device_config["buttons"], "", "on")
+                       );
+            edit   += this.tab.row(
+                       "Button OFF:",
+                       this.basic.select_array("add_toggle_off","button OFF", device_config["buttons"], "", "off")
+                       );
+            edit   += this.tab.line();
+            edit   += this.tab.row(
+                      this.button.edit(this.app_name+".remote_add_toggle('device','"+device+"','add_toggle_descr','add_toggle_value','add_toggle_on','add_toggle_off','remote_json_buttons');",  lang("BUTTON_T_ADD"),"")
+                       );
+            edit  += this.tab.end();
+            }
+        else if (type == "remote" && element == "color_picker") {
+
+            var select_color_values = [];
+            for (var i=0;i<device_config["commands"]["set"].length;i++) {
+                var key = device_config["commands"]["set"][i];
+                if (device_config["commands"]["definition"][key] != undefined && device_config["commands"]["definition"][key]["values"] != undefined &&
+                    device_config["commands"]["definition"][key]["values"]["min"] != undefined && device_config["commands"]["definition"][key]["values"]["max"] != undefined) {
+                    select_color_values.push(key);
+                }
+                else if (device_config["commands"]["definition"][key] != undefined && device_config["commands"]["definition"][key]["type"] == "list") {
+                    select_color_values.push(key);
+                }
+            }
+
+            edit   += this.tab.start();
+            if (select_color_values.length > 0) {
+                var color_models = ["Brightness", "Color RGB", "Color CIE_1931", "Color RGB (small)",  "Color CIE_1931 (small)", "Color temperature"];
+
+                edit    += this.tab.row(
+                        "Send command:",
+                        this.basic.select_array("add_colorpicker_cmd",lang("BUTTON_T_SEND"), select_color_values, "", ""),
+                        );
+                edit    += this.tab.row(
+                        "Color model:",
+                        this.basic.select_array("add_colorpicker_model", lang("BUTTON_T_COLOR"), color_models),
+                        );
+                edit    += this.tab.line();
+                edit    += this.tab.row(
+                        this.button.edit(this.app_name+".remote_add_colorpicker('device','"+device+"','add_colorpicker_cmd','remote_json_buttons');",  lang("BUTTON_T_ADD"),"")
+                        );
+                }
+            else {
+                edit    += this.tab.row(
+                        lang("COLORPICKER_N/A"),
+                        this.button.edit("N/A","","disabled")
+                        );
+                }
+            edit   += this.tab.end();
+            }
+        else if (type == "remote" && element == "slider") {
+
+            edit   += this.tab.start();
+            if (device_config["commands"]["set"].length > 0 || device_config["commands"]["get"] > 0) {
+                var onchange_slider_param = this.app_name+".remote_prepare_slider('device','"+device+"','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax','remote_json_buttons');";
+
+                edit    += this.tab.row(
+                        "Send command:",
+                        this.basic.select_array("add_slider_cmd",lang("BUTTON_T_SEND"), device_config["commands"]["set"], "", "")
+                        );
+                edit    += this.tab.row(
+                        "Parameter:",
+                        this.basic.select_array("add_slider_param",lang("BUTTON_T_PARAMETER"), device_config["commands"]["get"], onchange_slider_param, "")
+                        );
+                edit    += this.tab.row(
+                        "Description:",
+                        this.basic.input("add_slider_descr", lang("BUTTON_T_DESCRIPTION"))
+                        );
+                edit    += this.tab.row(
+                        "Min and max values:",
+                        this.basic.input("add_slider_minmax",lang("BUTTON_T_MINMAX"))
+                        );
+                edit    += this.tab.line();
+                edit    += this.tab.row(
+                        this.button.edit(this.app_name+".remote_add_slider('device','"+device+"','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax','remote_json_buttons');", lang("BUTTON_T_ADD"),"")
+                        );
+                }
+            else {
+                edit    += this.tab.row(
+                        lang("SLIDER_N/A"),
+                        this.button.edit("N/A","","disabled")
+                        );
+                }
+            edit   += this.tab.end();
+            }
+        else if (type == "remote" && element == "button_line") {
+
+            edit    = this.tab.start();
+            edit    += this.tab.row(
+                    this.basic.select_array("add_button_select","defined button", device_config["buttons"], "", ""),
+                    this.button.edit(this.app_name+".remote_add_button('device','"+device+"','add_button_select','remote_json_buttons');", lang("BUTTON_T"),"")
+                    );
+            edit    += this.tab.row(
+                    this.basic.input("add_button"),
+                    this.button.edit(this.app_name+".remote_add_button('device','"+device+"','add_button',        'remote_json_buttons');", lang("BUTTON_T_OTHER"),"")
+                    );
+            edit    += this.tab.line();
+            edit    += this.tab.row(
+                    "Add simple line",
+                    this.button.edit(this.app_name+".remote_add_button( 'device','"+device+"','LINE',   'remote_json_buttons');", lang("BUTTON_T_LINE"),"")
+                    );
+            edit    += this.tab.row(
+                    this.basic.input("add_line_text"),
+                    this.button.edit(this.app_name+".remote_add_line('device',  '"+device+"','add_line_text',     'remote_json_buttons');", lang("BUTTON_T_LINE_TEXT"),"")
+                    );
+            edit    += this.tab.line();
+            edit    += this.tab.row(
+                    "Add empty field",
+                    this.button.edit(this.app_name+".remote_add_button( 'device','"+device+"','.',      'remote_json_buttons');", lang("BUTTON_T_EMPTY"),"")
+                    );
+            edit   += this.tab.end();
+            }
+        else if (type == "remote" && element == "default") {
+
+            this.button.width = "90px";
+            edit    = this.tab.start();
+            edit    += this.tab.row("<center>"+
+                    this.button.edit(this.app_name+".remote_add_button( 'device','"+device+"','.',      'remote_json_buttons');", lang("BUTTON_T_EMPTY"),"") + "&nbsp; " +
+                    this.button.edit(this.app_name+".remote_add_button( 'device','"+device+"','LINE',   'remote_json_buttons');", lang("BUTTON_T_LINE"),"") + "&nbsp; " +
+                    this.button.edit(this.app_name+".remote_add_display('device','"+device+"','DISPLAY','remote_json_buttons');", lang("BUTTON_T_DISPLAY"),"") + "&nbsp; "+
+                    "</center>",
+                    false
+                    );
+            edit   += this.tab.end();
+            }
+        else if (type == "scene"  && element == "default") {
+
+            edit    = "&nbsp;";
+            edit   += this.tab.start();
+            edit   += this.tab.row(
+                      this.basic.select("add_button_device","device / macro", device_macro, device_macro_onchange),
+                      this.button.edit("N/A","","disabled")
+                      );
+            edit   += this.tab.row(
+                      "<input id='add_button_value' style='display:none;'/>" +
+                      "<div id='add_button_device_input'><i><small>-&gt; "+lang("SELECT_DEV_MACRO")+"</small></i></div>",
+                      this.button.edit(this.app_name+".remote_add_button('scene','"+scene+"','add_button_value','json::remote');", lang("BUTTON_T"),"")
+                      );
+            edit   += this.tab.line();
+            edit   += this.tab.row(
+                      this.basic.input("add_line_text"),
+                      this.button.edit(this.app_name+".remote_add_line(  'scene','"+scene+"','add_line_text', 'json::remote');", lang("BUTTON_T_LINE_TEXT"),"")
+                      );
+            edit    += this.tab.row(
+                      "Add simple line:",
+                      this.button.edit(this.app_name+".remote_add_button('scene','"+scene+"','LINE', 'json::remote');", lang("BUTTON_T_LINE"),"")
+                      );
+            edit   += this.tab.line();
+            edit   += this.tab.row(
+                      "Add empty field:",
+                      this.button.edit(this.app_name+".remote_add_button('scene','"+scene+"','.', 'json::remote');", lang("BUTTON_T_EMPTY"),"")
+                      );
+            edit   += this.tab.end();
+            }
+        else if (type == "remote" && element == "display") {
+
+            var check_display   = JSON.stringify(remote_definition);
+            var display_add_cmd = this.app_name+".display_add_value('device','"+device+"','add_display_device','remote_display_value','remote_display_label','remote_json_display','remote_display_size')";
+            var display_del_cmd = this.app_name+".display_delete_value('device','"+device+"','remote_json_display','remote_display_delete')";
+
+            edit    = this.tab.start();
+            if (check_display.indexOf("DISPLAY") < 0) {
+                edit   += this.tab.row(
+                        lang("DISPLAY_NOT_ADDED"),
+                        this.button.edit(this.app_name+".remote_add_display('device','"+device+"','DISPLAY',        'remote_json_buttons');", lang("BUTTON_T_DISPLAY"),"")
+                        );
+                }
+            else {
+                edit   += this.tab.row(
+                        lang("DISPLAY_EXISTS"),
+                        this.button.edit("","","disabled")
+                        );
+                }
+            edit   += this.tab.row(
+                    this.basic.select("remote_display_size","display size", display_sizes, "", remote_display_size),
+                    this.button.edit(this.app_name+".device_remote_preview('"+device+"');",lang("BUTTON_T_PREVIEW"))
+                    );
+            edit   += this.tab.line();
+            edit   += this.tab.row(
+                    "<input id='add_display_device' style='display:none;' value='X'>"+
+                    this.device_display_select(device,'remote_display_value'),
+                    this.button.edit("N/A","","disabled")
+                    );
+            edit   += this.tab.row(
+                    this.basic.input("remote_display_label",lang("LABEL")),
+                    this.button.edit(display_add_cmd,lang("BUTTON_T_VALUE"))
+                    );
+            edit   += this.tab.line();
+            edit   += this.tab.row(
+                    this.basic.select_array("remote_display_delete",lang("BUTTON_T_DISPLAY_VALUE"), Object.keys(remote_display),"",""),
+                    this.button.edit(display_del_cmd,lang("BUTTON_T_DEL_VALUE"))
+                    );
+            edit   += this.tab.end();
+            }
+        else if (type == "scene"  && element == "display") {
+
+            var check_display   = JSON.stringify(json_edit_values["remote"]);
+            var display_add_cmd = this.app_name+".display_add_value('scene','"+scene+"',   'add_display_device','scene_display_value','scene_display_label','json::display','json::display-size')";
+            var display_del_cmd = this.app_name+".display_delete_value('scene','"+scene+"','json::display','scene_display_delete')";
+
+            edit    = this.tab.start();
+            if (check_display.indexOf("DISPLAY") < 0) {
+                edit   += this.tab.row(
+                    lang("DISPLAY_NOT_ADDED"),
+                    this.button.edit(this.app_name+".remote_add_display('scene','"+scene+"','DISPLAY','json::remote');", lang("BUTTON_T_DISPLAY"),"")
+                    );
+                }
+            else {
+                edit   += this.tab.row(
+                          lang("DISPLAY_EXISTS"),
+                          this.button.edit("","","disabled")
+                          );
+                }
+            edit   += this.tab.row(
+                      this.basic.select("json::display-size","display size", display_sizes, "", json_edit_values["display-size"]),
+                      this.button.edit(this.app_name+".scene_remote(  '"+this.frames_remote[0]+"','"+scene+"','json::remote','json::display','json::display-size');"+
+				                   this.app_name+".scene_channels('"+this.frames_remote[2]+"','"+scene+"','json::macro-channel');",
+				                   lang("BUTTON_T_PREVIEW"))
+                      );
+            edit   += this.tab.line();
+            edit   += this.tab.row(
+                      this.basic.select("add_display_device",lang("BUTTON_T_DEVICE"),device_display,device_display_onchange),
+                      this.button.edit("N/A","","disabled")
+                      );
+            edit   += this.tab.row(
+                      "<input id='add_display_value' style='display:none;'/>" +
+                      "<div id='add_display_input'><i><small>-&gt; "+lang("SELECT_DEV_FIRST")+"</small></i></div>",
+                      this.button.edit("N/A","","disabled")
+                      );
+            edit   += this.tab.row(
+                      this.basic.input("scene_display_label",lang("LABEL")),
+                      this.button.edit(display_add_cmd,lang("BUTTON_T_VALUE"))
+                      );
+            edit   += this.tab.line();
+            edit   += this.tab.row(
+                      this.basic.select_array("scene_display_delete","display value", Object.keys(json_edit_values["display"]),"",""),
+                      this.button.edit(display_del_cmd,lang("BUTTON_T_DEL_VALUE"))
+                      );
+            edit   += this.tab.end();
+            }
+        else if (type == "remote" && element == "template") {
+            var templates = this.template_list("device");
+            edit     = this.tab.start();
+            edit    += this.tab.row(
+                        this.template_select("add_template",lang("BUTTON_T_TEMPLATE"),templates),
+                        this.button.edit(link_template,lang("BUTTON_T_CLONE"),"")
+                        );
+            edit    += this.tab.end();
+            }
+        else if (type == "scene"  && element == "template") {
+            this.button.width = "100px";
+            edit    = this.tab.start();
+            edit   += this.tab.row(
+                      this.template_select("add_template",lang("BUTTON_T_TEMPLATE"),this.templates),
+                      this.button.edit(link_template,lang("BUTTON_T_CLONE"),"")
+                      );
+            edit   += this.tab.end();
+            var edit_template = edit;
+            }
+        else if (type == "remote" && element == "delete") {
+            edit     = "&nbsp;";
+            edit    += this.tab.start();
+            edit    += this.tab.row(
+                    this.button_select("del_button",device,remote_definition),
+                    this.button.edit(this.app_name+".remote_delete_button('device','"+device+"','del_button','remote_json_buttons');", lang("BUTTON_T_DELETE"),"")
+                    );
+            edit    += this.tab.end();
+            }
+        else if (type == "scene"  && element == "delete") {
+            edit     = "&nbsp;";
+            edit    += this.tab.start();
+            edit   += this.tab.row(
+                      this.button_select("del_button",scene,json_edit_values["remote"]),
+                      this.button.edit(this.app_name+".remote_delete_button('scene','"+scene+"','del_button','json::remote');", lang("BUTTON_T_DEL"),"")
+                      );
+            edit   += this.tab.end();
+            }
+        else if (type == "scene"  && element == "header") {
+
+            var check_header       = JSON.stringify(json_edit_values["remote"]);
+            var header_exists      = (check_header.indexOf("HEADER-IMAGE") >= 0);
+            var header_with_toggle = (check_header.indexOf("HEADER-IMAGE||toggle") >= 0);
+            var header_on_change   = this.app_name + ".dialog_edit_elements_update('"+scene+"');";
+
+            var add_header_img     = "<div id='header_button_img'></div>";
+            var add_header_img_t   = "<div id='header_button_img_t'></div>";
+            var add_header_img_d   = "<div id='header_button_img_d'></div>";
+
+            edit  = "&nbsp;";
+            edit += this.tab.start();
+            edit += this.tab.row("Add simple header image:", add_header_img);
+            edit += this.tab.line();
+            edit += this.tab.row("Power device:",
+                                 this.basic.select("header_toggle_device","device", devices, header_on_change));
+            edit += this.tab.row("Power value:",            "<div id='header_toggle_value'></div>");
+            edit += this.tab.row("Power ON (or macro):",    "<div id='header_toggle_on'></div>");
+            edit += this.tab.row("Power OFF (or macro):",   "<div id='header_toggle_off'></div>");
+
+            edit += this.tab.line();
+            edit += this.tab.row("Add header image with toggle:", add_header_img_t);
+            edit += this.tab.line();
+            edit += this.tab.row("Remove header image:", add_header_img_d);
+            edit += this.tab.end();
+
+            setTimeout(function() {
+                rm3remotes.dialog_edit_elements_update(scene);
+                }, 1000);
+            }
+
+        if (line) { edit += this.tab.line(); }
+        return edit;
+        }
+
+    // update header settings
+    this.dialog_edit_elements_update = function (scene) {
+
+        this.button.width  = "90px";
+        this.button.height = "25px";
+
+        var check_header            = getValueById("json::remote");
+        var header_exists           = (check_header.indexOf("HEADER-IMAGE") >= 0);
+        var header_with_toggle      = (check_header.indexOf("HEADER-IMAGE||toggle") >= 0);
+        var header_toggle_device    = getValueById("header_toggle_device");
+        var header_on_change        = this.app_name + ".dialog_edit_elements_update('"+scene+"');";
+
+        var add_header_img          = this.button.edit(this.app_name+".remote_add_header('scene','"+scene+"','HEADER-IMAGE', 'json::remote');"+header_on_change, lang("BUTTON_T_ADD"),"");
+        var add_header_img_t        = this.button.edit(this.app_name+".remote_add_header('scene','"+scene+"','HEADER-IMAGE||toggle', 'json::remote');"+header_on_change, lang("BUTTON_T_ADD"),"");
+        var add_header_img_d        = this.button.edit(this.app_name+".remote_remove_header('scene','"+scene+"','HEADER-IMAGE||toggle', 'json::remote');"+header_on_change, lang("BUTTON_T_DELETE"),"");
+
+        var header_toggle_value     = "<i>"+lang("SELECT_DEV_FIRST")+"</id>";
+        var header_toggle_on        = "<i>"+lang("SELECT_DEV_FIRST")+"</id>";
+        var header_toggle_off       = "<i>"+lang("SELECT_DEV_FIRST")+"</id>";
+
+        if (header_with_toggle)  { add_header_img_t = "<i>active</i>"; }
+        else if (header_exists)  { add_header_img = "<i>active</i>"; }
+        else                     { add_header_img_d = "<i>no header image yet</i>"; }
+
+        if (header_toggle_device != "") {
+            var device_config       = this.data["CONFIG"]["devices"][header_toggle_device];
+            var global_macros       = this.data["CONFIG"]["macros"]["global"];
+            var device_on_off       = {};
+            var device_values       = {};
+
+            for (var i=0;i<device_config["buttons"].length;i++) {
+                device_on_off[header_toggle_device+"_"+device_config["buttons"][i]] = "Button: " + device_config["buttons"][i];
+                }
+            Object.keys(global_macros).forEach( key => {
+                device_on_off["macro_"+key] = "Macro: " + key;
+                });
+            for (var i=0;i<device_config["commands"]["get"].length;i++) {
+                device_values[header_toggle_device+"_"+device_config["commands"]["get"][i]] = device_config["commands"]["get"][i];
+                }
+
+            var device_on           = device_on_off;
+            var device_off          = device_on_off;
+            header_toggle_value     = this.basic.select("header_toggle_1value", "power value", device_values, "", "", true);
+            header_toggle_on        = this.basic.select("header_toggle_1on",    "button/macro ON", device_on, "", "", true);
+            header_toggle_off       = this.basic.select("header_toggle_1off",   "button/macro OFF", device_off, "", "", true);
+            }
+
+        setTextById("header_button_img",   add_header_img);
+        setTextById("header_button_img_t", add_header_img_t);
+        setTextById("header_button_img_d", add_header_img_d);
+        setTextById("header_toggle_value", header_toggle_value);
+        setTextById("header_toggle_on",    header_toggle_on);
+        setTextById("header_toggle_off",   header_toggle_off);
+        }
 
     // create header image for scenes
 	this.scene_header_image         = function (id, scene, toggle_html, selected="") {
@@ -1393,22 +1573,55 @@ function rmRemote(name) {
 			}
 		}
 
-	// create from unsaved data for preview
-	this.remote_preview             = function (type, name) {
-		if (type == "scene") { this.scene_remote_preview( name ); }
-		else                 { this.device_remote_preview( name ); }
-		}
-
 	// add header to JSON
 	this.remote_add_header          = function (type,scene,button,remote,position="") {
 		var value     = this.json.get_value(remote);
-		if (value.indexOf("HEADER-IMAGE") < 0) {
+		if (value.indexOf("HEADER-IMAGE||toggle") < 0) {
+
+		    // CHECK IF VALUES FOR TOGGLE ARE SET ...
+		    var header_toggle_value = getValueById("header_toggle_1value");
+		    var header_toggle_on    = getValueById("header_toggle_1on");
+		    var header_toggle_off   = getValueById("header_toggle_1off");
+
+		    if (header_toggle_value == "")      { appMsg.alert("Select the power device value first!"); return; }
+		    else if (header_toggle_on == "")    { appMsg.alert("Select the power device ON command first!"); return; }
+		    else if (header_toggle_off == "")   { appMsg.alert("Select the power device OFF command first!"); return; }
+
+		    var toggle_button = "TOGGLE||"+header_toggle_value+"||Power Device||"+header_toggle_on+"||"+header_toggle_off;
+
+			this.remote_add_button(type,scene,toggle_button,remote,"FIRST",true);
+			this.remote_add_button(type,scene,button,remote,"FIRST");
+			}
+		else if (value.indexOf("HEADER-IMAGE") < 0) {
 			this.remote_add_button(type,scene,button,remote,"FIRST");
 			this.remote_preview( type, scene );
 			}
 		else {
 			appMsg.alert(lang("HEADER_IMAGE_EXISTS"));
 			}
+		}
+
+	// add header to JSON
+	this.remote_remove_header          = function (type,scene,button,remote,position="") {
+		var value     = this.json.get_value(remote);
+		if (value.indexOf("HEADER-IMAGE||toggle") >= 0) {
+		    this.remote_delete_button('scene','tv2',"0",'json::remote')
+		    this.remote_delete_button('scene','tv2',"0",'json::remote')
+			this.remote_preview( type, scene );
+			}
+		else if (value.indexOf("HEADER-IMAGE") >= 0) {
+		    this.remote_delete_button('scene','tv2',"0",'json::remote')
+			this.remote_preview( type, scene );
+			}
+		else {
+			appMsg.alert(lang("HEADER_IMAGE_EXISTS"));
+			}
+		}
+
+	// create from unsaved data for preview
+	this.remote_preview             = function (type, name) {
+		if (type == "scene") { this.scene_remote_preview( name ); }
+		else                 { this.device_remote_preview( name ); }
 		}
 
 	// add display to JSON
@@ -1510,7 +1723,7 @@ function rmRemote(name) {
 		}
 
 	// add button to JSON	
-	this.remote_add_button          = function (type,scene,button,remote,position="") {
+	this.remote_add_button          = function (type,scene,button,remote,position="",multiple=false) {
 	
 		if (document.getElementById(button)) { button = getValueById(button); }
 		if (button == "" || button == undefined) { appMsg.alert(lang("BUTTON_INSERT_NAME")); return; }
@@ -1526,14 +1739,17 @@ function rmRemote(name) {
 		if (position == "") { value_new.push(button); }
 
 		this.json.textarea_replace(remote,value_new);
-		this.remote_preview( type, scene );
+		if (!multiple) {
+		    this.remote_preview( type, scene );
+		    }
 		}
 	
 	// delete button from JSON
 	this.remote_delete_button       = function (type,scene,button,remote) {
 
-		if (document.getElementById(button)) { button = getValueById(button); }
-		if (button == "") { appMsg.alert(lang("BUTTON_SELECT")); return; }
+        if (Number.isInteger(Number(button)))       { }
+		else if (document.getElementById(button))   { button = getValueById(button); }
+		if (button == "")  { appMsg.alert(lang("BUTTON_SELECT")); return; }
 		
 		value     = this.json.get_value(remote);
 		value_new = [];
@@ -1577,6 +1793,7 @@ function rmRemote(name) {
 
 		this.json.textarea_replace(remote,value_new);
 		this.remote_preview( type, scene );
+		console.error("this.remote_preview( "+type+", "+scene+" );");
 		}
 
 	// add value to JSON

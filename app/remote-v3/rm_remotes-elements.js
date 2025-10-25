@@ -749,13 +749,17 @@ function rmImage(file) {
         return "<img src='icon/"+file+"' class='rm-button-image' alt='"+file+"' />";
         }
 
+var rmSheetBox_open = {};
 
 class rmSheetBox {
-  constructor(containerId, height = "300px", scroll = false) {
+  constructor(containerId, height = "300px", scroll_bar = false, scroll_view = false, keep_open = true) {
+    this.id = containerId;
     this.container = document.getElementById(containerId);
     this.sheets = [];
     this.activeIndex = 0;
-    this.scroll = scroll;
+    this.scroll = scroll_bar;
+    this.scroll_into_view = scroll_view;
+    this.keep_open = keep_open;
 
     // Hauptstruktur
     this.box = document.createElement("div");
@@ -836,7 +840,8 @@ class rmSheetBox {
     this.tabBar.appendChild(tab);
 
     // Erstes Sheet aktivieren
-    if (index === 0) this.setActiveSheet(0);
+    if (this.keep_open)     { this.activateLast(); }
+    else if (index === 0)   { this.setActiveSheet(0); }
 
     this.updateArrowVisibility();
   }
@@ -844,15 +849,25 @@ class rmSheetBox {
   setActiveSheet(index) {
     this.activeIndex = index;
 
+
     this.sheets.forEach((sheet, i) => {
       const active = i === index;
       sheet.tab.classList.toggle("active", active);
       sheet.sheetDiv.style.display = active ? "block" : "none"; // inaktiv = display:none
 
-      if (active) {
+    if (this.keep_open && active) {
+        rmSheetBox_open[this.id] = index;
+        }
+
+      if (active && this.scroll_into_view) {
         sheet.tab.scrollIntoView({ behavior: "smooth", inline: "center" });
       }
     });
+  }
+
+  activateLast() {
+    if (this.keep_open && rmSheetBox_open[this.id]) { this.setActiveSheet(rmSheetBox_open[this.id]); }
+    else                                            { this.setActiveSheet(0); }
   }
 
   scrollTabs(offset) {
