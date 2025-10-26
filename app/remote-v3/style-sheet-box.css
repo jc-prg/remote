@@ -118,6 +118,7 @@
     bottom: 0;
     padding: 8px 12px;
     overflow: hidden;
+    text-align: left;
   }
 
   .sheet-panel.scrollable {

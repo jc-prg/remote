@@ -197,13 +197,15 @@ var language_app = {
 		                          "<li>Add &quot;SLIDER||send-&lt;value&gt;||&lt;description&gt;||&lt;range-from&gt;-&lt;range-to&gt;||&lt;value&gt;&quot; to add a slider."+
 		                          " This is support for devices with query mode and if a number can be send via API." +
 		                          "</ul>",
-		"MANUAL_MACROS"	        : "<i>Edit Macros:</i><br/><br/><ul class='help'>" +
-		                          "<li>Define macros using the JSON format</li>" +
-		                          "<li>Combine buttons from any defined remote control and integers for seconds to wait</li>" +
-
-		                          "<li><u>Macro type DEV-ON</u>: macros to switch a device on/off, e.g., switch on and set initial volume."+
+		"MANUAL_MACROS"	        : "<h4>Edit Macros:</h4><ul class='help'>" +
+		                          "<li>Here you can define macros using the JSON format. Macros can consist out of buttons from any defined remote control and integers for seconds to wait.</li>" +
+		                          "<li><i>Important:</i> When you safe, there will be a generic check if the JSON format is correct. Please ensure, the required data structure is used as described below.</li>" +
+		                          "<li><u>Groups (implementation in progress)</u>: combines several similar devices to a group to use the same buttons or commands for all devices at the same time."+
+		                          "<br/><i>-&gt; Format:</i> \"&lt;group_id&gt;\" : {\"description\": \"&lt;description&gt;\", \"devices\": [\"&lt;device_01&gt;\",\"&lt;device_02&gt;\"]} </li>" +
+		                          "<li>Groups can be used in all scenes (not in devices): 'group_&lt;button&gt;'.</li>" +
+		                          "<li><u>Macro type DEV-ON</u>: macros to switch a device on/off, e.g., switch on and set initial volume (to be edited also in the respective device settings)."+
 		                          "<br/><i>-&gt; Format:</i>  \"&lt;device&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"&lt;device&gt;_&lt;button&gt;||&lt;value&gt;\",] </li>" +
-		                          "<li><u>Macro type DEV-OFF</u>: macros to switch a device off." +
+		                          "<li><u>Macro type DEV-OFF</u>: macros to switch a device off (to be edited also in the respective device settings)." +
 		                          "<br/><i>-&gt; Format:</i>  \"&lt;device&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"&lt;device&gt;_&lt;button&gt;||&lt;value&gt;\",] </li>" +
 		                          "<li><u>Global macros</u>: all other macros."+
 		                          "<br/><i>-&gt; Format:</i> \"&lt;macro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;||&lt;value&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
@@ -278,6 +280,7 @@ var language_app = {
 		"SETTINGS_REMOTE"              : "Remote Control Settings",
 		"SETTINGS_DEVICES"             : "Device Settings",
 		"SETTINGS_API"                 : "API Settings",
+		"SETTINGS_MACROS"              : "Global Macros &amp; Groups",
 		"SETTINGS_SCENES"              : "Scene Settings",
 		"SETTINGS_TIMER"               : "Timer Settings",
 

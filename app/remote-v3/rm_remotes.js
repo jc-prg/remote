@@ -227,7 +227,9 @@ function rmRemote(name) {
 		if (remote_display_size == undefined) { remote_display_size = "middle"; }
 		
 		// create remote control
-		appCookie.set("remote","device::"+device+"::"+remote_label);
+		appCookie.set("remote","device::"+device+"::"+remote_label+"::"+this.edit_mode);
+		console.info("Set cookie: "+"device::"+device+"::"+remote_label+"::"+this.edit_mode);
+
 		if (preview) { remote += "<b>"+lang("PREVIEW")+":</b><br/><hr/>"; }
 
 		for (var i=0; i<remote_definition.length; i++) {
@@ -693,7 +695,8 @@ function rmRemote(name) {
         var edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"scene\",\""+scene+"\");";
 		remote += "<div class='remote-edit-button' onclick='"+edit_cmd+"' style='top:17px;left:17px;'><img src='icon/edit.png' style='height:20px;width:20px;'></div>";
 
-		appCookie.set("remote","scene::"+scene+"::"+scene_label);
+		appCookie.set("remote","scene::"+scene+"::"+scene_label+"::"+this.edit_mode);
+		console.info("Set cookie: "+"scene::"+scene+"::"+scene_label+"::"+this.edit_mode);
 
 		if (this.data["CONFIG"]["scenes"][scene] && this.data["CONFIG"]["scenes"][scene]["remote"] && this.data["CONFIG"]["scenes"][scene]["remote"]["remote"]) {
 			}		
@@ -1020,7 +1023,6 @@ function rmRemote(name) {
 		if (json_edit_values["macro-scene"] == "")            { json_edit_values["macro-scene"] = {}; }
 		if (json_edit_values["macro-channel"] == undefined)   { json_edit_values["macro-channel"] = {}; }
 
-//---------------------------
 		// frame
 		var remote = "";
 		remote += "<center class='remote_edit_headline'><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
