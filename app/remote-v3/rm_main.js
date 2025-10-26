@@ -177,12 +177,15 @@ function remoteDropDown(data) {
 //--------------------------------
 
 function remoteToggleEditMode(settings="") {
+    console.info("remoteToggleEditMode('"+settings+"');");
 
-    if (settings == "") {
-        if (rm3remotes.edit_mode)   { rm3remotes.edit_mode = false; }
-        else                        { rm3remotes.edit_mode = true; }
+    if (typeof settings === "boolean")  { rm3remotes.edit_mode = settings; }
+    else if (settings === "true")       { rm3remotes.edit_mode = true; }
+    else if (settings === "false")      { rm3remotes.edit_mode = false; }
+    else if (settings === "") {
+        if (rm3remotes.edit_mode)       { rm3remotes.edit_mode = false; }
+        else                            { rm3remotes.edit_mode = true; }
         }
-    else                            { rm3remotes.edit_mode = settings; }
 
     rm3settings.edit_mode = rm3remotes.edit_mode;
     rm3start.edit_mode    = rm3remotes.edit_mode;
@@ -231,6 +234,9 @@ function remoteLastFromCookie() {
 		var remote = cookie.split("::");
 		console.log("Load Cookie: " + cookie);
 		console.log(remote);
+
+        if (remote[3] == "true")    { remoteToggleEditMode(true); }
+		else                        { remoteToggleEditMode(false); }
 
 		// start remote if cookie is set (reopen with last remote control)
 		if (remote[0] == "scene") 	{

@@ -105,7 +105,6 @@ function rmSettings (name) {	// IN PROGRESS
             this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_SCENES"), "", true);
 	    	this.settings_ext_append(2,lang("ADD_SCENE"), this.module_add_scene(direct_cmd, direct_data));
             this.settings_ext_append(1,lang('EDIT_SCENES'), this.module_scenes());
-    		this.settings_ext_append(3,lang("EDIT_MACROS"), this.module_macros_edit());
             this.create_show_ext();
 
             startDragAndDrop("sort_scenes", apiMovePosition);
@@ -127,6 +126,15 @@ function rmSettings (name) {	// IN PROGRESS
             this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_TIMER"), "", true);
             this.settings_ext_append(1,lang("SETTINGS_TIMER"), this.module_timer());
             this.create_show_ext();
+            }
+        else if (selected_mode == "edit_macros") {
+            setNavTitle(lang('SETTINGS_MACROS'));
+            this.settings_ext_reset();
+            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_MACROS"), "", true);
+            //this.settings_ext_append(1,lang("SETTINGS_TIMER"), this.module_timer());
+    		this.settings_ext_append(1,lang("EDIT_MACROS"), this.module_macros_edit());
+            this.create_show_ext();
+            this.module_macros_edit_load();
             }
         else {
             setNavTitle(lang('INFORMATION'));
@@ -188,6 +196,7 @@ function rmSettings (name) {	// IN PROGRESS
 	        "SETTINGS_DEVICES": ["remote",      "rm3settings.create('edit_devices');"],
 	        "SETTINGS_SCENES":  ["cinema",      "rm3settings.create('edit_scenes');"],
 	        "SETTINGS_TIMER":   ["timer",       "rm3settings.create('edit_timer');"],
+	        "SETTINGS_MACROS":  ["macros",       "rm3settings.create('edit_macros');"],
 	        "INFORMATION":      ["info2",       "rm3settings.create('info');"],
 	        "SETTINGS_API":     ["plug2",       "rm3settings.create('edit_interfaces');"],
 	        "SETTINGS_GENERAL": ["settings2",   "rm3settings.create('general');"],
@@ -1025,20 +1034,24 @@ function rmSettings (name) {	// IN PROGRESS
 
 	this.module_macros_edit     = function () {
 	    this.btn.width = "100px";
-
 		setting   = "";
-		setting  += this.basic.container("setting_macros0","JSON groups",               this.json.textarea("groups",  this.data["CONFIG"]["macros"]["groups"], "macros"),false);
-		setting  += this.basic.container("setting_macros1","JSON macros [global]",      this.json.textarea("macro",   this.data["CONFIG"]["macros"]["global"], "macros"),false);
-		setting  += this.basic.container("setting_macros2","JSON macros [device ON]",   this.json.textarea("dev-on",  this.data["CONFIG"]["macros"]["device-on"], "macros"),false);
-		setting  += this.basic.container("setting_macros3","JSON macros [device OFF]",  this.json.textarea("dev-off", this.data["CONFIG"]["macros"]["device-off"], "macros"),false);
-		setting  += this.basic.container("setting_macros_manual","JSON macros - manual",lang("MANUAL_MACROS"),false);
-
-		setting  += "<div style='width:100%;align:center;'><center><br/>";
-//		setting  += this.btn.sized("apiMacroChange(['macro','scene-on','scene-off','dev-on','dev-off']);",lang("BUTTON_T_SAVE"),"");
+		//setting  += this.basic.container("setting_macros_sheet","JSON edit macros","<div id='macros-edit-json'></div>",false);
+		setting  += "<br/><center><div id='macros-edit-json'></div></center>";
+		setting  += "<center><div style='width:100%;align:center;'><br/>";
 		setting  += this.btn.sized(id="add_scene",label=lang("BUTTON_T_SAVE"),style="settings","apiMacroChange([#groups#,#macro#,#dev-on#,#dev-off#]);","");
-		setting  += "<br/></center></div>";
+		setting  += "<br/></div></center>";
+
 		return setting;
-	    }
+		}
+
+    this.module_macros_edit_load = function () {
+        const myBox2 = new rmSheetBox("macros-edit-json", height="300px", scroll=true);
+        myBox2.addSheet("Info",         lang("MANUAL_MACROS"));
+        myBox2.addSheet("Groups",       "<h4>Edit JSON for device groups:</h4>" +     this.json.textarea("groups",  this.data["CONFIG"]["macros"]["groups"], "macros"));
+        myBox2.addSheet("Macros",       "<h4>Edit JSON for global macros:</h4>" +     this.json.textarea("macro",   this.data["CONFIG"]["macros"]["global"], "macros"));
+        myBox2.addSheet("Device ON",    "<h4>Edit JSON for device ON macros:</h4>" +  this.json.textarea("dev-on",  this.data["CONFIG"]["macros"]["device-on"]));
+        myBox2.addSheet("Device OFF",   "<h4>Edit JSON for device OFF macros:</h4>" + this.json.textarea("dev-off",  this.data["CONFIG"]["macros"]["device-off"]));
+        }
 
 	this.module_order_remotes   = function () {
 
