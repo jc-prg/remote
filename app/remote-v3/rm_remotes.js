@@ -1118,11 +1118,14 @@ function rmRemote(name) {
 
             for (key in this.data["CONFIG"]["devices"]) {
                 devices[key]        = "Device: "+remote_info[key]["settings"]["label"];
-                device_macro[key]   = "Device: "+remote_info[key]["settings"]["label"];
+                device_macro["device_"+key]   = "Device: "+remote_info[key]["settings"]["label"];
                 device_display[key] = remote_info[key]["settings"]["label"];
                 }
+            for (key in this.data["CONFIG"]["macros"]["groups"])  {
+                if (key != "description") { device_macro["group_"+key] = "Group: "+key; }
+                }
             for (key in this.data["CONFIG"]["macros"])  {
-                if (key != "description") { device_macro[key] = "Macro: "+key; }
+                if (key != "groups") { device_macro["macro_"+key] = "Macro: "+key; }
                 }
             device_macro["scene"] = "Macro: " + scene;
 
@@ -2018,39 +2021,43 @@ function rmRemote(name) {
 		var device_macro_button = {};
 		var macros_scene        = dictCopy(this.data["CONFIG"]["scenes"][scene]["remote"]["macro-scene"]);
 		var macros              = {"scene": macros_scene};
+		var groups              = {};
+		var group_devices       = {};
+		var available_buttons   = [];
+        var type                = "";
+        [type, device]          = device.split("_");
 
-		for (var key in this.data["CONFIG"]["macros"])  { macros[key] = dictCopy(this.data["CONFIG"]["macros"][key]); }
+        if (type == "macro") {
+            var temp = Object.keys(this.data["CONFIG"]["macros"][device]);
+            for (var i=0;i<temp.length;i++) {
+                available_buttons.push(device+"_"+temp[i]);
+                }
+            }
+        if (type == "device") {
+            var temp =  this.data["CONFIG"]["devices"][device]["buttons"];
+            for (var i=0;i<temp.length;i++) {
+                available_buttons.push(device+"_"+temp[i]);
+                }
+            }
+        if (type == "group") {
+            var temp = this.data["CONFIG"]["macros"]["groups"][device]["devices"];
+            var temp_buttons = {};
+            for (var i=0;i<temp.length;i++) {
+                var dev_i = temp[i];
+                if (this.data["CONFIG"]["devices"][dev_i]) {
+                    temp_buttons[dev_i] = this.data["CONFIG"]["devices"][dev_i]["buttons"];
+                    }
+                }
+            var arrays = Object.values(temp_buttons);
+            var available_buttons_temp = arrays.reduce((acc, arr) => acc.filter(x => arr.includes(x)) );
+            for (var i=0;i<available_buttons_temp.length;i++) {
+                    available_buttons.push("group_"+device+"_"+available_buttons_temp[i]);
+                    }
+            }
 
-
-		for (key in this.data["CONFIG"]["devices"]) {
-			device_macro[key] = "Device: "+device_config[key]["settings"]["label"];
-			if (device_config[key]) {
-				device_macro_button[key] = {};
-				for (var i=0;i<device_config[key]["buttons"].length;i++) {
-					var key2 = device_config[key]["buttons"][i];
-					device_macro_button[key][key+"_"+key2] = key+"_"+key2;
-			}	}	}
-		for (key in macros)  {
-			if (key != "description") { 
-				device_macro[key] = "Macro: "+key;
-				device_macro_button[key] = {};
-				for (key2 in macros[key]) {
-					device_macro_button[key][key+"_"+key2] = key+"_"+key2;
-			}	}	}
-
-		if (device == "scene-on")  { device_macro_button["scene-on"]["scene-on"]   = "scene-on"; }
-		if (device == "scene-off") { device_macro_button["scene-off"]["scene-off"] = "scene-off"; }
-
-		var device_macro_selects_all = "";
-		var device_macro_select      = "";
 		var on_change = "document.getElementById('"+id+"').value = this.value;";
+        device_macro_select = this.basic.select_array("add_button_device_"+device,"button ("+device+")",available_buttons,on_change,'',true);
 
-		for (key in device_macro_button) {
-			//device_macro_selects_all += this.basic.select("add_button_device_"+key,"button ("+key+")",device_macro_button[key],on_change,'',true);
-			if (key == device) {
-				device_macro_select += this.basic.select("add_button_device_"+key,"button ("+key+")",device_macro_button[key],on_change,'',true);
-				}
-			}
 		setTextById(div_id,device_macro_select);
 		}
                 

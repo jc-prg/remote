@@ -802,9 +802,9 @@ function statusCheck_health(data={}) {
         else if (value == "stopped")    { threads.push(key + " (stopped)"); }
         else                            {
             var message = key + " (" + value + "s)";
-            if (value >= 20)            { threads.push("<font color='red'>" + message + "</font>"); }
-            else if (value >= 10)       { threads.push("<font color='yellow'>" + message + "</font>"); }
-            else                        { threads.push("<font color='lightgreen'>" + message + "</font>"); }
+            if (value >= 20)            { threads.push("<font color='darkred'>" + message + "</font>"); }
+            else if (value >= 10)       { threads.push("<font color='orange'>" + message + "</font>"); }
+            else                        { threads.push("<font color='green'>" + message + "</font>"); }
             }
     }
     health_msg = threads.join(", ");

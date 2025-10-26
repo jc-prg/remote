@@ -144,6 +144,7 @@ function rmSettings (name) {	// IN PROGRESS
             this.settings_ext_append(2,lang("BUTTON_INFOS"), this.module_system_info_buttons());
             this.create_show_ext();
             this.create_show_log();
+            this.module_system_info_load();
             }
 
         scrollBoxRegister("indexScrollBox");
@@ -357,7 +358,13 @@ function rmSettings (name) {	// IN PROGRESS
         return setting;
     }
 
-	this.module_system_info     = function () {
+    this.module_system_info      = function () {
+        return "<br/><div id='module_system_info'></div>";
+        }
+
+	this.module_system_info_load = function () {
+
+
 
 		var setting            = "";
 		var cookie             = appCookie.get("remote");
@@ -384,7 +391,6 @@ function rmSettings (name) {	// IN PROGRESS
             var audio2     = main_device_config["settings"]["label"];
             }
 
-
 		// version information
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row( "Client:",	 appVersion + " / " + this.test_info + " (" + rollout + ")" );
@@ -396,10 +402,11 @@ function rmSettings (name) {	// IN PROGRESS
                                     " / jcCookies " + appCookie.appVersion +
                                     " / jcFunction "+ jc_functions_version +
                                     " / jcSlider "  + rm3slider.appVersion );
-		set_temp += this.tab.row( "Sources:",  "<a href='https://github.com/jc-prg/remote/tree/"+git_branch+"/' style='color:white' target='_blank'>https://github.com/jc-prg/remote/tree/"+git_branch+"/</a>");
-		set_temp += this.tab.row( "REST API:", "<a href='"+ RESTurl + "api/list/' style='color:white' target='_blank'>" + RESTurl + "api/list/</a>");
+		set_temp += this.tab.row( "Sources:",  "<a href='https://github.com/jc-prg/remote/tree/"+git_branch+"/' target='_blank'>https://github.com/jc-prg/remote/tree/"+git_branch+"/</a>");
+		set_temp += this.tab.row( "REST API:", "<a href='"+ RESTurl + "api/list/' target='_blank'>" + RESTurl + "api/list/</a>");
 		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_version","Versions",set_temp,true);
+		var setting_info = set_temp;
+		//setting  += this.basic.container("setting_version","Versions",set_temp,true);
 
         // server health
         var modules = [];
@@ -410,9 +417,10 @@ function rmSettings (name) {	// IN PROGRESS
 
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row( 	"Threads:&nbsp;", "<div id='system_health'></div>" );
-		set_temp += this.tab.row( 	"Modules:&nbsp;", modules.join(", ") );
+		set_temp += this.tab.row( 	"APIs:&nbsp;", modules.join(", ") );
 		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_health","Server Health",set_temp,true);
+		var setting_health = set_temp;
+		//setting  += this.basic.container("setting_health","Server Health",set_temp,true);
 
 		// sceen & display
 		set_temp  = this.tab.start();
@@ -422,7 +430,8 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.row(	"Position:",    "<div id='scrollPosition'>0 px</div>" );
 		set_temp += this.tab.row( 	"Theme:", 		appTheme );
 		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_display","Screen &amp; Display",set_temp,false);
+		var setting_display = set_temp;
+		//setting  += this.basic.container("setting_display","Screen &amp; Display",set_temp,false);
 
 		// status
 		set_temp  = this.tab.start();
@@ -436,9 +445,14 @@ function rmSettings (name) {	// IN PROGRESS
     		set_temp += this.tab.row( 	"Audio:",	"<i>No main audio device defined yet.</i>" );
     	    }
 		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_other","Other",set_temp,false);
+		var setting_other = set_temp;
+		//setting  += this.basic.container("setting_other","Other",set_temp,false);
 
-	    return setting;
+	    const myBox = new rmSheetBox("module_system_info", height="220px", scroll=true);
+        myBox.addSheet("Info",   "&nbsp;" + setting_info);
+        myBox.addSheet("Health", "&nbsp;" + setting_health);
+        myBox.addSheet("Screen", "&nbsp;" + setting_display);
+        myBox.addSheet("Other",  "&nbsp;" + setting_other);
 		}
 
 	this.module_system_info_buttons = function () {
