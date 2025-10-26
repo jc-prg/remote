@@ -221,6 +221,26 @@ button {
 
 /* setting buttons */
 
+.rm-button_setting_wrapper {
+    width : 100%;
+    height : 18px;
+    float : left;
+}
+
+.rm-button_setting_wrapper_top {
+    width : 100%;
+    max-width: 700px;
+    margin : auto;
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Hide scrollbar in Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar in IE/Edge */
+}
+
+.rm-button_setting_wrapper_top::-webkit-scrollbar {
+    display: none; /* Hide scrollbar in Chrome/Safari */
+}
 
 .rm-button_setting_index {
     float       : left;
@@ -233,8 +253,14 @@ button {
 }
 
 .rm-button_setting_index_small {
-    float       : left;
-    width       : 13.2%;
+    display         : flex;
+    align-items     : center;
+    justify-content : center;
+    flex-shrink     : 0;
+    transition      : background 0.3s;
+
+    width       : 11.2%;
+    min-width   : 50px;
     margin      : 0.5%;
     height      : 40px;
     padding     : 1px;
@@ -248,6 +274,39 @@ button {
 
 canvas {
     margin              : 5px;
+}
+
+/* Navigation arrows */
+
+.nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 35px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  display: none; /* Hidden until needed */
+  transition: background 0.3s;
+}
+
+.nav-arrow:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.nav-arrow.left {
+  left: 0;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.nav-arrow.right {
+  right: 0;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 /* image header */

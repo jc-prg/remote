@@ -1002,15 +1002,23 @@ function rmRemote(name) {
 		        "macro-scene": {},
 		        };
 
-		// check if preview
+		// check if preview ------------------------------- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		for (var i=0;i<json_edit_fields.length;i++) {
 		    var field = json_edit_fields[i];
 		    if (json_preview_values[field] == "") {
 		        json_edit_values[field] = scene_remote[field];
 		        }
 		    else {
+
+            // Error detected .... !
+		    console.error("---");
+		    console.error("id:"+id+", scene:"+scene+", field:"+field);
+		    console.error(json_preview_values[field]);
+		    console.error("---");
+	        // -------------------
+
 		        json_edit_values[field] = this.json.get_value(json_preview_values[field], scene_remote[field]);
-		        // Error detected .... !
+		        //json_edit_values[field] = this.json.get_value(field, scene_remote[field]);
 		        preview = true;
 		        }
 		    }

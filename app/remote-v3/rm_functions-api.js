@@ -665,7 +665,8 @@ function apiSendToApi( api_command ) {
 }
 
 function apiSendToDeviceApi_return( data ) {
-    console.warn(data);
+    console.debug("apiSendToDeviceApi_return:");
+    console.debug(data);
     var response    = data["REQUEST"]["Return"];
     var answer      = "<b>" + response["interface"] + "/" + response["device"] + " (" + response["status"] + "):</b><br/>";
     answer         += "<pre>" + syntaxHighlightJSON(response["answer"]["answer"]) + "</pre>";

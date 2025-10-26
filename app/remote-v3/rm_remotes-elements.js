@@ -412,6 +412,13 @@ function rmRemoteJSON(name) {
         
     // get JSON value (and check if correct)
     this.get_value          = function ( id, default_data="" ) {
+
+        if (typeof id != "string") {
+            console.error(this.app_name+".get_value: id is not type 'string' but '"+(typeof id)+"'.");
+            console.error(id);
+            return;
+        }
+
 		element = document.getElementById(id);
 		this.logging.debug(this.app_name+".get_value: "+id);
 
@@ -749,6 +756,7 @@ function rmImage(file) {
         return "<img src='icon/"+file+"' class='rm-button-image' alt='"+file+"' />";
         }
 
+
 var rmSheetBox_open = {};
 
 class rmSheetBox {
@@ -886,6 +894,50 @@ class rmSheetBox {
   }
 }
 
+
+var scrollBoxWrapper    = undefined;
+var scrollBoxLeftArrow  = undefined;
+var scrollBoxRightArrow = undefined;
+
+function scrollBoxCreate (html="",wrapper="scrollWrapper", scrollLeft="scrollLeft", scrollRight="scrollRight") {
+    var box = "<div id='"+wrapper+"' class='rm-button_setting_wrapper_top'>";
+	box    += "<button class='nav-arrow left' id='"+scrollLeft+"'>❮</button>";
+	box    += html;
+	box    += "<button class='nav-arrow right' id='"+scrollRight+"'>❯</button>";
+	box    += "</div>";
+	return box;
+    }
+
+function scrollBoxRegister (wrapper="scrollWrapper", scrollLeft="scrollLeft", scrollRight="scrollRight") {
+
+    if (!document.getElementById(wrapper)) { return; }
+    else { console.info("Register Scroll Box: " + wrapper); }
+
+    scrollBoxWrapper        = document.getElementById(wrapper);
+    scrollBoxLeftArrow      = document.getElementById(scrollLeft);
+    scrollBoxRightArrow     = document.getElementById(scrollRight);
+
+    scrollBoxLeftArrow.addEventListener('click', () => {
+      scrollBoxWrapper.scrollBy({ left: -100, behavior: 'smooth' });
+    });
+
+    scrollBoxRightArrow.addEventListener('click', () => {
+      scrollBoxWrapper.scrollBy({ left: 100, behavior: 'smooth' });
+    });
+
+    scrollBoxWrapper.addEventListener('scroll', scrollBoxUpdate);
+    window.addEventListener('resize', scrollBoxUpdate);
+
+    scrollBoxUpdate();
+    }
+
+function scrollBoxUpdate() {
+    const scrollLeft = scrollBoxWrapper.scrollLeft;
+    const maxScroll  = scrollBoxWrapper.scrollWidth - scrollBoxWrapper.clientWidth;
+
+    scrollBoxLeftArrow.style.display  = scrollLeft > 0 ? 'block' : 'none';
+    scrollBoxRightArrow.style.display = scrollLeft < maxScroll - 1 ? 'block' : 'none';
+    }
 
 
 //----------------------------------

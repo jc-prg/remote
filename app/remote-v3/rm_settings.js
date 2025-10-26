@@ -145,6 +145,8 @@ function rmSettings (name) {	// IN PROGRESS
             this.create_show_ext();
             this.create_show_log();
             }
+
+        scrollBoxRegister("indexScrollBox");
         statusCheck_modes();
         scrollTop();
         }
@@ -187,7 +189,9 @@ function rmSettings (name) {	// IN PROGRESS
 
     this.module_index           = function (small=false, selected="") {
 	    var html  = "";
+	    var header_max_width = "650px";
 	    if (!small) { html += "&nbsp;<br/>"; }
+
 	    var button_img  = this.data["CONFIG"]["elements"]["button_images"];
 	    var setting_modules_back = {
 	        "SETTINGS":         ["link_back",   "rm3settings.create('index');"],
@@ -215,8 +219,9 @@ function rmSettings (name) {	// IN PROGRESS
 	        else       { html += "<button class='rm-button_setting_index' onclick=\""+setting_modules[key][1]+"\">" + img_big + "<br/>&nbsp;<br/>" + text + "</button>"; }
 	        }
 
-	    if (!small) { html += "<div style='width:100%;height:18px;float:left;'></div>"; }
-	    else        { html  = "<div style='max-width:650px;margin:auto;'>" + html + "</div>"; }
+	    if (!small) { html += "<div style='rm-button_setting_wrapper'></div>"; }
+	    else        { html  = scrollBoxCreate(html, "indexScrollBox"); }
+
 		return html;
 	    }
 
