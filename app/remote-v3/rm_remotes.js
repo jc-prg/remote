@@ -1122,7 +1122,12 @@ function rmRemote(name) {
                 device_display[key] = remote_info[key]["settings"]["label"];
                 }
             for (key in this.data["CONFIG"]["macros"]["groups"])  {
-                if (key != "description") { device_macro["group_"+key] = "Group: "+key; }
+                if (this.data["CONFIG"]["macros"]["groups"][key]["description"]) {
+                    device_macro["group_"+key] = "Group: "+this.data["CONFIG"]["macros"]["groups"][key]["description"]+" ("+key+")";
+                    }
+                else {
+                    device_macro["group_"+key] = "Group: "+key;
+                    }
                 }
             for (key in this.data["CONFIG"]["macros"])  {
                 if (key != "groups") { device_macro["macro_"+key] = "Macro: "+key; }
