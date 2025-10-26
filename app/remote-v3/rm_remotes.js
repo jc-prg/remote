@@ -989,7 +989,7 @@ function rmRemote(name) {
 		var remote_info   	= this.data["CONFIG"]["devices"];
 
         // prepare field values
-		var json_edit_fields        = ["remote", "devices", "display", "display-size", "macro-channel", "macro-scene-on", "macro-scene-off", "macro-scene"];
+		var json_edit_fields        = ["remote", "devices", "display", "display-size", "macro-channel", "macro-scene-on", "macro-scene-off"];
 		var json_edit_values        = {};
 		var json_preview_values     = {
 		        "remote": preview_remote,
@@ -999,26 +999,15 @@ function rmRemote(name) {
 		        "macro-channel": preview_channel,
 		        "macro-scene-on": [],
 		        "macro-scene-off": [],
-		        "macro-scene": {},
 		        };
 
-		// check if preview ------------------------------- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		for (var i=0;i<json_edit_fields.length;i++) {
 		    var field = json_edit_fields[i];
 		    if (json_preview_values[field] == "") {
 		        json_edit_values[field] = scene_remote[field];
 		        }
 		    else {
-
-            // Error detected .... !
-		    console.error("---");
-		    console.error("id:"+id+", scene:"+scene+", field:"+field);
-		    console.error(json_preview_values[field]);
-		    console.error("---");
-	        // -------------------
-
 		        json_edit_values[field] = this.json.get_value(json_preview_values[field], scene_remote[field]);
-		        //json_edit_values[field] = this.json.get_value(field, scene_remote[field]);
 		        preview = true;
 		        }
 		    }
@@ -1027,8 +1016,6 @@ function rmRemote(name) {
 		if (json_edit_values["display-size"] == undefined)    { json_edit_values["display-size"] = "middle"; }
 		if (json_edit_values["macro-scene-on"] == undefined)  { json_edit_values["macro-scene-on"] = []; }
 		if (json_edit_values["macro-scene-off"] == undefined) { json_edit_values["macro-scene-off"] = []; }
-		if (json_edit_values["macro-scene"] == undefined)     { json_edit_values["macro-scene"] = {}; }
-		if (json_edit_values["macro-scene"] == "")            { json_edit_values["macro-scene"] = {}; }
 		if (json_edit_values["macro-channel"] == undefined)   { json_edit_values["macro-channel"] = {}; }
 
 		// frame
@@ -1059,7 +1046,7 @@ function rmRemote(name) {
         myBox1.addSheet("Info",       lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") +
                                       this.dialog_edit_elements("scene", "template", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
         myBox1.addSheet("Buttons",    this.dialog_edit_elements("scene", "default", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
-        myBox1.addSheet("Header",    this.dialog_edit_elements("scene", "header", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
+        myBox1.addSheet("Header",     this.dialog_edit_elements("scene", "header", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
         myBox1.addSheet("Slider",     "not implemented yet");
         myBox1.addSheet("Toggle",     "not implemented yet");
         myBox1.addSheet("Display",    this.dialog_edit_elements("scene", "display", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
@@ -1138,7 +1125,7 @@ function rmRemote(name) {
             var device_display_onchange = this.app_name +".scene_display_select(div_id='add_display_input','add_display_value','add_display_device');";
 
             // prepare field values
-            var json_edit_fields        = ["remote", "devices", "display", "display-size", "macro-channel", "macro-scene-on", "macro-scene-off", "macro-scene"];
+            var json_edit_fields        = ["remote", "devices", "display", "display-size", "macro-channel", "macro-scene-on", "macro-scene-off"]; // "macro-scene"];
             var json_edit_values        = {};
             var json_preview_values     = {
                     "remote": preview_remote,
@@ -1148,7 +1135,7 @@ function rmRemote(name) {
                     "macro-channel": preview_channel,
                     "macro-scene-on": [],
                     "macro-scene-off": [],
-                    "macro-scene": {},
+                    //"macro-scene": {},
                     };
 
             // check if preview
@@ -1158,6 +1145,7 @@ function rmRemote(name) {
                     json_edit_values[field] = scene_remote[field];
                     }
                 else {
+            console.error(field);
                     json_edit_values[field] = this.json.get_value(json_preview_values[field], scene_remote[field]);
                     // Error detected .... !
                     preview = true;
@@ -1168,8 +1156,8 @@ function rmRemote(name) {
             if (json_edit_values["display-size"] == undefined)    { json_edit_values["display-size"] = "middle"; }
             if (json_edit_values["macro-scene-on"] == undefined)  { json_edit_values["macro-scene-on"] = []; }
             if (json_edit_values["macro-scene-off"] == undefined) { json_edit_values["macro-scene-off"] = []; }
-            if (json_edit_values["macro-scene"] == undefined)     { json_edit_values["macro-scene"] = {}; }
-            if (json_edit_values["macro-scene"] == "")            { json_edit_values["macro-scene"] = {}; }
+            //if (json_edit_values["macro-scene"] == undefined)     { json_edit_values["macro-scene"] = {}; }
+            //if (json_edit_values["macro-scene"] == "")            { json_edit_values["macro-scene"] = {}; }
             if (json_edit_values["macro-channel"] == undefined)   { json_edit_values["macro-channel"] = {}; }
             }
 
