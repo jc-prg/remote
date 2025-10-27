@@ -278,6 +278,10 @@ git_submodules = {
 }
 check_submodules()
 
+# Get all files (not directories) in the folder
+icon_directory = os.path.join(os.path.dirname(__file__), "..", "..", "app", "remote-v3", "icon")
+icon_files = [f for f in os.listdir(icon_directory) if os.path.isfile(os.path.join(icon_directory, f))]
+
 app_config_file = os.path.join(os.path.dirname(__file__), "..", "..", "app", "remote-v3", "config_stage.js")
 app_configuration = """
 //--------------------------------

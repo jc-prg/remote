@@ -763,6 +763,7 @@ class rmSheetBox {
   constructor(containerId, height = "300px", scroll_bar = false, scroll_view = false, keep_open = true) {
     this.id = containerId;
     this.container = document.getElementById(containerId);
+    this.container.innerHTML = "";
     this.sheets = [];
     this.activeIndex = 0;
     this.scroll = scroll_bar;

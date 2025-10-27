@@ -70,6 +70,7 @@ class RemoteAPI(RemoteDefaultClass):
                 "button_colors":        self.config.read(rm3presets.buttons + "button_colors"),
                 "scene_images":         self.config.read(rm3presets.scene_img_dir + "/index")
                 },
+            "icons":                    rm3presets.icon_files,
             "macros": {
                 "device-on":            macros.get("dev-on", {}),
                 "device-off":           macros.get("dev-off", {}),

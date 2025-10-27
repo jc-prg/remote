@@ -78,6 +78,7 @@ function rmSettings (name) {	// IN PROGRESS
             this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_GENERAL"), "", true);
             this.settings_ext_append(1,lang("SETTINGS_GENERAL"), this.module_general_settings());
             this.create_show_ext();
+            this.module_general_settings_load();
             }
         else if (selected_mode == "edit_devices") {
             setNavTitle(lang('SETTINGS_DEVICES'));
@@ -999,7 +1000,11 @@ function rmSettings (name) {	// IN PROGRESS
             }
         }
 
-	this.module_general_settings   = function () {
+    this.module_general_settings   = function () {
+        return "<center>&nbsp;<br/><div id='module_general_settings'></div></center>";
+        }
+
+	this.module_general_settings_load = function () {
 		// Edit Server Settings
 		var q1   = lang("RESET_SWITCH_OFF");
 		var q2   = lang("RESET_VOLUME_TO_ZERO");
@@ -1009,47 +1014,93 @@ function rmSettings (name) {	// IN PROGRESS
 
 		// Reload & Updates
 		var set_temp  = "";
-		var setting   = "";
-
 		var button_value_edit_mode = "OFF";
 		var button_value_manual_mode = "ON";
 		var button_show_code = "OFF";
 
         set_temp = this.module_index_quick(true, true, true);
-		setting  += this.basic.container("setting_version",lang("CHANGE_MODES"),set_temp,true);
+        var settings_index = set_temp;
 
 		set_temp  = this.tab.start();
-		set_temp += this.tab.row(	"<center>" +
+		set_temp += this.tab.row("Server:",
                     this.btn.sized("set01","reload (scroll)","settings","appForceReload(true);") + "&nbsp;" +
-                    this.btn.sized("set02","check updates","settings","appFW.requestAPI(\"GET\",[\"version\",\"" + appVersion +"\"], \"\", appMsg.alertReturn, \"wait\");") +
-                    "</center>"
+                    this.btn.sized("set02","check updates","settings","appFW.requestAPI(\"GET\",[\"version\",\"" + appVersion +"\"], \"\", appMsg.alertReturn, \"wait\");")
 					);
+		set_temp += this.tab.row("Devices",
+                    this.btn.sized("set21","Dev ON/OFF", "settings","appMsg.confirm(#" + q1 + "#, #appFW.requestAPI(##GET##,[##reset##],####,apiAlertReturn );#);") + "&nbsp;" +
+                    this.btn.sized("set22","Audio Level","settings", "appMsg.confirm(#" + q2 + "#, #appFW.requestAPI(##GET##,[##reset-audio##],####,apiAlertReturn );# );")
+                    );
 		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_reload","Reload &amp; updates",set_temp,true);
+        var settings_reload = set_temp;
 
 		// API Calls and information
 		set_temp  = this.tab.start();
-		set_temp += this.tab.row(	"<center>" +
+		set_temp += this.tab.row( "API Information:",
                     this.btn.sized("set11","REST API : list",  "settings","window.open(#" + RESTurl + "api/list/#,#_blank#);") + "&nbsp;" +
                     this.btn.sized("set12","REST API : status","settings","window.open(#" + RESTurl + "api/status/#,#_blank#);") + "&nbsp;" +
-                    this.btn.sized("set13","Swagger/UI",       "settings","window.open(#" + RESTurl + "api/ui/#,#_blank#);") + "&nbsp;" +
-                    "</center>"
+                    this.btn.sized("set13","Swagger/UI",       "settings","window.open(#" + RESTurl + "api/ui/#,#_blank#);") + "&nbsp;"
                     );
 		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_api","API calls &amp; swagger interface",set_temp,false);
+        var settings_api = set_temp;
 
-		// reset device values
-		set_temp  = this.tab.start();
-		set_temp += this.tab.row(	"<center>" +
-                    this.btn.sized("set21","Dev ON/OFF", "settings","appMsg.confirm(#" + q1 + "#, #appFW.requestAPI(##GET##,[##reset##],####,apiAlertReturn );#);") + "&nbsp;" +
-                    this.btn.sized("set22","Audio Level","settings", "appMsg.confirm(#" + q2 + "#, #appFW.requestAPI(##GET##,[##reset-audio##],####,apiAlertReturn );# );") + "&nbsp;" +
-                    "</center>"
-					);
-		set_temp += this.tab.end();
-		setting  += this.basic.container("setting_reset","Reset device values",set_temp,false);
+        this.icon_img = function (url, printUrl=true, onclick=false) {
+            var icon = "";
+            var onclick_img = "";
+            var onclick_style = "";
 
-		return setting;
+            if (url) {
+                if (onclick) {
+                    onclick_img = this.app_name+".module_set_favicon(\""+url+"\");";
+                    onclick_style = "cursor:pointer;";
+                    }
+                icon = "<img src='"+url+"' alt='"+url+"' class='favicon' onclick='"+onclick_img+"' style='"+onclick_style+"'>";
+                if (printUrl) { icon += "<br/>" + url; }
+                }
+            else {
+                icon = lang("NOT_FOUND");
+                }
+            return icon;
+            }
+
+        // Grab <link> elements from the document head
+        var appleTouchIcon = document.querySelector('link[rel="apple-touch-icon-precomposed"]');
+        var favicon = document.querySelector('link[rel="icon"], link[rel="shortcut icon"]');
+
+        // Extract their hrefs (if present)
+        var appleTouchIconUrl = appleTouchIcon ? appleTouchIcon.href : null;
+        var faviconUrl = favicon ? favicon.href : null;
+
+        appleTouchIcon  = this.icon_img(appleTouchIconUrl);
+        favicon         = this.icon_img(faviconUrl);
+        available       = "";
+
+        for (var icon in this.data["CONFIG"]["icons"]) {
+            available += this.icon_img("remote-v3/icon/"+this.data["CONFIG"]["icons"][icon], false, true);
+        }
+
+        set_temp  = this.tab.start();
+        set_temp += this.tab.row("<b>Favicon:</b>",favicon);
+        set_temp += this.tab.row("<b>Apple Icon:</b>",appleTouchIcon);
+        set_temp += this.tab.row("<b>Available:</b>",available);
+        set_temp += this.tab.end();
+        var settings_icon = set_temp;
+
+	    const myBox = new rmSheetBox("module_general_settings", height="350px", scroll=true);
+        myBox.addSheet("Main",   "&nbsp;" + settings_index);
+        myBox.addSheet("Icons",  "&nbsp;" + settings_icon);
+        myBox.addSheet("Server", "&nbsp;" + settings_reload);
+        myBox.addSheet("API",    "&nbsp;" + settings_api);
 	}
+
+	this.module_set_favicon     = function (url) {
+        var appleTouchIcon = document.querySelector('link[rel="apple-touch-icon-precomposed"]');
+        appleTouchIcon.href = url;
+        var appleTouchIcon2 = document.querySelector('link[rel="apple-touch-icon"]');
+        appleTouchIcon2.href = url;
+        var favicon = document.querySelector('link[rel="icon"]');
+        favicon.href = url;
+        this.module_general_settings_load();
+	    }
 
 	this.module_macros_edit     = function () {
 	    this.btn.width = "100px";

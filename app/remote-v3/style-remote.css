@@ -315,6 +315,14 @@ ul.help ul li {
 	border-radius   : 5px;
 }
 
+.favicon {
+    max-width: 60px;
+    max-height: 60px;
+    border: 1px solid black;
+    border-radius: 8px;
+    margin: 3px;
+}
+
 .slidecontainer { background: var(--rm-color-slider); }
 .slider         { border: solid 1px var(--rm-color-slider-border); }
 .slidervalue    { border: solid 1px var(--rm-color-slider-border); }
