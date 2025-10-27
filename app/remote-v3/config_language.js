@@ -133,6 +133,8 @@ var language_app = {
 		"ERROR_UNKNOWN"          : "Unknown error",
 
 		"FORMAT_INCORRECT"       : "format is not correct",
+		"FAVICON_INFO"           : "Select a different favicon or apple-icon. <i>Note:</i> this selection at the moment is temporary only - " +
+		                           "select and save WebApp to Home-Screen to use a specific apple-icon.",
 		
 		"GET_DATA"               : "Get data",
 		"GET_AVAILABLE_COMMANDS" : "List commands",

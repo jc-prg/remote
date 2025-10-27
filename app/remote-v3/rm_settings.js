@@ -1018,15 +1018,15 @@ function rmSettings (name) {	// IN PROGRESS
 		var button_value_manual_mode = "ON";
 		var button_show_code = "OFF";
 
-        set_temp = this.module_index_quick(true, true, true);
+        set_temp = "<i>"+this.module_index_quick(true, true, true)+"</i>";
         var settings_index = set_temp;
 
 		set_temp  = this.tab.start();
-		set_temp += this.tab.row("Server:",
+		set_temp += this.tab.row("<i>Server:</i>",
                     this.btn.sized("set01","reload (scroll)","settings","appForceReload(true);") + "&nbsp;" +
                     this.btn.sized("set02","check updates","settings","appFW.requestAPI(\"GET\",[\"version\",\"" + appVersion +"\"], \"\", appMsg.alertReturn, \"wait\");")
 					);
-		set_temp += this.tab.row("Devices",
+		set_temp += this.tab.row("<i>Devices</i>",
                     this.btn.sized("set21","Dev ON/OFF", "settings","appMsg.confirm(#" + q1 + "#, #appFW.requestAPI(##GET##,[##reset##],####,apiAlertReturn );#);") + "&nbsp;" +
                     this.btn.sized("set22","Audio Level","settings", "appMsg.confirm(#" + q2 + "#, #appFW.requestAPI(##GET##,[##reset-audio##],####,apiAlertReturn );# );")
                     );
@@ -1035,25 +1035,27 @@ function rmSettings (name) {	// IN PROGRESS
 
 		// API Calls and information
 		set_temp  = this.tab.start();
-		set_temp += this.tab.row( "API Information:",
+		set_temp += this.tab.row( "<i>Basic API calls:</i>",
                     this.btn.sized("set11","REST API : list",  "settings","window.open(#" + RESTurl + "api/list/#,#_blank#);") + "&nbsp;" +
-                    this.btn.sized("set12","REST API : status","settings","window.open(#" + RESTurl + "api/status/#,#_blank#);") + "&nbsp;" +
+                    this.btn.sized("set12","REST API : status","settings","window.open(#" + RESTurl + "api/status/#,#_blank#);") + "&nbsp;");
+		set_temp += this.tab.row( "<i>API Definition:</i>",
                     this.btn.sized("set13","Swagger/UI",       "settings","window.open(#" + RESTurl + "api/ui/#,#_blank#);") + "&nbsp;"
                     );
 		set_temp += this.tab.end();
         var settings_api = set_temp;
 
-        this.icon_img = function (url, printUrl=true, onclick=false) {
+        // draw icon images
+        this.icon_img = function (url, printUrl=true, onclick=false, selected=false, icon_type="favicon") {
             var icon = "";
             var onclick_img = "";
             var onclick_style = "";
+            var on_select = "";
 
             if (url) {
-                if (onclick) {
-                    onclick_img = this.app_name+".module_set_favicon(\""+url+"\");";
-                    onclick_style = "cursor:pointer;";
-                    }
-                icon = "<img src='"+url+"' alt='"+url+"' class='favicon' onclick='"+onclick_img+"' style='"+onclick_style+"'>";
+                if (onclick)  { onclick_img = this.app_name+".module_set_favicon(\""+url+"\",\""+icon_type+"\");"; onclick_style = "cursor:pointer;"; }
+                if (selected) { on_select   = " selected"; }
+
+                icon = "<img src='"+url+"' alt='"+url+"' class='favicon"+on_select+"' onclick='"+onclick_img+"' style='"+onclick_style+"'>";
                 if (printUrl) { icon += "<br/>" + url; }
                 }
             else {
@@ -1070,35 +1072,42 @@ function rmSettings (name) {	// IN PROGRESS
         var appleTouchIconUrl = appleTouchIcon ? appleTouchIcon.href : null;
         var faviconUrl = favicon ? favicon.href : null;
 
-        appleTouchIcon  = this.icon_img(appleTouchIconUrl);
-        favicon         = this.icon_img(faviconUrl);
-        available       = "";
+        appleTouchIcon  = "";
+        favicon         = "";
 
         for (var icon in this.data["CONFIG"]["icons"]) {
-            available += this.icon_img("remote-v3/icon/"+this.data["CONFIG"]["icons"][icon], false, true);
+            var currentUrl = "remote-v3/icon/"+this.data["CONFIG"]["icons"][icon];
+            if (appleTouchIconUrl.indexOf(currentUrl) >= 0) { appleTouchIcon += this.icon_img(currentUrl, false, false, true, "appleicon"); }
+            else                                            { appleTouchIcon += this.icon_img(currentUrl, false, true, false, "appleicon"); }
+            if (faviconUrl.indexOf(currentUrl) >= 0)        { favicon += this.icon_img(currentUrl, false, false, true, "favicon"); }
+            else                                            { favicon += this.icon_img(currentUrl, false, true, false, "favicon"); }
         }
 
-        set_temp  = this.tab.start();
+        set_temp  = "<br/>" + lang("FAVICON_INFO") + "<br/>&nbsp;";
+        set_temp += this.tab.start();
         set_temp += this.tab.row("<b>Favicon:</b>",favicon);
         set_temp += this.tab.row("<b>Apple Icon:</b>",appleTouchIcon);
-        set_temp += this.tab.row("<b>Available:</b>",available);
         set_temp += this.tab.end();
         var settings_icon = set_temp;
 
 	    const myBox = new rmSheetBox("module_general_settings", height="350px", scroll=true);
-        myBox.addSheet("Main",   "&nbsp;" + settings_index);
         myBox.addSheet("Icons",  "&nbsp;" + settings_icon);
+        myBox.addSheet("Modes",  "&nbsp;" + settings_index);
         myBox.addSheet("Server", "&nbsp;" + settings_reload);
         myBox.addSheet("API",    "&nbsp;" + settings_api);
 	}
 
-	this.module_set_favicon     = function (url) {
-        var appleTouchIcon = document.querySelector('link[rel="apple-touch-icon-precomposed"]');
-        appleTouchIcon.href = url;
-        var appleTouchIcon2 = document.querySelector('link[rel="apple-touch-icon"]');
-        appleTouchIcon2.href = url;
-        var favicon = document.querySelector('link[rel="icon"]');
-        favicon.href = url;
+	this.module_set_favicon     = function (url, icon_type) {
+	    if (icon_type == "favicon") {
+            var favicon = document.querySelector('link[rel="icon"]');
+            favicon.href = url;
+            }
+        else {
+            var appleTouchIcon = document.querySelector('link[rel="apple-touch-icon-precomposed"]');
+            appleTouchIcon.href = url;
+            var appleTouchIcon2 = document.querySelector('link[rel="apple-touch-icon"]');
+            appleTouchIcon2.href = url;
+            }
         this.module_general_settings_load();
 	    }
 

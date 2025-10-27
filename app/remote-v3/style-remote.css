@@ -322,6 +322,10 @@ ul.help ul li {
     border-radius: 8px;
     margin: 3px;
 }
+.favicon.selected {
+    border: 3px solid #ffff44;
+    margin: 1px;
+}
 
 .slidecontainer { background: var(--rm-color-slider); }
 .slider         { border: solid 1px var(--rm-color-slider-border); }
