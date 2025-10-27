@@ -653,6 +653,11 @@ function rmRemote(name) {
         this.button.width  = "90px";
         this.button.height = "25px";
 
+        const myJson = new rmSheetBox("remote-edit-json", height="350px", scroll=true);
+        myJson.addSheet("Remote",       "<h3>"+lang("JSON_REMOTE")+"</h3>" +  this.json.textarea( "remote_json_buttons", remote_definition, "buttons" ) + "<br/>" + lang("MANUAL_REMOTE") );
+        myJson.addSheet("Display",      "<h3>"+lang("JSON_DISPLAY")+"</h3>" + this.json.textarea( "remote_json_display", remote_display ) + "<br/>" + lang("MANUAL_DISPLAY") );
+        myJson.addSheet("Macros",       "<h3>"+lang("JSON_REMOTE_MACROS")+"</h3>" + macro_edit );
+
         const myBox = new rmSheetBox("remote-edit-add", height="280px", scroll=false);
         myBox.addSheet("Info",          lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") +
                                         this.tab.start() + this.dialog_edit_elements("remote", "template", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end());
@@ -666,11 +671,6 @@ function rmRemote(name) {
             myBox.addSheet("Color Picker",  this.tab.start() + this.dialog_edit_elements("remote", "color_picker", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
             }
         myBox.addSheet("Delete",        this.dialog_edit_elements("remote", "delete", id, device, preview_remote, preview_display, preview_display_size));
-
-        const myJson = new rmSheetBox("remote-edit-json", height="350px", scroll=true);
-        myJson.addSheet("Remote",       "<h3>"+lang("JSON_REMOTE")+"</h3>" +  this.json.textarea( "remote_json_buttons", remote_definition, "buttons" ) + "<br/>" + lang("MANUAL_REMOTE") );
-        myJson.addSheet("Display",      "<h3>"+lang("JSON_DISPLAY")+"</h3>" + this.json.textarea( "remote_json_display", remote_display ) + "<br/>" + lang("MANUAL_DISPLAY") );
-        myJson.addSheet("Macros",       "<h3>"+lang("JSON_REMOTE_MACROS")+"</h3>" + macro_edit );
 		}
 
 	// reread data from current definition and create preview
