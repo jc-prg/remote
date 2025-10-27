@@ -295,7 +295,13 @@ var language_app = {
 
 		"TEXT_INPUT"                   : "Text input",
 		"TRY_OUT"                      : "try out",
-		
+
+		"TOGGLE_SELECT_DEVICE"         : "Select a toggle device.",
+		"TOGGLE_SELECT_DESCR"          : "Define a description for the toggle.",
+		"TOGGLE_SELECT_VALUE"          : "Select a value field for the toggle.",
+		"TOGGLE_SELECT_ON"             : "Select a switch ON command for the toggle.",
+		"TOGGLE_SELECT_OFF"            : "Select a switch OFF command for the toggle.",
+
 		"VERSION_AND_STATUS"           : "Version and Status Information",
 
 		"WORKING_MODES"                : "Working modes",
