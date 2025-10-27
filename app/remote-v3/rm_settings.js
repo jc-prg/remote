@@ -1018,7 +1018,7 @@ function rmSettings (name) {	// IN PROGRESS
 		var button_value_manual_mode = "ON";
 		var button_show_code = "OFF";
 
-        set_temp = "<i>"+this.module_index_quick(true, true, true)+"</i>";
+        set_temp = "<br/><i>"+this.module_index_quick(true, true, true)+"</i>";
         var settings_index = set_temp;
 
 		set_temp  = this.tab.start();
