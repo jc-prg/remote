@@ -1,7 +1,9 @@
 .sheet-box {
     color: black;
-    width: 100%;
-    max-width: 700px;
+    width: calc(100vw - 45px);
+    //width: 100%;
+    //max-width: 700px;
+    max-width: 100%;
     min-height: 300px;
     border-radius: 4px;
     background-color: #f8f9fa;

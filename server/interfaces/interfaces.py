@@ -155,7 +155,8 @@ class Connect(RemoteThreadingClass):
 
             elif not api_device_power:
                 self.logging.debug("API-Interface '" + key + "' is switched off.")
-                self.api[key].status = "OFF (PowerDevice)"
+                #self.api[key].status = "OFF (PowerDevice "+power_dev+")"
+                self.api[key].status = "OFF (PowerDevice "+device_status[power_dev]["settings"]["label"]+")"
 
             elif "IPAddress" in self.api[key].api_config:
                 connect = rm3ping.ping(self.api[key].api_config["IPAddress"])

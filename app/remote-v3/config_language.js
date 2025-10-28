@@ -247,6 +247,8 @@ var language_app = {
 		"PLEASE_WAIT"                  : "Please wait ... .",
 		
 		"PREVIEW"                      : "Preview",
+		"POWER_DEVICE_OFF"             : "Switch on the power device first. {0}",
+		"POWER_DEVICE_OFF_SCENE"       : "Switch on the power device using the toggle in the header. {0}",
 
 		"QUICK_ACCESS"                 : "Quick Access",
 

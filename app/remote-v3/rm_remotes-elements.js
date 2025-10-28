@@ -484,10 +484,25 @@ function rmRemoteDisplays(name) {
 
             var connected               = "";
 	        var scene_data              = this.data["STATUS"]["scenes"][scene];
+	        var scene_power             = this.data["CONFIG"]["scenes"][scene]["remote"]["power_status"];
+	        var scene_switch            = "power device";
+	        var device_status           = this.data["STATUS"]["devices"];
+	        var device_config           = this.data["CONFIG"]["devices"];
 	        var scene_devices           = scene_data.length;
 	        var connected_devices       = 0;
 	        var not_connected           = [];
 	        var not_connected_details   = [];
+
+            if (device_status[scene_power.split("_")[0]]) {
+                device_field = scene_power.split("_");
+                scene_power  = device_status[device_field[0]][device_field[1]];
+                scene_switch = device_config[device_field[0]]["settings"]["label"];
+                }
+            else {
+                scene_power  = "N/A";
+                }
+
+            console.info("SCENE STATUS - " + scene + " --- "+ scene_power);
 
 	        for (var i=0;i<scene_devices;i++) {
                 var device  = scene_data[i];
@@ -501,10 +516,11 @@ function rmRemoteDisplays(name) {
                     }
 	            }
 
-	        if (connected_devices == scene_devices) { connected = lang("CONNECTED"); }
-	        else if (connected_devices == 0)        { connected = lang("NO_DEVICE_CONNECTED"); }
-	        else                                    { connected = lang("DEVICES_NOT_CONNECTED")+":<br/>" + not_connected.join(", "); }
-	        return connected;
+	        if (connected_devices == scene_devices)         { connected = lang("CONNECTED"); }
+	        else if (scene_power.toUpperCase() == "OFF")    { connected = lang("POWER_DEVICE_OFF", [scene_switch]); }
+	        else if (connected_devices == 0)                { connected = lang("NO_DEVICE_CONNECTED"); }
+	        else                                            { connected = lang("DEVICES_NOT_CONNECTED")+":<br/>" + not_connected.join(", "); }
+	        return [connected, scene_power];
 	        }
 
 		if (!this.data["CONFIG"][rm_type]) {
@@ -519,7 +535,12 @@ function rmRemoteDisplays(name) {
 
         // check connection
 		if (rm_type == "devices")  { var connected = this.check_connection_remote(device); }
-		else                       { var connected = this.check_connection_scene(device); }
+		else                       {
+		    var connected   = this.check_connection_scene(device);
+		    var scene_power = connected[1];
+		    connected       = connected[0];
+		    // console.error(scene_power); // ---------------------------------------------- !!!
+		    }
 
         // check display definition
 		if (display_data != {})             {}
@@ -535,12 +556,14 @@ function rmRemoteDisplays(name) {
 
         // set overarching status to activate the right display
 		if (this.edit_mode)                                                     { status = "EDIT_MODE"; }
-		else if (rm_type == "scenes")                                              { status = "ON"; }
+		else if (rm_type == "scenes" && scene_power == "OFF")                   { status = "POWER_OFF"; }
+		else if (rm_type == "scenes")                                           { status = "ON"; }
 		else if (connected.indexOf("off") > -1)                                 { status = "OFF"; }
 		else if (connected != "connected")                                      { status = "ERROR"; }
 		else if (status_data["power"].toUpperCase().indexOf("ON") >= 0)         { status = "ON"; }
 		else if (status_data["power"].toUpperCase().indexOf("OFF") >= 0)        { status = "OFF" }
-		else                                                                    { status = "ERROR"; }
+		else                                                                    { status = "ERROR";  }
+
 
         if (this.edit_mode) {
             // display if EDIT_MODE
@@ -565,8 +588,8 @@ function rmRemoteDisplays(name) {
             if (status == "ERROR" && !this.edit_mode)       { text  = text.replace( /##DISPLAY##/g, "block" ); }
             else                                            { text  = text.replace( /##DISPLAY##/g, "none" ); }
             if (status_data["power"] == undefined)          { status_data["power"] = "N/A"; }
-            text += "<center><b>Connection Error</b>:</center>"; //<br/>";
-            text += "<center><i>"+connected+"</i></center>";
+            text += "<center><b>Connection Error</b></center>"; //<br/>";
+            text += "<center><i><text id='display_ERROR_info_"+device+"'>"+connected+"</text></i></center>";
             text += display_end;
 
             // display if ON
@@ -592,7 +615,7 @@ function rmRemoteDisplays(name) {
             text  = text.replace( /##STYLE##/g, style + " display_manual" );
             if (rm3settings.manual_mode)    { text  = text.replace( /##DISPLAY##/g, "block" ); }
             else                            { text  = text.replace( /##DISPLAY##/g, "none" ); }
-            text += "<center>MANUAL MODE<br/><i>no information available</i></center>";
+            text += "<center>MANUAL MODE<br/><text id='display_MANUAL_info_"+device+"'><i>no information available</i></text></center>";
             text += display_end;
 
             // display if OFF
@@ -601,7 +624,16 @@ function rmRemoteDisplays(name) {
             text  = text.replace( /##STYLE##/g, style + " display_off" );
             if (status == "OFF"  && !this.edit_mode)    { text  = text.replace( /##DISPLAY##/g, "block" ); }
             else                                        { text  = text.replace( /##DISPLAY##/g, "none" ); }
-            text += "<center>power off<br/><i><text id='display_power_info_"+device+"'></text></i></center>";
+            text += "<center><b>Device Off</b><br/><i><text id='display_OFF_info_"+device+"'></text></i></center>";
+            text += display_end;
+
+            // display if OFF
+            text += display_start;
+            text  = text.replace( /##STATUS##/g, "POWER_OFF" );
+            text  = text.replace( /##STYLE##/g, style + " display_off" );
+            if (status == "OFF"  && !this.edit_mode)    { text  = text.replace( /##DISPLAY##/g, "block" ); }
+            else                                        { text  = text.replace( /##DISPLAY##/g, "none" ); }
+            text += "<center><b>Power Off</b><br/><i><text id='display_POWER_OFF_info_"+device+"'>"+lang("POWER_DEVICE_OFF", [""])+"</text></i></center>";
             text += display_end;
             }
 

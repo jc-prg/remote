@@ -472,6 +472,14 @@ function statusCheck_sceneDevices(data) {
 		var dev_on          = 0;
 		var dev_error       = 0;
 		var required        = data["STATUS"]["scenes"][key];
+		var power_device    = "N/A";
+		if (data["CONFIG"]["scenes"][key]["remote"]["power_status"]) {
+            power_device    = data["CONFIG"]["scenes"][key]["remote"]["power_status"].split("_");
+		    }
+		var power_status    = "N/A";
+		if (power_device != "N/A" && power_device.length > 1) {
+            power_status    = data["STATUS"]["devices"][power_device[0]][power_device[1]];
+		    }
 		log_data[key]       = "";
 
 		for (var i=0;i<required.length;i++) {
@@ -498,7 +506,8 @@ function statusCheck_sceneDevices(data) {
             if (device_api_status != "Connected")   { dev_error += 1; }
             }
 
-        if (dev_error > 0)                  { scene_status[key] = "ERROR"; }
+        if (power_status == "OFF")          { scene_status[key] = "POWER_OFF"; }
+        else if (dev_error > 0)             { scene_status[key] = "ERROR"; }
         else if (dev_on == required.length) { scene_status[key] = "ON"; }
         else if (dev_on > 0)                { scene_status[key] = "OTHER"; }
         else                                { scene_status[key] = "OFF"; }
@@ -545,6 +554,14 @@ function statusCheck_scenePowerButton(data) {
 				statusShow_powerButton( "scene_off_"+key,  scene_status[key] );
 				statusShow_powerButton( "scene_on_"+key, "" );
 				}
+			statusShow_display(key, scene_status[key]);
+			}
+		else if (scene_status[key] == "POWER_OFF") {
+			if (deactivateButton == false) {
+				statusShow_powerButton( "scene_off_"+key,  scene_status[key] );
+				statusShow_powerButton( "scene_on_"+key, "" );
+				}
+		    setTextById("display_POWER_OFF_info_"+key, lang("POWER_DEVICE_OFF_SCENE", [""]));
 			statusShow_display(key, scene_status[key]);
 			}
 		if (deactivateButton) {
@@ -715,7 +732,7 @@ function statusCheck_devicePowerButtonDisplay(data={}) {
 
 	// check device status and change color of power buttons / main menu buttons device
 	var devices        = data["STATUS"]["devices"];
-	var devices_config = data["CONFIG"]["devices"]
+	var devices_config = data["CONFIG"]["devices"];
 	var device_list    = "";
 
 	for (var device in devices) {
@@ -736,15 +753,15 @@ function statusCheck_devicePowerButtonDisplay(data={}) {
 	    device_list += device + " ";
 
         var power_status     = devices[device]["power"].toUpperCase() + "";
-        var power_status_api = devices[device]["api-status"].toUpperCase();
+        var power_status_api = devices[device]["api-status"];
 
-        if (power_status_api.indexOf("OFF") > -1)   { power_status = "OFF"; }
+        if (power_status_api.toUpperCase().indexOf("OFF") > -1)   { power_status = "POWER_OFF"; }
         else if (power_status_api != "CONNECTED")   { power_status = "ERROR"; }
 
         console.debug("Check PWR BUTTON & DISPLAY: " + device + " / " + power_status + " / " + power_status_api)
 
         if (deactivateButton == false) {
-            if (power_status_api.indexOf("OFF") > -1) {
+            if (power_status_api.toUpperCase().indexOf("OFF") > -1) {
 
             // DISABLED !!!
 
@@ -773,11 +790,17 @@ function statusCheck_devicePowerButtonDisplay(data={}) {
                 }
             }
 
-        if (rm3remotes.edit_mode)                 { statusShow_display(device, "EDIT_MODE"); }
-        else if (deactivateButton)                { statusShow_display(device, "MANUAL"); }
-        else if (power_status.includes("ERROR"))  { statusShow_display(device, "ERROR"); }
-        else if (power_status.includes("ON"))     { statusShow_display(device, "ON"); }
-        else if (power_status.includes("OFF"))    { statusShow_display(device, "OFF"); }
+        if (rm3remotes.edit_mode)                   { statusShow_display(device, "EDIT_MODE"); }
+        else if (deactivateButton)                  { statusShow_display(device, "MANUAL"); }
+        else if (power_status.includes("ERROR"))    { statusShow_display(device, "ERROR"); }
+        else if (power_status.includes("ON"))       { statusShow_display(device, "ON"); }
+        else if (power_status.includes("POWER_OFF")){
+            statusShow_display(device, "POWER_OFF");
+            var device_key = power_status_api.replace("OFF (PowerDevice ", "");
+            device_key = device_key.replace(")", "");
+		    setTextById("display_POWER_OFF_info_"+device, lang("POWER_DEVICE_OFF", ["("+device_key+")"]));
+            }
+        else if (power_status.includes("OFF"))      { statusShow_display(device, "OFF"); }
 
         if (power_status.includes("OFF") && power_status_api != "CONNECTED") { setTextById("display_power_info_"+device, device_api_connect.replace("OFF", "") ); }
         else                                                                 { setTextById("display_power_info_"+device, "" ); }
@@ -1029,7 +1052,7 @@ function statusCheck_displayValues(data={}) {
 
 // show specific display and hide the others
 function statusShow_display(id, view) {
-    var keys = ["ON", "OFF", "ERROR", "MANUAL", "EDIT_MODE"];
+    var keys = ["ON", "OFF", "ERROR", "MANUAL", "EDIT_MODE", "POWER_OFF"];
     view = view.toUpperCase();
     if (document.getElementById("display_"+id+"_"+view)) {
         for (var i=0;i<keys.length;i++) { elementHidden( "display_"+id+"_"+keys[i]); }

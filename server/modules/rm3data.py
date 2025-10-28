@@ -602,6 +602,10 @@ class RemotesData(RemoteThreadingClass):
                         remote_config = self.config.read(rm3presets.scenes + remote_file)
                         if "data" in remote_config:
                             data[scene]["remote"] = remote_config["data"]
+                            data[scene]["remote"]["scene_power_status"] = "N/A"
+                            if data[scene]["remote"]["remote"][0] == "HEADER-IMAGE||toggle" and data[scene]["remote"]["remote"][1].startswith("TOGGLE"):
+                                toggle = data[scene]["remote"]["remote"][1].split("||")
+                                data[scene]["remote"]["power_status"] = toggle[1]
                         else:
                             logging.error("Could not read remote data: " + rm3presets.scenes + remote_file)
                             data[scene]["remote_error"] = {
