@@ -599,40 +599,6 @@ function statusCheck_deviceActive(data) {
 
 	var [scene_status, status_log] = statusCheck_sceneDevices(data);
 
-	// get scene status from devices status and definition (see statusCheck) -> move to rm_remote.js
-	// ------ still required ? ------
-	/*
-	for (var key in data["CONFIG"]["scenes"]) {
-		if (data["CONFIG"]["scenes"][key]["remote"] && data["CONFIG"]["scenes"][key]["remote"]["devices"]) {
-
-			var required = data["CONFIG"]["scenes"][key]["remote"]["devices"];
-			var all_dev  = Object.keys(data["CONFIG"]["devices"]);
-			var dev_on   = 0;
-
-			for (var i=0;i<all_dev.length;i++)  {
-				if (devices_status[all_dev[i]]["power"]) {
-				    device_status[all_dev[i]] = devices_status[all_dev[i]]["power"].toUpperCase();
-				    }
-				else {
-				    device_status[all_dev[i]] = ""
-				    }
-				}
-			for (var i=0;i<required.length;i++) { if (device_status[required[i]] == "ON") { dev_on += 1; } }
-
-			if (dev_on == required.length)  { scene_status[key] = "ON"; }
-			else if (dev_on > 0)            { scene_status[key] = "OTHER"; }
-			else                            { scene_status[key] = "OFF"; }
-			//console.debug(key + " - on:" + dev_on + " / off:" + required.length + " / " + scene_status[key]);
-			}
-		else {
-			console.warn("ERROR statusCheck_deviceActive: "+key);
-			console.warn(data["CONFIG"]["scenes"][key]);
-			required = [];
-			}
-		}
-	*/
-	// ------ still required ? ------
-
 	// inactive macro_buttons (check scene status, deactivate all buttons from list starting with "macro")
 	if (rm3remotes.active_type == "scene" && scene_status[rm3remotes.active_name] == "POWER_OFF") {
 		for (var i=0; i<rm3remotes.active_buttons.length; i++) {
