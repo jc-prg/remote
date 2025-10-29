@@ -597,7 +597,11 @@ function statusCheck_deviceActive(data) {
 	var filter         = false;
 	var scene_status   = {};
 
+	var [scene_status, status_log] = statusCheck_sceneDevices(data);
+
 	// get scene status from devices status and definition (see statusCheck) -> move to rm_remote.js
+	// ------ still required ? ------
+	/*
 	for (var key in data["CONFIG"]["scenes"]) {
 		if (data["CONFIG"]["scenes"][key]["remote"] && data["CONFIG"]["scenes"][key]["remote"]["devices"]) {
 
@@ -626,21 +630,40 @@ function statusCheck_deviceActive(data) {
 			required = [];
 			}
 		}
+	*/
+	// ------ still required ? ------
 
 	// inactive macro_buttons (check scene status, deactivate all buttons from list starting with "macro")
-	if (rm3remotes.active_type == "scene" && scene_status[rm3remotes.active_name] != "ON") {
+	if (rm3remotes.active_type == "scene" && scene_status[rm3remotes.active_name] == "POWER_OFF") {
+		for (var i=0; i<rm3remotes.active_buttons.length; i++) {
+			var button = rm3remotes.active_buttons[i];
+			statusShow_buttonActive(button,false);
+			}
+		for (var i=0; i<rm3remotes.active_channels.length; i++) {
+			var button = rm3remotes.active_channels[i];
+			statusShow_buttonActive(button,false);
+			}
+	    setTextById("header_image_text_info", lang("POWER_DEVICE_OFF_SCENE_INFO"));
+	    console.error("!!!")
+	    }
+	else if (rm3remotes.active_type == "scene" && scene_status[rm3remotes.active_name] != "ON") {
 
 		for (var i=0; i<rm3remotes.active_buttons.length; i++) {
 			var button1 = rm3remotes.active_buttons[i].split("_");
 			if (button1[0] == "macro") { statusShow_buttonActive(button1[0]+"_"+button1[1],false); }
 			}
+	    setTextById("header_image_text_info", "");
 		}
 	else if (rm3remotes.active_type == "scene") {
 		for (var i=0; i<rm3remotes.active_buttons.length; i++) {
 			var button1 = rm3remotes.active_buttons[i].split("_");
 			if (button1[0] == "macro") { statusShow_buttonActive(button1[0]+"_"+button1[1],true); }
 			}
+	    setTextById("header_image_text_info", "");
 		}
+    else {
+	    setTextById("header_image_text_info", "");
+        }
 
 	// check device status - if OFF change color of buttons to gray
 	var buttons_color  = data["CONFIG"]["elements"]["button_colors"];
@@ -781,6 +804,12 @@ function statusCheck_devicePowerButtonDisplay(data={}) {
                 statusShow_powerButton( device + "_on-off", "ON" ); // on-off device button
                 statusShow_powerButton( device + "_on",  "ON" );
                 statusShow_powerButton( device + "_off", "" );
+                }
+            else if (power_status.includes("POWER_OFF")) {
+                statusShow_powerButton( "device_" + device, "OFF" ); // main menu button
+                statusShow_powerButton( device + "_on-off", "OFF" ); // on-o:16
+                statusShow_powerButton( device + "_off", "OFF" );
+                statusShow_powerButton( device + "_on",  "" );
                 }
             else if (power_status.includes("OFF")) {
                 statusShow_powerButton( "device_" + device, "OFF" ); // main menu button

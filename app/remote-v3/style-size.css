@@ -17,6 +17,7 @@
     --app-frame-width-30-menu   : calc((100% - 163px) / 3 - 16px);
 
     --rm-size-remote-header-text    : 30px;
+    --rm-size-remote-header-info    : 12px;
     --rm-size-remote-button-text    : 4cqw;
     --rm-size-remote-display-text   : 3cqw;
     --rm-size-remote-info-text      : 3cqw;

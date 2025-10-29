@@ -265,6 +265,12 @@ ul.help ul li {
     box-shadow		 : var(--rm-color-button-hover-shadow);
     }
 
+.channel-entry.device_off {
+   opacity          : 60%;
+   background-color : var(--rm-color-button-device-off);
+   border           : solid 0.5px var(--rm-color-button-disabled-border);
+}
+
 #show_hide_not_used {
 	position        : relative;
 	top             : -10px;

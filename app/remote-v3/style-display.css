@@ -87,6 +87,7 @@
 }
 
 .display.display_off {
+   opacity      : 60%;
    background   : var(--rm-color-display-off);
    color        : var(--rm-color-display-off-text);
 }

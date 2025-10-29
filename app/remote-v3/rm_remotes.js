@@ -10,6 +10,7 @@ function rmRemote(name) {
 	this.active_name    = "";
 	this.active_type    = "";
 	this.active_buttons = [];
+	this.active_channels= [];
 	this.edit_mode      = false;
 	this.initial_load   = true;
 	this.loaded_remote  = [];
@@ -96,6 +97,8 @@ function rmRemote(name) {
 		this.active_name    = rm_id;
 		this.active_type    = type;
 		this.active_buttons = [];
+        this.active_channels= [];
+
 
 		this.keyboard.set_device(this.active_name);
 		this.color_picker.set_device(this.active_name);
@@ -879,17 +882,18 @@ function rmRemote(name) {
 
 		this.tooltip.settings(this.tooltip_mode,this.tooltip_width,"80px",35);
 
-    		// create list of channel buttons
-    		for (var i=0; i<channels.length; i++) {
-                var cmd   	= "channel_"+i; //channels[i];
-                var next_button	= this.button.channel(cmd, channels[i], scene_name, macros[channels[i]],"","");
-                var context_menu = "["+i+"] <b>" + cmd +  "</b><br/><br/><i>" + lang("CHANNEL_USE_JSON") +"</i>";
-			
-                if (this.edit_mode) {
-                    next_button = this.tooltip.create_inside( next_button, context_menu, "channel_"+i );
-                    }
-                remote += next_button;
-        		}
+        // create list of channel buttons
+        for (var i=0; i<channels.length; i++) {
+            var cmd   	= "channel_"+i; //channels[i];
+            var next_button	= this.button.channel(cmd, channels[i], scene_name, macros[channels[i]],"","");
+            var context_menu = "["+i+"] <b>" + cmd +  "</b><br/><br/><i>" + lang("CHANNEL_USE_JSON") +"</i>";
+            this.active_channels.push(cmd);
+
+            if (this.edit_mode) {
+                next_button = this.tooltip.create_inside( next_button, context_menu, "channel_"+i );
+                }
+            remote += next_button;
+            }
 
 		// print
 		setTextById(id,remote);
@@ -1579,6 +1583,7 @@ function rmRemote(name) {
 	this.scene_header_image         = function (id, scene, toggle_html, selected="") {
 	
 		var scene_info    = this.data["CONFIG"]["scenes"][scene]["settings"];
+		var scene_remote  = this.data["CONFIG"]["scenes"][scene]["remote"]["remote"];
 		var scene_images  = this.data["CONFIG"]["elements"]["scene_images"];
 		var label         = scene_info["label"];
 		var image         = scene_info["image"];
@@ -1592,6 +1597,10 @@ function rmRemote(name) {
 
 		if (image && image != "") {
 			var image_html = "<button class='rm-button header_image' style='background-image:url("+rm3scene_dir+image+")'>";
+			var info = "";
+			if (!scene_remote.includes("DISPLAY") && !this.edit_mode && scene_remote.includes("HEADER-IMAGE||toggle")) {
+                info = "<br/><text id='header_image_text_info' class='header_image_text_info'></text>"
+			    }
 
             this.tooltip.settings("onmouseover","100px","50px","50px");
 			toggle_html = this.tooltip.create_inside(" "+toggle_html, test, 1);
@@ -1603,7 +1612,7 @@ function rmRemote(name) {
             image_html    += " <div class='header_image_toggle_container' id='toggle_place_"+id+"'>"+toggle_html+"</div>";
             image_html    += " <div id='header_tooltip' style='display:block;'><!--TOOL-TIPP-PLACEHOLDER--></div>";
 			image_html    += " <div class='header_image_fade'>";
-			image_html    += "  <div class='header_image_text'>&nbsp;<br/>&nbsp;<br/>"+label+"</div>";
+			image_html    += "  <div class='header_image_text'>&nbsp;<br/>&nbsp;<br/>"+label+info+"</div>";
 			image_html    += " </div>";
 			image_html    += "<!--X--></button>";
 			return image_html;

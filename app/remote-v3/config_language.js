@@ -249,6 +249,7 @@ var language_app = {
 		"PREVIEW"                      : "Preview",
 		"POWER_DEVICE_OFF"             : "Switch on the power device first. {0}",
 		"POWER_DEVICE_OFF_SCENE"       : "Switch on the power device using the toggle in the header. {0}",
+		"POWER_DEVICE_OFF_SCENE_INFO"  : "<b>Power Off:</b> Use the toggle in the header to switch on.",
 
 		"QUICK_ACCESS"                 : "Quick Access",
 

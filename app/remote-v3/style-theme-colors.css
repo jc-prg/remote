@@ -59,6 +59,7 @@
     --rm-color-button-white-coolest: #BBBBFF;
 
     --rm-color-header-text: black;
+    --rm-color-header-info: darkred;
     --rm-color-header-border: #DDDDDD;
     --rm-color-header-fade: -webkit-linear-gradient(top,
         rgba(221,221,221,0) 0%,
@@ -199,6 +200,7 @@
         --rm-color-frame-line-text: #AAAAAA;
 
         --rm-color-header-text: white;
+        --rm-color-header-info: yellow;
         --rm-color-header-border: #000000;
         --rm-color-header-fade: -webkit-linear-gradient(top,
                 rgba(0,0,0,0) 0%,
