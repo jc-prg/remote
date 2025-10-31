@@ -344,7 +344,7 @@ function rmRemoteDisplays(name) {
             var connection_2  = connection_1["api_devices"][status_data["api"].split("_")[1]];
 
             if (!status_data)                   { error = "Error building display: no status data for " + device + " (" + type + ")"; }
-            else if (!status_data["power"])     { error = "Error building display: no status_power data for " + device + " (" + type + ")"; status_data["power"] = "ERROR"; }
+            else if (!"power" in status_data)   { error = "Error building display: no status_power data for " + device + " (" + type + ")"; status_data["power"] = "ERROR"; }
             else if (!remote_data)              { error = "Error building display: no remote definition for " + device + " (" + type + ")"; }
             else if (!connection_1)             { error = "Error building display: no API definition for " + status_data["api"].split("_")[0]; }
             else if (!connection_2)             { error = "Error building display: no API device definition for " + status_data["api"]; }
@@ -1009,6 +1009,7 @@ class rmSheetBox {
         // Pfeile rechts
         this.arrowContainer = document.createElement("div");
         this.arrowContainer.className = "tab-scroll-right";
+        this.arrowContainer.style.display = "flex";
 
         this.btnLeft = document.createElement("button");
         this.btnLeft.className = "tab-scroll-btn";
@@ -1026,7 +1027,6 @@ class rmSheetBox {
         this.tabWrapper.appendChild(this.tabBar);
         this.tabWrapper.appendChild(this.arrowContainer);
 
-        // Inhaltsbereich
         this.contentArea = document.createElement("div");
         this.contentArea.className = "sheet-content";
         this.contentArea.style.position = "relative";
@@ -1035,7 +1035,12 @@ class rmSheetBox {
         this.box.appendChild(this.contentArea);
         this.container.appendChild(this.box);
 
+        this.fade = document.createElement('div');
+        this.fade.className = 'fade-bottom';
+        this.contentArea.appendChild(this.fade);
+
         window.addEventListener("resize", () => this.updateArrowVisibility());
+        this.updateArrowVisibility();
         }
 
     addSheet(title, content) {
@@ -1078,6 +1083,7 @@ class rmSheetBox {
 
     setActiveSheet(index) {
         this.activeIndex = index;
+        this.updateArrowVisibility();
 
         this.sheets.forEach((sheet, i) => {
             const active = i === index;
@@ -1105,8 +1111,31 @@ class rmSheetBox {
         }
 
     updateArrowVisibility() {
+        function isVisible(el) {
+          if (!el) return false;
+          // Not connected to the DOM
+          if (!el.ownerDocument || !el.ownerDocument.documentElement.contains(el)) {
+            return false;
+          }
+
+          // Walk up the DOM tree
+          while (el) {
+            const style = window.getComputedStyle(el);
+            if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+              return false;
+            }
+            el = el.parentElement;
+          }
+          return true;
+        }
+
         const { scrollWidth, clientWidth } = this.tabBar;
-        this.arrowContainer.style.display = scrollWidth > clientWidth ? "flex" : "none";
+        if (isVisible(this.container)) {
+            this.arrowContainer.style.display = scrollWidth > clientWidth ? "flex" : "none";
+            }
+        else {
+            this.arrowContainer.style.display = "flex";
+            }
         }
 
     getSheetContent(index) {
