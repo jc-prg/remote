@@ -7,6 +7,7 @@
 		"addon-AmazonVOD": "jc.set_addons('plugin.video.amazon-test')",
 		"addon-Joyn": "jc.set_addons('plugin.video.joyn')",
 		"addon-Mediathek": "jc.set_addons('plugin.video.mediathekview')",
+		"addon-Netflix": "jc.set_addons('plugin.video.netflix')",
 		"back": "Input.Back()",
 		"context": "Input.ContextMenu()",
 		"display": "Input.ShowOSD()",
@@ -66,6 +67,7 @@
 			"values": { "max": 100, "min": 0 }
 			},
 		"addons": { "get" : "jc.get_metadata('addon-list')" },
+		"addon-properties": { "get" : "jc.get_addons('properties')" },
 		"audiostreams": { "get" : "jc.get_metadata('audiostreams')" },
 		"current-playing": { "get" : "jc.get_metadata('info')" },
 		"genre": { "get" : "jc.get_metadata('genre')" },

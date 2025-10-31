@@ -453,7 +453,7 @@ function rmRemote(name) {
 		edit    += this.tab.end();
 
 		//remote  += this.basic.container("remote_main","Main settings",edit,true);
-		remote  += this.basic.container("remote_edit_main", "Main settings", "<div id='remote-edit-main'></div>", true);
+		remote  += this.basic.container("remote_edit_main", "Main settings", "<div id='remote-edit-main'></div>", false);
 
         var edit_main = edit;
 
@@ -600,7 +600,7 @@ function rmRemote(name) {
 		remote += this.basic.edit_line();
 			
         // Add GUI to add JSON elements
-		remote += this.basic.container("remote_edit_add", lang("EDIT_ELEMENTS"), "<div id='remote-edit-add'></div>", true);
+		remote += this.basic.container("remote_edit_add", lang("EDIT_ELEMENTS"), "<div id='remote-edit-add'></div>", false);
 
         // if record device, edit ... unclear if still required
 		if (device_config["method"] == "record") {
@@ -972,7 +972,7 @@ function rmRemote(name) {
         // create frame
 		remote  += "<center class='remote_edit_headline'><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
 		remote  += this.basic.edit_line();
-		remote += this.basic.container("scene_main","Scene settings","<div id='scene-edit-main'></div>",true);
+		remote += this.basic.container("scene_main","Scene settings","<div id='scene-edit-main'></div>",false);
 		setTextById(id,remote);
 
         // create sheet box
@@ -1034,7 +1034,7 @@ function rmRemote(name) {
 		var remote = "";
 		remote += "<center class='remote_edit_headline'><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
 		remote += this.basic.edit_line();
-		remote += this.basic.container("edit_elements","Edit elements","<div id='scene-edit-elements'></div>",true);
+		remote += this.basic.container("edit_elements","Edit elements","<div id='scene-edit-elements'></div>",false);
 		remote += this.basic.container("edit_json_all","JSON edit","<div id='scene-edit-json'></div>",false);
 		remote += this.basic.edit_line();
         this.button.width = "23%";
