@@ -970,7 +970,7 @@ function rmSettings (name) {	// IN PROGRESS
                     for (var i=0;i<dataAll["CONFIG"]["apis"]["list_api_commands"][key+"_"+dev].length > 0;i++) {
                         var command = dataAll["CONFIG"]["apis"]["list_api_commands"][key+"_"+dev][i];
                         var command_link = "apiSendToApi(\"" + key+"_"+dev + "::" +command + "\");";
-                        buttons += this.btn.sized("api_cmd_"+key+"_"+dev, command, "", command_link);
+                        buttons += this.btn.sized("api_cmd_"+key+"_"+dev, command, "settings", command_link);
                         }
                     }
 

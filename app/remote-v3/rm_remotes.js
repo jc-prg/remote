@@ -550,7 +550,7 @@ function rmRemote(name) {
     	this.basic              = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
 		this.basic.input_width  = "90%";
 
-        var select    = this.basic.select("api_cmd_select",lang("API_SELECT_CMD"),commands,on_change,'',sort=false, change_key_value=true);
+        var select    = this.basic.select("api_cmd_select", lang("API_SELECT_CMD"), commands, on_change, '', sort=false, change_key_value=true);
 
 	    setTextById('api_command_select', select);
 
