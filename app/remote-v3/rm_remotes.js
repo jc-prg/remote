@@ -453,7 +453,7 @@ function rmRemote(name) {
 		edit    += this.tab.end();
 
 		//remote  += this.basic.container("remote_main","Main settings",edit,true);
-		remote  += this.basic.container("remote_edit_main", "Main settings", "<div id='remote-edit-main'></div>", false);
+		remote  += this.basic.container("remote_edit_main", "Main settings", "<div id='remote-edit-main'></div>", true);
 
         var edit_main = edit;
 
@@ -972,7 +972,7 @@ function rmRemote(name) {
         // create frame
 		remote  += "<center class='remote_edit_headline'><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
 		remote  += this.basic.edit_line();
-		remote += this.basic.container("scene_main","Scene settings","<div id='scene-edit-main'></div>",false);
+		remote += this.basic.container("scene_main","Scene settings","<div id='scene-edit-main'></div>",true);
 		setTextById(id,remote);
 
         // create sheet box

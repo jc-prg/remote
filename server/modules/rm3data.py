@@ -603,9 +603,10 @@ class RemotesData(RemoteThreadingClass):
                         if "data" in remote_config:
                             data[scene]["remote"] = remote_config["data"]
                             data[scene]["remote"]["scene_power_status"] = "N/A"
-                            if data[scene]["remote"]["remote"][0] == "HEADER-IMAGE||toggle" and data[scene]["remote"]["remote"][1].startswith("TOGGLE"):
-                                toggle = data[scene]["remote"]["remote"][1].split("||")
-                                data[scene]["remote"]["power_status"] = toggle[1]
+                            if len(data[scene]["remote"]["remote"]) > 0:
+                                if data[scene]["remote"]["remote"][0] == "HEADER-IMAGE||toggle" and data[scene]["remote"]["remote"][1].startswith("TOGGLE"):
+                                    toggle = data[scene]["remote"]["remote"][1].split("||")
+                                    data[scene]["remote"]["power_status"] = toggle[1]
                         else:
                             logging.error("Could not read remote data: " + rm3presets.scenes + remote_file)
                             data[scene]["remote_error"] = {
@@ -1010,12 +1011,15 @@ class RemotesEdit(RemoteDefaultClass):
             "data": {
                 "label": info["label"],
                 "description": info["label"],
+                "display": {},
+                "display-size": "middle",
                 "remote": [],
                 "devices": [],
                 "macro-channel": {},
                 "macro-scene-on": [],
                 "macro-scene-off": [],
                 "macro-scene": {},
+                "type": "scene"
             }
         }
 
