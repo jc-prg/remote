@@ -517,8 +517,8 @@ function rmRemoteDisplays(name) {
             text += display_start;
             text  = text.replace( /##STATUS##/g, "POWER_OFF" );
             text  = text.replace( /##STYLE##/g, style + " display_off" );
-            if (status == "OFF"  && !this.edit_mode)    { text  = text.replace( /##DISPLAY##/g, "block" ); }
-            else                                        { text  = text.replace( /##DISPLAY##/g, "none" ); }
+            if (status == "POWER_OFF"  && !this.edit_mode)    { text  = text.replace( /##DISPLAY##/g, "block" ); }
+            else                                              { text  = text.replace( /##DISPLAY##/g, "none" ); }
             text += "<center><b>Power Off</b><br/><i><text id='display_POWER_OFF_info_"+device+"'>"+lang("POWER_DEVICE_OFF", [""])+"</text></i></center>";
             text += display_end;
             }

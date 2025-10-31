@@ -744,7 +744,7 @@ function statusCheck_devicePowerButtonDisplay(data={}) {
         var power_status_api = devices[device]["api-status"];
 
         if (power_status_api.toUpperCase().indexOf("OFF") > -1)   { power_status = "POWER_OFF"; }
-        else if (power_status_api != "CONNECTED")   { power_status = "ERROR"; }
+        else if (power_status_api.toUpperCase() != "CONNECTED")   { power_status = "ERROR"; }
 
         console.debug("Check PWR BUTTON & DISPLAY: " + device + " / " + power_status + " / " + power_status_api)
 
