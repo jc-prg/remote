@@ -319,120 +319,6 @@ function rmRemoteButtons(name) {
 	}
 
 
-function rmRemoteJSON(name) {
-	this.app_name       = name;
-	this.data           = {};
-	this.logging        = new jcLogging(this.app_name);
-
-
-	// create textarea to edit JSON
-	this.textarea           = function ( id, json, format="" ) {
-            var text = "";
-            text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:95%;height:160px;\">";
-            text += this.json2text( id, json, format );
-            text.replaceAll('"', '<b>"</b>');
-	        text += "</textarea></center>";
-        	return text;
-		}
-		
-	// replace JSON in area
-	this.textarea_replace   = function ( id, json, format="" ) {
-		var text = "";
-		text    += this.json2text( id, json, format );
-		element  = document.getElementById(id);
-		
-		if (element)	{ element.value = text; }
-		else		{ this.logging.error("Replace JSON in textarea - Element not found: "+id ); }
-		}
-
-    // show json for buttons in text field
-    this.json2text          = function ( id, json, format="" ) {
-		var text = "";
-        if (format == "buttons") {
-            var x=0;
-            text += "[\n";
-            for (var i=0;i<json.length;i++) {
-                x++;
-                text += "\""+json[i]+"\"";
-                if (i+1 < json.length)						{ text += ", "; }
-                if (Number.isInteger((x)/4))   				{ text += "\n\n"; x = 0; }
-                if (json.length > i+1 && json[i+1].includes("LINE") && x > 0) { text += "\n\n"; x = 0; }
-                if (json[i].includes("LINE"))                   { text += "\n\n"; x = 0; }
-                if (json[i].includes("TOGGLE"))                 { text += "\n\n"; x = 0; }
-                if (json[i].includes("HEADER-IMAGE"))           { text += "\n\n"; x = 0; }
-                if (json[i].includes("SLIDER"))                 { text += "\n\n"; x = 0; }
-                if (json[i].includes("COLOR-PICKER"))           { text += "\n\n"; x = 0; }
-                }
-            text += "\n]";
-            }
-        else if (format == "channels") {
-            json = JSON.stringify(json);
-            json = json.replaceAll( "],", "],\n\n" );
-            json = json.replaceAll( ":", ":\n   " );
-            json = json.replaceAll( "{", "{\n" );
-            json = json.replaceAll( "}", "\n}" );
-            text += json;
-            }
-        else if (format == "macros") {
-            json = JSON.stringify(json);
-            json = json.replaceAll( "],", "],\n\n" );
-            json = json.replaceAll( ":", ":\n" );
-            json = json.replaceAll( "{", "{\n" );
-            json = json.replaceAll( "}", "\n}" );
-            text += json;
-            }
-        else if (json != undefined) {
-            json = JSON.stringify(json);
-            json = json.replaceAll( ",", ",\n" );
-            json = json.replaceAll( "{", "{\n" );
-            json = json.replaceAll( "}", "\n}" );
-            text += json;
-            }
-        return text;
-        }
-        	
-    // convert text 2 json ...
-    this.text2json          = function ( json_text, id="" ) {
-
-		// if string return value
-        	if (json_text == "" || 
-        	   (json_text.indexOf("[") < 0 && json_text.indexOf("{") < 0 && json_text.indexOf("\""))) { return json_text; }
-        	
-        	// parse and return object
-		try 		{ var object = JSON.parse(json_text); } 
-		catch(e) 	{ 
-			alert(lang("FORMAT_INCORRECT")+": "+e); 
-			this.logging.error(lang("FORMAT_INCORRECT")+" / "+id+": "+e);
-			this.logging.error(json_text);
-			return default_data;
-			}
-		this.logging.debug(object);
-		return object;
-        	}
-        
-    // get JSON value (and check if correct)
-    this.get_value          = function ( id, default_data="" ) {
-
-        if (typeof id != "string") {
-            console.error(this.app_name+".get_value: id is not type 'string' but '"+(typeof id)+"'.");
-            console.error(id);
-            return;
-        }
-
-		element = document.getElementById(id);
-		this.logging.debug(this.app_name+".get_value: "+id);
-
-		if (!element)	{ 
-			this.logging.error(this.app_name+".get_value: element not found "+id);
-			return default_data;
-			}
-
-		return this.text2json( element.value, id );
-		}
-        	
-	}
-
-	
 function rmRemoteDisplays(name) {
 
 	this.app_name       = name;
@@ -639,7 +525,7 @@ function rmRemoteDisplays(name) {
 
         return text;
         }
-        	
+
 	this.sizes		= function () {
 		var sizes = {
 			"small" : "Small",
@@ -656,18 +542,18 @@ function rmRemoteDisplays(name) {
 		return sizes;
 		}
 
-        	
+
         // display all information
 	this.alert		= function (id, device, type="", style="" ) {
-        
+
 		var display_data = [];
       		var text  = "Device Information: "+device +"<hr/>";
       		text  += "<div style='width:100%;height:400px;overflow-y:scroll;'>";
-		
-		if (type != "devices") { 
+
+		if (type != "devices") {
 
 			if (!this.data["CONFIG"][type][device]["remote"]["display-detail"]) {
-			
+
 				this.logging.warn(this.app_name+".display_alert() not implemented for this type and device ("+type+"/"+device+")");
 				this.logging.warn(this.data["CONFIG"][type][device]);
 				return;
@@ -677,24 +563,24 @@ function rmRemoteDisplays(name) {
 				this.logging.warn(display_data);
 				}
 			}
-			
+
 		else {
 			var power = this.data["STATUS"][type][device];
 			if (type != "devices") { power = {}; }
 			var queries = this.data["CONFIG"]["devices"][device]["commands"]["definition"];
 			if (this.data["CONFIG"]["devices"][device] && queries)	{ display_data = Object.keys(queries); }
-			else								{ display_data = ["ERROR","No display defined"]; } 
+			else								{ display_data = ["ERROR","No display defined"]; }
 
         		this.logging.debug(device,"debug");
         		this.logging.debug(power,"debug");
         		this.logging.debug(queries,"debug");
         		this.logging.debug(display_data,"debug");
 
-			text  += "<center id='display_full_"+device+"_power'>"+power["api-status"]+": "+power["power"] + "</center><hr/>";        		
+			text  += "<center id='display_full_"+device+"_power'>"+power["api-status"]+": "+power["power"] + "</center><hr/>";
 			}
 
       		text  += this.tab_row("start","100%");
-        				
+
         	for (var i=0; i<display_data.length; i++) {
 
       			if (display_data[i] != "power" && display_data[i].substring && display_data[i].substring(0,3) != "api") { // || display_data[i].indexOf("api") != 0)) {
@@ -716,21 +602,21 @@ function rmRemoteDisplays(name) {
 		appMsg.confirm(text,"",500);
 		statusCheck_load();
         }
-        	
+
         // idea ... display for media information: mute (icon), volume (bar), info (title/artist/album/episode/...)
         // see: https://www.wbrnet.info/vbhtm/9261_Laufschriften_I.html
 
 	this.mediainfo		= function (id, device, style="") {
-                	
+
         var display      = "";
 		var status_data  = this.data["STATUS"]["devices"][device];
-        	
+
         return display;
         }
-        	
+
         // show json for buttons in text field
 	this.json		= function ( id, json, format="" ) {
-        
+
         var text = "";
         text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:95%;height:160px;\">";
         if (format == "buttons") {
@@ -767,9 +653,9 @@ function rmRemoteDisplays(name) {
 		text += "</textarea></center>";
         return text;
         }
-        	
+
         // write table tags
-	this.tab_row             = function (td1,td2="")  { 
+	this.tab_row             = function (td1,td2="")  {
 		if (td1 == "start")     { return "<table border=\"0\" width=\""+td2+"\">"; }
 		else if (td1 == "end")	{ return "</table>"; }
 		else if (td2 == false)	{ return "<tr><td valign=\"top\" colspan=\"2\">" + td1 + "</td></tr>"; }
@@ -789,187 +675,462 @@ function rmImage(file) {
         }
 
 
-var rmSheetBox_open = {};
-
-class rmSheetBox {
-  constructor(containerId, height = "300px", scroll_bar = false, scroll_view = false, keep_open = true) {
-    this.id = containerId;
-    this.container = document.getElementById(containerId);
-    this.container.innerHTML = "";
-    this.sheets = [];
-    this.activeIndex = 0;
-    this.scroll = scroll_bar;
-    this.scroll_into_view = scroll_view;
-    this.keep_open = keep_open;
-
-    // Hauptstruktur
-    this.box = document.createElement("div");
-    this.box.className = "sheet-box";
-    this.box.style.minHeight = height;
-    this.box.style.display = "flex";
-    this.box.style.flexDirection = "column";
-
-    // Tab-Leiste Wrapper
-    this.tabWrapper = document.createElement("div");
-    this.tabWrapper.className = "tab-bar-wrapper";
-
-    // Scrollbare Tab-Bar
-    this.tabBar = document.createElement("div");
-    this.tabBar.className = "tab-bar";
-
-    // Pfeile rechts
-    this.arrowContainer = document.createElement("div");
-    this.arrowContainer.className = "tab-scroll-right";
-
-    this.btnLeft = document.createElement("button");
-    this.btnLeft.className = "tab-scroll-btn";
-    this.btnLeft.innerHTML = "&#10094;";
-    this.btnLeft.addEventListener("click", () => this.scrollTabs(-150));
-
-    this.btnRight = document.createElement("button");
-    this.btnRight.className = "tab-scroll-btn";
-    this.btnRight.innerHTML = "&#10095;";
-    this.btnRight.addEventListener("click", () => this.scrollTabs(150));
-
-    this.arrowContainer.appendChild(this.btnLeft);
-    this.arrowContainer.appendChild(this.btnRight);
-
-    this.tabWrapper.appendChild(this.tabBar);
-    this.tabWrapper.appendChild(this.arrowContainer);
-
-    // Inhaltsbereich
-    this.contentArea = document.createElement("div");
-    this.contentArea.className = "sheet-content";
-    this.contentArea.style.position = "relative";
-
-    this.box.appendChild(this.tabWrapper);
-    this.box.appendChild(this.contentArea);
-    this.container.appendChild(this.box);
-
-    window.addEventListener("resize", () => this.updateArrowVisibility());
-  }
-
-  addSheet(title, content) {
-    const index = this.sheets.length;
-
-    // Tab erstellen
-    const tab = document.createElement("div");
-    tab.className = "tab";
-    tab.textContent = title;
-    tab.addEventListener("click", () => this.setActiveSheet(index));
-
-    // Sheet-Container erstellen
-    const sheetDiv = document.createElement("div");
-    sheetDiv.className = "sheet-panel";
-    sheetDiv.innerHTML = content;
-    sheetDiv.style.display = "none"; // inaktiv = unsichtbar
-    sheetDiv.style.position = "absolute";
-    sheetDiv.style.top = "0";
-    sheetDiv.style.left = "0";
-    sheetDiv.style.right = "0";
-    sheetDiv.style.bottom = "0";
-
-    // Scrollbar nur für das Sheet selbst
-    if (this.scroll) {
-      sheetDiv.style.overflowY = "auto";
-    }
-
-    // Immer im DOM, auch inaktiv
-    this.contentArea.appendChild(sheetDiv);
-
-    this.sheets.push({ title, tab, sheetDiv });
-    this.tabBar.appendChild(tab);
-
-    // Erstes Sheet aktivieren
-    if (this.keep_open)     { this.activateLast(); }
-    else if (index === 0)   { this.setActiveSheet(0); }
-
-    this.updateArrowVisibility();
-  }
-
-  setActiveSheet(index) {
-    this.activeIndex = index;
+function rmRemoteJSON(name) {
+	this.app_name       = name;
+	this.data           = {};
+	this.logging        = new jcLogging(this.app_name);
 
 
-    this.sheets.forEach((sheet, i) => {
-      const active = i === index;
-      sheet.tab.classList.toggle("active", active);
-      sheet.sheetDiv.style.display = active ? "block" : "none"; // inaktiv = display:none
+	// create textarea to edit JSON
+	this.textarea           = function ( id, json, format="" ) {
+            var text = "";
+            text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:95%;height:160px;\">";
+            text += this.json2text( id, json, format );
+            text.replaceAll('"', '<b>"</b>');
+	        text += "</textarea></center>";
+        	return text;
+		}
+		
+	// replace JSON in area
+	this.textarea_replace   = function ( id, json, format="" ) {
+		var text = "";
+		text    += this.json2text( id, json, format );
+		element  = document.getElementById(id);
+		
+		if (element)	{ element.value = text; }
+		else		{ this.logging.error("Replace JSON in textarea - Element not found: "+id ); }
+		}
 
-    if (this.keep_open && active) {
-        rmSheetBox_open[this.id] = index;
+    // show json for buttons in text field
+    this.json2text          = function ( id, json, format="" ) {
+		var text = "";
+        if (format == "buttons") {
+            var x=0;
+            text += "[\n";
+            for (var i=0;i<json.length;i++) {
+                x++;
+                text += "\""+json[i]+"\"";
+                if (i+1 < json.length)						{ text += ", "; }
+                if (Number.isInteger((x)/4))   				{ text += "\n\n"; x = 0; }
+                if (json.length > i+1 && json[i+1].includes("LINE") && x > 0) { text += "\n\n"; x = 0; }
+                if (json[i].includes("LINE"))                   { text += "\n\n"; x = 0; }
+                if (json[i].includes("TOGGLE"))                 { text += "\n\n"; x = 0; }
+                if (json[i].includes("HEADER-IMAGE"))           { text += "\n\n"; x = 0; }
+                if (json[i].includes("SLIDER"))                 { text += "\n\n"; x = 0; }
+                if (json[i].includes("COLOR-PICKER"))           { text += "\n\n"; x = 0; }
+                }
+            text += "\n]";
+            }
+        else if (format == "channels") {
+            json = JSON.stringify(json);
+            json = json.replaceAll( "],", "],\n\n" );
+            json = json.replaceAll( ":", ":\n   " );
+            json = json.replaceAll( "{", "{\n" );
+            json = json.replaceAll( "}", "\n}" );
+            text += json;
+            }
+        else if (format == "macros") {
+            json = JSON.stringify(json);
+            json = json.replaceAll( "],", "],\n\n" );
+            json = json.replaceAll( ":", ":\n" );
+            json = json.replaceAll( "{", "{\n" );
+            json = json.replaceAll( "}", "\n}" );
+            text += json;
+            }
+        else if (json != undefined) {
+            json = JSON.stringify(json);
+            json = json.replaceAll( ",", ",\n" );
+            json = json.replaceAll( "{", "{\n" );
+            json = json.replaceAll( "}", "\n}" );
+            text += json;
+            }
+        return text;
+        }
+        	
+    // convert text 2 json ...
+    this.text2json          = function ( json_text, id="" ) {
+
+		// if string return value
+        	if (json_text == "" || 
+        	   (json_text.indexOf("[") < 0 && json_text.indexOf("{") < 0 && json_text.indexOf("\""))) { return json_text; }
+        	
+        	// parse and return object
+		try 		{ var object = JSON.parse(json_text); } 
+		catch(e) 	{ 
+			alert(lang("FORMAT_INCORRECT")+": "+e); 
+			this.logging.error(lang("FORMAT_INCORRECT")+" / "+id+": "+e);
+			this.logging.error(json_text);
+			return default_data;
+			}
+		this.logging.debug(object);
+		return object;
+        }
+        
+    // get JSON value (and check if correct)
+    this.get_value          = function ( id, default_data="" ) {
+
+        if (typeof id != "string") {
+            console.error(this.app_name+".get_value: id is not type 'string' but '"+(typeof id)+"'.");
+            console.error(id);
+            return;
         }
 
-      if (active && this.scroll_into_view) {
-        sheet.tab.scrollIntoView({ behavior: "smooth", inline: "center" });
-      }
-    });
-  }
+		element = document.getElementById(id);
+		this.logging.debug(this.app_name+".get_value: "+id);
 
-  activateLast() {
-    if (this.keep_open && rmSheetBox_open[this.id]) { this.setActiveSheet(rmSheetBox_open[this.id]); }
-    else                                            { this.setActiveSheet(0); }
-  }
+		if (!element)	{ 
+			this.logging.error(this.app_name+".get_value: element not found "+id);
+			return default_data;
+			}
 
-  scrollTabs(offset) {
-    this.tabBar.scrollBy({ left: offset, behavior: "smooth" });
-    setTimeout(() => this.updateArrowVisibility(), 200);
-  }
+		return this.text2json( element.value, id );
+		}
+        	
+	}
 
-  updateArrowVisibility() {
-    const { scrollWidth, clientWidth } = this.tabBar;
-    this.arrowContainer.style.display = scrollWidth > clientWidth ? "flex" : "none";
-  }
+/*
+* class to edit JSON texts in a pre-formated and color coded style
+*/
+class rmJsonEdit {
 
-  getSheetContent(index) {
-    // Zugriff auf die Inhalte auch wenn sie gerade unsichtbar sind
-    return this.sheets[index]?.sheetDiv || null;
-  }
-}
+    constructor(name) {
+        this.sampleJSON = {
+            name: "Alice",
+            age: 28,
+            isAdmin: false,
+            favorites: { color: "blue", number: 42 },
+            collection: ["aa","bb","cc"],
+            attributes: {test: {hallo:"oh",huch:"ah"}, buh:23}
+            };
+        this.default_size = "width: 95%; height: 160px;";
 
+        this.create = this.create.bind(this);
+        this.start  = this.start.bind(this);
+        }
 
-var scrollBoxWrapper    = undefined;
-var scrollBoxLeftArrow  = undefined;
-var scrollBoxRightArrow = undefined;
+    create(container_id, id, json) {
+        const editor    = this.get(id, json);
+        if (document.getElementById(container_id)) {
+            const container = document.getElementById(container_id);
+            container.innerHTML = editor;
+            this.start(id);
+            }
+        else {
+            console.error("rmJsonEdit.create: container for json editor '" + container_id + "' not found." );
+            }
+        }
 
-function scrollBoxCreate (html="",wrapper="scrollWrapper", scrollLeft="scrollLeft", scrollRight="scrollRight") {
-    var box = "<div id='"+wrapper+"' class='rm-button_setting_wrapper_top'>";
-	box    += "<button class='nav-arrow left' id='"+scrollLeft+"'>❮</button>";
-	box    += html;
-	box    += "<button class='nav-arrow right' id='"+scrollRight+"'>❯</button>";
-	box    += "</div>";
-	return box;
+    get(id, json) {
+        const id_container = id + "_container";
+        const id_highlight = id + "_highlight";
+        const id_textarea  = id;
+
+        const jsonText = this.customJSONStringify(json, 2);
+
+        this.editor     = `<div id="`+id_container+`" class="json-editor-container" style="`+this.default_size+`">
+            <pre id="`+id_highlight+`">`+this.syntaxHighlight(jsonText)+`</pre>
+            <textarea id="`+id_textarea+`" spellcheck="false">`+jsonText+`</textarea>
+            </div>`;
+
+        return this.editor;
+        }
+
+    start(id) {
+        const highlight = document.getElementById(id + "_highlight");
+        const textarea  = document.getElementById(id);
+
+        if (textarea) {
+            // overlay highlighted text
+            textarea.addEventListener("input", () => {
+                highlight.innerHTML = this.syntaxHighlight(textarea.value);
+                });
+
+            // Sync scroll position
+            textarea.addEventListener("scroll", () => {
+                highlight.scrollTop = textarea.scrollTop;
+                highlight.scrollLeft = textarea.scrollLeft;
+                });
+
+            // Sync size changes with ResizeObserver
+            const resizeObserver = new ResizeObserver(() => {
+                highlight.style.width = textarea.offsetWidth + "px";
+                highlight.style.height = textarea.offsetHeight + "px";
+                });
+            resizeObserver.observe(textarea);
+            }
+        else {
+            console.error("rmJsonEdit.start: json editor '" + id + "' not found." );
+            }
+        }
+
+    disable(id, disabled=true) {
+        const highlight = document.getElementById(id + "_highlight");
+        const textarea  = document.getElementById(id);
+
+        textarea.disabled = disabled;
+        if (disabled)   { highlight.style.background = "var(--json-color-background-disabled)"; }
+        else            { highlight.style.background = "var(--json-color-background)"; }
     }
 
-function scrollBoxRegister (wrapper="scrollWrapper", scrollLeft="scrollLeft", scrollRight="scrollRight") {
+    customJSONStringify(obj, indent = 2) {
+        const space = " ".repeat(indent);
 
-    if (!document.getElementById(wrapper)) { return; }
-    else { console.info("Register Scroll Box: " + wrapper); }
+        function format(value, level = 0) {
+            if (value === null || typeof value !== "object") {
+                return JSON.stringify(value);
+                }
 
-    scrollBoxWrapper        = document.getElementById(wrapper);
-    scrollBoxLeftArrow      = document.getElementById(scrollLeft);
-    scrollBoxRightArrow     = document.getElementById(scrollRight);
+            if (Array.isArray(value)) {
+                if (value.length === 0) return "[]";
+                const items = value.map(v => format(v, level + 1)).join(", ");
+                return `[${items}]`;
+                }
 
-    scrollBoxLeftArrow.addEventListener('click', () => {
-      scrollBoxWrapper.scrollBy({ left: -100, behavior: 'smooth' });
-    });
+            const entries = Object.entries(value);
 
-    scrollBoxRightArrow.addEventListener('click', () => {
-      scrollBoxWrapper.scrollBy({ left: 100, behavior: 'smooth' });
-    });
+            // Detect if it's a "leaf" object (no nested objects/arrays)
+            const isLeaf = entries.every(
+                ([, v]) => v === null || typeof v !== "object"
+                );
 
-    scrollBoxWrapper.addEventListener('scroll', scrollBoxUpdate);
-    window.addEventListener('resize', scrollBoxUpdate);
+            if (isLeaf) {
+                const inline = entries
+                    .map(([k, v]) => `${JSON.stringify(k)}: ${format(v, level + 1)}`)
+                    .join(", ");
+                return `{${inline}}`;
+                }
 
-    scrollBoxUpdate();
+            const inner = entries
+                .map(([k, v]) => `${space.repeat(level + 1)}${JSON.stringify(k)}: ${format(v, level + 1)}`)
+                .join(",\n");
+            return `{\n${inner}\n${space.repeat(level)}}`;
+            }
+
+        return format(obj, 0);
+        }
+
+    syntaxHighlight(json) {
+        if (!json) return "";
+        json = json
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+        return json.replace(
+            /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+            function (match) {
+                let cls = "json-number";
+
+                if (/^"/.test(match))               { cls = /:$/.test(match) ? "json-key" : "json-string"; }
+                else if (/true|false/.test(match))  { cls = "json-boolean"; }
+                else if (/null/.test(match))        { cls = "json-null"; }
+
+                if (cls == "json-string") { match = match.replace( /\|\|/g, '<span class="json-separator">||</span>'); }
+
+                return `<span class="${cls}">${match}</span>`;
+                }
+            );
+        }
     }
 
-function scrollBoxUpdate() {
-    const scrollLeft = scrollBoxWrapper.scrollLeft;
-    const maxScroll  = scrollBoxWrapper.scrollWidth - scrollBoxWrapper.clientWidth;
+/*
+* class to create a box, where content can be added into several sheets and the sheets can be selected by tabs
+*/
+var rmSheetBox_open = {};
+class rmSheetBox {
 
-    scrollBoxLeftArrow.style.display  = scrollLeft > 0 ? 'block' : 'none';
-    scrollBoxRightArrow.style.display = scrollLeft < maxScroll - 1 ? 'block' : 'none';
+    constructor(containerId, height = "300px", scroll_bar = false, scroll_view = false, keep_open = true) {
+        this.id = containerId;
+        this.container = document.getElementById(containerId);
+        this.container.innerHTML = "";
+        this.sheets = [];
+        this.activeIndex = 0;
+        this.scroll = scroll_bar;
+        this.scroll_into_view = scroll_view;
+        this.keep_open = keep_open;
+
+        // Hauptstruktur
+        this.box = document.createElement("div");
+        this.box.className = "sheet-box";
+        this.box.style.minHeight = height;
+        this.box.style.display = "flex";
+        this.box.style.flexDirection = "column";
+
+        // Tab-Leiste Wrapper
+        this.tabWrapper = document.createElement("div");
+        this.tabWrapper.className = "tab-bar-wrapper";
+
+        // Scrollbare Tab-Bar
+        this.tabBar = document.createElement("div");
+        this.tabBar.className = "tab-bar";
+
+        // Pfeile rechts
+        this.arrowContainer = document.createElement("div");
+        this.arrowContainer.className = "tab-scroll-right";
+
+        this.btnLeft = document.createElement("button");
+        this.btnLeft.className = "tab-scroll-btn";
+        this.btnLeft.innerHTML = "&#10094;";
+        this.btnLeft.addEventListener("click", () => this.scrollTabs(-150));
+
+        this.btnRight = document.createElement("button");
+        this.btnRight.className = "tab-scroll-btn";
+        this.btnRight.innerHTML = "&#10095;";
+        this.btnRight.addEventListener("click", () => this.scrollTabs(150));
+
+        this.arrowContainer.appendChild(this.btnLeft);
+        this.arrowContainer.appendChild(this.btnRight);
+
+        this.tabWrapper.appendChild(this.tabBar);
+        this.tabWrapper.appendChild(this.arrowContainer);
+
+        // Inhaltsbereich
+        this.contentArea = document.createElement("div");
+        this.contentArea.className = "sheet-content";
+        this.contentArea.style.position = "relative";
+
+        this.box.appendChild(this.tabWrapper);
+        this.box.appendChild(this.contentArea);
+        this.container.appendChild(this.box);
+
+        window.addEventListener("resize", () => this.updateArrowVisibility());
+        }
+
+    addSheet(title, content) {
+        const index = this.sheets.length;
+
+        // Tab erstellen
+        const tab = document.createElement("div");
+        tab.className = "tab";
+        tab.textContent = title;
+        tab.addEventListener("click", () => this.setActiveSheet(index));
+
+        // Sheet-Container erstellen
+        const sheetDiv = document.createElement("div");
+        sheetDiv.className = "sheet-panel";
+        sheetDiv.innerHTML = content;
+        sheetDiv.style.display = "none"; // inaktiv = unsichtbar
+        sheetDiv.style.position = "absolute";
+        sheetDiv.style.top = "0";
+        sheetDiv.style.left = "0";
+        sheetDiv.style.right = "0";
+        sheetDiv.style.bottom = "0";
+
+        // Scrollbar nur für das Sheet selbst
+        if (this.scroll) {
+            sheetDiv.style.overflowY = "auto";
+            }
+
+        // Immer im DOM, auch inaktiv
+        this.contentArea.appendChild(sheetDiv);
+
+        this.sheets.push({ title, tab, sheetDiv });
+        this.tabBar.appendChild(tab);
+
+        // Erstes Sheet aktivieren
+        if (this.keep_open)     { this.activateLast(); }
+        else if (index === 0)   { this.setActiveSheet(0); }
+
+        this.updateArrowVisibility();
+        }
+
+    setActiveSheet(index) {
+        this.activeIndex = index;
+
+        this.sheets.forEach((sheet, i) => {
+            const active = i === index;
+            sheet.tab.classList.toggle("active", active);
+            sheet.sheetDiv.style.display = active ? "block" : "none"; // inaktiv = display:none
+
+            if (this.keep_open && active) {
+                rmSheetBox_open[this.id] = index;
+                }
+
+            if (active && this.scroll_into_view) {
+                sheet.tab.scrollIntoView({ behavior: "smooth", inline: "center" });
+                }
+            });
+        }
+
+    activateLast() {
+        if (this.keep_open && rmSheetBox_open[this.id]) { this.setActiveSheet(rmSheetBox_open[this.id]); }
+        else                                            { this.setActiveSheet(0); }
+        }
+
+    scrollTabs(offset) {
+        this.tabBar.scrollBy({ left: offset, behavior: "smooth" });
+        setTimeout(() => this.updateArrowVisibility(), 200);
+        }
+
+    updateArrowVisibility() {
+        const { scrollWidth, clientWidth } = this.tabBar;
+        this.arrowContainer.style.display = scrollWidth > clientWidth ? "flex" : "none";
+        }
+
+    getSheetContent(index) {
+        // Zugriff auf die Inhalte auch wenn sie gerade unsichtbar sind
+        return this.sheets[index]?.sheetDiv || null;
+        }
+    }
+
+/*
+* class to create a wide box for content, that can be scrolled left and right if it's wider than the box
+*/
+class rmScrollBox {
+
+    constructor(container="scrollBox", html="") {
+
+        this.update = this.update.bind(this);
+
+        this.id_container   = container;
+        this.id_wrapper     = container + "_wrapper";
+        this.id_scrollLeft  = container + "_scroll_left";
+        this.id_scrollRight = container + "_scroll_right";
+
+        this.boxHTML    = `<div id=`+this.id_wrapper+` class="rm-button_setting_wrapper_top">
+            <button class="nav-arrow left" id="`+this.id_scrollLeft+`">❮</button>
+            `+html+`
+            <button class='nav-arrow right' id="`+this.id_scrollRight+`">❯</button>
+	        </div>`;
+
+	    if (document.getElementById(this.id_container)) {
+
+	        this.container = document.getElementById(this.id_container);
+	        this.container.innerHTML = this.boxHTML;
+
+	        this.wrapper    = document.getElementById(this.id_wrapper);
+	        this.leftArrow  = document.getElementById(this.id_scrollLeft);
+	        this.rightArrow = document.getElementById(this.id_scrollRight);
+
+            this.leftArrow.addEventListener('click', () => {
+              this.wrapper.scrollBy({ left: -100, behavior: 'smooth' });
+            });
+
+            this.rightArrow.addEventListener('click', () => {
+              this.wrapper.scrollBy({ left: 100, behavior: 'smooth' });
+            });
+
+            this.wrapper.addEventListener('scroll', this.update);
+            window.addEventListener('resize', this.update);
+
+            this.update();
+	        }
+	    else {
+	        console.error("rmScrollBox: Container '" + container + "' not found.");
+	        }
+        }
+
+    update() {
+        if (this.wrapper) {
+            const scrollLeft = this.wrapper.scrollLeft;
+            const maxScroll  = this.wrapper.scrollWidth - this.wrapper.clientWidth;
+
+            this.leftArrow.style.display  = scrollLeft > 0 ? 'block' : 'none';
+            this.rightArrow.style.display = scrollLeft < maxScroll - 1 ? 'block' : 'none';
+            }
+	    else {
+	        console.error("rmScrollBox.update: Container '" + this.id_container + "' not found.");
+	        }
+        }
     }
 
 

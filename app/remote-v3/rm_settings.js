@@ -5,24 +5,25 @@
 function rmSettings (name) {	// IN PROGRESS
 
 	// preset vars
-	this.data         = {};
-	this.active       = false;
-	this.app_name     = name;
-	this.e_settings   = ["setting1","setting2","setting3","setting4","setting5","setting6"];
-	this.e_remotes    = ["frame3","frame4","frame5","frame1","frame2"];
-	this.input_width  = "140px";
-	this.initial_load = true;
-	this.edit_mode    = false;
-	this.manual_mode  = false;
-	this.mode         = "";
-	this.line         = "<div style=\"border:1px solid;height:1px;margin:5px;margin-top:10px;padding:0px;\"></div>";
+	this.data          = {};
+	this.active        = false;
+	this.app_name      = name;
+	this.e_settings    = ["setting1","setting2","setting3","setting4","setting5","setting6"];
+	this.e_remotes     = ["frame3","frame4","frame5","frame1","frame2"];
+	this.input_width   = "140px";
+	this.initial_load  = true;
+	this.edit_mode     = false;
+	this.manual_mode   = false;
+	this.mode          = "";
+	this.line          = "<div style=\"border:1px solid;height:1px;margin:5px;margin-top:10px;padding:0px;\"></div>";
 
-	this.logging      = new jcLogging(this.app_name);
-	this.btn          = new rmRemoteButtons(name);          // rm_remotes-elements.js
-	this.basic        = new rmRemoteBasic(name+".basic");   // rm_remotes-elements.js
-	this.tab          = new rmRemoteTable(name+".tab");     // rm_remotes-elements.js
-	this.json         = new rmRemoteJSON(name+".json");     // rm_remotes-elements.js
-	this.toggle       = new rmSlider(name+".toggle");       // rm_remotes-slider.js
+	this.logging       = new jcLogging(this.app_name);
+	this.btn           = new rmRemoteButtons(name);          // rm_remotes-elements.js
+	this.basic         = new rmRemoteBasic(name+".basic");   // rm_remotes-elements.js
+	this.tab           = new rmRemoteTable(name+".tab");     // rm_remotes-elements.js
+	this.json          = new rmRemoteJSON(name+".json");     // rm_remotes-elements.js
+	this.toggle        = new rmSlider(name+".toggle");       // rm_remotes-slider.js
+	this.index_buttons = undefined;
 	
 	// init settings / set vars
 	this.init			        = function (data) {
@@ -49,6 +50,7 @@ function rmSettings (name) {	// IN PROGRESS
 	// write settings page
     this.create			        = function (selected_mode="", direct_cmd="", direct_data="") {
 
+        this.index_buttons = "";
         this.header_title = getTextById("header_title");
         elementVisible("setting_ext_top_frame");
         elementVisible("setting_ext_frames");
@@ -75,8 +77,9 @@ function rmSettings (name) {	// IN PROGRESS
         else if (selected_mode == "general") {
             setNavTitle(lang('SETTINGS_GENERAL'));
             this.settings_ext_reset();
-            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_GENERAL"), "", true);
+            this.settings_ext_append(0,"", this.module_index(true, "WRAPPER"), "", true);
             this.settings_ext_append(1,lang("SETTINGS_GENERAL"), this.module_general_settings());
+            this.index_buttons_html = this.module_index(true, "SETTINGS_GENERAL");
             this.create_show_ext();
             this.module_general_settings_load();
             }
@@ -84,9 +87,10 @@ function rmSettings (name) {	// IN PROGRESS
             setNavTitle(lang('SETTINGS_DEVICES'));
 
             this.settings_ext_reset();
-            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_DEVICES"), "", true);
+            this.settings_ext_append(0,"", this.module_index(true, "WRAPPER"), "", true);
 	    	this.settings_ext_append(2,lang("ADD_DEVICE"), this.module_add_device(direct_cmd, direct_data));
             this.settings_ext_append(4,lang('EDIT_DEVICES'), this.module_devices());
+            this.index_buttons_html = this.module_index(true, "SETTINGS_DEVICES");
 	    	//this.settings_ext_append(2,lang("EDIT_REMOTES"), this.module_add_remotes(direct_cmd, direct_data) + this.module_title() + this.module_order_remotes());
             //this.settings_ext_append(1,"", this.module_index_quick(true, false));
     		//this.settings_ext_append(3,lang("EDIT_MACROS"), this.module_macros_edit());
@@ -103,9 +107,10 @@ function rmSettings (name) {	// IN PROGRESS
             setNavTitle(lang('SETTINGS_SCENES'));
 
             this.settings_ext_reset();
-            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_SCENES"), "", true);
+            this.settings_ext_append(0,"", this.module_index(true, "WRAPPER"), "", true);
 	    	this.settings_ext_append(2,lang("ADD_SCENE"), this.module_add_scene(direct_cmd, direct_data));
             this.settings_ext_append(1,lang('EDIT_SCENES'), this.module_scenes());
+            this.index_buttons_html = this.module_index(true, "SETTINGS_SCENES");
             this.create_show_ext();
 
             startDragAndDrop("sort_scenes", apiMovePosition);
@@ -113,42 +118,54 @@ function rmSettings (name) {	// IN PROGRESS
         else if (selected_mode == "edit_interfaces") {
             setNavTitle(lang('SETTINGS_API'));
             this.settings_ext_reset();
-            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_API"), "", true);
+            this.settings_ext_append(0,"", this.module_index(true, "WRAPPER"), "", true);
             this.module_interface_edit();
             this.settings_ext_append(1, "", this.module_interface_info());
             this.settings_ext_append(2, "", this.module_interface_logging());
             this.create_show_ext();
+            this.index_buttons_html = this.module_index(true, "SETTINGS_API");
             apiGetConfig_showInterfaceData(this.module_interface_edit_info);
             statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
             }
         else if (selected_mode == "edit_timer") {
             setNavTitle(lang('SETTINGS_TIMER'));
             this.settings_ext_reset();
-            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_TIMER"), "", true);
+            this.settings_ext_append(0,"", this.module_index(true, "WRAPPER"), "", true);
             this.settings_ext_append(1,lang("SETTINGS_TIMER"), this.module_timer());
+            this.index_buttons_html = this.module_index(true, "SETTINGS_TIMER");
             this.create_show_ext();
             }
         else if (selected_mode == "edit_macros") {
             setNavTitle(lang('SETTINGS_MACROS'));
             this.settings_ext_reset();
-            this.settings_ext_append(0,"", this.module_index(true, "SETTINGS_MACROS"), "", true);
+            this.settings_ext_append(0,"", this.module_index(true, "WRAPPER"), "", true);
             //this.settings_ext_append(1,lang("SETTINGS_TIMER"), this.module_timer());
     		this.settings_ext_append(1,lang("EDIT_MACROS"), this.module_macros_edit());
+            this.index_buttons_html = this.module_index(true, "SETTINGS_MACROS");
             this.create_show_ext();
             this.module_macros_edit_load();
             }
         else {
             setNavTitle(lang('INFORMATION'));
             this.settings_ext_reset();
-            this.settings_ext_append(0,"", this.module_index(true, "INFORMATION"), "", true);
+            this.settings_ext_append(0,"", this.module_index(true, "WRAPPER"), "", true);
             this.settings_ext_append(1,lang("VERSION_AND_STATUS"), this.module_system_info());
             this.settings_ext_append(2,lang("BUTTON_INFOS"), this.module_system_info_buttons());
+            this.index_buttons_html = this.module_index(true, "INFORMATION");
             this.create_show_ext();
             this.create_show_log();
             this.module_system_info_load();
             }
 
-        scrollBoxRegister("indexScrollBox");
+        if (selected_mode != "index") {
+            this.index_buttons = new rmScrollBox("setting_index_wrapper", this.index_buttons_html);
+            this.index_buttons.update();
+            }
+        else {
+            this.index_buttons = undefined;
+            }
+
+        //scrollBoxRegister("indexScrollBox");
         statusCheck_modes();
         scrollTop();
         }
@@ -189,7 +206,7 @@ function rmSettings (name) {	// IN PROGRESS
         else                                            { document.getElementById("frame_block_content").style.width = "calc(100% - 172px)"; }
         }
 
-    this.module_index           = function (small=false, selected="") {
+    this.module_index           = function (small=false, selected="", wrapper=false) {
 	    var html  = "";
 	    var header_max_width = "650px";
 	    if (!small) { html += "&nbsp;<br/>"; }
@@ -221,8 +238,10 @@ function rmSettings (name) {	// IN PROGRESS
 	        else       { html += "<button class='rm-button_setting_index' onclick=\""+setting_modules[key][1]+"\">" + img_big + "<br/>&nbsp;<br/>" + text + "</button>"; }
 	        }
 
-	    if (!small) { html += "<div style='rm-button_setting_wrapper'></div>"; }
-	    else        { html  = scrollBoxCreate(html, "indexScrollBox"); }
+	    if (!small)                     { html += "<div style='rm-button_setting_wrapper'></div>"; }
+	    else if (selected == "WRAPPER") { html  = "<div id='setting_index_wrapper'></div>"; }
+
+	    //else        { html  = scrollBoxCreate(html, "indexScrollBox"); }
 
 		return html;
 	    }
@@ -850,6 +869,8 @@ function rmSettings (name) {	// IN PROGRESS
     	this.tab       = new rmRemoteTable(name+".tab");
     	this.btn       = new rmRemoteButtons(name);			// rm_remotes-elements.js
         this.basic     = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
+        this.json_edit = new rmJsonEdit(name+".json");
+        this.json_edit.default_size = "width:100%;height:210px;";
 
     	this.list      = function (interface, data) {
             var text  = "";
@@ -911,6 +932,7 @@ function rmSettings (name) {	// IN PROGRESS
 
             for (var dev in interface["API-Devices"]) {
 
+                /*
                 var edit_json  = JSON.stringify(interface["API-Devices"][dev]);
                 edit_json      = edit_json.replaceAll("{", "{\n");
                 edit_json      = edit_json.replaceAll("}", "\n}\n");
@@ -920,16 +942,18 @@ function rmSettings (name) {	// IN PROGRESS
                 information += "<div id='api_status_data_"+key+"_"+dev+"' style='display:block'>";
                 information += "<textarea id=\"api_status_edit_"+key+"_"+dev+"\" style=\"width:95%;height:150px;\" disabled>" + edit_json + "</textarea>";
                 information += "</div>";
-
+                */
+                var information           = "<div id='api_status_data_"+key+"_"+dev+"'></div>";
                 var devices_per_interface = dataAll["CONFIG"]["apis"]["structure"];
                 var connected_devices     = devices_per_interface[key][dev].length;
 
                 var api_dev        = key.toLowerCase() + "_" + dev.toLowerCase();
-                var link_save      = "apiSetConfig_InterfaceData( \""+key+"_"+dev+"\", \"api_status_edit_"+key+"_"+dev+"\" );"
+                var link_save      = "apiSetConfig_InterfaceData( \""+key+"_"+dev+"\", \"api_status_edit_"+key+"_"+dev+"\" );" +
+                                     "rm3json_edit.disable(\"api_status_edit_"+key+"_"+dev+"\");";
                 var link_reconnect = "apiReconnectInterface( \""+key+"_"+dev+"\");"
-                var link_edit      = "document.getElementById(\"api_status_edit_"+key+"_"+dev+"\").removeAttribute(\"disabled\");";
-                link_edit         += "this.className=\"rm-button hidden\";";
-                link_edit         += "document.getElementById(\"save_"+api_dev+"\").className=\"rm-button settings\";";
+                var link_edit      = "rm3json_edit.disable(\"api_status_edit_"+key+"_"+dev+"\",false);" +
+                                     "this.className=\"rm-button hidden\";" +
+                                     "document.getElementById(\"save_"+api_dev+"\").className=\"rm-button settings\";";
                 var link_api_info  = "window.open(\""+interface["API-Info"]+"\")";
                 var link_on_off    = "apiApiDeviceOnOff_button(\""+key+"\", \""+dev+"\", this);";
 
@@ -949,7 +973,7 @@ function rmSettings (name) {	// IN PROGRESS
                 buttons      += this.btn.sized("onoff_"+api_dev,      on_off_status,    "settings",  link_on_off);
                 buttons      += this.btn.sized("reconnect_"+api_dev,  lang("RECONNECT"),"settings",  link_reconnect);
                 buttons      += this.btn.sized("edit_"+api_dev,       lang("EDIT"),     "settings",  link_edit)
-                buttons      += this.btn.sized("save_"+api_dev,       lang("SAVE"),     "hidden",  link_save);
+                buttons      += this.btn.sized("save_"+api_dev,       lang("SAVE"),     "hidden",    link_save);
                 buttons      += this.btn.sized("info_"+api_dev,       lang("API_INFO"), "settings",  link_api_info);
 
                 if (dataAll["CONFIG"]["apis"]["list_api_commands"][key+"_"+dev] && dataAll["CONFIG"]["apis"]["list_api_commands"][key+"_"+dev].length > 0) {
@@ -979,6 +1003,11 @@ function rmSettings (name) {	// IN PROGRESS
             }
             setting += "<br/>";
             setTextById(id, setting);
+
+            for (var dev in interface["API-Devices"]) {
+                this.json_edit.create("api_status_data_"+key+"_"+dev,"api_status_edit_"+key+"_"+dev, interface["API-Devices"][dev]);
+                this.json_edit.disable("api_status_edit_"+key+"_"+dev);
+                }
 
             var slider = document.getElementById("toggle__"+key+"_input");
             if (dataAll["STATUS"]["connections"][key]["active"] == true) {
@@ -1124,12 +1153,19 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
     this.module_macros_edit_load = function () {
-        const myBox2 = new rmSheetBox("macros-edit-json", height="300px", scroll=true);
+        const myBox2 = new rmSheetBox("macros-edit-json", height="400px", scroll=true);
         myBox2.addSheet("Info",         lang("MANUAL_MACROS"));
-        myBox2.addSheet("Groups",       "<h4>Edit JSON for device groups:</h4>" +     this.json.textarea("groups",  this.data["CONFIG"]["macros"]["groups"], "macros"));
-        myBox2.addSheet("Macros",       "<h4>Edit JSON for global macros:</h4>" +     this.json.textarea("macro",   this.data["CONFIG"]["macros"]["global"], "macros"));
-        myBox2.addSheet("Device ON",    "<h4>Edit JSON for device ON macros:</h4>" +  this.json.textarea("dev-on",  this.data["CONFIG"]["macros"]["device-on"]));
-        myBox2.addSheet("Device OFF",   "<h4>Edit JSON for device OFF macros:</h4>" + this.json.textarea("dev-off",  this.data["CONFIG"]["macros"]["device-off"]));
+        myBox2.addSheet("Groups",       "<h4>Edit JSON for device groups:</h4>" +     "<div id='json-edit-groups'></div>");
+        myBox2.addSheet("Macros",       "<h4>Edit JSON for global macros:</h4>" +     "<div id='json-edit-macro'></div>");
+        myBox2.addSheet("Device ON",    "<h4>Edit JSON for device ON macros:</h4>" +  "<div id='json-edit-dev-on'></div>");
+        myBox2.addSheet("Device OFF",   "<h4>Edit JSON for device OFF macros:</h4>" + "<div id='json-edit-dev-off'></div>");
+
+        const jsonEdit = new rmJsonEdit("edit-macros");
+        jsonEdit.default_size = "width:100%;height:270px;";
+        jsonEdit.create("json-edit-groups", "groups",  this.data["CONFIG"]["macros"]["groups"]);
+        jsonEdit.create("json-edit-macro",  "macro",   this.data["CONFIG"]["macros"]["global"]);
+        jsonEdit.create("json-edit-dev-on", "dev-on",  this.data["CONFIG"]["macros"]["device-on"]);
+        jsonEdit.create("json-edit-dev-off","dev-off", this.data["CONFIG"]["macros"]["device-off"]);
         }
 
 	this.module_order_remotes   = function () {

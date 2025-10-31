@@ -25,6 +25,7 @@ remote_css = [
     "style-theme-colors.css",
     "style-menu.css",
     "style-json.css",
+    "style-json-edit.css",
     "style-remote.css",
     "style-button.css",
     "style-slider.css",

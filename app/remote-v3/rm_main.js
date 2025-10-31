@@ -15,6 +15,8 @@ var rm3menu        = undefined;
 var rm3start       = undefined;
 var rm3remotes     = undefined;
 var rm3settings    = undefined;
+var rm3json_edit   = undefined;new rmJsonEdit("main");
+
 
 function startRemote() {
     rm3slider  = new jcSlider(name="rm3slider", container="audio_slider");              // create slider
@@ -29,10 +31,11 @@ function startRemote() {
         console.error("Could not connect 'apiSetVolume' and 'statusShow_volume'.");
         }
 
-    rm3menu     = new rmMenu(     "rm3menu", ["menuItems","menuItems2"] );
-    rm3start    = new rmStart(    "rm3start" );
-    rm3remotes  = new rmRemote(   "rm3remotes" );
-    rm3settings = new rmSettings( "rm3settings" );
+    rm3menu      = new rmMenu(     "rm3menu", ["menuItems","menuItems2"] );
+    rm3start     = new rmStart(    "rm3start");
+    rm3remotes   = new rmRemote(   "rm3remotes");
+    rm3settings  = new rmSettings( "rm3settings");
+    rm3json_edit = new rmJsonEdit( "rm3json_edit");
 
     appMsg.info_message_init(appMsg);
     remoteInit(first_load=true);

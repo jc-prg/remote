@@ -1,0 +1,64 @@
+:root {
+    --json-color-background: #222;
+    --json-color-background-disabled: #444;
+    --json-color-border: white;
+    --json-color-text: #ccc;
+    --json-color-text-key: green;
+    --json-color-text-string: orange;
+    --json-color-text-boolean: red;
+    --json-color-text-number: yellow;
+    --json-color-text-null: #FF9999;
+    --json-color-text-separator: lightblue;
+    --json-font-size: 12px;
+    --json-line-height: 1.8;
+}
+
+.json-editor-container {
+  position: relative;
+  width: 600px;
+  height: 400px;
+  font-family: monospace;
+}
+
+.json-editor-container pre, .json-editor-container textarea {
+  box-sizing: border-box;
+  font-family: monospace;
+  font-size: var(--json-font-size);
+  line-height: var(--json-line-height);
+  margin: 0;
+  padding: 10px;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Highlighted JSON text */
+.json-editor-container pre {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--json-color-text);
+  background: var(--json-color-background);
+  border-radius: 3px;
+  pointer-events: none; /* allows clicks to pass through */
+}
+
+/* Transparent textarea on top */
+.json-editor-container textarea {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: transparent;
+  background: transparent;
+  caret-color: white;
+  border-radius: 3px;
+}
+
+.json-key       { color: var(--json-color-text-key); }
+.json-string    { color: var(--json-color-text-string); }
+.json-number    { color: var(--json-color-text-number); }
+.json-boolean   { color: var(--json-color-text-boolean); }
+.json-null      { color: var(--json-color-text-null); }
+.json-separator { color: var(--json-color-text-separator); }

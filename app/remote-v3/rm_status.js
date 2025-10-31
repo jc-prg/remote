@@ -610,7 +610,6 @@ function statusCheck_deviceActive(data) {
 			statusShow_buttonActive(button,false);
 			}
 	    setTextById("header_image_text_info", lang("POWER_DEVICE_OFF_SCENE_INFO"));
-	    console.error("!!!")
 	    }
 	else if (rm3remotes.active_type == "scene" && scene_status[rm3remotes.active_name] != "ON") {
 

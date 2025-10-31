@@ -993,7 +993,7 @@ function rmRemote(name) {
 		var remote_info   	= this.data["CONFIG"]["devices"];
 
         // prepare field values
-		var json_edit_fields        = ["remote", "devices", "display", "display-size", "macro-channel", "macro-scene-on", "macro-scene-off"];
+		var json_edit_fields        = ["remote", "devices", "display", "display-size", "macro-channel", "macro-scene-on", "macro-scene-off", "macro-scene"];
 		var json_edit_values        = {};
 		var json_preview_values     = {
 		        "remote": preview_remote,
@@ -1003,6 +1003,7 @@ function rmRemote(name) {
 		        "macro-channel": preview_channel,
 		        "macro-scene-on": [],
 		        "macro-scene-off": [],
+		        "macro-scene": {},
 		        };
 
 		for (var i=0;i<json_edit_fields.length;i++) {
@@ -1021,6 +1022,7 @@ function rmRemote(name) {
 		if (json_edit_values["macro-scene-on"] == undefined)  { json_edit_values["macro-scene-on"] = []; }
 		if (json_edit_values["macro-scene-off"] == undefined) { json_edit_values["macro-scene-off"] = []; }
 		if (json_edit_values["macro-channel"] == undefined)   { json_edit_values["macro-channel"] = {}; }
+		if (json_edit_values["macro-scene"] == undefined)     { json_edit_values["macro-scene"] = {}; }
 
 		// frame
 		var remote = "";
