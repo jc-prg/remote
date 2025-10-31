@@ -932,17 +932,6 @@ function rmSettings (name) {	// IN PROGRESS
 
             for (var dev in interface["API-Devices"]) {
 
-                /*
-                var edit_json  = JSON.stringify(interface["API-Devices"][dev]);
-                edit_json      = edit_json.replaceAll("{", "{\n");
-                edit_json      = edit_json.replaceAll("}", "\n}\n");
-                edit_json      = edit_json.replaceAll(",", ",\n");
-
-                var information = "";
-                information += "<div id='api_status_data_"+key+"_"+dev+"' style='display:block'>";
-                information += "<textarea id=\"api_status_edit_"+key+"_"+dev+"\" style=\"width:95%;height:150px;\" disabled>" + edit_json + "</textarea>";
-                information += "</div>";
-                */
                 var information           = "<div id='api_status_data_"+key+"_"+dev+"'></div>";
                 var devices_per_interface = dataAll["CONFIG"]["apis"]["structure"];
                 var connected_devices     = devices_per_interface[key][dev].length;
