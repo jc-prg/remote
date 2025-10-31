@@ -656,10 +656,16 @@ function rmRemote(name) {
         this.button.width  = "90px";
         this.button.height = "25px";
 
-        const myJson = new rmSheetBox("remote-edit-json", height="350px", scroll=true);
-        myJson.addSheet("Remote",       "<h3>"+lang("JSON_REMOTE")+"</h3>" +  this.json.textarea( "remote_json_buttons", remote_definition, "buttons" ) + "<br/>" + lang("MANUAL_REMOTE") );
-        myJson.addSheet("Display",      "<h3>"+lang("JSON_DISPLAY")+"</h3>" + this.json.textarea( "remote_json_display", remote_display ) + "<br/>" + lang("MANUAL_DISPLAY") );
-        myJson.addSheet("Macros",       "<h3>"+lang("JSON_REMOTE_MACROS")+"</h3>" + macro_edit );
+        const myBoxJson = new rmSheetBox("remote-edit-json", height="350px", scroll=true);
+        //myBoxJson.addSheet("Remote",       "<h4>"+lang("JSON_REMOTE")+"</h4>" +  this.json.textarea( "remote_json_buttons", remote_definition, "buttons" ) + "<br/>" + lang("MANUAL_REMOTE") );
+        //myBoxJson.addSheet("Display",      "<h4>"+lang("JSON_DISPLAY")+"</h4>" + this.json.textarea( "remote_json_display", remote_display ) + "<br/>" + lang("MANUAL_DISPLAY") );
+        myBoxJson.addSheet("Remote",       "<h4>"+lang("JSON_REMOTE")+"</h4>" +  "<div id='container_remote_json_buttons'></div><br/>" + lang("MANUAL_REMOTE") );
+        myBoxJson.addSheet("Display",      "<h4>"+lang("JSON_DISPLAY")+"</h4>" + "<div id='container_remote_json_display'></div><br/>" + lang("MANUAL_DISPLAY") );
+        myBoxJson.addSheet("Macros",       "<h4>"+lang("JSON_REMOTE_MACROS")+"</h4>" + macro_edit );
+
+        const myJson = new rmJsonEdit("remote-edit", format_style="default", style="width:100%;height:200px");
+        myJson.create("container_remote_json_buttons", "remote_json_buttons", remote_definition, "rmc");
+        myJson.create("container_remote_json_display", "remote_json_display", remote_display,    "default");
 
         const myBox = new rmSheetBox("remote-edit-add", height="280px", scroll=false);
         myBox.addSheet("Info",          lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") +
@@ -1048,17 +1054,14 @@ function rmRemote(name) {
 		setTextById(id,remote);
 
 		// edit JSON file
-		var edit_json_required = "Required Devices: &nbsp;"+this.basic.input("json::devices", JSON.stringify(scene_remote["devices"])) + "<br/>&nbsp;<br/>" + lang("MANUAL_DEVICES");
-		var edit_json_remote   = this.json.textarea( "json::remote", json_edit_values["remote"], "buttons" ) + "&nbsp;<br/>" + lang("MANUAL_SCENE");
-		var edit_json_display  = this.json.textarea( "json::display", json_edit_values["display"] ) + "&nbsp;<br/>" + lang("MANUAL_DISPLAY");
-		var edit_json_channel  = this.json.textarea( "json::macro-channel", json_edit_values["macro-channel"], "channels"  ) + "&nbsp;<br/>" + lang("MANUAL_CHANNEL");
-		var edit_json_macros   = "<i>Macro SCENE ON: &nbsp;"  +
-                                this.json.textarea("json::macro-scene-on", json_edit_values["macro-scene-on"]) + "<br/>" +
-                                "Macro SCENE OFF: &nbsp;" +
-                                this.json.textarea("json::macro-scene-off", json_edit_values["macro-scene-off"]) + "<br/>" +
-                                "Other SCENE macros: &nbsp;" +
-                                this.json.textarea( "json::macro-scene", json_edit_values["macro-scene"] ) +
-                                "</i>&nbsp;<br/>" + lang("MANUAL_MACROS_SCENE");
+		var edit_json_required = "<h4>Required Devices:</h4><div id='scene-edit-required'></div><br/>" + lang("MANUAL_DEVICES");
+        var edit_json_remote   = "<h4>Edit remote control definition:</h4><div id='scene-edit-remote'></div><br/>" + "&nbsp;<br/>" + lang("MANUAL_DISPLAY");
+        var edit_json_display  = "<h4>Edit display definition:</h4><div id='scene-edit-display'></div><br/>" + "&nbsp;<br/>" + lang("MANUAL_DISPLAY");
+        var edit_json_channel  = "<h4>Edit channel macros:</h4><div id='scene-edit-macro-channel'></div><br/>" + "&nbsp;<br/>" + lang("MANUAL_DISPLAY");
+		var edit_json_macros   = "<h4>Macro SCENE ON:</h4>" + "<div id='scene-edit-macro-scene-on'></div><br/>" +
+                                 "<h4>Macro SCENE OFF:</h4>" + "<div id='scene-edit-macro-scene-off'></div><br/>" +
+                                 "<h4>Other SCENE macros:</h4>" + "<div id='scene-edit-macro-scene-other'></div><br/>" +
+                                 "</i>&nbsp;<br/>" + lang("MANUAL_MACROS_SCENE");
 
         // create sheet box JSON
         const myBox2 = new rmSheetBox("scene-edit-json", height="400px", scroll=true);
@@ -1067,6 +1070,16 @@ function rmRemote(name) {
         myBox2.addSheet("Display",   edit_json_display);
         myBox2.addSheet("Channels",  edit_json_channel);
         myBox2.addSheet("Macros",    edit_json_macros);
+
+        // create JSON edit fields
+        const myJson = new rmJsonEdit(id="scene-edit-json", format_style="default", style="width:100%;height:150px;");
+        myJson.create("scene-edit-macro-scene-on",   "json::macro-scene-on",    json_edit_values["macro-scene-on"]);
+        myJson.create("scene-edit-macro-scene-off",  "json::macro-scene-off",   json_edit_values["macro-scene-off"]);
+        myJson.create("scene-edit-macro-scene-other","json::macro-scene",       json_edit_values["macro-scene"]);
+        myJson.create("scene-edit-display",          "json::display",           json_edit_values["display"]);
+        myJson.create("scene-edit-macro-channel",    "json::macro-channel",     json_edit_values["macro-channel"], format_style="compact", style="width:100%;height:220px;");
+        myJson.create("scene-edit-remote",           "json::remote",            json_edit_values["remote"],        format_style="rmc",     style="width:100%;height:220px;");
+        myJson.create("scene-edit-required",         "json::devices",           scene_remote["devices"],           format_style="compact", style="width:100%;height:47px;");
 
         // create sheet box elements
         const myBox1 = new rmSheetBox("scene-edit-elements", height="300px", scroll=true);
@@ -1143,6 +1156,11 @@ function rmRemote(name) {
                 "display": JSON.parse(getValueById("json::display")),
                 "macro-channel": JSON.parse(getValueById("json::macro-channel")),
                 }
+            //if (document.getElementById("json::display-size")) { json_edit_values["display-size"] = JSON.parse(getValueById("json::display-size")); }
+            //else
+            if (preview_display_size != "")               { json_edit_values["display-size"] = preview_display_size; }
+            else if (scene_remote["display-size"])        { json_edit_values["display-size"] = scene_remote["display-size"]; }
+
             }
 
         // create elements editing
@@ -1415,8 +1433,7 @@ function rmRemote(name) {
                           );
                 }
             edit   += this.tab.row(
-                      //this.basic.select("json::display-size","display size", display_sizes, "", json_edit_values["display-size"]),
-                      this.basic.select("json::display-size","display size", display_sizes, "", json_preview_values["display-size"]),
+                      this.basic.select("json::display-size","display size", display_sizes, "", json_edit_values["display-size"]),
                       this.button.edit(this.app_name+".scene_remote(  '"+this.frames_remote[0]+"','"+scene+"','json::remote','json::display','json::display-size');"+
 				                   this.app_name+".scene_channels('"+this.frames_remote[2]+"','"+scene+"','json::macro-channel');",
 				                   lang("BUTTON_T_PREVIEW"))

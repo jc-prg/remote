@@ -157,7 +157,7 @@ function rmSettings (name) {	// IN PROGRESS
             this.module_system_info_load();
             }
 
-        if (selected_mode != "index") {
+        if (document.getElementById("setting_index_wrapper")) {
             this.index_buttons = new rmScrollBox("setting_index_wrapper", this.index_buttons_html);
             this.index_buttons.update();
             }
@@ -867,10 +867,9 @@ function rmSettings (name) {	// IN PROGRESS
 
         var interfaces = data["DATA"]["interfaces"];
     	this.tab       = new rmRemoteTable(name+".tab");
-    	this.btn       = new rmRemoteButtons(name);			// rm_remotes-elements.js
+    	this.btn       = new rmRemoteButtons(name);			    // rm_remotes-elements.js
         this.basic     = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
-        this.json_edit = new rmJsonEdit(name+".json");
-        this.json_edit.default_size = "width:100%;height:210px;";
+        this.json_edit = new rmJsonEdit(id=name+".json", format_style="compact", style="width:100%;height:210px;");
 
     	this.list      = function (interface, data) {
             var text  = "";
@@ -1149,8 +1148,7 @@ function rmSettings (name) {	// IN PROGRESS
         myBox2.addSheet("Device ON",    "<h4>Edit JSON for device ON macros:</h4>" +  "<div id='json-edit-dev-on'></div>");
         myBox2.addSheet("Device OFF",   "<h4>Edit JSON for device OFF macros:</h4>" + "<div id='json-edit-dev-off'></div>");
 
-        const jsonEdit = new rmJsonEdit("edit-macros");
-        jsonEdit.default_size = "width:100%;height:270px;";
+        const jsonEdit = new rmJsonEdit(id="edit-macros", format_style="compact", style="width:100%;height:270px;");
         jsonEdit.create("json-edit-groups", "groups",  this.data["CONFIG"]["macros"]["groups"]);
         jsonEdit.create("json-edit-macro",  "macro",   this.data["CONFIG"]["macros"]["global"]);
         jsonEdit.create("json-edit-dev-on", "dev-on",  this.data["CONFIG"]["macros"]["device-on"]);

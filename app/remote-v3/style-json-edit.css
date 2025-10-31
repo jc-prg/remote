@@ -10,7 +10,7 @@
     --json-color-text-null: #FF9999;
     --json-color-text-separator: lightblue;
     --json-font-size: 12px;
-    --json-line-height: 1.8;
+    --json-line-height: 2;
 }
 
 .json-editor-container {

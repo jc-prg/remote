@@ -772,6 +772,7 @@ function rmRemoteJSON(name) {
         if (typeof id != "string") {
             console.error(this.app_name+".get_value: id is not type 'string' but '"+(typeof id)+"'.");
             console.error(id);
+            console.error(default_data);
             return;
         }
 
@@ -793,23 +794,17 @@ function rmRemoteJSON(name) {
 */
 class rmJsonEdit {
 
-    constructor(name) {
-        this.sampleJSON = {
-            name: "Alice",
-            age: 28,
-            isAdmin: false,
-            favorites: { color: "blue", number: 42 },
-            collection: ["aa","bb","cc"],
-            attributes: {test: {hallo:"oh",huch:"ah"}, buh:23}
-            };
-        this.default_size = "width: 95%; height: 160px;";
+    constructor(id, format_style = "default", style = "width: 95%; height: 160px;") {
+        this.default_size = style;
+        this.format_style = format_style;   // other options: default, leafs, row4
 
+        this.start = this.start.bind(this);
         this.create = this.create.bind(this);
-        this.start  = this.start.bind(this);
+        this.customJSONStringify = this.customJSONStringify.bind(this);
         }
 
-    create(container_id, id, json) {
-        const editor    = this.get(id, json);
+    create(container_id, id, json, format_style = "", style = "") {
+        const editor    = this.get(id, json, format_style, style);
         if (document.getElementById(container_id)) {
             const container = document.getElementById(container_id);
             container.innerHTML = editor;
@@ -820,16 +815,19 @@ class rmJsonEdit {
             }
         }
 
-    get(id, json) {
+    get(id, json, format_style = "", style = "") {
         const id_container = id + "_container";
         const id_highlight = id + "_highlight";
+        const id_type      = id + "_type";
         const id_textarea  = id;
+        const jsonText     = this.customJSONStringify(json, 2, format_style);
 
-        const jsonText = this.customJSONStringify(json, 2);
+        if (style == "") { style = this.default_size; }
 
-        this.editor     = `<div id="`+id_container+`" class="json-editor-container" style="`+this.default_size+`">
+        this.editor     = `<div id="`+id_container+`" class="json-editor-container" style="`+style+`">
             <pre id="`+id_highlight+`">`+this.syntaxHighlight(jsonText)+`</pre>
             <textarea id="`+id_textarea+`" spellcheck="false">`+jsonText+`</textarea>
+            <div id="`+id_type+`">`+format_style+`</div>
             </div>`;
 
         return this.editor;
@@ -837,6 +835,7 @@ class rmJsonEdit {
 
     start(id) {
         const highlight = document.getElementById(id + "_highlight");
+        const format    = document.getElementById(id + "_type");
         const textarea  = document.getElementById(id);
 
         if (textarea) {
@@ -872,39 +871,83 @@ class rmJsonEdit {
         else            { highlight.style.background = "var(--json-color-background)"; }
     }
 
-    customJSONStringify(obj, indent = 2) {
+    customJSONStringify(obj, indent = 2, format_style = "") {
         const space = " ".repeat(indent);
+        let formatStyle = this.format_style;
+        if (format_style != "") { formatStyle = format_style; }
 
         function format(value, level = 0) {
             if (value === null || typeof value !== "object") {
                 return JSON.stringify(value);
-                }
+            }
 
+            // ARRAYS
             if (Array.isArray(value)) {
                 if (value.length === 0) return "[]";
-                const items = value.map(v => format(v, level + 1)).join(", ");
-                return `[${items}]`;
+
+                const items = value.map(v => format(v, level + 1));
+
+                if (formatStyle === "compact") {
+                    return `[${items.join(", ")}]`; // all inline
                 }
 
+                if (formatStyle === "rmc") {
+                const lines = [];
+                let currentLine = [];
+
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+
+                    // Special elements go on their own line
+                    if (
+                        item.startsWith('"LINE') ||
+                        item.startsWith('"HEADER-IMAGE') ||
+                        item.startsWith('"TOGGLE')
+                    ) {
+                        if (currentLine.length) {
+                            lines.push(currentLine.join(", "));
+                            currentLine = [];
+                        }
+                        lines.push(item); // single line
+                    } else {
+                        currentLine.push(item);
+                        // Push line every 4 elements
+                        if (currentLine.length === 4) {
+                            lines.push(currentLine.join(", "));
+                            currentLine = [];
+                        }
+                    }
+                }
+
+                // Push remaining items
+                if (currentLine.length) {
+                    lines.push(currentLine.join(", "));
+                }
+
+                return `[\n${space.repeat(level + 1)}${lines.join(`,\n${space.repeat(level + 1)}`)}\n${space.repeat(level)}]`;
+                }
+
+                if (formatStyle === "rmc2") {
+                    const lines = [];
+
+                    for (let i = 0; i < items.length; i += 4) {
+                        lines.push(items.slice(i, i + 4).join(", "));
+                    }
+                    return `[\n${space.repeat(level + 1)}${lines.join(`,\n${space.repeat(level + 1)}`)}\n${space.repeat(level)}]`;
+                }
+
+                // default: one element per line
+                return `[\n${space.repeat(level + 1)}${items.join(`,\n${space.repeat(level + 1)}`)}\n${space.repeat(level)}]`;
+            }
+
+            // OBJECTS
             const entries = Object.entries(value);
-
-            // Detect if it's a "leaf" object (no nested objects/arrays)
-            const isLeaf = entries.every(
-                ([, v]) => v === null || typeof v !== "object"
-                );
-
-            if (isLeaf) {
-                const inline = entries
-                    .map(([k, v]) => `${JSON.stringify(k)}: ${format(v, level + 1)}`)
-                    .join(", ");
-                return `{${inline}}`;
-                }
-
             const inner = entries
                 .map(([k, v]) => `${space.repeat(level + 1)}${JSON.stringify(k)}: ${format(v, level + 1)}`)
                 .join(",\n");
+
             return `{\n${inner}\n${space.repeat(level)}}`;
-            }
+        }
 
         return format(obj, 0);
         }
