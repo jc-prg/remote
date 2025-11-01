@@ -35,6 +35,12 @@ function statusCheck(data={}) {
         statusCheck_devicePowerButtonDisplay(data);
         statusCheck_scenePowerButton(data);
         statusCheck_sliderToggleColorPicker(data);
+        setTextById("edit1", "");
+        }
+    else {
+        var stop = "remoteToggleEditMode(false);remoteFirstLoad_load();";
+        var html = "<img src='/icon/edit_stop.png' onclick='"+stop+"' style='cursor:pointer;width:100%' name='stop editing'>";
+        setTextById("edit1", html);
         }
 	statusCheck_audioMute(data);
 	statusCheck_apiConnection(data);

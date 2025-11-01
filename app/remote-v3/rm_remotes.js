@@ -111,7 +111,7 @@ function rmRemote(name) {
 		var edit_mode       = "";
 		if (this.edit_mode) {
 		    edit_mode = " / EDIT";
-		    rm3settings.create("index_small");
+		    //rm3settings.create("index_small");
 		    elementVisible(this.frames_edit[0]);
 		    elementVisible(this.frames_edit[1]);
 		    elementHidden("setting_ext_top_frame");
@@ -188,7 +188,7 @@ function rmRemote(name) {
 		this.button.default_size();			
 
         var edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"device\",\""+device+"\");";
-		remote += "<div class='remote-edit-button' onclick='"+edit_cmd+"'><img src='icon/edit.png' style='height:20px;width:20px;'></div>";
+        if (!this.edit_mode) { remote += "<div class='remote-edit-button' onclick='"+edit_cmd+"'><img src='icon/edit.png' style='height:20px;width:20px;'></div>"; }
 
 		if (device_config && device_config["remote"]) {
 			var remote_display_size = device_config["remote"]["display-size"];
@@ -702,7 +702,7 @@ function rmRemote(name) {
         this.display.edit_mode      = this.edit_mode;
 
         var edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"scene\",\""+scene+"\");";
-		remote += "<div class='remote-edit-button' onclick='"+edit_cmd+"' style='top:17px;left:17px;'><img src='icon/edit.png' style='height:20px;width:20px;'></div>";
+		if (!this.edit_mode) { remote += "<div class='remote-edit-button' onclick='"+edit_cmd+"' style='top:17px;left:17px;'><img src='icon/edit.png' style='height:20px;width:20px;'></div>"; }
 
 		appCookie.set("remote","scene::"+scene+"::"+scene_label+"::"+this.edit_mode);
 		console.info("Set cookie: "+"scene::"+scene+"::"+scene_label+"::"+this.edit_mode);
@@ -836,6 +836,8 @@ function rmRemote(name) {
 			                                                    next_button = this.slider_element_toggle(id, button_def, "devices", button_def.split("||"), short=false);
 			                                                    }
 			                                             }
+            else if (button_def.indexOf("COLOR-P") == 0) { next_button = this.button.device(scene+i,"color-picker scene N/A", scene-label, "", "", "disabled"); }
+            else if (button_def.indexOf("SLIDER") == 0)  { next_button = this.button.device(scene+i,"slider scene N/A", scene-label, "", "", "disabled"); }
 			else 						                 { next_button = this.button.device( cmd, button[1], scene_label, "", cmd, "" );
 			                                               this.active_buttons.push(cmd); }
 									  

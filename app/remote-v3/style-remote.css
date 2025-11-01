@@ -8,6 +8,7 @@ hr         { border: solid 1px var(--rm-color-hr); }
 /* AUDIO INFO */
 
 #audio1 {
+  position          : absolute;
   right             : 145px;
   background-image  : url('/icon/mute.png');
   background-size   : 14px;
@@ -17,12 +18,19 @@ hr         { border: solid 1px var(--rm-color-hr); }
 }
 
 #audio2 {
-  right             : 145px;
+  position          : absolute;
+  right             : 122px;
   background-image  : url('/icon/vol+.png');
   background-size   : 14px;
   height            : 14px;
   width             : 14px;
   color             : var(--rm-color-audio-text);
+}
+
+#audio3 {
+  position          : absolute;
+  height            : 10px;
+  right             : 45px;
 }
 
 #audio4 {
@@ -32,6 +40,14 @@ hr         { border: solid 1px var(--rm-color-hr); }
   color             : var(--rm-color-audio-vol-text);
   text-align        : right;
   font-weight       : none;
+}
+
+#edit1 {
+  position          : absolute;
+  background-size   : 14px;
+  height            : 14px;
+  width             : 14px;
+  right             : 150px;
 }
 
 #attention {
@@ -175,7 +191,8 @@ ul.help ul li {
     top : 0px;
     left : 0px;
     height : 2px;
-    opacity : 0;
+    opacity : 20%;
+    z-index: 200;
 }
 
 .remote-edit-button:hover {

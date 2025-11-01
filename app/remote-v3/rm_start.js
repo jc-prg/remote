@@ -30,11 +30,10 @@ function rmStart(name) {
     // edit mode
     this.set_edit_mode        = function () {
         if (this.edit_mode)  {
-            rm3settings.create("index_small");
             elementVisible("frame3");
             elementVisible("frame4");
             }
-        else                 { rm3settings.settings_ext_reset(); }
+        rm3settings.settings_ext_reset();
     }
 
 	// add links to devices to drop down menu
