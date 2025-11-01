@@ -15,7 +15,7 @@ var rm3menu        = undefined;
 var rm3start       = undefined;
 var rm3remotes     = undefined;
 var rm3settings    = undefined;
-var rm3json_edit   = undefined;new rmJsonEdit("main");
+var rm3json_edit   = undefined;
 
 
 function startRemote() {

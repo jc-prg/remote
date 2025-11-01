@@ -657,8 +657,6 @@ function rmRemote(name) {
         this.button.height = "25px";
 
         const myBoxJson = new rmSheetBox("remote-edit-json", height="350px", scroll=true);
-        //myBoxJson.addSheet("Remote",       "<h4>"+lang("JSON_REMOTE")+"</h4>" +  this.json.textarea( "remote_json_buttons", remote_definition, "buttons" ) + "<br/>" + lang("MANUAL_REMOTE") );
-        //myBoxJson.addSheet("Display",      "<h4>"+lang("JSON_DISPLAY")+"</h4>" + this.json.textarea( "remote_json_display", remote_display ) + "<br/>" + lang("MANUAL_DISPLAY") );
         myBoxJson.addSheet("Remote",       "<h4>"+lang("JSON_REMOTE")+"</h4>" +  "<div id='container_remote_json_buttons'></div><br/>" + lang("MANUAL_REMOTE") );
         myBoxJson.addSheet("Display",      "<h4>"+lang("JSON_DISPLAY")+"</h4>" + "<div id='container_remote_json_display'></div><br/>" + lang("MANUAL_DISPLAY") );
         myBoxJson.addSheet("Macros",       "<h4>"+lang("JSON_REMOTE_MACROS")+"</h4>" + macro_edit );
@@ -673,7 +671,7 @@ function rmRemote(name) {
         myBox.addSheet("Buttons",       this.tab.start() + this.dialog_edit_elements("remote", "button_line", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
         myBox.addSheet("Display",       this.tab.start() + this.dialog_edit_elements("remote", "display", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
         myBox.addSheet("Toggle",        this.tab.start() + this.dialog_edit_elements("remote", "toggle", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
-        if (device_config["commands"]["set"].length > 0 || device_config["commands"]["get"] > 0) {
+        if (this.device_has_ranges(device)) {
             myBox.addSheet("Slider",        this.tab.start() + this.dialog_edit_elements("remote", "slider", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
             }
         if (select_color_values) {
@@ -1134,7 +1132,8 @@ function rmRemote(name) {
                 device_display[key] = remote_info[key]["settings"]["label"];
 
                 device_commands = this.data["CONFIG"]["devices"][key]["commands"];
-                if (device_commands["set"].length > 0 || device_commands["get"] > 0) {
+                //if (device_commands["set"].length > 0 || device_commands["get"] > 0) {
+                if (this.device_has_ranges(key)) {
                     devices_slider[key] = "Device: "+remote_info[key]["settings"]["label"];
                     }
                 }
@@ -1281,17 +1280,18 @@ function rmRemote(name) {
             }
         else if (type == "remote" && element == "slider") {
 
+            var param = this.device_has_ranges(device, true);
             edit   += this.tab.start();
-            if (device_config["commands"]["set"].length > 0 || device_config["commands"]["get"] > 0) {
+            if (this.device_has_ranges(device)) {
                 var onchange_slider_param = this.app_name+".remote_prepare_slider('device','"+device+"','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax','remote_json_buttons');";
 
                 edit    += this.tab.row(
                         "Send command:",
-                        this.basic.select_array("add_slider_cmd",lang("BUTTON_T_SEND"), device_config["commands"]["set"], "", "")
+                        this.basic.select_array("add_slider_cmd",lang("BUTTON_T_SEND"), param, "", "")
                         );
                 edit    += this.tab.row(
                         "Parameter:",
-                        this.basic.select_array("add_slider_param",lang("BUTTON_T_PARAMETER"), device_config["commands"]["get"], onchange_slider_param, "")
+                        this.basic.select_array("add_slider_param",lang("BUTTON_T_PARAMETER"), param, onchange_slider_param, "")
                         );
                 edit    += this.tab.row(
                         "Description:",
@@ -1832,6 +1832,7 @@ function rmRemote(name) {
 		var cmd_definition = this.data["CONFIG"]["devices"][device]["commands"]["definition"];
 
 		console.info(JSON.stringify(cmd_definition[s_param]));
+
 		if (cmd_definition && cmd_definition[s_param]) {
 			var min = "min";
 			var max = "max";
@@ -2123,7 +2124,26 @@ function rmRemote(name) {
 		device_info.sort();
 		var device_display_values = this.basic.select_array(id,"display value",device_info,"");
 		return device_display_values;
-		}	
+		}
+
+	// check if device has ranges - for slider option
+	this.device_has_ranges          = function (device, commands=false) {
+	    var has_ranges = false;
+	    var range_cmd  = [];
+        var cmd_definition = this.data["CONFIG"]["devices"][device]["commands"]["definition"];
+        var cmd_send       = this.data["CONFIG"]["devices"][device]["commands"]["set"]
+        Object.keys(cmd_definition).forEach( key => {
+            var param = cmd_definition[key];
+            var send  = (cmd_send.indexOf(key) >= 0);
+            if (send && param["values"] != undefined && param["values"]["max"] != undefined && param["values"]["min"] != undefined) {
+                has_ranges = true;
+                range_cmd.push(key);
+                }
+            });
+
+        if (!commands) { return has_ranges; }
+        else           { return range_cmd; }
+	    }
 		
     // return drop-down with display values
 	this.scene_display_select       = function (div_id,id,device) {
@@ -2226,10 +2246,13 @@ function rmRemote(name) {
         if (device != "" && this.data["CONFIG"]["devices"][device]) {
             var device_config   = this.data["CONFIG"]["devices"][device];
             var device_name     = this.data["CONFIG"]["devices"][device]["settings"]["label"];
+            var device_cmd      = this.device_has_ranges(device, true);
             var onchange_slider_param = this.app_name+".remote_prepare_slider('scene','"+device+"','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax','remote_json_buttons');";
 
-            select_cmd     = this.basic.select_array("add_slider_cmd", lang("BUTTON_T_SEND"), device_config["commands"]["set"], "", "")
-            select_param   = this.basic.select_array("add_slider_param", lang("BUTTON_T_PARAMETER"), device_config["commands"]["get"], onchange_slider_param, "")
+            //select_cmd     = this.basic.select_array("add_slider_cmd", lang("BUTTON_T_SEND"), device_config["commands"]["set"], "", "")
+            select_cmd     = this.basic.select_array("add_slider_cmd", lang("BUTTON_T_SEND"), device_cmd, "", "")
+            //select_param   = this.basic.select_array("add_slider_param", lang("BUTTON_T_PARAMETER"), device_config["commands"]["get"], onchange_slider_param, "")
+            select_param   = this.basic.select_array("add_slider_param", lang("BUTTON_T_PARAMETER"), device_cmd, onchange_slider_param, "")
             select_min_max = this.basic.input("add_slider_minmax", lang("BUTTON_T_MINMAX"))
 
             setValueById("add_slider_descr",   "Slider " + device_name + " (" + device + ")")
