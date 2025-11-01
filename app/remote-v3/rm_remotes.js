@@ -1777,7 +1777,7 @@ function rmRemote(name) {
 		if (s_minmax == "" || s_minmax == undefined){ appMsg.alert(lang("SLIDER_INSERT_MINMAX")); return; }
 
         if (type == "scene") {
-            var button = s_device+"_SLIDER||_send-"+s_cmd+"||"+s_descr+"||"+s_minmax+"||"+s_param;
+            var button = s_device+"_SLIDER||send-"+s_cmd+"||"+s_descr+"||"+s_minmax+"||"+s_param;
             }
         else {
             var button = "SLIDER||send-"+s_cmd+"||"+s_descr+"||"+s_minmax+"||"+s_param;
@@ -2249,9 +2249,7 @@ function rmRemote(name) {
             var device_cmd      = this.device_has_ranges(device, true);
             var onchange_slider_param = this.app_name+".remote_prepare_slider('scene','"+device+"','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax','remote_json_buttons');";
 
-            //select_cmd     = this.basic.select_array("add_slider_cmd", lang("BUTTON_T_SEND"), device_config["commands"]["set"], "", "")
             select_cmd     = this.basic.select_array("add_slider_cmd", lang("BUTTON_T_SEND"), device_cmd, "", "")
-            //select_param   = this.basic.select_array("add_slider_param", lang("BUTTON_T_PARAMETER"), device_config["commands"]["get"], onchange_slider_param, "")
             select_param   = this.basic.select_array("add_slider_param", lang("BUTTON_T_PARAMETER"), device_cmd, onchange_slider_param, "")
             select_min_max = this.basic.input("add_slider_minmax", lang("BUTTON_T_MINMAX"))
 
