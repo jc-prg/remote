@@ -16,6 +16,7 @@
     "down"      : "down.png",
     "empty"     : "empty.png",
     "edit"      : "edit.png",
+    "edit-stop" : "edit_stop.png",
     "exit"      : "exit.png",
     "enter"     : "enter.png",
     "fav"       : "heart.png",
