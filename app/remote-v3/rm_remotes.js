@@ -832,6 +832,7 @@ function rmRemote(name) {
 
 			else if (button.length > 1 && button[1].indexOf("SLIDER") == 0)
 			                                             { next_button = this.slider_element(id, button[0], "devices", button[1].split("||")); }
+
 			else if (button_def.indexOf("TOGGLE") == 0)  { if (i != toggle_done) {
 			                                                    next_button = this.slider_element_toggle(id, button_def, "devices", button_def.split("||"), short=false);
 			                                                    }
@@ -1123,18 +1124,28 @@ function rmRemote(name) {
             var device_display	= {};
             var device_macro	= {};
             var devices         = {};
+            var devices_groups  = {};
+            var devices_slider  = {};
 
             for (key in this.data["CONFIG"]["devices"]) {
                 devices[key]        = "Device: "+remote_info[key]["settings"]["label"];
+                devices_groups[key] = "Device: "+remote_info[key]["settings"]["label"];
                 device_macro["device_"+key]   = "Device: "+remote_info[key]["settings"]["label"];
                 device_display[key] = remote_info[key]["settings"]["label"];
+
+                device_commands = this.data["CONFIG"]["devices"][key]["commands"];
+                if (device_commands["set"].length > 0 || device_commands["get"] > 0) {
+                    devices_slider[key] = "Device: "+remote_info[key]["settings"]["label"];
+                    }
                 }
             for (key in this.data["CONFIG"]["macros"]["groups"])  {
                 if (this.data["CONFIG"]["macros"]["groups"][key]["description"]) {
                     device_macro["group_"+key] = "Group: "+this.data["CONFIG"]["macros"]["groups"][key]["description"]+" ("+key+")";
+                    devices_groups["group_"+key] = "Group: "+this.data["CONFIG"]["macros"]["groups"][key]["description"]+" ("+key+")";
                     }
                 else {
                     device_macro["group_"+key] = "Group: "+key;
+                    devices_groups["group_"+key] = "Group: "+key;
                     }
                 }
             for (key in this.data["CONFIG"]["macros"])  {
@@ -1143,6 +1154,7 @@ function rmRemote(name) {
             device_macro["scene"] = "Macro: " + scene;
 
             var toggle_onchange         = this.app_name +".scene_toggle_select(div_id='add_button_device_input','add_button_value','add_toggle_device','"+scene+"');";
+            var slider_onchange         = this.app_name +".scene_slider_select(div_id='add_button_device_input','add_button_value','add_slider_device','"+scene+"');";
             var device_macro_onchange   = this.app_name +".scene_button_select(div_id='add_button_device_input','add_button_value','add_button_device','"+scene+"');";
             var device_display_onchange = this.app_name +".scene_display_select(div_id='add_display_input','add_display_value','add_display_device');";
 
@@ -1197,7 +1209,8 @@ function rmRemote(name) {
             edit   += this.tab.start();
             edit   += this.tab.row(
                       "Device:",
-                      this.basic.select("add_toggle_device","device / macro", devices, toggle_onchange),
+                      //this.basic.select("add_toggle_device","device / group", devices_groups, toggle_onchange),
+                      this.basic.select("add_toggle_device","device", devices, toggle_onchange),
                       );
             edit   += this.tab.row(
                        "Description:",
@@ -1302,8 +1315,40 @@ function rmRemote(name) {
             edit   += this.tab.end();
             }
         else if (type == "scene"  && element == "slider") {
+            edit   += "&nbsp;";
+            edit   += this.tab.start();
+            edit   += this.tab.row(
+                      "Device:",
+                      //this.basic.select("add_toggle_device","device / group", devices_groups, toggle_onchange),
+                      this.basic.select("add_slider_device","device", devices_slider, slider_onchange),
+                      );
+            edit   += this.tab.row(
+                       "Send command:",
+                       "<div id='slider_device_cmd'></div>"
+                       );
+            edit   += this.tab.row(
+                       "Parameter:",
+                       "<div id='slider_device_param'></div>"
+                       );
+            edit   += this.tab.row(
+                       "Min and max values:",
+                       "<div id='slider_device_min-max'></div>"
+                       );
+            edit   += this.tab.row(
+                       "Description:",
+                       "<div id='slider_device_descr'>" +
+                       this.basic.input("add_slider_descr", "") +
+                       "</div>"
+                       );
+            edit   += this.tab.line();
+            edit   += this.tab.row(
+                       this.button.edit(this.app_name+".remote_add_slider('scene','"+scene+"','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax','json::remote','','add_slider_device');", lang("BUTTON_T_ADD"),"")
+                       );
+            edit  += this.tab.end();
 
-            edit   += "<br/>not implemented yet";
+            setTimeout(function() {
+                eval(slider_onchange);
+                },500);
             }
         else if (type == "remote" && element == "button_line") {
 
@@ -1643,28 +1688,29 @@ function rmRemote(name) {
 	// add header to JSON
 	this.remote_add_header          = function (type,scene,button,remote,position="") {
 		var value     = this.json.get_value(remote);
-		if (value.indexOf("HEADER-IMAGE||toggle") < 0) {
+
+		if (value.indexOf("HEADER-IMAGE") >= 0 || value.indexOf("HEADER-IMAGE||toggle") >= 0) {
+			appMsg.alert(lang("HEADER_IMAGE_EXISTS"));
+			}
+		else if (value.indexOf("HEADER-IMAGE||toggle") < 0 && button == "HEADER-IMAGE||toggle") {
 
 		    // CHECK IF VALUES FOR TOGGLE ARE SET ...
 		    var header_toggle_value = getValueById("header_toggle_1value");
 		    var header_toggle_on    = getValueById("header_toggle_1on");
 		    var header_toggle_off   = getValueById("header_toggle_1off");
 
-		    if (header_toggle_value == "")      { appMsg.alert("Select the power device value first!"); return; }
-		    else if (header_toggle_on == "")    { appMsg.alert("Select the power device ON command first!"); return; }
-		    else if (header_toggle_off == "")   { appMsg.alert("Select the power device OFF command first!"); return; }
+		    if (header_toggle_value == undefined)      { appMsg.alert("Select the power device value first!"); return; }
+		    else if (header_toggle_on == undefined || header_toggle_on == "")     { appMsg.alert("Select the power device ON command first!"); return; }
+		    else if (header_toggle_off == undefined || header_toggle_off == "")   { appMsg.alert("Select the power device OFF command first!"); return; }
 
 		    var toggle_button = "TOGGLE||"+header_toggle_value+"||Power Device||"+header_toggle_on+"||"+header_toggle_off;
 
 			this.remote_add_button(type,scene,toggle_button,remote,"FIRST",true);
 			this.remote_add_button(type,scene,button,remote,"FIRST");
 			}
-		else if (value.indexOf("HEADER-IMAGE") < 0) {
+		else if (value.indexOf("HEADER-IMAGE")  < 0 && button == "HEADER-IMAGE") {
 			this.remote_add_button(type,scene,button,remote,"FIRST");
 			this.remote_preview( type, scene );
-			}
-		else {
-			appMsg.alert(lang("HEADER_IMAGE_EXISTS"));
 			}
 		}
 
@@ -1717,21 +1763,28 @@ function rmRemote(name) {
 		}
 
 	// add a slider with description
-	this.remote_add_slider          = function (type,scene,slider_cmd,slider_param,slider_descr,slider_minmax,remote,position="") {
+	this.remote_add_slider          = function (type,scene,slider_cmd,slider_param,slider_descr,slider_minmax,remote,position="",slider_device="") {
 	
 		var s_cmd    = getValueById(slider_cmd);
 		var s_param  = getValueById(slider_param);
 		var s_descr  = getValueById(slider_descr);
 		var s_minmax = getValueById(slider_minmax);
-	
+		var s_device = getValueById(slider_device);
+
 		if (s_cmd == ""    || s_cmd == undefined)   { appMsg.alert(lang("SLIDER_SELECT_CMD")); return; }
 		if (s_param == ""  || s_param == undefined) { appMsg.alert(lang("SLIDER_SELECT_PARAM")); return; }
 		if (s_descr == ""  || s_descr == undefined) { appMsg.alert(lang("SLIDER_INSERT_DESCR")); return; }
 		if (s_minmax == "" || s_minmax == undefined){ appMsg.alert(lang("SLIDER_INSERT_MINMAX")); return; }
 
-		var button = "SLIDER||send-"+s_cmd+"||"+s_descr+"||"+s_minmax+"||"+s_param;
+        if (type == "scene") {
+            var button = s_device+"_SLIDER||_send-"+s_cmd+"||"+s_descr+"||"+s_minmax+"||"+s_param;
+            }
+        else {
+            var button = "SLIDER||send-"+s_cmd+"||"+s_descr+"||"+s_minmax+"||"+s_param;
+		    }
+		console.error(button);
 		this.remote_add_button(type,scene,button,remote,position);
-		this.remote_preview( type, scene );
+		this.remote_preview( type, scene, true );
 		}
 
     // add a toggle with description
@@ -1743,7 +1796,7 @@ function rmRemote(name) {
 		var t_on     = getValueById(t_on);
 		var t_off    = getValueById(t_off);
 
-		if (t_device == ""  || t_device == undefined)    { appMsg.alert(lang("TOGGLE_SELECT_DEVICE")); return; }
+		if (t_device == ""  || t_device == undefined)   { appMsg.alert(lang("TOGGLE_SELECT_DEVICE")); return; }
 		if (t_value == ""   || t_value == undefined)    { appMsg.alert(lang("TOGGLE_SELECT_VALUE")); return; }
 		if (t_descr == ""   || t_descr == undefined)    { appMsg.alert(lang("TOGGLE_SELECT_DESCR")); return; }
 		if (t_on == ""      || t_on == undefined)       { appMsg.alert(lang("TOGGLE_SELECT_ON")); return; }
@@ -1765,9 +1818,15 @@ function rmRemote(name) {
 
 		var s_param  = getValueById(slider_param);
 		var s_descr  = "description";
+		var s_device = this.data["CONFIG"]["devices"][device]["settings"]["label"];
 		if (s_param == ""  || s_param == undefined)	{ appMsg.alert(lang("SLIDER_SELECT_PARAM")); return; }
 
-		s_descr = s_param.charAt(0).toUpperCase() + s_param.slice(1);
+        if (type == "scene") {
+            s_descr = s_device + ": " + s_param.charAt(0).toUpperCase() + s_param.slice(1);
+            }
+        else {
+            s_descr = s_param.charAt(0).toUpperCase() + s_param.slice(1);
+		    }
 		setValueById(slider_descr, s_descr);
 		
 		var cmd_definition = this.data["CONFIG"]["devices"][device]["commands"]["definition"];
@@ -2130,7 +2189,7 @@ function rmRemote(name) {
 		setTextById(div_id,device_macro_select);
 		}
 
-    // return drop-down with toggle buttons
+    // create drop-downs for scene toggle buttons
     this.scene_toggle_select        = function (div_id,id,device,scene) {
 
         var device = check_if_element_or_value(device,false);
@@ -2155,6 +2214,35 @@ function rmRemote(name) {
         setTextById("toggle_device_value", select_value);
         setTextById("toggle_device_on",    select_on);
         setTextById("toggle_device_off",   select_off);
+        }
+
+    // create drop-downs for scene slider buttons
+    this.scene_slider_select        = function (div_id,id,device,scene) {
+
+        var device = check_if_element_or_value(device,false);
+        var select = "<i>"+lang("SELECT_DEV_FIRST")+"</i>";
+        var select_cmd, select_param, select_min_max = "";
+
+        if (device != "" && this.data["CONFIG"]["devices"][device]) {
+            var device_config   = this.data["CONFIG"]["devices"][device];
+            var device_name     = this.data["CONFIG"]["devices"][device]["settings"]["label"];
+            var onchange_slider_param = this.app_name+".remote_prepare_slider('scene','"+device+"','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax','remote_json_buttons');";
+
+            select_cmd     = this.basic.select_array("add_slider_cmd", lang("BUTTON_T_SEND"), device_config["commands"]["set"], "", "")
+            select_param   = this.basic.select_array("add_slider_param", lang("BUTTON_T_PARAMETER"), device_config["commands"]["get"], onchange_slider_param, "")
+            select_min_max = this.basic.input("add_slider_minmax", lang("BUTTON_T_MINMAX"))
+
+            setValueById("add_slider_descr",   "Slider " + device_name + " (" + device + ")")
+            }
+        else {
+            select_cmd     = select;
+            select_param   = select;
+            select_min_max = select;
+            }
+
+        setTextById("slider_device_cmd",     select_cmd);
+        setTextById("slider_device_param",   select_param);
+        setTextById("slider_device_min-max", select_min_max);
         }
 
 	// create color picker
