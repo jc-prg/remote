@@ -194,7 +194,7 @@ ul.help ul li {
     top : 0px;
     left : 0px;
     height : 2px;
-    opacity : 20%;
+    opacity : 10%;
     z-index: 200;
 }
 
@@ -259,20 +259,21 @@ ul.help ul li {
 
 .remote-power-information {
     float           : left;
-    width           : calc(100% - 27px);
+    width           : calc(100% - 36px);
     padding         : 4px;
     padding-left    : 10px;
     padding-right   : 10px;
-    margin          : 3px;
-    margin-bottom   : 15px;
-    background      : var(--rm-color-button);
-    border          : 0.5px solid var(--rm-color-button-border);
+    margin          : 8px;
+    margin-bottom   : 10px;
+    background      : var(--rm-color-power-information-background);
+    border          : 0.5px solid var(--rm-color-power-information-border);
     border-radius   : 10px;
-    color           : var(--rm-color-header-info);
+    line-height     : 1.5;
+    color           : var(--rm-color-power-information-text);
     font-size       : var(--rm-size-remote-header-info);
     font-weight     : normal;
     text-align      : center;
-    opacity         : 70%;
+    opacity         : 90%;
     display         : none;x
 }
 

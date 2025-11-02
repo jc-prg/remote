@@ -187,9 +187,6 @@ function rmRemote(name) {
 		var device_config   = this.data["CONFIG"]["devices"][device];
 		this.button.default_size();			
 
-        var edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"device\",\""+device+"\");";
-        if (!this.edit_mode) { remote += "<div class='remote-edit-button' onclick='"+edit_cmd+"'><img src='icon/edit.png' style='height:20px;width:20px;'></div>"; }
-
 		if (device_config && device_config["remote"]) {
 			var remote_display_size = device_config["remote"]["display-size"];
 			var remote_label        = device_config["settings"]["label"];
@@ -233,9 +230,15 @@ function rmRemote(name) {
 		appCookie.set("remote","device::"+device+"::"+remote_label+"::"+this.edit_mode);
 		console.info("Set cookie: "+"device::"+device+"::"+remote_label+"::"+this.edit_mode);
 
+        // add preview hint or error message container
 		if (preview) { remote += "<b>"+lang("PREVIEW")+":</b><br/><hr/>"; }
 		else         { remote += "<div id='remote-power-information-"+device+"' class='remote-power-information'>POWER INFORMATION</div>"; }
 
+        // add edit button
+        var edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"device\",\""+device+"\");";
+        if (!this.edit_mode) { remote += "<div class='remote-edit-button' onclick='"+edit_cmd+"'><img src='icon/edit.png' style='height:20px;width:20px;'></div>"; }
+
+        // add remote buttons
 		for (var i=0; i<remote_definition.length; i++) {
 
 			var next_button;
@@ -700,9 +703,6 @@ function rmRemote(name) {
 		var scene_label             = scene_definition["settings"]["label"];
         this.display.edit_mode      = this.edit_mode;
 
-        var edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"scene\",\""+scene+"\");";
-		if (!this.edit_mode) { remote += "<div class='remote-edit-button' onclick='"+edit_cmd+"' style='top:17px;left:17px;'><img src='icon/edit.png' style='height:20px;width:20px;'></div>"; }
-
 		appCookie.set("remote","scene::"+scene+"::"+scene_label+"::"+this.edit_mode);
 		console.info("Set cookie: "+"scene::"+scene+"::"+scene_label+"::"+this.edit_mode);
 
@@ -764,6 +764,11 @@ function rmRemote(name) {
         if (preview) { remote += "<b>"+lang("PREVIEW")+":</b><br/><hr/>"; }
 		else         { remote += "<div id='scene-power-information-"+scene+"' class='remote-power-information'>POWER INFORMATION</div>"; }
 
+        // include edit button
+        var edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"scene\",\""+scene+"\");";
+		if (!this.edit_mode) { remote += "<div class='remote-edit-button' onclick='"+edit_cmd+"' style='top:17px;left:17px;'><img src='icon/edit.png' style='height:20px;width:20px;'></div>"; }
+
+        // add buttons
 		for (var i=0; i<remote_definition.length; i++) {
 
 			var next_button	= "";

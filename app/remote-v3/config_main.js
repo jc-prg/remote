@@ -140,6 +140,7 @@ var colors_power            = {
 				"ON"        : "var(--rm-color-signal-power-on)",
 				"OFF"       : "var(--rm-color-signal-power-off)",
 				"OTHER"	    : "var(--rm-color-signal-power-other)",
+				"PARTLY"    : "var(--rm-color-signal-power-other)",
 				"ERROR"	    : "var(--rm-color-signal-power-error)",
 				}
 

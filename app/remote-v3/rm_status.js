@@ -547,50 +547,65 @@ function statusCheck_scenePowerStatus(data) {
 	var devices             = data["CONFIG"]["devices"];
 	var devices_status      = data["STATUS"]["devices"];
 
+	var [device_status_x, device_status_log] = statusCheck_devicePowerStatus(data);
+
 	for (var key in data["STATUS"]["scenes"]) {
 
-		var dev_on          = 0;
-		var dev_error       = 0;
+        var dev_status      = {"ON": 0,  "OFF": 0,  "N/A": 0,  "DISABLED": 0,  "ERROR": 0};
+        var dev_list        = {"ON": [], "OFF": [], "N/A": [], "DISABLED": [], "ERROR": []};
 		var required        = data["STATUS"]["scenes"][key];
+		var required_length = required.length;
+		var label           = data["CONFIG"]["scenes"][key]["settings"]["label"] + " (" + key + ")";
+
+        // power device and power status
 		var power_device    = "N/A";
-		if (data["CONFIG"]["scenes"][key]["remote"]["power_status"]) {
-            power_device    = data["CONFIG"]["scenes"][key]["remote"]["power_status"].split("_");
-		    }
 		var power_status    = "N/A";
-		if (power_device != "N/A" && power_device.length > 1) {
-            power_status    = data["STATUS"]["devices"][power_device[0]][power_device[1]];
-		    }
-		scene_status_info[key] = "";
+		if (data["CONFIG"]["scenes"][key]["remote"]["power_status"]) { power_device = data["CONFIG"]["scenes"][key]["remote"]["power_status"].split("_"); }
+		if (power_device != "N/A" && power_device.length > 1)        { power_status = data["STATUS"]["devices"][power_device[0]][power_device[1]]; }
 
+        // check status of all required devices
 		for (var i=0;i<required.length;i++) {
+		    var device       = required[i];
+    		var device_label = data["CONFIG"]["devices"][device]["settings"]["label"] + " (" + device + ")";
+		    var status       = device_status_x[device];
 
-            if (!devices_status[required[i]]) {
-                console.error("Did not found " + required[i] + ", defined as requirement in " + key + ".");
-                continue;
-                }
+//		    console.error("..." + status + " | " + device);
+//		    console.error("...",dev_status);
 
-	        var device_api          = devices_status[required[i]]["api"];
-	        var device_api_status   = data["STATUS"]["interfaces"]["connect"][device_api];
-	        scene_status_info[key] += required[i];
+            var status_check = status;
+            if (status == "POWER_OFF")                  { status_check = "OFF"; }
+            else if (status.indexOf("ERROR") >= 0)      { status_check = "ERROR"; }
+            else if (status.indexOf("DISABLED") >= 0)   { status_check = "DISABLED"; }
+            else if (!dev_list[status])                 { status_check = "ERROR"; }
 
-            if (devices_status[required[i]]["power"]) {
-                device_status[required[i]]  = devices_status[required[i]]["power"].toUpperCase();
-                scene_status_info[key]     += "="+device_status[required[i]]+"  ";
-                }
-            else {
-                device_status[required[i]] = "";
-                scene_status_info[key] += "=<NO-POWER-STATUS>  ";
-                }
-
-            if (device_status[required[i]] == "ON") { dev_on += 1; }
-            if (device_api_status != "Connected")   { dev_error += 1; }
+            dev_status[status_check] += 1;
+            dev_list[status_check].push(device_label);
             }
 
-        if (power_status == "OFF")          { scene_status[key] = "POWER_OFF"; }
-        else if (dev_error > 0)             { scene_status[key] = "ERROR"; }
-        else if (dev_on == required.length) { scene_status[key] = "ON"; }
-        else if (dev_on > 0)                { scene_status[key] = "OTHER"; }
-        else                                { scene_status[key] = "OFF"; }
+        if (power_status == "OFF") {
+            scene_status[key] = "POWER_OFF";
+            scene_status_info[key] = lang("STATUS_SCENE_POWER_OFF", [label, power_device]);
+            }
+        else if (dev_status["ON"] == required_length) {
+            scene_status[key] = "ON";
+            scene_status_info[key] = lang("STATUS_SCENE_OK", [label]);
+            }
+        else if (dev_status["OFF"] == required_length) {
+            scene_status[key] = "OFF";
+            scene_status_info[key] = lang("STATUS_SCENE_OK", [label]);
+            }
+        else if (dev_status["ON"] + dev_status["OFF"] == required_length) {
+            scene_status[key] = "PARTLY";
+            scene_status_info[key] = lang("STATUS_SCENE_PARTLY", [label, dev_list["OFF"].join(", ")]);
+            }
+        else if (dev_status["DISABLED"] > 0) {
+            scene_status[key] = "DISABLED";
+            scene_status_info[key] = lang("STATUS_SCENE_DISABLED", [label]);
+            }
+        else if (dev_status["ERROR"] > 0) {
+            scene_status[key] = "ERROR";
+            scene_status_info[key] = lang("STATUS_SCENE_ERROR", [label, dev_list["ERROR"].join(", ")]);
+            }
         }
 
 	return [ scene_status, scene_status_info ];
@@ -617,7 +632,7 @@ function statusCheck_scenePowerButton(data) {
 				}
 			statusShow_display(key, scene_status[key]);
 			}
-		else if (scene_status[key] == "OTHER") {
+		else if (scene_status[key] == "PARTLY") {
 			if (deactivateButton == false) {
 				statusShow_powerButton( "scene_on_"+key,  scene_status[key] );
 				statusShow_powerButton( "scene_off_"+key, "" );
@@ -625,6 +640,13 @@ function statusCheck_scenePowerButton(data) {
 			statusShow_display(key, scene_status[key]);
 			}
 		else if (scene_status[key] == "ERROR") {
+			if (deactivateButton == false) {
+				statusShow_powerButton( "scene_on_"+key,  scene_status[key] );
+				statusShow_powerButton( "scene_off_"+key, scene_status[key] );
+				}
+			statusShow_display(key, scene_status[key]);
+			}
+		else if (scene_status[key] == "DISABLED") {
 			if (deactivateButton == false) {
 				statusShow_powerButton( "scene_on_"+key,  scene_status[key] );
 				statusShow_powerButton( "scene_off_"+key, scene_status[key] );
@@ -675,16 +697,16 @@ function statusCheck_deviceActive(data) {
 	var device_status  = {};
 	var devices_status = data["STATUS"]["devices"];
 	var devices_config = data["CONFIG"]["devices"];
+	var scene          = rm3remotes.active_name;
 	var filter         = false;
 	var scene_status   = {};
 
     // check scene status: inactive macro_buttons, deactivate all buttons from list starting with "macro", power message
     if (rm3remotes.active_type == "scene") {
     	var [scene_status, status_log]          = statusCheck_scenePowerStatus(data);
+        console.debug("---> " + scene + " " + scene_status[scene] + " - " + status_log[scene]);
 
-console.error("--- " + rm3remotes.active_name + " " + scene_status[rm3remotes.active_name]);
-
-        if (scene_status[rm3remotes.active_name] == "POWER_OFF") {
+        if (scene_status[scene] == "POWER_OFF") {
             for (var i=0; i<rm3remotes.active_buttons.length; i++) {
                 var button = rm3remotes.active_buttons[i];
                 statusShow_buttonActive(button,false);
@@ -694,24 +716,24 @@ console.error("--- " + rm3remotes.active_name + " " + scene_status[rm3remotes.ac
                 statusShow_buttonActive(button,false);
                 }
             //setTextById("header_image_text_info", lang("POWER_DEVICE_OFF_SCENE_INFO"));
-            setTextById("scene-power-information-"+rm3remotes.active_name, lang("POWER_DEVICE_OFF_SCENE_INFO"));
-            elementVisible("scene-power-information-"+rm3remotes.active_name);
+            setTextById("scene-power-information-"+scene, lang("POWER_DEVICE_OFF_SCENE_INFO"));
+            elementVisible("scene-power-information-"+scene);
             }
-        else if (scene_status[rm3remotes.active_name] != "ON") {
+        else if (scene_status[scene] != "ON" && scene_status[scene] != "OFF") {
             for (var i=0; i<rm3remotes.active_buttons.length; i++) {
                 var button1 = rm3remotes.active_buttons[i].split("_");
                 if (button1[0] == "macro") { statusShow_buttonActive(button1[0]+"_"+button1[1],false); }
                 }
-            setTextById("scene-power-information-"+rm3remotes.active_name, "");
-            elementHidden("scene-power-information-"+rm3remotes.active_name);
+            setTextById("scene-power-information-"+scene, status_log[scene]);
+            elementVisible("scene-power-information-"+scene);
             }
         else {
             for (var i=0; i<rm3remotes.active_buttons.length; i++) {
                 var button1 = rm3remotes.active_buttons[i].split("_");
                 if (button1[0] == "macro") { statusShow_buttonActive(button1[0]+"_"+button1[1],true); }
                 }
-            setTextById("scene-power-information-"+rm3remotes.active_name, "");
-            elementHidden("scene-power-information-"+rm3remotes.active_name);
+            setTextById("scene-power-information-"+scene, "");
+            elementHidden("scene-power-information-"+scene);
             }
         }
 

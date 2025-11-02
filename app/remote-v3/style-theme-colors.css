@@ -58,6 +58,10 @@
     --rm-color-button-white-cool: #DDDDFF;
     --rm-color-button-white-coolest: #BBBBFF;
 
+    --rm-color-power-information-text: #000033;
+    --rm-color-power-information-background: #CCC;
+    --rm-color-power-information-border: #AAA;
+
     --rm-color-header-text: black;
     --rm-color-header-info: darkred;
     --rm-color-header-border: #DDDDDD;
@@ -198,6 +202,10 @@
         --rm-color-frame-remote-border: #333333;
         --rm-color-frame-remote-text: #AAAAAA;
         --rm-color-frame-line-text: #AAAAAA;
+
+        --rm-color-power-information-text: #AAAA00;
+        --rm-color-power-information-background: #181818;
+        --rm-color-power-information-border: #333;
 
         --rm-color-header-text: white;
         --rm-color-header-info: yellow;

@@ -8,7 +8,7 @@
 
 var language_app = {
     "DE" : {
-        "CONNECTION_ERROR"          : "Verbindungsproblem",
+        "CONNECTION_ERROR"          : "Verbindungsfehler",
         "CONNECTION_DISABLED"       : "API deaktiviert",
         "RESET_SWITCH_OFF"          : "Reset Devices:<br/>vorher alle Geräte ausschalten.",
         "RESET_VOLUME_TO_ZERO"      : "Reset Audio Settings:<br/>vorher alle Receiver mit Audio auf Mininum (0) einstellen.",
@@ -17,13 +17,20 @@ var language_app = {
         "POWER_DEVICE_OFF_SCENE"       : "Schalte über den Toggle oben rechts den Strom für das Gerät ein. {0}",
         "POWER_DEVICE_OFF_SCENE_INFO"  : "<b>Strom Aus:</b> Schalte den Strom über den Toggle oben rechts ein.",
 
-        "STATUS_DEV_OK"             : "Das Gerät <b>{0}</b> ist in Ordnung.",
-        "STATUS_DEV_N/A"            : "Der Status vom Gerät <b>{0}</b> ist unklar. Ausprobieren!",
-        "STATUS_DEV_POWER_OFF"      : "Der Strom über <b>{0}</b> ist ausgeschaltet.",
-        "STATUS_DEV_ERROR"          : "Beim Gerät <b>{0}</b> ist ein Fehler aufgetreten. {1}",
-        "STATUS_DEV_API_DISABLED"   : "Die API <b>{0}</b> für das Gerät <b>{1}</b> wurde deaktiviert.",
-        "STATUS_DEV_API_ERROR"      : "Bei der API <b>{0}</b> für das angeschlossene Gerät <b>{1}</b> ist ein Fehler aufgetreten. {2}",
-        "STATUS_DEV_OTHER_ERROR"    : "Es ist ein unbekannter Fehler beim Gerät <b>{0}</b> aufgetreten."
+        "STATUS_DEV_OK"                : "Das Gerät <b>{0}</b> ist OK.",
+        "STATUS_DEV_N/A"               : "Der Status vom Gerät <b>{0}</b> ist unklar. Ausprobieren!",
+        "STATUS_DEV_POWER_OFF"         : "Der Strom über <b>{0}</b> ist ausgeschaltet.",
+        "STATUS_DEV_ERROR"             : "Beim Gerät <b>{0}</b> ist ein Fehler aufgetreten. {1}",
+        "STATUS_DEV_API_DISABLED"      : "Die API <b>{0}</b> für das Gerät <b>{1}</b> wurde deaktiviert.",
+        "STATUS_DEV_API_ERROR"         : "Bei der API <b>{0}</b> für das angeschlossene Gerät <b>{1}</b> ist ein Fehler aufgetreten. {2}",
+        "STATUS_DEV_OTHER_ERROR"       : "Es ist ein unbekannter Fehler beim Gerät <b>{0}</b> aufgetreten.",
+
+        "STATUS_SCENE_OK"              : "Die Szene <b>{0}</b> ist OK.",
+        "STATUS_DEV_OFF"               : "Alle Geräte der Szene <b>{0}</b> sind ausgeschaltet.",
+        "STATUS_SCENE_POWER_OFF"       : "Der Strom über <b>{1}</b> für Szene <b>{0}</b> ist ausgeschaltet.",
+        "STATUS_SCENE_PARTLY"          : "Für die Szene <b>{0}</b> sind benötigte Geräte noch ausgeschaltet: <i>{1}</i>. 'ON' drücken, um die restlichen Geräte anzuschalten.",
+        "STATUS_SCENE_DISABLED"        : "Mindestens eine für die Szene <b>{0}</b> erforderliche API ist deaktiviert.",
+        "STATUS_SCENE_ERROR"           : "Für mindestens eines der für die Szene <b>{0}</b> benötigten Geräte ist ein Fehler aufgetreten: <i>{1}</i>."
         },
     "EN" : {
         "ADD_ELEMENTS"          : "Add elements",
@@ -353,6 +360,13 @@ var language_app = {
         "STATUS_DEV_API_DISABLED"      : "The API <b>{0}</b> for the device <b>{1}</b> has been disabled.",
         "STATUS_DEV_API_ERROR"         : "An API error occurred for <b>{0}</b> and the connected device <b>{1}</b>. {2}",
         "STATUS_DEV_OTHER_ERROR"       : "Unknown error occurred for the device <b>{0}</b>.",
+
+        "STATUS_SCENE_OK"              : "Scene <b>{0}</b> is OK.",
+        "STATUS_DEV_OFF"               : "All devices of the scene <b>{0}</b> are switched off.",
+        "STATUS_SCENE_POWER_OFF"       : "Power device <b>{1}</b> for scene <b>{0}</b> is switched off.",
+        "STATUS_SCENE_PARTLY"          : "For the scene <b>{0}</b> required devices are still switched off: <i>{1}</i>. Press 'ON' to switch on the missing devices.",
+        "STATUS_SCENE_DISABLED"        : "At least one for the scene <b>{0}</b> required API  is disabled.",
+        "STATUS_SCENE_ERROR"           : "For at least one of the required devices for the scene <b>{0}</b> an error occurred: <i>{1}</i>.",
 
         "TEXT_INPUT"                   : "Text input",
         "TEMPLATE"                     : "template",
