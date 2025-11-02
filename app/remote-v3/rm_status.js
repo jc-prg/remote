@@ -679,6 +679,9 @@ function statusCheck_deviceActive(data) {
     // check scene status: inactive macro_buttons, deactivate all buttons from list starting with "macro", power message
     if (rm3remotes.active_type == "scene") {
     	var [scene_status, status_log]          = statusCheck_scenePowerStatus(data);
+
+console.error("--- " + rm3remotes.active_name + " " + scene_status[rm3remotes.active_name]);
+
         if (scene_status[rm3remotes.active_name] == "POWER_OFF") {
             for (var i=0; i<rm3remotes.active_buttons.length; i++) {
                 var button = rm3remotes.active_buttons[i];
@@ -688,22 +691,25 @@ function statusCheck_deviceActive(data) {
                 var button = rm3remotes.active_channels[i];
                 statusShow_buttonActive(button,false);
                 }
-            setTextById("header_image_text_info", lang("POWER_DEVICE_OFF_SCENE_INFO"));
+            //setTextById("header_image_text_info", lang("POWER_DEVICE_OFF_SCENE_INFO"));
+            setTextById("scene-power-information-"+rm3remotes.active_name, lang("POWER_DEVICE_OFF_SCENE_INFO"));
+            elementVisible("scene-power-information-"+rm3remotes.active_name);
             }
         else if (scene_status[rm3remotes.active_name] != "ON") {
-
             for (var i=0; i<rm3remotes.active_buttons.length; i++) {
                 var button1 = rm3remotes.active_buttons[i].split("_");
                 if (button1[0] == "macro") { statusShow_buttonActive(button1[0]+"_"+button1[1],false); }
                 }
-            setTextById("header_image_text_info", "");
+            setTextById("scene-power-information-"+rm3remotes.active_name, "");
+            elementHidden("scene-power-information-"+rm3remotes.active_name);
             }
         else {
             for (var i=0; i<rm3remotes.active_buttons.length; i++) {
                 var button1 = rm3remotes.active_buttons[i].split("_");
                 if (button1[0] == "macro") { statusShow_buttonActive(button1[0]+"_"+button1[1],true); }
                 }
-            setTextById("header_image_text_info", "");
+            setTextById("scene-power-information-"+rm3remotes.active_name, "");
+            elementHidden("scene-power-information-"+rm3remotes.active_name);
             }
         }
 
@@ -815,10 +821,16 @@ function statusCheck_devicePowerButtonDisplay(data={}) {
                 statusShow_powerButton( device + "_off",    "ERROR" );
             }
             else if (power_status == "POWER_OFF") {
+                statusShow_buttonActive("device_" + device, false);
+                statusShow_buttonActive(device + "_on-off", false);
+                statusShow_buttonActive(device + "_on", false);
+                statusShow_buttonActive(device + "_off", false);
+            /*
                 statusShow_powerButton( "device_" + device, "OFF" ); // main menu button
                 statusShow_powerButton( device + "_on-off", "OFF" ); // on-o:16
                 statusShow_powerButton( device + "_off", "OFF" );
                 statusShow_powerButton( device + "_on",  "" );
+                */
                 }
             else if (power_status == "OFF") {
                 statusShow_powerButton( "device_" + device, "OFF" ); // main menu button

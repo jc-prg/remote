@@ -761,8 +761,9 @@ function rmRemote(name) {
 
 		// create remote
 		remote += "<div id='scene_button' style='display:block;'>";
-		if (preview) { remote += "<b>"+lang("PREVIEW")+":</b><br/><hr/>"; }
-		
+        if (preview) { remote += "<b>"+lang("PREVIEW")+":</b><br/><hr/>"; }
+		else         { remote += "<div id='scene-power-information-"+scene+"' class='remote-power-information'>POWER INFORMATION</div>"; }
+
 		for (var i=0; i<remote_definition.length; i++) {
 
 			var next_button	= "";
