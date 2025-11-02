@@ -9,7 +9,7 @@ hr         { border: solid 1px var(--rm-color-hr); }
 
 #audio1 {
   position          : absolute;
-  right             : 145px;
+  right             : 122px;
   background-image  : url('/icon/mute.png');
   background-size   : 14px;
   height            : 14px;
@@ -65,6 +65,8 @@ hr         { border: solid 1px var(--rm-color-hr); }
 ul.help { 
 	margin-bottom   : 5px;
 	margin-top      : 3px;
+	color           : inherit;
+	background      : inherit;
 	}
 ul.help li { 
 	margin-left     : -15px;
@@ -136,7 +138,8 @@ ul.help ul li {
    width            : var(--app-frame-width-100);
    margin           : 4px;
    padding          : 5px;
-   border-radius	: 5px;   
+   padding-bottom   : 8px;
+   border-radius	: 14px;
    background-color	: var(--rm-color-frame-remote);
    color            : var(--rm-color-frame-remote-text);
    opacity		    : var(--rm-opacity-frame-var);
@@ -253,6 +256,25 @@ ul.help ul li {
     font-size       : var(--rm-size-remote-line-text);
     clear		    : left;
     }
+
+.remote-power-information {
+    float           : left;
+    width           : calc(100% - 27px);
+    padding         : 4px;
+    padding-left    : 10px;
+    padding-right   : 10px;
+    margin          : 3px;
+    margin-bottom   : 15px;
+    background      : var(--rm-color-button);
+    border          : 0.5px solid var(--rm-color-button-border);
+    border-radius   : 10px;
+    color           : var(--rm-color-header-info);
+    font-size       : var(--rm-size-remote-header-info);
+    font-weight     : normal;
+    text-align      : center;
+    opacity         : 70%;
+    display         : none;x
+}
 
 /* adaptive sizes for smart phones -> see style-screensize-big.css */
 

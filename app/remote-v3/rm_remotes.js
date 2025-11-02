@@ -234,6 +234,7 @@ function rmRemote(name) {
 		console.info("Set cookie: "+"device::"+device+"::"+remote_label+"::"+this.edit_mode);
 
 		if (preview) { remote += "<b>"+lang("PREVIEW")+":</b><br/><hr/>"; }
+		else         { remote += "<div id='remote-power-information-"+device+"' class='remote-power-information'>POWER INFORMATION</div>"; }
 
 		for (var i=0; i<remote_definition.length; i++) {
 
@@ -951,8 +952,8 @@ function rmRemote(name) {
             edit   += this.tab.row("<center>"+
                       "<input id='scene_visibility' value='"+scene_info["visible"]+"' style='display:none;'>"+
                       this.button.edit("apiRemoteChangeVisibility('scene','"+scene+"','scene_visibility');",lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
-                      this.button.edit("apiSceneEdit('"+scene+"','edit','description,label,image');","save","") + "&nbsp;" +
-                      this.button.edit("apiSceneDelete('"+scene+"');","delete","") + "</center>"
+                      this.button.edit("apiSceneEdit('"+scene+"','edit','description,label,image');",lang("BUTTON_T_SAVE"),"") + "&nbsp;" +
+                      this.button.edit("apiSceneDelete('"+scene+"');",lang("BUTTON_T_DELETE"),"") + "</center>"
                       );
             edit   += this.tab.end();
             return edit;
@@ -1049,7 +1050,7 @@ function rmRemote(name) {
                   this.button.edit(this.app_name+".scene_remote(  '"+this.frames_remote[0]+"','"+scene+"','json::remote','json::display','json::display-size');"+
 				                   this.app_name+".scene_channels('"+this.frames_remote[2]+"','"+scene+"','json::macro-channel');",
 				                   lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
-		          this.button.edit("remoteToggleEditMode(false);"+this.app_name+".create('"+this.active_type+"','"+scene+"');","stop edit") +
+		          this.button.edit("remoteToggleEditMode(false);"+this.app_name+".create('"+this.active_type+"','"+scene+"');",lang("BUTTON_T_STOP_EDIT")) +
 				  "</center><br/>";
 
 		setTextById(id,remote);

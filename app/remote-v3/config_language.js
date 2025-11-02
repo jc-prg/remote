@@ -62,6 +62,7 @@ var language_app = {
 		"BUTTON_T_PREVEW"       : "preview",
 		"BUTTON_T_RESET"        : "reset",
 		"BUTTON_T_SAVE"         : "save",
+		"BUTTON_T_STOP_EDIT"    : "stop editing",
 		"BUTTON_T_SEND"         : "send-command",
 		"BUTTON_T_SHOW_HIDE"    : "show/hide",
 		"BUTTON_T_SLIDER"       : "slider",
@@ -79,6 +80,10 @@ var language_app = {
 		"CHANGE_MODES"          : "Change working modes",
 
 		"CONNECTION_ERROR"      : "Connection Error",
+		"CONNECTION_POWER_OFF"  : "Power Off",
+		"CONNECTION_DEVICE_OFF" : "Device Off",
+		"CONNECTION_MANUAL"     : "Manual Mode",
+		"CONNECTION_DISABLED"   : "API Disabled",
 		"CONNECTED"             : "connected",
 
 		"COLORPICKER_SELECT_CMD" : "Select command, to insert color picker.",
@@ -250,6 +255,13 @@ var language_app = {
 		"POWER_DEVICE_OFF"             : "Switch on the power device first. {0}",
 		"POWER_DEVICE_OFF_SCENE"       : "Switch on the power device using the toggle in the header. {0}",
 		"POWER_DEVICE_OFF_SCENE_INFO"  : "<b>Power Off:</b> Use the toggle in the header to switch on.",
+
+        "STATUS_DEV_OK"                : "Device <b>{0}</b> is OK.",
+        "STATUS_DEV_POWER_OFF"         : "Power device <b>{0}</b> is switched off.",
+        "STATUS_DEV_ERROR"             : "An error occurred for device <b>{0}</b>. {1}",
+        "STATUS_DEV_API_DISABLED"      : "The API <b>{0}</b> for the device <b>{1}</b> has been disabled.",
+        "STATUS_DEV_API_ERROR"         : "An API error occurred for <b>{0}</b> and the connected device <b>{1}</b>. {2}",
+        "STATUS_DEV_OTHER_ERROR"       : "Unknown error occurred for the device <b>{0}</b>.",
 
 		"QUICK_ACCESS"                 : "Quick Access",
 

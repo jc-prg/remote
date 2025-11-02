@@ -10,7 +10,7 @@ var app_setting_style_header    = "setting_bg header";
 
 var app_last_load               = 0;
 var app_title                   = "jc://remote/";
-var app_version                 = "v3.0.8";
+var app_version                 = "v3.0.9";
 var app_api_dir                 = "api/";
 var app_api_status              = "list";
 
@@ -137,10 +137,10 @@ var color_api_warning       = "yellow";
 var color_api_error         = "#FF6666";
 var color_button_inactive 	= "#666666";
 var colors_power            = {
-				"ON"        : "darkgreen",
-				"OFF"       : "darkred",
-				"OTHER"	    : "darkcyan",
-				"ERROR"	    : "blueviolet",
+				"ON"        : "var(--rm-color-signal-power-on)",
+				"OFF"       : "var(--rm-color-signal-power-off)",
+				"OTHER"	    : "var(--rm-color-signal-power-other)",
+				"ERROR"	    : "var(--rm-color-signal-power-error)",
 				}
 
 var sign_ok       = "&#10003;";       // &#9745;

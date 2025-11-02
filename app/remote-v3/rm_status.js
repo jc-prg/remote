@@ -465,11 +465,83 @@ function statusCheck_sliderToggleColorPicker(data) {
     }
 
 
+// check power status of devices
+function statusCheck_devicePowerStatus (data) {
+    var dev_status       = {}
+    var dev_status_info  = {}
+
+	var devices_status    = data["STATUS"]["devices"];
+	var devices_config    = data["CONFIG"]["devices"];
+
+	for (device in devices_config) {
+	    var status            = "N/A";
+	    var status_msg        = "N/A";
+	    var error_msg         = "";
+        var device_api        = devices_config[device]["interface"]["api"];
+        var device_api_status = data["STATUS"]["interfaces"]["connect"][device_api];
+        var device_api_power  = data["CONFIG"]["apis"]["list_api_power_device"][device_api];
+
+        // check API status
+        if (device_api_status.toUpperCase().indexOf("DISABLED") >= 0)        { status = "API_DISABLED"; }
+        else if (device_api_status.toUpperCase().indexOf("ERROR") >= 0)      { status = "API_ERROR"; error_msg = device_api_status; }
+        else if (device_api_status.toUpperCase().indexOf("CONNECTED") < 0)   { status = "API_ERROR"; }
+        else if (device_api_status.toUpperCase().indexOf("CONNECTED") >= 0)  { status = "API_OK"; }
+
+        if (device_api_power != "") {
+            // check API status of Power Device
+            var power_dev_status  = data["STATUS"]["interfaces"]["connect"][device_api_power];
+
+            if (power_dev_status.toUpperCase().indexOf("DISABLED") >= 0)       { status = "API_PWR_DISABLED"; }
+            else if (power_dev_status.toUpperCase().indexOf("ERROR") >= 0)      { status = "API_PWR_ERROR";  error_msg = device_api_status; }
+            else if (power_dev_status.toUpperCase().indexOf("CONNECTED") < 0)   { status = "API_PWR_ERROR"; }
+            else if (power_dev_status.toUpperCase().indexOf("CONNECTED") >= 0)  { status = "API_OK"; }
+
+            // check power status of Power Device !!! ATTENTION: this has to be changed some when (device at the moment is part of API name will not be in future)
+            var [api, power_device] = device_api_power.split("_");
+            if (status == "API_OK") {
+                if (!devices_status[power_device]["power"])                                        { status = "ERROR_PWR_N/A"; }
+                else if (devices_status[power_device]["power"].toUpperCase().indexOf("OFF") >= 0)  { status = "POWER_OFF"; }
+                else if (devices_status[power_device]["power"].toUpperCase().indexOf("ON") >= 0)   { status = "POWER_ON"; }
+                }
+            }
+
+        // check device status
+        if (status == "API_OK" || status == "POWER_ON") {
+            if (devices_status[device]["api-status"].toUpperCase().indexOf("CONNECTED") < 0) { status = "API_ERROR_DEVICE"; }
+            else if (!devices_status[device]["power"])                                       { status = "ERROR_N/A"; }
+            else if (devices_status[device]["power"].toUpperCase().indexOf("OFF") >= 0)      { status = "OFF"; }
+            else if (devices_status[device]["power"].toUpperCase().indexOf("ON") >= 0)       { status = "ON"; }
+            }
+
+        var label       = devices_config[device]["settings"]["label"] + " (" + device + ")";
+        var label_pwr   = devices_config[power_device]["settings"]["label"] + " (" + power_device + ")";
+        label_pwr       = "<span style=\"cursor:pointer;\" onclick=\"rm3remotes.create('device','"+power_device+"');rm3menu.click_menu();\">" + label_pwr + "</span>";
+
+        // create status messages // IN PROGRESS
+        if (status == "ON" || status == "OFF")      { status_msg = lang("STATUS_DEV_OK", [label]); }
+        else if (status == "POWER_OFF")             { status_msg = lang("STATUS_DEV_POWER_OFF", [label_pwr]); }
+        else if (status == "API_DISABLED")          { status_msg = lang("STATUS_DEV_API_DISABLED", [device_api, label]); }
+        else if (status == "API_PWR_DISABLED")      { status_msg = lang("STATUS_DEV_API_DISABLED", [device_api_power, label]); }
+        else if (status == "API_ERROR")             { status_msg = lang("STATUS_DEV_API_ERROR", [device_api, label, error_msg]); }
+        else if (status == "API_PWR_ERROR")         { status_msg = lang("STATUS_DEV_API_ERROR", [device_api_power, label, error_msg]); }
+        else if (status == "API_ERROR_DEVICE")      { status_msg = lang("STATUS_DEV_API_ERROR", [device_api, label]); }
+        else if (status == "ERROR_N/A")             { status_msg = lang("STATUS_DEV_OTHER_ERROR", [label]); }
+        else if (status == "ERROR_PWR_N/A")         { status_msg = lang("STATUS_DEV_OTHER_ERROR", [label_pwr]); }
+        else                                        { status_msg = lang("STATUS_DEV_OTHER_ERROR", [label]); }
+
+        dev_status[device]      = status;
+        dev_status_info[device] = status_msg;
+        }
+
+	return [ dev_status, dev_status_info ];
+}
+
+
 // check power status of devices required for a scene
-function statusCheck_sceneDevices(data) {
+function statusCheck_scenePowerStatus(data) {
 
 	var scene_status        = {};
-	var log_data            = {};
+	var scene_status_info   = {};
 	var devices             = data["CONFIG"]["devices"];
 	var devices_status      = data["STATUS"]["devices"];
 
@@ -486,7 +558,7 @@ function statusCheck_sceneDevices(data) {
 		if (power_device != "N/A" && power_device.length > 1) {
             power_status    = data["STATUS"]["devices"][power_device[0]][power_device[1]];
 		    }
-		log_data[key]       = "";
+		scene_status_info[key] = "";
 
 		for (var i=0;i<required.length;i++) {
 
@@ -495,17 +567,17 @@ function statusCheck_sceneDevices(data) {
                 continue;
                 }
 
-	        var device_api         = devices_status[required[i]]["api"];
-	        var device_api_status  = data["STATUS"]["interfaces"]["connect"][device_api];
-	        log_data[key]         += required[i];
+	        var device_api          = devices_status[required[i]]["api"];
+	        var device_api_status   = data["STATUS"]["interfaces"]["connect"][device_api];
+	        scene_status_info[key] += required[i];
 
             if (devices_status[required[i]]["power"]) {
                 device_status[required[i]]  = devices_status[required[i]]["power"].toUpperCase();
-                log_data[key] += "="+device_status[required[i]]+"  ";
+                scene_status_info[key]     += "="+device_status[required[i]]+"  ";
                 }
             else {
                 device_status[required[i]] = "";
-                log_data[key] += "=<NO-POWER-STATUS>  ";
+                scene_status_info[key] += "=<NO-POWER-STATUS>  ";
                 }
 
             if (device_status[required[i]] == "ON") { dev_on += 1; }
@@ -519,15 +591,17 @@ function statusCheck_sceneDevices(data) {
         else                                { scene_status[key] = "OFF"; }
         }
 
-	return [ scene_status, log_data ];
+	return [ scene_status, scene_status_info ];
     }
 
 
 // show power status of devices required for a scene -> color button
 function statusCheck_scenePowerButton(data) {
 
-    var scene_status_all = statusCheck_sceneDevices(data);
-	var scene_status = scene_status_all[0];
+    var scene_status_all = statusCheck_scenePowerStatus(data);
+	var scene_status     = scene_status_all[0];
+
+    if (rm3remotes.active_type == "device") { return; }
 
 	for (var key in scene_status) {
 
@@ -586,11 +660,10 @@ function statusCheck_scenePowerButton(data) {
 	}
 	
 	
-// check if device status is off
+// check if scene and/or device status is off - format buttons; show status message
 function statusCheck_deviceActive(data) {
 
 	if (deactivateButton)	{ return; }
-
 	if (!data["CONFIG"]) {
 		console.error("statusCheck_deviceActive: data not loaded.");
 		statusShowApiStatus("red", showButtonTime);
@@ -603,40 +676,39 @@ function statusCheck_deviceActive(data) {
 	var filter         = false;
 	var scene_status   = {};
 
-	var [scene_status, status_log] = statusCheck_sceneDevices(data);
+    // check scene status: inactive macro_buttons, deactivate all buttons from list starting with "macro", power message
+    if (rm3remotes.active_type == "scene") {
+    	var [scene_status, status_log]          = statusCheck_scenePowerStatus(data);
+        if (scene_status[rm3remotes.active_name] == "POWER_OFF") {
+            for (var i=0; i<rm3remotes.active_buttons.length; i++) {
+                var button = rm3remotes.active_buttons[i];
+                statusShow_buttonActive(button,false);
+                }
+            for (var i=0; i<rm3remotes.active_channels.length; i++) {
+                var button = rm3remotes.active_channels[i];
+                statusShow_buttonActive(button,false);
+                }
+            setTextById("header_image_text_info", lang("POWER_DEVICE_OFF_SCENE_INFO"));
+            }
+        else if (scene_status[rm3remotes.active_name] != "ON") {
 
-	// inactive macro_buttons (check scene status, deactivate all buttons from list starting with "macro")
-	if (rm3remotes.active_type == "scene" && scene_status[rm3remotes.active_name] == "POWER_OFF") {
-		for (var i=0; i<rm3remotes.active_buttons.length; i++) {
-			var button = rm3remotes.active_buttons[i];
-			statusShow_buttonActive(button,false);
-			}
-		for (var i=0; i<rm3remotes.active_channels.length; i++) {
-			var button = rm3remotes.active_channels[i];
-			statusShow_buttonActive(button,false);
-			}
-	    setTextById("header_image_text_info", lang("POWER_DEVICE_OFF_SCENE_INFO"));
-	    }
-	else if (rm3remotes.active_type == "scene" && scene_status[rm3remotes.active_name] != "ON") {
-
-		for (var i=0; i<rm3remotes.active_buttons.length; i++) {
-			var button1 = rm3remotes.active_buttons[i].split("_");
-			if (button1[0] == "macro") { statusShow_buttonActive(button1[0]+"_"+button1[1],false); }
-			}
-	    setTextById("header_image_text_info", "");
-		}
-	else if (rm3remotes.active_type == "scene") {
-		for (var i=0; i<rm3remotes.active_buttons.length; i++) {
-			var button1 = rm3remotes.active_buttons[i].split("_");
-			if (button1[0] == "macro") { statusShow_buttonActive(button1[0]+"_"+button1[1],true); }
-			}
-	    setTextById("header_image_text_info", "");
-		}
-    else {
-	    setTextById("header_image_text_info", "");
+            for (var i=0; i<rm3remotes.active_buttons.length; i++) {
+                var button1 = rm3remotes.active_buttons[i].split("_");
+                if (button1[0] == "macro") { statusShow_buttonActive(button1[0]+"_"+button1[1],false); }
+                }
+            setTextById("header_image_text_info", "");
+            }
+        else {
+            for (var i=0; i<rm3remotes.active_buttons.length; i++) {
+                var button1 = rm3remotes.active_buttons[i].split("_");
+                if (button1[0] == "macro") { statusShow_buttonActive(button1[0]+"_"+button1[1],true); }
+                }
+            setTextById("header_image_text_info", "");
+            }
         }
 
-	// check device status - if OFF change color of buttons to gray
+	// check device status: if OFF change color of buttons to gray
+	var [device_status, device_status_log]  = statusCheck_devicePowerStatus(data);
 	var buttons_color  = data["CONFIG"]["elements"]["button_colors"];
 	var buttons_power  = {"on":1, "off":1, "on-off":1};
 
@@ -644,42 +716,37 @@ function statusCheck_deviceActive(data) {
 
 		if (devices_config[device] && devices_config[device]["buttons"] && devices_status[device] && devices_status[device]["power"]) {
 
-			var api        = devices_config[device]["interface"]["api"];
-			var api_status = data["STATUS"]["interfaces"]["connect"][api];
-
-			var power_on = true;
-			if (devices_status[device]["power"].toUpperCase() != "ON") { power_on = false; }
-			//if (devices_status[device]["api-status"] != "Connected")   { power_on = false; }
-			if (api_status != "Connected")                             { power_on = false; }
+		    var status     = device_status[device];
+		    var message    = device_status_log[device];
+            var power_on   = (status == "ON");
 
 			// show device status
-			console.debug("statusCheck_deviceActive: " + device + ", " + power_on +
-			              "(" + api_status + "," + devices_status[device]["power"] + ")");
+			console.debug("statusCheck_deviceActive: " + device + ", " + power_on + "(" + status + ": " + message + ")");
+
+			// show message
+			if (status != "ON" && status != "OFF") {
+			    setTextById("remote-power-information-"+device, message);
+			    elementVisible("remote-power-information-"+device);
+			    }
+			else {
+			    setTextById("remote-power-information-"+device, "");
+			    elementHidden("remote-power-information-"+device);
+    			}
 
             // check if device of slider is active
 			for (var i=0;i<devices_config[device]["commands"]["set"].length;i++) {
 				var button = devices_config[device]["commands"]["set"][i];
-				if (!power_on) {
-					statusShow_buttonActive("slider_"+device+"_"+button+"_input",false);
-					}
-				else {
-					statusShow_buttonActive("slider_"+device+"_"+button+"_input",true);
-					}
+				if (!power_on)  { statusShow_buttonActive("slider_"+device+"_"+button+"_input",false); }
+				else            { statusShow_buttonActive("slider_"+device+"_"+button+"_input",true); }
 				}
 
 			// check if device of buttons is active
 			for (var i=0;i<devices_config[device]["buttons"].length;i++) {
 				var button   = devices_config[device]["buttons"][i].toLowerCase();
 
-				if (!buttons_power[button] && !power_on) {
-					statusShow_buttonActive(device+"_"+button,false);
-					}
-				else if (!buttons_power[button] && power_on) {
-					statusShow_buttonActive(device+"_"+button,true);
-					}
-				else {
-					statusShow_buttonActive(device+"_"+button,true);
-					}
+				if (!buttons_power[button] && !power_on)        { statusShow_buttonActive(device+"_"+button,false); }
+				else if (!buttons_power[button] && power_on)    { statusShow_buttonActive(device+"_"+button,true); }
+				else                                            { statusShow_buttonActive(device+"_"+button,true); }
 				}
 			}
 		}
@@ -725,9 +792,10 @@ function statusCheck_deviceIdle(data) {
 function statusCheck_devicePowerButtonDisplay(data={}) {
 
 	// check device status and change color of power buttons / main menu buttons device
+	var device_list    = "";
 	var devices        = data["STATUS"]["devices"];
 	var devices_config = data["CONFIG"]["devices"];
-	var device_list    = "";
+    var [device_status, device_status_log]  = statusCheck_devicePowerStatus(data);
 
 	for (var device in devices) {
 
@@ -735,78 +803,53 @@ function statusCheck_devicePowerButtonDisplay(data={}) {
 		if (!devices_config[device])     { console.warn("Device not defined correctly: '" + device + "' has no configuration."); continue; }
 	    if (!devices[device]["power"])   { continue; }
 
-	    var device_api         = data["STATUS"]["devices"][device]["api"];
-	    var device_api_connect = data["STATUS"]["devices"][device]["api-status"];
-	    var device_api_status  = data["STATUS"]["interfaces"]["connect"][device_api];
+        var power_status  = device_status[device];
+        var power_message = device_status_log[device];
 
-		if (!device_api_status) {
-		    console.warn("Device not defined correctly: '" + device + "' has no interface '" + device_api + "'");
-		    continue;
-		    }
-
-	    device_list += device + " ";
-
-        var power_status     = devices[device]["power"].toUpperCase() + "";
-        var power_status_api = devices[device]["api-status"];
-
-        if (power_status_api.toUpperCase().indexOf("OFF") > -1)   { power_status = "POWER_OFF"; }
-        else if (power_status_api.toUpperCase() != "CONNECTED")   { power_status = "ERROR"; }
-
-        console.debug("Check PWR BUTTON & DISPLAY: " + device + " / " + power_status + " / " + power_status_api)
-
+        // format power buttons
         if (deactivateButton == false) {
-            if (power_status_api.toUpperCase().indexOf("OFF") > -1) {
-
-            // DISABLED !!!
-
-                statusShow_powerButton( "device_" + device, "ERROR" ); // main menu button
-                statusShow_powerButton( device + "_on-off", "ERROR" ); // on-off device button
-                statusShow_powerButton( device + "_on",     "ERROR" );
-                statusShow_powerButton( device + "_off",    "ERROR" );
-                }
-            else if (power_status.includes("ERROR")) {
+            if (power_status.indexOf("ERROR") >= 0) {
                 statusShow_powerButton( "device_" + device, "ERROR" ); // main menu button
                 statusShow_powerButton( device + "_on-off", "ERROR" ); // on-off device button
                 statusShow_powerButton( device + "_on",     "ERROR" );
                 statusShow_powerButton( device + "_off",    "ERROR" );
             }
-            else if (power_status.includes("ON")) {
+            else if (power_status == "POWER_OFF") {
+                statusShow_powerButton( "device_" + device, "OFF" ); // main menu button
+                statusShow_powerButton( device + "_on-off", "OFF" ); // on-o:16
+                statusShow_powerButton( device + "_off", "OFF" );
+                statusShow_powerButton( device + "_on",  "" );
+                }
+            else if (power_status == "OFF") {
+                statusShow_powerButton( "device_" + device, "OFF" ); // main menu button
+                statusShow_powerButton( device + "_on-off", "OFF" ); // on-o:16
+                statusShow_powerButton( device + "_off", "OFF" );
+                statusShow_powerButton( device + "_on",  "" );
+                }
+            else if (power_status == "ON") {
                 statusShow_powerButton( "device_" + device, "ON" ); // main menu button
                 statusShow_powerButton( device + "_on-off", "ON" ); // on-off device button
                 statusShow_powerButton( device + "_on",  "ON" );
                 statusShow_powerButton( device + "_off", "" );
                 }
-            else if (power_status.includes("POWER_OFF")) {
-                statusShow_powerButton( "device_" + device, "OFF" ); // main menu button
-                statusShow_powerButton( device + "_on-off", "OFF" ); // on-o:16
-                statusShow_powerButton( device + "_off", "OFF" );
-                statusShow_powerButton( device + "_on",  "" );
-                }
-            else if (power_status.includes("OFF")) {
-                statusShow_powerButton( "device_" + device, "OFF" ); // main menu button
-                statusShow_powerButton( device + "_on-off", "OFF" ); // on-o:16
-                statusShow_powerButton( device + "_off", "OFF" );
-                statusShow_powerButton( device + "_on",  "" );
-                }
             }
 
-        if (rm3remotes.edit_mode)                   { statusShow_display(device, "EDIT_MODE"); }
-        else if (deactivateButton)                  { statusShow_display(device, "MANUAL"); }
-        else if (power_status.includes("ERROR"))    { statusShow_display(device, "ERROR"); }
-        else if (power_status.includes("ON"))       { statusShow_display(device, "ON"); }
-        else if (power_status.includes("POWER_OFF")){
+        // format displays
+        if (rm3remotes.edit_mode)                       { statusShow_display(device, "EDIT_MODE"); }
+        else if (deactivateButton)                      { statusShow_display(device, "MANUAL"); }
+        else if (power_status == "ON")                  { statusShow_display(device, "ON"); }
+        else if (power_status == "OFF")                 { statusShow_display(device, "OFF"); }
+        else if (power_status.indexOf("ERROR") >= 0)    {
+            statusShow_display(device, "ERROR");
+		    setTextById("display_ERROR_info_"+device, "");
+            }
+        else if (power_status == "POWER_OFF"){
             statusShow_display(device, "POWER_OFF");
-            var device_key = power_status_api.replace("OFF (PowerDevice ", "");
-            device_key = device_key.replace(")", "");
-		    setTextById("display_POWER_OFF_info_"+device, lang("POWER_DEVICE_OFF", ["("+device_key+")"]));
+		    setTextById("display_POWER_OFF_info_"+device, "");
             }
-        else if (power_status.includes("OFF"))      { statusShow_display(device, "OFF"); }
-
-        if (power_status.includes("OFF") && power_status_api != "CONNECTED") { setTextById("display_power_info_"+device, device_api_connect.replace("OFF", "") ); }
-        else                                                                 { setTextById("display_power_info_"+device, "" ); }
         }
 
-    console.debug("statusCheck_powerButton: "+device_list)
+    console.debug("statusCheck_powerButton: "+device_list);
 	}
 
 
@@ -843,11 +886,14 @@ function statusCheck_displayValues(data={}) {
 	// check status for displays
 	var devices     = data["CONFIG"]["devices"];
 	var scenes      = data["CONFIG"]["scenes"];
+    var [device_status, device_status_log]  = statusCheck_devicePowerStatus(data);
+
+	// set colors
 	var vol_color   = "white";
 	var vol_color2  = "yellow";
 	var novol_color = "darkgray";
 
-	// set colors
+    // fill in values for all device displays
 	for (var key in devices) {
 
 	    if (key == "default") { continue; }
@@ -855,151 +901,92 @@ function statusCheck_displayValues(data={}) {
 		    console.warn("Device not defined correctly: '" + key + "' has no configuration.");
 		    continue;
 		    }
-	
-		// media info ...
-		var media_info         = document.getElementById("media_info");
-		var media_info_content = document.getElementById("media_info_content");
-		
-    	var device_config      = data["CONFIG"]["devices"][key];
-		var device_status      = data["STATUS"]["devices"][key]; 
-		var device_api         = data["STATUS"]["devices"][key]["api"];
-		var device_api_status  = data["STATUS"]["interfaces"]["connect"][device_api];
 
-		if (!device_api_status) {
-		    console.warn("Device not defined correctly: '" + key + "' has no interface '" + device_api + "'");
-		    continue;
-		    }
+	    // device status
+	    var status      = device_status[key];
+	    var message     = device_status_log[key];
+        var dev_status  = data["STATUS"]["devices"][key];
+        var dev_config  = data["CONFIG"]["devices"][key];
 
-		if (device_status["power"]) { var device_status = device_status["power"].toUpperCase(); }
-		else                        { var device_status = ""; }
-		
-		if (device_api_status == "Connected" && device_status["power"] && device_status["power"].includes("ON")) {
-		
-			// to be transferred to server: single source for playing information
-			// -> add 'queries-content-info = ["current-playing","usb-net-title"]' to config files
-			// -> offer value via API
-			// -> use it here to check if one of those values contains (relevant) information
-					
-			var playing_information = ["current-playing","usb-net-title"];
-			var playing_content     = "";
-			
-			for (var i=0;i<playing_information.length;i++) {
+        // set values if device is active or scene is active (which can contain several devices)
+        if (status == "ON" && (rm3remotes.active_type == "scene" || rm3remotes.active_name == key)) {
 
-				if (device_status[playing_information[i]] 
-				    && device_status[playing_information[i]] != "" 
-				    && device_status[playing_information[i]] != "Error"
-				    && device_status[playing_information[i]] != "no media"
-				    && device_status[playing_information[i]] != "no data"
-				    ) {
-					playing_content = device_status[playing_information[i]];
-					}
-				}
-		
-			if (media_info && playing_content != "") {
+			var remote      = devices[key]["remote"]["remote"];
+			var display     = devices[key]["remote"]["display"];
 
-				if (media_info_content)	{
-				    var current_media_info_content = media_info_content.innerHTML;
-				    }
-				else {
-				    var current_media_info_content = "";
-				    }
-				
-				if (playing_content != "" && rm3remotes.active_name == key) {				
-					current_media_info_content = playing_content;
-					current_playing            = "&nbsp;<br/><center>";
-					current_playing           += "<marquee style='width:98%' scrollamount='3' scrolldelay='10' id='media_info_content'>"+current_media_info_content+"</marquee>";
-					current_playing           += "</center>&nbsp;<hr/>";
-					device_media_info[key]     = current_media_info_content;
-					}
-				else {	current_playing            = "";
-					device_media_info[key]     = "";
-					}
+			if (!remote.includes("DISPLAY"))            { continue; }
+			if (display == {} || display == undefined)  { continue; }
 
-				if (current_media_info_content != last_media_info_content) { 
-					media_info.innerHTML    = current_playing;
-					last_media_info_content = current_media_info_content;
-					}
-	 			}
-	 		}
-
-		// fill keys with displays
-		if (device_status && devices[key]["remote"] && devices[key]["remote"]["display"]) {
-		
-			var display     	= devices[key]["remote"]["display"];
-			var connected   	= device_api_status.toLowerCase();
-			var device_status   = data["STATUS"]["devices"][key];
-			var online_status   = device_status["availability"];
-		        
+            // set display values
 			for (var display_key in display) {
 				var value_key      = display[display_key];
 				var element        = document.getElementById("display_" + key + "_" + value_key);
 				var element2       = document.getElementById("display_full_" + key + "_" + value_key);
-				var status         = device_status[value_key];
+				var key_status     = dev_status[value_key];
 
 				if (value_key == "vol"
-				    && device_config["commands"]["definition"] 
-				    && device_config["commands"]["definition"][value_key]
-				    && device_config["commands"]["definition"][value_key]["values"]
-				    && device_config["commands"]["definition"][value_key]["values"]["max"]) {
-				    
-					status = statusShow_volume_old( device_status[value_key], device_config["commands"]["definition"][value_key]["values"]["max"], vol_color2, novol_color ) + " &nbsp; ["+device_status[value_key]+"]";
+				    && dev_config["commands"]["definition"]
+				    && dev_config["commands"]["definition"][value_key]
+				    && dev_config["commands"]["definition"][value_key]["values"]
+				    && dev_config["commands"]["definition"][value_key]["values"]["max"]) {
+
+					key_status = statusShow_volume_old( dev_status[value_key], dev_config["commands"]["definition"][value_key]["values"]["max"], vol_color2, novol_color ) + " &nbsp; ["+dev_status[value_key]+"]";
 					}
-									
-				if (status && value_key == "power") {
-					if (connected != "connected")                         { status = use_color("<b>"+lang("CONNECTION_ERROR")+":</b><br/>","error")+connected; }
-					else if (online_status && online_status == "offline") { status = use_color("<b>"+lang("OFFLINE")+"</b><br/>","hint"); }
-			        else if (status.toUpperCase().indexOf("ON") >= 0)     { status = use_color("<b>Power On<b/>","on"); }
-					else if (status.toUpperCase().indexOf("OFF") >= 0)    { status = use_color("<b>Power Off<b/>","hint"); }
-                    else                                                  { status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+status; }
+
+				if (key_status && value_key == "power") {
+					if (connected != "connected")                           { key_status = use_color("<b>"+lang("CONNECTION_ERROR")+":</b><br/>","error")+connected; }
+					else if (online_status && online_status == "offline")   { key_status = use_color("<b>"+lang("OFFLINE")+"</b><br/>","hint"); }
+			        else if (key_status.toUpperCase().indexOf("ON") >= 0)   { key_status = use_color("<b>Power On<b/>","on"); }
+					else if (key_status.toUpperCase().indexOf("OFF") >= 0)  { key_status = use_color("<b>Power Off<b/>","hint"); }
+                    else                                                    { key_status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+status; }
 					}
-				if (status && element)  { element.innerHTML  = status; }
-				if (status && element2) { element2.innerHTML = status.replace(/,/g,"; "); }
+
+				if (element)  { element.innerHTML  = key_status; }
+				if (element2) { element2.innerHTML = key_status.replace(/,/g,"; "); }
 				}
-			}
-			
-		// fill all keys in alert display
-		if (device_status && device_config && device_config["commands"]["get"]) {
+            }
 
-			var additional_keys = ["api","api-status","api-last-query","api-last-record",
-			                       "api-last-send","api-auto-off"];
-			var display         = device_config["commands"]["get"];
-			var connected       = device_api_status.toLowerCase();
-			var device_status   = data["STATUS"]["devices"][key];
+        // set display detail popup values (for devices only)
+        if (rm3remotes.active_type == "device" && dev_status && dev_config && dev_config["commands"]["get"]) {
 
-			for (var i=0; i<additional_keys.length; i++) {
-				if (!display[additional_keys[i]] && device_status[additional_keys[i]]) { display.push([additional_keys[i]]); }
-				}
+            var additional_keys = ["api","api-status","api-last-query","api-last-record",
+                                   "api-last-send","api-auto-off"];
+            var display_keys    = dev_config["commands"]["get"];
+            var connected       = device_status[key] + ": " + device_status_log[key];
 
-			for (var i=0; i<display.length; i++) {
-				var value_key   = display[i];
-				var element2    = document.getElementById("display_full_" + key + "_" + value_key);
-				var status      = device_status[value_key];
-				if (typeof(status) == "string") {
-				    status          = status.replaceAll("'", "\"");
-				    status          = status.replaceAll("True", "true");
-				    status          = status.replaceAll("False", "false");
-				    }
-				status          = syntaxHighlightJSON(status);
+            for (var i=0; i<additional_keys.length; i++) {
+                if (!display_keys[additional_keys[i]] && dev_status[additional_keys[i]]) { display_keys.push([additional_keys[i]]); }
+                }
 
-				if (status && value_key == "power") {
+            for (var i=0; i<display_keys.length; i++) {
+                var value_key   = display_keys[i];
+                var key_status  = dev_status[value_key];
+                var element2    = document.getElementById("display_full_" + key + "_" + value_key);
 
-					if (connected != "connected")                                       { status = use_color("<b>"+lang("CONNECTION_ERROR")+":</b><br/>","error")+connected; }
-					else if (status.indexOf("ON") >= 0 || status.indexOf("on") >= 0)	{ status = use_color("<b>"+lang("CONNECTED")+"<b/>","on"); }
-					else if (status.indexOf("OFF") >= 0 || status.indexOf("off") >= 0)	{ status = use_color("<b>"+lang("CONNECTED")+": Power Off<b/>","hint"); }
-        			else 									                            { status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+status; }
-					}
-				else if (status && value_key == "api-status") {
-					status = device_api_status;
-					}
+                if (typeof(key_status) == "string") {
+                    key_status          = key_status.replaceAll("'", "\"");
+                    key_status          = key_status.replaceAll("True", "true");
+                    key_status          = key_status.replaceAll("False", "false");
+                    }
+                key_status      = syntaxHighlightJSON(key_status);
 
-				if (status && status.replace)   { status = status.replace(/,/g,", "); }
-				if (element2 && status)         { element2.innerHTML = status; }
-				}
-			}
-		}
+                if (value_key == "power") {
+                    if (connected.indexOf("ERROR") >= 0)                    { key_status = use_color("<b>"+lang("CONNECTION_ERROR")+":</b><br/>","error")+connected; }
+                    else if (typeof(key_status) != "string")                { key_status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+key_status; }
+                    else if (key_status.toUpperCase().indexOf("ON") >= 0)   { key_status = use_color("<b>"+lang("CONNECTED")+"<b/>","on"); }
+                    else if (key_status.toUpperCase().indexOf("OFF") >= 0)  { key_status = use_color("<b>"+lang("CONNECTED")+": Power Off<b/>","hint"); }
+                    else 									                { key_status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+key_status; }
+                    }
 
-	// check status for displays
+                if (key_status && key_status.replace) { key_status = key_status.replace(/,/g,", "); }
+                if (key_status && element2)           { element2.innerHTML = key_status; }
+                }
+            }
+        }
+
+	// fill in values for all scene displays
 	for (var key in scenes) {
+
 		if (scenes[key]["remote"] && scenes[key]["remote"]["display-detail"]) {
 			// .......
 			for (var vkey in scenes[key]["remote"]["display-detail"]) {
@@ -1062,6 +1049,7 @@ function statusShow_display(id, view) {
         console.debug("Error showing display: " + id + ":" + view);
         }
 }
+
 
 // check if some fatal error occurred
 function statusCheck_error(data) {
