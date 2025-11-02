@@ -274,7 +274,16 @@ ul.help ul li {
     font-weight     : normal;
     text-align      : center;
     opacity         : 90%;
-    display         : none;x
+    display         : none;
+    cursor          : zoom-in;
+}
+
+.remote-power-information.big {
+    color           : inherit;
+    background      : inherit;
+    border          : none;
+    font-size       : 18px;
+    display         : block;
 }
 
 /* adaptive sizes for smart phones -> see style-screensize-big.css */

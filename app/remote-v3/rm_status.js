@@ -682,7 +682,7 @@ function statusCheck_scenePowerButton(data) {
         statusShow_powerButton('button_show_code',   getTextById('button_show_code'));
         }
 	}
-	
+
 	
 // check if scene and/or device status is off - format buttons; show status message
 function statusCheck_deviceActive(data) {
@@ -1114,4 +1114,12 @@ function statusCheck_error(data) {
         }
 
     setTextById("attention", html);
+}
+
+
+// open as big message
+function statusCheck_bigMessage(id) {
+    var message = getTextById(id);
+    message = "<div class=\"remote-power-information big\">" + message + "</div>";
+    appMsg.confirm(message, "", 200);
 }

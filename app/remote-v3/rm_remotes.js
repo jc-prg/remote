@@ -232,7 +232,7 @@ function rmRemote(name) {
 
         // add preview hint or error message container
 		if (preview) { remote += "<b>"+lang("PREVIEW")+":</b><br/><hr/>"; }
-		else         { remote += "<div id='remote-power-information-"+device+"' class='remote-power-information'>POWER INFORMATION</div>"; }
+		else         { remote += "<div id='remote-power-information-"+device+"' class='remote-power-information' onclick='statusCheck_bigMessage(\"remote-power-information-"+device+"\");'>POWER INFORMATION</div>"; }
 
         // add edit button
         var edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"device\",\""+device+"\");";
@@ -762,7 +762,7 @@ function rmRemote(name) {
 		// create remote
 		remote += "<div id='scene_button' style='display:block;'>";
         if (preview) { remote += "<b>"+lang("PREVIEW")+":</b><br/><hr/>"; }
-		else         { remote += "<div id='scene-power-information-"+scene+"' class='remote-power-information'>POWER INFORMATION</div>"; }
+		else         { remote += "<div id='scene-power-information-"+scene+"' class='remote-power-information' onclick='statusCheck_bigMessage(\"scene-power-information-"+scene+"\");'>POWER INFORMATION</div>"; }
 
         // include edit button
         var edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"scene\",\""+scene+"\");";
