@@ -1121,5 +1121,5 @@ function statusCheck_error(data) {
 function statusCheck_bigMessage(id) {
     var message = getTextById(id);
     message = "<div class=\"remote-power-information big\">" + message + "</div>";
-    appMsg.confirm(message, "", 200);
+    appMsg.confirm(message, "", 260);
 }
