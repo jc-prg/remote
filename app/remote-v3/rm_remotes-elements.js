@@ -334,8 +334,6 @@ function rmRemoteDisplays(name) {
 
         var text          = "";
         var status        = "";
-        var display_start = "<button id=\"display_"+device+"_##STATUS##\" class=\"display ##STYLE##\" style=\"display:##DISPLAY##\" "+onclick+">";
-        var display_end   = "</button>";
 
    	    if (rm_type == "scenes") {
    	        var [scene_status, status_log] = statusCheck_scenePowerStatus(dataAll);
@@ -346,6 +344,15 @@ function rmRemoteDisplays(name) {
    	        status = device_status[device];
    	        }
 
+        // create link for details (for scenes not defined yet)
+		if (rm_type == "devices")   { var onclick = "onclick=\"" + this.app_name + ".alert('"+id+"','"+device+"','"+rm_type+"','##STYLE##');\""; }
+		else                        { var onclick = "disabled"; }
+
+        // create display
+        var display_start = "<button id=\"display_"+device+"_##STATUS##\" class=\"display ##STYLE##\" style=\"display:##DISPLAY##\" "+onclick+">";
+        var display_end   = "</button>";
+
+        // create display content
         if (this.edit_mode) {
             // display if EDIT_MODE
             text += display_start;
