@@ -454,7 +454,7 @@ function rmRemote(name) {
 		edit    += this.tab.end();
 
 		//remote  += this.basic.container("remote_main","Main settings",edit,true);
-		remote  += this.basic.container("remote_edit_main", "Main settings", "<div id='remote-edit-main'></div>", true);
+		remote  += this.basic.container("remote_edit_main", lang("MAIN_SETTINGS"), "<div id='remote-edit-main'></div>", true);
 
         var edit_main = edit;
 
@@ -506,8 +506,8 @@ function rmRemote(name) {
             // API Testing
             this.basic.input_width  = "90%";
             this.button.height  = "25px;";
-            edit    = "Test here your commands vor device '" + device + "':<br/>&nbsp;<br/><center>";
-            edit    += "<div id='api_command_select'><select style='width:90%'><option>Loading ...</option></select></div><br/>";
+            edit    = lang("TEST_DEVICE_COMMANDS",[device]);
+            edit    += "<div id='api_command_select'><select style='width:90%'><option>"+lang("LOADING")+" ...</option></select></div><br/>";
             edit    += this.basic.input("api_command") + "<br/>";
             edit    += this.button.edit("apiSendToDeviceApi( '" + device + "', getValueById('api_command') );", lang("TRY_OUT"),"") + "&nbsp;";
             edit    += this.button.edit("apiSendToDeviceApi( '" + device + "', 'jc.get_available_commands()' );", lang("GET_AVAILABLE_COMMANDS"),"");
@@ -527,11 +527,11 @@ function rmRemote(name) {
         // create sheet box
 
         const myBox = new rmSheetBox("remote-edit-main", height="380px", scroll=true, scroll_view=false, keep_open=false);
-        myBox.addSheet("Main",          edit_main);
-        myBox.addSheet("API Settings",  edit_info);
-        myBox.addSheet("API Commands",  edit_cmd);
+        myBox.addSheet(lang("REMOTE"),        edit_main);
+        myBox.addSheet(lang("API_SETTINGS"),  edit_info);
+        myBox.addSheet(lang("API_COMMANDS"),  edit_cmd);
         if (device_method == "query") {
-            myBox.addSheet("API Test",      edit_test);
+            myBox.addSheet(lang("API_TEST"),      edit_test);
             }
 
         apiGetConfig_createDropDown( device, this.device_edit_api_commands );
@@ -597,7 +597,7 @@ function rmRemote(name) {
 		
 		// Start remote control edit section
 		var remote = "";
-		remote += "<center class='remote_edit_headline'><b>Edit remote &quot;"+device_info["label"]+"&quot;</b> ["+device+"]</center>";
+		remote += "<center class='remote_edit_headline'><b>"+lang("EDIT_REMOTE")+" &quot;"+device_info["label"]+"&quot;</b> ["+device+"]</center>";
 		remote += this.basic.edit_line();
 			
         // Add GUI to add JSON elements
@@ -630,7 +630,7 @@ function rmRemote(name) {
         var device_macros = this.data["CONFIG"]["macros"];
         if (device in device_macros["device-on"])  { macro_on  = JSON.stringify(device_macros["device-on"][device]); }  else { macro_on = "[]"; }
         if (device in device_macros["device-off"]) { macro_off = JSON.stringify(device_macros["device-off"][device]); } else { macro_off = "[]"; }
-        var macro_edit = "<p>Information - edit in the <u style='cursor:pointer;' onclick='rm3settings.create(\"edit_scenes\");'>scene settings</u> ...<br/></p>";
+        var macro_edit = lang("MACRO_DEVICE_EDIT");
         macro_edit    += this.tab.start();
         macro_edit    += this.tab.row(lang("MACRO") + " ON:<br/>", this.basic.input("remote_macro_on", macro_on));
         macro_edit    += this.tab.row(lang("MACRO") + " OFF:<br/>", this.basic.input("remote_macro_off",   macro_off));
@@ -658,27 +658,27 @@ function rmRemote(name) {
         this.button.height = "25px";
 
         const myBoxJson = new rmSheetBox("remote-edit-json", height="350px", scroll=true);
-        myBoxJson.addSheet("Remote",       "<h4>"+lang("JSON_REMOTE")+"</h4>" +  "<div id='container_remote_json_buttons'></div><br/>" + lang("MANUAL_REMOTE") );
-        myBoxJson.addSheet("Display",      "<h4>"+lang("JSON_DISPLAY")+"</h4>" + "<div id='container_remote_json_display'></div><br/>" + lang("MANUAL_DISPLAY") );
-        myBoxJson.addSheet("Macros",       "<h4>"+lang("JSON_REMOTE_MACROS")+"</h4>" + macro_edit );
+        myBoxJson.addSheet(lang("REMOTE"),       "<h4>"+lang("JSON_REMOTE")+"</h4>" +  "<div id='container_remote_json_buttons'></div><br/>" + lang("MANUAL_REMOTE") );
+        myBoxJson.addSheet(lang("DISPLAY"),      "<h4>"+lang("JSON_DISPLAY")+"</h4>" + "<div id='container_remote_json_display'></div><br/>" + lang("MANUAL_DISPLAY") );
+        myBoxJson.addSheet(lang("MACROS"),       "<h4>"+lang("JSON_REMOTE_MACROS")+"</h4>" + macro_edit );
 
         const myJson = new rmJsonEdit("remote-edit", format_style="default", style="width:100%;height:200px");
         myJson.create("container_remote_json_buttons", "remote_json_buttons", remote_definition, "rmc");
         myJson.create("container_remote_json_display", "remote_json_display", remote_display,    "default");
 
         const myBox = new rmSheetBox("remote-edit-add", height="280px", scroll=false);
-        myBox.addSheet("Info",          lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") +
-                                        this.tab.start() + this.dialog_edit_elements("remote", "template", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end());
-        myBox.addSheet("Buttons",       this.tab.start() + this.dialog_edit_elements("remote", "button_line", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
-        myBox.addSheet("Display",       this.tab.start() + this.dialog_edit_elements("remote", "display", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
-        myBox.addSheet("Toggle",        this.tab.start() + this.dialog_edit_elements("remote", "toggle", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
+        myBox.addSheet(lang("INFO"),          lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") +
+                                              this.tab.start() + this.dialog_edit_elements("remote", "template", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end());
+        myBox.addSheet(lang("BUTTONS"),       this.tab.start() + this.dialog_edit_elements("remote", "button_line", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
+        myBox.addSheet(lang("DISPLAY"),       this.tab.start() + this.dialog_edit_elements("remote", "display", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
+        myBox.addSheet(lang("TOGGLE"),        this.tab.start() + this.dialog_edit_elements("remote", "toggle", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
         if (this.device_has_ranges(device)) {
-            myBox.addSheet("Slider",        this.tab.start() + this.dialog_edit_elements("remote", "slider", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
+            myBox.addSheet(lang("SLIDER"),        this.tab.start() + this.dialog_edit_elements("remote", "slider", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
             }
         if (select_color_values) {
-            myBox.addSheet("Color Picker",  this.tab.start() + this.dialog_edit_elements("remote", "color_picker", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
+            myBox.addSheet(lang("COLOR_PICKER"),  this.tab.start() + this.dialog_edit_elements("remote", "color_picker", id, device, preview_remote, preview_display, preview_display_size) + this.tab.end() );
             }
-        myBox.addSheet("Delete",        this.dialog_edit_elements("remote", "delete", id, device, preview_remote, preview_display, preview_display_size));
+        myBox.addSheet(lang("DELETE"),            this.dialog_edit_elements("remote", "delete", id, device, preview_remote, preview_display, preview_display_size));
 		}
 
 	// reread data from current definition and create preview
@@ -942,10 +942,10 @@ function rmRemote(name) {
             // main settings for the scene
             var edit = "";
             edit   += this.tab.start();
-            edit   += this.tab.row( "ID:",                 scene );
-            edit   += this.tab.row( "Label:",              this.basic.input("edit_label",        scene_info["label"]) );
-            edit   += this.tab.row( "Description:&nbsp;",  this.basic.input("edit_description",  scene_info["description"]));
-            edit   += this.tab.row( "Scene Image:&nbsp;",  this.image_select("edit_image",       scene_info["image"]) );
+            edit   += this.tab.row( lang("ID") + ":",                 scene );
+            edit   += this.tab.row( lang("LABEL") + ":",              this.basic.input("edit_label",        scene_info["label"]) );
+            edit   += this.tab.row( lang("DESCRIPTION") + ":&nbsp;",  this.basic.input("edit_description",  scene_info["description"]));
+            edit   += this.tab.row( lang("SCENE_IMAGE") + ":&nbsp;",  this.image_select("edit_image",       scene_info["image"]) );
             edit   += this.tab.line();
             edit   += this.tab.row("<div id='scene_edit_header_image' style='align:center;'></div>","");
             edit   += this.tab.line();
@@ -972,15 +972,15 @@ function rmRemote(name) {
         else                    { elementHidden(id,"device_edit"); return; }
 
         // create frame
-		remote  += "<center class='remote_edit_headline'><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
+		remote  += "<center class='remote_edit_headline'><b>"+lang("EDIT_SCENE")+" &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
 		remote  += this.basic.edit_line();
-		remote += this.basic.container("scene_main","Scene settings","<div id='scene-edit-main'></div>",true);
+		remote += this.basic.container("scene_main",lang("SETTINGS_SCENES"),"<div id='scene-edit-main'></div>",true);
 		setTextById(id,remote);
 
         // create sheet box
         const myBox = new rmSheetBox("scene-edit-main", height="500px", scroll_bar=true, scroll_view=false, keep_open=false);
-        myBox.addSheet("Main",          this.dialog_edit_main());
-        myBox.addSheet("API Settings",  this.dialog_edit_api());
+        myBox.addSheet(lang("SCENE"),         this.dialog_edit_main());
+        myBox.addSheet(lang("API_SETTINGS"),  this.dialog_edit_api());
 
 		this.image_preview();
 		}
@@ -1034,10 +1034,10 @@ function rmRemote(name) {
 
 		// frame
 		var remote = "";
-		remote += "<center class='remote_edit_headline'><b>Edit scene &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
+		remote += "<center class='remote_edit_headline'><b>"+lang("EDIT_SCENE")+" &quot;"+scene_info["label"]+"&quot;</b> ["+scene+"]</center>";
 		remote += this.basic.edit_line();
-		remote += this.basic.container("edit_elements","Edit elements","<div id='scene-edit-elements'></div>",false);
-		remote += this.basic.container("edit_json_all","JSON edit","<div id='scene-edit-json'></div>",false);
+		remote += this.basic.container("edit_elements",lang("EDIT_ELEMENTS"),"<div id='scene-edit-elements'></div>",false);
+		remote += this.basic.container("edit_json_all",lang("EDIT_JSON"),"<div id='scene-edit-json'></div>",false);
 		remote += this.basic.edit_line();
         this.button.width = "23%";
 		remote += "<br/><center>" +
@@ -1056,22 +1056,22 @@ function rmRemote(name) {
 		setTextById(id,remote);
 
 		// edit JSON file
-		var edit_json_required = "<h4>Required Devices:</h4><div id='scene-edit-required'></div><br/>" + lang("MANUAL_DEVICES");
-        var edit_json_remote   = "<h4>Edit remote control definition:</h4><div id='scene-edit-remote'></div><br/>" + "&nbsp;<br/>" + lang("MANUAL_DISPLAY");
-        var edit_json_display  = "<h4>Edit display definition:</h4><div id='scene-edit-display'></div><br/>" + "&nbsp;<br/>" + lang("MANUAL_DISPLAY");
-        var edit_json_channel  = "<h4>Edit channel macros:</h4><div id='scene-edit-macro-channel'></div><br/>" + "&nbsp;<br/>" + lang("MANUAL_DISPLAY");
-		var edit_json_macros   = "<h4>Macro SCENE ON:</h4>" + "<div id='scene-edit-macro-scene-on'></div><br/>" +
-                                 "<h4>Macro SCENE OFF:</h4>" + "<div id='scene-edit-macro-scene-off'></div><br/>" +
-                                 "<h4>Other SCENE macros:</h4>" + "<div id='scene-edit-macro-scene-other'></div><br/>" +
+		var edit_json_required = "<h4>"+lang("JSON_REQUIRED_DEVICES")+":</h4><div id='scene-edit-required'></div><br/>" + lang("MANUAL_DEVICES");
+        var edit_json_remote   = "<h4>"+lang("JSON_EDIT_RMC_DEFINITION")+":</h4><div id='scene-edit-remote'></div><br/>" + "&nbsp;<br/>" + lang("MANUAL_DISPLAY");
+        var edit_json_display  = "<h4>"+lang("JSON_EDIT_DISPLAY_DEFINITION")+":</h4><div id='scene-edit-display'></div><br/>" + "&nbsp;<br/>" + lang("MANUAL_DISPLAY");
+        var edit_json_channel  = "<h4>"+lang("JSON_EDIT_CHANNEL_MACROS")+":</h4><div id='scene-edit-macro-channel'></div><br/>" + "&nbsp;<br/>" + lang("MANUAL_DISPLAY");
+		var edit_json_macros   = "<h4>"+lang("JSON_EDIT_MACRO_SCENE")+" ON:</h4>" + "<div id='scene-edit-macro-scene-on'></div><br/>" +
+                                 "<h4>"+lang("JSON_EDIT_MACRO_SCENE")+" OFF:</h4>" + "<div id='scene-edit-macro-scene-off'></div><br/>" +
+                                 "<h4>"+lang("JSON_EDIT_MACRO_SCENE_OTHER")+":</h4>" + "<div id='scene-edit-macro-scene-other'></div><br/>" +
                                  "</i>&nbsp;<br/>" + lang("MANUAL_MACROS_SCENE");
 
         // create sheet box JSON
         const myBox2 = new rmSheetBox("scene-edit-json", height="400px", scroll=true);
-        myBox2.addSheet("Devices",   edit_json_required);
-        myBox2.addSheet("Remote",    edit_json_remote);
-        myBox2.addSheet("Display",   edit_json_display);
-        myBox2.addSheet("Channels",  edit_json_channel);
-        myBox2.addSheet("Macros",    edit_json_macros);
+        myBox2.addSheet(lang("DEVICES"),   edit_json_required);
+        myBox2.addSheet(lang("REMOTE"),    edit_json_remote);
+        myBox2.addSheet(lang("DISPLAY"),   edit_json_display);
+        myBox2.addSheet(lang("CHANNEL"),  edit_json_channel);
+        myBox2.addSheet(lang("MACROS"),    edit_json_macros);
 
         // create JSON edit fields
         const myJson = new rmJsonEdit(id="scene-edit-json", format_style="default", style="width:100%;height:150px;");
@@ -1085,14 +1085,14 @@ function rmRemote(name) {
 
         // create sheet box elements
         const myBox1 = new rmSheetBox("scene-edit-elements", height="300px", scroll=true);
-        myBox1.addSheet("Info",       lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") +
-                                      this.dialog_edit_elements("scene", "template", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
-        myBox1.addSheet("Buttons",    this.dialog_edit_elements("scene", "default", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
-        myBox1.addSheet("Header",     this.dialog_edit_elements("scene", "header", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
-        myBox1.addSheet("Slider",     this.dialog_edit_elements("scene", "slider", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
-        myBox1.addSheet("Toggle",     this.dialog_edit_elements("scene", "toggle", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
-        myBox1.addSheet("Display",    this.dialog_edit_elements("scene", "display", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
-        myBox1.addSheet("Delete",     this.dialog_edit_elements("scene", "delete", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
+        myBox1.addSheet(lang("INFO"),       lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") +
+                                            this.dialog_edit_elements("scene", "template", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
+        myBox1.addSheet(lang("BUTTONS"),    this.dialog_edit_elements("scene", "default", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
+        myBox1.addSheet(lang("HEADER"),     this.dialog_edit_elements("scene", "header", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
+        myBox1.addSheet(lang("SLIDER"),     this.dialog_edit_elements("scene", "slider", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
+        myBox1.addSheet(lang("TOGGLE"),     this.dialog_edit_elements("scene", "toggle", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
+        myBox1.addSheet(lang("DISPLAY"),    this.dialog_edit_elements("scene", "display", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
+        myBox1.addSheet(lang("DELETE"),     this.dialog_edit_elements("scene", "delete", id, scene, preview_remote, preview_display, preview_display_size, preview_channel));
 		}
 
     // add json elements
@@ -1364,7 +1364,7 @@ function rmRemote(name) {
                     );
             edit    += this.tab.line();
             edit    += this.tab.row(
-                    "Add simple line",
+                    lang("ADD_LINE"),
                     this.button.edit(this.app_name+".remote_add_button( 'device','"+device+"','LINE',   'remote_json_buttons');", lang("BUTTON_T_LINE"),"")
                     );
             edit    += this.tab.row(
@@ -1373,7 +1373,7 @@ function rmRemote(name) {
                     );
             edit    += this.tab.line();
             edit    += this.tab.row(
-                    "Add empty field",
+                    lang("ADD_EMPTY"),
                     this.button.edit(this.app_name+".remote_add_button( 'device','"+device+"','.',      'remote_json_buttons');", lang("BUTTON_T_EMPTY"),"")
                     );
             edit   += this.tab.end();
@@ -2075,7 +2075,7 @@ function rmRemote(name) {
     // return drop-down with templates
 	this.template_select            = function (id,title,data,onchange="") {
         var item  = "<select style=\"width:" + this.basic.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
-        item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
+        item     += "<option value='' disabled='disabled' selected>"+lang("SELECT")+" " + title + "</option>";
         for (var key in data) {
                 if (key != "default") {
                         item += "<option value=\"" + key + "\">" + data[key] + "</option>";

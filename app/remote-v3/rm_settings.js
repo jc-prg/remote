@@ -257,7 +257,7 @@ function rmSettings (name) {	// IN PROGRESS
 		    if (rm3remotes.edit_mode) { init = 1; }
 
             html += "<div style='width:95%;float:left;max-height:30px;padding:5px;padding-left:10px;'>";
-            html += "   <div style='padding:5px;float:left;'>Edit mode:</div>";
+            html += "   <div style='padding:5px;float:left;'>"+lang("MODE_EDIT")+":</div>";
             html += "   <div style='width:60px;float:right;'>"
 		    html +=     this.toggle.toggleHTML("mode_edit", "", "", command_on, command_off, init);
             html += "   </div>";
@@ -270,7 +270,7 @@ function rmSettings (name) {	// IN PROGRESS
 		    if (this.manual_mode) { init = 0; }
 
             html += "<div style='width:95%;float:left;max-height:30px;padding:5px;padding-left:10px;'>";
-            html += "   <div style='padding:5px;float:left;'>Intelligent mode:</div>";
+            html += "   <div style='padding:5px;float:left;'>"+lang("MODE_INTELLIGENT")+":</div>";
             html += "   <div style='width:60px;float:right;'>";
 		    html +=     this.toggle.toggleHTML("mode_intelligent", "", "", command_on, command_off, init);
             html += "   </div>";
@@ -283,7 +283,7 @@ function rmSettings (name) {	// IN PROGRESS
 		    if (showButton) { init = 1; }
 
             html += "<div style='width:95%;float:left;max-height:30px;padding:5px;padding-left:10px;'>";
-            html += "   <div style='padding:5px;float:left;'>Show button code:</div>";
+            html += "   <div style='padding:5px;float:left;'>"+lang("MODE_SHOW_BUTTON")+":</div>";
             html += "   <div style='width:60px;float:right;'>";
 		    html +=     this.toggle.toggleHTML("mode_buttonshow", "", "", command_on, command_off, init);
             html += "   </div>";
@@ -1647,7 +1647,7 @@ function rmSettings (name) {	// IN PROGRESS
 
 	this.select                 = function (id, title, data, onchange="", value="") {
 		var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
-		item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
+		item     += "<option value='' disabled='disabled' selected>"+lang("SELECT")+" " + title + "</option>";
 		if (Array.isArray(data)) {
             for (var i=0;i<data.length;i++) {
                 var selected = "";

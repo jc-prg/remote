@@ -29,7 +29,7 @@ function rmRemoteBasic(name) {
 	                }
 
                 var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
-                item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
+                item     += "<option value='' disabled='disabled' selected>"+lang("SELECT")+" " + title + "</option>";
                 keys      = Object.keys(data);
                 if (sort) { keys.sort(); }
                 for (var i=0;i<keys.length;i++) {
@@ -46,7 +46,7 @@ function rmRemoteBasic(name) {
 	this.select_array       = function (id,title,data,onchange="",selected_value="") {
 	            var control = {};
                 var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
-                item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
+                item     += "<option value='' disabled='disabled' selected>"+lang("SELECT")+" " + title + "</option>";
                 data.forEach(function(key) {
                         var selected = "";
                         if (selected_value == key) { selected = "selected"; }

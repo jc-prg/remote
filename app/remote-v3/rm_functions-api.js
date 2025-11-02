@@ -88,7 +88,7 @@ function apiTemplateAdd(device_id, template_id) {
 	else if (template == "")                    { appMsg.alert(lang("DEVICE_SELECT_TEMPLATE")); return;	}
 
 	//appFW.requestAPI("PUT",["template",device,template], "", apiAlertReturn);
-	question = "Do you really want overwrite buttons of '" + device + "' with template '" + template + "'?";
+	question = lang("TEMPLATE_OVERWRITE", [device, template]);
 	appMsg.confirm(question,"apiTemplateAdd_exe('" + device + "','" + template + "'); ");
 	}
 
@@ -103,7 +103,7 @@ function apiSceneAdd(data) {
 	
 	console.debug("apiSceneAdd: " + JSON.stringify(send_data));
 
-    if (dataAll["CONFIG"]["scenes"][send_data["id"]])     { appMsg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
+    if (dataAll["CONFIG"]["scenes"][send_data["id"]])   { appMsg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
     else if (send_data["id"] == "")                     { appMsg.alert(lang("SCENE_INSERT_ID")); return; }
     else if (send_data["label"] == "")                  { appMsg.alert(lang("SCENE_INSERT_LABEL")); return; }
 
