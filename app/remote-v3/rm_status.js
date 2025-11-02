@@ -665,7 +665,7 @@ function statusCheck_scenePowerButton(data) {
 				statusShow_powerButton( "scene_off_"+key,  scene_status[key] );
 				statusShow_powerButton( "scene_on_"+key, "" );
 				}
-		    setTextById("display_POWER_OFF_info_"+key, lang("POWER_DEVICE_OFF_SCENE", [""]));
+		    //setTextById("display_POWER_OFF_info_"+key, lang("POWER_DEVICE_OFF_SCENE", [""]));
 			statusShow_display(key, scene_status[key]);
 			}
 		if (deactivateButton) {
