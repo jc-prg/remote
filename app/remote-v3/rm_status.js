@@ -506,7 +506,7 @@ function statusCheck_devicePowerStatus (data) {
             }
 
         // check device status
-        if (status == "API_OK" || status == "POWER_ON") {
+        if (status == "API_OK" || status == "POWER_ON" || status == "N/A") {
             if (devices_status[device]["api-status"].toUpperCase().indexOf("CONNECTED") < 0) { status = "API_ERROR_DEVICE"; }
             else if (!devices_status[device]["power"])                                       { status = "ERROR_N/A"; }
             else if (devices_status[device]["power"].toUpperCase().indexOf("OFF") >= 0)      { status = "OFF"; }
