@@ -18,10 +18,10 @@ var language_app = {
         "POWER_DEVICE_OFF_SCENE_INFO"  : "<b>Kein Strom:</b> Schalte den Strom über den Toggle oben rechts ein.",
 
         "STATUS_DEV_OK"             : "Das Gerät <b>{0}</b> ist in Ordnung.",
-        "STATUS_DEV_POWER_OFF"      : "Der Strom für <b>{0}</b> ist ausgeschaltet.",
+        "STATUS_DEV_POWER_OFF"      : "Der Strom über <b>{0}</b> ist ausgeschaltet.",
         "STATUS_DEV_ERROR"          : "Beim Gerät <b>{0}</b> ist ein Fehler aufgetreten. {1}",
         "STATUS_DEV_API_DISABLED"   : "Die API <b>{0}</b> für das Gerät <b>{1}</b> wurde deaktiviert.",
-        "STATUS_DEV_API_ERROR"      : "Bei der API <b>{0}</b> und dem angeschlossene Gerät <b>{1}</b> ist ein Fehler aufgetreten. {2}",
+        "STATUS_DEV_API_ERROR"      : "Bei der API <b>{0}</b> für das angeschlossene Gerät <b>{1}</b> ist ein Fehler aufgetreten. {2}",
         "STATUS_DEV_OTHER_ERROR"    : "Es ist ein unbekannter Fehler beim Gerät <b>{0}</b> aufgetreten."
         },
     "EN" : {
