@@ -15,7 +15,7 @@ var language_app = {
 
         "POWER_DEVICE_OFF"             : "Schalte zuerst den Strom für das Gerät ein. {0}",
         "POWER_DEVICE_OFF_SCENE"       : "Schalte über den Toggle oben rechts den Strom für das Gerät ein. {0}",
-        "POWER_DEVICE_OFF_SCENE_INFO"  : "<b>Strom ausgeschaltet:</b> Schalte ihn über den Toggle oben rechts ein.",
+        "POWER_DEVICE_OFF_SCENE_INFO"  : "<b>Strom ausgeschaltet:</b> Schalte den Strom für diese Szene über den Toggle oben rechts ein.",
 
         "STATUS_DEV_OK"                : "Das Gerät <b>{0}</b> ist OK.",
         "STATUS_DEV_N/A"               : "Der Status vom Gerät <b>{0}</b> ist unklar. Ausprobieren!",
