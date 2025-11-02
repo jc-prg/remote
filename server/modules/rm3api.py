@@ -44,6 +44,7 @@ class RemoteAPI(RemoteDefaultClass):
         remotes = self.data.remotes_read()
         apis = self.data.devices_read_api_structure()
         apis_commands = self.data.devices_read_api_commands(apis)
+        apis_power_dev = self.data.devices_read_api_power_devices(apis)
         apis_dev_configs = self.data.api_config_read()
         apis_detect = self.data.devices_read_api_new_devices()
         macros = self.data.macros_read()
@@ -60,6 +61,7 @@ class RemoteAPI(RemoteDefaultClass):
                 "list_description":     self.apis.available,
                 "list_detect":          apis_detect,
                 "list_api_commands":    apis_commands,
+                "list_api_power_device": apis_power_dev,
                 "list_api_configs":     apis_dev_configs,
                 "structure":            apis
                 },
@@ -139,6 +141,7 @@ class RemoteAPI(RemoteDefaultClass):
 
         self.config.user_action()
         data = self.config.api_init.copy()
+        data["API"]["app-language"] = rm3presets.app_language
 
         if "request-only" not in setting:
             data["STATUS"] = self._api_STATUS()

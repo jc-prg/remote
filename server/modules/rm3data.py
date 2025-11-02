@@ -318,6 +318,21 @@ class RemotesData(RemoteThreadingClass):
 
         return api_info
 
+    def devices_read_api_power_devices(self, api_structure):
+        """
+        read all power devices per API
+        """
+        api_power_devices = {}
+        for api in api_structure:
+            interface_info = self.config.read(rm3presets.commands + api + "/00_interface")
+            for api_device in api_structure[api]:
+
+                if "API-Devices" in interface_info and api_device in interface_info["API-Devices"] and "PowerDevice" in interface_info["API-Devices"][api_device]:
+                    api_power_devices[api+"_"+api_device] = interface_info["API-Devices"][api_device]["PowerDevice"]
+                else:
+                    api_power_devices[api+"_"+api_device] = ""
+        return api_power_devices
+
     def devices_read_api_new_devices(self):
         """
         create a list of devices detected by API Devices
