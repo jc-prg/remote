@@ -946,11 +946,12 @@ function statusCheck_displayValues(data={}) {
 					}
 
 				if (key_status && value_key == "power") {
-					if (connected != "connected")                           { key_status = use_color("<b>"+lang("CONNECTION_ERROR")+":</b><br/>","error")+connected; }
-					else if (online_status && online_status == "offline")   { key_status = use_color("<b>"+lang("OFFLINE")+"</b><br/>","hint"); }
+					//if (connected != "connected")                           { key_status = use_color("<b>"+lang("CONNECTION_ERROR")+":</b><br/>","error")+connected; }
+/// ------------> status auswerten
+					if (online_status && online_status == "offline")   { key_status = use_color("<b>"+lang("OFFLINE")+"</b><br/>","hint"); }
 			        else if (key_status.toUpperCase().indexOf("ON") >= 0)   { key_status = use_color("<b>Power On<b/>","on"); }
 					else if (key_status.toUpperCase().indexOf("OFF") >= 0)  { key_status = use_color("<b>Power Off<b/>","hint"); }
-                    else                                                    { key_status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+status; }
+                    else                                                    { key_status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+key_status; }
 					}
 
 				if (element)  { element.innerHTML  = key_status; }
