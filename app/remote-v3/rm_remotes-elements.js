@@ -410,8 +410,8 @@ function rmRemoteDisplays(name) {
             text += display_start;
             text  = text.replace( /##STATUS##/g, "MANUAL" );
             text  = text.replace( /##STYLE##/g, style + " display_manual" );
-            if (rm3settings.manual_mode)    { text  = text.replace( /##DISPLAY##/g, "block" ); }
-            else                            { text  = text.replace( /##DISPLAY##/g, "none" ); }
+            if (rm3settings.manual_mode || status == "N/A")    { text  = text.replace( /##DISPLAY##/g, "block" ); }
+            else                                               { text  = text.replace( /##DISPLAY##/g, "none" ); }
             text += "<center>"+lang("CONNECTION_MANUAL")+"<br/><text id='display_MANUAL_info_"+device+"'></text></center>";
             text += display_end;
 

@@ -18,6 +18,7 @@ var language_app = {
         "POWER_DEVICE_OFF_SCENE_INFO"  : "<b>Strom Aus:</b> Schalte den Strom über den Toggle oben rechts ein.",
 
         "STATUS_DEV_OK"             : "Das Gerät <b>{0}</b> ist in Ordnung.",
+        "STATUS_DEV_N/A"            : "Der Status vom Gerät <b>{0}</b> ist unklar. Ausprobieren!",
         "STATUS_DEV_POWER_OFF"      : "Der Strom über <b>{0}</b> ist ausgeschaltet.",
         "STATUS_DEV_ERROR"          : "Beim Gerät <b>{0}</b> ist ein Fehler aufgetreten. {1}",
         "STATUS_DEV_API_DISABLED"   : "Die API <b>{0}</b> für das Gerät <b>{1}</b> wurde deaktiviert.",
@@ -346,6 +347,7 @@ var language_app = {
         "SLIDER_N/A"                   : "Slider not supported",
 
         "STATUS_DEV_OK"                : "Device <b>{0}</b> is OK.",
+        "STATUS_DEV_N/A"               : "The power status of the device <b>{0}</b> is not available. Just try out.",
         "STATUS_DEV_POWER_OFF"         : "Power device <b>{0}</b> is switched off.",
         "STATUS_DEV_ERROR"             : "An error occurred for device <b>{0}</b>. {1}",
         "STATUS_DEV_API_DISABLED"      : "The API <b>{0}</b> for the device <b>{1}</b> has been disabled.",
