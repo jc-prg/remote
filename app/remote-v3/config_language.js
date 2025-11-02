@@ -28,7 +28,7 @@ var language_app = {
         "STATUS_SCENE_OK"              : "Die Szene <b>{0}</b> ist OK.",
         "STATUS_DEV_OFF"               : "Alle Geräte der Szene <b>{0}</b> sind ausgeschaltet.",
         "STATUS_SCENE_POWER_OFF"       : "Der Strom über <b>{1}</b> für Szene <b>{0}</b> ist ausgeschaltet.",
-        "STATUS_SCENE_PARTLY"          : "Für die Szene <b>{0}</b> sind benötigte Geräte noch ausgeschaltet: <i>{1}</i>. 'ON' drücken, um die restlichen Geräte anzuschalten.",
+        "STATUS_SCENE_PARTLY"          : "Für die Szene <b>{0}</b> sind benötigte Geräte noch nicht eingeschaltet: <i>{1}</i>. 'ON' drücken, um die restlichen Geräte einzuschalten.",
         "STATUS_SCENE_DISABLED"        : "Mindestens eine für die Szene <b>{0}</b> erforderliche API ist deaktiviert.",
         "STATUS_SCENE_ERROR"           : "Für mindestens eines der für die Szene <b>{0}</b> benötigten Geräte ist ein Fehler aufgetreten: <i>{1}</i>."
         },
