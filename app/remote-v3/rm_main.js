@@ -9,6 +9,7 @@ var app_data       = {};
 var reload_active  = false;
 var showImg        = true;
 var startActive    = true;
+var easyEdit       = false;
 
 var rm3slider      = undefined;
 var rm3menu        = undefined;
@@ -16,6 +17,7 @@ var rm3start       = undefined;
 var rm3remotes     = undefined;
 var rm3settings    = undefined;
 var rm3json_edit   = undefined;
+
 
 
 function startRemote() {
@@ -240,6 +242,7 @@ function remoteLastFromCookie() {
 
         if (remote[3] == "true")    { remoteToggleEditMode(true); }
 		else                        { remoteToggleEditMode(false); }
+		if (remote[4] != undefined && remote[4] != "undefined") { easyEdit = remote[4]; }
 
 		// start remote if cookie is set (reopen with last remote control)
 		if (remote[0] == "scene") 	{
@@ -254,7 +257,7 @@ function remoteLastFromCookie() {
 			setNavTitle(remote[2]);
 			//clickMenu();
 			}
-		else 	{}
+		else {}
 		}
 	}
 

@@ -63,7 +63,7 @@ function rmSettings (name) {	// IN PROGRESS
             setNavTitle(lang('SETTINGS'));
             this.settings_ext_reset();
             this.settings_ext_append(1, lang("SETTINGS"), this.module_index(), "", false, true);
-            this.settings_ext_append(2, lang("QUICK_ACCESS"), "&nbsp;<br/>" + this.module_index_quick(true, true));
+            //this.settings_ext_append(2, lang("QUICK_ACCESS"), "&nbsp;<br/>" + this.module_index_quick(true, true));
             this.create_show_ext();
 
             statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
@@ -246,51 +246,35 @@ function rmSettings (name) {	// IN PROGRESS
 		return html;
 	    }
 
-	this.module_index_quick     = function (edit=true, intelligent=false, button_code=false) {
+	this.module_index_quick     = function (edit=true, intelligent=false, button_code=false, easy_edit=false) {
 
-	    var html        = "";
-		html   += this.tab.start();
-		if (edit) {
-		    var command_on  = "remoteToggleEditMode(true);";
-		    var command_off = "remoteToggleEditMode(false);";
-		    var init        = 0;
-		    if (rm3remotes.edit_mode) { init = 1; }
+        this.create_toggle = function(id, label, command_on, command_off, init=0) {
 
-            html += "<div style='width:95%;float:left;max-height:30px;padding:5px;padding-left:10px;'>";
-            html += "   <div style='padding:5px;float:left;'>"+lang("MODE_EDIT")+":</div>";
+            if (init == true)       { init = 1; }
+            else if (init == false) { init = 0; }
+
+            var html = "<div style='width:95%;float:left;max-height:30px;padding:5px;padding-left:10px;'>";
+            html += "   <div style='padding:5px;float:left;'>"+label+":</div>";
             html += "   <div style='width:60px;float:right;'>"
-		    html +=     this.toggle.toggleHTML("mode_edit", "", "", command_on, command_off, init);
+		    html +=     this.toggle.toggleHTML(id, "", "", command_on, command_off, init);
             html += "   </div>";
             html += "</div>";
-		    }
-		if (intelligent) {
-		    var command_on  = this.app_name+".button_deact(true)";
-		    var command_off = this.app_name+".button_deact(false)";
-		    var init        = 1;
-		    if (this.manual_mode) { init = 0; }
+            return html;
+        }
 
-            html += "<div style='width:95%;float:left;max-height:30px;padding:5px;padding-left:10px;'>";
-            html += "   <div style='padding:5px;float:left;'>"+lang("MODE_INTELLIGENT")+":</div>";
-            html += "   <div style='width:60px;float:right;'>";
-		    html +=     this.toggle.toggleHTML("mode_intelligent", "", "", command_on, command_off, init);
-            html += "   </div>";
-            html += "</div>";
+	    var html = "";
+		if (edit) {
+            html += this.create_toggle("mode_edit", lang("MODE_EDIT"), command_on="remoteToggleEditMode(true);", command_off="remoteToggleEditMode(false);", rm3remotes.edit_mode);
+		    }
+		if (easy_edit) {
+            html += this.create_toggle("mode_easy", lang("MODE_EASY_EDIT"), command_on="javascript:easyEdit=true;", command_off="javascript:easyEdit=false;", easyEdit);
+            }
+		if (intelligent) {
+            html += this.create_toggle("mode_intelligent", lang("MODE_INTELLIGENT"), command_on=this.app_name+".button_deact(true);", command_off=this.app_name+".button_deact(false)", this.manual_mode);
 		    }
 		if (button_code) {
-		    var command_on  = this.app_name+".button_show(true)";
-		    var command_off = this.app_name+".button_show(false)";
-		    var init        = 0;
-		    if (showButton) { init = 1; }
-
-            html += "<div style='width:95%;float:left;max-height:30px;padding:5px;padding-left:10px;'>";
-            html += "   <div style='padding:5px;float:left;'>"+lang("MODE_SHOW_BUTTON")+":</div>";
-            html += "   <div style='width:60px;float:right;'>";
-		    html +=     this.toggle.toggleHTML("mode_buttonshow", "", "", command_on, command_off, init);
-            html += "   </div>";
-            html += "</div>";
+            html += this.create_toggle("mode_buttonshow", lang("MODE_SHOW_BUTTON"), command_on=this.app_name+".button_show(true)", command_off=this.app_name+this.app_name+".button_show(false)", showButton);
 		    }
-		html   += this.tab.end();
-
 		return html;
 	    }
 
@@ -387,7 +371,8 @@ function rmSettings (name) {	// IN PROGRESS
 
 
 		var setting            = "";
-		var cookie             = appCookie.get("remote");
+		var cookie             = appCookie.get("remote").split("::");
+		cookie                 = cookie[0] + "=<b>" + cookie[1] + "</b>, label=<b>" + cookie[2] + "</b>, edit_mode=<b>" + cookie[3] + "</b>, edit_easy=<b>" + cookie[4] + "</b>";
         var main_audio         = this.data["CONFIG"]["main-audio"];  // get main audio device from file
 		var main_device_config = this.data["CONFIG"]["devices"][main_audio];
 		var main_device        = this.data["STATUS"]["devices"][main_audio];
@@ -478,7 +463,6 @@ function rmSettings (name) {	// IN PROGRESS
 	this.module_system_info_buttons = function () {
 
 		var setting            = "";
-		var cookie             = appCookie.get("remote");
         var main_audio         = this.data["CONFIG"]["main-audio"];  // get main audio device from file
 		var main_device_config = this.data["CONFIG"]["devices"][main_audio];
 		var main_device        = this.data["STATUS"]["devices"][main_audio];
@@ -1035,7 +1019,7 @@ function rmSettings (name) {	// IN PROGRESS
 		var button_value_manual_mode = "ON";
 		var button_show_code = "OFF";
 
-        set_temp = "<br/><i>"+this.module_index_quick(true, true, true)+"</i>";
+        set_temp = "<br/><i>"+this.module_index_quick(true, true, true, true)+"</i>";
         var settings_index = set_temp;
 
 		set_temp  = this.tab.start();

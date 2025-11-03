@@ -328,6 +328,7 @@ canvas {
     justify-content     : space-between;
 
     border              : solid 3px var(--rm-color-header-border);
+    border-radius       : 12px 12px 0 0;
     background-repeat   : no-repeat;
     background-size     : cover;
     background-position : center;

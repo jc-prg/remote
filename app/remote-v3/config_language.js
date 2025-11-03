@@ -289,6 +289,7 @@ var language_app = {
         "MODE_EDIT"             : "Edit mode",
         "MODE_INTELLIGENT"      : "Intelligent mode",
         "MODE_MANUAL"           : "Manual mode",
+        "MODE_EASY_EDIT"        : "Easy edit",
 
         "MSG_ONLY_ONE_COLOR_PICKER"    : "This color picker already exists in the remote control, only one is possible.",
         
