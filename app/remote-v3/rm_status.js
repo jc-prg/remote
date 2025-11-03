@@ -707,7 +707,7 @@ function statusCheck_deviceActive(data) {
                 var button1 = rm3remotes.active_buttons[i].split("_");
                 if (button1[0] == "macro") { statusShow_buttonActive(button1[0]+"_"+button1[1],false); }
                 }
-            if (remoteHints || scene_status[scene].indexOf("ERROR") >= 0 || scene_status[scene].indexOf("DISABLED") >= 0) {
+            if (remoteHints || scene_status[scene] && (scene_status[scene].indexOf("ERROR") >= 0 || scene_status[scene].indexOf("DISABLED") >= 0)) {
                 setTextById("scene-power-information-"+scene, status_log[scene]);
                 elementVisible("scene-power-information-"+scene);
                 }
@@ -744,7 +744,7 @@ function statusCheck_deviceActive(data) {
 
 			// show message
 			if (status != "ON" && status != "OFF") {
-                if (remoteHints || status.indexOf("ERROR") >= 0 || status.indexOf("DISABLED") >= 0) {
+                if (remoteHints || status && (status.indexOf("ERROR") >= 0 || status.indexOf("DISABLED") >= 0)) {
                     setTextById("remote-power-information-"+device, message);
                     elementVisible("remote-power-information-"+device);
                     }
