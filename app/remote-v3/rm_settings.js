@@ -246,12 +246,15 @@ function rmSettings (name) {	// IN PROGRESS
 		return html;
 	    }
 
-	this.module_index_quick     = function (edit=true, intelligent=false, button_code=false, easy_edit=false) {
+	this.module_index_quick     = function (edit=true, intelligent=false, button_code=false, easy_edit=false, remote_hints=false) {
 
-        this.create_toggle = function(id, label, command_on, command_off, init=0) {
+        this.create_toggle = function(id, label, command_on, command_off, init=0){
 
             if (init == true)       { init = 1; }
             else if (init == false) { init = 0; }
+
+            command_on  += "remoteSetCookie();"
+            command_off += "remoteSetCookie();"
 
             var html = "<div style='width:95%;float:left;max-height:30px;padding:5px;padding-left:10px;'>";
             html += "   <div style='padding:5px;float:left;'>"+label+":</div>";
@@ -267,13 +270,16 @@ function rmSettings (name) {	// IN PROGRESS
             html += this.create_toggle("mode_edit", lang("MODE_EDIT"), command_on="remoteToggleEditMode(true);", command_off="remoteToggleEditMode(false);", rm3remotes.edit_mode);
 		    }
 		if (easy_edit) {
-            html += this.create_toggle("mode_easy", lang("MODE_EASY_EDIT"), command_on="javascript:easyEdit=true;", command_off="javascript:easyEdit=false;", easyEdit);
+            html += this.create_toggle("mode_easy", lang("MODE_EASY_EDIT"), command_on="remoteToggleEasyEdit(true);", command_off="remoteToggleEasyEdit(false);", easyEdit);
             }
+		if (remote_hints) {
+            html += this.create_toggle("mode_hint", lang("MODE_HINT"), command_on="remoteToggleRemoteHints(true);", command_off="remoteToggleRemoteHints(false);", remoteHints);
+		    }
 		if (intelligent) {
-            html += this.create_toggle("mode_intelligent", lang("MODE_INTELLIGENT"), command_on=this.app_name+".button_deact(true);", command_off=this.app_name+".button_deact(false)", this.manual_mode);
+            html += this.create_toggle("mode_intelligent", lang("MODE_INTELLIGENT"), command_on=this.app_name+".button_deact(true);", command_off=this.app_name+".button_deact(false);", this.manual_mode);
 		    }
 		if (button_code) {
-            html += this.create_toggle("mode_buttonshow", lang("MODE_SHOW_BUTTON"), command_on=this.app_name+".button_show(true)", command_off=this.app_name+this.app_name+".button_show(false)", showButton);
+            html += this.create_toggle("mode_buttonshow", lang("MODE_SHOW_BUTTON"), command_on=this.app_name+".button_show(true);", command_off=this.app_name+this.app_name+".button_show(false);", showButton);
 		    }
 		return html;
 	    }
@@ -372,7 +378,8 @@ function rmSettings (name) {	// IN PROGRESS
 
 		var setting            = "";
 		var cookie             = appCookie.get("remote").split("::");
-		cookie                 = cookie[0] + "=<b>" + cookie[1] + "</b>, label=<b>" + cookie[2] + "</b>, edit_mode=<b>" + cookie[3] + "</b>, edit_easy=<b>" + cookie[4] + "</b>";
+		cookie                 = cookie[0] + "=<b>" + cookie[1] + "</b>, label=<b>" + cookie[2] + "</b>, edit_mode=<b>" +
+		                         cookie[3] + "</b>, easyEdit=<b>" + cookie[4] + "</b>, remoteHints=<b>" + cookie[5] + "</b>";
         var main_audio         = this.data["CONFIG"]["main-audio"];  // get main audio device from file
 		var main_device_config = this.data["CONFIG"]["devices"][main_audio];
 		var main_device        = this.data["STATUS"]["devices"][main_audio];
@@ -1019,7 +1026,7 @@ function rmSettings (name) {	// IN PROGRESS
 		var button_value_manual_mode = "ON";
 		var button_show_code = "OFF";
 
-        set_temp = "<br/><i>"+this.module_index_quick(true, true, true, true)+"</i>";
+        set_temp = "<br/><i>"+this.module_index_quick(true, true, true, true, true)+"</i>";
         var settings_index = set_temp;
 
 		set_temp  = this.tab.start();

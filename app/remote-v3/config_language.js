@@ -8,14 +8,17 @@
 
 var language_app = {
     "DE" : {
-        "CONNECTION_ERROR"          : "Verbindungsfehler",
-        "CONNECTION_DISABLED"       : "API deaktiviert",
-        "RESET_SWITCH_OFF"          : "Reset Devices:<br/>vorher alle Geräte ausschalten.",
-        "RESET_VOLUME_TO_ZERO"      : "Reset Audio Settings:<br/>vorher alle Receiver mit Audio auf Mininum (0) einstellen.",
+        "CONNECTION_ERROR"              : "Verbindungsfehler",
+        "CONNECTION_DISABLED"           : "API deaktiviert",
+        "RESET_SWITCH_OFF"              : "Reset Devices:<br/>vorher alle Geräte ausschalten.",
+        "RESET_VOLUME_TO_ZERO"          : "Reset Audio Settings:<br/>vorher alle Receiver mit Audio auf Mininum (0) einstellen.",
 
         "POWER_DEVICE_OFF"             : "Schalte zuerst den Strom für das Gerät ein. {0}",
         "POWER_DEVICE_OFF_SCENE"       : "Schalte über den Toggle oben rechts den Strom für das Gerät ein. {0}",
         "POWER_DEVICE_OFF_SCENE_INFO"  : "<b>Strom ausgeschaltet:</b> Schalte den Strom für diese Szene über den Toggle oben rechts ein.",
+
+        "PLEASE_WAIT"                  : "Bitte warten ... .",
+        "MACRO_PLEASE_WAIT"            : "Führe ein paar Kommandos aus, bitte warte ein paar Sekunden.",
 
         "STATUS_DEV_OK"                : "Das Gerät <b>{0}</b> ist OK.",
         "STATUS_DEV_N/A"               : "Der Status vom Gerät <b>{0}</b> ist unklar. Ausprobieren!",
@@ -27,8 +30,8 @@ var language_app = {
 
         "STATUS_SCENE_OK"              : "Die Szene <b>{0}</b> ist OK.",
         "STATUS_DEV_OFF"               : "Alle Geräte der Szene <b>{0}</b> sind ausgeschaltet.",
-        "STATUS_SCENE_POWER_OFF"       : "Der Strom über <b>{1}</b> für Szene <b>{0}</b> ist ausgeschaltet.",
-        "STATUS_SCENE_PARTLY"          : "Für die Szene <b>{0}</b> sind benötigte Geräte noch nicht eingeschaltet: <i>{1}</i>. 'ON' drücken, um die restlichen Geräte einzuschalten.",
+        "STATUS_SCENE_POWER_OFF"       : "Der Strom über für Szene <b>{0}</b> ist ausgeschaltet. Nutze <b>{1}</b> zum einschalten.",
+        "STATUS_SCENE_PARTLY"          : "Für die Szene <b>{0}</b> sind noch nicht alle nötigen Geräte eingeschaltet: <i>{1}</i>.",
         "STATUS_SCENE_DISABLED"        : "Mindestens eine für die Szene <b>{0}</b> erforderliche API ist deaktiviert.",
         "STATUS_SCENE_ERROR"           : "Für mindestens eines der für die Szene <b>{0}</b> benötigten Geräte ist ein Fehler aufgetreten: <i>{1}</i>."
         },
@@ -290,6 +293,7 @@ var language_app = {
         "MODE_INTELLIGENT"      : "Intelligent mode",
         "MODE_MANUAL"           : "Manual mode",
         "MODE_EASY_EDIT"        : "Easy edit",
+        "MODE_HINT"             : "Show hints for remote controls (not only errors)",
 
         "MSG_ONLY_ONE_COLOR_PICKER"    : "This color picker already exists in the remote control, only one is possible.",
         

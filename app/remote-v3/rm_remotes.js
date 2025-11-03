@@ -191,7 +191,8 @@ function rmRemote(name) {
 			var remote_display_size = device_config["remote"]["display-size"];
 			var remote_label        = device_config["settings"]["label"];
 			var remote_buttons      = device_config["buttons"];
-			}		
+			this.active_label       = remote_label;
+			}
 		else {
 			if (this.data["STATUS"]["config_errors"]["devices"][device]) {
 				var errors = this.data["STATUS"]["config_errors"]["devices"][device];
@@ -227,8 +228,8 @@ function rmRemote(name) {
 		if (remote_display_size == undefined) { remote_display_size = "middle"; }
 		
 		// create remote control
-		appCookie.set("remote","device::"+device+"::"+remote_label+"::"+this.edit_mode+"::"+easyEdit);
-		console.info("Set cookie: "+"device::"+device+"::"+remote_label+"::"+this.edit_mode+"::"+easyEdit);
+		appCookie.set("remote","device::"+device+"::"+remote_label+"::"+this.edit_mode+"::"+easyEdit+"::"+remoteHints);
+		console.info("Set cookie: "+"device::"+device+"::"+remote_label+"::"+this.edit_mode+"::"+easyEdit+"::"+remoteHints);
 
         // add preview hint or error message container
 		if (preview) { remote += "<b>"+lang("PREVIEW")+":</b><br/><hr/>"; }
@@ -701,10 +702,11 @@ function rmRemote(name) {
 		var remote_channel          = [];
     	var scene_definition        = this.data["CONFIG"]["scenes"][scene];
 		var scene_label             = scene_definition["settings"]["label"];
+        this.active_label           = scene_label;
         this.display.edit_mode      = this.edit_mode;
 
-		appCookie.set("remote","scene::"+scene+"::"+scene_label+"::"+this.edit_mode+"::"+easyEdit);
-		console.info("Set cookie: "+"scene::"+scene+"::"+scene_label+"::"+this.edit_mode+"::"+easyEdit);
+		appCookie.set("remote","scene::"+scene+"::"+scene_label+"::"+this.edit_mode+"::"+easyEdit+"::"+remoteHints);
+		console.info("Set cookie: "+"scene::"+scene+"::"+scene_label+"::"+this.edit_mode+"::"+easyEdit+"::"+remoteHints);
 
 		if (this.data["CONFIG"]["scenes"][scene] && this.data["CONFIG"]["scenes"][scene]["remote"] && this.data["CONFIG"]["scenes"][scene]["remote"]["remote"]) {
 			}		

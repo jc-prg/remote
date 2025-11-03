@@ -625,42 +625,21 @@ function statusCheck_scenePowerButton(data) {
 	    if (!document.getElementById("scene_on_"+key) && !document.getElementById("scene_off_"+key)) { continue; }
         console.debug("statusCheck_powerButtonScene: SCENE_"+key+"="+scene_status[key]+" ... "+scene_status_all[1][key]);
 
-		if (scene_status[key] == "ON") {
+		if (scene_status[key] == "ON" || scene_status[key] == "PARTLY") {
 			if (deactivateButton == false) {
 				statusShow_powerButton( "scene_on_"+key,  scene_status[key] );
 				statusShow_powerButton( "scene_off_"+key, "" );
 				}
 			statusShow_display(key, scene_status[key]);
 			}
-		else if (scene_status[key] == "PARTLY") {
-			if (deactivateButton == false) {
-				statusShow_powerButton( "scene_on_"+key,  scene_status[key] );
-				statusShow_powerButton( "scene_off_"+key, "" );
-				}
-			statusShow_display(key, scene_status[key]);
-			}
-		else if (scene_status[key] == "ERROR") {
+		else if (scene_status[key] == "ERROR" || scene_status[key] == "DISABLED") {
 			if (deactivateButton == false) {
 				statusShow_powerButton( "scene_on_"+key,  scene_status[key] );
 				statusShow_powerButton( "scene_off_"+key, scene_status[key] );
 				}
 			statusShow_display(key, scene_status[key]);
 			}
-		else if (scene_status[key] == "DISABLED") {
-			if (deactivateButton == false) {
-				statusShow_powerButton( "scene_on_"+key,  scene_status[key] );
-				statusShow_powerButton( "scene_off_"+key, scene_status[key] );
-				}
-			statusShow_display(key, scene_status[key]);
-			}
-		else if (scene_status[key] == "OFF") {
-			if (deactivateButton == false) {
-				statusShow_powerButton( "scene_off_"+key,  scene_status[key] );
-				statusShow_powerButton( "scene_on_"+key, "" );
-				}
-			statusShow_display(key, scene_status[key]);
-			}
-		else if (scene_status[key] == "POWER_OFF") {
+		else if (scene_status[key] == "OFF" || scene_status[key] == "POWER_OFF") {
 			if (deactivateButton == false) {
 				statusShow_powerButton( "scene_off_"+key,  scene_status[key] );
 				statusShow_powerButton( "scene_on_"+key, "" );
@@ -714,17 +693,28 @@ function statusCheck_deviceActive(data) {
                 var button = rm3remotes.active_channels[i];
                 statusShow_buttonActive(button,false);
                 }
-            //setTextById("header_image_text_info", lang("POWER_DEVICE_OFF_SCENE_INFO"));
-            setTextById("scene-power-information-"+scene, lang("POWER_DEVICE_OFF_SCENE_INFO"));
-            elementVisible("scene-power-information-"+scene);
+            if (remoteHints) {
+                setTextById("scene-power-information-"+scene, lang("POWER_DEVICE_OFF_SCENE_INFO"));
+                elementVisible("scene-power-information-"+scene);
+                }
+            else {
+                setTextById("scene-power-information-"+scene, "");
+                elementHidden("scene-power-information-"+scene);
+                }
             }
         else if (scene_status[scene] != "ON" && scene_status[scene] != "OFF") {
             for (var i=0; i<rm3remotes.active_buttons.length; i++) {
                 var button1 = rm3remotes.active_buttons[i].split("_");
                 if (button1[0] == "macro") { statusShow_buttonActive(button1[0]+"_"+button1[1],false); }
                 }
-            setTextById("scene-power-information-"+scene, status_log[scene]);
-            elementVisible("scene-power-information-"+scene);
+            if (remoteHints || scene_status[scene].indexOf("ERROR") >= 0 || scene_status[scene].indexOf("DISABLED") >= 0) {
+                setTextById("scene-power-information-"+scene, status_log[scene]);
+                elementVisible("scene-power-information-"+scene);
+                }
+            else {
+                setTextById("scene-power-information-"+scene, "");
+                elementHidden("scene-power-information-"+scene);
+                }
             }
         else {
             for (var i=0; i<rm3remotes.active_buttons.length; i++) {
@@ -754,8 +744,14 @@ function statusCheck_deviceActive(data) {
 
 			// show message
 			if (status != "ON" && status != "OFF") {
-			    setTextById("remote-power-information-"+device, message);
-			    elementVisible("remote-power-information-"+device);
+                if (remoteHints || status.indexOf("ERROR") >= 0 || status.indexOf("DISABLED") >= 0) {
+                    setTextById("remote-power-information-"+device, message);
+                    elementVisible("remote-power-information-"+device);
+                    }
+                else {
+                    setTextById("remote-power-information-"+device, "");
+                    elementHidden("remote-power-information-"+device);
+                    }
 			    }
 			else {
 			    setTextById("remote-power-information-"+device, "");

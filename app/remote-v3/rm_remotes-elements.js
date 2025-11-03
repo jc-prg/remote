@@ -393,8 +393,8 @@ function rmRemoteDisplays(name) {
             text += display_start;
             text  = text.replace( /##STATUS##/g, "ON" );
             text  = text.replace( /##STYLE##/g, style + " display_on" );
-            if (status == "ON")	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
-            else                { text  = text.replace( /##DISPLAY##/g, "none" ); }
+            if (status == "ON" || status == "PARTLY")	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
+            else                                        { text  = text.replace( /##DISPLAY##/g, "none" ); }
 
             for (var key in display_data) {
                 var input_id = "";

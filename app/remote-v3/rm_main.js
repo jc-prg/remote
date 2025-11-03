@@ -10,6 +10,7 @@ var reload_active  = false;
 var showImg        = true;
 var startActive    = true;
 var easyEdit       = false;
+var remoteHints    = true;
 
 var rm3slider      = undefined;
 var rm3menu        = undefined;
@@ -200,6 +201,32 @@ function remoteToggleEditMode(settings="") {
     remoteDropDown_load();
 	}
 
+
+function remoteToggleEasyEdit(settings="") {
+    console.info("remoteToggleEasyEdit('"+settings+"');");
+
+    if (typeof settings === "boolean")  { easyEdit = settings; }
+    else if (settings === "true")       { easyEdit = true; }
+    else if (settings === "false")      { easyEdit = false; }
+    else if (settings === "") {
+        if (easyEdit)                   { easyEdit = false; }
+        else                            { easyEdit = true; }
+        }
+    }
+
+
+function remoteToggleRemoteHints(settings="") {
+    console.info("remoteRemoteHints('"+settings+"');");
+
+    if (typeof settings === "boolean")  { remoteHints = settings; }
+    else if (settings === "true")       { remoteHints = true; }
+    else if (settings === "false")      { remoteHints = false; }
+    else if (settings === "") {
+        if (remoteHints)                { remoteHints = false; }
+        else                            { remoteHints = true; }
+        }
+    }
+
 //--------------------------------
 
 function remoteStartMenu_load() { appFW.requestAPI( "GET", ["list"], "", remoteStartMenu ); }
@@ -239,10 +266,17 @@ function remoteLastFromCookie() {
 		var remote = cookie.split("::");
 		console.log("Load Cookie: " + cookie);
 		console.log(remote);
-
+/*
         if (remote[3] == "true")    { remoteToggleEditMode(true); }
 		else                        { remoteToggleEditMode(false); }
-		if (remote[4] != undefined && remote[4] != "undefined") { easyEdit = remote[4]; }
+*/
+        if (remote.length > 2) { remoteToggleEditMode(remote[3]); }
+        if (remote.length > 3) { remoteToggleEasyEdit(remote[4]); }
+        if (remote.length > 4) { remoteToggleRemoteHints(remote[5]); }
+/*
+		if (remote[4] != undefined && remote[4] != "undefined")
+		if (remote[5] != undefined && remote[5] != "undefined") { remoteHints = remote[5]; }
+*/
 
 		// start remote if cookie is set (reopen with last remote control)
 		if (remote[0] == "scene") 	{
@@ -261,6 +295,11 @@ function remoteLastFromCookie() {
 		}
 	}
 
+
+function remoteSetCookie() {
+    appCookie.set("remote",rm3remotes.active_type+"::"+rm3remotes.active_name+"::"+rm3remotes.active_label+"::"+rm3remotes.edit_mode+"::"+easyEdit+"::"+remoteHints);
+	console.info("Set cookie: "+rm3remotes.active_type+"::"+rm3remotes.active_name+"::"+rm3remotes.active_type_label+"::"+rm3remotes.edit_mode+"::"+easyEdit+"::"+remoteHints);
+}
 
 //-----------------------------
 // EOF
