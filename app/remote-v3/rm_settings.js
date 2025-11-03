@@ -256,9 +256,9 @@ function rmSettings (name) {	// IN PROGRESS
             command_on  += "remoteSetCookie();"
             command_off += "remoteSetCookie();"
 
-            var html = "<div style='width:95%;float:left;max-height:30px;padding:5px;padding-left:10px;'>";
-            html += "   <div style='padding:5px;float:left;'>"+label+":</div>";
-            html += "   <div style='width:60px;float:right;'>"
+            var html = "<div class='mode_setting_container'>";
+            html += "   <div class='mode_setting_label'>"+label+":</div>";
+            html += "   <div class='mode_setting_toggle'>"
 		    html +=     this.toggle.toggleHTML(id, "", "", command_on, command_off, init);
             html += "   </div>";
             html += "</div>";
