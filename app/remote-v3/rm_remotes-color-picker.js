@@ -272,6 +272,7 @@ function rmColorPicker(name) {
     // send commands depending on color model
 	this.sendColorCode              = function (send_command, input, device) {
 
+        this.logging.log("Send default color code: " + input + " / " + this.class_name + " / " + device);
 		appFW.requestAPI('GET',[ 'send-data', device, send_command, '"'+input+'"'	 ], '','');
 		}
 
@@ -280,8 +281,8 @@ function rmColorPicker(name) {
         rgb_color = input.split(":");
         xy_color  = this.RGB_to_XY(rgb_color);
         input     = xy_color[0] + ":" + xy_color[1];
-        this.logging.log("CIE 1931 XY coordinates: " + input + " / " + this.class_name + " / " + device);
 
+        this.logging.log("Send CIE 1931 XY color coordinates: " + input + " / " + this.class_name + " / " + device);
 		appFW.requestAPI('GET',[ 'send-data', device, send_command, '"'+input+'"' ], '','');
     }
 
