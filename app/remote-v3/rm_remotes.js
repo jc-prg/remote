@@ -2296,22 +2296,13 @@ function rmRemote(name) {
 
 
 function rmRemoteAdvancedElements(name, remote) {
-
+    // set main data
 	this.data             = {};
 	this.app_name         = name;
 	this.remote           = remote;
 	this.active_name      = remote.active_name;
+	this.logging           = new jcLogging(this.app_name);
 
-	this.e_basic          = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
-	this.e_button         = new rmRemoteButtons(name);			// rm_remotes-elements.js
-	this.e_display        = new rmRemoteDisplays(name+".display");		// rm_remotes-elements.js
-	this.e_json           = new rmRemoteJSON(name+".json");		// rm_remotes-elements.js
-
-	this.e_keyboard       = new rmRemoteKeyboard(name+".keyboard");	// rm_remotes-keyboard.js
-	this.e_color_picker   = new rmColorPicker(name+".color_picker", this);	// rm_remotes-color-picker.js
-	this.e_slider         = new rmSlider(name+".slider");			// rm_remotes-slider.js
-
-	this.logging        = new jcLogging(this.app_name);
 
     // update API data
     this.update = function(api_data) {
@@ -2468,6 +2459,12 @@ function rmRemoteAdvancedElements(name, remote) {
        	text += toggle_end;
        	return text;
 	}
+
+
+    // connect pure elements
+	this.e_keyboard       = new rmRemoteKeyboard(name+".keyboard");	// rm_remotes-keyboard.js
+	this.e_color_picker   = new rmColorPicker(name+".color_picker", this);	// rm_remotes-color-picker.js
+	this.e_slider         = new rmSlider(name+".slider");			// rm_remotes-slider.js
 }
 
 
