@@ -2342,9 +2342,9 @@ function rmRemoteAdvancedElements(name, remote) {
         display_end       += "<canvas id=\"colorpicker_demo_"+sub_id+"\" style=\"border-radius:5px;border:1px white solid;\"></canvas></center>";
         display_end       += "</button>";
 
-        //var text = display_start;
+        var text = display_start;
         //text += this.color_picker.colorPickerHTML_v1(send_command);
-        //text += display_end;
+        text += display_end;
 
         setTimeout(() => { this.e_color_picker.colorPickerHTML("colorpicker_"+sub_id, sub_id, send_command, color_model); }, 100);
         return text;
