@@ -263,16 +263,16 @@ function rmColorPicker(name) {
             if (color_model.indexOf("CIE_1931") > -1)          { eval(this.class_name).sendColorCode_CIE1931(color_send_command, input, device); }
             else if (color_model.indexOf("temperature") > -1)  { eval(this.class_name).sendColorCode_temperature(color_send_command, value, device); }
             else if (color_model.indexOf("Brightness") > -1)   { eval(this.class_name).sendColorCode_brightness(color_send_command, value, device); }
-            else                                               { eval(this.class_name).sendColorCode(color_send_command, input); }
+            else                                               { eval(this.class_name).sendColorCode(color_send_command, input, device); }
         });
 
     }
 
 
     // send commands depending on color model
-	this.sendColorCode              = function (send_command, input) {
+	this.sendColorCode              = function (send_command, input, device) {
 
-		appFW.requestAPI('GET',[ 'send-data', this.active_name, send_command, '"'+input+'"'	 ], '','');
+		appFW.requestAPI('GET',[ 'send-data', device, send_command, '"'+input+'"'	 ], '','');
 		}
 
     this.sendColorCode_CIE1931      = function (send_command, input, device) {
