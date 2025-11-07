@@ -2,8 +2,9 @@
 
 function rmColorPicker(name) {
 
-	this.hh = 0;
+	this.hh         = 0;
 	this.class_name = name;
+	this.logging    = new jcLogging(this.class_name);
 
 	this.set_device     = function(name) {
 
@@ -12,7 +13,7 @@ function rmColorPicker(name) {
 
 
     // color picker visualization v1
-	this.colorPickerHTML = function (send_command) {
+	this.colorPickerHTML_v1 = function (send_command) {
 		html = `
     <div style="margin:auto;width:236px;">
       <img style="margin-right:2px;" src="remote-v3/img/img_colormap.gif" usemap="#colormap" alt="colormap"><map id="colormap" name="colormap" onmouseout="mouseOutMap()">
@@ -176,8 +177,8 @@ function rmColorPicker(name) {
 		g = parseInt(hex.substr(3,2), 16);
 		b = parseInt(hex.substr(5,2), 16);
 
-        console.log('this.sendColorCode(r+":"+g+":"+b);')
-        console.log(r+":"+g+":"+b);
+        this.logging.log('this.sendColorCode(r+":"+g+":"+b);')
+        this.logging.log(r+":"+g+":"+b);
 
         //this.sendColorCode(r+":"+g+":"+b);
         this.sendColorCode_CIE1931(send_command, r+":"+g+":"+b);
@@ -185,9 +186,9 @@ function rmColorPicker(name) {
 
 
     // color picker visualization v2
-    this.colorPickerHTMLv2 = function (container_id, sub_id, send_command, color_model) {
+    this.colorPickerHTML = function (container_id, sub_id, send_command, color_model) {
 
-        console.debug("Load Color Picker ("+container_id+") ...");
+        this.logging.debug("Load Color Picker ("+container_id+") ...");
 
         var use_image = "rgb";
         var device    = sub_id.replace("_"+send_command, "");
@@ -235,7 +236,7 @@ function rmColorPicker(name) {
             canvas.style.borderRadius = "5px";
             ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
             //ctx.drawImage(image, 0, 0, image.width, image.height);
-            console.debug("Color picker canvas size: " + canvas.width + "x" + canvas.height);
+            this.logging.debug("Color picker canvas size: " + canvas.width + "x" + canvas.height);
         };
 
         // Event listener for click on the canvas
@@ -252,8 +253,8 @@ function rmColorPicker(name) {
             const value = Math.round(x / canvas.width * 1000) / 10;
 
             // Display RGB values
-            console.debug("PIXEL DATA: " + pixelData);
-            console.debug(`PIXEL DATA: X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue} | value: ${value}`);
+            this.logging.debug("PIXEL DATA: " + pixelData);
+            this.logging.debug(`PIXEL DATA: X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue} | value: ${value}`);
             color_demo.style.backgroundColor = "rgb("+red+","+green+","+blue+")";
 
             var input = `${red}:${green}:${blue}`;
@@ -278,7 +279,7 @@ function rmColorPicker(name) {
         rgb_color = input.split(":");
         xy_color  = this.RGB_to_XY(rgb_color);
         input     = xy_color[0] + ":" + xy_color[1];
-        console.error("CIE 1931 XY coordinates: " + input + " / " + this.class_name + " / " + device);
+        this.logging.log("CIE 1931 XY coordinates: " + input + " / " + this.class_name + " / " + device);
 
 		appFW.requestAPI('GET',[ 'send-data', device, send_command, '"'+input+'"' ], '','');
     }
@@ -289,15 +290,15 @@ function rmColorPicker(name) {
         var type     = dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]["type"];
         if (min_max == undefined || min_max["min"] == undefined || min_max["max"] == undefined) {
             appMsg.info("Could not set brightness: no min-max values for " + device + " / " + pure_cmd + ".  Check remote configuration!","error");
-            console.error(dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]);
-            console.error(min_max["min"]);
+            this.logging.error(dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]);
+            this.logging.error(min_max["min"]);
             }
         else {
             var range = min_max["max"] - min_max["min"];
             var value = (range * input) / 100 + min_max["min"];
             if (type == "integer") { value = Math.round(value); }
-            console.log("BRIGHTNESS: " + send_command + " / " + input + " / min=" + min_max["min"] + "; max=" + min_max["max"] + " / " + value);
-            console.debug(min_max);
+            this.logging.log("BRIGHTNESS: " + send_command + " / " + input + " / min=" + min_max["min"] + "; max=" + min_max["max"] + " / " + value);
+            this.logging.debug(min_max);
             appFW.requestAPI('GET',[ 'send-data', this.active_name, send_command, value ], '','');
             }
         }
@@ -308,14 +309,14 @@ function rmColorPicker(name) {
         var type     = dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]["type"];
         if (min_max == undefined || min_max["min"] == undefined || min_max["max"] == undefined) {
             appMsg.info("Could not set color temperature: no min-max values for " + device + " / " + pure_cmd + ". Check remote configuration!","error");
-            console.error(dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]);
+            this.logging.error(dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]);
             }
         else {
             var range = min_max["max"] - min_max["min"];
             var value = (range * input) / 100 + min_max["min"];
             if (type == "integer") { value = Math.round(value); }
-            console.log("TEMPERATURE: " + send_command + " / " + input + " / min=" + min_max["min"] + "; max=" + min_max["max"] + " / " + value);
-            console.debug(min_max);
+            this.logging.log("TEMPERATURE: " + send_command + " / " + input + " / min=" + min_max["min"] + "; max=" + min_max["max"] + " / " + value);
+            this.logging.debug(min_max);
             appFW.requestAPI('GET',[ 'send-data', this.active_name, send_command, value ], '','');
             }
         }
