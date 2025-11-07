@@ -258,10 +258,10 @@ function rmColorPicker(name, parent) {
             color_demo.style.backgroundColor = "rgb("+red+","+green+","+blue+")";
 
             var input = `${red}:${green}:${blue}`;
-            if (color_model.indexOf("CIE_1931") > -1)          { this.parent.color_picker.sendColorCode_CIE1931(color_send_command, input); }
-            else if (color_model.indexOf("temperature") > -1)  { this.parent.color_picker.sendColorCode_temperature(color_send_command, value, device); }
-            else if (color_model.indexOf("Brightness") > -1)   { this.parent.color_picker.sendColorCode_brightness(color_send_command, value, device); }
-            else                                               { this.parent.color_picker.sendColorCode(color_send_command, input); }
+            if (color_model.indexOf("CIE_1931") > -1)          { this.sendColorCode_CIE1931(color_send_command, input); }
+            else if (color_model.indexOf("temperature") > -1)  { this.sendColorCode_temperature(color_send_command, value, device); }
+            else if (color_model.indexOf("Brightness") > -1)   { this.sendColorCode_brightness(color_send_command, value, device); }
+            else                                               { this.sendColorCode(color_send_command, input); }
         });
 
 
