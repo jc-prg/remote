@@ -2506,7 +2506,7 @@ function rmRemoteElements(name, remote) {
             var device_api          = this.data["STATUS"]["devices"][check_device]["api"];
             var device_api_status   = this.data["STATUS"]["interfaces"]["connect"][device_api];
 		    }
-		else if (!this.data["CONFIG"][type][device]) {
+		else if (api_data["CONFIG"][type][device]) {
 		    this.logging.error(this.app_name+".slider_element: Could not create slider element: " + type + " '" + device + "' does not exist.");
 		    return "";
 		    }
