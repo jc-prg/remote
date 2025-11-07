@@ -1,10 +1,9 @@
 // uses parts from source: https://www.w3docs.com/tools/color-picker
 
-function rmColorPicker(name, parent) {
+function rmColorPicker(name) {
 
 	this.hh = 0;
 	this.class_name = name;
-	this.parent = parent;
 
 	this.set_device     = function(name) {
 
@@ -257,13 +256,11 @@ function rmColorPicker(name, parent) {
             console.debug(`PIXEL DATA: X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue} | value: ${value}`);
             color_demo.style.backgroundColor = "rgb("+red+","+green+","+blue+")";
 
-console.error("..."+ this.class_name);
-
             var input = `${red}:${green}:${blue}`;
-            if (color_model.indexOf("CIE_1931") > -1)          { eval(this.class_name).sendColorCode_CIE1931(color_send_command, input); }
-            else if (color_model.indexOf("temperature") > -1)  { this.sendColorCode_temperature(color_send_command, value, device); }
-            else if (color_model.indexOf("Brightness") > -1)   { this.sendColorCode_brightness(color_send_command, value, device); }
-            else                                               { this.sendColorCode(color_send_command, input); }
+            if (color_model.indexOf("CIE_1931") > -1)          { eval(this.class_name).sendColorCode_CIE1931(color_send_command, input, device); }
+            else if (color_model.indexOf("temperature") > -1)  { eval(this.class_name).sendColorCode_temperature(color_send_command, value, device); }
+            else if (color_model.indexOf("Brightness") > -1)   { eval(this.class_name).sendColorCode_brightness(color_send_command, value, device); }
+            else                                               { eval(this.class_name).sendColorCode(color_send_command, input); }
         });
 
 
@@ -276,14 +273,14 @@ console.error("..."+ this.class_name);
 		appFW.requestAPI('GET',[ 'send-data', this.active_name, send_command, '"'+input+'"'	 ], '','');
 		}
 
-    this.sendColorCode_CIE1931      = function (send_command, input) {
+    this.sendColorCode_CIE1931      = function (send_command, input, device) {
 
         rgb_color = input.split(":");
         xy_color  = this.RGB_to_XY(rgb_color);
         input     = xy_color[0] + ":" + xy_color[1];
-        console.error("CIE 1931 XY coordinates: " + input + " / " + this.class_name + " / " + this.active_name);
+        console.error("CIE 1931 XY coordinates: " + input + " / " + this.class_name + " / " + device);
 
-		appFW.requestAPI('GET',[ 'send-data', this.active_name, send_command, '"'+input+'"' ], '','');
+		appFW.requestAPI('GET',[ 'send-data', device, send_command, '"'+input+'"' ], '','');
     }
 
     this.sendColorCode_brightness   = function (send_command, input, device) {

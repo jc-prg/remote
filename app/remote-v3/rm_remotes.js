@@ -2296,6 +2296,7 @@ function rmRemote(name) {
 
 
 function rmRemoteAdvancedElements(name, remote) {
+
     // set main data
 	this.data             = {};
 	this.app_name         = name;
@@ -2303,6 +2304,9 @@ function rmRemoteAdvancedElements(name, remote) {
 	this.active_name      = remote.active_name;
 	this.logging           = new jcLogging(this.app_name);
 
+    // connect pure elements
+	this.e_color_picker   = new rmColorPicker(name+".e_color_picker");	// rm_remotes-color-picker.js
+	this.e_slider         = new rmSlider(name+".e_slider");			// rm_remotes-slider.js
 
     // update API data
     this.update = function(api_data) {
@@ -2331,9 +2335,10 @@ function rmRemoteAdvancedElements(name, remote) {
 		var remote_data  = this.data["CONFIG"][type][device]["remote"];
 		var status_data  = this.data["STATUS"]["devices"][device];
 
-        var display_start = "<button id=\"colorpicker_"+sub_id+"_button\" class=\"color-picker\">";
-        display_start    += "<center><canvas id=\"colorpicker_"+sub_id+"\">";
-        var display_end   = "</canvas>";
+        var display_start  = "<button id=\"colorpicker_"+sub_id+"_button\" class=\"color-picker\">";
+        display_start     += "<center><canvas id=\"colorpicker_"+sub_id+"\">";
+
+        var display_end    = "</canvas>";
         display_end       += "<canvas id=\"colorpicker_demo_"+sub_id+"\" style=\"border-radius:5px;border:1px white solid;\"></canvas></center>";
         display_end       += "</button>";
 
@@ -2386,23 +2391,23 @@ function rmRemoteAdvancedElements(name, remote) {
 
 		if (data[4] && status_data[data[4]]) { init = status_data[data[4]]; }
 
-        	var display_start = "<button id=\"slider_"+device+"_"+data[1]+"\" class=\"rm-slider-button\">";
-        	var display_end   = "</button>";
+        var display_start = "<button id=\"slider_"+device+"_"+data[1]+"\" class=\"rm-slider-button\">";
+        var display_end   = "</button>";
 
-        	if (data.length > 3) {
-        		var min_max = data[3].split("-");
-        		var min     = min_max[0];
-        		var max     = min_max[1];
-        		}
-        	else {
-        		var min     = 0;
-        		var max     = 100;
-        		}
+        if (data.length > 3) {
+            var min_max = data[3].split("-");
+            var min     = min_max[0];
+            var max     = min_max[1];
+            }
+        else {
+            var min     = 0;
+            var max     = 100;
+            }
 
-        	var text = display_start;
-        	text += this.e_slider.sliderHTML(name=data[1], label=data[2], device=device, command=data[1], min, max, init, disabled);
-        	text += display_end;
-        	return text;
+        var text = display_start;
+        text += this.e_slider.sliderHTML(name=data[1], label=data[2], device=device, command=data[1], min, max, init, disabled);
+        text += display_end;
+        return text;
 		}
 
 	// create toggle element (ON | OFF) - "TOGGLE||<status-field>||<description/label>||<TOGGLE_CMD_ON>||<TOGGLE_CMD_OFF>"
@@ -2460,10 +2465,6 @@ function rmRemoteAdvancedElements(name, remote) {
        	return text;
 	}
 
-
-    // connect pure elements
-	this.e_color_picker   = new rmColorPicker(name+".e_color_picker", this);	// rm_remotes-color-picker.js
-	this.e_slider         = new rmSlider(name+".e_slider");			// rm_remotes-slider.js
 }
 
 
