@@ -257,6 +257,8 @@ function rmColorPicker(name, parent) {
             console.debug(`PIXEL DATA: X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue} | value: ${value}`);
             color_demo.style.backgroundColor = "rgb("+red+","+green+","+blue+")";
 
+console.error("..."+ this.class_name);
+
             var input = `${red}:${green}:${blue}`;
             if (color_model.indexOf("CIE_1931") > -1)          { eval(this.class_name).sendColorCode_CIE1931(color_send_command, input); }
             else if (color_model.indexOf("temperature") > -1)  { this.sendColorCode_temperature(color_send_command, value, device); }
