@@ -778,7 +778,7 @@ function rmRemote(name) {
 			if (remote_definition[i] == "scene-on")  { cmd = "scene-on_"+scene;  button = ["scene-on", scene];  button_def = cmd; }
 			if (remote_definition[i] == "scene-off") { cmd = "scene-off_"+scene; button = ["scene-off", scene]; button_def = cmd; }
 			if (button[0] == "group")                { cmd = button.join("_");   button = ["group_" + button[1], button[2]]; }
-			if (remote_definition[i].indexOf("COLOR-P") > 1) { button = remote_definition[i].split("_",1); }
+			if (remote_definition[i].indexOf("COLOR-P") > 1) { button = [button[0], button_def.replace(button[0]+"_", "")]; }
 
             // create tool tip
 			if (this.edit_mode) {
