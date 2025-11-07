@@ -29,6 +29,8 @@ function rmRemote(name) {
 	this.color_picker   = new rmColorPicker(name+".color_picker");	// rm_remotes-color-picker.js
 	this.slider         = new rmSlider(name+".slider");			// rm_remotes-slider.js
 
+	this.element        = new rmRemoteElements(name+".element", this);
+
 	this.logging        = new jcLogging(this.app_name);
 	this.tooltip        = new jcTooltip(this.app_name + ".tooltip");	// rm_remotes-elements.js
 
@@ -271,7 +273,8 @@ function rmRemote(name) {
 						
 			if (button == "LINE")                         { next_button = this.basic.line(""); }
 			else if (button.indexOf("LINE||") == 0)       { next_button = this.basic.line(button.split("||")[1]); }
-			else if (button.indexOf("SLIDER") == 0)       { next_button = this.slider_element(id, device, "devices", button.split("||")); }
+//			else if (button.indexOf("SLIDER") == 0)       { next_button = this.slider_element(id, device, "devices", button.split("||")); }
+			else if (button.indexOf("SLIDER") == 0)       { next_button = this.element.slider(id, device, "devices", button.split("||")); }
 			else if (button.indexOf("TOGGLE") == 0)       { next_button = this.slider_element_toggle(id, device, "devices", button.split("||")); }
 			else if (button == ".")                       { next_button = this.button.device( device+i, ".", device, "empty", "", "disabled" ) }
 			else if (button == "DISPLAY")                 { next_button = this.display.default(id, device, "devices", remote_display_size, remote_display); }
@@ -464,7 +467,7 @@ function rmRemote(name) {
 
 		// API Information
         var select        = function (id, title, data, onchange="", value="") {
-            var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
+            var item  = "<select style=\"width:" + this.input_width + ";margin:1px;max-width:100%;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
             item     += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
             for (var key in data) {
                 var selected = "";
@@ -708,8 +711,7 @@ function rmRemote(name) {
 		appCookie.set("remote","scene::"+scene+"::"+scene_label+"::"+this.edit_mode+"::"+easyEdit+"::"+remoteHints);
 		console.info("Set cookie: "+"scene::"+scene+"::"+scene_label+"::"+this.edit_mode+"::"+easyEdit+"::"+remoteHints);
 
-		if (this.data["CONFIG"]["scenes"][scene] && this.data["CONFIG"]["scenes"][scene]["remote"] && this.data["CONFIG"]["scenes"][scene]["remote"]["remote"]) {
-			}		
+		if (this.data["CONFIG"]["scenes"][scene] && this.data["CONFIG"]["scenes"][scene]["remote"] && this.data["CONFIG"]["scenes"][scene]["remote"]["remote"]) {}
 		else {
 			if (this.data["STATUS"]["config_errors"]["scenes"][scene]) {
 				var errors = this.data["STATUS"]["config_errors"]["scenes"][scene];
@@ -776,11 +778,13 @@ function rmRemote(name) {
 			var next_button	= "";
 			var button_def = remote_definition[i];
 			var button     = remote_definition[i].split("_");
-			var cmd    	   = button[0] + "_" + button[1];
+			var cmd    	   = button[0] + "_" + button[1];        // button.join("_"); // ??
 
 			if (remote_definition[i] == "scene-on")  { cmd = "scene-on_"+scene;  button = ["scene-on", scene];  button_def = cmd; }
 			if (remote_definition[i] == "scene-off") { cmd = "scene-off_"+scene; button = ["scene-off", scene]; button_def = cmd; }
+			if (button[0] == "group")                { cmd = button.join("_");   button = ["group_" + button[1], button[2]]; }
 
+            // create tool tip
 			if (this.edit_mode) {
 				var button_name      = cmd.split("||")[0];
 				var button_name_test = button_name.split("_");
@@ -808,11 +812,10 @@ function rmRemote(name) {
 				context_menu += input_add_button;
 				}
 
+            // create element per definition
 			if (button[0] == "LINE")                     { next_button = this.basic.line(""); }
 			else if (button[0].indexOf("LINE||") == 0)   { next_button = this.basic.line(button[0].split("||")[1]); }
 			else if (button[0] == ".")                   { next_button = this.button.device( scene+i, ".", scene_label, "empty", "", "disabled" ); }
-			else if (button[0] == "group")               { next_button = this.button.btn_group(  cmd, button[2], scene_label, "", button, "" );
-									                       this.active_buttons.push(cmd); }
 			else if (button[0] == "macro")               { next_button = this.button.macro(  cmd, button[1], scene_label, "", macros[button[1]], "" );
 									                       this.active_buttons.push(cmd); }
 			else if (button[0] == "scene-on")            { next_button = this.button.macro( "scene_on_"+button[1], "on", scene_label,"", scene_macros["scene-on"], "" );
@@ -826,6 +829,8 @@ function rmRemote(name) {
 			else if (button[1] == "keyboard")            { this.keyboard.set_device(button[0]);
                                                            next_button = this.button.device_keyboard( cmd, button[1], device, "", cmd, "" );
                                                            this.active_buttons.push(cmd); }
+//			else if (button[0].indexOf("group") == 0)    { next_button = this.button.btn_group(  cmd, button[2], scene_label, "", button, "" );
+//									                       this.active_buttons.push(cmd); }
 			else if (button[0].indexOf("HEADER-IMAGE") == 0) {
 			                                               var toggle_html = "";
 			                                               if (remote_definition[i+1].indexOf("TOGGLE") == 0 && button_def.indexOf("toggle") > 0) {
@@ -838,7 +843,8 @@ function rmRemote(name) {
 			else if (button == "DISPLAY")                { next_button = this.display.default(id, scene, "scenes", remote_display_size, remote_display); }
 
 			else if (button.length > 1 && button[1].indexOf("SLIDER") == 0)
-			                                             { next_button = this.slider_element(id, button[0], "devices", button[1].split("||")); }
+//			                                             { next_button = this.slider_element(id, button[0], "devices", button[1].split("||")); }
+			                                             { next_button = this.element.slider(this.data, id, button[0], "devices", button[1].split("||")); }
 
 			else if (button_def.indexOf("TOGGLE") == 0)  { if (i != toggle_done) {
 			                                                    next_button = this.slider_element_toggle(id, button_def, "devices", button_def.split("||"), short=false);
@@ -2332,10 +2338,28 @@ function rmRemote(name) {
 	
 		var init;
 		var disabled = false;
-		var remote_data         = this.data["CONFIG"][type][device]["remote"];
-		var status_data         = this.data["STATUS"]["devices"][device];
-        var device_api          = this.data["STATUS"]["devices"][device]["api"];
-        var device_api_status   = this.data["STATUS"]["interfaces"]["connect"][device_api];
+
+		if (device.indexOf("group_") >= 0) {
+		    var group_name          = device.split("_")[1];
+            var group_devices       = this.data["CONFIG"]["macros"]["groups"][group_name];
+            if (!group_devices || !group_devices["devices"] || group_devices["devices"].length == 0) {
+                console.error(this.app_name+".slider_element: Group "+group_name+" not defined correctly.");
+                return "";
+                }
+            var check_device        = group_devices["devices"][0];
+            var status_data         = this.data["STATUS"]["devices"][check_device];
+            var device_api          = this.data["STATUS"]["devices"][check_device]["api"];
+            var device_api_status   = this.data["STATUS"]["interfaces"]["connect"][device_api];
+		    }
+		else if (!this.data["CONFIG"][type][device]) {
+		    console.error(this.app_name+".slider_element: Could not create slider element: " + type + " '" + device + "' does not exist.");
+		    return "";
+		    }
+        else {
+            var status_data         = this.data["STATUS"]["devices"][device];
+            var device_api          = this.data["STATUS"]["devices"][device]["api"];
+            var device_api_status   = this.data["STATUS"]["interfaces"]["connect"][device_api];
+            }
 
         if (!device_api_status) { console.error("API Device not defined correctly for " + device + ": " + device_api + " doesn't exist.")}
         else if (device_api_status.toLowerCase() != "connected") { disabled = true; }
@@ -2436,6 +2460,93 @@ function rmRemote(name) {
 
 	}
 
+
+function rmRemoteElements(name, remote) {
+
+	this.data           = {};
+	this.app_name       = name;
+	this.remote         = remote;
+
+	this.e_basic          = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
+	this.e_button         = new rmRemoteButtons(name);			// rm_remotes-elements.js
+	this.e_display        = new rmRemoteDisplays(name+".display");		// rm_remotes-elements.js
+	this.e_json           = new rmRemoteJSON(name+".json");		// rm_remotes-elements.js
+
+	this.e_keyboard       = new rmRemoteKeyboard(name+".keyboard");	// rm_remotes-keyboard.js
+	this.e_color_picker   = new rmColorPicker(name+".color_picker");	// rm_remotes-color-picker.js
+	this.e_slider         = new rmSlider(name+".slider");			// rm_remotes-slider.js
+
+	this.logging        = new jcLogging(this.app_name);
+
+    // update API data
+    this.update = function(api_data) {
+
+        this.data = api_data;
+        }
+
+
+	// create slider
+	this.slider = function (api_data, id, device, type="devices", data) {
+
+		this.logging.debug("slider_element: "+id+"/"+device+"/"+type+"/"+data);
+        this.update(api_data);
+
+		var init;
+		var disabled = false;
+
+		if (device.indexOf("group_") >= 0) {
+		    var group_name          = device.split("_")[1];
+            var group_devices       = this.data["CONFIG"]["macros"]["groups"][group_name];
+            if (!group_devices || !group_devices["devices"] || group_devices["devices"].length == 0) {
+                this.logging.error(this.app_name+".slider_element: Group "+group_name+" not defined correctly.");
+                return "";
+                }
+            var check_device        = group_devices["devices"][0];
+            var status_data         = this.data["STATUS"]["devices"][check_device];
+            var device_api          = this.data["STATUS"]["devices"][check_device]["api"];
+            var device_api_status   = this.data["STATUS"]["interfaces"]["connect"][device_api];
+		    }
+		else if (!this.data["CONFIG"][type][device]) {
+		    this.logging.error(this.app_name+".slider_element: Could not create slider element: " + type + " '" + device + "' does not exist.");
+		    return "";
+		    }
+        else {
+            var status_data         = this.data["STATUS"]["devices"][device];
+            var device_api          = this.data["STATUS"]["devices"][device]["api"];
+            var device_api_status   = this.data["STATUS"]["interfaces"]["connect"][device_api];
+            }
+
+        if (!device_api_status) { this.logging.error("API Device not defined correctly for " + device + ": " + device_api + " doesn't exist.")}
+        else if (device_api_status.toLowerCase() != "connected") { disabled = true; }
+
+		if (!this.data["CONFIG"][type]) {
+			this.logging.error(this.app_name+".slider() - type not supported ("+type+")");
+			return;
+			}
+
+		if (data[4] && status_data[data[4]]) { init = status_data[data[4]]; }
+
+        	var display_start = "<button id=\"slider_"+device+"_"+data[1]+"\" class=\"rm-slider-button\">";
+        	var display_end   = "</button>";
+
+        	if (data.length > 3) {
+        		var min_max = data[3].split("-");
+        		var min     = min_max[0];
+        		var max     = min_max[1];
+        		}
+        	else {
+        		var min     = 0;
+        		var max     = 100;
+        		}
+
+        	var text = display_start;
+        	text += this.e_slider.sliderHTML(name=data[1], label=data[2], device=device, command=data[1], min, max, init, disabled);
+        	text += display_end;
+        	return text;
+		}
+
+
+}
 
 //--------------------------------
 // EOF
