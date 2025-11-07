@@ -258,7 +258,7 @@ function rmColorPicker(name, parent) {
             color_demo.style.backgroundColor = "rgb("+red+","+green+","+blue+")";
 
             var input = `${red}:${green}:${blue}`;
-            if (color_model.indexOf("CIE_1931") > -1)          { this.sendColorCode_CIE1931(color_send_command, input); }
+            if (color_model.indexOf("CIE_1931") > -1)          { eval(this.class_name).sendColorCode_CIE1931(color_send_command, input); }
             else if (color_model.indexOf("temperature") > -1)  { this.sendColorCode_temperature(color_send_command, value, device); }
             else if (color_model.indexOf("Brightness") > -1)   { this.sendColorCode_brightness(color_send_command, value, device); }
             else                                               { this.sendColorCode(color_send_command, input); }
@@ -279,7 +279,7 @@ function rmColorPicker(name, parent) {
         rgb_color = input.split(":");
         xy_color  = this.RGB_to_XY(rgb_color);
         input     = xy_color[0] + ":" + xy_color[1];
-        console.error("CIE 1931 XY coordinates: " + input + " / " + this.class_name);
+        console.error("CIE 1931 XY coordinates: " + input + " / " + this.class_name + " / " + this.active_name);
 
 		appFW.requestAPI('GET',[ 'send-data', this.active_name, send_command, '"'+input+'"' ], '','');
     }
