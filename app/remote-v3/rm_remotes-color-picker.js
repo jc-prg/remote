@@ -236,7 +236,7 @@ function rmColorPicker(name) {
             canvas.style.borderRadius = "5px";
             ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
             //ctx.drawImage(image, 0, 0, image.width, image.height);
-            this.logging.debug("Color picker canvas size: " + canvas.width + "x" + canvas.height);
+            console.debug("Color picker canvas size: " + canvas.width + "x" + canvas.height);
         };
 
         // Event listener for click on the canvas
@@ -253,8 +253,8 @@ function rmColorPicker(name) {
             const value = Math.round(x / canvas.width * 1000) / 10;
 
             // Display RGB values
-            this.logging.debug("PIXEL DATA: " + pixelData);
-            this.logging.debug(`PIXEL DATA: X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue} | value: ${value}`);
+            eval(this.class_name).logging.debug("PIXEL DATA: " + pixelData);
+            eval(this.class_name).logging.debug(`PIXEL DATA: X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue} | value: ${value}`);
             color_demo.style.backgroundColor = "rgb("+red+","+green+","+blue+")";
 
             var input = `${red}:${green}:${blue}`;
