@@ -2308,7 +2308,7 @@ function rmRemoteAdvancedElements(name, remote) {
 	this.e_json           = new rmRemoteJSON(name+".json");		// rm_remotes-elements.js
 
 	this.e_keyboard       = new rmRemoteKeyboard(name+".keyboard");	// rm_remotes-keyboard.js
-	this.e_color_picker   = new rmColorPicker(name+".color_picker");	// rm_remotes-color-picker.js
+	this.e_color_picker   = new rmColorPicker(name+".color_picker", this);	// rm_remotes-color-picker.js
 	this.e_slider         = new rmSlider(name+".slider");			// rm_remotes-slider.js
 
 	this.logging        = new jcLogging(this.app_name);

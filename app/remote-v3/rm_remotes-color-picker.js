@@ -1,9 +1,10 @@
 // uses parts from source: https://www.w3docs.com/tools/color-picker
 
-function rmColorPicker(name) {
+function rmColorPicker(name, parent) {
 
 	this.hh = 0;
 	this.class_name = name;
+	this.parent = this;
 
 	this.set_device     = function(name) {
 
@@ -257,10 +258,10 @@ function rmColorPicker(name) {
             color_demo.style.backgroundColor = "rgb("+red+","+green+","+blue+")";
 
             var input = `${red}:${green}:${blue}`;
-            if (color_model.indexOf("CIE_1931") > -1)          { rm3remotes.color_picker.sendColorCode_CIE1931(color_send_command, input); }
-            else if (color_model.indexOf("temperature") > -1)  { rm3remotes.color_picker.sendColorCode_temperature(color_send_command, value, device); }
-            else if (color_model.indexOf("Brightness") > -1)   { rm3remotes.color_picker.sendColorCode_brightness(color_send_command, value, device); }
-            else                                               { rm3remotes.color_picker.sendColorCode(color_send_command, input); }
+            if (color_model.indexOf("CIE_1931") > -1)          { this.parent.color_picker.sendColorCode_CIE1931(color_send_command, input); }
+            else if (color_model.indexOf("temperature") > -1)  { this.parent.color_picker.sendColorCode_temperature(color_send_command, value, device); }
+            else if (color_model.indexOf("Brightness") > -1)   { this.parent.color_picker.sendColorCode_brightness(color_send_command, value, device); }
+            else                                               { this.parent.color_picker.sendColorCode(color_send_command, input); }
         });
 
 
