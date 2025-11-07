@@ -26,10 +26,10 @@ function rmRemote(name) {
 	
 	this.tab            = new rmRemoteTable(name+".tab");		// rm_remotes-elements.js
 	this.keyboard       = new rmRemoteKeyboard(name+".keyboard");	// rm_remotes-keyboard.js
-	this.color_picker   = new rmColorPicker(name+".color_picker");	// rm_remotes-color-picker.js
-	this.slider         = new rmSlider(name+".slider");			// rm_remotes-slider.js
+//	this.color_picker   = new rmColorPicker(name+".color_picker");	// rm_remotes-color-picker.js
+//	this.slider         = new rmSlider(name+".slider");			// rm_remotes-slider.js
 
-	this.element        = new rmRemoteElements(name+".element", this);
+	this.element        = new rmRemoteAdvancedElements(name+".element", this);
 
 	this.logging        = new jcLogging(this.app_name);
 	this.tooltip        = new jcTooltip(this.app_name + ".tooltip");	// rm_remotes-elements.js
@@ -103,7 +103,6 @@ function rmRemote(name) {
 
 
 		this.keyboard.set_device(this.active_name);
-		this.color_picker.set_device(this.active_name);
 		this.button.data    = this.data;
 		this.display.data   = this.data;
 
@@ -273,12 +272,12 @@ function rmRemote(name) {
 						
 			if (button == "LINE")                         { next_button = this.basic.line(""); }
 			else if (button.indexOf("LINE||") == 0)       { next_button = this.basic.line(button.split("||")[1]); }
-//			else if (button.indexOf("SLIDER") == 0)       { next_button = this.slider_element(id, device, "devices", button.split("||")); }
 			else if (button.indexOf("SLIDER") == 0)       { next_button = this.element.slider(this.data, id, device, "devices", button.split("||")); }
-			else if (button.indexOf("TOGGLE") == 0)       { next_button = this.slider_element_toggle(id, device, "devices", button.split("||")); }
+			else if (button.indexOf("COLOR-PICKER") == 0) { next_button = this.element.colorPicker(this.data, id, device, "devices", button.split("||")); }
+			else if (button.indexOf("TOGGLE") == 0)       { next_button = this.element.toggle(this.data, id, device, "devices", button.split("||")); }
 			else if (button == ".")                       { next_button = this.button.device( device+i, ".", device, "empty", "", "disabled" ) }
 			else if (button == "DISPLAY")                 { next_button = this.display.default(id, device, "devices", remote_display_size, remote_display); }
-			else if (button.indexOf("COLOR-PICKER") == 0) { next_button = this.colorPicker(id, device, "devices", button.split("||")); }
+			//else if (button.indexOf("COLOR-PICKER") == 0) { next_button = this.colorPicker(id, device, "devices", button.split("||")); }
 			else if (button == "keyboard")                { next_button = this.button.device_keyboard( cmd, button, device, "", cmd, "" ); this.active_buttons.push(cmd); }
 			else if (remote_buttons.includes(button))     { next_button = this.button.device( cmd, button, device, button_style, cmd, "" ); this.active_buttons.push(cmd); }
 			else if (this.edit_mode)                      { next_button = this.button.device_add( cmd, button, device, "notfound", cmd, "" ); }
@@ -829,13 +828,11 @@ function rmRemote(name) {
 			else if (button[1] == "keyboard")            { this.keyboard.set_device(button[0]);
                                                            next_button = this.button.device_keyboard( cmd, button[1], device, "", cmd, "" );
                                                            this.active_buttons.push(cmd); }
-//			else if (button[0].indexOf("group") == 0)    { next_button = this.button.btn_group(  cmd, button[2], scene_label, "", button, "" );
-//									                       this.active_buttons.push(cmd); }
 			else if (button[0].indexOf("HEADER-IMAGE") == 0) {
 			                                               var toggle_html = "";
 			                                               if (remote_definition[i+1].indexOf("TOGGLE") == 0 && button_def.indexOf("toggle") > 0) {
 			                                                    var toggle = remote_definition[i+1];
-			                                                    toggle_html = this.slider_element_toggle(id, toggle, "devices", toggle.split("||"), short=true);
+			                                                    toggle_html = this.element.toggle(this.data, id, toggle, "devices", toggle.split("||"), short=true);
 			                                                    toggle_done = i+1;
 			                                                    }
 			                                               next_button = this.scene_header_image(id, scene, toggle_html);
@@ -843,11 +840,10 @@ function rmRemote(name) {
 			else if (button == "DISPLAY")                { next_button = this.display.default(id, scene, "scenes", remote_display_size, remote_display); }
 
 			else if (button.length > 1 && button[1].indexOf("SLIDER") == 0)
-//			                                             { next_button = this.slider_element(id, button[0], "devices", button[1].split("||")); }
 			                                             { next_button = this.element.slider(this.data, id, button[0], "devices", button[1].split("||")); }
 
 			else if (button_def.indexOf("TOGGLE") == 0)  { if (i != toggle_done) {
-			                                                    next_button = this.slider_element_toggle(id, button_def, "devices", button_def.split("||"), short=false);
+			                                                    next_button = this.element.toggle(this.data, id, button_def, "devices", button_def.split("||"), short=false);
 			                                                    }
 			                                             }
             else if (button_def.indexOf("COLOR-P") == 0) { next_button = this.button.device(scene+i,"color-picker scene N/A", scene-label, "", "", "disabled"); }
@@ -2281,168 +2277,6 @@ function rmRemote(name) {
         setTextById("slider_device_min-max", select_min_max);
         }
 
-	// create color picker
-	this.colorPicker                = function (id, device, type="devices", data) {
-	
-		if (type != "devices") {
-			this.logging.error(this.app_name+".colorPicker() - type not supported ("+type+")");
-			return;
-			}
-
-        var color_model  = "RGB";
-        var send_command = data[1];
-        var sub_id       = device + "_" + send_command;
-        if (data.length > 2) { color_model  = data[2]; }
-
-		var remote_data  = this.data["CONFIG"][type][device]["remote"];
-		var status_data  = this.data["STATUS"]["devices"][device];
-		
-        var display_start = "<button id=\"colorpicker_"+sub_id+"_button\" class=\"color-picker\">";
-        display_start    += "<center><canvas id=\"colorpicker_"+sub_id+"\">";
-        var display_end   = "</canvas>";
-        display_end       += "<canvas id=\"colorpicker_demo_"+sub_id+"\" style=\"border-radius:5px;border:1px white solid;\"></canvas></center>";
-        display_end       += "</button>";
-
-        var text = display_start;
-        //text += this.color_picker.colorPickerHTML(send_command);
-        text += display_end;
-
-        setTimeout(function() { rm3remotes.color_picker.colorPickerHTMLv2("colorpicker_"+sub_id, sub_id, send_command, color_model); }, 100);
-        return text;
-		}
-	
-	// create color picker
-	this.colorPicker_v1              = function (id, device, type="devices", data) {
-
-		if (type != "devices") {
-			this.logging.error(this.app_name+".colorPicker() - type not supported ("+type+")");
-			return;
-			}
-
-        var send_command = data[1];
-		var remote_data  = this.data["CONFIG"][type][device]["remote"];
-		var status_data  = this.data["STATUS"]["devices"][device];
-
-        var display_start = "<button id=\"colorpicker_"+device+"\" class=\"color-picker\">";
-        var display_end    = "</button>";
-
-        var text = display_start;
-        text += this.color_picker.colorPickerHTML(send_command);
-        text += display_end;
-        return text;
-		}
-
-	// create slider
-	this.slider_element             = function (id, device, type="devices", data) {
-		console.debug("slider_element: "+id+"/"+device+"/"+type+"/"+data);
-	
-		var init;
-		var disabled = false;
-
-		if (device.indexOf("group_") >= 0) {
-		    var group_name          = device.split("_")[1];
-            var group_devices       = this.data["CONFIG"]["macros"]["groups"][group_name];
-            if (!group_devices || !group_devices["devices"] || group_devices["devices"].length == 0) {
-                console.error(this.app_name+".slider_element: Group "+group_name+" not defined correctly.");
-                return "";
-                }
-            var check_device        = group_devices["devices"][0];
-            var status_data         = this.data["STATUS"]["devices"][check_device];
-            var device_api          = this.data["STATUS"]["devices"][check_device]["api"];
-            var device_api_status   = this.data["STATUS"]["interfaces"]["connect"][device_api];
-		    }
-		else if (!this.data["CONFIG"][type][device]) {
-		    console.error(this.app_name+".slider_element: Could not create slider element: " + type + " '" + device + "' does not exist.");
-		    return "";
-		    }
-        else {
-            var status_data         = this.data["STATUS"]["devices"][device];
-            var device_api          = this.data["STATUS"]["devices"][device]["api"];
-            var device_api_status   = this.data["STATUS"]["interfaces"]["connect"][device_api];
-            }
-
-        if (!device_api_status) { console.error("API Device not defined correctly for " + device + ": " + device_api + " doesn't exist.")}
-        else if (device_api_status.toLowerCase() != "connected") { disabled = true; }
-
-		if (!this.data["CONFIG"][type]) {
-			this.logging.error(this.app_name+".slider() - type not supported ("+type+")");
-			return;
-			}
-
-		if (data[4] && status_data[data[4]]) { init = status_data[data[4]]; }
-
-        	var display_start = "<button id=\"slider_"+device+"_"+data[1]+"\" class=\"rm-slider-button\">";
-        	var display_end   = "</button>";
-        	
-        	if (data.length > 3) {
-        		var min_max = data[3].split("-");
-        		var min     = min_max[0];
-        		var max     = min_max[1];
-        		}
-        	else {
-        		var min     = 0;
-        		var max     = 100;
-        		}
-        	
-        	var text = display_start;
-        	text += this.slider.sliderHTML(name=data[1], label=data[2], device=device, command=data[1], min, max, init, disabled);
-        	text += display_end;
-        	return text;
-		}
-
-	// create toggle element (ON | OFF) - "TOGGLE||<status-field>||<description/label>||<TOGGLE_CMD_ON>||<TOGGLE_CMD_OFF>"
-	this.slider_element_toggle      = function (id, device, type="device", data, short=false) {
-		console.debug("slider_element_toggle: "+id+"/"+device+"/"+type+"/"+data);
-
-		var init, key, status_data;
-		var reset_value = "";
-		var key;
-		var min = 0;
-		var max = 1;
-		var device_id = device.split("_");
-		device_id = device_id[0].split("||");
-
-        if (this.data["CONFIG"]["devices"][device_id[1]] && this.data["CONFIG"]["devices"][device_id[1]]["interface"]["method"] != "query") {
-            reset_value   = "<font style='color:gray'>[<status onclick=\"appFW.requestAPI('GET',['set','"+device_id[1]+"','power','OFF'], '', '', '' );\" style='cursor:pointer;'>OFF</status> | ";
-            reset_value      += "<status onclick=\"appFW.requestAPI('GET',['set','"+device_id[1]+"','power','ON'], '', '', '' );\" style='cursor:pointer;'>ON</status>]</font>";
-            }
-       	var toggle_start  = "";
-       	var toggle_end    = "";
-       	if (!short) {
-       	    toggle_start   += "<button id=\"slider_"+device+"_"+data[1]+"\" class=\"rm-toggle-label long\">"+data[2]+" &nbsp; &nbsp;  "+reset_value+"</button>";
-       	    toggle_start   += "<button id=\"slider_"+device+"_"+data[1]+"\" class=\"rm-toggle-button\">";
-            toggle_end     += "</button>";
-       	    }
-       	else {
-       	    toggle_start   += "<div class='header_image_toggle'>"
-       	    toggle_end     += "</div>"
-       	    }
-
-        var disabled      = false;
-       	var device_key    = data[1].split("_");
-        if (device_key.length > 1) { device = device_key[0]; key = device_key[1]}
-        else                       { key = data[1]; }
-
-        if (this.data["STATUS"]["devices"][device]) {
-            status_data             = this.data["STATUS"]["devices"][device];
-    	    var device_api          = this.data["STATUS"]["devices"][device]["api"];
-	        var device_api_status   = this.data["STATUS"]["interfaces"][device_api];
-            }
-        if (status_data[key] && device_api_status == "Connected") {
-            if (status_data[key].toUpperCase() == "TRUE")         { init = "1"; }
-            else if (status_data[key].toUpperCase() == "FALSE")   { init = "0"; }
-            else if (status_data[key].toUpperCase() == "ON")      { init = "1"; }
-            else if (status_data[key].toUpperCase() == "OFF")     { init = "0"; }
-            else                                                  { init = ""; }
-        }
-        else { init = ""; disabled = true; }
-
-       	var text = toggle_start;
-       	text += this.slider.toggleHTML(name=data[1], label=data[2], device=device, command_on=data[3], command_off=data[4], init, disabled);
-       	text += toggle_end;
-       	return text;
-	}
-	
 	// empty field
 	this.empty                      = function (id, comment="" ) {
 
@@ -2461,11 +2295,12 @@ function rmRemote(name) {
 	}
 
 
-function rmRemoteElements(name, remote) {
+function rmRemoteAdvancedElements(name, remote) {
 
-	this.data           = {};
-	this.app_name       = name;
-	this.remote         = remote;
+	this.data             = {};
+	this.app_name         = name;
+	this.remote           = remote;
+	this.active_name      = remote.active_name;
 
 	this.e_basic          = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
 	this.e_button         = new rmRemoteButtons(name);			// rm_remotes-elements.js
@@ -2481,14 +2316,48 @@ function rmRemoteElements(name, remote) {
     // update API data
     this.update = function(api_data) {
 
-        this.data = api_data;
+        this.data           = api_data;
+    	this.active_name    = remote.active_name;
+    	//this.e_slider.set_device(this.active_name);
         }
 
+	// create color picker
+	this.colorPicker = function (api_data, id, device, type="devices", data) {
+
+		this.logging.debug(this.app_name+".colorPicker: "+id+"/"+device+"/"+type+"/"+data);
+        this.update(api_data);
+
+		if (type != "devices") {
+			this.logging.error(this.app_name+".colorPicker() - type not supported ("+type+")");
+			return;
+			}
+
+        var color_model  = "RGB";
+        var send_command = data[1];
+        var sub_id       = device + "_" + send_command;
+        if (data.length > 2) { color_model  = data[2]; }
+
+		var remote_data  = this.data["CONFIG"][type][device]["remote"];
+		var status_data  = this.data["STATUS"]["devices"][device];
+
+        var display_start = "<button id=\"colorpicker_"+sub_id+"_button\" class=\"color-picker\">";
+        display_start    += "<center><canvas id=\"colorpicker_"+sub_id+"\">";
+        var display_end   = "</canvas>";
+        display_end       += "<canvas id=\"colorpicker_demo_"+sub_id+"\" style=\"border-radius:5px;border:1px white solid;\"></canvas></center>";
+        display_end       += "</button>";
+
+        var text = display_start;
+        //text += this.color_picker.colorPickerHTML(send_command);
+        text += display_end;
+
+        setTimeout(() => { this.e_color_picker.colorPickerHTMLv2("colorpicker_"+sub_id, sub_id, send_command, color_model); }, 100);
+        return text;
+		}
 
 	// create slider
 	this.slider = function (api_data, id, device, type="devices", data) {
 
-		this.logging.debug("slider_element: "+id+"/"+device+"/"+type+"/"+data);
+		this.logging.debug(this.app_name+".slider: "+id+"/"+device+"/"+type+"/"+data);
         this.update(api_data);
 
 		var init;
@@ -2545,8 +2414,62 @@ function rmRemoteElements(name, remote) {
         	return text;
 		}
 
+	// create toggle element (ON | OFF) - "TOGGLE||<status-field>||<description/label>||<TOGGLE_CMD_ON>||<TOGGLE_CMD_OFF>"
+	this.toggle = function (api_data, id, device, type="device", data, short=false) {
 
+		this.logging.debug(this.app_name+".toggle: "+id+"/"+device+"/"+type+"/"+data);
+        this.update(api_data);
+
+		var init, key, status_data;
+		var reset_value = "";
+		var key;
+		var min = 0;
+		var max = 1;
+		var device_id = device.split("_");
+		device_id = device_id[0].split("||");
+
+        if (this.data["CONFIG"]["devices"][device_id[1]] && this.data["CONFIG"]["devices"][device_id[1]]["interface"]["method"] != "query") {
+            reset_value   = "<font style='color:gray'>[<status onclick=\"appFW.requestAPI('GET',['set','"+device_id[1]+"','power','OFF'], '', '', '' );\" style='cursor:pointer;'>OFF</status> | ";
+            reset_value      += "<status onclick=\"appFW.requestAPI('GET',['set','"+device_id[1]+"','power','ON'], '', '', '' );\" style='cursor:pointer;'>ON</status>]</font>";
+            }
+       	var toggle_start  = "";
+       	var toggle_end    = "";
+       	if (!short) {
+       	    toggle_start   += "<button id=\"slider_"+device+"_"+data[1]+"\" class=\"rm-toggle-label long\">"+data[2]+" &nbsp; &nbsp;  "+reset_value+"</button>";
+       	    toggle_start   += "<button id=\"slider_"+device+"_"+data[1]+"\" class=\"rm-toggle-button\">";
+            toggle_end     += "</button>";
+       	    }
+       	else {
+       	    toggle_start   += "<div class='header_image_toggle'>"
+       	    toggle_end     += "</div>"
+       	    }
+
+        var disabled      = false;
+       	var device_key    = data[1].split("_");
+        if (device_key.length > 1) { device = device_key[0]; key = device_key[1]}
+        else                       { key = data[1]; }
+
+        if (this.data["STATUS"]["devices"][device]) {
+            status_data             = this.data["STATUS"]["devices"][device];
+    	    var device_api          = this.data["STATUS"]["devices"][device]["api"];
+	        var device_api_status   = this.data["STATUS"]["interfaces"][device_api];
+            }
+        if (status_data[key] && device_api_status == "Connected") {
+            if (status_data[key].toUpperCase() == "TRUE")         { init = "1"; }
+            else if (status_data[key].toUpperCase() == "FALSE")   { init = "0"; }
+            else if (status_data[key].toUpperCase() == "ON")      { init = "1"; }
+            else if (status_data[key].toUpperCase() == "OFF")     { init = "0"; }
+            else                                                  { init = ""; }
+        }
+        else { init = ""; disabled = true; }
+
+       	var text = toggle_start;
+       	text += this.e_slider.toggleHTML(name=data[1], label=data[2], device=device, command_on=data[3], command_off=data[4], init, disabled);
+       	text += toggle_end;
+       	return text;
+	}
 }
+
 
 //--------------------------------
 // EOF
