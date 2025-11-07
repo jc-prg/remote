@@ -773,7 +773,7 @@ function rmRemote(name) {
 			var next_button	= "";
 			var button_def = remote_definition[i];
 			var button     = remote_definition[i].split("_");
-			var cmd    	   = button[0] + "_" + button[1];        // button.join("_"); // ??
+			var cmd    	   = button[0] + "_" + remote_definition[i].replace(button[0] + "_", "");
 
 			if (remote_definition[i] == "scene-on")  { cmd = "scene-on_"+scene;  button = ["scene-on", scene];  button_def = cmd; }
 			if (remote_definition[i] == "scene-off") { cmd = "scene-off_"+scene; button = ["scene-off", scene]; button_def = cmd; }
