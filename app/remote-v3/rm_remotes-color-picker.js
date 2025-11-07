@@ -193,8 +193,6 @@ function rmColorPicker(name) {
         var use_image = "rgb";
         var device    = sub_id.replace("_"+send_command, "");
 
-        console.error(device);
-
         if (color_model.indexOf("Brightness") > -1)       { use_image = "strip_brightness"; }
         else if (color_model.indexOf("temperature") > -1) { use_image = "strip_temperature"; }
         else if (color_model.indexOf("small") > -1)       { use_image = "strip_rgb"; }
@@ -247,6 +245,8 @@ function rmColorPicker(name) {
             var x = event.offsetX;
             var y = event.offsetY;
             const pixelData = ctx.getImageData(x, y, 1, 1).data;
+
+        console.error(device);
 
             // Extract RGB values
             const red   = pixelData[0];
