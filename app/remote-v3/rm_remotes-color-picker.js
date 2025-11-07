@@ -4,7 +4,7 @@ function rmColorPicker(name, parent) {
 
 	this.hh = 0;
 	this.class_name = name;
-	this.parent = this;
+	this.parent = parent;
 
 	this.set_device     = function(name) {
 
