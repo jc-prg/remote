@@ -13,11 +13,11 @@ remote_js = [
     "rm_menu.js",
     "rm_start.js",
     "rm_sort-list.js",
-    "rm_remotes.js",
     "rm_remotes-color-picker.js",
     "rm_remotes-elements.js",
     "rm_remotes-keyboard.js",
     "rm_remotes-slider.js",
+    "rm_remotes.js",
     "rm_main.js",
     ];
 
