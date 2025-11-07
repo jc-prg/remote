@@ -836,7 +836,7 @@ function rmRemote(name) {
 			else if (button == "DISPLAY")                { next_button = this.display.default(id, scene, "scenes", remote_display_size, remote_display); }
 
 			else if (button.length > 1 && button[1].indexOf("COLOR-PICKER") == 0)
-			                                             { next_button = this.element.colorPicker(this.data, id, device, "devices", button[1].split("||")); }
+			                                             { next_button = this.element.colorPicker(this.data, id, button[0], "devices", button[1].split("||")); }
 
 			else if (button.length > 1 && button[1].indexOf("SLIDER") == 0)
 			                                             { next_button = this.element.slider(this.data, id, button[0], "devices", button[1].split("||")); }

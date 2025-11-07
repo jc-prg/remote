@@ -6,7 +6,7 @@ function rmColorPicker(name) {
 	this.class_name = name;
 	this.logging    = new jcLogging(this.class_name);
 
-	this.set_device     = function(name) {
+	this.set_device = function(name) {
 
 		this.active_name = name;		
 		}
