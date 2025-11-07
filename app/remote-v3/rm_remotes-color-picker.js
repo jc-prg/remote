@@ -240,7 +240,7 @@ function rmColorPicker(name, parent) {
         };
 
         // Event listener for click on the canvas
-        canvas.addEventListener('click', function(event) {
+        canvas.addEventListener('click', (event) => {
             // Get the clicked pixel data
             var x = event.offsetX;
             var y = event.offsetY;
