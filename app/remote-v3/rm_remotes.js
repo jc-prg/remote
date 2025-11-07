@@ -2462,9 +2462,8 @@ function rmRemoteAdvancedElements(name, remote) {
 
 
     // connect pure elements
-	this.e_keyboard       = new rmRemoteKeyboard(name+".keyboard");	// rm_remotes-keyboard.js
-	this.e_color_picker   = new rmColorPicker(name+".color_picker", this);	// rm_remotes-color-picker.js
-	this.e_slider         = new rmSlider(name+".slider");			// rm_remotes-slider.js
+	this.e_color_picker   = new rmColorPicker(name+".e_color_picker", this);	// rm_remotes-color-picker.js
+	this.e_slider         = new rmSlider(name+".e_slider");			// rm_remotes-slider.js
 }
 
 
