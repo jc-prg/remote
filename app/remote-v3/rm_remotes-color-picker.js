@@ -264,7 +264,6 @@ function rmColorPicker(name) {
             else                                               { eval(this.class_name).sendColorCode(color_send_command, input); }
         });
 
-
     }
 
 

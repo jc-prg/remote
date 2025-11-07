@@ -26,9 +26,6 @@ function rmRemote(name) {
 	
 	this.tab            = new rmRemoteTable(name+".tab");		// rm_remotes-elements.js
 	this.keyboard       = new rmRemoteKeyboard(name+".keyboard");	// rm_remotes-keyboard.js
-//	this.color_picker   = new rmColorPicker(name+".color_picker");	// rm_remotes-color-picker.js
-//	this.slider         = new rmSlider(name+".slider");			// rm_remotes-slider.js
-
 	this.element        = new rmRemoteAdvancedElements(name+".element", this);
 
 	this.logging        = new jcLogging(this.app_name);
@@ -277,7 +274,6 @@ function rmRemote(name) {
 			else if (button.indexOf("TOGGLE") == 0)       { next_button = this.element.toggle(this.data, id, device, "devices", button.split("||")); }
 			else if (button == ".")                       { next_button = this.button.device( device+i, ".", device, "empty", "", "disabled" ) }
 			else if (button == "DISPLAY")                 { next_button = this.display.default(id, device, "devices", remote_display_size, remote_display); }
-			//else if (button.indexOf("COLOR-PICKER") == 0) { next_button = this.colorPicker(id, device, "devices", button.split("||")); }
 			else if (button == "keyboard")                { next_button = this.button.device_keyboard( cmd, button, device, "", cmd, "" ); this.active_buttons.push(cmd); }
 			else if (remote_buttons.includes(button))     { next_button = this.button.device( cmd, button, device, button_style, cmd, "" ); this.active_buttons.push(cmd); }
 			else if (this.edit_mode)                      { next_button = this.button.device_add( cmd, button, device, "notfound", cmd, "" ); }
@@ -838,6 +834,9 @@ function rmRemote(name) {
 			                                               next_button = this.scene_header_image(id, scene, toggle_html);
 			                                               }
 			else if (button == "DISPLAY")                { next_button = this.display.default(id, scene, "scenes", remote_display_size, remote_display); }
+
+			else if (button.length > 1 && button[1].indexOf("COLOR-PICKER") == 0)
+			                                             { next_button = this.element.colorPicker(this.data, id, device, "devices", button[1].split("||")); }
 
 			else if (button.length > 1 && button[1].indexOf("SLIDER") == 0)
 			                                             { next_button = this.element.slider(this.data, id, button[0], "devices", button[1].split("||")); }
@@ -2321,11 +2320,6 @@ function rmRemoteAdvancedElements(name, remote) {
 
 		this.logging.debug(this.app_name+".colorPicker: "+id+"/"+device+"/"+type+"/"+data);
         this.update(api_data);
-
-		if (type != "devices") {
-			this.logging.error(this.app_name+".colorPicker() - type not supported ("+type+")");
-			return;
-			}
 
         var color_model  = "RGB";
         var send_command = data[1];
