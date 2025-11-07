@@ -21,8 +21,8 @@ var language_app = {
         "MACRO_PLEASE_WAIT"            : "Führe ein paar Kommandos aus, bitte warte ein paar Sekunden.",
 
         "STATUS_DEV_OK"                : "Das Gerät <b>{0}</b> ist OK.",
-        "STATUS_DEV_N/A"               : "Der Status vom Gerät <b>{0}</b> ist unklar. Ausprobieren!",
-        "STATUS_DEV_POWER_OFF"         : "Der Strom über <b>{0}</b> ist ausgeschaltet.",
+        "STATUS_DEV_N/A"               : "Der Status vom Gerät <b>{0}</b> ist unklar. Bitte, ausprobieren!",
+        "STATUS_DEV_POWER_OFF"         : "Der Strom ist ausgeschaltet: <b>{0}</b>",
         "STATUS_DEV_ERROR"             : "Beim Gerät <b>{0}</b> ist ein Fehler aufgetreten. {1}",
         "STATUS_DEV_API_DISABLED"      : "Die API <b>{0}</b> für das Gerät <b>{1}</b> wurde deaktiviert.",
         "STATUS_DEV_API_ERROR"         : "Bei der API <b>{0}</b> für das angeschlossene Gerät <b>{1}</b> ist ein Fehler aufgetreten. {2}",
@@ -360,7 +360,7 @@ var language_app = {
 
         "STATUS_DEV_OK"                : "Device <b>{0}</b> is OK.",
         "STATUS_DEV_N/A"               : "The power status of the device <b>{0}</b> is not available. Just try out.",
-        "STATUS_DEV_POWER_OFF"         : "Power device <b>{0}</b> is switched off.",
+        "STATUS_DEV_POWER_OFF"         : "The power device is switched off: <b>{0}</b>.",
         "STATUS_DEV_ERROR"             : "An error occurred for device <b>{0}</b>. {1}",
         "STATUS_DEV_API_DISABLED"      : "The API <b>{0}</b> for the device <b>{1}</b> has been disabled.",
         "STATUS_DEV_API_ERROR"         : "An API error occurred for <b>{0}</b> and the connected device <b>{1}</b>. {2}",

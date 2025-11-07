@@ -51,12 +51,15 @@ Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 
 ### App v3.0 / Server v3.0 (in progress)
 
+* simple implementation of device groups (use buttons for all devices of a group at the same time)
 * integration of ZigBee interface (using a Zigbee USB Dongle and ZigBee2MQTT): Smart Plug + RGB+CCT Bulb 
 * schedule events (device commands and macros)
 * color picker for RGB, CIE_1391, brightness and color temperature
 * RGB+CCT light templates
+* improved layout for editing of remotes, and improved JSON editing
 * improved setting section and API configuration via app
 * improved adaptive layout plus additional icons and scene headers
+* improved error messages for device and scene status
 
 **Note:** The data structure changed: recreate configuration files by coping them from the 
 folder [_sample/devices](data/_sample/devices) to the productive folders and adjusting them to your needs.

@@ -47,7 +47,7 @@ function rmSettings (name) {	// IN PROGRESS
             }
 		}
 
-	// write settings page
+	// compose settings page
     this.create			        = function (selected_mode="", direct_cmd="", direct_data="") {
 
         this.index_buttons = "";
@@ -91,9 +91,6 @@ function rmSettings (name) {	// IN PROGRESS
 	    	this.settings_ext_append(2,lang("ADD_DEVICE"), this.module_add_device(direct_cmd, direct_data));
             this.settings_ext_append(4,lang('EDIT_DEVICES'), this.module_devices());
             this.index_buttons_html = this.module_index(true, "SETTINGS_DEVICES");
-	    	//this.settings_ext_append(2,lang("EDIT_REMOTES"), this.module_add_remotes(direct_cmd, direct_data) + this.module_title() + this.module_order_remotes());
-            //this.settings_ext_append(1,"", this.module_index_quick(true, false));
-    		//this.settings_ext_append(3,lang("EDIT_MACROS"), this.module_macros_edit());
             this.create_show_ext();
 
             statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
@@ -170,6 +167,7 @@ function rmSettings (name) {	// IN PROGRESS
         scrollTop();
         }
 
+    // show and hide the relevant frames
     this.create_show            = function () {
 
         elementVisible("setting_frames");
@@ -184,6 +182,7 @@ function rmSettings (name) {	// IN PROGRESS
         for (var i=0; i<this.e_settings.length; i++) { elementVisible(this.e_settings[i],show_settings); }
         }
 
+    // show extended setting frames, hide default setting frames
     this.create_show_ext        = function () {
 
         this.create_show();
@@ -191,6 +190,7 @@ function rmSettings (name) {	// IN PROGRESS
         elementVisible("setting_ext_frames");
         }
 
+    // show / create container for API communication logging information
     this.create_show_log        = function () {
 
         elementVisible("setting_frames");
@@ -300,7 +300,6 @@ function rmSettings (name) {	// IN PROGRESS
         var edit_commands   = "";
         edit_commands      += "<span onclick='apiRemoteChangeVisibility(\""+type+"\",\""+id+"\",\"rm_visibility_"+id+"\");"+onclick_reload+"' style='cursor:pointer;'>" + img_visible + "</span>&nbsp;&nbsp;&nbsp;";
         edit_commands      += "<span onclick='remoteToggleEditMode(true);rm3remotes.create(\""+type+"\",\""+id+"\");' style='cursor:pointer;'>" + img_edit + "</span>&nbsp;&nbsp;";
-        //apiRemoteChangeVisibility('scene','tv2','scene_visibility');
         edit_commands      += "<input id=\"rm_visibility_"+id+"\" style=\"display:none;\" value=\""+visible+"\">";
         edit_commands      += "<span onclick='"+delete_cmd+"(\""+id+"\");' style='cursor:pointer;'>" + img_delete + "</span>";
 	    return edit_commands;
@@ -333,17 +332,21 @@ function rmSettings (name) {	// IN PROGRESS
 	    var devices = dataAll["CONFIG"]["devices"];
 	    var html   = "&nbsp;<br/><ul id='sort_devices'>";
 
-        for (var key in devices) { devices[key]["position"] = devices[key]["settings"]["position"]; }
+        for (var key in devices) {
+            devices[key]["position"] = devices[key]["settings"]["position"];
+            }
 		var order  = sortDict(devices, "position");
 	    for (var key in order) {
 	        var device          = order[key];
+	        var api             = devices[device]["interface"]["api"].replace("_","/");
+	        api                 = api.replace("/default","");
 	        var visible         = "";
 	        var style           = "";
 	        if (devices[device]["settings"]["visible"] == "no") { style = " hidden"; }
 
 	        html += "<li id='"+device+"'>";
 	        html += "<div class='slist_li_content"+style+"'>" + devices[device]["settings"]["label"] + "<br/>";
-	        html += "<font style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>"+device+"</rm-id></font></div>";
+	        html += "<font style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>"+ device + " (" + api+")</rm-id></font></div>";
 	        html += "<div class='slist_li_edit'>" + this.module_remote_edit("device", device, devices[device]["settings"]["visible"]) + "</div>";
 	        html += "</li>";
 	    }
@@ -369,6 +372,7 @@ function rmSettings (name) {	// IN PROGRESS
     }
 
     this.module_system_info      = function () {
+
         return "<br/><div id='module_system_info'></div>";
         }
 
@@ -525,6 +529,7 @@ function rmSettings (name) {	// IN PROGRESS
 	    return setting;
 		}
 
+    // create container and load data for settings view of the timer editing
 	this.module_timer           = function () {
 	    var html = "";
 	    html += "<div id='module_timer_info' style='width:100%;min-height:100px;'></div>";
@@ -1009,6 +1014,7 @@ function rmSettings (name) {	// IN PROGRESS
         }
 
     this.module_general_settings   = function () {
+
         return "<center>&nbsp;<br/><div id='module_general_settings'></div></center>";
         }
 
@@ -1145,61 +1151,6 @@ function rmSettings (name) {	// IN PROGRESS
         jsonEdit.create("json-edit-dev-on", "dev-on",  this.data["CONFIG"]["macros"]["device-on"]);
         jsonEdit.create("json-edit-dev-off","dev-off", this.data["CONFIG"]["macros"]["device-off"]);
         }
-
-	this.module_order_remotes   = function () {
-
-        var setting = "";
-		var devices  = this.data["CONFIG"]["devices"];
-		var scenes   = this.data["CONFIG"]["scenes"];
-
-		this.btn.width  = "30px";
-		this.btn.height = "30px";
-
-        // order scenes
-		this.logging.default(scenes);
-		for (var key in scenes) { scenes[key]["position"] = scenes[key]["settings"]["position"]; this.logging.default(key);}
-		var order  = sortDict(scenes,"position");
-		set_temp = this.tab.start();
-		for (var i=0;i<order.length;i++) {
-			var key     = order[i];
-			var button  = "";
-			var visible = scenes[key]["settings"]["visible"];
-
-			if (i > 0)              { button += this.btn.sized(id="mv_sce_"+i,label="<b>&uarr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#scene#,#"+key+"#,#-1#);",disabled=""); }
-			else                    { button += this.btn.sized(id="mv_sce_"+i,label="",             style="updown",script_apiCommandSend="",disabled="disabled"); }
-			if (i < order.length-1)	{ button += this.btn.sized(id="mv_sce_"+i,label="<b>&darr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#scene#,#"+key+"#,#1#);",disabled=""); }
-
-			if (visible == "no")    { set_temp += this.tab.row("<i>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</i>",button); }
-			else                    { set_temp += this.tab.row("<b>" + scenes[key]["position"] + ". " + scenes[key]["settings"]["label"] + "</b>",button); }
-			}
-
-		set_temp   += this.tab.end();
-        setting     = "";
-		setting    += this.basic.container("setting_scene_order",lang("CHANGE_ORDER_SCENES"),set_temp,false);
-		set_temp    = this.tab.start();
-
-        // order devices
-		this.logging.default(devices);
-		for (var key in devices) { devices[key]["position"] = devices[key]["settings"]["position"]; this.logging.default(key); }
-		var order  = sortDict(devices,"position");
-		for (var i=0;i<order.length;i++) {
-			var key     = order[i];
-			var button  = "";
-			var visible = this.data["CONFIG"]["devices"][key]["settings"]["visible"];
-
-			if (i > 0)              { button += this.btn.sized(id="mv_dev_"+i,label="<b>&uarr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#device#,#"+key+"#,#-1#);",disabled=""); }
-			else                    { button += this.btn.sized(id="mv_dev_"+i,label="",             style="updown",script_apiCommandSend="",disabled="disabled"); }
-			if (i < order.length-1) { button += this.btn.sized(id="mv_dev_"+i,label="<b>&darr;</b>",style="updown",script_apiCommandSend="apiDeviceMovePosition_exe(#device#,#"+key+"#,#1#);",disabled=""); }
-
-			if (visible == "no")    { set_temp += this.tab.row("<i>" + devices[key]["settings"]["position"] + ". " + devices[key]["settings"]["label"] + "</i>",button); }
-			else                    { set_temp += this.tab.row("<b>" + devices[key]["settings"]["position"] + ". " + devices[key]["settings"]["label"] + "</b>",button); }
-			}
-
-		set_temp   += this.tab.end();
-		setting    += this.basic.container("setting_device_order",lang("CHANGE_ORDER_DEVICES"),set_temp,false);
-
-        return setting;
-    	}
 
     this.module_add_device      = function  (direct_cmd="", direct_data="") {
 		var setting   = "";
@@ -1493,6 +1444,7 @@ function rmSettings (name) {	// IN PROGRESS
         if (field == 0 || field == 2) { document.getElementById("add_device_remote").value = "rmc-" + remote_file; }
 		}
 
+    // create drop down with list of devices from config data (key => label)
 	this.device_list		    = function (id,onchange="") {
 		var list = {};
 		for (var key in this.data["CONFIG"]["devices"]){
