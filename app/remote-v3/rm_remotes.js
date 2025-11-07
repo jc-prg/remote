@@ -274,7 +274,7 @@ function rmRemote(name) {
 			if (button == "LINE")                         { next_button = this.basic.line(""); }
 			else if (button.indexOf("LINE||") == 0)       { next_button = this.basic.line(button.split("||")[1]); }
 //			else if (button.indexOf("SLIDER") == 0)       { next_button = this.slider_element(id, device, "devices", button.split("||")); }
-			else if (button.indexOf("SLIDER") == 0)       { next_button = this.element.slider(id, device, "devices", button.split("||")); }
+			else if (button.indexOf("SLIDER") == 0)       { next_button = this.element.slider(this.data, id, device, "devices", button.split("||")); }
 			else if (button.indexOf("TOGGLE") == 0)       { next_button = this.slider_element_toggle(id, device, "devices", button.split("||")); }
 			else if (button == ".")                       { next_button = this.button.device( device+i, ".", device, "empty", "", "disabled" ) }
 			else if (button == "DISPLAY")                 { next_button = this.display.default(id, device, "devices", remote_display_size, remote_display); }
@@ -2506,7 +2506,7 @@ function rmRemoteElements(name, remote) {
             var device_api          = this.data["STATUS"]["devices"][check_device]["api"];
             var device_api_status   = this.data["STATUS"]["interfaces"]["connect"][device_api];
 		    }
-		else if (api_data["CONFIG"][type][device]) {
+		else if (!this.data["CONFIG"][type][device]) {
 		    this.logging.error(this.app_name+".slider_element: Could not create slider element: " + type + " '" + device + "' does not exist.");
 		    return "";
 		    }
