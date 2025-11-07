@@ -188,7 +188,7 @@ function rmColorPicker(name) {
     // color picker visualization v2
     this.colorPickerHTML = function (container_id, sub_id, send_command, color_model) {
 
-        this.logging.debug("Load Color Picker ("+container_id+") ...");
+        this.logging.debug("Load Color Picker ("+container_id+" - " + send_command + " / " + color_model + ") ...");
 
         var use_image = "rgb";
         var device    = sub_id.replace("_"+send_command, "");
