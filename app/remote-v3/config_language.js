@@ -119,7 +119,8 @@ var language_app = {
 
         "COLORPICKER_SELECT_CMD" : "Select command, to insert color picker.",
         "COLORPICKER_N/A"       : "Color picker not supported",
-        
+        "COLOR_PICKER"          : "color picker",
+
         "CONFIG_INTERFACE"      : "Interface-Config",
         "CONFIG_REMOTE"         : "Remote-Config",
         "COMMANDS"              : "Commands",

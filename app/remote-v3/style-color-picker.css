@@ -19,6 +19,27 @@
    vertical-align  : top;
 }
 
+.color-picker-label {
+    display         : none;
+    position        : relative;
+    right           : 20px;
+    top             : 20px;
+    padding         : 2px;
+    color           : var(--rm-color-colorpicker-text);
+    background-color: var(--rm-color-colorpicker);
+    font-size       : 10px;
+}
+
+.color-picker-demo {
+    border-radius   : 5px;
+    border          : 1px white solid;
+    color           : white;
+    padding         : 3px;
+    padding-bottom  : 5px;
+    font-size       : 11px;
+    overflow        : hidden;
+}
+
 .color-picker img {
    opacity          : var(--rm-opacity-image-fix);
 }
