@@ -208,7 +208,6 @@ function rmColorPicker(name) {
 
         // Get the canvas element and its context
         const color_demo         = document.getElementById("colorpicker_demo_" + sub_id);
-        const color_label        = document.getElementById("colorpicker_label_" + sub_id);
         const canvas             = document.getElementById(container_id);
         const ctx                = canvas.getContext('2d');
         const color_send_command = send_command;
@@ -228,7 +227,6 @@ function rmColorPicker(name) {
             color_demo.style.width  = (image.width/2) + "px";
             color_demo.style.height = "10px";
             color_demo.style.background = "2px solid gray";
-            color_label.style.width  = (image.width/2) + "px";
             }
 
         // When the image is loaded, draw it on the canvas

@@ -2,6 +2,7 @@
 // jc://remote/
 //--------------------------------
 
+
 let rmSheetBox_open = {};
 
 
@@ -310,7 +311,7 @@ function RemoteElementButtons(name) {
 
 		// if image available set image
 		let button_img   = [];
-		for (let key in button_img2) { button_img[key] = RemoteElementImage(button_img2[key]); }
+		for (let key in button_img2) { button_img[key] = this.imageHTML(button_img2[key]); }
 
 		// check label
         	if (label in button_color)    { style = style + " bg" + label + " "; }
@@ -319,7 +320,11 @@ function RemoteElementButtons(name) {
         	return [label, style];
 		}
 
-	}
+    this.imageHTML = function (file) {
+
+        return "<img src='icon/"+file+"' class='rm-button-image' alt='"+file+"' />";
+    }
+}
 
 
 function RemoteElementDisplay(name) {
@@ -584,12 +589,6 @@ function RemoteElementDisplay(name) {
 	}
 
 
-function RemoteElementImage(file) {
-
-        return "<img src='icon/"+file+"' class='rm-button-image' alt='"+file+"' />";
-        }
-
-
 /*
 * class to create a box, where content can be added into several sheets and the sheets can be selected by tabs
 */
@@ -757,6 +756,7 @@ class RemoteElementSheetBox {
         return this.sheets[index]?.sheetDiv || null;
         }
     }
+
 
 /*
 * class to create a wide box for content, that can be scrolled left and right if it's wider than the box

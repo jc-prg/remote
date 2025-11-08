@@ -825,7 +825,6 @@ class RemoteMain {
         let preview = false;
         let remote = "";
         let remote_definition = [];
-        let remote_channel = [];
         let scene_definition = this.data["CONFIG"]["scenes"][scene];
         let scene_label = scene_definition["settings"]["label"];
         this.active_label = scene_label;
@@ -1018,7 +1017,7 @@ class RemoteMain {
                     toggle_done = i + 1;
                 }
                 next_button = this.scene_header_image(id, scene, toggle_html);
-            } else if (button === "DISPLAY") {
+            } else if (button[0] === "DISPLAY") {
                 next_button = this.display.default(id, scene, "scenes", remote_display_size, remote_display);
             } else if (button.length > 1 && button[1].indexOf("COLOR-PICKER") >= 0) {
                 next_button = this.advanced.colorPicker(this.data, id, button[0], "devices", button[1].split("||"));
@@ -3303,19 +3302,60 @@ class RemoteAdvancedElements {
         this.logging.debug("Create RemoteAdvancedElements (" + this.app_name + "/" + this.active_name + "/" + this.active_type + ")");
 
         // connect pure elements
-        this.e_color_picker = new rmColorPicker(this.app_name + ".e_color_picker");	// rm_remotes-color-picker.js
-        this.e_slider = new rmSlider(this.app_name + ".e_slider");			// rm_remotes-slider.js
-
-        // update API data
-
-        // create color picker
-
-        // create slider
-
-        // create toggle element (ON | OFF) - "TOGGLE||<status-field>||<description/label>||<TOGGLE_CMD_ON>||<TOGGLE_CMD_OFF>"
-
+        this.e_color_picker = new rmColorPicker(this.app_name + ".e_color_picker");
+        this.e_slider = new rmSlider(this.app_name + ".e_slider");
     }
 
+    /* update API data */
+    update(api_data) {
+
+        this.data = api_data;
+        this.active_name = this.remote.active_name;
+    }
+
+    /* create color picker */
+    colorPicker(api_data, id, device, type = "devices", data) {
+
+        this.logging.debug(this.app_name + ".colorPicker: " + id + "/" + device + "/" + type + "/" + data);
+        this.update(api_data);
+
+        if (device.indexOf("group") >= 0) {
+            this.logging.warn("Groups are not yet available for color pickers.");
+            return "";
+        }
+
+        let color_model = "RGB";
+        let send_command = data[1];
+        let sub_id = device + "_" + send_command;
+        let label = "";
+        if (data.length > 2) {
+            color_model = data[2];
+        }
+        if (data.length > 3) {
+            label = data[3];
+        }
+
+        let remote_data = this.data["CONFIG"][type][device]["remote"];
+        let status_data = this.data["STATUS"]["devices"][device];
+
+        let display_start = "<button id=\"colorpicker_" + sub_id + "_button\" class=\"color-picker\"><center>";
+        display_start += "<canvas id=\"colorpicker_" + sub_id + "\">";
+
+        let display_end = "</canvas>";
+        display_end += "<canvas id=\"colorpicker_demo_" + sub_id + "\" class=\"color-picker-demo\">" + label + "</canvas></center>";
+        display_end += "</center></button>";
+
+        let text = display_start;
+        //text += this.color_picker.colorPickerHTML_v1(send_command);
+        text += display_end;
+
+        setTimeout(() => {
+            this.e_color_picker.colorPickerHTML("colorpicker_" + sub_id, sub_id, send_command, color_model);
+        }, 100);
+        return text;
+    }
+
+    /* create slider */
     slider(api_data, id, device, type = "devices", data) {
 
         this.logging.debug(this.app_name + ".slider: " + id + "/" + device + "/" + type + "/" + data);
@@ -3323,6 +3363,9 @@ class RemoteAdvancedElements {
 
         let init;
         let disabled = false;
+        let status_data = {};
+        let device_api = "";
+        let device_api_status = "";
 
         if (device.indexOf("group_") >= 0) {
             let group_name = device.split("_")[1];
@@ -3332,16 +3375,16 @@ class RemoteAdvancedElements {
                 return "";
             }
             let check_device = group_devices["devices"][0];
-            let status_data = this.data["STATUS"]["devices"][check_device];
-            let device_api = this.data["STATUS"]["devices"][check_device]["api"];
-            let device_api_status = this.data["STATUS"]["interfaces"]["connect"][device_api];
+            status_data = this.data["STATUS"]["devices"][check_device];
+            device_api = this.data["STATUS"]["devices"][check_device]["api"];
+            device_api_status = this.data["STATUS"]["interfaces"]["connect"][device_api];
         } else if (!this.data["CONFIG"][type][device]) {
             this.logging.error(this.app_name + ".slider_element: Could not create slider element: " + type + " '" + device + "' does not exist.");
             return "";
         } else {
-            let status_data = this.data["STATUS"]["devices"][device];
-            let device_api = this.data["STATUS"]["devices"][device]["api"];
-            let device_api_status = this.data["STATUS"]["interfaces"]["connect"][device_api];
+            status_data = this.data["STATUS"]["devices"][device];
+            device_api = this.data["STATUS"]["devices"][device]["api"];
+            device_api_status = this.data["STATUS"]["interfaces"]["connect"][device_api];
         }
 
         if (!device_api_status) {
@@ -3359,16 +3402,15 @@ class RemoteAdvancedElements {
             init = status_data[data[4]];
         }
 
+        let min = 0;
+        let max = 100;
         let display_start = "<button id=\"slider_" + device + "_" + data[1] + "\" class=\"rm-slider-button\">";
         let display_end = "</button>";
 
         if (data.length > 3) {
             let min_max = data[3].split("-");
-            let min = min_max[0];
-            let max = min_max[1];
-        } else {
-            let min = 0;
-            let max = 100;
+            min = min_max[0];
+            max = min_max[1];
         }
 
         let text = display_start;
@@ -3377,13 +3419,7 @@ class RemoteAdvancedElements {
         return text;
     }
 
-    update(api_data) {
-
-        this.data = api_data;
-        this.active_name = this.remote.active_name;
-        //this.e_slider.set_device(this.active_name);
-    }
-
+    /* create toggle element (ON | OFF) - "TOGGLE||<status-field>||<description/label>||<TOGGLE_CMD_ON>||<TOGGLE_CMD_OFF>" */
     toggle(api_data, id, device, type = "device", data, short = false) {
 
         this.logging.debug(this.app_name + ".toggle: " + id + "/" + device + "/" + type + "/" + data);
@@ -3448,48 +3484,6 @@ class RemoteAdvancedElements {
         let text = toggle_start;
         text += this.e_slider.toggleHTML(data[1], data[2], device, data[3], data[4], init, disabled);
         text += toggle_end;
-        return text;
-    }
-
-    colorPicker(api_data, id, device, type = "devices", data) {
-
-        this.logging.debug(this.app_name + ".colorPicker: " + id + "/" + device + "/" + type + "/" + data);
-        this.update(api_data);
-
-        if (device.indexOf("group") >= 0) {
-            this.logging.warn("Groups are not yet available for color pickers.");
-            return "";
-        }
-
-        let color_model = "RGB";
-        let send_command = data[1];
-        let sub_id = device + "_" + send_command;
-        let label = "";
-        if (data.length > 2) {
-            color_model = data[2];
-        }
-        if (data.length > 3) {
-            label = data[3];
-        }
-
-        let remote_data = this.data["CONFIG"][type][device]["remote"];
-        let status_data = this.data["STATUS"]["devices"][device];
-
-        let display_start = "<button id=\"colorpicker_" + sub_id + "_button\" class=\"color-picker\"><center>";
-        display_start += "<canvas id=\"colorpicker_" + sub_id + "\">";
-
-        let display_end = "</canvas>";
-        display_end += "<div id=\"colorpicker_label_" + sub_id + "\" class=\"color-picker-label\">" + label + "</div>";
-        display_end += "<div id=\"colorpicker_demo_" + sub_id + "\" class=\"color-picker-demo\">" + label + "</div></center>";
-        display_end += "</center></button>";
-
-        let text = display_start;
-        //text += this.color_picker.colorPickerHTML_v1(send_command);
-        text += display_end;
-
-        setTimeout(() => {
-            this.e_color_picker.colorPickerHTML("colorpicker_" + sub_id, sub_id, send_command, color_model);
-        }, 100);
         return text;
     }
 }
