@@ -2,6 +2,7 @@
 // jc://remote/
 //--------------------------------
 
+
 /*
 * class to create and edit remote controls (scene and device)
 */
@@ -42,7 +43,7 @@ class RemoteMain {
         this.dialog_device = new RemoteEditDialogs(name + ".dialog_device", "device", this);
     }
 
-    // load data with devices (deviceConfig["devices"])
+    /* load data with devices (deviceConfig["devices"]) */
     init(data) {
 
         if (data["CONFIG"]) {
@@ -69,7 +70,7 @@ class RemoteMain {
         }
     }
 
-    // create complete remote setup (for scenes and devices)
+    /* create complete remote setup (for scenes and devices) */
     create(type = "", rm_id = "") {
 
         if (type === "") {
@@ -123,7 +124,6 @@ class RemoteMain {
         let edit_mode = "";
         if (this.edit_mode) {
             edit_mode = " / EDIT";
-            //rm3settings.create("index_small");
             elementVisible(this.frames_edit[0]);
             elementVisible(this.frames_edit[1]);
             elementHidden("setting_ext_top_frame");
@@ -145,7 +145,7 @@ class RemoteMain {
             // create remote for device
             this.device_remote(this.frames_remote[0], rm_id);
             this.device_description(this.frames_remote[1], rm_id);
-            this.device_notused(this.frames_remote[2], rm_id);
+            this.device_not_used(this.frames_remote[2], rm_id);
 
             // create edit panels
             this.device_edit(this.frames_edit[0], rm_id);
@@ -181,7 +181,7 @@ class RemoteMain {
         rm3menu.menu_height();
     }
 
-    // create from unsaved data for preview
+    /* create from unsaved data for preview */
     preview(type, name) {
 
         if (type === "scene") {
@@ -193,7 +193,7 @@ class RemoteMain {
 
     // DEVICE REMOTES - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    // create remote for a specific device
+    /* create remote for a specific device */
     device_remote(id = "", device = "", preview_remote = "", preview_display = "", preview_display_size = "") {
 
         let preview = false;
@@ -363,7 +363,7 @@ class RemoteMain {
         setTextById(id, remote);
     }
 
-    // write description for device remote
+    /* write description for device remote */
     device_description(id, device) {
         let device_data = this.data["CONFIG"]["devices"][device]["settings"];
         let label = device_data["label"];
@@ -382,8 +382,8 @@ class RemoteMain {
         setTextById(id, str);
     }
 
-    // create list of buttons not used in RM definition (for devices)
-    device_notused(id, device, preview_remote = "") {
+    /* create list of buttons not used in RM definition (for devices) */
+    device_not_used(id, device, preview_remote = "") {
 
         let device_config = this.data["CONFIG"]["devices"][device];
 
@@ -429,7 +429,7 @@ class RemoteMain {
 
         // show / hide buttons that are not used
         if (not_used.length > 0) {
-            let onclick = this.app_name + ".device_notused_showhide();";
+            let onclick = this.app_name + ".device_not_used_show_hide();";
             remote += "<div id='show_hide_not_used' onclick='" + onclick + "'>" + sign + "</div>";
         }
 
@@ -461,8 +461,8 @@ class RemoteMain {
         setTextById(id, remote);
     }
 
-    // show / hide buttons that are not used
-    device_notused_showhide() {
+    /* show / hide buttons that are not used */
+    device_not_used_show_hide() {
         const element = document.getElementById("buttons_not_used");
         const button = document.getElementById("show_hide_not_used");
         if (element.style.display === "block") {
@@ -474,7 +474,7 @@ class RemoteMain {
         }
     }
 
-    //  panel per remote ...
+    /*  panel per remote ... */
     device_edit(id, device) {
 
         if (this.edit_mode) {
@@ -594,7 +594,7 @@ class RemoteMain {
         edit += "<ul><li>" + JSON.stringify(device_config["buttons"]).replace(/,/g, ", ") + "</li></ul>";
         edit += "<i><b>" + lang("GET_DATA") + "</b> (" + lang("BUTTON_T_DISPLAY") + ")</i>";
         edit += "<ul><li>" + JSON.stringify(device_config["commands"]["get"]).replace(/,/g, ", ") + "</li></ul>";
-        edit += "<i><b>" + lang("SEND_DATA") + "</b> (" + lang("SLIDER") + ", " + lang("BUTTON_T_KEYBOARD") + ", " + lang("BUTTON_T_COLORPICKER") + ")</i>";
+        edit += "<i><b>" + lang("SEND_DATA") + "</b> (" + lang("SLIDER") + ", " + lang("BUTTON_T_KEYBOARD") + ", " + lang("BUTTON_T_COLOR_PICKER") + ")</i>";
         edit += "<ul><li>" + JSON.stringify(device_config["commands"]["set"]).replace(/,/g, ", ") + "</li></ul>";
         let edit_cmd = edit;
         //remote  += this.basic.container("remote_api02",lang("API_COMMANDS"),edit,false);
@@ -634,7 +634,7 @@ class RemoteMain {
         apiGetConfig_createDropDown(device, this.device_edit_api_commands);
     }
 
-    // create drop-down with API commands
+    /* create drop-down with API commands */
     device_edit_api_commands(data) {
         if (data["DATA"]["error"]) {
             return;
@@ -659,7 +659,7 @@ class RemoteMain {
         }
     }
 
-    // create edit panel to edit JSON data
+    /* create edit panel to edit JSON data */
     device_edit_json(id, device, preview_remote = "", preview_display = "", preview_display_size = "") {
 
         if (this.edit_mode) {
@@ -778,7 +778,7 @@ class RemoteMain {
         remote += "<br/><center>" +
             this.button.edit(this.app_name + ".device_edit_json('" + id + "','" + device + "');" +
                 this.app_name + ".device_remote('" + this.frames_remote[0] + "','" + device + "','remote_json_buttons','remote_json_channel');" +
-                this.app_name + ".device_notused('" + this.frames_remote[2] + "','" + device + "','remote_json_buttons');", lang("BUTTON_T_RESET")) + "&nbsp;" +
+                this.app_name + ".device_not_used('" + this.frames_remote[2] + "','" + device + "','remote_json_buttons');", lang("BUTTON_T_RESET")) + "&nbsp;" +
             this.button.edit("apiDeviceJsonEdit('" + device + "','remote_json_buttons','remote_json_display','remote_display_size');", lang("BUTTON_T_SAVE")) + "&nbsp;" +
             this.button.edit(this.app_name + ".rm_device.preview('" + device + "');", lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
             this.button.edit("remoteToggleEditMode(false);" + this.app_name + ".create('" + this.active_type + "','" + device + "');", "stop edit") +
@@ -818,7 +818,7 @@ class RemoteMain {
 
     // SCENE REMOTES - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    // create remote for a specific scene
+    /* create remote for a specific scene */
     scene_remote(id = "", scene = "", preview_remote = "", preview_display = "", preview_display_size = "") {
 
         let toggle_done;
@@ -1077,7 +1077,7 @@ class RemoteMain {
         setTextById(id, remote);
     }
 
-    // create list of channels (for scenes)
+    /* create list of channels (for scenes) */
     scene_channels(id, scene, preview_channel = "") {
 
         let remote = "";
@@ -1122,7 +1122,7 @@ class RemoteMain {
         setTextById(id, remote);
     }
 
-    // write description for device remote
+    /* write description for device remote */
     scene_description(id, scene) {
         let scene_info = this.data["CONFIG"]["scenes"][scene]["settings"];
         let label = scene_info["label"];
@@ -1137,7 +1137,7 @@ class RemoteMain {
         setTextById(id, str);
     }
 
-    // edit scene
+    /* edit scene */
     scene_edit(id, scene) {
 
         if (this.edit_mode) {
@@ -1210,7 +1210,7 @@ class RemoteMain {
         this.image_preview();
     }
 
-    // create edit panel to edit JSON data
+    /* create edit panel to edit JSON data */
     scene_edit_json(id, scene, preview_remote = "", preview_channel = "", preview_display = "", preview_display_size = "") {
 
         if (this.edit_mode) {
@@ -1338,7 +1338,7 @@ class RemoteMain {
 
     // EDITING DIALOGS - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    // add json elements
+    /* add json elements */
     dialog_edit_elements(type, element, id, device, preview_remote = "", preview_display = "", preview_display_size = "", preview_channel = "") {
 
         // set vars
@@ -1817,7 +1817,7 @@ class RemoteMain {
         return edit;
     }
 
-    // update header settings
+    /* update header settings */
     dialog_edit_elements_update(scene) {
 
         this.button.width = "90px";
@@ -1886,7 +1886,7 @@ class RemoteMain {
 
     // SUPPORT FUNCTIONS - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    // return drop-down with scene images
+    /* return drop-down with scene images */
     button_image_select(id, selected = "") {
         let list = {};
         let images = this.data["CONFIG"]["elements"]["button_images"];
@@ -1898,7 +1898,7 @@ class RemoteMain {
         return this.basic.select(id, "button-image", list, "rm3remotes.button_image_preview('" + id + "');", selected);
     }
 
-    // header-image preview
+    /* header-image preview */
     button_image_preview(id) {
         let images = this.data["CONFIG"]["elements"]["button_images"];
         let selected = getValueById("edit_image");
@@ -1908,7 +1908,7 @@ class RemoteMain {
         }
     }
 
-    // return list of buttons for a device
+    /* return list of buttons for a device */
     button_list(device) {
         if (this.data["CONFIG"]["devices"][device]) {
             return this.data["CONFIG"]["devices"]["buttons"];
@@ -1917,7 +1917,7 @@ class RemoteMain {
         }
     }
 
-    // return drop-down with buttons
+    /* return drop-down with buttons */
     button_select(id, device = "", remote_definition = {}) {
         let list = {};
         let device_buttons = [];
@@ -1954,7 +1954,7 @@ class RemoteMain {
         return this.basic.select(id, "element", list);
     }
 
-    // return drop-down with available commands
+    /* return drop-down with available commands */
     command_select(id, device = "") {
         let list = {};
         let button_list;
@@ -1967,7 +1967,7 @@ class RemoteMain {
         return this.basic.select(id, "command", list);
     }
 
-    // return drop-down with commands to be recorded
+    /* return drop-down with commands to be recorded */
     command_select_record(id, device = "") {
         let list = {};
         let device_buttons = [];
@@ -1987,7 +1987,7 @@ class RemoteMain {
         return this.basic.select(id, "button", list);
     }
 
-    // return drop-down with scene images
+    /* return drop-down with scene images */
     image_select(id, selected = "") {
         let list = {};
         let images = this.data["CONFIG"]["elements"]["scene_images"];
@@ -1999,7 +1999,7 @@ class RemoteMain {
         return this.basic.select(id, "header-image", list, "rm3remotes.image_preview('" + id + "');", selected);
     }
 
-    // header-image preview
+    /* header-image preview */
     image_preview(id) {
         let images = this.data["CONFIG"]["elements"]["scene_images"];
         let selected = getValueById("edit_image");
@@ -2011,7 +2011,7 @@ class RemoteMain {
         }
     }
 
-    // return drop-down with display values
+    /* return drop-down with display values */
     device_display_select(device, id) {
 
         let device_info = this.data["CONFIG"]["devices"][device]["commands"]["get"];
@@ -2028,7 +2028,7 @@ class RemoteMain {
         return device_display_values;
     }
 
-    // check if device has ranges - for slider option
+    /* check if device has ranges - for slider option */
     device_has_ranges(device, commands = false) {
         let has_ranges = false;
         let range_cmd = [];
@@ -2050,7 +2050,7 @@ class RemoteMain {
         }
     }
 
-    // create header image for scenes
+    /* create header image for scenes */
     scene_header_image(id, scene, toggle_html, selected = "") {
 
         let scene_info = this.data["CONFIG"]["scenes"][scene]["settings"];
@@ -2089,7 +2089,7 @@ class RemoteMain {
         }
     }
 
-    // return drop-down with display values
+    /* return drop-down with display values */
     scene_display_select(div_id, id, device) {
 
         device = check_if_element_or_value(device, false);
@@ -2103,7 +2103,7 @@ class RemoteMain {
         setTextById(div_id, device_display_values);
     }
 
-    // return drop-down with scene buttons
+    /* return drop-down with scene buttons */
     scene_button_select(div_id, id, device, scene) {
 
         device = check_if_element_or_value(device, false);
@@ -2153,7 +2153,7 @@ class RemoteMain {
         setTextById(div_id, device_macro_select);
     }
 
-    // create drop-downs for scene toggle buttons
+    /* create drop-downs for scene toggle buttons */
     scene_toggle_select(div_id, id, device, scene) {
 
         device = check_if_element_or_value(device, false);
@@ -2182,7 +2182,7 @@ class RemoteMain {
         setTextById("toggle_device_off", select_off);
     }
 
-    // create drop-downs for scene slider buttons
+    /* create drop-downs for scene slider buttons */
     scene_slider_select(div_id, id, device, scene) {
 
         device = check_if_element_or_value(device, false);
@@ -2212,7 +2212,7 @@ class RemoteMain {
         setTextById("slider_device_min-max", select_min_max);
     }
 
-    // return list of templates
+    /* return list of templates */
     template_list(type = "") {
         let templates = {};
         for (let key in this.data["CONFIG"]["templates"]["definition"]) {
@@ -2225,7 +2225,7 @@ class RemoteMain {
         return templates;
     }
 
-    // return drop-down with templates
+    /* return drop-down with templates */
     template_select(id, title, data, onchange = "") {
         let item = "<select style=\"width:" + this.basic.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
         item += "<option value='' disabled='disabled' selected>" + lang("SELECT") + " " + title + "</option>";
@@ -2238,13 +2238,13 @@ class RemoteMain {
         return item;
     }
 
-    // empty field
+    /* empty field */
     empty(id, comment = "") {
 
         setTextById(id, comment);
     }
 
-    // ensure, that all elements are visible and settings are hidden
+    /* ensure, that all elements are visible and settings are hidden */
     show(device = "") {
 
         statusCheck_load();			// ... check if part of class ...
@@ -2880,7 +2880,7 @@ class RemoteJsonElements {
         } else if (this.remote_type === "device") {
             this.remote.device_edit_json(this.remote.frames_edit[1], scene_device, this.json_field_id, this.json_field_id_display, this.json_field_id_display2);
             this.remote.device_remote(this.remote.frames_remote[0], scene_device, this.json_field_id, this.json_field_id_display, this.json_field_id_display2);
-            this.remote.device_notused(this.remote.frames_remote[2], scene_device);
+            this.remote.device_not_used(this.remote.frames_remote[2], scene_device);
         }
     }
 
