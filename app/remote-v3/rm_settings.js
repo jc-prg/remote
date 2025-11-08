@@ -927,7 +927,7 @@ function rmSettings (name) {	// IN PROGRESS
 
             for (var dev in interface["API-Devices"]) {
 
-                var information           = "<div id='api_status_data_"+key+"_"+dev+"'></div>";
+                var information    = "<div id='api_status_data_"+key+"_"+dev+"'></div>";
                 var devices_per_interface = dataAll["CONFIG"]["apis"]["structure"];
                 var connected_devices     = devices_per_interface[key][dev].length;
 
@@ -969,6 +969,14 @@ function rmSettings (name) {	// IN PROGRESS
                         }
                     }
 
+                console.error(interface["API-Devices"][dev]);
+                if (interface["API-Devices"][dev]["AdminURL"]) {
+                    cmd_url  = "window.open(\""+interface["API-Devices"][dev]["AdminURL"]+"\", \"_blank\", \"noopener,noreferrer\");";
+                    buttons += this.btn.sized("api_cmd_"+key+"_"+dev+"_admin", "Admin-Tool", "settings", cmd_url);
+                }
+
+                // ---------------------> add AdminURL
+
                 var temp = this.tab.start();
                 temp    += this.tab.row("ID: ",    use_color(key+"_"+dev, "VALUE"));
                 if (interface["API-Devices"][dev]["PowerDevice"] && interface["API-Devices"][dev]["PowerDevice"] != "") {
@@ -977,7 +985,7 @@ function rmSettings (name) {	// IN PROGRESS
                     }
                 temp    += this.tab.row("Devices:", use_color(connected_devices, "VALUE"));
                 temp    += this.tab.row("Status:", "<text id='api_status_"+key+"_"+dev+"'></text>");
-                temp    += this.tab.row(information);
+                temp    += this.tab.row(information, false);
                 temp    += this.tab.row("<div style='width:100%;text-align:center;'>" + buttons + "</div>");
                 temp    += this.tab.end();
 

@@ -259,6 +259,8 @@ class ApiControl(RemoteApiClass):
                 return "ERROR: " + device_file + " exists but is not accessible due to permissions."
             except Exception as e:
                 return "ERROR: An error occurred: " + str(e)
+        else:
+            self.logging.info("No USBDongle defined, try to connect with external server.")
 
         return "OK"
 

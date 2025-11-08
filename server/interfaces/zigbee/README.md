@@ -16,13 +16,14 @@ This configuration comes with an own UI which can help to configure the devices.
 
 ### Activate
 
-To activate ZIGBEE set ```ZIGBEE2MQTT_START=YES``` in the [.env](../../../sample.env) file and configure 
-the correct IPv4 address and the correct ```/dev/ttyXXX``` in this file also. 
-Start the server using the start script, this will start the ZigBee docker container in addition to the remote server.
+* To activate ZIGBEE set ```ZIGBEE2MQTT_START=YES``` in the [.env](../../../sample.env) file and configure 
+  the correct IPv4 address and the correct ```/dev/ttyXXX``` in this file also. 
+* Start the server using the [start](../../../start) script, this will start the ZigBee docker container in addition to the remote server.
 
-### Configure
+### Configure MQTT Server
 
-When build the server the first time, adapt the configuration to your needs by editing './data/zigbee2mqtt/zigbee/configuration.yml'. Adjust it to your needs:
+When started the server the first time using the included [docker configuration](../../../docker-compose-zigbee.yml), the default configuration will be created. 
+Adjust this configuration to your needs by editing './data/zigbee2mqtt/zigbee/configuration.yml', e.g.:
 
 ```yaml
 frontend: true                      # activate / disable frontend
@@ -35,8 +36,37 @@ serial:
   adapter: ezsp                     # depending on your adapter it might be necessary to specify the adapter type (ezsp|deconz|xbee|zigate|znp)
 ```
 
+
+### Configure App
+
 Adjust the ZIGBEE2MQTT connector configuration: [data/devices/ZIGBEE2MQTT/00_interface.json](../../../data/_sample/devices/ZIGBEE2MQTT/00_interface.json).
-This can be done using the API settings in the app.
+This can be done using the API settings in the app. If you want to use an external MQTT server, set "USBDongle" = "".
+
+```json
+{
+    "API-Description": "ZigBee2MQTT interfaces",
+    "API-Devices": {
+        "default": {
+            "AdminURL": "http://192.168.x.x:8080/",
+            "Description": "ZigBee2MQTT Server",
+            "IPAddress": "192.168.x.x",
+            "MacAddress": "",
+            "Methods": [
+                "send",
+                "query"
+            ],
+            "MqttPassword": "",
+            "MqttUser": "",
+            "Port": 1883,
+            "PowerDevice": "",
+            "Timeout": 5,
+            "USBDongle": "/dev/ttyACM0"
+        }
+    },
+    "API-Info": "https://github.com/jc-prg/remote/blob/master/server/interfaces/zigbee2mqtt/README.md",
+    "API-Source": "https://github.com/Koenkk/zigbee2mqtt"
+}
+```
 
 ## Device Definition
 
