@@ -137,7 +137,7 @@ function RemoteElementTable(name) {
 		if (td1 === "start")     { return "<table border=\"0\" width=\""+td2+"\">"; }
 		else if (td1 === "end")  { return "</table>"; }
 		else if (td2 === false)  { return "<tr><td valign=\"top\" colspan=\"2\">" + td1 + "</td></tr>"; }
-		else                    { return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
+		else                     { return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
 		}
 
 	this.line	= function (text="") {

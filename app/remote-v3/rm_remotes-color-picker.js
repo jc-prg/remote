@@ -1,6 +1,6 @@
 // uses parts from source: https://www.w3docs.com/tools/color-picker
 
-function rmColorPicker(name) {
+function RemoteElementColorPicker(name) {
 
 	this.hh         = 0;
 	this.class_name = name;
@@ -14,7 +14,8 @@ function rmColorPicker(name) {
 
     // color picker visualization v1
 	this.colorPickerHTML_v1 = function (send_command) {
-		html = `
+		html = html.replace( /clickColor/g,  this.class_name+".clickColor");
+        html = `
     <div style="margin:auto;width:236px;">
       <img style="margin-right:2px;" src="remote-v3/img/img_colormap.gif" usemap="#colormap" alt="colormap"><map id="colormap" name="colormap" onmouseout="mouseOutMap()">
       <area style="cursor:pointer" shape="poly" coords="63,0,72,4,72,15,63,19,54,15,54,4" onclick='clickColor("${send_command}","#003366",-200,54)' onmouseover='mouseOverColor("#003366")' alt="#003366">
@@ -148,8 +149,7 @@ function rmColorPicker(name) {
       <div id="selectedhexagon" style="visibility: visible; position: relative; width: 21px; height: 21px; background-image: url(&quot;img_selectedcolor.gif&quot;); top: -35px; left: 135px;"></div>
       <div id="divpreview" style="width:120px;margin:auto;border:solid 1px gray;">&nbsp;</div>
     </div>`;
-		html = html.replace( /clickColor/g,  this.class_name+".clickColor");
-		html = html.replace( /mouseOverColor/g,  this.class_name+".mouseOverColor");
+        html = html.replace( /mouseOverColor/g,  this.class_name+".mouseOverColor");
 		html = html.replace( /mouseOutMap/g,  this.class_name+".mouseOutMap");
 		return html;
 		}
