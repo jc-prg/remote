@@ -18,10 +18,10 @@ function rmSettings (name) {	// IN PROGRESS
 	this.line          = "<div style=\"border:1px solid;height:1px;margin:5px;margin-top:10px;padding:0px;\"></div>";
 
 	this.logging       = new jcLogging(this.app_name);
-	this.btn           = new rmRemoteButtons(name);          // rm_remotes-elements.js
-	this.basic         = new rmRemoteBasic(name+".basic");   // rm_remotes-elements.js
-	this.tab           = new rmRemoteTable(name+".tab");     // rm_remotes-elements.js
-	this.json          = new rmRemoteJSON(name+".json");     // rm_remotes-elements.js
+	this.btn           = new RemoteElementButtons(name);          // rm_remotes-elements.js
+	this.basic         = new RemoteBasicElements(name+".basic");   // rm_remotes-elements.js
+	this.tab           = new RemoteElementTable(name+".tab");     // rm_remotes-elements.js
+	this.json          = new RemoteJsonHandling(name+".json");     // rm_remotes-elements.js
 	this.toggle        = new rmSlider(name+".toggle");       // rm_remotes-slider.js
 	this.index_buttons = undefined;
 	
@@ -155,7 +155,7 @@ function rmSettings (name) {	// IN PROGRESS
             }
 
         if (document.getElementById("setting_index_wrapper")) {
-            this.index_buttons = new rmScrollBox("setting_index_wrapper", this.index_buttons_html);
+            this.index_buttons = new RemoteElementScrollBox("setting_index_wrapper", this.index_buttons_html);
             this.index_buttons.update();
             }
         else {
@@ -464,7 +464,7 @@ function rmSettings (name) {	// IN PROGRESS
 		var setting_other = set_temp;
 		//setting  += this.basic.container("setting_other","Other",set_temp,false);
 
-	    const myBox = new rmSheetBox("module_system_info", height="220px", scroll=true);
+	    const myBox = new RemoteElementSheetBox("module_system_info", height="220px", scroll=true);
         myBox.addSheet("Info",   "&nbsp;" + setting_info);
         myBox.addSheet("Health", "&nbsp;" + setting_health);
         myBox.addSheet("Screen", "&nbsp;" + setting_display);
@@ -548,7 +548,7 @@ function rmSettings (name) {	// IN PROGRESS
             }
         console.error(value);
         console.error(data);
-        var basic           = new rmRemoteBasic(name+".basic")
+        var basic           = new RemoteBasicElements(name+".basic")
         basic.input_width   = "125px;";
         var onchange        = "document.getElementById('add_button_"+key+"').removeAttribute('disabled');";
         var select          = basic.select_array("add_button_command2_"+key, " ("+value+") ...", data, onchange);
@@ -597,7 +597,7 @@ function rmSettings (name) {	// IN PROGRESS
             entry_html += tab.row("&nbsp;");
 
 
-            var basic           = new rmRemoteBasic(name+".basic")
+            var basic           = new RemoteBasicElements(name+".basic")
             basic.input_width   = "125px;";
             var onchange        = "rm3settings.module_timer_select('"+key+"', 'add_button_command_"+key+"','add_button_device_"+key+"');";
             var onclick         = "var command = getValueById(\"add_button_device_"+key+"\") + \"_\" + getValueById(\"add_button_command2_"+key+"\");";
@@ -862,10 +862,10 @@ function rmSettings (name) {	// IN PROGRESS
     this.module_interface_edit_info = function (data) {
 
         var interfaces = data["DATA"]["interfaces"];
-    	this.tab       = new rmRemoteTable(name+".tab");
-    	this.btn       = new rmRemoteButtons(name);			    // rm_remotes-elements.js
-        this.basic     = new rmRemoteBasic(name+".basic");		// rm_remotes-elements.js
-        this.json_edit = new rmJsonEdit(id=name+".json", format_style="compact", style="width:100%;height:210px;");
+    	this.tab       = new RemoteElementTable(name+".tab");
+    	this.btn       = new RemoteElementButtons(name);			    // rm_remotes-elements.js
+        this.basic     = new RemoteBasicElements(name+".basic");		// rm_remotes-elements.js
+        this.json_edit = new RemoteJsonEditing(id=name+".json", format_style="compact", style="width:100%;height:210px;");
 
     	this.list      = function (interface, data) {
             var text  = "";
@@ -1104,7 +1104,7 @@ function rmSettings (name) {	// IN PROGRESS
         set_temp += this.tab.end();
         var settings_icon = set_temp;
 
-	    const myBox = new rmSheetBox("module_general_settings", height="350px", scroll=true);
+	    const myBox = new RemoteElementSheetBox("module_general_settings", height="350px", scroll=true);
         myBox.addSheet("Icons",  "&nbsp;" + settings_icon);
         myBox.addSheet("Modes",  "&nbsp;" + settings_index);
         myBox.addSheet("Server", "&nbsp;" + settings_reload);
@@ -1138,14 +1138,14 @@ function rmSettings (name) {	// IN PROGRESS
 		}
 
     this.module_macros_edit_load = function () {
-        const myBox2 = new rmSheetBox("macros-edit-json", height="400px", scroll=true);
+        const myBox2 = new RemoteElementSheetBox("macros-edit-json", height="400px", scroll=true);
         myBox2.addSheet("Info",         lang("MANUAL_MACROS"));
         myBox2.addSheet("Groups",       "<h4>Edit JSON for device groups:</h4>" +     "<div id='json-edit-groups'></div>");
         myBox2.addSheet("Macros",       "<h4>Edit JSON for global macros:</h4>" +     "<div id='json-edit-macro'></div>");
         myBox2.addSheet("Device ON",    "<h4>Edit JSON for device ON macros:</h4>" +  "<div id='json-edit-dev-on'></div>");
         myBox2.addSheet("Device OFF",   "<h4>Edit JSON for device OFF macros:</h4>" + "<div id='json-edit-dev-off'></div>");
 
-        const jsonEdit = new rmJsonEdit(id="edit-macros", format_style="compact", style="width:100%;height:270px;");
+        const jsonEdit = new RemoteJsonEditing(id="edit-macros", format_style="compact", style="width:100%;height:270px;");
         jsonEdit.create("json-edit-groups", "groups",  this.data["CONFIG"]["macros"]["groups"]);
         jsonEdit.create("json-edit-macro",  "macro",   this.data["CONFIG"]["macros"]["global"]);
         jsonEdit.create("json-edit-dev-on", "dev-on",  this.data["CONFIG"]["macros"]["device-on"]);

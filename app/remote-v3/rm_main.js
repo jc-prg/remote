@@ -36,9 +36,9 @@ function startRemote() {
 
     rm3menu      = new rmMenu(     "rm3menu", ["menuItems","menuItems2"] );
     rm3start     = new rmStart(    "rm3start");
-    rm3remotes   = new rmRemote(   "rm3remotes");
+    rm3remotes   = new RemoteMain(   "rm3remotes");
     rm3settings  = new rmSettings( "rm3settings");
-    rm3json_edit = new rmJsonEdit( "rm3json_edit");
+    rm3json_edit = new RemoteJsonEditing( "rm3json_edit");
 
     appMsg.info_message_init(appMsg);
     remoteInit(first_load=true);

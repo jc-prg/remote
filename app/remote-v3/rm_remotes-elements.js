@@ -2,12 +2,16 @@
 // jc://remote/
 //--------------------------------
 
-function rmRemoteBasic(name) {
+let rmSheetBox_open = {};
+
+
+function RemoteBasicElements(name) {
 
 	this.app_name       = name;
 	this.data           = {};
 	this.edit_mode      = false;
 	this.input_width    = "100px";
+    this.container_open = {};
 
 	this.logging        = new jcLogging(this.app_name);
 
@@ -21,22 +25,23 @@ function rmRemoteBasic(name) {
 	this.select	            = function (id,title,data,onchange="",selected_value="",sort=false, change_key_value=false) {
 
 	            if (change_key_value) {
-	                var new_data = {};
+	                let new_data = {};
 	                for (key in data) {
 	                    new_data[data[key]] = key;
 	                    }
 	                data = new_data;
 	                }
 
-                var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
+                let item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
                 item     += "<option value='' disabled='disabled' selected>"+lang("SELECT")+" " + title + "</option>";
-                keys      = Object.keys(data);
+                let keys = Object.keys(data);
+
                 if (sort) { keys.sort(); }
-                for (var i=0;i<keys.length;i++) {
-                        var key = keys[i];
-                        var selected = "";
-                        if (selected_value == key) { selected = "selected"; }
-                        if (key != "default") {
+                for (let i=0;i<keys.length;i++) {
+                        let key = keys[i];
+                        let selected = "";
+                        if (selected_value === key) { selected = "selected"; }
+                        if (key !== "default") {
                                 item += "<option value=\"" + key + "\" "+selected+">" + data[key] + "</option>";
                         }       }
                 item     += "</select>";
@@ -44,13 +49,13 @@ function rmRemoteBasic(name) {
                 }
 
 	this.select_array       = function (id,title,data,onchange="",selected_value="") {
-	            var control = {};
-                var item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
+	            let control = {};
+                let item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
                 item     += "<option value='' disabled='disabled' selected>"+lang("SELECT")+" " + title + "</option>";
                 data.forEach(function(key) {
-                        var selected = "";
-                        if (selected_value == key) { selected = "selected"; }
-                        if (key != "default" && !control[key]) {
+                        let selected = "";
+                        if (selected_value === key) { selected = "selected"; }
+                        if (key !== "default" && !control[key]) {
                                 item += "<option value=\"" + key + "\" "+selected+">" + key + "</option>";
                                 control[key] = 1;
                                 }
@@ -61,34 +66,32 @@ function rmRemoteBasic(name) {
 
     // write line with text ...
 	this.line	            = function (text="") {
-          	var remote = "";
+          	let remote = "";
 		remote += "<div class='remote-line'><hr/>";
-		if (text != "") { remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>"; }
+		if (text !== "") { remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>"; }
 		remote += "</div>";
 		return remote;
 		}
 		
 	this.edit_line	        = function (text="") {
-          	var remote = "";
+          	let remote = "";
 		remote += "<div style='border:1px solid;height:1px;margin:5px;margin-top:10px;padding:0px;'>";
-		if (text != "") { remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>"; }
+		if (text !== "") { remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>"; }
 		remote += "</div>";
 		return remote;
 		}
 		
-	this.container_open = {};
-		
 	this.container           = function(id,title,text="",open=true) {
 	
-		if (this.container_open[id] != undefined)	{ open = this.container_open[id]; }
+		if (this.container_open[id] !== undefined)	{ open = this.container_open[id]; }
 		else						{ this.container_open[id] = open; }
 	
-		var onclick  = ' onclick="'+this.app_name+'.container_showHide(\''+id+'\')"; '
-		var display  = "";
-		var link     = "&minus;";
-		var ct       = "";
+		let onclick  = ' onclick="'+this.app_name+'.container_showHide(\''+id+'\')"; '
+		let display  = "";
+		let link     = "&minus;";
+		let ct       = "";
 		
-		if (open == false) {
+		if (open === false) {
 			link    = "+";
 			display = "display:none;";
 			}
@@ -104,7 +107,7 @@ function rmRemoteBasic(name) {
 
 	this.container_showHide = function( id, open="" ) {
 		status = document.getElementById(id+"_status").innerHTML;
-		if (status == "true") { 
+		if (status === "true") { 
 			document.getElementById(id+"_body").style.display = "none"; 
 			document.getElementById(id+"_status").innerHTML   = "false";
 			document.getElementById(id+"_link").innerHTML     = "+";
@@ -120,7 +123,7 @@ function rmRemoteBasic(name) {
 	}
 	
 
-function rmRemoteTable(name) {
+function RemoteElementTable(name) {
 
 	this.app_name       = name;
 
@@ -130,9 +133,9 @@ function rmRemoteTable(name) {
 		}
 		
 	this.row	= function (td1,td2="")  { 
-		if (td1 == "start")     { return "<table border=\"0\" width=\""+td2+"\">"; }
-		else if (td1 == "end")  { return "</table>"; }
-		else if (td2 == false)  { return "<tr><td valign=\"top\" colspan=\"2\">" + td1 + "</td></tr>"; }
+		if (td1 === "start")     { return "<table border=\"0\" width=\""+td2+"\">"; }
+		else if (td1 === "end")  { return "</table>"; }
+		else if (td2 === false)  { return "<tr><td valign=\"top\" colspan=\"2\">" + td1 + "</td></tr>"; }
 		else                    { return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
 		}
 
@@ -148,7 +151,7 @@ function rmRemoteTable(name) {
 	}
 	
 
-function rmRemoteButtons(name) {
+function RemoteElementButtons(name) {
 
 	this.app_name       = name;
 	this.data           = {};
@@ -169,17 +172,17 @@ function rmRemoteButtons(name) {
 	// default buttons
 	this.default         = function (id, label, style, script_apiCommandSend, disabled="", btnstyle="" ){
 	
-        var onContext  = "";
-        var onClick    = "";
+        let onContext  = "";
+        let onClick    = "";
 
         if (Array.isArray(script_apiCommandSend)) {
-                var test   = "onmousedown_left_right(event,'alert(#left#);','alert(#right#);');"
+                let test   = "onmousedown_left_right(event,'alert(#left#);','alert(#right#);');"
                 onClick    = "onmousedown_left_right(event,\"" + script_apiCommandSend[0].replaceAll("\"","#") +
                              "\",\"" + script_apiCommandSend[1].replaceAll("\"","#") + "\");";
                 onClick    = "onmousedown='"+onClick+"'";
                 onContext  = "oncontextmenu=\"return false;\"";
                 }
-        else if (script_apiCommandSend != "") {
+        else if (script_apiCommandSend !== "") {
             onClick    = "onclick='" + script_apiCommandSend + "'";
             onClick    = onClick.replaceAll("##", "{{!!}}");
             onClick    = onClick.replaceAll("#", "\"");
@@ -187,43 +190,43 @@ function rmRemoteButtons(name) {
             }
 
         if (!isNaN(label)) { label = "<big>" + label + "</big>"; }
-        if (style != "")   { style = " " + style; }
+        if (style !== "")   { style = " " + style; }
 
-        var button = "<button id='" + id.toLowerCase() + "' class='rm-button" + style + "' " + btnstyle + " " +
+        let button = "<button id='" + id.toLowerCase() + "' class='rm-button" + style + "' " + btnstyle + " " +
                      onClick + " " + onContext + " " + disabled + " >" + label + "</button>"; // style='float:left;'
         return button;
 		}
 
 	// default with size from values
 	this.sized           = function (id, label, style, script_apiCommandSend, disabled="") {
-		var btnstyle	= "";
-	        if (this.width  != "") { btnstyle += "width:" + this.width + ";max-width:" + this.width + ";"; }
-	        if (this.height != "") { btnstyle += "height:" + this.height + ";max-height:" + this.height + ";"; }
-	        if (btnstyle    != "") { btnstyle  = "style='" + btnstyle + "'"; }
+		let btnstyle	= "";
+	        if (this.width  !== "") { btnstyle += "width:" + this.width + ";max-width:" + this.width + ";"; }
+	        if (this.height !== "") { btnstyle += "height:" + this.height + ";max-height:" + this.height + ";"; }
+	        if (btnstyle    !== "") { btnstyle  = "style='" + btnstyle + "'"; }
 	        
 	        return this.default(id, label, style, script_apiCommandSend, disabled, btnstyle);
 		}
 	        
 	// button edit mode		
 	this.edit            = function (onclick,label,disabled="") {
-		var style = "";
-		if (this.width != "")  { style += "width:" + this.width + ";"; }
-		if (this.height != "") { style += "height:"+this.height+";"; }
-		if (this.margin != "") { style += "margin:"+this.margin+";"; }
+		let style = "";
+		if (this.width !== "")  { style += "width:" + this.width + ";"; }
+		if (this.height !== "") { style += "height:"+this.height+";"; }
+		if (this.margin !== "") { style += "margin:"+this.margin+";"; }
 
-        	if (disabled == "disabled") { style += "background-color:gray;"; }
+        	if (disabled === "disabled") { style += "background-color:gray;"; }
         	return "<button style=\""+style+"\" onClick=\""+onclick+"\" "+disabled+">"+label+"</button>";
         	}
 
 	// create button for single command
 	this.device          = function (id, label, device, style, cmd, disabled ) {
 
-		var label2 	= this.image( label, style );
-		if (label == ".") {
+		let label2 	= this.image( label, style );
+		if (label === ".") {
 			disabled = "disabled";
 			label2[0] = "&nbsp;";
 			}
-		if (cmd != "") {
+		if (cmd !== "") {
 			cmd = 'apiCommandSend("'+cmd+'","","","'+device+'");';
 			}
 		return this.default( id, label2[0], label2[1], cmd, disabled );
@@ -232,12 +235,12 @@ function rmRemoteButtons(name) {
 	// create button for single command
 	this.device_keyboard = function (id, label, device, style, cmd, disabled ) {
 
-		var label2 	= this.image( label, style );
-		if (label == ".") {
+		let label2 	= this.image( label, style );
+		if (label === ".") {
 			disabled = "disabled";
 			label2[0] = "&nbsp;";
 			}
-		if (cmd != "") {
+		if (cmd !== "") {
 			cmd = this.keyboard.toggle_cmd();
 			}
 		return this.default( id, label2[0], label2[1], cmd, disabled );
@@ -246,32 +249,32 @@ function rmRemoteButtons(name) {
 	// create button for single command -> if no command assigned yet to record command for button
 	this.device_add      = function (id, label, device, style, cmd, disabled ) {
 
-        var device_button	= cmd.split("_");
-		var label2		= this.image( label, style );
-		if (label == ".")	{ disabled = "disabled"; label2[0] = "&nbsp;"; }
+        let device_button	= cmd.split("_");
+		let label2		= this.image( label, style );
+		if (label === ".")	{ disabled = "disabled"; label2[0] = "&nbsp;"; }
 	        
-        var button = this.default( id, label2[0], label2[1], 'apiCommandRecord("'+device_button[0]+'","'+device_button[1]+'");', disabled );
+        let button = this.default( id, label2[0], label2[1], 'apiCommandRecord("'+device_button[0]+'","'+device_button[1]+'");', disabled );
 		return button;		
 		}		
 
 	// create button for multiple commands (macro)
 	this.macro           = function (id, label, scene, style, macro, disabled ) {
         if (macro) {
-            var d = this.image( label, style );
-            var macro_string = "";
-            var macro_wait = "";
+            let d = this.image( label, style );
+            let macro_string = "";
+            let macro_wait = "";
 
-            for (var i=0; i<macro.length; i++) {
+            for (let i=0; i<macro.length; i++) {
 
                 if (isNaN(macro[i]) && macro[i].indexOf("WAIT") > -1) {
-                    var wait = macro[i].split("-");
+                    let wait = macro[i].split("-");
                     macro_wait = 'appMsg.wait_time("'+lang("MACRO_PLEASE_WAIT")+'", '+wait[1]+');';
                     }
                 else {
                     macro_string = macro_string + macro[i] + "::";
                     }
                 }
-            var b = this.default( id, d[0], d[1], 'apiMacroSend("'+macro_string+'","'+scene+'");'+macro_wait, disabled );
+            let b = this.default( id, d[0], d[1], 'apiMacroSend("'+macro_string+'","'+scene+'");'+macro_wait, disabled );
             this.logging.debug("button_macro - "+b);
             return b;
             }
@@ -281,8 +284,8 @@ function rmRemoteButtons(name) {
 	// create button for multiple commands (macro)
 	this.btn_group           = function (id, label, scene, style, group, disabled ) {
         if (group) {
-            var d = this.image( label, style );
-            var b = this.default( id, d[0], d[1], 'apiGroupSend("'+group.join("_")+'","'+scene+'");', disabled );
+            let d = this.image( label, style );
+            let b = this.default( id, d[0], d[1], 'apiGroupSend("'+group.join("_")+'","'+scene+'");', disabled );
             this.logging.debug("button_macro - "+b);
             return b;
             }
@@ -291,8 +294,8 @@ function rmRemoteButtons(name) {
 
 	// create button for channel (macro)
 	this.channel         = function (id, label, scene, macro, style, disabled="") {
-    		var macro_string = "";
-		for (var i=0; i<macro.length; i++) { macro_string = macro_string + macro[i] + "::"; }
+    		let macro_string = "";
+		for (let i=0; i<macro.length; i++) { macro_string = macro_string + macro[i] + "::"; }
 
 		this.logging.debug(label+" - "+macro_string);
 		return "<button id='" + id + "' class='channel-entry " + style + "' " + disabled + " onclick=\"javascript:apiMacroSend('" + macro_string + "','"+scene+"','"+label+"');\">" + label + "</button>";
@@ -302,12 +305,12 @@ function rmRemoteButtons(name) {
 	this.image           = function (label,style) {
 
 		// set vars
-        var button_color = this.data["CONFIG"]["elements"]["button_colors"];  // definition of button color
-		var button_img2  = this.data["CONFIG"]["elements"]["button_images"];  // definition of images for buttons (without path and ".png")
+        let button_color = this.data["CONFIG"]["elements"]["button_colors"];  // definition of button color
+		let button_img2  = this.data["CONFIG"]["elements"]["button_images"];  // definition of images for buttons (without path and ".png")
 
 		// if image available set image
-		var button_img   = [];
-		for (var key in button_img2) { button_img[key] = rmImage(button_img2[key]); }
+		let button_img   = [];
+		for (let key in button_img2) { button_img[key] = RemoteElementImage(button_img2[key]); }
 
 		// check label
         	if (label in button_color)    { style = style + " bg" + label + " "; }
@@ -319,7 +322,7 @@ function rmRemoteButtons(name) {
 	}
 
 
-function rmRemoteDisplays(name) {
+function RemoteElementDisplay(name) {
 
 	this.app_name       = name;
 	this.data           = {};
@@ -332,25 +335,25 @@ function rmRemoteDisplays(name) {
 	// show display with information
 	this.default		= function (id, device, rm_type="devices", style="", display_data={}) {
 
-        var text          = "";
-        var status        = "";
+        let text          = "";
+        let status        = "";
 
-   	    if (rm_type == "scenes") {
-   	        var [scene_status, status_log] = statusCheck_scenePowerStatus(dataAll);
+   	    if (rm_type === "scenes") {
+   	        let [scene_status, status_log] = statusCheck_scenePowerStatus(dataAll);
    	        status = scene_status[device];
    	        }
     	else {
-    	    var [device_status, device_status_log] = statusCheck_devicePowerStatus(dataAll);
+    	    let [device_status, device_status_log] = statusCheck_devicePowerStatus(dataAll);
    	        status = device_status[device];
    	        }
 
         // create link for details (for scenes not defined yet)
-		if (rm_type == "devices")   { var onclick = "onclick=\"" + this.app_name + ".alert('"+id+"','"+device+"','"+rm_type+"','##STYLE##');\""; }
-		else                        { var onclick = "disabled"; }
+		if (rm_type === "devices")   { let onclick = "onclick=\"" + this.app_name + ".alert('"+id+"','"+device+"','"+rm_type+"','##STYLE##');\""; }
+		else                        { let onclick = "disabled"; }
 
         // create display
-        var display_start = "<button id=\"display_"+device+"_##STATUS##\" class=\"display ##STYLE##\" style=\"display:##DISPLAY##\" "+onclick+">";
-        var display_end   = "</button>";
+        let display_start = "<button id=\"display_"+device+"_##STATUS##\" class=\"display ##STYLE##\" style=\"display:##DISPLAY##\" "+onclick+">";
+        let display_end   = "</button>";
 
         // create display content
         if (this.edit_mode) {
@@ -360,9 +363,9 @@ function rmRemoteDisplays(name) {
             text  = text.replace( /##STYLE##/g, style + " display_on edit" );
             if (this.edit_mode) { text  = text.replace( /##DISPLAY##/g, "block" ); }
             else                { text  = text.replace( /##DISPLAY##/g, "none" ); }
-            for (var key in display_data) {
-                var label = "<data class='display-label'>"+key+":</data>";
-                var input = "<data class='display-input-shorten' id='display_"+device+"_"+display_data[key]+"_edit'>{"+display_data[key]+"}</data>";
+            for (let key in display_data) {
+                let label = "<data class='display-label'>"+key+":</data>";
+                let input = "<data class='display-input-shorten' id='display_"+device+"_"+display_data[key]+"_edit'>{"+display_data[key]+"}</data>";
                 text += "<div class='display-element "+style+"'>"+label+input+"</div>";
                 }
             text += display_end;
@@ -393,15 +396,15 @@ function rmRemoteDisplays(name) {
             text += display_start;
             text  = text.replace( /##STATUS##/g, "ON" );
             text  = text.replace( /##STYLE##/g, style + " display_on" );
-            if (status == "ON" || status == "PARTLY")	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
+            if (status === "ON" || status === "PARTLY")	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
             else                                        { text  = text.replace( /##DISPLAY##/g, "none" ); }
 
-            for (var key in display_data) {
-                var input_id = "";
+            for (let key in display_data) {
+                let input_id = "";
                 if (display_data[key].indexOf("_") >= 0)    { input_id = 'display_' + display_data[key]; }
                 else                                        { input_id = 'display_' + device + '_' + display_data[key]; }
-                var label    = "<data class='display-label'>"+key+":</data>";
-                var input    = "<data class='display-input' id='"+input_id+"'>no data</data>";
+                let label    = "<data class='display-label'>"+key+":</data>";
+                let input    = "<data class='display-input' id='"+input_id+"'>no data</data>";
                 text += "<div class='display-element "+style+"'>"+label+input+"</div>";
                 }
             text += display_end;
@@ -410,7 +413,7 @@ function rmRemoteDisplays(name) {
             text += display_start;
             text  = text.replace( /##STATUS##/g, "MANUAL" );
             text  = text.replace( /##STYLE##/g, style + " display_manual" );
-            if (rm3settings.manual_mode || status == "N/A")    { text  = text.replace( /##DISPLAY##/g, "block" ); }
+            if (rm3settings.manual_mode || status === "N/A")    { text  = text.replace( /##DISPLAY##/g, "block" ); }
             else                                               { text  = text.replace( /##DISPLAY##/g, "none" ); }
             text += "<center>"+lang("CONNECTION_MANUAL")+"<br/><text id='display_MANUAL_info_"+device+"'></text></center>";
             text += display_end;
@@ -419,7 +422,7 @@ function rmRemoteDisplays(name) {
             text += display_start;
             text  = text.replace( /##STATUS##/g, "OFF" );
             text  = text.replace( /##STYLE##/g, style + " display_off" );
-            if (status == "OFF")    { text  = text.replace( /##DISPLAY##/g, "block" ); }
+            if (status === "OFF")    { text  = text.replace( /##DISPLAY##/g, "block" ); }
             else                    { text  = text.replace( /##DISPLAY##/g, "none" ); }
             text += "<center><b>"+lang("CONNECTION_DEVICE_OFF")+"</b><br/><i><text id='display_OFF_info_"+device+"'></text></i></center>";
             text += display_end;
@@ -428,7 +431,7 @@ function rmRemoteDisplays(name) {
             text += display_start;
             text  = text.replace( /##STATUS##/g, "POWER_OFF" );
             text  = text.replace( /##STYLE##/g, style + " display_off" );
-            if (status == "POWER_OFF")    { text  = text.replace( /##DISPLAY##/g, "block" ); }
+            if (status === "POWER_OFF")    { text  = text.replace( /##DISPLAY##/g, "block" ); }
             else                          { text  = text.replace( /##DISPLAY##/g, "none" ); }
             text += "<center><b>"+lang("CONNECTION_POWER_OFF")+"</b><br/><i><text id='display_POWER_OFF_info_"+device+"'></text></i></center>";
             text += display_end;
@@ -439,7 +442,7 @@ function rmRemoteDisplays(name) {
 
     // define display sizes
 	this.sizes      = function () {
-		var sizes = {
+		let sizes = {
 			"small" : "Small",
 			"middle" : "Middle",
 			"big"  : "Big",
@@ -457,11 +460,11 @@ function rmRemoteDisplays(name) {
     // display all information
 	this.alert      = function (id, device, type="", style="" ) {
 
-		var display_data = [];
-      		var text  = "Device Information: "+device +"<hr/>";
+		let display_data = [];
+      		let text  = "Device Information: "+device +"<hr/>";
       		text  += "<div style='width:100%;height:400px;overflow-y:scroll;'>";
 
-		if (type != "devices") {
+		if (type !== "devices") {
 
 			if (!this.data["CONFIG"][type][device]["remote"]["display-detail"]) {
 
@@ -476,9 +479,9 @@ function rmRemoteDisplays(name) {
 			}
 
 		else {
-			var power = this.data["STATUS"][type][device];
-			if (type != "devices") { power = {}; }
-			var queries = this.data["CONFIG"]["devices"][device]["commands"]["definition"];
+			let power = this.data["STATUS"][type][device];
+			if (type !== "devices") { power = {}; }
+			let queries = this.data["CONFIG"]["devices"][device]["commands"]["definition"];
 			if (this.data["CONFIG"]["devices"][device] && queries)	{ display_data = Object.keys(queries); }
 			else								{ display_data = ["ERROR","No display defined"]; }
 
@@ -492,11 +495,11 @@ function rmRemoteDisplays(name) {
 
       		text  += this.tab_row("start","100%");
 
-        	for (var i=0; i<display_data.length; i++) {
+        	for (let i=0; i<display_data.length; i++) {
 
-      			if (display_data[i] != "power" && display_data[i].substring && display_data[i].substring(0,3) != "api") { // || display_data[i].indexOf("api") != 0)) {
-	        		var label = "<data class='display-label-dialog'>"+display_data[i]+":</data>";
-				var input = use_color("<data class='display-detail-dialog' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>", "VALUE");
+      			if (display_data[i] !== "power" && display_data[i].substring && display_data[i].substring(0,3) !== "api") { // || display_data[i].indexOf("api") !== 0)) {
+	        		let label = "<data class='display-label-dialog'>"+display_data[i]+":</data>";
+				let input = use_color("<data class='display-detail-dialog' id='display_full_"+device+"_"+display_data[i]+"'>no data</data>", "VALUE");
 		        	//text += "<div class='display-element alert'>"+label+input+"</div><br/>";
 		        	text += this.tab_row("<div style='width:100px;'>"+label+"</div>",input);
 		        	}
@@ -518,8 +521,8 @@ function rmRemoteDisplays(name) {
     // see: https://www.wbrnet.info/vbhtm/9261_Laufschriften_I.html
 	this.mediainfo  = function (id, device, style="") {
 
-        var display      = "";
-		var status_data  = this.data["STATUS"]["devices"][device];
+        let display      = "";
+		let status_data  = this.data["STATUS"]["devices"][device];
 
         return display;
         }
@@ -527,12 +530,12 @@ function rmRemoteDisplays(name) {
     // show json for buttons in text field
 	this.json       = function ( id, json, format="" ) {
 
-        var text = "";
+        let text = "";
         text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:95%;height:160px;\">";
-        if (format == "buttons") {
-	       	var x=0;
+        if (format === "buttons") {
+	       	let x=0;
 	       	text += "[\n";
-        	for (var i=0;i<json.length;i++) {
+        	for (let i=0;i<json.length;i++) {
         			x++;
         			text += "\""+json[i]+"\"";
         			if (i+1 < json.length)                                          { text += ", "; }
@@ -545,7 +548,7 @@ function rmRemoteDisplays(name) {
         			}
 	       	text += "\n]";
         	}
-        else if (format == "channels") {
+        else if (format === "channels") {
         	json = JSON.stringify(json);
         	json = json.replaceAll( "],", "],\n\n" );
         	json = json.replaceAll( ":", ":\n   " );
@@ -566,9 +569,9 @@ function rmRemoteDisplays(name) {
 
     // write table tags
 	this.tab_row    = function (td1,td2="")  {
-		if (td1 == "start")     { return "<table border=\"0\" width=\""+td2+"\">"; }
-		else if (td1 == "end")	{ return "</table>"; }
-		else if (td2 == false)	{ return "<tr><td valign=\"top\" colspan=\"2\">" + td1 + "</td></tr>"; }
+		if (td1 === "start")     { return "<table border=\"0\" width=\""+td2+"\">"; }
+		else if (td1 === "end")	{ return "</table>"; }
+		else if (td2 === false)	{ return "<tr><td valign=\"top\" colspan=\"2\">" + td1 + "</td></tr>"; }
 		else                    { return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
 		}
 
@@ -581,317 +584,16 @@ function rmRemoteDisplays(name) {
 	}
 
 
-function rmImage(file) {
+function RemoteElementImage(file) {
 
         return "<img src='icon/"+file+"' class='rm-button-image' alt='"+file+"' />";
         }
 
 
-function rmRemoteJSON(name) {
-	this.app_name       = name;
-	this.data           = {};
-	this.logging        = new jcLogging(this.app_name);
-
-
-	// create textarea to edit JSON
-	this.textarea           = function ( id, json, format="" ) {
-            var text = "";
-            text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:95%;height:160px;\">";
-            text += this.json2text( id, json, format );
-            text.replaceAll('"', '<b>"</b>');
-	        text += "</textarea></center>";
-        	return text;
-		}
-		
-	// replace JSON in area
-	this.textarea_replace   = function ( id, json, format="" ) {
-		var text = "";
-		text    += this.json2text( id, json, format );
-		element  = document.getElementById(id);
-		
-		if (element)	{ element.value = text; }
-		else		{ this.logging.error("Replace JSON in textarea - Element not found: "+id ); }
-		}
-
-    // show json for buttons in text field
-    this.json2text          = function ( id, json, format="" ) {
-		var text = "";
-        if (format == "buttons") {
-            var x=0;
-            text += "[\n";
-            for (var i=0;i<json.length;i++) {
-                x++;
-                text += "\""+json[i]+"\"";
-                if (i+1 < json.length)						{ text += ", "; }
-                if (Number.isInteger((x)/4))   				{ text += "\n\n"; x = 0; }
-                if (json.length > i+1 && json[i+1].includes("LINE") && x > 0) { text += "\n\n"; x = 0; }
-                if (json[i].includes("LINE"))                   { text += "\n\n"; x = 0; }
-                if (json[i].includes("TOGGLE"))                 { text += "\n\n"; x = 0; }
-                if (json[i].includes("HEADER-IMAGE"))           { text += "\n\n"; x = 0; }
-                if (json[i].includes("SLIDER"))                 { text += "\n\n"; x = 0; }
-                if (json[i].includes("COLOR-PICKER"))           { text += "\n\n"; x = 0; }
-                }
-            text += "\n]";
-            }
-        else if (format == "channels") {
-            json = JSON.stringify(json);
-            json = json.replaceAll( "],", "],\n\n" );
-            json = json.replaceAll( ":", ":\n   " );
-            json = json.replaceAll( "{", "{\n" );
-            json = json.replaceAll( "}", "\n}" );
-            text += json;
-            }
-        else if (format == "macros") {
-            json = JSON.stringify(json);
-            json = json.replaceAll( "],", "],\n\n" );
-            json = json.replaceAll( ":", ":\n" );
-            json = json.replaceAll( "{", "{\n" );
-            json = json.replaceAll( "}", "\n}" );
-            text += json;
-            }
-        else if (json != undefined) {
-            json = JSON.stringify(json);
-            json = json.replaceAll( ",", ",\n" );
-            json = json.replaceAll( "{", "{\n" );
-            json = json.replaceAll( "}", "\n}" );
-            text += json;
-            }
-        return text;
-        }
-        	
-    // convert text 2 json ...
-    this.text2json          = function ( json_text, id="" ) {
-
-		// if string return value
-        	if (json_text == "" || 
-        	   (json_text.indexOf("[") < 0 && json_text.indexOf("{") < 0 && json_text.indexOf("\""))) { return json_text; }
-        	
-        	// parse and return object
-		try 		{ var object = JSON.parse(json_text); } 
-		catch(e) 	{ 
-			alert(lang("FORMAT_INCORRECT")+": "+e); 
-			this.logging.error(lang("FORMAT_INCORRECT")+" / "+id+": "+e);
-			this.logging.error(json_text);
-			return default_data;
-			}
-		this.logging.debug(object);
-		return object;
-        }
-        
-    // get JSON value (and check if correct)
-    this.get_value          = function ( id, default_data="" ) {
-
-        if (typeof id != "string") {
-            console.error(this.app_name+".get_value: id is not type 'string' but '"+(typeof id)+"'.");
-            console.error(id);
-            console.error(default_data);
-            return;
-        }
-
-		element = document.getElementById(id);
-		this.logging.debug(this.app_name+".get_value: "+id);
-
-		if (!element)	{ 
-			this.logging.error(this.app_name+".get_value: element not found "+id);
-			return default_data;
-			}
-
-		return this.text2json( element.value, id );
-		}
-        	
-	}
-
-/*
-* class to edit JSON texts in a pre-formated and color coded style
-*/
-class rmJsonEdit {
-
-    constructor(id, format_style = "default", style = "width: 95%; height: 160px;") {
-        this.default_size = style;
-        this.format_style = format_style;   // other options: default, leafs, row4
-
-        this.start = this.start.bind(this);
-        this.create = this.create.bind(this);
-        this.customJSONStringify = this.customJSONStringify.bind(this);
-        }
-
-    create(container_id, id, json, format_style = "", style = "") {
-        const editor    = this.get(id, json, format_style, style);
-        if (document.getElementById(container_id)) {
-            const container = document.getElementById(container_id);
-            container.innerHTML = editor;
-            this.start(id);
-            }
-        else {
-            console.error("rmJsonEdit.create: container for json editor '" + container_id + "' not found." );
-            }
-        }
-
-    get(id, json, format_style = "", style = "") {
-        const id_container = id + "_container";
-        const id_highlight = id + "_highlight";
-        const id_type      = id + "_type";
-        const id_textarea  = id;
-        const jsonText     = this.customJSONStringify(json, 2, format_style);
-
-        if (style == "") { style = this.default_size; }
-
-        this.editor     = `<div id="`+id_container+`" class="json-editor-container" style="`+style+`">
-            <pre id="`+id_highlight+`">`+this.syntaxHighlight(jsonText)+`</pre>
-            <textarea id="`+id_textarea+`" spellcheck="false">`+jsonText+`</textarea>
-            <div id="`+id_type+`">`+format_style+`</div>
-            </div>`;
-
-        return this.editor;
-        }
-
-    start(id) {
-        const highlight = document.getElementById(id + "_highlight");
-        const format    = document.getElementById(id + "_type");
-        const textarea  = document.getElementById(id);
-
-        if (textarea) {
-            // overlay highlighted text
-            textarea.addEventListener("input", () => {
-                highlight.innerHTML = this.syntaxHighlight(textarea.value);
-                });
-
-            // Sync scroll position
-            textarea.addEventListener("scroll", () => {
-                highlight.scrollTop = textarea.scrollTop;
-                highlight.scrollLeft = textarea.scrollLeft;
-                });
-
-            // Sync size changes with ResizeObserver
-            const resizeObserver = new ResizeObserver(() => {
-                highlight.style.width = textarea.offsetWidth + "px";
-                highlight.style.height = textarea.offsetHeight + "px";
-                });
-            resizeObserver.observe(textarea);
-            }
-        else {
-            console.error("rmJsonEdit.start: json editor '" + id + "' not found." );
-            }
-        }
-
-    disable(id, disabled=true) {
-        const highlight = document.getElementById(id + "_highlight");
-        const textarea  = document.getElementById(id);
-
-        textarea.disabled = disabled;
-        if (disabled)   { highlight.style.background = "var(--json-color-background-disabled)"; }
-        else            { highlight.style.background = "var(--json-color-background)"; }
-    }
-
-    customJSONStringify(obj, indent = 2, format_style = "") {
-        const space = " ".repeat(indent);
-        let formatStyle = this.format_style;
-        if (format_style != "") { formatStyle = format_style; }
-
-        function format(value, level = 0) {
-            if (value === null || typeof value !== "object") {
-                return JSON.stringify(value);
-            }
-
-            // ARRAYS
-            if (Array.isArray(value)) {
-                if (value.length === 0) return "[]";
-
-                const items = value.map(v => format(v, level + 1));
-
-                if (formatStyle === "compact") {
-                    return `[${items.join(", ")}]`; // all inline
-                }
-
-                if (formatStyle === "rmc") {
-                const lines = [];
-                let currentLine = [];
-
-                for (let i = 0; i < items.length; i++) {
-                    const item = items[i];
-
-                    // Special elements go on their own line
-                    if (
-                        item.startsWith('"LINE') ||
-                        item.startsWith('"HEADER-IMAGE') ||
-                        item.startsWith('"TOGGLE')
-                    ) {
-                        if (currentLine.length) {
-                            lines.push(currentLine.join(", "));
-                            currentLine = [];
-                        }
-                        lines.push(item); // single line
-                    } else {
-                        currentLine.push(item);
-                        // Push line every 4 elements
-                        if (currentLine.length === 4) {
-                            lines.push(currentLine.join(", "));
-                            currentLine = [];
-                        }
-                    }
-                }
-
-                // Push remaining items
-                if (currentLine.length) {
-                    lines.push(currentLine.join(", "));
-                }
-
-                return `[\n${space.repeat(level + 1)}${lines.join(`,\n${space.repeat(level + 1)}`)}\n${space.repeat(level)}]`;
-                }
-
-                if (formatStyle === "rmc2") {
-                    const lines = [];
-
-                    for (let i = 0; i < items.length; i += 4) {
-                        lines.push(items.slice(i, i + 4).join(", "));
-                    }
-                    return `[\n${space.repeat(level + 1)}${lines.join(`,\n${space.repeat(level + 1)}`)}\n${space.repeat(level)}]`;
-                }
-
-                // default: one element per line
-                return `[\n${space.repeat(level + 1)}${items.join(`,\n${space.repeat(level + 1)}`)}\n${space.repeat(level)}]`;
-            }
-
-            // OBJECTS
-            const entries = Object.entries(value);
-            const inner = entries
-                .map(([k, v]) => `${space.repeat(level + 1)}${JSON.stringify(k)}: ${format(v, level + 1)}`)
-                .join(",\n");
-
-            return `{\n${inner}\n${space.repeat(level)}}`;
-        }
-
-        return format(obj, 0);
-        }
-
-    syntaxHighlight(json) {
-        if (!json) return "";
-        json = json
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
-        return json.replace(
-            /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
-            function (match) {
-                let cls = "json-number";
-
-                if (/^"/.test(match))               { cls = /:$/.test(match) ? "json-key" : "json-string"; }
-                else if (/true|false/.test(match))  { cls = "json-boolean"; }
-                else if (/null/.test(match))        { cls = "json-null"; }
-
-                if (cls == "json-string") { match = match.replace( /\|\|/g, '<span class="json-separator">||</span>'); }
-
-                return `<span class="${cls}">${match}</span>`;
-                }
-            );
-        }
-    }
-
 /*
 * class to create a box, where content can be added into several sheets and the sheets can be selected by tabs
 */
-var rmSheetBox_open = {};
-class rmSheetBox {
+class RemoteElementSheetBox {
 
     constructor(containerId, height = "300px", scroll_bar = false, scroll_view = false, keep_open = true) {
         this.id = containerId;
@@ -1059,7 +761,7 @@ class rmSheetBox {
 /*
 * class to create a wide box for content, that can be scrolled left and right if it's wider than the box
 */
-class rmScrollBox {
+class RemoteElementScrollBox {
 
     constructor(container="scrollBox", html="") {
 
@@ -1099,7 +801,7 @@ class rmScrollBox {
             this.update();
 	        }
 	    else {
-	        console.error("rmScrollBox: Container '" + container + "' not found.");
+	        console.error("RemoteElementScrollBox: Container '" + container + "' not found.");
 	        }
         }
 
@@ -1112,28 +814,7 @@ class rmScrollBox {
             this.rightArrow.style.display = scrollLeft < maxScroll - 1 ? 'block' : 'none';
             }
 	    else {
-	        console.error("rmScrollBox.update: Container '" + this.id_container + "' not found.");
+	        console.error("RemoteElementScrollBox.update: Container '" + this.id_container + "' not found.");
 	        }
         }
     }
-
-
-//----------------------------------
-// Handling of Macros
-//----------------------------------
-// Macroseiten schreiben
-
-function writeMacroButton () {
-    var buttons = "";
-    var macro   = macro_def["Main"];
-
-    for (var key in macro) {
-        id      = macro[key];
-        buttons = buttons + sendButtonMacro( id, macro[key], key, "yellow", "" );
-        }
-
-    document.getElementById("frame2").innerHTML = buttons;
-    }
-
-//--------------------------------
-// EOF
