@@ -2,7 +2,7 @@
 	"data": {
         "api_commands": {
             "permit-join": "request/permit_join={'value': true, 'time': 120}",
-            "restart": "request/restart="
+            "restart-api": "request/restart="
         },
         "buttons" : {
 			"off": "set={'state': 'OFF'}",
@@ -10,12 +10,6 @@
             "toggle": "set={'state': 'TOGGLE'}"
 		},
         "commands" : {
-            "availability": {
-                "cmd": ["get"],
-                "get": "get=availability",
-                "type": "enum",
-                "values": ["online", "offline"]
-            },
 			"link-quality": {
                 "cmd": [
                     "get"

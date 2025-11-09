@@ -1,6 +1,9 @@
 import os.path
 import time
 import json
+
+from flask import template_rendered
+
 import server.modules.rm3json as rm3json
 import server.modules.rm3presets as rm3config
 import server.modules.rm3ping as rm3ping
@@ -309,6 +312,17 @@ class ApiControl(RemoteApiClass):
         """
         self.execute_request("bridge/request/permit_join", "{\"value\": true, \"time\": 120}")
 
+    def device_info(self, device_id=""):
+        """
+        Topic: zigbee2mqtt/bridge/request/device/info
+        Payload: {"id": "<device_friendly_name>"}
+        """
+        device_infos = self.config.read(rm3config.commands + self.api_name + "/10_devices")
+        if device_id != "" and device_id in device_infos:
+            return device_infos[device_id]
+        else:
+            return device_infos
+
     def wait_if_working(self):
         """Some devices run into problems, if send several requests at the same time"""
         while self.working:
@@ -439,6 +453,34 @@ class ApiControl(RemoteApiClass):
 
                 if "availability" in command:
                     result = self.mqtt_device_availability[friendly_name]
+
+                if "device-info" in command:
+                    result = self.device_info(friendly_name)
+
+                if "device-features" in command:
+                    temp_result = self.device_info(friendly_name)
+                    result = {
+                        "ieee_address": temp_result["ieee_address"],
+                        "friendly_name": temp_result["friendly_name"],
+                        "description": temp_result["definition"]["description"],
+                        "model_id": temp_result["model_id"],
+                        "features": {},
+                        "options": [],
+                        "endpoints": []
+                    }
+                    for entry in temp_result["definition"]["options"]:
+                        if "name" in entry:
+                            result["options"].append(entry["name"])
+
+                    for entry in temp_result["definition"]["exposes"]:
+                        for entry2 in entry:
+                            if "name" in entry2 and "type" in entry2:
+                                result["features"][entry2["name"]] = entry2["type"]
+
+                            # ??? not ready yet !!!
+
+                    for entry in temp_result["endpoints"]:
+                        result["endpoints"].append(entry)
 
                 if friendly_name in self.mqtt_devices_status and command_value in self.mqtt_devices_status[friendly_name]:
                     result = self.mqtt_devices_status[friendly_name][command_value]
