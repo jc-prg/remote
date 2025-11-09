@@ -18,7 +18,6 @@ class RemoteMain {
         this.active_channels = [];
         this.edit_mode = false;
         this.initial_load = true;
-        this.loaded_remote = [];
         this.input_width = "";
 
         this.frames_edit = ["frame1", "frame2"];
@@ -178,7 +177,6 @@ class RemoteMain {
             startActive = true;
         }
 
-        this.loaded_remote = [type, rm_id];
         rm3menu.menu_height();
     }
 
@@ -274,7 +272,7 @@ class RemoteMain {
         // add edit button
         let edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"device\",\"" + device + "\");";
         if (!this.edit_mode && easyEdit) {
-            remote += "<div class='remote-edit-button' onclick='" + edit_cmd + "'><img src='icon/edit.png' style='height:20px;width:20px;'></div>";
+            remote += "<div class='remote-edit-button' onclick='" + edit_cmd + "'><img src='icon/edit.png' alt='' style='height:20px;width:20px;'></div>";
         }
 
         // add remote buttons
@@ -395,7 +393,6 @@ class RemoteMain {
         }
 
         let remote = "";
-        let preview = undefined;
         let not_used = [];
         let sign = "";
         let remote_buttons = [];
@@ -410,7 +407,6 @@ class RemoteMain {
             remote_buttons = device_config["remote"]["remote"];
         } else {
             remote_buttons = this.json.get_value(preview_remote, device_config["remote"]["remote"]);
-            preview = true;
         }
 
         // show not used buttons if edit mode
@@ -448,7 +444,6 @@ class RemoteMain {
                 let link_add = this.app_name + ".rm_device.add_button('" + device + "', 'not_used_" + i + "');";
                 let input_add = "<input id='not_used_" + i + "' name='not_used_" + i + "' value='" + button + "' style='display:none;'>";
                 let context_menu = input_add + "[" + i + "] " + cmd + "<br/><br/>" + this.button.edit(link_add + link_preview, lang("BUTTON_T_MOVE2REMOTE"), "");
-                ;
 
                 this.tooltip.settings(this.tooltip_mode, this.tooltip_width, "80px", this.tooltip_distance);
                 next_button = this.tooltip.create_inside(next_button, context_menu, "not_used" + i);
@@ -1716,7 +1711,7 @@ class RemoteMain {
 
 
 /*
-* UNDER CONSTRUCTION: class to create GUI dialogs to add, edit or delete elements of the remote definition, when edit mode is set true
+* class to create GUI dialogs to add, edit or delete elements of the remote definition, when edit mode is set true
 */
 class RemoteEditDialogs {
 
@@ -2993,6 +2988,9 @@ class RemoteAdvancedElements {
             init = "";
             disabled = true;
         }
+
+        if (data[3].indexOf("_") < 0)   { data[3] = device + "_" + data[3]; }
+        if (data[4].indexOf("_") < 0)   { data[4] = device + "_" + data[4]; }
 
         let text = toggle_start;
         text += this.e_slider.toggleHTML(data[1], data[2], device, data[3], data[4], init, disabled);

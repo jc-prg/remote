@@ -838,7 +838,7 @@ function rmSettings (name) {	// IN PROGRESS
                 if (devices_detect[api_device][device]["disabled"])            { disabled = "&nbsp;&nbsp;<small>(DISABLED)</small>"; }
                 if (devices_detect[api_device][device]["available"] == false)  { disabled = "&nbsp;&nbsp;<small>(N/A)</small>"; }
 
-                if (disabled == "") {
+                if (disabled == "") { // !!!! ERROR
                     var button_cmd  = "rm3settings.create(\"edit_devices\", \"add_device\", {";
                     button_cmd     += "\"external_id\": \"" + devices_detect[api_device][device]["id"] + "\", ";
                     button_cmd     += "\"description\": \"" + info + "\", ";
@@ -850,7 +850,7 @@ function rmSettings (name) {	// IN PROGRESS
                     }
 
                 if (info != "") {  info = ": " + info; }
-                details_new += "<li>" + button_add + "<b>[" + devices_detect[api_device][device]["id"] + "]</b><br/>" + name + info + disabled + "</li>";
+                details_new += "<li>" + button_add + " <b>[" + devices_detect[api_device][device]["id"] + "]</b><br/>" + name + info + disabled + "</li>";
                 }
             details_new += "</ul>";
             }
@@ -1217,6 +1217,7 @@ function rmSettings (name) {	// IN PROGRESS
         var device_types   = this.data["CONFIG"]["device_types"];
 
         this.on_change_api = function(value) {
+
             var api               = value.split("_")[0];
             var device_config     = this.data["CONFIG"]["devices"][api];
             var api_config        = this.data["CONFIG"]["apis"]["list_api_configs"]["list"];
@@ -1244,6 +1245,11 @@ function rmSettings (name) {	// IN PROGRESS
                 elementVisible("txt_add_device_remote_2");
                 }
             }
+
+        if (device_data_start !== {}) {
+            setTimeout( () => { this.on_change_api(document.getElementById("add_device_api").value); }, 1000 );
+        }
+
         this.on_change_dev_type = function(device_type) {
 
             // Check if "devices" and device_type exist in this.data

@@ -6,34 +6,34 @@
 // language_app[LANG][<param>]
 // add your app specific translations
 
-var language_app = {
+let language_app = {
     "DE" : {
         "CONNECTION_ERROR"              : "Verbindungsfehler",
         "CONNECTION_DISABLED"           : "API deaktiviert",
         "RESET_SWITCH_OFF"              : "Reset Devices:<br/>vorher alle Geräte ausschalten.",
         "RESET_VOLUME_TO_ZERO"          : "Reset Audio Settings:<br/>vorher alle Receiver mit Audio auf Mininum (0) einstellen.",
 
-        "POWER_DEVICE_OFF"             : "Schalte zuerst den Strom für das Gerät ein. {0}",
-        "POWER_DEVICE_OFF_SCENE"       : "Schalte über den Toggle oben rechts den Strom für das Gerät ein. {0}",
-        "POWER_DEVICE_OFF_SCENE_INFO"  : "<b>Strom ausgeschaltet:</b> Schalte den Strom für diese Szene über den Toggle oben rechts ein.",
+        "POWER_DEVICE_OFF"              : "Schalte zuerst den Strom für das Gerät ein. {0}",
+        "POWER_DEVICE_OFF_SCENE"        : "Schalte über den Toggle oben rechts den Strom für das Gerät ein. {0}",
+        "POWER_DEVICE_OFF_SCENE_INFO"   : "<b>Strom ausgeschaltet:</b> Schalte den Strom für diese Szene über den Toggle oben rechts ein.",
 
-        "PLEASE_WAIT"                  : "Bitte warten ... .",
-        "MACRO_PLEASE_WAIT"            : "Führe ein paar Kommandos aus, bitte warte ein paar Sekunden.",
+        "PLEASE_WAIT"                   : "Bitte warten ... .",
+        "MACRO_PLEASE_WAIT"             : "Führe ein paar Kommandos aus, bitte warte ein paar Sekunden.",
 
-        "STATUS_DEV_OK"                : "Das Gerät <b>{0}</b> ist OK.",
-        "STATUS_DEV_N/A"               : "Der Status vom Gerät <b>{0}</b> ist unklar. Bitte, ausprobieren!",
-        "STATUS_DEV_POWER_OFF"         : "Der Strom ist ausgeschaltet: <b>{0}</b>",
-        "STATUS_DEV_ERROR"             : "Beim Gerät <b>{0}</b> ist ein Fehler aufgetreten. {1}",
-        "STATUS_DEV_API_DISABLED"      : "Die API <b>{0}</b> für das Gerät <b>{1}</b> wurde deaktiviert.",
-        "STATUS_DEV_API_ERROR"         : "Bei der API <b>{0}</b> für das angeschlossene Gerät <b>{1}</b> ist ein Fehler aufgetreten. {2}",
-        "STATUS_DEV_OTHER_ERROR"       : "Es ist ein unbekannter Fehler beim Gerät <b>{0}</b> aufgetreten.",
+        "STATUS_DEV_OK"                 : "Das Gerät <b>{0}</b> ist OK.",
+        "STATUS_DEV_N/A"                : "Der Status vom Gerät <b>{0}</b> ist unbekannt, ausprobieren!",
+        "STATUS_DEV_POWER_OFF"          : "Der Strom ist ausgeschaltet: <b>{0}</b>",
+        "STATUS_DEV_ERROR"              : "Beim Gerät <b>{0}</b> ist ein Fehler aufgetreten. {1}",
+        "STATUS_DEV_API_DISABLED"       : "Die API <b>{0}</b> für das Gerät <b>{1}</b> wurde deaktiviert.",
+        "STATUS_DEV_API_ERROR"          : "Bei der API <b>{0}</b> für das angeschlossene Gerät <b>{1}</b> ist ein Fehler aufgetreten. {2}",
+        "STATUS_DEV_OTHER_ERROR"        : "Es ist ein unbekannter Fehler beim Gerät <b>{0}</b> aufgetreten.",
 
-        "STATUS_SCENE_OK"              : "Die Szene <b>{0}</b> ist OK.",
-        "STATUS_DEV_OFF"               : "Alle Geräte der Szene <b>{0}</b> sind ausgeschaltet.",
-        "STATUS_SCENE_POWER_OFF"       : "Der Strom über für Szene <b>{0}</b> ist ausgeschaltet. Nutze <b>{1}</b> zum einschalten.",
-        "STATUS_SCENE_PARTLY"          : "Für die Szene <b>{0}</b> sind noch nicht alle nötigen Geräte eingeschaltet: <i>{1}</i>.",
-        "STATUS_SCENE_DISABLED"        : "Mindestens eine für die Szene <b>{0}</b> erforderliche API ist deaktiviert.",
-        "STATUS_SCENE_ERROR"           : "Für mindestens eines der für die Szene <b>{0}</b> benötigten Geräte ist ein Fehler aufgetreten: <i>{1}</i>."
+        "STATUS_SCENE_OK"               : "Die Szene <b>{0}</b> ist OK.",
+        "STATUS_DEV_OFF"                : "Alle Geräte der Szene <b>{0}</b> sind ausgeschaltet.",
+        "STATUS_SCENE_POWER_OFF"        : "Der Strom über für Szene <b>{0}</b> ist ausgeschaltet. Nutze <b>{1}</b> zum einschalten.",
+        "STATUS_SCENE_PARTLY"           : "Für die Szene <b>{0}</b> sind noch nicht alle nötigen Geräte eingeschaltet: <i>{1}</i>.",
+        "STATUS_SCENE_DISABLED"         : "Mindestens eine für die Szene <b>{0}</b> erforderliche API ist deaktiviert.",
+        "STATUS_SCENE_ERROR"            : "Für mindestens eines der für die Szene <b>{0}</b> benötigten Geräte ist ein Fehler aufgetreten: <i>{1}</i>."
         },
     "EN" : {
         "ADD_ELEMENTS"          : "Add elements",
@@ -70,7 +70,7 @@ var language_app = {
         "BUTTON_T"              : "button",
         "BUTTON_T_ADD"          : "add",
         "BUTTON_T_CLONE"        : "clone",
-        "BUTTON_T_COLOR_PICKER"  : "color picker",
+        "BUTTON_T_COLOR_PICKER" : "color picker",
         "BUTTON_T_COLOR"        : "color model",
         "BUTTON_T_CREATE"       : "create",
         "BUTTON_T_DEL"          : "delete button",
@@ -117,7 +117,7 @@ var language_app = {
         "CONNECTION_DISABLED"   : "API Disabled",
         "CONNECTED"             : "connected",
 
-        "COLORPICKER_SELECT_CMD" : "Select command, to insert color picker.",
+        "COLORPICKER_SELECT_CMD": "Select command, to insert color picker.",
         "COLORPICKER_N/A"       : "Color picker not supported",
         "COLOR_PICKER"          : "color picker",
 
@@ -134,28 +134,28 @@ var language_app = {
         "DELETE_ELEMENTS"       : "Delete elements",
         "DELETE_COMMAND"        : "Delete command",
 
-        "DEVICE"                : "Device",
-        "DEVICE_ASK_DELETE"     : "Do you really want to delete device '{0}'?",
-        "DEVICE_DONT_EXISTS"    : "Device '{0}' doesn't exists!",
-        "DEVICE_EXISTS"         : "Device '{0}' already exists!",
-        "DEVICE_INSERT_ID"      : "Please insert ID for device (no special characters).",
-        "DEVICE_INSERT_LABEL"   : "Please insert label for device.",
-        "DEVICE_INSERT_NAME"    : "Please insert name of device.",
-        "DEVICE_SELECT"         : "Please select device.",
-        "DEVICE_SELECT_API"     : "Please select API for device.",
-        "DEVICE_SELECT_TEMPLATE"   : "Please select template to create remote for device.",
-        "DEVICE_SELECT_VISIBILITY" : "Please select if device should be visible or hidden.",
-        "DEVICES"                  : "devices",
-        "DEVICES_NOT_CONNECTED"    : "Devices not connected",
+        "DEVICE"                    : "Device",
+        "DEVICE_ASK_DELETE"         : "Do you really want to delete device '{0}'?",
+        "DEVICE_DONT_EXISTS"        : "Device '{0}' doesn't exists!",
+        "DEVICE_EXISTS"             : "Device '{0}' already exists!",
+        "DEVICE_INSERT_ID"          : "Please insert ID for device (no special characters).",
+        "DEVICE_INSERT_LABEL"       : "Please insert label for device.",
+        "DEVICE_INSERT_NAME"        : "Please insert name of device.",
+        "DEVICE_SELECT"             : "Please select device.",
+        "DEVICE_SELECT_API"         : "Please select API for device.",
+        "DEVICE_SELECT_TEMPLATE"    : "Please select template to create remote for device.",
+        "DEVICE_SELECT_VISIBILITY"  : "Please select if device should be visible or hidden.",
+        "DEVICES"                   : "devices",
+        "DEVICES_NOT_CONNECTED"     : "Devices not connected",
 
-        "DISPLAY"                : "display",
-        "DISPLAY_EXISTS"         : "Display active for this remote.",
-        "DISPLAY_LABEL_SELECT"   : "Select label to be deleted in the display.",
-        "DISPLAY_LABEL_DONT_EXIST" : "Selected label doesn't exist in display definition.",
-        "DISPLAY_VALUE_SELECT"   : "Select device and value to be added in the display.",
-        "DISPLAY_LABEL_ADD"      : "Insert label for the additional value in the display.",
-        "DISPLAY_LABEL_EXISTS_ALREADY" : "Label already exists in the display.",
-        "DISPLAY_NOT_ADDED"      : "No display added yet. Changes below will have no effect.",
+        "DISPLAY"                       : "display",
+        "DISPLAY_EXISTS"                : "Display active for this remote.",
+        "DISPLAY_LABEL_SELECT"          : "Select label to be deleted in the display.",
+        "DISPLAY_LABEL_DONT_EXIST"      : "Selected label doesn't exist in display definition.",
+        "DISPLAY_VALUE_SELECT"          : "Select device and value to be added in the display.",
+        "DISPLAY_LABEL_ADD"             : "Insert label for the additional value in the display.",
+        "DISPLAY_LABEL_EXISTS_ALREADY"  : "Label already exists in the display.",
+        "DISPLAY_NOT_ADDED"             : "No display added yet. Changes below will have no effect.",
         
         "EDIT"                   : "edit",
         "EDIT_ADD_DISPLAY"       : "Add and edit display",
@@ -392,6 +392,3 @@ var language_app = {
         "WORKING_MODES"                : "Working modes",
         }
     }
-
-// -------------------------------------
-// EOF
