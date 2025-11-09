@@ -43,6 +43,10 @@
                 "cmd": ["get"],
                 "get": "get=device-features"
             },
+            "device-configuration": {
+                "cmd": ["get"],
+                "get": "get=device-configuration"
+            },
             "state": {
                 "cmd": [
                     "get",
