@@ -10,6 +10,12 @@
             "toggle": "set={'state': 'TOGGLE'}"
 		},
         "commands" : {
+            "availability": {
+                "cmd": ["get"],
+                "get": "get=availability",
+                "type": "enum",
+                "values": ["online", "offline"]
+            },
 			"link-quality": {
                 "cmd": [
                     "get"
@@ -28,6 +34,14 @@
                     "ON",
                     "OFF"
                 ]
+            },
+            "device-info": {
+                "cmd": ["get"],
+                "get": "get=device-info"
+            },
+            "device-features": {
+                "cmd": ["get"],
+                "get": "get=device-features"
             },
             "state": {
                 "cmd": [
