@@ -39,7 +39,6 @@ The following interfaces are integrated at the moment.
 
 * create a directory (capital letters) for your device in the directory [/data/devices/](../../data/devices/)
 * create the file **00_default.json** in this directory that defines commands for all devices controlled by this API using the following format:
-
 ```json
 {
   "data": {
@@ -74,16 +73,28 @@ The following interfaces are integrated at the moment.
     },
     "query" : {
       "load_interval": { "5": ["cmd_name_3", "cmd_name_4"] }, 
-      "load_default": 30,
+      "load_default": 60,
       "load_after": ["btn_name_1","cmd_name_3"],
-      "load_after_commands": ["cmd_name_3","cmd_name_4"]
-      "load_commands": ["cmd_name_1","cmd_name_2","cmd_name_3","cmd_name_4"]
+      "load_after_commands": ["cmd_name_3","cmd_name_4"],
+      "load_never": [],
+      "load_only": ["cmd_name_1","cmd_name_2","cmd_name_3","cmd_name_4"]
     }
   }
 }
 ```
-* create a file with device specific buttons and commands using the same format
-* create the file **00_interface.json** in this directory that defines the connection to the devices controlled by this API (the content of the device definition might be different depending on the API, i.e., it might contain username and password):
+* For ZigBee devices this file can be generated automatically in the API Settings of the app. 
+  Open 'API: ZIGBEE2MQTT' and the desired API-Device, navigate to the sheet "API create config".
+* In the **query** section you can set the following
+  * _load_interval_: load specific commands in a defined interval, e.g., "cmd_name_3" and "cmd_name_4" every 5 seconds (values from "commands")
+  * _load_default_: load all commands at this default interval (integer)
+  * _load_after_: after this commands load the values defined in _load_after_values_ in addition to the defined intervals (values from "commands" and "buttons")
+  * _load_after_values_: defines values that will be loaded when _load_after_ (values from "commands")
+  * _load_never_: not implemented yet
+  * _load_only_: not implemented yet
+
+
+* Create a file with device specific buttons and commands using the same format
+* Create the file **00_interface.json** in this directory that defines the connection to the devices controlled by this API (the content of the device definition might be different depending on the API, i.e., it might contain username and password):
 
 ```json
 {

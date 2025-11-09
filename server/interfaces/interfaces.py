@@ -478,7 +478,7 @@ class Connect(RemoteThreadingClass):
         if self.api[api_dev].count_error > 0:
             self.logging.debug("ERROR RATE ... error: " + str(is_error) +  " / " + str(self.api[api_dev].count_error))
 
-    def api_send_directly(self, device, command):
+    def api_send_directly(self, device, command, external=False):
         """
         send command directly to API of the device
         """
@@ -492,23 +492,36 @@ class Connect(RemoteThreadingClass):
             return_msg = {
                 "connect": self.api[device].status,
                 "command": command_string,
-                "answer": answer
+                "answer": answer,
+                "device_id": external,
+                "last_action": self.api[device].last_action,
+                "last_action_cmd": self.api[device].last_action_cmd
                 }
         else:
-            api_dev = self.device_api_string(device)
-            device_id = self.device_id_get(device)
-            method = self.api_method(device)
-            self.logging.info("__SEND DIRECTLY: " + api_dev + "/" + device + " | " + command)
+            if external:
+                api_dev, device_id = device.split("||")
+                self.logging.info("__SEND DIRECTLY: " + api_dev + "/** | " + command)
 
-            if self.api[api_dev].status == "Connected":
-                answer = self.api[api_dev].query(device, device_id, command)
-                power = self.device_status(device)["status"]["power"]
+                if self.api[api_dev].status == "Connected":
+                    answer = self.api[api_dev].query(device_id, device_id, command)
+                    power = "N/A"
+            else:
+                api_dev = self.device_api_string(device)
+                device_id = self.device_id_get(device)
+                self.logging.info("__SEND DIRECTLY: " + api_dev + "/" + device + " | " + command)
+
+                if self.api[api_dev].status == "Connected":
+                    answer = self.api[api_dev].query(device, device_id, command)
+                    power = self.device_status(device)["status"]["power"]
 
             return_msg = {
                 "connect": self.api[api_dev].status,
                 "command": command,
                 "power": power,
-                "answer": answer
+                "answer": answer,
+                "device_id": external,
+                "last_action": self.api[api_dev].last_action,
+                "last_action_cmd": self.api[api_dev].last_action_cmd
                 }
 
         return return_msg
@@ -600,7 +613,7 @@ class Connect(RemoteThreadingClass):
                 return return_msg
 
             if self.last_message != return_msg:
-                self.logging.warning(return_msg)
+                self.logging.debug(return_msg)
 
             self.last_message = return_msg
             self.api_error_count(device, True)
@@ -693,7 +706,7 @@ class Connect(RemoteThreadingClass):
                 return return_msg
 
             if self.last_message != return_msg:
-                self.logging.warning(return_msg)
+                self.logging.debug(return_msg)
             self.last_message = return_msg
             self.api_error_count(device, True)
         else:

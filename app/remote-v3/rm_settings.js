@@ -774,7 +774,8 @@ function rmSettings (name) {	// IN PROGRESS
             }   }
         }
 
-    this.module_interface_edit_list = function (interface, data) {
+    this.module_interface_edit_list = function (interface, data, selected_device = "") {
+
         var text = "";
         var devices_per_interface = data["CONFIG"]["apis"]["structure"];
         var devices_detect = data["CONFIG"]["apis"]["list_detect"];
@@ -783,7 +784,10 @@ function rmSettings (name) {	// IN PROGRESS
         var external_ids = {};
 
         for (var api_device in devices_per_interface[interface]) {
-            details += "<i>API Device: " + api_device + "</i>&nbsp;&nbsp;";
+
+            if (selected_device !== "" && selected_device !== api_device) { continue; }
+            if (selected_device === "") { details += "<i>API Device: " + api_device + "</i>&nbsp;&nbsp;"; }
+
             var connect  = data["STATUS"]["interfaces"]["connect"][interface + "_" + api_device];
             if (!connect) { connect = "N/A"; }
             details += "<ul>";
@@ -861,13 +865,15 @@ function rmSettings (name) {	// IN PROGRESS
 
     this.module_interface_edit_info = function (data) {
 
-        var interfaces = data["DATA"]["interfaces"];
+        let interfaces  = data["DATA"]["interfaces"];
+        let sheet_boxes = {};
+
     	this.tab       = new RemoteElementTable(name+".tab");
     	this.btn       = new RemoteElementButtons(name);			    // rm_remotes-elements.js
         this.basic     = new RemoteBasicElements(name+".basic");		// rm_remotes-elements.js
         this.json_edit = new RemoteJsonEditing(id=name+".json", format_style="compact", style="width:100%;height:210px;");
 
-    	this.list      = function (interface, data) {
+    	this.list_connected_devices = function (interface, device, data) {
             var text  = "";
             var count = 0;
             var devices_per_interface = dataAll["CONFIG"]["apis"]["structure"];
@@ -876,11 +882,11 @@ function rmSettings (name) {	// IN PROGRESS
             var details = "<div style='width:100%;height:9px;'></div>";
 
             for (var api_device in devices_per_interface[interface]) {
-                details += "<i>API Device: " + api_device + "</i>&nbsp;&nbsp;";
-                var connect  = dataAll["STATUS"]["interfaces"]["connect"][interface + "_" + api_device];
+                if (device === "" || api_device !== device) { continue; }
+                if (device === "") { details += "<i>API Device: " + api_device + "</i>&nbsp;&nbsp;"; }
 
-                //details += "<text id='api_status_short_"+interface+"_"+api_device+"'></text>";
-                details += "<ul>";
+                var connect  = dataAll["STATUS"]["interfaces"]["connect"][interface + "_" + api_device];
+                details += this.tab.start();
                 for (var i=0;i<devices_per_interface[interface][api_device].length;i++) {
                     count += 1;
                     var device          = devices_per_interface[interface][api_device][i];
@@ -902,16 +908,130 @@ function rmSettings (name) {	// IN PROGRESS
                         power_status = "<u id=\"CHANGE_STATUS_"+device+"\"><status onclick=\""+command_on+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
                         }
 
-                    details += "<li><b>["+device+"]</b> <i>"+label+":</i> " + power_status + hidden + "</li>" + idle;
+                    details += this.tab.row("<b>["+device+"]</b>", "<i>"+label+":</i> " + power_status + hidden + "<br/>" + idle);
                     }
-                details += "</ul>";
+                details += this.tab.end();
                 }
             details += "<br/>";
                 //text += this.basic.container("details_"+interface,"Interface: "+interface+" </b><text id='api_status_"+interface+"'> &nbsp;...</text>",details,false);
                 //}
             return [count, details];
             }
+        this.list_api_device_settings = function (interface, device, show_buttons=undefined) {
+
+            let temp                  = "";
+            let information           = "<div id='api_status_data_"+interface+"_"+device+"'></div>";
+            let devices_per_interface = dataAll["CONFIG"]["apis"]["structure"];
+            let connected_devices     = devices_per_interface[interface][device].length;
+
+            let api_dev        = interface.toLowerCase() + "_" + device.toLowerCase();
+            let link_save      = "apiSetConfig_InterfaceData( \""+interface+"_"+device+"\", \"api_status_edit_"+interface+"_"+device+"\" );" +
+                                 "rm3json_edit.disable(\"api_status_edit_"+interface+"_"+device+"\");";
+            let link_reconnect = "apiReconnectInterface( \""+interface+"_"+device+"\");"
+            let link_edit      = "rm3json_edit.disable(\"api_status_edit_"+interface+"_"+device+"\",false);" +
+                                 "this.className=\"rm-button hidden\";" +
+                                 "document.getElementById(\"save_"+api_dev+"\").className=\"rm-button settings\";";
+            let link_api_info  = "window.open(\""+interfaces[interface]["API-Info"]+"\")";
+            let link_on_off    = "apiApiDeviceOnOff_button(\""+interface+"\", \""+device+"\", this);";
+
+            let buttons = "";
+            let buttons_plus = "";
+
+            console.log("module_interface_edit_list: " + interface + "_" + device)
+            let connect_status_api = dataAll["STATUS"]["interfaces"]["active"][interface];
+            let connect_status     = dataAll["STATUS"]["interfaces"]["connect"][interface+"_"+device];
+
+            if (!connect_status) { connect_status = "NO DEVICE connected yet."; }
+
+            let on_off_status = "";
+            if (connect_status_api == false || connected_devices == 0)  { on_off_status = "N/A"; }
+            else if (connect_status.indexOf("OFF") > -1)                { on_off_status = "OFF"; }
+            else if (connect_status.indexOf("ERROR") > -1)              { on_off_status = "ERROR"; }
+            else                                                        { on_off_status = "ON"; }
+
+            buttons      += this.btn.sized("onoff_"+api_dev,      on_off_status,    "settings",  link_on_off);
+            buttons      += this.btn.sized("reconnect_"+api_dev,  lang("RECONNECT"),"settings",  link_reconnect);
+            buttons      += this.btn.sized("edit_"+api_dev,       lang("EDIT"),     "settings",  link_edit)
+            buttons      += this.btn.sized("save_"+api_dev,       lang("SAVE"),     "hidden",    link_save);
+            buttons      += this.btn.sized("info_"+api_dev,       lang("API_INFO"), "settings",  link_api_info);
+
+            if (dataAll["CONFIG"]["apis"]["list_api_commands"][interface+"_"+device] && dataAll["CONFIG"]["apis"]["list_api_commands"][interface+"_"+device].length > 0) {
+                if (show_buttons === undefined) { buttons_plus += "<hr style='width:100%;float:left;'/>"; }
+                for (var i=0;i<dataAll["CONFIG"]["apis"]["list_api_commands"][interface+"_"+device].length > 0;i++) {
+                    var command = dataAll["CONFIG"]["apis"]["list_api_commands"][interface+"_"+device][i];
+                    var command_link = "apiSendToApi(\"" + interface + "_" + device + "::" +command + "\");";
+                    buttons_plus += this.btn.sized("api_cmd_"+interface+"_"+device, command, "settings", command_link);
+                    }
+                }
+
+            console.debug(interfaces[interface]["API-Devices"][device]);
+            if (interfaces[interface]["API-Devices"][device]["AdminURL"]) {
+                cmd_url  = "window.open(\""+interfaces[interface]["API-Devices"][device]["AdminURL"]+"\", \"_blank\", \"noopener,noreferrer\");";
+                buttons_plus += this.btn.sized("api_cmd_"+interface+"_"+device+"_admin", "Admin-Tool", "settings", cmd_url);
+            }
+
+            if (show_buttons === undefined) {
+                buttons += buttons_plus;
+            }
+
+            if (!show_buttons) {
+                // create edit dialog
+                temp    += this.tab.start();
+                temp    += this.tab.row("ID: ",    interface+"_"+device);
+                if (interfaces[interface]["API-Devices"][device]["PowerDevice"] && interfaces[interface]["API-Devices"][device]["PowerDevice"] != "") {
+                    temp    += this.tab.row("Power: ", interfaces[interface]["API-Devices"][device]["PowerDevice"] +
+                                                       "<text id='power_status_"+interface+"_"+device+"'></text>");
+                    }
+                temp    += this.tab.row("Devices:", connected_devices);
+                temp    += this.tab.row("Status:", "<div id='api_status_"+interface+"_"+device+"' class='api-status-info'></div>");
+                temp    += this.tab.row("<div style='height:5px;width:100%'></div>");
+                temp    += this.tab.row(information, false);
+                temp    += this.tab.row("<div style='width:100%;text-align:center;'>" + buttons + "</div>", false);
+                temp    += this.tab.end();
+            } else if (buttons_plus !== "") {
+                temp    += this.tab.start();
+                temp    += this.tab.row("Admin actions:", buttons_plus );
+                temp    += this.tab.end();
+            }
+            return temp;
+        }
+        this.create_device_configuration = function (interface, device) {
+            let temp = "";
+            let select = "";
+            let key2 = "";
+            let config_create = ("device-configuration" in interfaces[interface]["API-Config"]["commands"]);
+            let detect_devices = (interface + "_" + device in dataAll["CONFIG"]["apis"]["list_detect"]);
+            if (detect_devices) {
+                const detected = dataAll["CONFIG"]["apis"]["list_detect"][interface + "_" + device];
+                let detected_select = {}
+                Object.keys(detected).forEach(key => {
+                    api_string = interface + "_" + device + "||";
+                    detected_select[api_string + key] = detected[key]["description"];
+                    if (!detected[key]["description"] || detected_select[api_string + key] === "") { detected_select[api_string + key] = key; }
+                });
+                select = this.basic.select("api_device-"+interface+"_"+device, "detected device", detected_select, "", "");
+                }
+
+            if (config_create) {
+                this.btn.width = "80px;";
+                let activate_copy_button = "document.getElementById('copy_button').disabled=false;document.getElementById('copy_button').style.backgroundColor='';";
+                temp += lang("API_CREATE_CONFIG_INFO", [interface]);
+                temp += "<br/>&nbsp;";
+                //temp += "<div id='api_device-"+interface+"_"+device+"'>light</div><br/>";
+                temp += this.tab.start();
+                temp += this.tab.row("Detected:","<div id='api_device-"+interface+"_"+device+"_container'>"+select+"</div>");
+                temp += this.tab.row("API Call:<br/>","<div id='api_command-"+interface+"_"+device+"'>get=device-configuration</div><br/>");
+                temp += this.tab.row("<div class='remote-edit-cmd' id='api_response'></div><br/>",false);
+                temp += this.tab.end();
+                temp += this.btn.edit("apiSendToDeviceApi( getValueById('api_device-"+interface+"_"+device+"'), getTextById('api_command-"+interface+"_"+device+"'), true);"+activate_copy_button, lang("CREATE"), "") + "&nbsp;";
+                temp += this.btn.edit("copyTextById('JSON_copy',appMsg,'"+lang("COPIED_TO_CLIPBOARD")+"');", lang("COPY"), "disabled", "copy_button");
+            }
+            return temp;
+        }
+
     	this.btn.width = "72px";
+
+    	console.error(data);
 
         for (var key in interfaces) {
             var id        = "interface_edit_"+key;
@@ -919,104 +1039,31 @@ function rmSettings (name) {	// IN PROGRESS
             var setting   = "";
             setting += "<hr style='border:solid lightgray 1px;'/>";
 
-            var [count, overview] = this.list(key, data);
-            var container_title = "</b>Connected devices";
-            if (count == 0) { container_title += " (empty)"; }
-            else            { container_title += " ("+count+")"; }
-            setting += this.basic.container("details_"+key+"_overview", container_title, overview, false);
-
             for (var dev in interface["API-Devices"]) {
 
-                var information    = "<div id='api_status_data_"+key+"_"+dev+"'></div>";
-                var devices_per_interface = dataAll["CONFIG"]["apis"]["structure"];
-                var connected_devices     = devices_per_interface[key][dev].length;
-
-                var api_dev        = key.toLowerCase() + "_" + dev.toLowerCase();
-                var link_save      = "apiSetConfig_InterfaceData( \""+key+"_"+dev+"\", \"api_status_edit_"+key+"_"+dev+"\" );" +
-                                     "rm3json_edit.disable(\"api_status_edit_"+key+"_"+dev+"\");";
-                var link_reconnect = "apiReconnectInterface( \""+key+"_"+dev+"\");"
-                var link_edit      = "rm3json_edit.disable(\"api_status_edit_"+key+"_"+dev+"\",false);" +
-                                     "this.className=\"rm-button hidden\";" +
-                                     "document.getElementById(\"save_"+api_dev+"\").className=\"rm-button settings\";";
-                var link_api_info  = "window.open(\""+interface["API-Info"]+"\")";
-                var link_on_off    = "apiApiDeviceOnOff_button(\""+key+"\", \""+dev+"\", this);";
-
-                var buttons   = "";
-                console.log("module_interface_edit_list: " + key + "_" + dev)
-                var connect_status_api = dataAll["STATUS"]["interfaces"]["active"][key];
-                var connect_status     = dataAll["STATUS"]["interfaces"]["connect"][key+"_"+dev];
-
-                if (!connect_status) { connect_status = "NO DEVICE connected yet."; }
-
-                var on_off_status = "";
-                if (connect_status_api == false || connected_devices == 0)  { on_off_status = "N/A"; }
-                else if (connect_status.indexOf("OFF") > -1)                { on_off_status = "OFF"; }
-                else if (connect_status.indexOf("ERROR") > -1)              { on_off_status = "ERROR"; }
-                else                                                        { on_off_status = "ON"; }
-
-                buttons      += this.btn.sized("onoff_"+api_dev,      on_off_status,    "settings",  link_on_off);
-                buttons      += this.btn.sized("reconnect_"+api_dev,  lang("RECONNECT"),"settings",  link_reconnect);
-                buttons      += this.btn.sized("edit_"+api_dev,       lang("EDIT"),     "settings",  link_edit)
-                buttons      += this.btn.sized("save_"+api_dev,       lang("SAVE"),     "hidden",    link_save);
-                buttons      += this.btn.sized("info_"+api_dev,       lang("API_INFO"), "settings",  link_api_info);
-
-                if (dataAll["CONFIG"]["apis"]["list_api_commands"][key+"_"+dev] && dataAll["CONFIG"]["apis"]["list_api_commands"][key+"_"+dev].length > 0) {
-                    buttons += "<hr style='width:100%;float:left;'/>";
-                    for (var i=0;i<dataAll["CONFIG"]["apis"]["list_api_commands"][key+"_"+dev].length > 0;i++) {
-                        var command = dataAll["CONFIG"]["apis"]["list_api_commands"][key+"_"+dev][i];
-                        var command_link = "apiSendToApi(\"" + key+"_"+dev + "::" +command + "\");";
-                        buttons += this.btn.sized("api_cmd_"+key+"_"+dev, command, "settings", command_link);
-                        }
-                    }
-
-                console.error(interface["API-Devices"][dev]);
-                if (interface["API-Devices"][dev]["AdminURL"]) {
-                    cmd_url  = "window.open(\""+interface["API-Devices"][dev]["AdminURL"]+"\", \"_blank\", \"noopener,noreferrer\");";
-                    buttons += this.btn.sized("api_cmd_"+key+"_"+dev+"_admin", "Admin-Tool", "settings", cmd_url);
-                }
-
-                // ---------------------> add AdminURL
-
-                var temp = this.tab.start();
-                temp    += this.tab.row("ID: ",    use_color(key+"_"+dev, "VALUE"));
-                if (interface["API-Devices"][dev]["PowerDevice"] && interface["API-Devices"][dev]["PowerDevice"] != "") {
-                    temp    += this.tab.row("Power: ", use_color(interface["API-Devices"][dev]["PowerDevice"] +
-                                                       "<text id='power_status_"+key+"_"+dev+"'></text>", "VALUE"));
-                    }
-                temp    += this.tab.row("Devices:", use_color(connected_devices, "VALUE"));
-                temp    += this.tab.row("Status:", "<text id='api_status_"+key+"_"+dev+"'></text>");
-                temp    += this.tab.row(information, false);
-                temp    += this.tab.row("<div style='width:100%;text-align:center;'>" + buttons + "</div>");
-                temp    += this.tab.end();
-
+                //let temp_edit_device_config = this.list_api_device_settings(key, dev);
+                let temp_edit_device_config = "<div id='api-setting-"+key+"_"+dev+"'></div>";
                 var container_title = "</b>API-Device: "+dev+"&nbsp;&nbsp;<text id='api_status_icon_"+key+"_"+dev+"' style='font-size:16px;'></text>";
-
-                setting += this.basic.container("details_"+key+"_"+dev, container_title, temp, false);
+                setting += this.basic.container("details_"+key+"_"+dev, container_title, temp_edit_device_config, false);
             }
-            setting += "<br/>";
-            setTextById(id, setting);
+            setTextById(id, setting + "<br/>");
 
+            // create sheet boxes for all devices of this interface
+            for (var dev in interface["API-Devices"]) {
+                buttons = this.list_api_device_settings(key, dev, true);
+                config_create = this.create_device_configuration(key, dev);
+
+                sheet_boxes[key+"_"+dev] = new RemoteElementSheetBox("api-setting-"+key+"_"+dev, "410px", true, false, false);
+                sheet_boxes[key+"_"+dev].addSheet(lang("API_DEFINITION"), this.list_api_device_settings(key, dev, false));
+                if (buttons !== "")         { sheet_boxes[key+"_"+dev].addSheet(lang("API_ADMIN"), buttons); }
+                if (config_create !== "")   { sheet_boxes[key+"_"+dev].addSheet(lang("API_CREATE_CONFIG"), config_create); }
+                sheet_boxes[key+"_"+dev].addSheet(lang("CONNECTED_DEVICES"), this.list_connected_devices(key, dev, data)[1]);
+            }
+
+            // fill JSON edit field
             for (var dev in interface["API-Devices"]) {
                 this.json_edit.create("api_status_data_"+key+"_"+dev,"api_status_edit_"+key+"_"+dev, interface["API-Devices"][dev]);
                 this.json_edit.disable("api_status_edit_"+key+"_"+dev);
-                }
-
-            var slider = document.getElementById("toggle__"+key+"_input");
-            if (dataAll["STATUS"]["connections"][key]["active"] == true) {
-                //elementVisible("interface_edit_"+key);
-                slider.value = 1;
-                slider.className = "rm-slider device_active";
-                slider.disabled = false;
-                }
-            else if (dataAll["STATUS"]["connections"][key]["active"] == false) {
-                slider.value = 0;
-                slider.className = "rm-slider device_disabled";
-                slider.disabled = false;
-                }
-            else {
-                slider.value = 0;
-                slider.className = "rm-slider device_undef";
-                slider.disabled = true;
                 }
             }
         }

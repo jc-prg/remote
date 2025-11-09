@@ -283,6 +283,34 @@ paths:
               REQUEST:
                 $ref: "#/definitions/REQUEST"
 
+  /send-api-external/{device}/:
+    post:
+      operationId: __main__.remoteAPI.send_api_external
+      tags:
+        - send
+      summary: send API request for a specific command
+      description: send API request for a specific command and return answer given by the device
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: command
+          in: body
+          schema:
+            type:
+              string
+          required: true
+      responses:
+        200:
+          description: Successfully send API request
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
   /send-api-command/{api_command}/:
     post:
       operationId: __main__.remoteAPI.send_api_command

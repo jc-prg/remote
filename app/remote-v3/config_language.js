@@ -49,6 +49,13 @@ let language_app = {
         "AUDIO_N/A_AS_MAIN"     : "This device can't be set as main AUDIO device, no audio volume control available.",
         
         "API"                   : "API",
+        "API_ADMIN"             : "API admin",
+        "API_CREATE_CONFIG"     : "API create config",
+        "API_CREATE_CONFIG_INFO" : "Create a <b>device config file</b> for a device from its configuration and save this to the folder ./data/devices/{0}/&lt;device-name&gt;.json. " +
+                                   "You can adapt key names for buttons and commands and the query section to your needs. " +
+                                   "Select this file as device config when creating a new remote control for a device.",
+        "API_DEVICE"            : "API device",
+        "API_DEFINITION"        : "API definition",
         "API_INTERFACE"         : "API / API-Device",
         "API_COMMANDS"          : "API commands",
         "API_COMMANDS_TEST"     : "API commands - manual testing",
@@ -116,6 +123,7 @@ let language_app = {
         "CONNECTION_MANUAL"     : "Manual Mode",
         "CONNECTION_DISABLED"   : "API Disabled",
         "CONNECTED"             : "connected",
+        "CONNECTED_DEVICES"     : "connected devices",
 
         "COLORPICKER_SELECT_CMD": "Select command, to insert color picker.",
         "COLORPICKER_N/A"       : "Color picker not supported",
@@ -127,7 +135,10 @@ let language_app = {
         
         "COMMAND_DELETE_INFO"   : "When deleted you can record a command for a button again.",
         "COMMAND_RECORD_INFO"   : "Undefined buttons are colored blue. Click to record an IR command for those buttons.",
-        
+        "COPY"                  : "copy",
+        "COPIED_TO_CLIPBOARD"   : "Copied content to clipboard.",
+        "CREATE"                : "create",
+
         "DESCRIPTION"           : "Description",
         
         "DELETE"                : "delete",

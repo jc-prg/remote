@@ -36,6 +36,12 @@
                 ]
             }
         },
+        "query" : {
+          "load_intervals" : {
+            "10": ["l1-power","l2-power"]
+          },
+          "load_after": ["l1-on","l1-off","l1-toggle","l2-on","l2-off","l2-toggle"]
+        },
         "description": "zigbee-switch"
     },
     "info": "jc://remote/ - In this file the commands and buttons are defined."

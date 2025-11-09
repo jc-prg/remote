@@ -653,9 +653,10 @@ function apiTimerDelete(key) {
 
 
 // send a command directly to an API of a device
-function apiSendToDeviceApi( device, api_command ) {
+function apiSendToDeviceApi( device, api_command, external_id=false ) {
     var send_cmd  = ["send-api", device];
     var send_data = api_command;
+    if (external_id) { send_cmd[0] += "-external"; }
 	appFW.requestAPI( "POST", send_cmd, send_data, apiSendToDeviceApi_return );
 }
 
@@ -667,11 +668,35 @@ function apiSendToApi( api_command ) {
 function apiSendToDeviceApi_return( data ) {
     console.debug("apiSendToDeviceApi_return:");
     console.debug(data);
-    var response    = data["REQUEST"]["Return"];
-    var answer      = "<b>" + response["interface"] + "/" + response["device"] + " (" + response["status"] + "):</b><br/>";
-    answer         += "<pre>" + syntaxHighlightJSON(response["answer"]["answer"]) + "</pre>";
-    answer         += "<br/>&nbsp;<br/>-----<br/><i>";
-    answer         += "total: " + (data["REQUEST"]["load-time-app"])/1000 + "s / srv: " + Math.round(data["REQUEST"]["load-time"]*10000)/10000 + "s";
+
+    let formatted = "N/A";
+    const response = data["REQUEST"]["Return"];
+    const timecode = response["answer"]["last_action"]; // timestamp (seconds)
+    if (timecode > 0) {
+        const date = new Date(timecode * 1000); // convert to milliseconds
+        formatted =
+            String(date.getDate()).padStart(2, '0') + '.' +
+            String(date.getMonth() + 1).padStart(2, '0') + '.' +
+            String(date.getFullYear()).slice(-2) + ' ' +
+            String(date.getHours()).padStart(2, '0') + ':' +
+            String(date.getMinutes()).padStart(2, '0') + ':' +
+            String(date.getSeconds()).padStart(2, '0');
+            }
+
+    let answer = "";
+    answer       += "<i>Request:</i> <b>" + response["command"] + "</b><br/>";
+    if (response["answer"]["device_id"]) {
+        answer       += "<i>Interface &amp; device:</i> " + response["device"].replace("||", " / ");
+        }
+    else {
+        answer       += "<i>Interface &amp; device:</i> " + response["interface"] + " / " + response["device"] + " (" + response["status"] + ")";
+        }
+    answer       += "<br/>-----<br/>";
+    answer       += "<pre>" + syntaxHighlightJSON(response["answer"]["answer"]) + "</pre>";
+    answer       += "<pre id='JSON_copy' style='display:none;'>" + JSON.stringify(response["answer"]["answer"], null, 2) + "</pre>";
+    answer       += "<br/>&nbsp;<br/>-----<br/><i>";
+    answer       += "total: " + (data["REQUEST"]["load-time-app"])/1000 + "s / srv: " + Math.round(data["REQUEST"]["load-time"]*10000)/10000 + "s / " +
+                    "last: " + formatted;
     setTextById('api_response', answer);
 }
 

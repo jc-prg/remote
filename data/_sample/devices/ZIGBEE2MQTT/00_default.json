@@ -58,11 +58,13 @@
             }
 		},
         "query" : {
-          "load_intervals" : {
-            "10": ["power"]
-          },
           "load_default" : 30,
-          "load_after" : ["on", "off", "toggle"]
+          "load_intervals" : {
+            "10": ["availability","power"]
+          },
+          "load_after" : ["on", "off", "toggle"],
+          "load_after_values" : ["availability","power"],
+          "load_never": ["device-info","device-features"]
           },
 		"description" : "API for ZigBee Devices",
 		"method" : "query"

@@ -150,7 +150,7 @@
           "current-playing"
         ]
       },
-      "load_commands": [
+      "load_only": [
         "audio-info",
         "current-playing",
         "mute",

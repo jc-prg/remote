@@ -209,14 +209,14 @@ function RemoteElementButtons(name) {
 		}
 	        
 	// button edit mode		
-	this.edit            = function (onclick,label,disabled="") {
+	this.edit            = function (onclick,label,disabled="",id="") {
 		let style = "";
 		if (this.width !== "")  { style += "width:" + this.width + ";"; }
 		if (this.height !== "") { style += "height:"+this.height+";"; }
 		if (this.margin !== "") { style += "margin:"+this.margin+";"; }
 
         	if (disabled === "disabled") { style += "background-color:gray;"; }
-        	return "<button style=\""+style+"\" onClick=\""+onclick+"\" "+disabled+">"+label+"</button>";
+        	return "<button id=\""+id+"\" style=\""+style+"\" onClick=\""+onclick+"\" "+disabled+">"+label+"</button>";
         	}
 
 	// create button for single command
@@ -596,67 +596,74 @@ class RemoteElementSheetBox {
 
     constructor(containerId, height = "300px", scroll_bar = false, scroll_view = false, keep_open = true) {
         this.id = containerId;
+        this.created = false;
         this.container = document.getElementById(containerId);
-        this.container.innerHTML = "";
-        this.sheets = [];
-        this.activeIndex = 0;
-        this.scroll = scroll_bar;
-        this.scroll_into_view = scroll_view;
-        this.keep_open = keep_open;
+        if (!this.container) {
+            console.error("RemoteElementSheetBox: Could not create the sheet box, container '"+containerId+"' not found.");
+        } else {
+            this.created = true;
+            this.container.innerHTML = "";
+            this.sheets = [];
+            this.activeIndex = 0;
+            this.scroll = scroll_bar;
+            this.scroll_into_view = scroll_view;
+            this.keep_open = keep_open;
 
-        // Hauptstruktur
-        this.box = document.createElement("div");
-        this.box.className = "sheet-box";
-        this.box.style.minHeight = height;
-        this.box.style.display = "flex";
-        this.box.style.flexDirection = "column";
+            // Hauptstruktur
+            this.box = document.createElement("div");
+            this.box.className = "sheet-box";
+            this.box.style.minHeight = height;
+            this.box.style.display = "flex";
+            this.box.style.flexDirection = "column";
 
-        // Tab-Leiste Wrapper
-        this.tabWrapper = document.createElement("div");
-        this.tabWrapper.className = "tab-bar-wrapper";
+            // Tab-Leiste Wrapper
+            this.tabWrapper = document.createElement("div");
+            this.tabWrapper.className = "tab-bar-wrapper";
 
-        // Scrollbare Tab-Bar
-        this.tabBar = document.createElement("div");
-        this.tabBar.className = "tab-bar";
+            // Scrollbare Tab-Bar
+            this.tabBar = document.createElement("div");
+            this.tabBar.className = "tab-bar";
 
-        // Pfeile rechts
-        this.arrowContainer = document.createElement("div");
-        this.arrowContainer.className = "tab-scroll-right";
-        this.arrowContainer.style.display = "flex";
+            // Pfeile rechts
+            this.arrowContainer = document.createElement("div");
+            this.arrowContainer.className = "tab-scroll-right";
+            this.arrowContainer.style.display = "flex";
 
-        this.btnLeft = document.createElement("button");
-        this.btnLeft.className = "tab-scroll-btn";
-        this.btnLeft.innerHTML = "&#10094;";
-        this.btnLeft.addEventListener("click", () => this.scrollTabs(-150));
+            this.btnLeft = document.createElement("button");
+            this.btnLeft.className = "tab-scroll-btn";
+            this.btnLeft.innerHTML = "&#10094;";
+            this.btnLeft.addEventListener("click", () => this.scrollTabs(-150));
 
-        this.btnRight = document.createElement("button");
-        this.btnRight.className = "tab-scroll-btn";
-        this.btnRight.innerHTML = "&#10095;";
-        this.btnRight.addEventListener("click", () => this.scrollTabs(150));
+            this.btnRight = document.createElement("button");
+            this.btnRight.className = "tab-scroll-btn";
+            this.btnRight.innerHTML = "&#10095;";
+            this.btnRight.addEventListener("click", () => this.scrollTabs(150));
 
-        this.arrowContainer.appendChild(this.btnLeft);
-        this.arrowContainer.appendChild(this.btnRight);
+            this.arrowContainer.appendChild(this.btnLeft);
+            this.arrowContainer.appendChild(this.btnRight);
 
-        this.tabWrapper.appendChild(this.tabBar);
-        this.tabWrapper.appendChild(this.arrowContainer);
+            this.tabWrapper.appendChild(this.tabBar);
+            this.tabWrapper.appendChild(this.arrowContainer);
 
-        this.contentArea = document.createElement("div");
-        this.contentArea.className = "sheet-content";
-        this.contentArea.style.position = "relative";
+            this.contentArea = document.createElement("div");
+            this.contentArea.className = "sheet-content";
+            this.contentArea.style.position = "relative";
 
-        this.box.appendChild(this.tabWrapper);
-        this.box.appendChild(this.contentArea);
-        this.container.appendChild(this.box);
+            this.box.appendChild(this.tabWrapper);
+            this.box.appendChild(this.contentArea);
+            this.container.appendChild(this.box);
 
-        this.fade = document.createElement('div');
-        this.fade.className = 'fade-bottom';
-        this.contentArea.appendChild(this.fade);
+            this.fade = document.createElement('div');
+            this.fade.className = 'fade-bottom';
+            this.contentArea.appendChild(this.fade);
 
-        window.addEventListener("resize", () => this.updateArrowVisibility());
-        this.updateArrowVisibility();
+            window.addEventListener("resize", () => this.updateArrowVisibility());
+            this.updateArrowVisibility();
         }
+    }
 
     addSheet(title, content) {
+        if (!this.created) { console.error("RemoteElementSheetBox: Could not add sheet '"+title+"'."); return; }
         const index = this.sheets.length;
 
         // Tab erstellen

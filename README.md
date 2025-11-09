@@ -52,7 +52,7 @@ Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 ### App v3.0 / Server v3.0 (in progress)
 
 * simple implementation of device groups (use buttons for all devices of a group at the same time)
-* integration of ZigBee interface (using a Zigbee USB Dongle and ZigBee2MQTT): Smart Plug + RGB+CCT Bulb 
+* integration of ZigBee interface (using a Zigbee USB Dongle and ZigBee2MQTT): Smart Socket + RGB+CCT Bulb + Smart Switch
 * schedule events (device commands and macros)
 * color picker for RGB, CIE_1391, brightness and color temperature
 * RGB+CCT light templates

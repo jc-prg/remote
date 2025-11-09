@@ -362,12 +362,16 @@ ul.help ul li {
     color           : var(--rm-color-edit-cmd-text);
     padding         : 6px;
     width           : 95%;
+    max-width       : 95%;
     height          : 150px;
     overflow-y      : scroll;
     text-align      : left;
     font-size       : 11px;
 	border          : solid 1px var(--rm-color-edit-cmd-border);
 	border-radius   : 5px;
+}
+.remote-edit-cmd pre {
+    max-width       : 200px;
 }
 
 .favicon {

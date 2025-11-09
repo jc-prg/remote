@@ -674,23 +674,27 @@ class RemoteAPI(RemoteDefaultClass):
             data["DATA"]["interfaces"] = {}
             for api in interfaces:
                 api_config = self.config.read(rm3presets.commands + api + "/00_interface")
+                api_device_config = self.config.read(rm3presets.commands + api + "/00_default")
                 # data["DATA"]["interfaces"][api] = str(api_config)
                 for key1 in api_config["API-Devices"]:
                     for key2 in api_config["API-Devices"][key1]:
                         if key2 == "MACAddress":
                             api_config["API-Devices"][key1][key2] = str(api_config["API-Devices"][key1][key2])
 
-                data["DATA"]["interfaces"][api] = api_config
+                data["DATA"]["interfaces"][api] = api_config.copy()
+                data["DATA"]["interfaces"][api]["API-Config"] = api_device_config["data"].copy()
 
         elif interface in interfaces:
             data["REQUEST"]["Return"] = "OK"
             data["DATA"]["interface"] = interface
             api_config = self.config.read(rm3presets.commands + interface + "/00_interface")
+            api_device_config = self.config.read(rm3presets.commands + api + "/00_default")
             for key1 in api_config["API-Devices"]:
                 for key2 in api_config["API-Devices"][key1]:
                     if key2 == "MACAddress":
                         api_config["API-Devices"][key1][key2] = str(api_config["API-Devices"][key1][key2])
-            data["DATA"][interface] = api_config
+            data["DATA"][interface] = api_config.copy()
+            data["DATA"][api]["API-Config"] = api_device_config["data"].copy()
 
         else:
             data["REQUEST"]["Return"] = "ERROR"
@@ -823,7 +827,7 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
-    def send_api(self, device, command):
+    def send_api_external(self, device, command):
         """
         Execute API command given as parameter and return value
 
@@ -833,16 +837,32 @@ class RemoteAPI(RemoteDefaultClass):
         Returns:
             dict: API response
         """
+        return self.send_api(device, command, True)
+
+    def send_api(self, device, command, external=False):
+        """
+        Execute API command given as parameter and return value
+
+        Args:
+            device (str): device id
+            command (str): device API command
+            external (bool): is device id external
+        Returns:
+            dict: API response
+        """
         data = self._start(["request-only"])
 
-        status = self.apis.device_status(device)["status"]
-        if "power" in status:
-            pwr_status = status["power"]
+        if not external:
+            status = self.apis.device_status(device)["status"]
+            if "power" in status:
+                pwr_status = status["power"]
+            else:
+                pwr_status = "N/A"
         else:
             pwr_status = "N/A"
 
         data["REQUEST"]["Return"] = {
-            "answer": self.apis.api_send_directly(device, command),
+            "answer": self.apis.api_send_directly(device, command, external),
             "device": device,
             "command": command,
             "interface": self.apis.device_api_string(device),

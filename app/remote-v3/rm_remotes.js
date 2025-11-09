@@ -25,7 +25,7 @@ class RemoteMain {
         this.frames_notouch = false;
 
         this.basic = new RemoteBasicElements(name + ".basic");		// rm_remotes-elements.js
-        this.button = new RemoteElementButtons(name);			// rm_remotes-elements.js
+        this.button = new RemoteElementButtons(name + ".button");			// rm_remotes-elements.js
         this.display = new RemoteElementDisplay(name + ".display");		// rm_remotes-elements.js
         this.json = new RemoteJsonHandling(name + ".json");		// rm_remotes-elements.js
 
@@ -602,15 +602,19 @@ class RemoteMain {
             // API Testing
             this.basic.input_width = "90%";
             this.button.height = "25px;";
+            let activate_copy_button = "document.getElementById('copy_button').disabled=false;document.getElementById('copy_button').style.backgroundColor='';";
             edit = lang("TEST_DEVICE_COMMANDS", [device]);
             edit += "<div id='api_command_select'><select style='width:90%'><option>" + lang("LOADING") + " ...</option></select></div><br/>";
             edit += this.basic.input("api_command") + "<br/>";
-            edit += this.button.edit("apiSendToDeviceApi( '" + device + "', getValueById('api_command') );", lang("TRY_OUT"), "") + "&nbsp;";
-            edit += this.button.edit("apiSendToDeviceApi( '" + device + "', 'jc.get_available_commands()' );", lang("GET_AVAILABLE_COMMANDS"), "");
+            this.button.width = "80px;";
+            edit += this.button.edit("apiSendToDeviceApi( '" + device + "', getValueById('api_command'));"+activate_copy_button, lang("TRY_OUT"), "") + "&nbsp;";
+            this.button.width = "120px;";
+            edit += this.button.edit("apiSendToDeviceApi( '" + device + "', 'jc.get_available_commands()');"+activate_copy_button, lang("GET_AVAILABLE_COMMANDS"), "") + "&nbsp;";
+            this.button.width = "80px;";
+            edit += this.button.edit("copyTextById('JSON_copy',appMsg,'"+lang("COPIED_TO_CLIPBOARD")+"');", lang("COPY"), "disabled", "copy_button");
             edit += "<br/>&nbsp;<br/>";
-            edit += "<div class='remote-edit-cmd' id='api_response'></div>"
+            edit += "<div class='remote-edit-cmd' id='api_response'></div>";
             edit += "<div id='api_description' style='margin-top:5px;'></div>";
-            edit += "</center>";
             edit_test = edit;
             //remote  += this.basic.container("remote_api03",lang("API_COMMANDS_TEST"),edit,false);
         }
