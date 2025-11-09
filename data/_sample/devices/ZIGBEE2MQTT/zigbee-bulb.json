@@ -5,6 +5,12 @@
           "brightness-high": "set={'brightness': 254}",
           "brightness-low": "set={'brightness': 30}",
           "cyan": "set={'color': {'x': 0.2200, 'y': 0.3500}}",
+          "effect-blink": "set={'effect': 'blink'}",
+          "effect-breathe": "set={'effect': 'breathe'}",
+          "effect-channel-change": "set={'effect': 'channel_change'}",
+          "effect-finish-effect": "set={'effect': 'finish_effect'}",
+          "effect-okay": "set={'effect': 'okay'}",
+          "effect-stop-effect": "set={'effect': 'stop_effect'}",
           "green": "set={'color': {'x': 0.2900, 'y': 0.6200}}",
           "orange": "set={'color': {'x': 0.5600, 'y': 0.4000}}",
           "pink": "set={'color': {'x': 0.3500, 'y': 0.1400}}",
@@ -15,22 +21,22 @@
           "white-neutral": "set={'color_temp': 'neutral'}",
           "white-warm": "set={'color_temp': 'warm'}",
           "white-warmest": "set={'color_temp': 'warmest'}",
-          "yellow": "set={'color': {'x': 0.4400, 'y': 0.5000}}"
+          "yellow": "set={'color': {'x': 0.4400, 'y': 0.5000}}",
       },
       "commands": {
           "brightness": {
-              "cmd": [
-                  "get",
-                  "set"
-              ],
-              "get": "get=brightness",
-              "set": "set={'brightness': {DATA}}",
-              "type": "integer",
-              "values": {
-                  "max": 254,
-                  "min": 0
-              }
-          },
+                "cmd": [
+                    "get",
+                    "set"
+                ],
+                "get": "get=brightness",
+                "set": "set={'brightness': {DATA}}",
+                "type": "integer",
+                "values": {
+                    "max": 254,
+                    "min": 0
+                }
+            },
           "color-temp": {
               "cmd": [
                   "get",
@@ -70,8 +76,13 @@
               "type": "list"
           }
       },
-      "timing" : {
-        "15": ["brightness", "color-xy"]
+      "query" : {
+        "load_intervals" : {
+          "15": [
+            "brightness",
+            "color-xy"
+          ]
+        }
       },
       "description": "Zigbee Bulb 01: zigbee-bulb",
       "method": "query"

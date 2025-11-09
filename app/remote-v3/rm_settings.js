@@ -999,8 +999,12 @@ function rmSettings (name) {	// IN PROGRESS
             let temp = "";
             let select = "";
             let key2 = "";
+
             let config_create = ("device-configuration" in interfaces[interface]["API-Config"]["commands"]);
             let detect_devices = (interface + "_" + device in dataAll["CONFIG"]["apis"]["list_detect"]);
+            let activate_copy_button = "document.getElementById('copy_button_"+interface+"_"+device+"').disabled=false;document.getElementById('copy_button_"+interface+"_"+device+"').style.backgroundColor='';";
+            let activate_create_button = "document.getElementById('create_button_"+interface+"_"+device+"').disabled=false;document.getElementById('create_button_"+interface+"_"+device+"').style.backgroundColor='';";
+
             if (detect_devices) {
                 const detected = dataAll["CONFIG"]["apis"]["list_detect"][interface + "_" + device];
                 let detected_select = {}
@@ -1009,12 +1013,11 @@ function rmSettings (name) {	// IN PROGRESS
                     detected_select[api_string + key] = detected[key]["description"];
                     if (!detected[key]["description"] || detected_select[api_string + key] === "") { detected_select[api_string + key] = key; }
                 });
-                select = this.basic.select("api_device-"+interface+"_"+device, "detected device", detected_select, "", "");
+                select = this.basic.select("api_device-"+interface+"_"+device, "detected device", detected_select, activate_create_button, "");
                 }
 
             if (config_create) {
                 this.btn.width = "80px;";
-                let activate_copy_button = "document.getElementById('copy_button').disabled=false;document.getElementById('copy_button').style.backgroundColor='';";
                 temp += lang("API_CREATE_CONFIG_INFO", [interface]);
                 temp += "<br/>&nbsp;";
                 //temp += "<div id='api_device-"+interface+"_"+device+"'>light</div><br/>";
@@ -1023,8 +1026,8 @@ function rmSettings (name) {	// IN PROGRESS
                 temp += this.tab.row("API Call:<br/>","<div id='api_command-"+interface+"_"+device+"'>get=device-configuration</div><br/>");
                 temp += this.tab.row("<div class='remote-edit-cmd' id='api_response'></div><br/>",false);
                 temp += this.tab.end();
-                temp += this.btn.edit("apiSendToDeviceApi( getValueById('api_device-"+interface+"_"+device+"'), getTextById('api_command-"+interface+"_"+device+"'), true);"+activate_copy_button, lang("CREATE"), "") + "&nbsp;";
-                temp += this.btn.edit("copyTextById('JSON_copy',appMsg,'"+lang("COPIED_TO_CLIPBOARD")+"');", lang("COPY"), "disabled", "copy_button");
+                temp += this.btn.edit("apiSendToDeviceApi( getValueById('api_device-"+interface+"_"+device+"'), getTextById('api_command-"+interface+"_"+device+"'), true);"+activate_copy_button, lang("CREATE"), "disabled", "create_button_"+interface+"_"+device) + "&nbsp;";
+                temp += this.btn.edit("copyTextById('JSON_copy',appMsg,'"+lang("COPIED_TO_CLIPBOARD")+"');"+activate_copy_button, lang("COPY"), "disabled", "copy_button_"+interface+"_"+device);
             }
             return temp;
         }
