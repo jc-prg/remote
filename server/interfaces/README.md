@@ -103,7 +103,8 @@ The following interfaces are integrated at the moment.
   "API-Source": "https://put-url-here/",
   "API-Devices" : {
     "device01" : {
-      "Description" : "",
+      "AdminURL": "http://192.168.1.10:8081/",
+      "Description" : "API Device 01",
       "IPAddress": "192.168.1.10",
       "MACAddress": "AA:BB:CC:DD:EE:FF",
       "Methods": ["send","query"],
@@ -111,9 +112,10 @@ The following interfaces are integrated at the moment.
       "Timeout": 5
       },
     "device02" : {
-      "Description": "",
+      "AdminURL": "http://192.168.1.11:8081/",
+      "Description": "API Device 02",
       "IPAddress": "192.168.1.11",
-      "MACAddress": "AA:BB:CC:DD:EE:FF",
+      "MACAddress": "AA:BB:CC:DD:EE:00",
       "Methods": ["send","query"],
       "Port": "8080",
       "Timeout": 5

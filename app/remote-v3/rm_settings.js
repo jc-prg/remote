@@ -873,50 +873,75 @@ function rmSettings (name) {	// IN PROGRESS
         this.basic     = new RemoteBasicElements(name+".basic");		// rm_remotes-elements.js
         this.json_edit = new RemoteJsonEditing(id=name+".json", format_style="compact", style="width:100%;height:210px;");
 
-    	this.list_connected_devices = function (interface, device, data) {
-            var text  = "";
-            var count = 0;
-            var devices_per_interface = dataAll["CONFIG"]["apis"]["structure"];
+    	this.list_connected_devices = function (api, device, data) {
+            let text  = "";
+            let count = 0;
+            let devices_per_api = dataAll["CONFIG"]["apis"]["structure"];
+            let detected_devices = dataAll["CONFIG"]["apis"]["list_detect"];
+            let connected_vs_detected = {};
+            let details = "<div style='width:100%;height:9px;'></div>";
 
-            //for (var interface in devices_per_interface) {
-            var details = "<div style='width:100%;height:9px;'></div>";
-
-            for (var api_device in devices_per_interface[interface]) {
+            for (let api_device in devices_per_api[api]) {
+                let connect  = dataAll["STATUS"]["interfaces"]["connect"][api + "_" + api_device];
                 if (device === "" || api_device !== device) { continue; }
                 if (device === "") { details += "<i>API Device: " + api_device + "</i>&nbsp;&nbsp;"; }
+                else { details += "<i>"+lang("CONNECTED_RMC")+":</i><hr/>&nbsp;&nbsp;"; }
 
-                var connect  = dataAll["STATUS"]["interfaces"]["connect"][interface + "_" + api_device];
-                details += this.tab.start();
-                for (var i=0;i<devices_per_interface[interface][api_device].length;i++) {
+                details += this.tab.start("");
+                for (let i=0;i<devices_per_api[api][api_device].length;i++) {
                     count += 1;
-                    var device          = devices_per_interface[interface][api_device][i];
-                    var device_settings = dataAll["CONFIG"]["devices"][device];
-                    var method          = dataAll["CONFIG"]["devices"][device]["interface"]["method"];
-                    var power_status    = dataAll["STATUS"]["devices"][device]["power"];
-                    var label           = device_settings["settings"]["label"];
-                    var visibility      = device_settings["settings"]["visible"];
-                    var hidden          = "";
-                    var idle            = "<small id=\"device_auto_off_"+device+"\"></small>";
-                    var command_on    = "appFW.requestAPI('GET',['set','"+device+"','power','ON'], '', '', '' ); setTextById('CHANGE_STATUS_"+device+"','ON');"; //rm3settings.onoff();remoteInit();";
-                    var command_off   = "appFW.requestAPI('GET',['set','"+device+"','power','OFF'], '', '', '' );setTextById('CHANGE_STATUS_"+device+"','OFF');"; //rm3settings.onoff();remoteInit();";
+                    let connected_device = devices_per_api[api][api_device][i];
+                    let device_settings = dataAll["CONFIG"]["devices"][connected_device];
+                    let method = dataAll["CONFIG"]["devices"][connected_device]["interface"]["method"];
+                    let power_status = dataAll["STATUS"]["devices"][connected_device]["power"];
+                    let label = device_settings["settings"]["label"];
+                    let visibility = device_settings["settings"]["visible"];
+                    let hidden = "";
+                    let idle = "<small id=\"device_auto_off_"+connected_device+"\"></small>";
+                    let command_on = "appFW.requestAPI('GET',['set','"+connected_device+"','power','ON'], '', '', '' ); setTextById('CHANGE_STATUS_"+connected_device+"','ON');"; //rm3settings.onoff();remoteInit();";
+                    let command_off = "appFW.requestAPI('GET',['set','"+connected_device+"','power','OFF'], '', '', '' );setTextById('CHANGE_STATUS_"+connected_device+"','OFF');"; //rm3settings.onoff();remoteInit();";
+                    let external_id = "";
 
-                    if (visibility != "yes") { hidden = "*"; }
-                    if (method == "record" && power_status == "ON")  {
-                        power_status = "<u id=\"CHANGE_STATUS_"+device+"\"><status onclick=\""+command_off+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
-                        }
-                    else if (method == "record" && power_status == "OFF") {
-                        power_status = "<u id=\"CHANGE_STATUS_"+device+"\"><status onclick=\""+command_on+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
-                        }
-
-                    details += this.tab.row("<b>["+device+"]</b>", "<i>"+label+":</i> " + power_status + hidden + "<br/>" + idle);
+                    if (visibility !== "yes") {
+                        hidden = "*";
                     }
-                details += this.tab.end();
+                    if (method === "record" && power_status === "ON")  {
+                        power_status = "<u id=\"CHANGE_STATUS_"+connected_device+"\"><status onclick=\""+command_off+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
+                    }
+                    else if (method === "record" && power_status === "OFF") {
+                        power_status = "<u id=\"CHANGE_STATUS_"+connected_device+"\"><status onclick=\""+command_on+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
+                    }
+                    if (device_settings["settings"]["device_id"] && device_settings["settings"]["device_id"] !== "") {
+                        external_id = "<br/><span style='color:gray;'>connected to: " + device_settings["settings"]["device_id"] + "</span>";
+                        if (!connected_vs_detected[device_settings["settings"]["device_id"]]) { connected_vs_detected[device_settings["settings"]["device_id"]] = "[" + connected_device + "]"; }
+                        else { connected_vs_detected[device_settings["settings"]["device_id"]] += ", " + "[" + connected_device + "]"; }
+                    }
+
+                    details += this.tab.row("<b>["+connected_device+"]&nbsp;&nbsp;</b>", "<i>"+label+":</i> " + power_status + hidden + external_id + "<br/>" + idle);
                 }
-            details += "<br/>";
-                //text += this.basic.container("details_"+interface,"Interface: "+interface+" </b><text id='api_status_"+interface+"'> &nbsp;...</text>",details,false);
-                //}
-            return [count, details];
+                details += this.tab.end();
+
+                console.error(api_device);
+                console.error(detected_devices[api+"_"+api_device]);
+
+                if (api+"_"+api_device in detected_devices) {
+                    details += "<br/><i>"+lang("DETECTED_DEVICES")+":</i><hr/>&nbsp;&nbsp;";
+                    details += this.tab.start("");
+                    Object.keys(detected_devices[api+"_"+api_device]).forEach(key => {
+                        let description = detected_devices[api+"_"+api_device][key]["description"];
+                        let connected_remotes = "";
+
+                        if (key in connected_vs_detected) { connected_remotes = "<br/><span style='color:gray;'>used by: " + connected_vs_detected[key] + "</span>"; }
+                        if (description === "") { description = key; }
+                        details += this.tab.row("<b>"+key+"&nbsp;&nbsp;</b>", description + connected_remotes);
+                    });
+                    details += this.tab.end();
+                }
             }
+
+            details += "<br/>";
+            return [count, details];
+        }
         this.list_api_device_settings = function (interface, device, show_buttons=undefined) {
 
             let temp                  = "";
@@ -936,6 +961,7 @@ function rmSettings (name) {	// IN PROGRESS
 
             let buttons = "";
             let buttons_plus = "";
+            let buttons_admin = "";
 
             console.log("module_interface_edit_list: " + interface + "_" + device)
             let connect_status_api = dataAll["STATUS"]["interfaces"]["active"][interface];
@@ -959,7 +985,7 @@ function rmSettings (name) {	// IN PROGRESS
                 if (show_buttons === undefined) { buttons_plus += "<hr style='width:100%;float:left;'/>"; }
                 for (var i=0;i<dataAll["CONFIG"]["apis"]["list_api_commands"][interface+"_"+device].length > 0;i++) {
                     var command = dataAll["CONFIG"]["apis"]["list_api_commands"][interface+"_"+device][i];
-                    var command_link = "apiSendToApi(\"" + interface + "_" + device + "::" +command + "\");";
+                    var command_link = "apiSendToApi(\"" + interface + "_" + device + "::" +command + "\");appMsg.info(\"Command send: " + interface + "_" + device + "::" + command + "\");";
                     buttons_plus += this.btn.sized("api_cmd_"+interface+"_"+device, command, "settings", command_link);
                     }
                 }
@@ -967,11 +993,12 @@ function rmSettings (name) {	// IN PROGRESS
             console.debug(interfaces[interface]["API-Devices"][device]);
             if (interfaces[interface]["API-Devices"][device]["AdminURL"]) {
                 cmd_url  = "window.open(\""+interfaces[interface]["API-Devices"][device]["AdminURL"]+"\", \"_blank\", \"noopener,noreferrer\");";
-                buttons_plus += this.btn.sized("api_cmd_"+interface+"_"+device+"_admin", "Admin-Tool", "settings", cmd_url);
+                buttons_admin += this.btn.sized("api_cmd_"+interface+"_"+device+"_admin", "open", "settings", cmd_url);
             }
 
             if (show_buttons === undefined) {
                 buttons += buttons_plus;
+                buttons += buttons_admin;
             }
 
             if (!show_buttons) {
@@ -990,7 +1017,8 @@ function rmSettings (name) {	// IN PROGRESS
                 temp    += this.tab.end();
             } else if (buttons_plus !== "") {
                 temp    += this.tab.start();
-                temp    += this.tab.row("Admin actions:", buttons_plus );
+                if (buttons_plus !== "")  { temp += this.tab.row("Admin actions:", buttons_plus ); }
+                if (buttons_admin !== "") { temp += this.tab.row("Admin tool:", buttons_admin ); }
                 temp    += this.tab.end();
             }
             return temp;
@@ -1060,7 +1088,7 @@ function rmSettings (name) {	// IN PROGRESS
                 sheet_boxes[key+"_"+dev].addSheet(lang("API_DEFINITION"), this.list_api_device_settings(key, dev, false));
                 if (buttons !== "")         { sheet_boxes[key+"_"+dev].addSheet(lang("API_ADMIN"), buttons); }
                 if (config_create !== "")   { sheet_boxes[key+"_"+dev].addSheet(lang("API_CREATE_CONFIG"), config_create); }
-                sheet_boxes[key+"_"+dev].addSheet(lang("CONNECTED_DEVICES"), this.list_connected_devices(key, dev, data)[1]);
+                sheet_boxes[key+"_"+dev].addSheet(lang("CONNECTED"), this.list_connected_devices(key, dev, data)[1]);
             }
 
             // fill JSON edit field
