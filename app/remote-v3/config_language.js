@@ -124,9 +124,12 @@ let language_app = {
         "CONNECTION_DISABLED"   : "API Disabled",
         "CONNECTED"             : "connected",
         "CONNECTED_DEVICES"     : "connected devices",
+        "CONNECTED_RMC"         : "connected remote controls",
+        "DETECTED_DEVICES"      : "detected devices",
 
-        "COLORPICKER_SELECT_CMD": "Select command, to insert color picker.",
-        "COLORPICKER_N/A"       : "Color picker not supported",
+        "COLOR_PICKER_SELECT_CMD": "Select command to insert color picker.",
+        "COLOR_PICKER_SELECT_MODEL": "Select color model to insert color picker.",
+        "COLOR_PICKER_N/A"      : "Color picker not supported",
         "COLOR_PICKER"          : "color picker",
 
         "CONFIG_INTERFACE"      : "Interface-Config",

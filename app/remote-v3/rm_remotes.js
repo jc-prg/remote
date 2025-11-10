@@ -25,14 +25,13 @@ class RemoteMain {
         this.frames_notouch = false;
 
         this.basic = new RemoteBasicElements(name + ".basic");		// rm_remotes-elements.js
+        this.advanced = new RemoteAdvancedElements(name + ".advanced", this);
         this.button = new RemoteElementButtons(name + ".button");			// rm_remotes-elements.js
         this.display = new RemoteElementDisplay(name + ".display");		// rm_remotes-elements.js
-        this.json = new RemoteJsonHandling(name + ".json");		// rm_remotes-elements.js
 
+        this.json = new RemoteJsonHandling(name + ".json");		// rm_remotes-elements.js
         this.tab = new RemoteElementTable(name + ".tab");		// rm_remotes-elements.js
         this.keyboard = new rmRemoteKeyboard(name + ".keyboard");	// rm_remotes-keyboard.js
-
-        this.advanced = new RemoteAdvancedElements(name + ".element", this);
 
         this.logging = new jcLogging(this.app_name);
         this.tooltip = new jcTooltip(this.app_name + ".tooltip");	// rm_remotes-elements.js
@@ -683,35 +682,19 @@ class RemoteMain {
         let display_sizes = this.display.sizes();
         let device_info = device_config["settings"];
 
-        // check if color values exist
-        let select_color_values = false;
-        for (let i = 0; i < device_config["commands"]["set"].length; i++) {
-            let key = device_config["commands"]["set"][i];
-            if (key.indexOf("color") >= 0) {
-                select_color_values = true;
-            }
-            if (key.indexOf("bright") >= 0) {
-                select_color_values = true;
-            }
-        }
-
         // check data for preview
         let remote_definition;
         let remote_display_size;
         let remote_display;
-        let preview;
         if (preview_remote === "") {
-
             remote_definition = device_config["remote"]["remote"];
         } else {
             remote_definition = this.json.get_value(preview_remote, device_config["remote"]["remote"]);
-            preview = true;
         }
         if (preview_display === "") {
             remote_display = device_config["remote"]["display"];
         } else {
             remote_display = this.json.get_value(preview_display, device_config["remote"]["display"]);
-            preview = true;
         }
         if (remote_display === undefined) {
             remote_display = {};
@@ -720,7 +703,6 @@ class RemoteMain {
             remote_display_size = device_config["remote"]["display-size"];
         } else {
             remote_display_size = this.json.get_value(preview_display_size, device_config["remote"]["display-size"]);
-            preview = true;
         }
         if (remote_display_size === undefined) {
             remote_display_size = "middle";
@@ -813,8 +795,8 @@ class RemoteMain {
 // !!!!!!!! ---------------
         myBox.addSheet(lang("DISPLAY")+"!", this.dialog_device.edit_fields("display", id, device));
         myBox.addSheet(lang("TOGGLE"), this.dialog_device.edit_fields("toggle", id, device));
-        if (this.device_has_ranges(device))     myBox.addSheet(lang("SLIDER"), this.dialog_device.edit_fields("slider", id, device));
-        if (select_color_values)                myBox.addSheet(lang("COLOR_PICKER"), this.dialog_device.edit_fields( "color_picker", id, device));
+        if (this.device_has_ranges(device))  myBox.addSheet(lang("SLIDER"), this.dialog_device.edit_fields("slider", id, device));
+        if (this.device_has_colors(device))  myBox.addSheet(lang("COLOR_PICKER"), this.dialog_device.edit_fields( "color_picker", id, device));
         myBox.addSheet(lang("DELETE"), this.dialog_device.edit_fields("delete", id, device));
     }
 
@@ -1335,10 +1317,11 @@ class RemoteMain {
         myBox1.addSheet(lang("INFO"), lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") + this.dialog_scene.edit_fields("template", id, scene));
         myBox1.addSheet(lang("BUTTONS"), this.dialog_scene.edit_fields("default", id, scene));
         myBox1.addSheet(lang("HEADER"), this.dialog_scene.edit_fields("header", id, scene));
-        myBox1.addSheet(lang("SLIDER"), this.dialog_scene.edit_fields("slider", id, scene));
-        myBox1.addSheet(lang("TOGGLE"), this.dialog_scene.edit_fields("toggle", id, scene));
-// !!!!
         myBox1.addSheet(lang("DISPLAY")+"!", this.dialog_scene.edit_fields("display", id, scene));
+        myBox1.addSheet(lang("TOGGLE"), this.dialog_scene.edit_fields("toggle", id, scene));
+        myBox1.addSheet(lang("SLIDER"), this.dialog_scene.edit_fields("slider", id, scene));
+        myBox1.addSheet(lang("COLOR_PICKER"), this.dialog_scene.edit_fields("color_picker", id, scene));
+// !!!!
         myBox1.addSheet(lang("DELETE"), this.dialog_scene.edit_fields("delete", id, scene));
     }
 
@@ -1508,6 +1491,22 @@ class RemoteMain {
         }
     }
 
+    /* check if device has color settings - for color picker options */
+    device_has_colors(device, commands = false) {
+        let has_colors = false;
+        let color_cmd = [];
+        let cmd_definition = this.data["CONFIG"]["devices"][device]["commands"]["definition"];
+        Object.keys(cmd_definition).forEach(key => {
+            if (key.toLowerCase().indexOf("color") >= 0) { has_colors = true; color_cmd.push(key); }
+            if (key.toLowerCase().indexOf("brightness") >= 0) { has_colors = true; color_cmd.push(key); }
+        });
+        if (!commands) {
+            return has_colors;
+        } else {
+            return color_cmd;
+        }
+    }
+
     /* create header image for scenes */
     scene_header_image(id, scene, toggle_html, selected = "") {
 
@@ -1670,6 +1669,34 @@ class RemoteMain {
         setTextById("slider_device_min-max", select_min_max);
     }
 
+    /* create drop-downs for scene slider buttons */
+    scene_color_picker_select(device) {
+
+        device = check_if_element_or_value(device, false);
+        let select = "<i>" + lang("SELECT_DEV_FIRST") + "</i>";
+        let select_cmd = "";
+        let select_model = "";
+        let color_models = this.advanced.color_picker_models;
+
+        if (device !== "" && this.data["CONFIG"]["devices"][device]) {
+            let device_name = this.data["CONFIG"]["devices"][device]["settings"]["label"];
+            let device_cmd = this.device_has_colors(device, true);
+
+            //let onchange_color_picker_param = this.app_name + ".rm_scene.prepare_slider('" + device + "','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax');";
+
+            select_cmd = this.basic.select_array("add_color_picker_cmd", lang("BUTTON_T_SEND"), device_cmd, "", "")
+            select_model = this.basic.select_array("add_color_picker_model", lang("BUTTON_T_PARAMETER"), color_models, "", "")
+
+            setValueById("add_color_picker_description", "CP " + device_name + " (" + device + ")")
+        } else {
+            select_cmd = select;
+            select_model = select;
+        }
+
+        setTextById("color_picker_device_cmd", select_cmd);
+        setTextById("color_picker_model", select_model);
+    }
+
     /* return list of templates */
     template_list(type = "") {
         let templates = {};
@@ -1735,6 +1762,7 @@ class RemoteEditDialogs {
         this.button = new RemoteElementButtons(name + ".button");
         this.display = new RemoteElementDisplay(name + ".display");
         this.tab = new RemoteElementTable(name + ".tab");
+        this.advanced = new RemoteAdvancedElements(name + ".advanced", this);
 
         this.rm_scene = new RemoteJsonElements(this.app_name + ".rm_scene", "scene", this.remote);
         this.rm_device = new RemoteJsonElements(this.app_name + ".rm_device", "device", this.remote);
@@ -1770,24 +1798,28 @@ class RemoteEditDialogs {
         //let device_commands = [];
 
         let link_template = "";
-        let display_sizes = undefined;
-        let device_config = {};
-        let device_display = {};
-        let device_macro = {};
-        let devices = {};
-        let devices_groups = {};
-        let devices_slider = {};
         let remote_info = this.data["CONFIG"]["devices"];
-        let scene_remote = {};
+        let color_models = this.advanced.color_picker_models;
 
-        let toggle_onchange = "";
-        let slider_onchange = "";
-        let device_macro_onchange = "";
-        let device_display_onchange = "";
-
-        let json_preview_values = {};
+        let display_sizes = undefined;
+        let json_preview_values ={};
         let json_edit_values = {};
 
+        let devices = {};
+        let device_config = {};
+        let devices_color_picker = {};
+        let device_display = {};
+        let devices_groups = {};
+        let device_macro = {};
+        let devices_slider = {};
+
+        let onchange_toggle = "";
+        let onchange_slider= "";
+        let onchange_color_picker = "";
+        let onchange_device_macro = "";
+        let onchange_device_display = "";
+
+        let scene_remote = {};
         let remote_definition = {};
         let remote_display = [];
         let remote_display_size = "";
@@ -1811,18 +1843,20 @@ class RemoteEditDialogs {
             scene_remote = this.data["CONFIG"]["scenes"][scene]["remote"];
             display_sizes = this.display.sizes();
 
-            for (let key in this.data["CONFIG"]["devices"]) {
+            for (let key in remote_info) {
                 devices[key] = "Device: " + remote_info[key]["settings"]["label"];
                 devices_groups[key] = "Device: " + remote_info[key]["settings"]["label"];
                 device_macro["device_" + key] = "Device: " + remote_info[key]["settings"]["label"];
                 device_display[key] = remote_info[key]["settings"]["label"];
 
-                //device_commands = this.data["CONFIG"]["devices"][key]["commands"];
-                //if (device_commands["set"].length > 0 || device_commands["get"] > 0) {
                 if (this.remote.device_has_ranges(key)) {
                     devices_slider[key] = "Device: " + remote_info[key]["settings"]["label"];
                 }
+                if (this.remote.device_has_colors(key)) {
+                    devices_color_picker[key] = "Device: " + remote_info[key]["settings"]["label"];
+                }
             }
+
             for (let key in this.data["CONFIG"]["macros"]["groups"]) {
                 if (this.data["CONFIG"]["macros"]["groups"][key]["description"]) {
                     device_macro["group_" + key] = "Group: " + this.data["CONFIG"]["macros"]["groups"][key]["description"] + " (" + key + ")";
@@ -1840,10 +1874,11 @@ class RemoteEditDialogs {
             device_macro["scene"] = "Macro: " + scene;
 
             link_template = this.remote.app_name + ".rm_scene.import_templates('" + scene + "','add_template');";
-            toggle_onchange = this.remote.app_name + ".scene_toggle_select('add_button_device_input','add_button_value','add_toggle_device','" + scene + "');";
-            slider_onchange = this.remote.app_name + ".scene_slider_select('add_button_device_input','add_button_value','add_slider_device','" + scene + "');";
-            device_macro_onchange = this.remote.app_name + ".scene_button_select('add_button_device_input','add_button_value','add_button_device','" + scene + "');";
-            device_display_onchange = this.remote.app_name + ".scene_display_select('add_display_input','add_display_value','add_display_device');";
+            onchange_toggle = this.remote.app_name + ".scene_toggle_select('add_button_device_input','add_button_value','add_toggle_device','" + scene + "');";
+            onchange_slider = this.remote.app_name + ".scene_slider_select('add_button_device_input','add_button_value','add_slider_device','" + scene + "');";
+            onchange_color_picker = this.remote.app_name + ".scene_color_picker_select('add_color_picker_device');";
+            onchange_device_macro = this.remote.app_name + ".scene_button_select('add_button_device_input','add_button_value','add_button_device','" + scene + "');";
+            onchange_device_display = this.remote.app_name + ".scene_display_select('add_display_input','add_display_value','add_display_device');";
 
             // prepare field values
             json_preview_values = {
@@ -1906,23 +1941,22 @@ class RemoteEditDialogs {
 
             edit += this.tab.start();
             if (select_color_values.length > 0) {
-                let color_models = ["Brightness", "Color RGB", "Color CIE_1931", "Color RGB (small)", "Color CIE_1931 (small)", "Color temperature"];
 
                 edit += this.tab.row(
                     "Send command:",
-                    this.basic.select_array("add_colorpicker_cmd", lang("BUTTON_T_SEND"), select_color_values, "", ""),
+                    this.basic.select_array("add_color_picker_cmd", lang("BUTTON_T_SEND"), select_color_values, "", ""),
                 );
                 edit += this.tab.row(
                     "Color model:",
-                    this.basic.select_array("add_colorpicker_model", lang("BUTTON_T_COLOR"), color_models),
+                    this.basic.select_array("add_color_picker_model", lang("BUTTON_T_COLOR"), color_models),
                 );
                 edit += this.tab.line();
                 edit += this.tab.row(
-                    this.button.edit(this.app_name + ".rm_device.add_color_picker('" + device + "','add_colorpicker_cmd');", lang("BUTTON_T_ADD"), "")
+                    this.button.edit(this.app_name + ".rm_device.add_color_picker('" + device + "','add_color_picker_cmd','add_color_picker_model','');", lang("BUTTON_T_ADD"), "")
                 );
             } else {
                 edit += this.tab.row(
-                    lang("COLORPICKER_N/A"),
+                    lang("COLOR_PICKER_N/A"),
                     this.button.edit("N/A", "", "disabled")
                 );
             }
@@ -2069,8 +2103,8 @@ class RemoteEditDialogs {
             edit += this.tab.start();
             edit += this.tab.row(
                 "Device:",
-                //this.basic.select("add_toggle_device","device / group", devices_groups, toggle_onchange),
-                this.basic.select("add_toggle_device", "device", devices, toggle_onchange),
+                //this.basic.select("add_toggle_device","device / group", devices_groups, onchange_toggle),
+                this.basic.select("add_toggle_device", "device", devices, onchange_toggle),
             );
             edit += this.tab.row(
                 "Description:",
@@ -2097,7 +2131,37 @@ class RemoteEditDialogs {
             edit += this.tab.end();
 
             setTimeout(function () {
-                eval(toggle_onchange);
+                eval(onchange_toggle);
+            }, 500);
+        }
+        else if (this.remote_type === "scene" && element === "color_picker") {
+            edit += this.tab.start();
+            edit += this.tab.row(
+                "Device:",
+                this.basic.select("add_color_picker_device", "device", devices_color_picker, onchange_color_picker),
+            );
+            edit += this.tab.row(
+                "Send command:",
+                "<div id='color_picker_device_cmd'></div>"
+            );
+            edit += this.tab.row(
+                "Color model:",
+                "<div id='color_picker_model'></div>"
+            );
+            edit += this.tab.row(
+                "Description:",
+                "<div id='color_picker_description'>" +
+                this.basic.input("add_color_picker_description", "") +
+                "</div>"
+            );
+            edit += this.tab.line();
+            edit += this.tab.row(
+                this.button.edit(this.app_name + ".rm_scene.add_color_picker('add_color_picker_device','add_color_picker_cmd','add_color_picker_model','add_color_picker_description','"+scene+"');", lang("BUTTON_T_ADD"), "")
+            );
+            edit += this.tab.end();
+
+            setTimeout(function () {
+                eval(onchange_color_picker);
             }, 500);
         }
         else if (this.remote_type === "scene" && element === "slider") {
@@ -2105,8 +2169,7 @@ class RemoteEditDialogs {
             edit += this.tab.start();
             edit += this.tab.row(
                 "Device:",
-                //this.basic.select("add_toggle_device","device / group", devices_groups, toggle_onchange),
-                this.basic.select("add_slider_device", "device", devices_slider, slider_onchange),
+                this.basic.select("add_slider_device", "device", devices_slider, onchange_slider),
             );
             edit += this.tab.row(
                 "Send command:",
@@ -2133,7 +2196,7 @@ class RemoteEditDialogs {
             edit += this.tab.end();
 
             setTimeout(function () {
-                eval(slider_onchange);
+                eval(onchange_slider);
             }, 500);
         }
         else if (this.remote_type === "scene" && element === "default") {
@@ -2141,7 +2204,7 @@ class RemoteEditDialogs {
             edit = "&nbsp;";
             edit += this.tab.start();
             edit += this.tab.row(
-                this.basic.select("add_button_device", "device / macro", device_macro, device_macro_onchange),
+                this.basic.select("add_button_device", "device / macro", device_macro, onchange_device_macro),
                 this.button.edit("N/A", "", "disabled")
             );
             edit += this.tab.row(
@@ -2192,7 +2255,7 @@ class RemoteEditDialogs {
             );
             edit += this.tab.line();
             edit += this.tab.row(
-                this.basic.select("add_display_device", lang("BUTTON_T_DEVICE"), device_display, device_display_onchange),
+                this.basic.select("add_display_device", lang("BUTTON_T_DEVICE"), device_display, onchange_device_display),
                 this.button.edit("N/A", "", "disabled")
             );
             edit += this.tab.row(
@@ -2434,27 +2497,40 @@ class RemoteJsonElements {
     }
 
     /* add color picker to JSON*/
-    add_color_picker(scene, button_select, position = "") {
+    add_color_picker(device_select, command_select, model_select, description_input, scene="", position = "") {
 
         if (this.remote_type === "scene") {
             this.logging.warn("Color Picker not implemented for scenes yet.");
         }
 
-        let color_model = "";
-        let button = getValueById(button_select);
-        if (button === "" || button === undefined) {
-            appMsg.alert(lang("COLORPICKER_SELECT_CMD"));
+        let device = device_select;
+        if (document.getElementById(device_select)) { device = getValueById(device_select); }
+
+        let color_model = getValueById(model_select);
+        let command = getValueById(command_select);
+        let description = getValueById(description_input);
+
+        if (command === "" || command === undefined) {
+            appMsg.alert(lang("COLOR_PICKER_SELECT_CMD"));
             return;
         }
-
-        if (document.getElementById("add_colorpicker_model")) {
-            color_model = "||" + document.getElementById("add_colorpicker_model").value;
+        if (color_model === "" || color_model === undefined) {
+            appMsg.alert(lang("COLOR_PICKER_SELECT_MODEL"));
+            return;
         }
-        if (document.getElementById(button_select)) {
-            button = "COLOR-PICKER||send-" + button + color_model;
+        if (description === undefined) { description = ""; }
+
+        let button_check = "COLOR-PICKER||send-" + command + "||" + color_model;
+        let button = "COLOR-PICKER||send-" + command + "||" + color_model + "||" + description;
+        if (this.remote_type === "scene") {
+            button = device + "_" + button;
+            button_check = device + "_" + button_check;
+        }
+        else {
+            scene = device;
         }
 
-        if (document.getElementById(this.json_field_id).innerHTML.indexOf(button) > -1) {
+        if (document.getElementById(this.json_field_id).innerHTML.indexOf(button_check) > -1) {
             appMsg.alert(lang("MSG_ONLY_ONE_COLOR_PICKER"));
         } else {
             this.add_button(scene, button, position);
@@ -2816,6 +2892,7 @@ class RemoteAdvancedElements {
         // connect pure elements
         this.e_color_picker = new RemoteElementColorPicker(this.app_name + ".e_color_picker");
         this.e_slider = new rmSlider(this.app_name + ".e_slider");
+        this.color_picker_models = ["Brightness", "Color RGB", "Color CIE_1931", "Color RGB (small)", "Color CIE_1931 (small)", "Color temperature"];
     }
 
     /* update API data */
