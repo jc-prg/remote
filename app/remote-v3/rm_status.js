@@ -145,19 +145,16 @@ function statusShow_toggle(device, id_slider, id_value, id_button, status, activ
     }
     if (slider && slider_button) {
         if (active === "on") {
-            slider.className = "rm-slider device_on";
             slider_button.className = "rm-toggle-label device_on";
             slider_button2.className = "rm-toggle-button device_on";
             slider.disabled = false;
         }
         else if (active === "off") {
-            slider.className = "rm-slider device_off";
             slider_button.className = "rm-toggle-label device_off";
             slider_button2.className = "rm-toggle-button device_off";
             slider.disabled = true;
         }
         else {
-            slider.className = "rm-slider device_undef";
             slider_button.className = "rm-toggle-label device_undef";
             slider_button2.className = "rm-toggle-button device_undef";
             slider.disabled = true;
