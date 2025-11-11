@@ -47,12 +47,14 @@ class ApiControl(RemoteApiClass):
         self.mqtt_device_id = {}
         self.mqtt_device_availability = {}
         self.mqtt_device_availability_subscribed = []
+
         self.connect_config = {
             "FIRST_RECONNECT_DELAY": 1,
             "RECONNECT_RATE": 2,
             "MAX_RECONNECT_COUNT": 12,
             "MAX_RECONNECT_DELAY": 60
             }
+        self.not_available = [];
 
     def _on_connect(self, client, userdata, flags, rc, properties):
         """
@@ -128,6 +130,7 @@ class ApiControl(RemoteApiClass):
         self.status = "Starting ..."
         self.count_error = 0
         self.count_success = 0
+        self.not_available = []
 
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
@@ -633,7 +636,9 @@ class ApiControl(RemoteApiClass):
         elif device_id in self.mqtt_device_id:
             friendly_name = device_id
         else:
-            self.logging.error("ERROR: No data for device '" + device_id + "' available.")
+            if device_id not in self.not_available:
+                self.logging.error("ERROR: No data for device '" + device_id + "' available (no further info for this device till reconnect).")
+                self.not_available.append(device_id)
             self.working = False
             return "N/A"
 

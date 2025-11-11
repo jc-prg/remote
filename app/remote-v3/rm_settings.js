@@ -371,6 +371,7 @@ function rmSettings (name) {	// IN PROGRESS
         return setting;
     }
 
+    // create container and load data with system information
     this.module_system_info      = function () {
 
         return "<br/><div id='module_system_info'></div>";
@@ -705,6 +706,7 @@ function rmSettings (name) {	// IN PROGRESS
         setTextById("timer_regular_"+key,JSON.stringify(timer_data));
 	    }
 
+    // create container and load data for API settings
 	this.module_interface_info  = function () {
 		var setting = "<b>&nbsp;API details for devices</b><text style='font-size:25px;'>&nbsp;</text>";
 		setting    += "<hr style='border:1px lightgray solid;' />";
@@ -774,96 +776,10 @@ function rmSettings (name) {	// IN PROGRESS
             }   }
         }
 
-    this.module_interface_edit_list = function (interface, data, selected_device = "") {
-
-        var text = "";
-        var devices_per_interface = data["CONFIG"]["apis"]["structure"];
-        var devices_detect = data["CONFIG"]["apis"]["list_detect"];
-
-        var details = "<div style='width:100%;height:9px;'></div>";
-        var external_ids = {};
-
-        for (var api_device in devices_per_interface[interface]) {
-
-            if (selected_device !== "" && selected_device !== api_device) { continue; }
-            if (selected_device === "") { details += "<i>API Device: " + api_device + "</i>&nbsp;&nbsp;"; }
-
-            var connect  = data["STATUS"]["interfaces"]["connect"][interface + "_" + api_device];
-            if (!connect) { connect = "N/A"; }
-            details += "<ul>";
-            for (var i=0;i<devices_per_interface[interface][api_device].length;i++) {
-                var device          = devices_per_interface[interface][api_device][i];
-                var device_settings = data["CONFIG"]["devices"][device];
-                var power_status    = data["STATUS"]["devices"][device]["power"];
-                var online_status   = data["STATUS"]["devices"][device]["availability"];
-                var method          = device_settings["interface"]["method"];
-                var label           = device_settings["settings"]["label"];
-                var visibility      = device_settings["settings"]["visible"];
-                var hidden          = "";
-                var idle            = "<small id=\"device_auto_off_"+device+"\"></small>";
-                var command_on    = "appFW.requestAPI('GET',['set','"+device+"','power','ON'], '', '', '' ); setTextById('CHANGE_STATUS_"+device+"','ON');"; //rm3settings.onoff();remoteInit();";
-                var command_off   = "appFW.requestAPI('GET',['set','"+device+"','power','OFF'], '', '', '' );setTextById('CHANGE_STATUS_"+device+"','OFF');"; //rm3settings.onoff();remoteInit();";
-
-                external_id       = device_settings["settings"]["device_id"];
-                if (external_id != undefined && external_id != "") { external_ids[external_id] = true; }
-
-                if (online_status && online_status == "offline") { power_status = "N/A (offline)"; }
-                if (visibility != "yes") { hidden = "*"; }
-                if (method == "record" && power_status == "ON")  {
-                    power_status = "<u id=\"CHANGE_STATUS_"+device+"\"><status onclick=\""+command_off+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
-                    }
-                else if (method == "record" && power_status == "OFF") {
-                    power_status = "<u id=\"CHANGE_STATUS_"+device+"\"><status onclick=\""+command_on+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
-                    }
-
-                details += "<li><b>["+device+"]</b> <i>"+label+":</i> " + power_status + hidden + "</li>" + idle;
-                }
-            details += "</ul>";
-            }
-        details += "<br/>";
-
-        var details_new = "";
-        var new_exist   = false;
-        for (var api_device in devices_detect) {
-            if (api_device.indexOf(interface) == -1) { continue; }
-            details_new += "<i>API Device: not yet connected ("+interface+") </i>&nbsp;&nbsp;";
-            details_new += "<ul>";
-            for (var device in devices_detect[api_device]) {
-
-                if (devices_detect[api_device][device]["type"] == "Coordinator")    { continue; }
-                if (external_ids[devices_detect[api_device][device]["id"]] == true) { continue; } else { new_exist = true; }
-
-                var name = "";
-                var disabled = "";
-                var info = "";
-                var button_add = "";
-                if (devices_detect[api_device][device]["id"] != devices_detect[api_device][device]["name"]) { name = devices_detect[api_device][device]["name"]; }
-                if (devices_detect[api_device][device]["description"])         { info = devices_detect[api_device][device]["description"];}
-                if (devices_detect[api_device][device]["disabled"])            { disabled = "&nbsp;&nbsp;<small>(DISABLED)</small>"; }
-                if (devices_detect[api_device][device]["available"] == false)  { disabled = "&nbsp;&nbsp;<small>(N/A)</small>"; }
-
-                if (disabled == "") { // !!!! ERROR
-                    var button_cmd  = "rm3settings.create(\"edit_devices\", \"add_device\", {";
-                    button_cmd     += "\"external_id\": \"" + devices_detect[api_device][device]["id"] + "\", ";
-                    button_cmd     += "\"description\": \"" + info + "\", ";
-                    button_cmd     += "\"api_device\": \"" + api_device + "\", ";
-                    button_cmd     += "\"label\": \"" + name + "\", ";
-                    button_cmd     += "\"device_name\": \"" + name + "\"";
-                    button_cmd     += "});";
-                    button_add     = "<button onclick='"+button_cmd+"'> add </button>";
-                    }
-
-                if (info != "") {  info = ": " + info; }
-                details_new += "<li>" + button_add + " <b>[" + devices_detect[api_device][device]["id"] + "]</b><br/>" + name + info + disabled + "</li>";
-                }
-            details_new += "</ul>";
-            }
-        if (new_exist) { details += details_new; }
-
-        return details;
-        }
-
     this.module_interface_edit_info = function (data) {
+
+        console.debug(this.app_name+".module_interface_edit_info:");
+        console.debug(data);
 
         let interfaces  = data["DATA"]["interfaces"];
         let sheet_boxes = {};
@@ -873,6 +789,42 @@ function rmSettings (name) {	// IN PROGRESS
         this.basic     = new RemoteBasicElements(name+".basic");		// rm_remotes-elements.js
         this.json_edit = new RemoteJsonEditing(id=name+".json", format_style="compact", style="width:100%;height:210px;");
 
+        this.button_add_device = function(api, api_device, external_id) {
+
+            if (!dataAll["CONFIG"]["apis"]["list_detect"][api+"_"+api_device]) {
+                this.logging.warn("No detected devices found for "+api+"_"+api_device+".");
+                return "";
+            }
+            const devices_detect = dataAll["CONFIG"]["apis"]["list_detect"][api+"_"+api_device];
+            let html = "";
+
+            if (api === "ZIGBEE2MQTT") {
+                if (external_id !== "Coordinator") {
+                    let new_device = devices_detect[external_id];
+                    let button_cmd = "";
+                    if (new_device["disabled"] || !new_device["available"]) {
+                        this.logging.info("Detected devices '" + external_id + "' (API " + api + "_" + api_device + ") is disabled or not available at the moment.");
+                        html += "<span style='color:gray'>device disabled or not available</span>";
+                    }
+                    else {
+                        let data = {
+                            external_id: external_id,
+                            description: new_device["description"],
+                            api_device: api+"_" +api_device,
+                            label: new_device["name"],
+                            name: new_device["name"],
+                        }
+                        button_cmd  = "rm3settings.create(\"edit_devices\", \"add_device\", "+JSON.stringify(data)+");";
+                        html += "<button onclick='"+button_cmd+"'>"+lang("BUTTON_T_ADD")+"</button>";
+                    }
+
+                }
+            }
+            else {
+                this.logging.info("Easy adding of detected devices is for "+api+"-APIs not implemented yet.")
+            }
+            return html;
+        }
     	this.list_connected_devices = function (api, device, data) {
             let text  = "";
             let count = 0;
@@ -912,17 +864,23 @@ function rmSettings (name) {	// IN PROGRESS
                         power_status = "<u id=\"CHANGE_STATUS_"+connected_device+"\"><status onclick=\""+command_on+"\" style=\"cursor:pointer;\">"+power_status+"</status></u>";
                     }
                     if (device_settings["settings"]["device_id"] && device_settings["settings"]["device_id"] !== "") {
-                        external_id = "<br/><span style='color:gray;'>connected to: " + device_settings["settings"]["device_id"] + "</span>";
+                        let external_id_connected = "";
+                        let device_id= device_settings["settings"]["device_id"];
+                        if (!detected_devices[api+"_"+api_device][device_id]) {
+                            external_id_connected = " (N/A at the moment)";
+                        }
+                        external_id = "<br/><span style='color:gray;'>connected to: " + device_settings["settings"]["device_id"] + external_id_connected + "</span>";
                         if (!connected_vs_detected[device_settings["settings"]["device_id"]]) { connected_vs_detected[device_settings["settings"]["device_id"]] = "[" + connected_device + "]"; }
                         else { connected_vs_detected[device_settings["settings"]["device_id"]] += ", " + "[" + connected_device + "]"; }
                     }
 
-                    details += this.tab.row("<b>["+connected_device+"]&nbsp;&nbsp;</b>", "<i>"+label+":</i> " + power_status + hidden + external_id + "<br/>" + idle);
+
+                    details += this.tab.row("<b>["+connected_device+"]&nbsp;&nbsp;</b>", "<i>" + label + hidden + ":</i> " + power_status  + external_id + "<br/>" + idle);
+                }
+                if (devices_per_api[api][api_device].length === 0) {
+                    details += this.tab.row("&nbsp;&nbsp;&nbsp;"+lang("NO_REMOTE_CONNECTED"));
                 }
                 details += this.tab.end();
-
-                console.error(api_device);
-                console.error(detected_devices[api+"_"+api_device]);
 
                 if (api+"_"+api_device in detected_devices) {
                     details += "<br/><i>"+lang("DETECTED_DEVICES")+":</i><hr/>&nbsp;&nbsp;";
@@ -931,7 +889,8 @@ function rmSettings (name) {	// IN PROGRESS
                         let description = detected_devices[api+"_"+api_device][key]["description"];
                         let connected_remotes = "";
 
-                        if (key in connected_vs_detected) { connected_remotes = "<br/><span style='color:gray;'>used by: " + connected_vs_detected[key] + "</span>"; }
+                        if (key in connected_vs_detected)   { connected_remotes = "<br/><span style='color:gray;'>used by: " + connected_vs_detected[key] + "</span>"; }
+                        else                                { connected_remotes = "<br/>" + this.button_add_device(api, api_device, key); }
                         if (description === "") { description = key; }
                         details += this.tab.row("<b>"+key+"&nbsp;&nbsp;</b>", description + connected_remotes);
                     });
@@ -1062,27 +1021,23 @@ function rmSettings (name) {	// IN PROGRESS
 
     	this.btn.width = "72px";
 
-    	console.error(data);
-
-        for (var key in interfaces) {
-            var id        = "interface_edit_"+key;
-            var interface = interfaces[key];
-            var setting   = "";
+        for (let key in interfaces) {
+            let id = "interface_edit_"+key;
+            let api_config = interfaces[key];
+            let setting = "";
             setting += "<hr style='border:solid lightgray 1px;'/>";
 
-            for (var dev in interface["API-Devices"]) {
-
-                //let temp_edit_device_config = this.list_api_device_settings(key, dev);
+            for (let dev in api_config["API-Devices"]) {
                 let temp_edit_device_config = "<div id='api-setting-"+key+"_"+dev+"'></div>";
-                var container_title = "</b>API-Device: "+dev+"&nbsp;&nbsp;<text id='api_status_icon_"+key+"_"+dev+"' style='font-size:16px;'></text>";
+                let container_title = "</b>API-Device: "+dev+"&nbsp;&nbsp;<text id='api_status_icon_"+key+"_"+dev+"' style='font-size:16px;'></text>";
                 setting += this.basic.container("details_"+key+"_"+dev, container_title, temp_edit_device_config, false);
             }
             setTextById(id, setting + "<br/>");
 
             // create sheet boxes for all devices of this interface
-            for (var dev in interface["API-Devices"]) {
-                buttons = this.list_api_device_settings(key, dev, true);
-                config_create = this.create_device_configuration(key, dev);
+            for (let dev in api_config["API-Devices"]) {
+                let buttons = this.list_api_device_settings(key, dev, true);
+                let config_create = this.create_device_configuration(key, dev);
 
                 sheet_boxes[key+"_"+dev] = new RemoteElementSheetBox("api-setting-"+key+"_"+dev, "410px", true, false, false);
                 sheet_boxes[key+"_"+dev].addSheet(lang("API_DEFINITION"), this.list_api_device_settings(key, dev, false));
@@ -1092,13 +1047,14 @@ function rmSettings (name) {	// IN PROGRESS
             }
 
             // fill JSON edit field
-            for (var dev in interface["API-Devices"]) {
-                this.json_edit.create("api_status_data_"+key+"_"+dev,"api_status_edit_"+key+"_"+dev, interface["API-Devices"][dev]);
+            for (let dev in api_config["API-Devices"]) {
+                this.json_edit.create("api_status_data_"+key+"_"+dev,"api_status_edit_"+key+"_"+dev, api_config["API-Devices"][dev]);
                 this.json_edit.disable("api_status_edit_"+key+"_"+dev);
                 }
             }
         }
 
+    // create container and load data for general settings
     this.module_general_settings   = function () {
 
         return "<center>&nbsp;<br/><div id='module_general_settings'></div></center>";
@@ -1191,8 +1147,8 @@ function rmSettings (name) {	// IN PROGRESS
         var settings_icon = set_temp;
 
 	    const myBox = new RemoteElementSheetBox("module_general_settings", height="350px", scroll=true);
-        myBox.addSheet("Icons",  "&nbsp;" + settings_icon);
         myBox.addSheet("Modes",  "&nbsp;" + settings_index);
+        myBox.addSheet("Icons",  "&nbsp;" + settings_icon);
         myBox.addSheet("Server", "&nbsp;" + settings_reload);
         myBox.addSheet("API",    "&nbsp;" + settings_api);
 	}
@@ -1211,6 +1167,7 @@ function rmSettings (name) {	// IN PROGRESS
         this.module_general_settings_load();
 	    }
 
+    // create container and load data for macro settings
 	this.module_macros_edit     = function () {
 	    this.btn.width = "100px";
 		setting   = "";
@@ -1238,15 +1195,16 @@ function rmSettings (name) {	// IN PROGRESS
         jsonEdit.create("json-edit-dev-off","dev-off", this.data["CONFIG"]["macros"]["device-off"]);
         }
 
+    // create dialogs to add devices, scenes and remotes
     this.module_add_device      = function  (direct_cmd="", direct_data="") {
-		var setting   = "";
-		var set_temp  = "";
+        let setting   = "";
+        let set_temp  = "";
 		this.btn.width  = "120px";
 		this.btn.height = "30px";
 
-        var open_add_device = false;
-        if (direct_cmd == "add_device" && direct_data != "") { set_temp = this.modules_add_remote_dialog(direct_data); open_add_device = true; }
-        else                                                 { set_temp = this.modules_add_remote_dialog(); }
+        let open_add_device = false;
+        if (direct_cmd === "add_device" && direct_data !== "") { set_temp = this.modules_add_remote_dialog(direct_data); open_add_device = true; }
+        else                                                   { set_temp = this.modules_add_remote_dialog(); }
 
 		setting  += this.basic.container("setting_add_device",lang("ADD_DEVICE"),set_temp,open_add_device);
 		return setting;
@@ -1271,14 +1229,6 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_add_scene",lang("ADD_SCENE"),set_temp,open_add_scene);
 
-		return setting;
-        }
-
-    this.module_add_remotes     = function (direct_cmd="", direct_data="") {
-
-        var setting = "";
-        setting += this.module_add_scene(direct_cmd, direct_data);
-        setting += this.module_add_device(direct_cmd, direct_data);
 		return setting;
         }
 
@@ -1363,26 +1313,25 @@ function rmSettings (name) {	// IN PROGRESS
 		for (var key in device_data_start) { device_data[key] = device_data_start[key]; }
 
         var asterix = "<sup>*</sup>";
-		this.input_width   = "150px";
+		this.input_width   = "180px";
+        rm3remotes.basic.input_width = "180px";
         set_temp  = this.tab.start();
 		//set_temp += this.tab.row( "Device-Type:"+asterix,       this.input("add_device", onchange, onchange, device_data["device_name"]) );
-		set_temp += this.tab.row( "ID*:",                       "<span id='text_add_device_id'>" + lang("SELECT_DEV_FIRST") + "</span>" +
-		                                                        "<span style='display:none;'>" + this.input("add_device_id", onchange, onchange + "apiDeviceAddCheckID(this);", device_data["id"]) +"</span>");
-		set_temp += this.tab.row( "Device name:"+asterix,       this.input("add_device_descr", "", onchange, device_data["description"]) );
-		set_temp += this.tab.row( "Device type:"+asterix,       this.select("add_device", "device type", device_types, onchange3, "") );
+		set_temp += this.tab.row( "Device type:"+asterix, this.select("add_device", "device type", device_types, onchange3, "") );
         this.input_width = "180px";
-		set_temp += this.tab.row( "Interface:"+asterix,         this.select("add_device_api","interface", this.data["CONFIG"]["apis"]["list_description"], onchange, device_data["api_device"]) );
+		set_temp += this.tab.row( "Interface:"+asterix, this.select("add_device_api","interface", this.data["CONFIG"]["apis"]["list_description"], onchange, device_data["api_device"]) );
+        set_temp += this.tab.row( "ID:"+asterix, "<span id='text_add_device_id'>" + lang("SELECT_DEV_TYPE_FIRST") + "</span>" +
+                                  "<span style='display:none;'>" + this.input("add_device_id", onchange, onchange + "apiDeviceAddCheckID(this);", device_data["id"]) +"</span>");
 		set_temp += this.tab.line();
-		set_temp += this.tab.row( icon_container,               rm3remotes.button_image_select("edit_image") );
-		set_temp += this.tab.row( "Label in menu:"+asterix,     this.input("add_device_label", "", onchange, device_data["label"]) );
-		set_temp += this.tab.row( "External ID:",               this.input("add_device_id_external", "", "", device_data["external_id"]) );
+        set_temp += this.tab.row( "Device name:"+asterix, this.input("add_device_descr", "", onchange, device_data["description"]) );
+        set_temp += this.tab.row( "Label in menu:"+asterix, this.input("add_device_label", "", onchange, device_data["label"]) );
+        set_temp += this.tab.row( "External ID:", this.input("add_device_id_external", "", "", device_data["external_id"]) );
+		set_temp += this.tab.row( icon_container, rm3remotes.button_image_select("edit_image") );
 		set_temp += this.tab.line();
-        this.input_width = "100px";
-		set_temp += this.tab.row( "Device config:"+asterix,	    "<span id='txt_add_device_device'>"+lang("SELECT_API_FIRST")+"</span> " +
-		                                                        "<span id='txt_add_device_device_2' style='display:none;'>" + this.input("add_device_device")+".json</span>" );
-
-		set_temp += this.tab.row( "Remote config:"+asterix,	    "<span id='txt_add_device_remote'>"+lang("SELECT_API_FIRST")+"</span>" +
-		                                                        "<span id='txt_add_device_remote_2' style='display:none;'>" + this.input("add_device_remote")+".json</span>" );
+		set_temp += this.tab.row( "Device config:"+asterix, "<span id='txt_add_device_device'>"+lang("SELECT_API_FIRST")+"</span> " +
+		                          "<span id='txt_add_device_device_2' style='display:none;'>" + this.input("add_device_device")+".json</span>" );
+		set_temp += this.tab.row( "Remote config:"+asterix, "<span id='txt_add_device_remote'>"+lang("SELECT_API_FIRST")+"</span>" +
+		                          "<span id='txt_add_device_remote_2' style='display:none;'>" + this.input("add_device_remote")+".json</span>" );
 		set_temp += this.tab.end();
 
         this.input_width = width;
@@ -1648,9 +1597,10 @@ function rmSettings (name) {	// IN PROGRESS
             }
 		}
 
-	// deactivate buttons if device / scene is switched off
+
+    // deactivate buttons if device / scene is switched off
 	this.button_deact		    = function (menu_entry=false) {
-		if (deactivateButton) 	{ 
+		if (deactivateButton) 	{
 			deactivateButton = false;
 			this.manual_mode = false;
 			}

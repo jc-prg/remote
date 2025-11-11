@@ -47,8 +47,10 @@
 .display-element.big     { width : 48%; }
 
 .display-element.h1w4    { width : 48%; }
-.display-element.h2w4    { width : 48%; }
+.display-element.h1w2    { width : 98%; }
+.display-element.h2w2    { width : 98%; }
 .display-element.h2w3    { width : 98%; }
+.display-element.h2w4    { width : 48%; }
 .display-element.h3w2    { width : 98%; }
 .display-element.h4w2    { width : 98%; }
 

@@ -3029,7 +3029,7 @@ class RemoteAdvancedElements {
         let toggle_end = "";
         if (!short) {
             toggle_start += "<button id=\"slider_" + device + "_" + data[1] + "\" class=\"rm-toggle-label long\">" + data[2] + " &nbsp; &nbsp;  " + reset_value + "</button>";
-            toggle_start += "<button id=\"slider_" + device + "_" + data[1] + "\" class=\"rm-toggle-button\">";
+            toggle_start += "<button id=\"slider_" + device + "_" + data[1] + "2\" class=\"rm-toggle-button\">";
             toggle_end += "</button>";
         } else {
             toggle_start += "<div class='header_image_toggle'>"

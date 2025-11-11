@@ -314,6 +314,7 @@ let language_app = {
         
         "NOT_USED"                     : "not used in remote control",
         "NO_DEVICE_CONNECTED"          : "no device connected",
+        "NO_REMOTE_CONNECTED"          : "no remote control connected",
 
         "OFFLINE"                      : "Offline",
 
@@ -355,6 +356,7 @@ let language_app = {
         "SELECT"                       : "Select",
         "SELECT_DEV_MACRO"             : "select device or macro",
         "SELECT_DEV_FIRST"             : "select device first",
+        "SELECT_DEV_TYPE_FIRST"        : "select device type first",
         "SELECT_API_FIRST"             : "select interface first",
         "SERVER_SETTINGS"              : "Server &amp; client settings",
         "SETTINGS"                     : "Settings",

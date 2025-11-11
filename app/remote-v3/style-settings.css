@@ -110,12 +110,12 @@ nav-title {
 .mode_setting_label {
   padding       : 5px;
   width         : calc(95% - 70px);
-  height        : 35px;
+  height        : 30px;
   float         : left;
 }
 .mode_setting_toggle {
   width         : 65px;
-  height        : 35px;
+  height        : 30px;
   float         : right;
 }
 

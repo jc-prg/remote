@@ -13,8 +13,11 @@ let device_media_info       = {};
 //-----------------------------------------
 
 
-// check if device status
+// load the devices status -> visualization via function statusCheck();
 function statusCheck_load() { appFW.requestAPI("GET",["list"], "", statusCheck, "" ); }
+
+
+// coordinate visualization of the devices status
 function statusCheck(data={}) {
 
 	// if not data includes -> error
@@ -86,19 +89,23 @@ function statusShow_volume( volume ) {
 
 
 // change slider color
-function statusShow_sliderActive(id, active) {
+function statusShow_sliderActive(id, id_button, active, toggle=false) {
 	if (document.getElementById(id)) {
-	    slider = document.getElementById(id);
-		if (active == "on") {
+	    let slider = document.getElementById(id);
+	    let slider_button = document.getElementById(id_button);
+		if (active === "on") {
 		    slider.className = "rm-slider device_on";
+		    slider_button.className = "rm-slider-button device_on";
 		    slider.disabled = false;
 		    }
-		else if (active == "off") {
+		else if (active === "off") {
 		    slider.className = "rm-slider device_off";
+		    slider_button.className = "rm-slider-button device_off";
 		    slider.disabled = true;
 		    }
 		else {
 		    slider.className = "rm-slider device_undef";
+            slider_button.className = "rm-slider-button device_undef";
 		    slider.disabled = true;
 		    }
 		}
@@ -106,34 +113,57 @@ function statusShow_sliderActive(id, active) {
 
 
 // change toggle status color
-function statusShow_toggle(device, id_slider, id_value, status) {
-    slider          = document.getElementById(id_slider);
-    slider_value    = document.getElementById(id_value);
-    change          = false;
+function statusShow_toggle(device, id_slider, id_value, id_button, status, active) {
+    let slider = document.getElementById(id_slider);
+    let slider_value = document.getElementById(id_value);
+    let slider_button= document.getElementById(id_button);
+    let slider_button2= document.getElementById(id_button+"2");
 
-    if (status.toUpperCase() == "FALSE")            { status = "0"; }
-    else if (status.toUpperCase().includes("OFF"))  { status = "0"; }
-    else if (status.toUpperCase() == "OFF")         { status = "0"; }
-    else if (status.toUpperCase() == "TRUE")        { status = "1"; }
-    else if (status.toUpperCase() == "ON")          { status = "1"; }
-    else                                            { status = "E"; }
+    if (!slider) { return; }
+
+    if (status.toUpperCase() === "FALSE")            { status = "0"; }
+    else if (status.toUpperCase().includes("OFF"))   { status = "0"; }
+    else if (status.toUpperCase() === "OFF")         { status = "0"; }
+    else if (status.toUpperCase() === "TRUE")        { status = "1"; }
+    else if (status.toUpperCase() === "ON")          { status = "1"; }
+    else                                             { status = "E"; }
 
     //if (slider.value == slider_value.value && slider.className.includes("device_set")) {}
     // change only if different value from API (wait in status blue until new status is set server-side)
-    if ((slider.className.includes("device_set") && status != slider_value.value) || !slider.className.includes("device_set")) {
+    if ((slider.className.includes("device_set") && status !== slider_value.value) || !slider.className.includes("device_set")) {
 
-        if (status == "0")      { slider.value = 0; }
-        else if (status == "1") { slider.value = 1; }
-        else if (status == "E") { slider.value = 0; }
+        if (status === "0")      { slider.value = 0; }
+        else if (status === "1") { slider.value = 1; }
+        else if (status === "E") { slider.value = 0; }
 
         slider_value.value = status;
 
-        if (status == "0")      { slider.className = "rm-slider device_off";   slider.disabled = false; }
-        else if (status == "1") { slider.className = "rm-slider device_on";    slider.disabled = false; }
-        else if (status == "E") { slider.className = "rm-slider device_undef"; slider.disabled = true; }
-        else                    { slider.className = "rm-slider device_undef"; slider.disabled = true; }
+        if (status === "0")      { slider.className = "rm-slider device_off";   slider.disabled = false; }
+        else if (status === "1") { slider.className = "rm-slider device_on";    slider.disabled = false; }
+        else if (status === "E") { slider.className = "rm-slider device_undef"; slider.disabled = true; }
+        else                     { slider.className = "rm-slider device_undef"; slider.disabled = true; }
+    }
+    if (slider && slider_button) {
+        if (active === "on") {
+            slider.className = "rm-slider device_on";
+            slider_button.className = "rm-toggle-label device_on";
+            slider_button2.className = "rm-toggle-button device_on";
+            slider.disabled = false;
+        }
+        else if (active === "off") {
+            slider.className = "rm-slider device_off";
+            slider_button.className = "rm-toggle-label device_off";
+            slider_button2.className = "rm-toggle-button device_off";
+            slider.disabled = true;
+        }
+        else {
+            slider.className = "rm-slider device_undef";
+            slider_button.className = "rm-toggle-label device_undef";
+            slider_button2.className = "rm-toggle-button device_undef";
+            slider.disabled = true;
         }
     }
+}
 
 
 // change button color
@@ -176,12 +206,6 @@ function statusCheck_apiConnection(data) {
 
 
 	for (var api in data["CONFIG"]["apis"]["structure"]) {
-        // update breakdown from API over API Device to Connected devices
-        if (document.getElementById("details_"+api+"_overview_body")) {
-            var text = rm3settings.module_interface_edit_list(api, data);
-            setTextById("details_"+api+"_overview_body", text);
-            }
-
         // set toggle values for apis
 	    var slider = document.getElementById("toggle__" + api + "_input");
 	    if (slider) {
@@ -397,38 +421,38 @@ function statusCheck_sliderToggleColorPicker(data) {
 	    let device_api_status  = data["STATUS"]["interfaces"]["connect"][device_api];
 	    let device_commands    = data["CONFIG"]["devices"][device]["commands"]["set"];
 
-        for (key in devices[device]) {
+        for (let key in devices[device]) {
             // toggle
             if (document.getElementById("toggle_"+device+"_"+key+"_input")) {
 
                 let toggle = document.getElementById("toggle_"+device+"_"+key+"_input");
-                var toggle_value = document.getElementById("toggle_"+device+"_"+key+"_value");
+                let toggle_value = document.getElementById("toggle_"+device+"_"+key+"_value");
 
-                value  = devices[device][key];
-                if (device_api_status.toLowerCase() == "connected" && value.toLowerCase() != "error")   {
+                let value  = devices[device][key];
+                if (device_api_status.toLowerCase() === "connected" && value.toLowerCase() !== "error")   {
                     console.debug("statusCheck_sliderToggle: "+device+"_"+key+"="+value+" - "+device_api_status)
+                    if (device_api_power.toUpperCase() === "ON") { statusShow_toggle(device,"toggle_"+device+"_"+key+"_input","toggle_"+device+"_"+key+"_last_value", "slider_"+device+"_"+key, value, "on"); }
+                    else                                         { statusShow_toggle(device,"toggle_"+device+"_"+key+"_input","toggle_"+device+"_"+key+"_last_value", "slider_"+device+"_"+key, value, "off"); }
                     }
                 else {
                     value = "Error";
                     console.debug("statusCheck_sliderToggle: "+device+"_"+key+"="+value+" - "+device_api_status)
-                    }
-                statusShow_toggle(device,"toggle_"+device+"_"+key+"_input","toggle_"+device+"_"+key+"_last_value", value);
+                    statusShow_toggle(device,"toggle_"+device+"_"+key+"_input","toggle_"+device+"_"+key+"_last_value", value, "error");
                 }
+            }
 
             // slider
             if (document.getElementById("slider_"+device+"_send-"+key+"_input")) {
-                slider = document.getElementById("slider_"+device+"_send-"+key+"_input");
-                value  = getTextById("send-" + key + "_value");
-
-                if (device_api_status.toLowerCase() == "connected" && value.toLowerCase() != "error")   {
+                let value  = getTextById("send-" + key + "_value");
+                if (device_api_status.toLowerCase() === "connected" && value.toLowerCase() !== "error")   {
                     console.debug("statusCheck_sliderToggle: "+device+"_"+key+"="+value+" - "+device_api_status)
-                    if (device_api_power.toUpperCase() == "ON") { statusShow_sliderActive("slider_"+device+"_send-"+key+"_input", "on"); }
-                    else                                        { statusShow_sliderActive("slider_"+device+"_send-"+key+"_input", "off"); }
+                    if (device_api_power.toUpperCase() === "ON") { statusShow_sliderActive("slider_"+device+"_send-"+key+"_input", "slider_"+device+"_send-"+key, "on"); }
+                    else                                         { statusShow_sliderActive("slider_"+device+"_send-"+key+"_input", "slider_"+device+"_send-"+key, "off"); }
                     }
                 else {
                     value = "Error";
                     console.debug("statusCheck_sliderToggle: "+device+"_send-"+key+"="+value+" - "+device_api_status)
-                    statusShow_sliderActive("slider_"+device+"_send-"+key+"_input", "error");
+                    statusShow_sliderActive("slider_"+device+"_send-"+key+"_input", "slider_"+device+"_send-"+key, "error");
                     }
                 }
 
@@ -450,14 +474,14 @@ function statusCheck_sliderToggleColorPicker(data) {
                 //console.debug(device_commands);
 
                 if (document.getElementById("colorpicker_"+device+"_send-"+command)) {
-                color_picker = document.getElementById("colorpicker_"+device+"_send-"+command);
-                if (device_api_status.toLowerCase() == "connected" && device_api_power && device_api_power.toUpperCase().indexOf("ON") > -1)   {
-                    color_picker.style.opacity = "100%";
+                    color_picker = document.getElementById("colorpicker_"+device+"_send-"+command);
+                    if (device_api_status.toLowerCase() == "connected" && device_api_power && device_api_power.toUpperCase().indexOf("ON") > -1)   {
+                        color_picker.style.opacity = "100%";
+                        }
+                    else {
+                        color_picker.style.opacity = "40%";
+                        }
                     }
-                else {
-                    color_picker.style.opacity = "40%";
-                    }
-                }
                 }
             }
 	    }

@@ -108,7 +108,9 @@ The following interfaces are integrated at the moment.
       "IPAddress": "192.168.1.10",
       "MACAddress": "AA:BB:CC:DD:EE:FF",
       "Methods": ["send","query"],
+      "MultiDevice": true,
       "Port": "8080",
+      "PowerDevice": "TAPO-P100_plug02",
       "Timeout": 5
       },
     "device02" : {
@@ -117,7 +119,9 @@ The following interfaces are integrated at the moment.
       "IPAddress": "192.168.1.11",
       "MACAddress": "AA:BB:CC:DD:EE:00",
       "Methods": ["send","query"],
+      "MultiDevice": true,
       "Port": "8080",
+      "PowerDevice": "",
       "Timeout": 5
       }
     }
