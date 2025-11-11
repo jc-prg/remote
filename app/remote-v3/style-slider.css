@@ -26,6 +26,11 @@
     background-color : var(--rm-color-button-device-off);
     border           : solid 0.5px var(--rm-color-button-disabled-border);
 }
+.rm-slider-button.device_undef {
+    opacity          : 60%;
+    background-color : var(--rm-color-button-device-off);
+    border           : solid 0.5px var(--rm-color-button-disabled-border);
+}
 .rm-toggle-label.device_off {
     opacity          : 60%;
 }
