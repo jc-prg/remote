@@ -1,12 +1,9 @@
 /* display information within the remote control */
 
 .color-picker {
-   width           :  98%;
    height          :  auto;
-   margin          :   1%;
-   padding         :   2px;
-   padding-top     :   4px;
-   padding-bottom  :   4px;
+   padding         : 4px 2px;
+   grid-column     : span 4;
 
    color           : var(--rm-color-colorpicker-text);
    font-size       :   9px;

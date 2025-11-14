@@ -137,9 +137,8 @@ ul.help ul li {
    float            : left;
    width            : var(--app-frame-width-100);
    margin           : 4px;
-   padding          : 5px;
-   padding-bottom   : 8px;
-   border-radius	: 14px;
+    padding         : 5px 5px 8px;
+    border-radius	: 14px;
    background-color	: var(--rm-color-frame-remote);
    color            : var(--rm-color-frame-remote-text);
    opacity		    : var(--rm-opacity-frame-var);
@@ -214,9 +213,8 @@ ul.help ul li {
 	   
 .remote_group_header {
 	width           :  100%;
-	padding         :    5px;
-	padding-top     :   10px;
-	}
+    padding         : 10px 5px 5px;
+}
 
 .remote_group_header:hover {
 	color           : var(--rm-color-frame-group-text-hover);
@@ -234,14 +232,10 @@ ul.help ul li {
 
 .remote-line {
     position		: relative;
-    float		    : left;
-    width		    : 96%;
+    grid-column     : span 4;
     height		    : 15px;
-    overflow		: hidden;
-    margin-top		: 1.2cqw;
-    margin-bottom	: 1cqw;
-    margin-left	    : 2%;
-    margin-right	: 2%;
+    overflow		: visible;
+    margin          : 1.2cqw 2% 1cqw;
     border-color    : var(--rm-color-frame-line);
     color		    : var(--rm-color-frame-line-text);
     }
@@ -258,13 +252,10 @@ ul.help ul li {
     }
 
 .remote-power-information {
-    float           : left;
-    width           : calc(100% - 36px);
-    padding         : 4px;
-    padding-left    : 10px;
-    padding-right   : 10px;
-    margin          : 8px;
+    padding         : 4px 10px;
     margin-bottom   : 10px;
+    grid-column     : span 4;
+    grid-row        : span 1;
     background      : var(--rm-color-power-information-background);
     border          : 0.5px solid var(--rm-color-power-information-border);
     border-radius   : 10px;
@@ -295,10 +286,10 @@ ul.help ul li {
     margin          :  1%;
     height          : auto;
     max-height      : none;
-    overflow        : hidden;
-    padding         : 0px;
-    padding-top     : 8px;
-    padding-bottom  : 8px;
+    overflow        : visible;
+    position        : relative;
+
+    padding         : 8px 0px;
     font-size       : var(--rm-size-remote-channel-text);
     color           : var(--rm-color-button-channel-text);
     border          : var(--rm-color-button-channel-border);

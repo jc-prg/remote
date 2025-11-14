@@ -177,7 +177,7 @@ function RemoteElementButtons(name) {
         let onClick    = "";
 
         if (Array.isArray(script_apiCommandSend)) {
-                let test   = "onmousedown_left_right(event,'alert(#left#);','alert(#right#);');"
+                //let test   = "onmousedown_left_right(event,'alert(#left#);','alert(#right#);');"
                 onClick    = "onmousedown_left_right(event,\"" + script_apiCommandSend[0].replaceAll("\"","#") +
                              "\",\"" + script_apiCommandSend[1].replaceAll("\"","#") + "\");";
                 onClick    = "onmousedown='"+onClick+"'";
@@ -222,11 +222,17 @@ function RemoteElementButtons(name) {
 	// create button for single command
 	this.device          = function (id, label, device, style, cmd, disabled ) {
 
+        if (label.indexOf("||") > 0) { label = label.split("||")[1]; }
+        if (cmd.indexOf("||") > 0)   { cmd = cmd.split("||")[0]; }
+
 		let label2 	= this.image( label, style );
 		if (label === ".") {
 			disabled = "disabled";
 			label2[0] = "&nbsp;";
 			}
+        else if (label2[0].indexOf("<img") < 0) {
+            label2[0] = "<span class='rm-button-text'>" + label2[0] + "</span>";
+        }
 		if (cmd !== "") {
 			cmd = 'apiCommandSend("'+cmd+'","","","'+device+'");';
 			}
@@ -305,20 +311,20 @@ function RemoteElementButtons(name) {
 	// check if image exists for button
 	this.image           = function (label,style) {
 
-		// set vars
+        // set vars
         let button_color = this.data["CONFIG"]["elements"]["button_colors"];  // definition of button color
-		let button_img2  = this.data["CONFIG"]["elements"]["button_images"];  // definition of images for buttons (without path and ".png")
+        let button_img2  = this.data["CONFIG"]["elements"]["button_images"];  // definition of images for buttons (without path and ".png")
 
-		// if image available set image
-		let button_img   = [];
-		for (let key in button_img2) { button_img[key] = this.imageHTML(button_img2[key]); }
+        // if image available set image
+        let button_img   = [];
+        for (let key in button_img2) { button_img[key] = this.imageHTML(button_img2[key]); }
 
-		// check label
-        	if (label in button_color)    { style = style + " bg" + label + " "; }
-        	if (label in button_img && showImg ) { label = button_img[label]; }
+        // check label
+        if (label in button_color) { style = style + " bg" + label + " "; }
+        else if (label in button_img && showImg ) { label = button_img[label]; }
 
-        	return [label, style];
-		}
+        return [label, style];
+    }
 
     this.imageHTML = function (file) {
 

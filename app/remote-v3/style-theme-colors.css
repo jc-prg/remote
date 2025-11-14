@@ -176,6 +176,16 @@
     --rm-opacity-display-var: 1.0;
 }
 
+@media (prefers-color-scheme: light) {
+    :root {
+        --jc-tooltip-background: lightyellow;
+        --jc-tooltip-color: black;
+        --jc-tooltip-button-background: #5555ff;
+        --jc-tooltip-button-background-hover: #5555ee;
+        --jc-tooltip-button-color: white;
+    }
+}
+
 @media (prefers-color-scheme: dark) {
     :root {
         --rm-color-body: #111111;

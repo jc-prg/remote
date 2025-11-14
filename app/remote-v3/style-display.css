@@ -2,16 +2,19 @@
 
 .display {
    float           : left;
+/*
    width           : 48%;
-   margin          : 1%;
    height          : 40px;
+*/
+   margin          : 1%;
    padding         : 0.5vw;
    border-radius   : 6px;
    border          : solid 0.5px var(--rm-color-display-default-border);
    background-color: var(--rm-color-display-default);
    color           : var(--rm-color-display-default-text);
    font-size       : var(--rm-size-remote-display-text);
-   overflow        : hidden;
+   overflow        : visible;
+   position        : relative;
    display         : inline-block;
    vertical-align  : top;
    opacity         : var(--rm-opacity-display-var);
@@ -20,17 +23,19 @@
 .display.right  { float  : right; }
 .display.edit   { opacity: 1; }
 
-.display.small  { width  : 48%;   height  :  auto;  aspect-ratio: 8 / 1.19; }
-.display.middle { width  : 48%;   height  :  auto;  aspect-ratio: 4 / 2.05; }
-.display.big    { width  : 98%;   height  :  auto;  aspect-ratio: 4 / 2; }
+.display        { width: auto; height: auto; margin : 0; }
+.display.small  { grid-column: span 2; grid-row: span 1; }
+.display.middle { grid-column: span 2; grid-row: span 2; }
+.display.big    { grid-column: span 4; grid-row: span 4; }
 
-.display.h1w4   { width  : 98%;   height  :  auto;  aspect-ratio: 16 / 2; }
-.display.h1w2   { width  : 48%;   height  :  auto;  aspect-ratio: 8 / 1.9;  }
-.display.h2w2   { width  : 48%;   height  :  auto;  aspect-ratio: 4 / 2.05; }
-.display.h2w3   { width  : 73%;   height  :  auto;  aspect-ratio: 6 / 2.05;}
-.display.h2w4   { width  : 98%;   height  :  auto;  aspect-ratio: 8 / 2; }
-.display.h3w2   { width  : 48%;   height  :  auto;  aspect-ratio: 6 / 4.81; }
-.display.h4w2   { width  : 48%;   height  :  auto;  aspect-ratio: 2 / 2.15; }
+.display.h1w4 { grid-row: span 1; grid-column: span 4; }
+.display.h1w2 { grid-row: span 1; grid-column: span 2; }
+.display.h2w2 { grid-row: span 2; grid-column: span 2; }
+.display.h2w3 { grid-row: span 2; grid-column: span 3; }
+.display.h2w4 { grid-row: span 2; grid-column: span 4; }
+.display.h3w2 { grid-row: span 3; grid-column: span 2; }
+.display.h4w2 { grid-row: span 4; grid-column: span 2; }
+
 
 .display-element {
    width	: 56px;

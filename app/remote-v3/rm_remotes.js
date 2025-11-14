@@ -34,7 +34,7 @@ class RemoteMain {
         this.keyboard = new rmRemoteKeyboard(name + ".keyboard");	// rm_remotes-keyboard.js
 
         this.logging = new jcLogging(this.app_name);
-        this.tooltip = new jcTooltip(this.app_name + ".tooltip");	// rm_remotes-elements.js
+        this.tooltip = new JcTooltip2(this.app_name + ".tooltip");	// jc-function-0.1.9.js
 
         this.rm_scene = new RemoteJsonElements(this.app_name + ".rm_scene", "scene", this);
         this.rm_device = new RemoteJsonElements(this.app_name + ".rm_device", "device", this);
@@ -56,12 +56,6 @@ class RemoteMain {
         }
 
         if (this.initial_load) {
-            this.tooltip_mode = "onmouseover";
-            this.tooltip_width = "140px";
-            this.tooltip_height = "140px";
-            this.tooltip_distance = 47;
-
-            this.tooltip.settings(this.tooltip_mode, this.tooltip_width, this.tooltip_height, this.tooltip_distance);
             this.logging.default("Initialized new class 'rmRemotes'.");
             this.initial_load = false;
         } else {
@@ -195,7 +189,7 @@ class RemoteMain {
     device_remote(id = "", device = "", preview_remote = "", preview_display = "", preview_display_size = "") {
 
         let preview = false;
-        let remote = "<div id='remote_button' style='display:block'>";
+        let remote = "";
         let device_config = this.data["CONFIG"]["devices"][device];
 
         let context_menu;
@@ -261,17 +255,20 @@ class RemoteMain {
         appCookie.set("remote", "device::" + device + "::" + remote_label + "::" + this.edit_mode + "::" + easyEdit + "::" + remoteHints);
         console.info("Set cookie: " + "device::" + device + "::" + remote_label + "::" + this.edit_mode + "::" + easyEdit + "::" + remoteHints);
 
-        // add preview hint or error message container
-        if (preview) {
-            remote += "<b>" + lang("PREVIEW") + ":</b><br/><hr/>";
-        } else {
-            remote += "<div id='remote-power-information-" + device + "' class='remote-power-information' onclick='statusCheck_bigMessage(\"remote-power-information-" + device + "\");'>POWER INFORMATION</div>";
-        }
-
         // add edit button
         let edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"device\",\"" + device + "\");";
         if (!this.edit_mode && easyEdit) {
             remote += "<div class='remote-edit-button' onclick='" + edit_cmd + "'><img src='icon/edit.png' alt='' style='height:20px;width:20px;'></div>";
+        }
+
+        // remote container
+        remote += "<div id='remote_button' class='rm-button-grid'>";
+
+        // add preview hint or error message container
+        if (preview) {
+            remote += "<div style='grid-column:span 4;'><b>" + lang("PREVIEW") + ":</b><br/><hr/></div>";
+        } else {
+            remote += "<div id='remote-power-information-" + device + "' class='remote-power-information' onclick='statusCheck_bigMessage(\"remote-power-information-" + device + "\");'>POWER INFORMATION</div>";
         }
 
         // add remote buttons
@@ -283,31 +280,53 @@ class RemoteMain {
             let button_style = "";
             this.display.edit_mode = this.edit_mode;
 
+
+            // create tooltip data
+            let context_menu;
             if (this.edit_mode) {
-                context_menu = "[" + i + "] <b>" + cmd.split("||")[0] + "</b><br/><br/>";
+
+                this.tt_button = function (onclick, text) {
+                    //onclick = "alert('" + text + "');";
+                    onclick = onclick.replaceAll("'", "##");
+                    return "<button onclick='" + onclick + "'>" + text + "</button>";
+                }
+                this.tt_input = function (id) {
+                    return "<input id='" + id + "' style='width:100px'>";
+                }
+
+                let button_name = cmd.split("||")[0];
+                let button_name_test = button_name.split("_");
+                if (button_name_test[1] === "undefined") {
+                    button_name = button_name_test[0];
+                }
+
                 let link_preview = this.app_name + ".rm_device.preview('" + device + "');";
                 let link_delete = this.app_name + ".rm_device.delete_button('" + device + "','" + i + "');";
                 let link_move_left = this.app_name + ".rm_device.move_button('" + device + "'," + i + ",'left');";
                 let link_move_right = this.app_name + ".rm_device.move_button('" + device + "'," + i + ",'right');";
                 let link_button_left = this.app_name + ".rm_device.add_button('" + device + "','add_button_" + i + "','" + i + "');";
                 let link_button_right = this.app_name + ".rm_device.add_button('" + device + "','add_button_" + i + "','" + (i + 1) + "');";
-                this.button.width = "50px;"
-                let input_add_button = "<br/>&nbsp;<br/><input id='add_button_" + i + "' style='width:100px'><br/>&nbsp;<br/>" +
-                    this.button.edit(link_button_left + link_preview, "&lt; +") +
-                    this.button.edit(link_button_right + link_preview, "+ &gt;");
 
-                this.button.width = "30px;";
+                context_menu = "[" + i + "] <b>" + button_name + "</b><br/><br/>";
+
                 if (i > 0) {
-                    context_menu += this.button.edit(link_move_left + link_preview, "&lt;", "");
+                    context_menu += this.tt_button(link_move_left + link_preview, "&lt;");
                 }
-                context_menu += this.button.edit(link_delete + link_preview, "x", "");
-                if (i + 1 < remote_definition.length) {
-                    context_menu += this.button.edit(link_move_right + link_preview, "&gt;", "");
+                context_menu += this.tt_button(link_delete + link_preview, "x");
+                if (i + 1 < remote_definition.length && button_name.indexOf("HEADER-IMAGE") < 0) {
+                    context_menu += this.tt_button(link_move_right + link_preview, "&gt;");
                 }
-                context_menu += input_add_button;
-                button_style = " edit";
+
+                context_menu += "<br/>";
+                if (button_name.indexOf("HEADER-IMAGE") < 0) {
+                    context_menu += this.tt_input("add_button_" + i) + "<br/>";
+                    context_menu += this.tt_button(link_button_left + link_preview, "&lt; +");
+                    context_menu += this.tt_button(link_button_right + link_preview, "+ &gt;");
+                }
+                context_menu = "<center>" + context_menu + "</center>";
             }
 
+            // create element for definition
             if (button === "LINE") {
                 next_button = this.basic.line("");
             } else if (button.indexOf("LINE||") === 0) {
@@ -325,7 +344,7 @@ class RemoteMain {
             } else if (button === "keyboard") {
                 next_button = this.button.device_keyboard(cmd, button, device, "", cmd, "");
                 this.active_buttons.push(cmd);
-            } else if (remote_buttons.includes(button)) {
+            } else if (remote_buttons.includes(button.split("||")[0])) {
                 next_button = this.button.device(cmd, button, device, button_style, cmd, "");
                 this.active_buttons.push(cmd);
             } else if (this.edit_mode) {
@@ -334,18 +353,10 @@ class RemoteMain {
                 next_button = this.button.device(cmd, button, device, "notfound", cmd, "disabled");
             }
 
+            // add tooltip data to new element
             if (this.edit_mode) {
-                if (button.indexOf("LINE") === 0) {
-                    this.tooltip.settings(this.tooltip_mode, this.tooltip_width, this.tooltip_height, 30);
-                } else if (button.indexOf("DISPLAY") === 0) {
-                    this.tooltip.settings(this.tooltip_mode, this.tooltip_width, this.tooltip_height, this.tooltip_distance);
-                } else if (button.indexOf("COLOR-PICKER") === 0) {
-                    this.tooltip.settings(this.tooltip_mode, this.tooltip_width, this.tooltip_height, this.tooltip_distance);
-                } else {
-                    this.tooltip.settings(this.tooltip_mode, this.tooltip_width, this.tooltip_height, this.tooltip_distance);
-                }
-
-                next_button = this.tooltip.create_inside(next_button, context_menu, i);
+                next_button = this.tooltip.create("button", next_button, context_menu);
+                next_button = this.tooltip.create("div", next_button, context_menu);
             }
 
             remote += next_button;
@@ -360,6 +371,12 @@ class RemoteMain {
         //remote += this.device_remote_json(id,device,remote_definition,remote_display);
 
         setTextById(id, remote);
+        if (this.edit_mode) {
+            setTimeout(() => {
+                this.tooltip.load("button");
+                this.tooltip.load("div");
+            },500);
+        }
     }
 
     /* write description for device remote */
@@ -417,10 +434,17 @@ class RemoteMain {
             sign = "+";
         }
 
+        // create pure version of button list without alternative icons
+        let pure_device_buttons = [];
+        for (let i=0;i<remote_buttons.length;i++) {
+            pure_device_buttons.push(remote_buttons[i].split("||")[0]);
+        }
+
         // identify difference of arrays
         for (let i = 0; i < device_buttons.length; i++) {
-            if (remote_buttons.includes(device_buttons[i]) === false) {
-                not_used.push(device_buttons[i]);
+            let button = device_buttons[i];
+            if (pure_device_buttons.includes(button) === false) {
+                not_used.push(button);
             }
         }
 
@@ -431,6 +455,7 @@ class RemoteMain {
         }
 
         remote += "<div id='buttons_not_used' style='display:" + display + ";position:relative;top:-7px;'>";
+        remote += "<div class='rm-button-grid' style='width:100%'>";
         remote += this.basic.line(lang("NOT_USED"));
 
         // create buttons not used
@@ -440,18 +465,20 @@ class RemoteMain {
             next_button = this.button.device("not_used" + i, button, device, "", cmd, "");
 
             if (this.edit_mode) {
-                let link_add = this.app_name + ".rm_device.add_button('" + device + "', 'not_used_" + i + "');";
-                let input_add = "<input id='not_used_" + i + "' name='not_used_" + i + "' value='" + button + "' style='display:none;'>";
-                let context_menu = input_add + "[" + i + "] " + cmd + "<br/><br/>" + this.button.edit(link_add + link_preview, lang("BUTTON_T_MOVE2REMOTE"), "");
+                let link_add = this.app_name + ".rm_device.add_button(##" + device + "##, ##not_used_" + i + "##);" + link_preview.replaceAll("'", "##");
+                let input_add = "<input id='not_used_" + i + "' name='not_used_" + i + "' value='" + button + "' style='display:none;' />";
+                let context_menu = input_add + "[" + i + "] " + cmd + "<br/><br/>" + this.button.edit(link_add, lang("BUTTON_T_MOVE2REMOTE"), "");
+                context_menu = context_menu.replaceAll("\"", "'");
 
-                this.tooltip.settings(this.tooltip_mode, this.tooltip_width, "80px", this.tooltip_distance);
-                next_button = this.tooltip.create_inside(next_button, context_menu, "not_used" + i);
+                console.error(context_menu);
+
+                next_button = this.tooltip.create("button", next_button, context_menu);
             }
 
             remote += next_button;
         }
 
-        remote += "</div>";
+        remote += "</div></div>";
 
         // print
         setTextById(id, remote);
@@ -519,7 +546,7 @@ class RemoteMain {
         edit += this.tab.row(lang("ID"), "<b>" + device + "</b>");
         edit += this.tab.row(lang("LABEL") + ":", this.basic.input("edit_label", device_config["settings"]["label"]));
         edit += this.tab.line();
-        edit += this.tab.row(icon, this.button_image_select("edit_image", device_config["settings"]["image"]));
+        edit += this.tab.row(icon, this.button_image_select("edit_image", 'device_edit_button_image', device_config["settings"]["image"]));
         edit += this.tab.row(lang("EXTERNAL_ID") + ":", this.basic.input("edit_device_id", device_config["settings"]["device_id"]));
         edit += this.tab.row(lang("DESCRIPTION") + ":&nbsp;", this.basic.input("edit_description", device_config["settings"]["description"]));
 
@@ -789,7 +816,7 @@ class RemoteMain {
         myJson.create("container_remote_json_buttons", "remote_json_buttons", remote_definition, "rmc");
         myJson.create("container_remote_json_display", "remote_json_display", remote_display, "default");
 
-        const myBox = new RemoteElementSheetBox("remote-edit-add", height = "280px", scroll = false);
+        const myBox = new RemoteElementSheetBox("remote-edit-add", height = "280px", scroll = true);
         myBox.addSheet(lang("INFO"), lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") + this.dialog_device.edit_fields("template", id, device));
         myBox.addSheet(lang("BUTTONS"), this.dialog_device.edit_fields("button_line", id, device, preview_remote));
 // !!!!!!!! ---------------
@@ -890,18 +917,18 @@ class RemoteMain {
             remote_display_size = "middle";
         }
 
-        // create remote
-        remote += "<div id='scene_button' style='display:block;'>";
-        if (preview) {
-            remote += "<b>" + lang("PREVIEW") + ":</b><br/><hr/>";
-        } else {
-            remote += "<div id='scene-power-information-" + scene + "' class='remote-power-information' onclick='statusCheck_bigMessage(\"scene-power-information-" + scene + "\");'>POWER INFORMATION</div>";
-        }
-
         // include edit button
         let edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"scene\",\"" + scene + "\");";
         if (!this.edit_mode && easyEdit) {
             remote += "<div class='remote-edit-button' onclick='" + edit_cmd + "' style='top:17px;left:17px;'><img src='icon/edit.png' style='height:20px;width:20px;'></div>";
+        }
+
+        // create remote
+        remote += "<div id='scene_button' class='rm-button-grid'>";
+        if (preview) {
+            remote += "<div style='grid-column:span 4;'><b>" + lang("PREVIEW") + ":</b><br/><hr/></div>";
+        } else {
+            remote += "<div id='scene-power-information-" + scene + "' class='remote-power-information' onclick='statusCheck_bigMessage(\"scene-power-information-" + scene + "\");'>POWER INFORMATION</div>";
         }
 
         // add buttons
@@ -935,15 +962,25 @@ class RemoteMain {
                 button = [cp_device, cp_data];
             }
 
-            // create tool tip
+            // create tooltip data for edit mode
+            let context_menu;
             if (this.edit_mode) {
+
+                this.tt_button = function (onclick, text) {
+                    //onclick = "alert('" + text + "');";
+                    onclick = onclick.replaceAll("'", "##");
+                    return "<button onclick='" + onclick + "'>" + text + "</button>";
+                }
+                this.tt_input = function (id) {
+                    return "<input id='" + id + "' style='width:100px'>";
+                }
+
                 let button_name = cmd.split("||")[0];
                 let button_name_test = button_name.split("_");
                 if (button_name_test[1] === "undefined") {
                     button_name = button_name_test[0];
                 }
 
-                context_menu = "[" + i + "] <b>" + button_name + "</b><br/><br/>";
                 let link_preview = this.app_name + ".rm_scene.preview('" + scene + "');";
 
                 let link_delete = this.app_name + ".rm_scene.delete_button('" + scene + "','" + i + "');";
@@ -952,20 +989,24 @@ class RemoteMain {
 
                 let link_button_left = this.app_name + ".rm_scene.add_button('" + scene + "','add_button_" + i + "','" + i + "');";
                 let link_button_right = this.app_name + ".rm_scene.add_button('" + scene + "','add_button_" + i + "','" + (i + 1) + "');";
-                this.button.width = "50px;"
-                let input_add_button = "<br/>&nbsp;<br/><input id='add_button_" + i + "' style='width:100px'><br/>&nbsp;<br/>" +
-                    this.button.edit(link_button_left + link_preview, "&lt; +") +
-                    this.button.edit(link_button_right + link_preview, "+ &gt;");
 
-                this.button.width = "30px;";
+                context_menu = "[" + i + "] <b>" + button_name + "</b><br/><br/>";
+
                 if (i > 0) {
-                    context_menu += this.button.edit(link_move_left + link_preview, "&lt;", "");
+                    context_menu += this.tt_button(link_move_left + link_preview, "&lt;");
                 }
-                context_menu += this.button.edit(link_delete + link_preview, "x", "");
-                if (i + 1 < remote_definition.length) {
-                    context_menu += this.button.edit(link_move_right + link_preview, "&gt;", "");
+                context_menu += this.tt_button(link_delete + link_preview, "x");
+                if (i + 1 < remote_definition.length && button_name.indexOf("HEADER-IMAGE") < 0) {
+                    context_menu += this.tt_button(link_move_right + link_preview, "&gt;");
                 }
-                context_menu += input_add_button;
+
+                context_menu += "<br/>";
+                if (button_name.indexOf("HEADER-IMAGE") < 0) {
+                    context_menu += this.tt_input("add_button_" + i) + "<br/>";
+                    context_menu += this.tt_button(link_button_left + link_preview, "&lt; +");
+                    context_menu += this.tt_button(link_button_right + link_preview, "+ &gt;");
+                }
+                context_menu = "<center>" + context_menu + "</center>";
             }
 
             // create element per definition
@@ -1021,35 +1062,10 @@ class RemoteMain {
                 this.active_buttons.push(cmd);
             }
 
+            // add tooltip data to new element
             if (this.edit_mode) {
-                if (button[0].indexOf("LINE") === 0) {
-                    this.tooltip.settings(this.tooltip_mode, this.tooltip_width, this.tooltip_height, 30);
-                } else if (button[0].indexOf("HEADER-IMAGE") === 0) {
-                    this.tooltip.settings(this.tooltip_mode, this.tooltip_width, this.tooltip_height, 20);
-                } else if (button[0].indexOf("SLIDER") === 0) {
-                    this.tooltip.settings(this.tooltip_mode, this.tooltip_width, this.tooltip_height, 40);
-                } else if (button[0].indexOf("TOGGLE") === 0) {
-                    this.tooltip.settings(this.tooltip_mode, this.tooltip_width, this.tooltip_height, 20);
-                } else if (button[0].indexOf("DISPLAY") === 0) {
-                    this.tooltip.settings(this.tooltip_mode, this.tooltip_width, this.tooltip_height, this.tooltip_distance);
-                } else {
-                    this.tooltip.settings(this.tooltip_mode, this.tooltip_width, this.tooltip_height, this.tooltip_distance);
-                }
-
-                next_button = this.tooltip.create_inside(next_button, context_menu, i);
-
-                // adapt tooltip placement for header image in edit mode
-                if (button[0].indexOf("HEADER-IMAGE") === 0 || remote.indexOf("TOOL-TIPP-PLACEHOLDER") > 0) {
-
-                    console.debug(next_button);
-
-                    let splitter = "<span class='jc_tooltip";
-                    let tooltip = splitter + next_button.split("<!--X-->" + splitter)[1];
-                    tooltip = tooltip.replace("</button>", "");
-
-                    next_button = next_button.replace(tooltip, "");
-                    next_button = next_button.replace("<!--TOOL-TIPP-PLACEHOLDER-->", tooltip);
-                }
+                next_button = this.tooltip.create("button", next_button, context_menu);
+                next_button = this.tooltip.create("div", next_button, context_menu);
             }
 
             remote += next_button;
@@ -1059,6 +1075,12 @@ class RemoteMain {
         remote += this.keyboard.input();
 
         setTextById(id, remote);
+        if (this.edit_mode) {
+            setTimeout(() => {
+                this.tooltip.load("button");
+                this.tooltip.load("div");
+            },500);
+        }
     }
 
     /* create list of channels (for scenes) */
@@ -1087,17 +1109,16 @@ class RemoteMain {
             return a.toLowerCase().localeCompare(b.toLowerCase());
         });
 
-        this.tooltip.settings(this.tooltip_mode, this.tooltip_width, "80px", 35);
-
         // create list of channel buttons
         for (let i = 0; i < channels.length; i++) {
             let cmd = "channel_" + i; //channels[i];
             let next_button = this.button.channel(cmd, channels[i], scene_name, macros[channels[i]], "", "");
-            let context_menu = "[" + i + "] <b>" + cmd + "</b><br/><br/><i>" + lang("CHANNEL_USE_JSON") + "</i>";
+            let context_menu = "[" + i + "] <b>" + cmd + "</b><br/><br/><i>" + lang("CHANNEL_USE_JSON") + "</i><br/>&nbsp;";
+            context_menu = "<center>" + context_menu + "</center>";
             this.active_channels.push(cmd);
 
             if (this.edit_mode) {
-                next_button = this.tooltip.create_inside(next_button, context_menu, "channel_" + i);
+                next_button = this.tooltip.create("button", next_button, context_menu);
             }
             remote += next_button;
         }
@@ -1328,24 +1349,28 @@ class RemoteMain {
     // SUPPORT FUNCTIONS - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     /* return drop-down with scene images */
-    button_image_select(id, selected = "") {
+    button_image_select(source_id, target_id, selected = "", width = "") {
         let list = {};
         let images = this.data["CONFIG"]["elements"]["button_images"];
 
         for (let key in images) {
             list[key] = key;
         }
-
-        return this.basic.select(id, "button-image", list, "rm3remotes.button_image_preview('" + id + "');", selected);
+        if (width !== "") { this.basic.input_width = width; }
+        return this.basic.select(source_id, "button-image", list, "rm3remotes.button_image_preview('" + source_id + "', '"+target_id+"');", selected);
     }
 
     /* header-image preview */
-    button_image_preview(id) {
+    button_image_preview(source_id, target_id) {
+
         let images = this.data["CONFIG"]["elements"]["button_images"];
-        let selected = getValueById("edit_image");
+        let selected = getValueById(source_id);
         if (images[selected]) {
             let image_html = "<img src='icon/" + images[selected] + "' class='rm-button_image_start'>";
-            setTextById("device_edit_button_image", image_html);
+            setTextById(target_id, image_html);
+        }
+        else {
+            setTextById(target_id, selected);
         }
     }
 
@@ -1528,13 +1553,6 @@ class RemoteMain {
             if (!scene_remote.includes("DISPLAY") && !this.edit_mode && scene_remote.includes("HEADER-IMAGE||toggle")) {
                 info = "<br/><text id='header_image_text_info' class='header_image_text_info'></text>"
             }
-
-            this.tooltip.settings("onmouseover", "100px", "50px", "50px");
-            toggle_html = this.tooltip.create_inside(" " + toggle_html, test, 1);
-            // ---------------------------------------------------------- TOOLTIP IN PROGRESS
-            // - activate for a few seconds, if toggle is off (and hint is activated)
-            // - place below the toggle
-            // - ensure the triangle is visible
 
             image_html += " <div class='header_image_toggle_container' id='toggle_place_" + id + "'>" + toggle_html + "</div>";
             image_html += " <div id='header_tooltip' style='display:block;'><!--TOOL-TIPP-PLACEHOLDER--></div>";
@@ -2000,11 +2018,24 @@ class RemoteEditDialogs {
         }
         else if (this.remote_type === "device" && element === "button_line") {
 
+            let icon_default = "<button class='button device_off small' style='height:40px;'><div id='add_button_image_default'>&nbsp;</div></button>";
+            let icon_select = "<button class='button device_off small' style='height:40px;'><div id='add_button_image_select_show'>&nbsp;</div></button>";
+            let onchange_default = this.remote.app_name+".button_image_preview('add_button_select','add_button_image_default');";
+            let chose_default = "<input type='radio' name='button-image-select' id='button-select-default' value='default' checked>";
+            let chose_select = "<input type='radio' name='button-image-select' id='button-select-select' value='select'>";
+
             edit = this.tab.start();
             edit += this.tab.row(
-                this.basic.select_array("add_button_select", "defined button", device_config["buttons"], "", ""),
-                this.button.edit(this.app_name + ".rm_device.add_button('" + device + "','add_button_select');", lang("BUTTON_T"), "")
+                this.basic.select_array("add_button_select", "defined button", device_config["buttons"], onchange_default, ""),
+                this.button.edit(this.app_name + ".rm_device.add_button_select_image('" + device + "','add_button_select', 'button-image-select','add_button_image');", lang("BUTTON_T"), "")
             );
+            let button_select = this.tab.start("");
+            button_select += this.tab.row(icon_default, "&nbsp;" + chose_default + lang("BUTTON_IMAGE_DEFAULT"));
+            button_select += this.tab.row(icon_select, "&nbsp;" + chose_select + this.remote.button_image_select("add_button_image_select", 'add_button_image_select_show', "", "140px"));
+            button_select += this.tab.end();
+
+            edit += this.tab.row(button_select,false);
+            edit += this.tab.line();
             edit += this.tab.row(
                 this.basic.input("add_button"),
                 this.button.edit(this.app_name + ".rm_device.add_button('" + device + "','add_button');", lang("BUTTON_T_OTHER"), "")
@@ -2474,16 +2505,17 @@ class RemoteJsonElements {
         let value = this.json.get_value(this.json_field_id);
         let value_new = [];
 
+        if (this.remote_type === "scene" && button.indexOf("_") < 0) { button = scene + "_" + button; }
+
         if (position === "FIRST") {
             value_new.push(button);
         }
-
         for (let i = 0; i < value.length; i++) {
-            if (i === position && position !== "" && position !== "FIRST") {
-                value_new.push(button);
+                if (i === Number(position) && position !== "" && position !== "FIRST") {
+                    value_new.push(button);
+                }
+                value_new.push(value[i]);
             }
-            value_new.push(value[i]);
-        }
 
         if (position === "") {
             value_new.push(button);
@@ -2494,6 +2526,33 @@ class RemoteJsonElements {
         if (!multiple) {
             this.preview(scene);
         }
+    }
+
+    /* check if alternative image button and then add to JSON */
+    add_button_select_image(scene, button, button_choice, button_value) {
+        const radio_select = document.getElementsByName(button_choice);
+        const button_select = document.getElementById(button);
+        let selected_value = 'default';
+        if (button_select) {
+            button = button_select.value;
+        }
+        if (radio_select) {
+            // Loop through them to find which one is checked
+            for (const radio of radio_select) {
+                if (radio.checked) {
+                    selected_value = radio.value;
+                    break;
+                }
+            }
+            if (selected_value !== 'default') {
+                const image_select = document.getElementById(button_value+"_"+selected_value);
+                if (image_select) {
+                    let image = image_select.value;
+                    button += "||" + image;
+                }
+            }
+        }
+        this.add_button(scene, button);
     }
 
     /* add color picker to JSON*/
@@ -3073,9 +3132,11 @@ class RemoteAdvancedElements {
         if (data[3].indexOf("_") < 0)   { data[3] = device + "_" + data[3]; }
         if (data[4].indexOf("_") < 0)   { data[4] = device + "_" + data[4]; }
 
-        let text = toggle_start;
+        let text = "<div class=\"rm-toggle-container\">";
+        text += toggle_start;
         text += this.e_slider.toggleHTML(data[1], data[2], device, data[3], data[4], init, disabled);
         text += toggle_end;
+        text += "</div>";
         return text;
     }
 }
