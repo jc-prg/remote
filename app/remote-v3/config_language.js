@@ -73,6 +73,7 @@ let language_app = {
         "BUTTON_RECORD"         : "Record button &quot;{0}&quot; for device &quot;{1}&quot;: click OK and then press button within the next 5 seconds.",
         "BUTTON_SELECT"         : "Please select button.",
         "BUTTON_INFOS"          : "Button Information",
+        "BUTTON_IMAGE_DEFAULT"  : "default button image",
         
         "BUTTON_T"              : "button",
         "BUTTON_T_ADD"          : "add",
