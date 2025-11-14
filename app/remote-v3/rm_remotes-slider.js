@@ -44,7 +44,7 @@ function rmSlider(name) {
 		setValueCmd += " onMouseUp=\"appFW.requestAPI('GET',[ 'send-data', '"+device+"', '"+command+"', this.value ], '','');\" ";
 		setValueCmd += " onTouchEnd=\"appFW.requestAPI('GET',[ 'send-data', '"+device+"', '"+command+"', this.value ], '','');\" ";
 	
-		this.slider_code   		=  "<div id=\""+name+"_container\" class=\"rm-slidecontainer\" style=\"display:block\">";
+		this.slider_code   		=  "<div id=\""+name+"_container\" class=\"rm-slide-container\" style=\"display:block\">";
 		this.slider_code   		+= "<div  id=\""+name+"_label\" class=\"rm-sliderlabel\">"+label+"</div>";
   		this.slider_code   		+= "<input type=\"range\" min=\""+min+"\" max=\""+max+"\" value=\""+defaultValue+"\" class=\"rm-slider "+add_class+"\" id=\"slider_"+device+"_"+name+"_input\" "+setValueCmd+" "+input_disabled+">";
  		this.slider_code   		+= "<div id=\""+name+"_value\" class=\"rm-slidervalue\">"+defaultValue+"</div>";
@@ -92,7 +92,7 @@ function rmSlider(name) {
         else if (init == "1") { defaultValue = init; class_init = "device_on"; }
         else if (init == "0") { defaultValue = init; class_init = "device_off"; }
 
-		this.toggle_code   		=  "<div id=\"toggle_"+name+"_container\" class=\"rm-slidecontainer\" style=\"display:block\">";
+		this.toggle_code   		=  "<div id=\"toggle_"+name+"_container\" class=\"rm-slide-container\" style=\"display:block\">";
         this.toggle_code   		+= "<input type=\"range\" min=\"0\" max=\"1\" value=\""+defaultValue+"\" class=\"rm-slider "+class_init+"\" id=\"toggle_"+device+"_"+value_key+"_input\" " + setValueCmd +" " + input_disabled + ">";
   		this.toggle_code        += "<input id=\"toggle_"+device+"_"+value_key+"_value\" value=\""+defaultValue+"\" style=\"display:none\">";
   		this.toggle_code        += "<input id=\"toggle_"+device+"_"+value_key+"_last_value\" value=\""+defaultValue+"\" style=\"display:none\">";

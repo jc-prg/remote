@@ -90,9 +90,9 @@
 
 /* ---------------------------------------- */
 
-.rm-slidecontainer {
+.rm-slide-container {
     border          : none;
-    background-color: none; //var(--rm-color-colorpicker);
+    background-color: unset; //var(--rm-color-colorpicker);
 
     z-index       : 99;
     width         : 100%;
