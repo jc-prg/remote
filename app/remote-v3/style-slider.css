@@ -44,6 +44,9 @@
 .rm-toggle-container {
     grid-column: span 4;
     grid-row: span 1;
+    overflow: visible;
+    display: flex;
+    position: relative;
 }
 
 .rm-toggle-button {
@@ -66,23 +69,23 @@
 }
 
 .rm-toggle-label {
-   width           :  calc(100% - 95px);
-   min-width       :  60%;
-   height          :  40px;
+    width           :  calc(100% - 95px);
+    min-width       :  60%;
+    height          :  40px;
     padding        : 2px 2px 2px 5px;
     margin         :   4px;
 
-   border-radius   :   6px;
-   border          : 1px solid var(--rm-color-slider2-label-border);
-   background-color: var(--rm-color-slider2-label);
-   color           : var(--rm-color-slider2-label-text);
-   font-size       : var(--rm-size-remote-label-text);
+    border-radius   :   6px;
+    border          : 1px solid var(--rm-color-slider2-label-border);
+    background-color: var(--rm-color-slider2-label);
+    color           : var(--rm-color-slider2-label-text);
+    font-size       : var(--rm-size-remote-label-text);
 
-   overflow        : hidden;
-   float           : left;
-   display         : inline-block;
-   vertical-align  : top;
-   text-align      : left;
+    overflow        : hidden;
+    float           : left;
+    display         : inline-block;
+    vertical-align  : top;
+    text-align      : left;
 }
 
 /* ---------------------------------------- */
