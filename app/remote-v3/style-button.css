@@ -22,7 +22,7 @@ button.small {
 }
 
 .rm-button-grid {
-    width       : calc(100% - 20px);
+    width       : 100%;
     padding     : 10px;
     display     : grid;
     grid-template-columns: repeat(4, 1fr);
