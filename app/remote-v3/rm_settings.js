@@ -935,25 +935,25 @@ function rmSettings (name) {	// IN PROGRESS
             else if (connect_status.indexOf("ERROR") > -1)                { on_off_status = "ERROR"; }
             else                                                          { on_off_status = "ON"; }
 
-            buttons      += this.btn.sized("onoff_"+api_dev,      on_off_status,    "settings",  link_on_off);
-            buttons      += this.btn.sized("reconnect_"+api_dev,  lang("RECONNECT"),"settings",  link_reconnect);
-            buttons      += this.btn.sized("edit_"+api_dev,       lang("EDIT"),     "settings",  link_edit)
-            buttons      += this.btn.sized("save_"+api_dev,       lang("SAVE"),     "hidden",    link_save);
-            buttons      += this.btn.sized("info_"+api_dev,       lang("API_INFO"), "settings",  link_api_info);
+            buttons      += this.button.sized("onoff_"+api_dev,      on_off_status,    "settings",  link_on_off);
+            buttons      += this.button.sized("reconnect_"+api_dev,  lang("RECONNECT"),"settings",  link_reconnect);
+            buttons      += this.button.sized("edit_"+api_dev,       lang("EDIT"),     "settings",  link_edit)
+            buttons      += this.button.sized("save_"+api_dev,       lang("SAVE"),     "hidden",    link_save);
+            buttons      += this.button.sized("info_"+api_dev,       lang("API_INFO"), "settings",  link_api_info);
 
             if (dataAll["CONFIG"]["apis"]["list_api_commands"][interface+"_"+device] && dataAll["CONFIG"]["apis"]["list_api_commands"][interface+"_"+device].length > 0) {
                 if (show_buttons === undefined) { buttons_plus += "<hr style='width:100%;float:left;'/>"; }
                 for (var i=0;i<dataAll["CONFIG"]["apis"]["list_api_commands"][interface+"_"+device].length > 0;i++) {
                     var command = dataAll["CONFIG"]["apis"]["list_api_commands"][interface+"_"+device][i];
                     var command_link = "apiSendToApi(\"" + interface + "_" + device + "::" +command + "\");appMsg.info(\"Command send: " + interface + "_" + device + "::" + command + "\");";
-                    buttons_plus += this.btn.sized("api_cmd_"+interface+"_"+device, command, "settings", command_link);
+                    buttons_plus += this.button.sized("api_cmd_"+interface+"_"+device, command, "settings", command_link);
                     }
                 }
 
             console.debug(interfaces[interface]["API-Devices"][device]);
             if (interfaces[interface]["API-Devices"][device]["AdminURL"]) {
                 cmd_url  = "window.open(\""+interfaces[interface]["API-Devices"][device]["AdminURL"]+"\", \"_blank\", \"noopener,noreferrer\");";
-                buttons_admin += this.btn.sized("api_cmd_"+interface+"_"+device+"_admin", "open", "settings", cmd_url);
+                buttons_admin += this.button.sized("api_cmd_"+interface+"_"+device+"_admin", "open", "settings", cmd_url);
             }
 
             if (show_buttons === undefined) {
@@ -1005,7 +1005,7 @@ function rmSettings (name) {	// IN PROGRESS
                 }
 
             if (config_create) {
-                this.btn.width = "80px;";
+                this.button.width = "80px;";
                 temp += lang("API_CREATE_CONFIG_INFO", [interface]);
                 temp += "<br/>&nbsp;";
                 //temp += "<div id='api_device-"+interface+"_"+device+"'>light</div><br/>";
@@ -1014,13 +1014,13 @@ function rmSettings (name) {	// IN PROGRESS
                 temp += this.tab.row("API Call:<br/>","<div id='api_command-"+interface+"_"+device+"'>get=device-configuration</div><br/>");
                 temp += this.tab.row("<div class='remote-edit-cmd' id='api_response'></div><br/>",false);
                 temp += this.tab.end();
-                temp += this.btn.edit("apiSendToDeviceApi( getValueById('api_device-"+interface+"_"+device+"'), getTextById('api_command-"+interface+"_"+device+"'), true);"+activate_copy_button, lang("CREATE"), "disabled", "create_button_"+interface+"_"+device) + "&nbsp;";
-                temp += this.btn.edit("copyTextById('JSON_copy',appMsg,'"+lang("COPIED_TO_CLIPBOARD")+"');"+activate_copy_button, lang("COPY"), "disabled", "copy_button_"+interface+"_"+device);
+                temp += this.button.edit("apiSendToDeviceApi( getValueById('api_device-"+interface+"_"+device+"'), getTextById('api_command-"+interface+"_"+device+"'), true);"+activate_copy_button, lang("CREATE"), "disabled", "create_button_"+interface+"_"+device) + "&nbsp;";
+                temp += this.button.edit("copyTextById('JSON_copy',appMsg,'"+lang("COPIED_TO_CLIPBOARD")+"');"+activate_copy_button, lang("COPY"), "disabled", "copy_button_"+interface+"_"+device);
             }
             return temp;
         }
 
-    	this.btn.width = "72px";
+    	this.button.width = "72px";
 
         for (let key in interfaces) {
             let id = "interface_edit_"+key;
@@ -1066,8 +1066,8 @@ function rmSettings (name) {	// IN PROGRESS
 		var q1   = lang("RESET_SWITCH_OFF");
 		var q2   = lang("RESET_VOLUME_TO_ZERO");
 
-		this.btn.height = "30px";
-		this.btn.width  = "120px";
+		this.button.height = "30px";
+		this.button.width  = "120px";
 
 		// Reload & Updates
 		var set_temp  = "";
@@ -1080,12 +1080,12 @@ function rmSettings (name) {	// IN PROGRESS
 
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row("<i>Server:</i>",
-                    this.btn.sized("set01","reload (scroll)","settings","appForceReload(true);") + "&nbsp;" +
-                    this.btn.sized("set02","check updates","settings","appFW.requestAPI(\"GET\",[\"version\",\"" + appVersion +"\"], \"\", appMsg.alertReturn, \"wait\");")
+                    this.button.sized("set01","reload (scroll)","settings","appForceReload(true);") + "&nbsp;" +
+                    this.button.sized("set02","check updates","settings","appFW.requestAPI(\"GET\",[\"version\",\"" + appVersion +"\"], \"\", appMsg.alertReturn, \"wait\");")
 					);
 		set_temp += this.tab.row("<i>Devices</i>",
-                    this.btn.sized("set21","Dev ON/OFF", "settings","appMsg.confirm(#" + q1 + "#, #appFW.requestAPI(##GET##,[##reset##],####,apiAlertReturn );#);") + "&nbsp;" +
-                    this.btn.sized("set22","Audio Level","settings", "appMsg.confirm(#" + q2 + "#, #appFW.requestAPI(##GET##,[##reset-audio##],####,apiAlertReturn );# );")
+                    this.button.sized("set21","Dev ON/OFF", "settings","appMsg.confirm(#" + q1 + "#, #appFW.requestAPI(##GET##,[##reset##],####,apiAlertReturn );#);") + "&nbsp;" +
+                    this.button.sized("set22","Audio Level","settings", "appMsg.confirm(#" + q2 + "#, #appFW.requestAPI(##GET##,[##reset-audio##],####,apiAlertReturn );# );")
                     );
 		set_temp += this.tab.end();
         var settings_reload = set_temp;
@@ -1093,10 +1093,10 @@ function rmSettings (name) {	// IN PROGRESS
 		// API Calls and information
 		set_temp  = this.tab.start();
 		set_temp += this.tab.row( "<i>Basic API calls:</i>",
-                    this.btn.sized("set11","REST API : list",  "settings","window.open(#" + RESTurl + "api/list/#,#_blank#);") + "&nbsp;" +
-                    this.btn.sized("set12","REST API : status","settings","window.open(#" + RESTurl + "api/status/#,#_blank#);") + "&nbsp;");
+                    this.button.sized("set11","REST API : list",  "settings","window.open(#" + RESTurl + "api/list/#,#_blank#);") + "&nbsp;" +
+                    this.button.sized("set12","REST API : status","settings","window.open(#" + RESTurl + "api/status/#,#_blank#);") + "&nbsp;");
 		set_temp += this.tab.row( "<i>API Definition:</i>",
-                    this.btn.sized("set13","Swagger/UI",       "settings","window.open(#" + RESTurl + "api/ui/#,#_blank#);") + "&nbsp;"
+                    this.button.sized("set13","Swagger/UI",       "settings","window.open(#" + RESTurl + "api/ui/#,#_blank#);") + "&nbsp;"
                     );
 		set_temp += this.tab.end();
         var settings_api = set_temp;
@@ -1170,12 +1170,12 @@ function rmSettings (name) {	// IN PROGRESS
 
     // create container and load data for macro settings
 	this.module_macros_edit     = function () {
-	    this.btn.width = "100px";
+	    this.button.width = "100px";
 		setting   = "";
 		//setting  += this.basic.container("setting_macros_sheet","JSON edit macros","<div id='macros-edit-json'></div>",false);
 		setting  += "<br/><center><div id='macros-edit-json'></div></center>";
 		setting  += "<center><div style='width:100%;align:center;'><br/>";
-		setting  += this.btn.sized(id="add_scene",label=lang("BUTTON_T_SAVE"),style="settings","apiMacroChange([#groups#,#macro#,#dev-on#,#dev-off#]);","");
+		setting  += this.button.sized(id="add_scene",label=lang("BUTTON_T_SAVE"),style="settings","apiMacroChange([#groups#,#macro#,#dev-on#,#dev-off#]);","");
 		setting  += "<br/></div></center>";
 
 		return setting;
@@ -1200,8 +1200,8 @@ function rmSettings (name) {	// IN PROGRESS
     this.module_add_device      = function  (direct_cmd="", direct_data="") {
         let setting   = "";
         let set_temp  = "";
-		this.btn.width  = "120px";
-		this.btn.height = "30px";
+		this.button.width  = "120px";
+		this.button.height = "30px";
 
         let open_add_device = false;
         if (direct_cmd === "add_device" && direct_data !== "") { set_temp = this.modules_add_remote_dialog(direct_data); open_add_device = true; }
@@ -1214,8 +1214,8 @@ function rmSettings (name) {	// IN PROGRESS
     this.module_add_scene       = function  (direct_cmd="", direct_data="") {
 		let setting   = "";
 		let set_temp  = "";
-		this.btn.width  = "120px";
-		this.btn.height = "30px";
+		this.button.width  = "120px";
+		this.button.height = "30px";
 
         let open_add_scene = false;
         if (direct_cmd === "add_scene") { open_add_scene = true; }
@@ -1225,7 +1225,7 @@ function rmSettings (name) {	// IN PROGRESS
 		set_temp += this.tab.row( "Label:",         this.elements.input("add_scene_label") );
 		set_temp += this.tab.row( "Description:",   this.elements.input("add_scene_descr") );
 		set_temp += this.tab.row( "<center>" +
-                    this.btn.sized("add_scene",lang("ADD_SCENE"),"settings","apiSceneAdd([#add_scene_id#,#add_scene_descr#,#add_scene_label#]);") +
+                    this.button.sized("add_scene",lang("ADD_SCENE"),"settings","apiSceneAdd([#add_scene_id#,#add_scene_descr#,#add_scene_label#]);") +
                     "</center>", false);
 		set_temp += this.tab.end();
 		setting  += this.basic.container("setting_add_scene",lang("ADD_SCENE"),set_temp,open_add_scene);
@@ -1339,7 +1339,7 @@ function rmSettings (name) {	// IN PROGRESS
         this.input_width = width;
 
         set_temp += "<center>";
-        set_temp += this.btn.sized(id="add_dev",label="Add Device",style="settings",add_command);
+        set_temp += this.button.sized(id="add_dev",label="Add Device",style="settings",add_command);
         set_temp += "</center>";
         return set_temp;
 		}
