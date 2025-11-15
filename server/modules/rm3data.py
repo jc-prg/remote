@@ -1364,6 +1364,19 @@ class RemotesEdit(RemoteDefaultClass):
             message = "ERROR: Could not fully delete device '" + device + "'. (" + msg1 + "; " + msg2 + ")"
         return message
 
+    def device_edit_api_settings(self, device, info):
+        """
+        add api settings for a device, incl. (1) API + API-Device, (2) interface config-file and (3) remote config-file
+
+        Args:
+            device (str): device id
+            info (dict): device information
+        Return:
+            dict: API response
+        """
+        self.logging.warning("--> not fully implemented yet!")
+        return "Function 'edit_device_api_settings' not fully implemented yet! (rm3data.py -> line 1369ff)"
+
     def device_status_get(self, device, key):
         """
         get status of device

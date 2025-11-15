@@ -855,6 +855,35 @@ paths:
                 $ref: "#/definitions/STATUS_SYSTEM"
                 
 
+  /device-api-settings/{device}/:
+    post:
+      operationId: __main__.remoteAPI.edit_device_api_settings
+      tags:
+        - edit
+      summary: edit device api settings
+      description: edit device data in database
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: info
+          in: body
+          description: parameters of device api settings that can be edited
+          schema:
+            type: object
+      responses:
+        200:
+          description: Successfully edited device
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS_SYSTEM"
+
   /template/{device}/{template}/:
     put:
       operationId: __main__.remoteAPI.edit_remote_template
