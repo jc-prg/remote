@@ -67,6 +67,11 @@ let language_app = {
         "API_SETTINGS"          : "API settings",
         "API_TEST"              : "API test",
 
+        "API_EDIT_REALLY_CHANGE": "Do you really want to <b>change the API settings</b> for this remote control?",
+        "API_EDIT_SELECT_API_CONFIG": "Please select an <b>API-Device config</b> file",
+        "API_EDIT_SELECT_API_DEVICE": "Please select an <b>Interface config</b> file",
+        "API_EDIT_SELECT_REMOTE": "Please select an <b>Remote config</b> file",
+
         "BUTTON_ASK_DELETE"     : "Do you really want to delete the button '{0}' from '{1}'?",
         "BUTTON_ASK_DELETE_NUMBER" : "Do you really want to delete the button number [{0}] from '{1}'?",
         "BUTTON_INSERT_NAME"    : "Please insert name for button.",

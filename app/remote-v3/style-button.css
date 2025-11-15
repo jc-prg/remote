@@ -172,6 +172,7 @@ button.rm-button.small {
 .rm-button.settings {
     font-size   : 14px;
     margin      : 3px;
+    float: left;
 }
 
 .rm-button.calculate_values {
@@ -393,10 +394,10 @@ canvas {
     width           : 60px;
     height          : 32px;
     margin          : 2px;
-    padding         : 0px;
-    padding-bottom  : 0px;
-    padding-right   : 5px;
-    float           : right;
+    padding         : 0 5px 0 0;
+    position: absolute;
+    right: -5px;
+    top: 3px;
     border-radius   : 19px;
 }
 

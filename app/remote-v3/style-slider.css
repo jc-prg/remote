@@ -5,20 +5,20 @@
 /* display information within the remote control */
 
 .rm-slider-button {
-   grid-column      : span 4;
-   height          :  70px;
-   padding         :   2px;
+    grid-column      : span 4;
+    height          :  70px;
+    padding         :   2px;
 
-   border-radius   :   6px; 
-   border          : 1px solid var(--rm-color-slider2-border);
-   background-color: var(--rm-color-slider2);
-   color           : var(--rm-color-slider2-text);
-   font-size       :   9px;
+    border-radius   :   6px;
+    border          : 1px solid var(--rm-color-slider2-border);
+    background-color: var(--rm-color-slider2);
+    color           : var(--rm-color-slider2-text);
+    font-size       :   9px;
 
-   overflow        : hidden;
-   float           : left;
-   display         : inline-block;
-   vertical-align  : top;
+    overflow        : visible;
+    display         : flex;
+    position        : relative;
+    vertical-align  : top;
 }
 .rm-slider-button.device_off {
     opacity          : 60%;
@@ -112,6 +112,13 @@
 	-webkit-transition : .2s; /* 0.2 seconds transition on hover */
   	transition    : opacity .2s;
 	border-radius : 13px;
+}
+
+.rm-slider.header {
+    position: absolute;
+    width: 50px;
+    right: 50px;
+    top: 0;
 }
 
 .rm-slidervalue {

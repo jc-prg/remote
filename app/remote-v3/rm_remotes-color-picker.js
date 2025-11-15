@@ -198,7 +198,7 @@ function RemoteElementColorPicker(name) {
         else if (color_model.indexOf("small") > -1)       { use_image = "strip_rgb"; }
         else if (color_model.indexOf("old") > -1)         { use_image = "old"; }
 
-        var color_picker_images = {
+        let color_picker_images = {
             "rgb":               ['remote-v3/img/rgb2.png', 250, 250],
             "strip_rgb":         ['remote-v3/img/rgb-regenbogen.png', 280, 30],
             "strip_temperature": ['remote-v3/img/color-temp.png', 280, 30],
@@ -218,7 +218,7 @@ function RemoteElementColorPicker(name) {
         image.width  = color_picker_images[use_image][1];
         image.height = color_picker_images[use_image][2];
 
-        if (image.height == 30) {
+        if (image.height === 30) {
             color_demo.style.width  = "10px";
             color_demo.style.height = "28px";
             color_demo.style.background = "2px solid white";
@@ -235,7 +235,6 @@ function RemoteElementColorPicker(name) {
             canvas.height = image.height;
             canvas.style.borderRadius = "5px";
             ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-            //ctx.drawImage(image, 0, 0, image.width, image.height);
             console.debug("Color picker canvas size: " + canvas.width + "x" + canvas.height);
         };
 
@@ -243,8 +242,8 @@ function RemoteElementColorPicker(name) {
         canvas.addEventListener('click', (event) => {
 
             // Get the clicked pixel data
-            var x = event.offsetX;
-            var y = event.offsetY;
+            let x = event.offsetX;
+            let y = event.offsetY;
             const pixelData = ctx.getImageData(x, y, 1, 1).data;
 
             // Extract RGB values
@@ -258,7 +257,7 @@ function RemoteElementColorPicker(name) {
             eval(this.class_name).logging.debug(`PIXEL DATA: X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue} | value: ${value}`);
             color_demo.style.backgroundColor = "rgb("+red+","+green+","+blue+")";
 
-            var input = `${red}:${green}:${blue}`;
+            let input = `${red}:${green}:${blue}`;
             if (color_model.indexOf("CIE_1931") > -1)          { eval(this.class_name).sendColorCode_CIE1931(color_send_command, input, device); }
             else if (color_model.indexOf("temperature") > -1)  { eval(this.class_name).sendColorCode_temperature(color_send_command, value, device); }
             else if (color_model.indexOf("Brightness") > -1)   { eval(this.class_name).sendColorCode_brightness(color_send_command, value, device); }
@@ -275,28 +274,38 @@ function RemoteElementColorPicker(name) {
 		appFW.requestAPI('GET',[ 'send-data', device, send_command, '"'+input+'"'	 ], '','');
 		}
 
+    // send color code for CIE1931
     this.sendColorCode_CIE1931      = function (send_command, input, device) {
 
-        rgb_color = input.split(":");
-        xy_color  = this.RGB_to_XY(rgb_color);
+        let rgb_color = input.split(":");
+        let xy_color  = this.RGB_to_XY(rgb_color);
         input     = xy_color[0] + ":" + xy_color[1];
 
         this.logging.log("Send CIE 1931 XY color coordinates: " + input + " / " + this.class_name + " / " + device);
 		appFW.requestAPI('GET',[ 'send-data', device, send_command, '"'+input+'"' ], '','');
     }
 
+    // send color code for brightness
     this.sendColorCode_brightness   = function (send_command, input, device) {
-        var pure_cmd = send_command.replace("send-", "");
-        var min_max  = dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]["values"];
-        var type     = dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]["type"];
+        let pure_cmd = send_command.replace("send-", "");
+        let check_device = device;
+
+        if (device.indexOf("group") >= 0) {
+            let group_id = device.split("_")[1];
+            let devices = dataAll["CONFIG"]["macros"]["groups"][group_id]["devices"];
+            check_device = devices[0];
+        }
+
+        let min_max  = dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]["values"];
+        let type     = dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]["type"];
         if (min_max === undefined || min_max["min"] === undefined || min_max["max"] === undefined) {
-            appMsg.info("Could not set brightness: no min-max values for " + device + " / " + pure_cmd + ".  Check remote configuration!","error");
-            this.logging.error(dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]);
+            appMsg.info("Could not set brightness: no min-max values for " + check_device + " / " + pure_cmd + ".  Check remote configuration!","error");
+            this.logging.error(dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]);
             this.logging.error(min_max["min"]);
             }
         else {
-            var range = min_max["max"] - min_max["min"];
-            var value = (range * input) / 100 + min_max["min"];
+            let range = min_max["max"] - min_max["min"];
+            let value = (range * input) / 100 + min_max["min"];
             if (type === "integer") { value = Math.round(value); }
             this.logging.log("BRIGHTNESS: " + send_command + " / " + input + " / min=" + min_max["min"] + "; max=" + min_max["max"] + " / " + value);
             this.logging.debug(min_max);
@@ -304,45 +313,53 @@ function RemoteElementColorPicker(name) {
             }
         }
 
+    // send color code for temperature
     this.sendColorCode_temperature  = function (send_command, input, device) {
-        var pure_cmd = send_command.replace("send-", "");
-        var min_max  = dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]["values"];
-        var type     = dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]["type"];
+        let pure_cmd = send_command.replace("send-", "");
+        let check_device = device;
+
+        if (device.indexOf("group") >= 0) {
+            let group_id = device.split("_")[1];
+            let devices = dataAll["CONFIG"]["macros"]["groups"][group_id]["devices"];
+            check_device = devices[0];
+        }
+
+        let min_max  = dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]["values"];
+        let type     = dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]["type"];
         if (min_max === undefined || min_max["min"] === undefined || min_max["max"] === undefined) {
             appMsg.info("Could not set color temperature: no min-max values for " + device + " / " + pure_cmd + ". Check remote configuration!","error");
             this.logging.error(dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]);
             }
         else {
-            var range = min_max["max"] - min_max["min"];
-            var value = (range * input) / 100 + min_max["min"];
-            if (type == "integer") { value = Math.round(value); }
+            let range = min_max["max"] - min_max["min"];
+            let value = (range * input) / 100 + min_max["min"];
+            if (type === "integer") { value = Math.round(value); }
             this.logging.log("TEMPERATURE: " + send_command + " / " + input + " / min=" + min_max["min"] + "; max=" + min_max["max"] + " / " + value);
             this.logging.debug(min_max);
             appFW.requestAPI('GET',[ 'send-data', device, send_command, value ], '','');
             }
         }
 
-
     // Function to convert RGB to XY
     this.RGB_to_XY = function (rgb) {
 
-        var red = rgb[0];
-        var green = rgb[1];
-        var blue = rgb[2];
+        let red = rgb[0];
+        let green = rgb[1];
+        let blue = rgb[2];
 
         //Apply a gamma correction to the RGB values, which makes the color more vivid and more the like the color displayed on the screen of your device
-        var red 	= (red > 0.04045) ? Math.pow((red + 0.055) / (1.0 + 0.055), 2.4) : (red / 12.92);
-        var green 	= (green > 0.04045) ? Math.pow((green + 0.055) / (1.0 + 0.055), 2.4) : (green / 12.92);
-        var blue 	= (blue > 0.04045) ? Math.pow((blue + 0.055) / (1.0 + 0.055), 2.4) : (blue / 12.92);
+        red 	= (red > 0.04045) ? Math.pow((red + 0.055) / (1.0 + 0.055), 2.4) : (red / 12.92);
+        green 	= (green > 0.04045) ? Math.pow((green + 0.055) / (1.0 + 0.055), 2.4) : (green / 12.92);
+        blue 	= (blue > 0.04045) ? Math.pow((blue + 0.055) / (1.0 + 0.055), 2.4) : (blue / 12.92);
 
         //RGB values to XYZ using the Wide RGB D65 conversion formula
-        var X 		= red * 0.664511 + green * 0.154324 + blue * 0.162028;
-        var Y 		= red * 0.283881 + green * 0.668433 + blue * 0.047685;
-        var Z 		= red * 0.000088 + green * 0.072310 + blue * 0.986039;
+        let X 		= red * 0.664511 + green * 0.154324 + blue * 0.162028;
+        let Y 		= red * 0.283881 + green * 0.668433 + blue * 0.047685;
+        let Z 		= red * 0.000088 + green * 0.072310 + blue * 0.986039;
 
         //Calculate the xy values from the XYZ values
-        var x 		= (X / (X + Y + Z)).toFixed(4);
-        var y 		= (Y / (X + Y + Z)).toFixed(4);
+        let x 		= (X / (X + Y + Z)).toFixed(4);
+        let y 		= (Y / (X + Y + Z)).toFixed(4);
 
         if (isNaN(x))
             x = 0;

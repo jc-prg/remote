@@ -1,12 +1,6 @@
 /* display information within the remote control */
 
 .display {
-    /*
-       float           : left;
-       width           : 48%;
-       height          : 40px;
-       margin          : 1%;
-    */
     min-width       : 0;
     min-height      : 0;
     border-radius   : 6px;
@@ -40,8 +34,6 @@
 .display-content {
     position: absolute;
     inset: 0;
-    padding         : 0.5vw;
-
     width: 100%;
     max-width: 100%;
     height: 100%;
@@ -49,18 +41,22 @@
     overflow : hidden;
     display: flex;         /* so children don't overflow */
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .display-element {
-    width	: 56px;
-    margin	: 2px;
-    padding	: 0px;
-    float	: left;
-    color	: var(--rm-color-display-element);
-    text-align   : left;
-    overflow: hidden;
+    width: 56px;
     min-height: 0;
     min-width: 0;
+
+    margin	: 1%;
+    padding	: 0;
+    padding-left: 5px;
+    float	: left;
+    color	: var(--rm-color-display-element);
+    text-align: left;
+    overflow: hidden;
 }
 
 .display-element.alert   { color : black; }

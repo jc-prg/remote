@@ -1,19 +1,20 @@
 /* display information within the remote control */
 
 .color-picker {
-   height          :  auto;
-   padding         : 4px 2px;
-   grid-column     : span 4;
+    height          :  auto;
+    padding         : 4px 2px;
+    grid-column     : span 4;
 
-   color           : var(--rm-color-colorpicker-text);
-   font-size       :   9px;
-   border-radius   :   6px; 
-   border          : solid 1px var(--rm-color-colorpicker-border);
-   background-color: var(--rm-color-colorpicker);
-   overflow        : hidden;
-   float           : left;
-   display         : inline-block;
-   vertical-align  : top;
+    color           : var(--rm-color-colorpicker-text);
+    font-size       :   9px;
+    border-radius   :   6px;
+    border          : solid 1px var(--rm-color-colorpicker-border);
+    background-color: var(--rm-color-colorpicker);
+    overflow        : visible;
+    display         : flex;
+    position        : relative;
+    vertical-align  : top;
+    justify-content : center;
 }
 
 .color-picker-label {

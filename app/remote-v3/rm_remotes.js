@@ -24,14 +24,14 @@ class RemoteMain {
         this.frames_remote = ["frame3", "frame4", "frame5"];
         this.frames_notouch = false;
 
-        this.basic = new RemoteBasicElements(name + ".basic");		// rm_remotes-elements.js
-        this.advanced = new RemoteAdvancedElements(name + ".advanced", this);
-        this.button = new RemoteElementButtons(name + ".button");			// rm_remotes-elements.js
-        this.display = new RemoteElementDisplay(name + ".display");		// rm_remotes-elements.js
+        this.basic = new RemoteElementsEdit(name + ".basic");		// rm_remotes-elements.js
+        this.advanced = new RemoteControlAdvanced(name + ".advanced", this);
+        this.button = new RemoteControlBasic(name + ".button");			// rm_remotes-elements.js
+        this.display = new RemoteControlDisplay(name + ".display");		// rm_remotes-elements.js
 
         this.json = new RemoteJsonHandling(name + ".json");		// rm_remotes-elements.js
         this.tab = new RemoteElementTable(name + ".tab");		// rm_remotes-elements.js
-        this.keyboard = new rmRemoteKeyboard(name + ".keyboard");	// rm_remotes-keyboard.js
+        this.keyboard = new RemoteControlKeyboard(name + ".keyboard");	// rm_remotes-keyboard.js
 
         this.logging = new jcLogging(this.app_name);
         this.tooltip = new JcTooltip2(this.app_name + ".tooltip");	// jc-function-0.1.9.js
@@ -265,7 +265,7 @@ class RemoteMain {
         if (preview) {
             remote += "<div style='grid-column:span 4;'><b>" + lang("PREVIEW") + ":</b><br/><hr/></div>";
         } else {
-            remote += "<div id='remote-power-information-" + device + "' class='remote-power-information' onclick='statusCheck_bigMessage(\"remote-power-information-" + device + "\");'>POWER INFORMATION</div>";
+            remote += "<div id='remote-power-information-" + device + "' class='remote-power-information'>POWER INFORMATION</div>";
         }
 
         // add remote buttons
@@ -325,9 +325,9 @@ class RemoteMain {
 
             // create element for definition
             if (button === "LINE") {
-                next_button = this.basic.line("");
+                next_button = this.button.line("");
             } else if (button.indexOf("LINE||") === 0) {
-                next_button = this.basic.line(button.split("||")[1]);
+                next_button = this.button.line(button.split("||")[1]);
             } else if (button.indexOf("SLIDER") === 0) {
                 next_button = this.advanced.slider(this.data, id, device, "devices", button.split("||"));
             } else if (button.indexOf("COLOR-PICKER") === 0) {
@@ -352,8 +352,7 @@ class RemoteMain {
 
             // add tooltip data to new element
             if (this.edit_mode) {
-                next_button = this.tooltip.create("button", next_button, context_menu);
-                next_button = this.tooltip.create("div", next_button, context_menu);
+                next_button = this.tooltip.create(["button","div"], next_button, context_menu);
             }
 
             remote += next_button;
@@ -370,8 +369,7 @@ class RemoteMain {
         setTextById(id, remote);
         if (this.edit_mode) {
             setTimeout(() => {
-                this.tooltip.load("button");
-                this.tooltip.load("div");
+                this.tooltip.load(["button","div"]);
             },500);
         }
     }
@@ -453,7 +451,7 @@ class RemoteMain {
 
         remote += "<div id='buttons_not_used' style='display:" + display + ";position:relative;top:-7px;'>";
         remote += "<div class='rm-button-grid' style='width:100%'>";
-        remote += this.basic.line(lang("NOT_USED"));
+        remote += this.button.line(lang("NOT_USED"));
 
         // create buttons not used
         for (let i = 0; i < not_used.length; i++) {
@@ -466,7 +464,7 @@ class RemoteMain {
                 let input_add = "<input id='not_used_" + i + "' name='not_used_" + i + "' value='" + button + "' style='display:none;' />";
                 let context_menu = input_add + "[" + i + "] " + cmd + "<br/><br/>" + this.button.edit(link_add, lang("BUTTON_T_MOVE2REMOTE"), "");
                 context_menu = context_menu.replaceAll("\"", "'");
-                next_button = this.tooltip.create("button", next_button, context_menu);
+                next_button = this.tooltip.create(["button"], next_button, context_menu);
             }
 
             remote += next_button;
@@ -508,12 +506,8 @@ class RemoteMain {
             return;
         }
 
-        let remote_buttons = device_config["remote"];
         let remote_visible = device_config["settings"]["visible"];
-        let remote_display = device_config["remote"]["display"];
-        let device_commands = device_config["buttons"];
         let device_method = device_config["interface"]["method"];
-        let device_status = this.data["STATUS"]["devices"][device];
         let device_buttons = [];
 
         for (let i = 0; i < device_config["remote"].length; i++) {
@@ -572,38 +566,21 @@ class RemoteMain {
         let edit_main = edit;
         let edit_test;
 
-        // API Information
-        let select = function (id, title, data, onchange = "", value = "", input_width="") {
-            let item = "<select style=\"width:" + input_width + ";margin:1px;max-width:100%;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
-            item += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
-            for (let key in data) {
-                let selected = "";
-                if (key === value) {
-                    selected = "selected";
-                }
-                if (key !== "default") {
-                    item += "<option value=\"" + key + "\" " + selected + ">" + data[key] + "</option>";
-                }
-            }
-            item += "</select>";
-            return item;
-        }
-        let on_change1 = "setTextById('edit_dev_api_field', this.value);";
-        let on_change2 = "setTextById('edit_dev_config_field', this.value + '.json');";
-        let on_change3 = "setTextById('edit_dev_rm_field', this.value + '.json');";
-        let api_key = device_config["interface"]["api"].split("_")[0];
-        let api_interface = select("edit_dev_api", "interface", this.data["CONFIG"]["apis"]["list_description"], on_change1, device_config["interface"]["api"], this.input_width);
-        let dev_config = select("edit_dev_config", "device config", this.data["CONFIG"]["apis"]["list_api_configs"]["list"][api_key], on_change2, device_config["interface"]["device"], this.input_width);
-        let rm_definition = select("edit_dev_rm", "remote definition", this.data["CONFIG"]["remotes"]["list"], on_change3, device_config["interface"]["remote"], this.input_width);
+        edit = "<p><b>" + lang("API_INTERFACE") + ":</b><br/><text id='edit_dev_api_select'></text>";
+        edit += "<br>&nbsp;<text id='edit_dev_api_field'></text>";
+        edit += "<div id='edit_dev_api_current' style='display:none;'>"+device_config["interface"]["api"]+"</div>";
+        edit += "<p><b>" + lang("CONFIG_INTERFACE") + ":</b><br/><text id='edit_dev_config_select'></text>";
+        edit += "<br/>&nbsp;<text id='edit_dev_config_field'></text>";
+        edit += "<div id='edit_dev_config_current' style='display:none;'>"+device_config["interface"]["device"]+"</div>";
+        edit += "<p><b>" + lang("CONFIG_REMOTE") + ":</b><br/><text id='edit_dev_rm_select'></text>";
+        edit += "<br/>&nbsp;<text id='edit_dev_rm_field'></text>";
+        edit += "<div id='edit_dev_rm_current' style='display:none;'>"+device_config["interface"]["remote"]+"</div>";
 
-        edit = "<p><b>" + lang("API_INTERFACE") + ":</b><br/>" + api_interface;
-        edit += "<br>&nbsp;<text id='edit_dev_api_field'>" + device_config["interface"]["api"] + "</text>";
-        edit += "<p><b>" + lang("CONFIG_INTERFACE") + ":</b><br/>" + dev_config;
-        edit += "<br/>&nbsp;<text id='edit_dev_config_field'>" + device_config["interface"]["device"] + ".json" + "</text>";
-        edit += "<p><b>" + lang("CONFIG_REMOTE") + ":</b><br/>" + rm_definition;
-        edit += "<br/>&nbsp;<text id='edit_dev_rm_field'>" + device_config["interface"]["remote"] + ".json" + "</text>";
         edit += "<p><b>" + lang("METHOD") + ":</b><br/>" + device_config["interface"]["method"]; //device_data["interface"]["remote"]+".json" );
-        edit += "<hr/><center>" + this.button.edit("alert('not implemented yet');", lang("BUTTON_T_SAVE")) + "</center>";
+        edit += "<hr/><center>";
+        edit += this.button.edit(this.app_name+".device_edit_api_update(true);", lang("BUTTON_T_RESET")) + "&nbsp;";
+        edit += this.button.edit(this.app_name+".device_edit_api_confirm()", lang("BUTTON_T_SAVE"));
+        edit += "</center>";
         let edit_info = edit;
 
         //remote  += this.basic.container("remote_api01",lang("API_INFORMATION"),edit,false);
@@ -654,7 +631,83 @@ class RemoteMain {
             myBox.addSheet(lang("API_TEST"), edit_test);
         }
 
+        this.device_edit_api_update();
         apiGetConfig_createDropDown(device, this.device_edit_api_commands);
+    }
+
+    /* set / update / reset drop-downs to edit API settings for a device */
+    device_edit_api_update(reset = false) {
+
+        let select = function (id, title, data, onchange = "", value = "", input_width="") {
+            let item = "<select style=\"width:" + input_width + ";margin:1px;max-width:100%;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
+            item += "<option value='' disabled='disabled' selected>Select " + title + "</option>";
+            for (let key in data) {
+                let selected = "";
+                if (key === value) {
+                    selected = "selected";
+                }
+                if (key !== "default") {
+                    item += "<option value=\"" + key + "\" " + selected + ">" + data[key] + "</option>";
+                }
+            }
+            item += "</select>";
+            return item;
+        }
+
+        let device_config = this.data["CONFIG"]["devices"][device];
+        let api_key = device_config["interface"]["api"].split("_")[0];
+
+        let selected = {
+            "api" : device_config["interface"]["api"],
+            "config" : device_config["interface"]["device"],
+            "rm" : device_config["interface"]["remote"]
+        }
+
+        if (document.getElementById("edit_dev_api") && reset === false) {
+            selected["api"] = document.getElementById("edit_dev_api").value;
+            selected["config"] = document.getElementById("edit_dev_config").value;
+            selected["rm"] = document.getElementById("edit_dev_rm").value;
+            api_key = selected["api"].split("_")[0];
+        }
+        else if (reset) {
+            selected["api"] = document.getElementById("edit_dev_api_current").innerHTML;
+            selected["config"] = document.getElementById("edit_dev_config_current").innerHTML;
+            selected["rm"] = document.getElementById("edit_dev_rm_current").innerHTML;
+            api_key = selected["api"].split("_")[0];
+        }
+
+        let on_change1 = "setTextById('edit_dev_api_field', this.value);" + this.app_name + ".device_edit_api_update();"; // + change int
+        let on_change2 = "setTextById('edit_dev_config_field', this.value + '.json');";
+        let on_change3 = "setTextById('edit_dev_rm_field', this.value + '.json');";
+
+        let api_interface = select("edit_dev_api", "interface", this.data["CONFIG"]["apis"]["list_description"], on_change1, selected["api"], this.input_width);
+        let dev_config = select("edit_dev_config", "device config", this.data["CONFIG"]["apis"]["list_api_configs"]["list"][api_key], on_change2, selected["config"], this.input_width);
+        let rm_definition = select("edit_dev_rm", "remote definition", this.data["CONFIG"]["remotes"]["list"], on_change3, selected["rm"], this.input_width);
+
+        setTextById("edit_dev_api_select", api_interface);
+        setTextById("edit_dev_config_select", dev_config);
+        setTextById("edit_dev_rm_select", rm_definition);
+
+        const select_0 = document.getElementById("edit_dev_api");
+        const select_1 = document.getElementById("edit_dev_config");
+        const select_2 = document.getElementById("edit_dev_rm");
+
+        setTextById("edit_dev_api_field", select_0.value+".json");
+        setTextById("edit_dev_config_field", select_1.value+".json");
+        setTextById("edit_dev_rm_field", select_2.value+".json");
+    }
+
+    device_edit_api_confirm() {
+        const select_0 = document.getElementById("edit_dev_api");
+        const select_1 = document.getElementById("edit_dev_config");
+        const select_2 = document.getElementById("edit_dev_rm");
+
+        if (select_0.value === "") { appMsg.alert(lang("API_EDIT_SELECT_API_CONFIG")); return; }
+        if (select_1.value === "") { appMsg.alert(lang("API_EDIT_SELECT_API_DEVICE")); return; }
+        if (select_2.value === "") { appMsg.alert(lang("API_EDIT_SELECT_REMOTE")); return; }
+
+        let cmd = "alert('not implemented yet')";
+        appMsg.confirm(lang("API_EDIT_REALLY_CHANGE"),cmd);
     }
 
     /* create drop-down with API commands */
@@ -670,7 +723,7 @@ class RemoteMain {
         let api_name = data["DATA"][device]["interface"]["api_key"];
         let on_change = "setValueById('api_command', getValueById('api_cmd_select'));";
 
-        const basic = new RemoteBasicElements("rm3remotes.basic");		// !!! should use this.app_name, but doesn't work
+        const basic = new RemoteElementsEdit("rm3remotes.basic");		// !!! should use this.app_name, but doesn't work
         basic.input_width = "90%";
 
         let select = basic.select("api_cmd_select", lang("API_SELECT_CMD"), commands, on_change, '', false, true);
@@ -1005,9 +1058,9 @@ class RemoteMain {
 
             // create element per definition
             if (button[0] === "LINE") {
-                next_button = this.basic.line("");
+                next_button = this.button.line("");
             } else if (button[0].indexOf("LINE||") === 0) {
-                next_button = this.basic.line(button[0].split("||")[1]);
+                next_button = this.button.line(button[0].split("||")[1]);
             } else if (button[0] === ".") {
                 next_button = this.button.device(scene + i, ".", scene_label, "empty", "", "disabled");
             } else if (button[0] === "macro") {
@@ -1021,7 +1074,7 @@ class RemoteMain {
                 this.active_buttons.push("scene_off_" + button[1]);
             } else if (button[0] === "device-on") {
                 next_button = this.button.macro(button[1] + "_on", "on", scene_label, "", macros_deviceOn[button[1]], "");
-                this.active_buttons.push(button[1]) + "_on";
+                this.active_buttons.push(button[1] + "_on");
             } else if (button[0] === "device-off") {
                 next_button = this.button.macro(button[1] + "_off", "off", scene_label, "", macros_deviceOff[button[1]], "");
                 this.active_buttons.push(button[1] + "_off");
@@ -1041,6 +1094,9 @@ class RemoteMain {
                 next_button = this.display.default(id, scene, "scenes", remote_display_size, remote_display);
             } else if (button.length > 1 && button[1].indexOf("COLOR-PICKER") >= 0) {
                 next_button = this.advanced.colorPicker(this.data, id, button[0], "devices", button[1].split("||"));
+            } else if (button.length > 1 && button[1] === "group" && button[2].indexOf("COLOR-PICKER") >= 0) {
+
+                next_button = this.advanced.colorPicker(this.data, id, button[0]+"_"+button[1], "devices", button[2].split("||"));
             } else if (button.length > 1 && button[1].indexOf("SLIDER") === 0) {
                 next_button = this.advanced.slider(this.data, id, button[0], "devices", button[1].split("||"));
             } else if (button_def.indexOf("TOGGLE") === 0) {
@@ -1058,8 +1114,7 @@ class RemoteMain {
 
             // add tooltip data to new element
             if (this.edit_mode) {
-                next_button = this.tooltip.create("button", next_button, context_menu);
-                next_button = this.tooltip.create("div", next_button, context_menu);
+                next_button = this.tooltip.create(["button","div"], next_button, context_menu);
             }
 
             remote += next_button;
@@ -1071,8 +1126,7 @@ class RemoteMain {
         setTextById(id, remote);
         if (this.edit_mode) {
             setTimeout(() => {
-                this.tooltip.load("button");
-                this.tooltip.load("div");
+                this.tooltip.load(["button","div"]);
             },500);
         }
     }
@@ -1112,7 +1166,7 @@ class RemoteMain {
             this.active_channels.push(cmd);
 
             if (this.edit_mode) {
-                next_button = this.tooltip.create("button", next_button, context_menu);
+                next_button = this.tooltip.create(["button"], next_button, context_menu);
             }
             remote += next_button;
         }
@@ -1771,11 +1825,11 @@ class RemoteEditDialogs {
         this.preview_display_size = "";
         this.preview_channel = "";
 
-        this.basic = new RemoteBasicElements(name + ".basic");
-        this.button = new RemoteElementButtons(name + ".button");
-        this.display = new RemoteElementDisplay(name + ".display");
+        this.basic = new RemoteElementsEdit(name + ".basic");
+        this.button = new RemoteControlBasic(name + ".button");
+        this.display = new RemoteControlDisplay(name + ".display");
         this.tab = new RemoteElementTable(name + ".tab");
-        this.advanced = new RemoteAdvancedElements(name + ".advanced", this);
+        this.advanced = new RemoteControlAdvanced(name + ".advanced", this);
 
         this.rm_scene = new RemoteJsonElements(this.app_name + ".rm_scene", "scene", this.remote);
         this.rm_device = new RemoteJsonElements(this.app_name + ".rm_device", "device", this.remote);
@@ -2433,212 +2487,3 @@ class RemoteEditDialogs {
 
 }
 
-
-/*
-* class to create advanced elements such as color picker, slider, and toggle for the remote control
-*/
-class RemoteAdvancedElements {
-
-    constructor(name, remote) {
-
-        // set main data
-        this.data = {};
-        this.app_name = name;
-        this.remote = remote;
-        this.active_name = this.remote.active_name;
-        this.active_type = this.remote.active_type;
-        this.logging = new jcLogging(this.app_name);
-        this.logging.debug("Create RemoteAdvancedElements (" + this.app_name + "/" + this.active_name + "/" + this.active_type + ")");
-
-        // connect pure elements
-        this.e_color_picker = new RemoteElementColorPicker(this.app_name + ".e_color_picker");
-        this.e_slider = new rmSlider(this.app_name + ".e_slider");
-        this.color_picker_models = ["Brightness", "Color RGB", "Color CIE_1931", "Color RGB (small)", "Color CIE_1931 (small)", "Color temperature"];
-    }
-
-    /* update API data */
-    update(api_data) {
-
-        this.data = api_data;
-        this.active_name = this.remote.active_name;
-    }
-
-    /* create color picker */
-    colorPicker(api_data, id, device, type = "devices", data) {
-
-        this.logging.debug(this.app_name + ".colorPicker: " + id + "/" + device + "/" + type + "/" + data);
-        this.update(api_data);
-
-        if (device.indexOf("group") >= 0) {
-            this.logging.warn("Groups are not yet available for color pickers.");
-            return "";
-        }
-
-        let color_model = "RGB";
-        let send_command = data[1];
-        let sub_id = device + "_" + send_command;
-        let label = "";
-        if (data.length > 2) {
-            color_model = data[2];
-        }
-        if (data.length > 3) {
-            label = data[3];
-        }
-
-        let remote_data = this.data["CONFIG"][type][device]["remote"];
-        let status_data = this.data["STATUS"]["devices"][device];
-
-        let display_start = "<button id=\"colorpicker_" + sub_id + "_button\" class=\"color-picker\"><center>";
-        display_start += "<canvas id=\"colorpicker_" + sub_id + "\">";
-
-        let display_end = "</canvas>";
-        display_end += "<canvas id=\"colorpicker_demo_" + sub_id + "\" class=\"color-picker-demo\">" + label + "</canvas></center>";
-        display_end += "</center></button>";
-
-        let text = display_start;
-        //text += this.color_picker.colorPickerHTML_v1(send_command);
-        text += display_end;
-
-        setTimeout(() => {
-            this.e_color_picker.colorPickerHTML("colorpicker_" + sub_id, sub_id, send_command, color_model);
-        }, 100);
-        return text;
-    }
-
-    /* create slider */
-    slider(api_data, id, device, type = "devices", data) {
-
-        this.logging.debug(this.app_name + ".slider: " + id + "/" + device + "/" + type + "/" + data);
-        this.update(api_data);
-
-        let init;
-        let disabled = false;
-        let status_data = {};
-        let device_api = "";
-        let device_api_status = "";
-
-        if (device.indexOf("group_") >= 0) {
-            let group_name = device.split("_")[1];
-            let group_devices = this.data["CONFIG"]["macros"]["groups"][group_name];
-            if (!group_devices || !group_devices["devices"] || group_devices["devices"].length === 0) {
-                this.logging.error(this.app_name + ".slider_element: Group " + group_name + " not defined correctly.");
-                return "";
-            }
-            let check_device = group_devices["devices"][0];
-            status_data = this.data["STATUS"]["devices"][check_device];
-            device_api = this.data["STATUS"]["devices"][check_device]["api"];
-            device_api_status = this.data["STATUS"]["interfaces"]["connect"][device_api];
-        } else if (!this.data["CONFIG"][type][device]) {
-            this.logging.error(this.app_name + ".slider_element: Could not create slider element: " + type + " '" + device + "' does not exist.");
-            return "";
-        } else {
-            status_data = this.data["STATUS"]["devices"][device];
-            device_api = this.data["STATUS"]["devices"][device]["api"];
-            device_api_status = this.data["STATUS"]["interfaces"]["connect"][device_api];
-        }
-
-        if (!device_api_status) {
-            this.logging.error("API Device not defined correctly for " + device + ": " + device_api + " doesn't exist.")
-        } else if (device_api_status.toLowerCase() !== "connected") {
-            disabled = true;
-        }
-
-        if (!this.data["CONFIG"][type]) {
-            this.logging.error(this.app_name + ".slider() - type not supported (" + type + ")");
-            return;
-        }
-
-        if (data[4] && status_data[data[4]]) {
-            init = status_data[data[4]];
-        }
-
-        let min = 0;
-        let max = 100;
-        let display_start = "<button id=\"slider_" + device + "_" + data[1] + "\" class=\"rm-slider-button\">";
-        let display_end = "</button>";
-
-        if (data.length > 3) {
-            let min_max = data[3].split("-");
-            min = min_max[0];
-            max = min_max[1];
-        }
-
-        let text = display_start;
-        text += this.e_slider.sliderHTML(data[1], data[2], device, data[1], min, max, init, disabled);
-        text += display_end;
-        return text;
-    }
-
-    /* create toggle element (ON | OFF) - "TOGGLE||<status-field>||<description/label>||<TOGGLE_CMD_ON>||<TOGGLE_CMD_OFF>" */
-    toggle(api_data, id, device, type = "device", data, short = false) {
-
-        this.logging.debug(this.app_name + ".toggle: " + id + "/" + device + "/" + type + "/" + data);
-        this.update(api_data);
-
-        let init, key, status_data;
-        let reset_value = "";
-        let min = 0;
-        let max = 1;
-        let device_id = device.split("_");
-        device_id = device_id[0].split("||");
-
-        if (this.data["CONFIG"]["devices"][device_id[1]] && this.data["CONFIG"]["devices"][device_id[1]]["interface"]["method"] !== "query") {
-            reset_value = "<font style='color:gray'>[<status onclick=\"appFW.requestAPI('GET',['set','" + device_id[1] + "','power','OFF'], '', '', '' );\" style='cursor:pointer;'>OFF</status> | ";
-            reset_value += "<status onclick=\"appFW.requestAPI('GET',['set','" + device_id[1] + "','power','ON'], '', '', '' );\" style='cursor:pointer;'>ON</status>]</font>";
-        }
-        let toggle_start = "";
-        let toggle_end = "";
-        if (!short) {
-            toggle_start += "<button id=\"slider_" + device + "_" + data[1] + "\" class=\"rm-toggle-label long\">" + data[2] + " &nbsp; &nbsp;  " + reset_value + "</button>";
-            toggle_start += "<button id=\"slider_" + device + "_" + data[1] + "2\" class=\"rm-toggle-button\">";
-            toggle_end += "</button>";
-        } else {
-            toggle_start += "<div class='header_image_toggle'>"
-            toggle_end += "</div>"
-        }
-
-        let disabled = false;
-        let device_key = data[1].split("_");
-        if (device_key.length > 1) {
-            device = device_key[0];
-            key = device_key[1]
-        } else {
-            key = data[1];
-        }
-
-        let device_api = "";
-        let device_api_status = "";
-
-        if (this.data["STATUS"]["devices"][device]) {
-            status_data = this.data["STATUS"]["devices"][device];
-            device_api = this.data["STATUS"]["devices"][device]["api"];
-            device_api_status = this.data["STATUS"]["interfaces"][device_api];
-        }
-        if (status_data[key] && device_api_status === "Connected") {
-            if (status_data[key].toUpperCase() === "TRUE") {
-                init = "1";
-            } else if (status_data[key].toUpperCase() === "FALSE") {
-                init = "0";
-            } else if (status_data[key].toUpperCase() === "ON") {
-                init = "1";
-            } else if (status_data[key].toUpperCase() === "OFF") {
-                init = "0";
-            } else {
-                init = "";
-            }
-        } else {
-            init = "";
-            disabled = true;
-        }
-
-        if (data[3].indexOf("_") < 0)   { data[3] = device + "_" + data[3]; }
-        if (data[4].indexOf("_") < 0)   { data[4] = device + "_" + data[4]; }
-
-        let text = "<div class=\"rm-toggle-container\">";
-        text += toggle_start;
-        text += this.e_slider.toggleHTML(data[1], data[2], device, data[3], data[4], init, disabled);
-        text += toggle_end;
-        text += "</div>";
-        return text;
-    }
-}

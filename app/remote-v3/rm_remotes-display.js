@@ -9,7 +9,7 @@
 
 
 /* create displays for scene and device remote controls, format defined in style-display.css */
-class RemoteElementDisplay {
+class RemoteControlDisplay {
 
     constructor(name) {
 

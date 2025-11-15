@@ -6,7 +6,8 @@
 let rmSheetBox_open = {};
 
 
-function RemoteBasicElements(name) {
+/* create elements for remote control editing */
+function RemoteElementsEdit(name) {
 
 	this.app_name       = name;
 	this.data           = {};
@@ -65,17 +66,8 @@ function RemoteBasicElements(name) {
                 return item;
                 }
 
-    // write line with text ...
-	this.line	            = function (text="") {
-          	let remote = "";
-		remote += "<div class='remote-line'><hr/>";
-		if (text !== "") { remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>"; }
-		remote += "</div>";
-		return remote;
-		}
-		
 	this.edit_line	        = function (text="") {
-          	let remote = "";
+        let remote = "";
 		remote += "<div style='border:1px solid;height:1px;margin:5px;margin-top:10px;padding:0px;'>";
 		if (text !== "") { remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>"; }
 		remote += "</div>";
@@ -104,7 +96,7 @@ function RemoteBasicElements(name) {
 		ct  += "</div>";	
 		
 		return ct;
-		}
+    }
 
 	this.container_showHide = function( id, open="" ) {
 		status = document.getElementById(id+"_status").innerHTML;
@@ -120,216 +112,43 @@ function RemoteBasicElements(name) {
 			document.getElementById(id+"_link").innerHTML     = "&minus;";
 			this.container_open[id] = true;
 			}
-		}
-	}
+    }
+}
 	
 
-function RemoteElementTable(name) {
+/* class to draw a table */
+class RemoteElementTable {
+    constructor(name) {
 
-	this.app_name       = name;
-
-	this.start	= function (width="100%") {
-
-		return "<table border=\"0\" width=\""+width+"\">";
-		}
-		
-	this.row	= function (td1,td2="")  { 
-		if (td1 === "start")     { return "<table border=\"0\" width=\""+td2+"\">"; }
-		else if (td1 === "end")  { return "</table>"; }
-		else if (td2 === false)  { return "<tr><td valign=\"top\" colspan=\"2\">" + td1 + "</td></tr>"; }
-		else                     { return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
-		}
-
-	this.line	= function (text="") {
-
-		return "<tr><td colspan='2'><hr style='border:1px solid white;'/></td></tr>";
-		}
-
-	this.end	= function () {
-
-		return "</table>";
-		}
-	}
-	
-
-function RemoteElementButtons(name) {
-
-	this.app_name       = name;
-	this.data           = {};
-	this.edit_mode      = false;
-	
-	this.logging        = new jcLogging(this.app_name);
-	this.tooltip        = new jcTooltip(this.app_name + ".tooltip");
-	this.keyboard       = new rmRemoteKeyboard(name+".keyboard");	// rm_remotes-keyboard.js
-	
-	// set default button size
-	this.default_size	= function () {	
-		this.width	= "";
-		this.height	= "";
-		this.margin	= "";
-		}
-	this.default_size();
-
-	// default buttons
-	this.default         = function (id, label, style, script_apiCommandSend, disabled="", btnstyle="" ){
-	
-        let onContext  = "";
-        let onClick    = "";
-
-        if (Array.isArray(script_apiCommandSend)) {
-                //let test   = "onmousedown_left_right(event,'alert(#left#);','alert(#right#);');"
-                onClick    = "onmousedown_left_right(event,\"" + script_apiCommandSend[0].replaceAll("\"","#") +
-                             "\",\"" + script_apiCommandSend[1].replaceAll("\"","#") + "\");";
-                onClick    = "onmousedown='"+onClick+"'";
-                onContext  = "oncontextmenu=\"return false;\"";
-                }
-        else if (script_apiCommandSend !== "") {
-            onClick    = "onclick='" + script_apiCommandSend + "'";
-            onClick    = onClick.replaceAll("##", "{{!!}}");
-            onClick    = onClick.replaceAll("#", "\"");
-            onClick    = onClick.replaceAll("{{!!}}", "#");
-            }
-
-        if (!isNaN(label)) { label = "<big>" + label + "</big>"; }
-        if (style !== "")   { style = " " + style; }
-
-        let button = "<button id='" + id.toLowerCase() + "' class='rm-button" + style + "' " + btnstyle + " " +
-                     onClick + " " + onContext + " " + disabled + " >" + label + "</button>"; // style='float:left;'
-        return button;
-		}
-
-	// default with size from values
-	this.sized           = function (id, label, style, script_apiCommandSend, disabled="") {
-		let btnstyle	= "";
-	        if (this.width  !== "") { btnstyle += "width:" + this.width + ";max-width:" + this.width + ";"; }
-	        if (this.height !== "") { btnstyle += "height:" + this.height + ";max-height:" + this.height + ";"; }
-	        if (btnstyle    !== "") { btnstyle  = "style='" + btnstyle + "'"; }
-	        
-	        return this.default(id, label, style, script_apiCommandSend, disabled, btnstyle);
-		}
-	        
-	// button edit mode		
-	this.edit            = function (onclick,label,disabled="",id="") {
-		let style = "";
-		if (this.width !== "")  { style += "width:" + this.width + ";"; }
-		if (this.height !== "") { style += "height:"+this.height+";"; }
-		if (this.margin !== "") { style += "margin:"+this.margin+";"; }
-
-        	if (disabled === "disabled") { style += "background-color:gray;"; }
-        	return "<button id=\""+id+"\" style=\""+style+"\" onClick=\""+onclick+"\" "+disabled+">"+label+"</button>";
-        	}
-
-	// create button for single command
-	this.device          = function (id, label, device, style, cmd, disabled ) {
-
-        if (label.indexOf("||") > 0) { label = label.split("||")[1]; }
-        if (cmd.indexOf("||") > 0)   { cmd = cmd.split("||")[0]; }
-
-		let label2 	= this.image( label, style );
-		if (label === ".") {
-			disabled = "disabled";
-			label2[0] = "&nbsp;";
-			}
-        else if (label2[0].indexOf("<img") < 0) {
-            label2[0] = "<span class='rm-button-text'>" + label2[0] + "</span>";
-        }
-		if (cmd !== "") {
-			cmd = 'apiCommandSend("'+cmd+'","","","'+device+'");';
-			}
-		return this.default( id, label2[0], label2[1], cmd, disabled );
-		}
-				
-	// create button for single command
-	this.device_keyboard = function (id, label, device, style, cmd, disabled ) {
-
-		let label2 	= this.image( label, style );
-		if (label === ".") {
-			disabled = "disabled";
-			label2[0] = "&nbsp;";
-			}
-		if (cmd !== "") {
-			cmd = this.keyboard.toggle_cmd();
-			}
-		return this.default( id, label2[0], label2[1], cmd, disabled );
-		}
-				
-	// create button for single command -> if no command assigned yet to record command for button
-	this.device_add      = function (id, label, device, style, cmd, disabled ) {
-
-        let device_button	= cmd.split("_");
-		let label2		= this.image( label, style );
-		if (label === ".")	{ disabled = "disabled"; label2[0] = "&nbsp;"; }
-	        
-        let button = this.default( id, label2[0], label2[1], 'apiCommandRecord("'+device_button[0]+'","'+device_button[1]+'");', disabled );
-		return button;		
-		}		
-
-	// create button for multiple commands (macro)
-	this.macro           = function (id, label, scene, style, macro, disabled ) {
-        if (macro) {
-            let d = this.image( label, style );
-            let macro_string = "";
-            let macro_wait = "";
-
-            for (let i=0; i<macro.length; i++) {
-
-                if (isNaN(macro[i]) && macro[i].indexOf("WAIT") > -1) {
-                    let wait = macro[i].split("-");
-                    macro_wait = 'appMsg.wait_time("'+lang("MACRO_PLEASE_WAIT")+'", '+wait[1]+');';
-                    }
-                else {
-                    macro_string = macro_string + macro[i] + "::";
-                    }
-                }
-            let b = this.default( id, d[0], d[1], 'apiMacroSend("'+macro_string+'","'+scene+'");'+macro_wait, disabled );
-            this.logging.debug("button_macro - "+b);
-            return b;
-            }
-        else { return this.default( id, label, style+" notfound", "", "disabled" ); }
-        }
-		
-	// create button for multiple commands (macro)
-	this.btn_group           = function (id, label, scene, style, group, disabled ) {
-        if (group) {
-            let d = this.image( label, style );
-            let b = this.default( id, d[0], d[1], 'apiGroupSend("'+group.join("_")+'","'+scene+'");', disabled );
-            this.logging.debug("button_macro - "+b);
-            return b;
-            }
-        else { return this.default( id, label, style+" notfound", "", "disabled" ); }
-        }
-
-	// create button for channel (macro)
-	this.channel         = function (id, label, scene, macro, style, disabled="") {
-    		let macro_string = "";
-		for (let i=0; i<macro.length; i++) { macro_string = macro_string + macro[i] + "::"; }
-
-		this.logging.debug(label+" - "+macro_string);
-		return "<button id='" + id + "' class='channel-entry " + style + "' " + disabled + " onclick=\"javascript:apiMacroSend('" + macro_string + "','"+scene+"','"+label+"');\">" + label + "</button>";
-		}
-
-	// check if image exists for button
-	this.image           = function (label,style) {
-
-        // set vars
-        let button_color = this.data["CONFIG"]["elements"]["button_colors"];  // definition of button color
-        let button_img2  = this.data["CONFIG"]["elements"]["button_images"];  // definition of images for buttons (without path and ".png")
-
-        // if image available set image
-        let button_img   = [];
-        for (let key in button_img2) { button_img[key] = this.imageHTML(button_img2[key]); }
-
-        // check label
-        if (label in button_color) { style = style + " bg" + label + " "; }
-        else if (label in button_img && showImg ) { label = button_img[label]; }
-
-        return [label, style];
+        this.app_name       = name;
     }
 
-    this.imageHTML = function (file) {
+    /* add a table row with a line in it*/
+    line(text="") {
 
-        return "<img src='icon/"+file+"' class='rm-button-image' alt='"+file+"' />";
+        return "<tr><td colspan='2'><hr style='border:1px solid white;'/></td></tr>";
     }
+
+    /* add a table row with up to two cells */
+    row(td1, td2="") {
+        if (td1 === "start")     { return "<table border=\"0\" width=\""+td2+"\">"; }
+        else if (td1 === "end")  { return "</table>"; }
+        else if (td2 === false)  { return "<tr><td valign=\"top\" colspan=\"2\">" + td1 + "</td></tr>"; }
+        else                     { return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
+    }
+
+    /* add a table start */
+    start(width="100%") {
+
+        return "<table border=\"0\" width=\""+width+"\">";
+    }
+
+    /* add a table end */
+    end() {
+
+        return "</table>";
+    }
+
 }
 
 
@@ -569,3 +388,406 @@ class RemoteElementScrollBox {
 	        }
         }
     }
+
+
+/* class to create some basic elements for remote controls*/
+function RemoteControlBasic(name) {
+
+    this.app_name       = name;
+    this.data           = {};
+    this.edit_mode      = false;
+
+    this.logging        = new jcLogging(this.app_name);
+    this.keyboard       = new RemoteControlKeyboard(name+".keyboard");	// rm_remotes-keyboard.js
+
+    // set default button size
+    this.default_size	= function () {
+        this.width	= "";
+        this.height	= "";
+        this.margin	= "";
+    }
+    this.default_size();
+
+    // default buttons
+    this.default         = function (id, label, style, script_apiCommandSend, disabled="", btnstyle="" ){
+
+        let onContext  = "";
+        let onClick    = "";
+
+        if (Array.isArray(script_apiCommandSend)) {
+            //let test   = "onmousedown_left_right(event,'alert(#left#);','alert(#right#);');"
+            onClick    = "onmousedown_left_right(event,\"" + script_apiCommandSend[0].replaceAll("\"","#") +
+                "\",\"" + script_apiCommandSend[1].replaceAll("\"","#") + "\");";
+            onClick    = "onmousedown='"+onClick+"'";
+            onContext  = "oncontextmenu=\"return false;\"";
+        }
+        else if (script_apiCommandSend !== "") {
+            onClick    = "onclick='" + script_apiCommandSend + "'";
+            onClick    = onClick.replaceAll("##", "{{!!}}");
+            onClick    = onClick.replaceAll("#", "\"");
+            onClick    = onClick.replaceAll("{{!!}}", "#");
+        }
+
+        if (!isNaN(label)) { label = "<big>" + label + "</big>"; }
+        if (style !== "")   { style = " " + style; }
+
+        let button = "<button id='" + id.toLowerCase() + "' class='rm-button" + style + "' " + btnstyle + " " +
+            onClick + " " + onContext + " " + disabled + " >" + label + "</button>"; // style='float:left;'
+        return button;
+    }
+
+    // default with size from values
+    this.sized           = function (id, label, style, script_apiCommandSend, disabled="") {
+        let btnstyle	= "";
+        if (this.width  !== "") { btnstyle += "width:" + this.width + ";max-width:" + this.width + ";"; }
+        if (this.height !== "") { btnstyle += "height:" + this.height + ";max-height:" + this.height + ";"; }
+        if (btnstyle    !== "") { btnstyle  = "style='" + btnstyle + "'"; }
+
+        return this.default(id, label, style, script_apiCommandSend, disabled, btnstyle);
+    }
+
+    // button edit mode
+    this.edit            = function (onclick,label,disabled="",id="") {
+        let style = "";
+        if (this.width !== "")  { style += "width:" + this.width + ";"; }
+        if (this.height !== "") { style += "height:"+this.height+";"; }
+        if (this.margin !== "") { style += "margin:"+this.margin+";"; }
+
+        if (disabled === "disabled") { style += "background-color:gray;"; }
+        return "<button id=\""+id+"\" style=\""+style+"\" onClick=\""+onclick+"\" "+disabled+">"+label+"</button>";
+    }
+
+    // create button for single command
+    this.device          = function (id, label, device, style, cmd, disabled ) {
+
+        if (label.indexOf("||") > 0) { label = label.split("||")[1]; }
+        if (cmd.indexOf("||") > 0)   { cmd = cmd.split("||")[0]; }
+
+        let label2 	= this.image( label, style );
+        if (label === ".") {
+            disabled = "disabled";
+            label2[0] = "&nbsp;";
+        }
+        else if (label2[0].indexOf("<img") < 0) {
+            label2[0] = "<span class='rm-button-text'>" + label2[0] + "</span>";
+        }
+        if (cmd !== "") {
+            cmd = 'apiCommandSend("'+cmd+'","","","'+device+'");';
+        }
+        return this.default( id, label2[0], label2[1], cmd, disabled );
+    }
+
+    // create button for single command
+    this.device_keyboard = function (id, label, device, style, cmd, disabled ) {
+
+        let label2 	= this.image( label, style );
+        if (label === ".") {
+            disabled = "disabled";
+            label2[0] = "&nbsp;";
+        }
+        if (cmd !== "") {
+            cmd = this.keyboard.toggle_cmd();
+        }
+        return this.default( id, label2[0], label2[1], cmd, disabled );
+    }
+
+    // create button for single command -> if no command assigned yet to record command for button
+    this.device_add      = function (id, label, device, style, cmd, disabled ) {
+
+        let device_button	= cmd.split("_");
+        let label2		= this.image( label, style );
+        if (label === ".")	{ disabled = "disabled"; label2[0] = "&nbsp;"; }
+
+        let button = this.default( id, label2[0], label2[1], 'apiCommandRecord("'+device_button[0]+'","'+device_button[1]+'");', disabled );
+        return button;
+    }
+
+    // create button for multiple commands (macro)
+    this.macro           = function (id, label, scene, style, macro, disabled ) {
+        if (macro) {
+            let d = this.image( label, style );
+            let macro_string = "";
+            let macro_wait = "";
+
+            for (let i=0; i<macro.length; i++) {
+
+                if (isNaN(macro[i]) && macro[i].indexOf("WAIT") > -1) {
+                    let wait = macro[i].split("-");
+                    macro_wait = 'appMsg.wait_time("'+lang("MACRO_PLEASE_WAIT")+'", '+wait[1]+');';
+                }
+                else {
+                    macro_string = macro_string + macro[i] + "::";
+                }
+            }
+            let b = this.default( id, d[0], d[1], 'apiMacroSend("'+macro_string+'","'+scene+'");'+macro_wait, disabled );
+            this.logging.debug("button_macro - "+b);
+            return b;
+        }
+        else { return this.default( id, label, style+" notfound", "", "disabled" ); }
+    }
+
+    // create button for multiple commands (macro)
+    this.btn_group           = function (id, label, scene, style, group, disabled ) {
+        if (group) {
+            let d = this.image( label, style );
+            let b = this.default( id, d[0], d[1], 'apiGroupSend("'+group.join("_")+'","'+scene+'");', disabled );
+            this.logging.debug("button_macro - "+b);
+            return b;
+        }
+        else { return this.default( id, label, style+" notfound", "", "disabled" ); }
+    }
+
+    // create button for channel (macro)
+    this.channel         = function (id, label, scene, macro, style, disabled="") {
+        let macro_string = "";
+        for (let i=0; i<macro.length; i++) { macro_string = macro_string + macro[i] + "::"; }
+
+        this.logging.debug(label+" - "+macro_string);
+        return "<button id='" + id + "' class='channel-entry " + style + "' " + disabled + " onclick=\"javascript:apiMacroSend('" + macro_string + "','"+scene+"','"+label+"');\">" + label + "</button>";
+    }
+
+    // write line with text ...
+    this.line	            = function (text="") {
+        let remote = "";
+        remote += "<div class='remote-line'><hr/>";
+        if (text !== "") { remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>"; }
+        remote += "</div>";
+        return remote;
+    }
+
+    // check if image exists for button
+    this.image           = function (label,style) {
+
+        // set vars
+        let button_color = this.data["CONFIG"]["elements"]["button_colors"];  // definition of button color
+        let button_img2  = this.data["CONFIG"]["elements"]["button_images"];  // definition of images for buttons (without path and ".png")
+
+        // if image available set image
+        let button_img   = [];
+        for (let key in button_img2) { button_img[key] = this.imageHTML(button_img2[key]); }
+
+        // check label
+        if (label in button_color) { style = style + " bg" + label + " "; }
+        else if (label in button_img && showImg ) { label = button_img[label]; }
+
+        return [label, style];
+    }
+
+    this.imageHTML = function (file) {
+
+        return "<img src='icon/"+file+"' class='rm-button-image' alt='"+file+"' />";
+    }
+}
+
+
+/*
+* class to create advanced elements such as color picker, slider, and toggle for the remote control
+*/
+class RemoteControlAdvanced {
+
+    constructor(name, remote) {
+
+        // set main data
+        this.data = {};
+        this.app_name = name;
+        this.remote = remote;
+        this.active_name = this.remote.active_name;
+        this.active_type = this.remote.active_type;
+        this.logging = new jcLogging(this.app_name);
+        this.logging.debug("Create RemoteControlAdvanced (" + this.app_name + "/" + this.active_name + "/" + this.active_type + ")");
+
+        // connect pure elements
+        this.e_color_picker = new RemoteElementColorPicker(this.app_name + ".e_color_picker");
+        this.e_slider = new RemoteElementSlider(this.app_name + ".e_slider");
+        this.color_picker_models = ["Brightness", "Color RGB", "Color CIE_1931", "Color RGB (small)", "Color CIE_1931 (small)", "Color temperature"];
+    }
+
+    /* update API data */
+    update(api_data) {
+
+        this.data = api_data;
+        this.active_name = this.remote.active_name;
+    }
+
+    /* create color picker */
+    colorPicker(api_data, id, device, type = "devices", data) {
+
+        this.logging.debug(this.app_name + ".colorPicker: " + id + "/" + device + "/" + type + "/" + data);
+        this.update(api_data);
+
+        /*
+        if (device.indexOf("group") >= 0) {
+            this.logging.warn("Groups are not yet available for color pickers.");
+            return "";
+        }
+*/
+
+        let color_model = "RGB";
+        let send_command = data[1];
+        let sub_id = device + "_" + send_command;
+        let label = "";
+        if (data.length > 2) {
+            color_model = data[2];
+        }
+        if (data.length > 3) {
+            label = data[3];
+        }
+/*
+        let remote_data = this.data["CONFIG"][type][device]["remote"];
+        let status_data = this.data["STATUS"]["devices"][device];
+*/
+        let display_start = "<button id=\"colorpicker_" + sub_id + "_button\" class=\"color-picker\"><center>";
+        display_start += "<canvas id=\"colorpicker_" + sub_id + "\">";
+
+        let display_end = "</canvas>";
+        display_end += "<canvas id=\"colorpicker_demo_" + sub_id + "\" class=\"color-picker-demo\">" + label + "</canvas></center>";
+        display_end += "</center></button>";
+
+        let text = display_start;
+        //text += this.color_picker.colorPickerHTML_v1(send_command);
+        text += display_end;
+
+        setTimeout(() => {
+            this.e_color_picker.colorPickerHTML("colorpicker_" + sub_id, sub_id, send_command, color_model);
+        }, 100);
+        return text;
+    }
+
+    /* create slider */
+    slider(api_data, id, device, type = "devices", data) {
+
+        this.logging.debug(this.app_name + ".slider: " + id + "/" + device + "/" + type + "/" + data);
+        this.update(api_data);
+
+        let init;
+        let disabled = false;
+        let status_data = {};
+        let device_api = "";
+        let device_api_status = "";
+
+        if (device.indexOf("group_") >= 0) {
+            let group_name = device.split("_")[1];
+            let group_devices = this.data["CONFIG"]["macros"]["groups"][group_name];
+            if (!group_devices || !group_devices["devices"] || group_devices["devices"].length === 0) {
+                this.logging.error(this.app_name + ".slider_element: Group " + group_name + " not defined correctly.");
+                return "";
+            }
+            let check_device = group_devices["devices"][0];
+            status_data = this.data["STATUS"]["devices"][check_device];
+            device_api = this.data["STATUS"]["devices"][check_device]["api"];
+            device_api_status = this.data["STATUS"]["interfaces"]["connect"][device_api];
+        } else if (!this.data["CONFIG"][type][device]) {
+            this.logging.error(this.app_name + ".slider_element: Could not create slider element: " + type + " '" + device + "' does not exist.");
+            return "";
+        } else {
+            status_data = this.data["STATUS"]["devices"][device];
+            device_api = this.data["STATUS"]["devices"][device]["api"];
+            device_api_status = this.data["STATUS"]["interfaces"]["connect"][device_api];
+        }
+
+        if (!device_api_status) {
+            this.logging.error("API Device not defined correctly for " + device + ": " + device_api + " doesn't exist.")
+        } else if (device_api_status.toLowerCase() !== "connected") {
+            disabled = true;
+        }
+
+        if (!this.data["CONFIG"][type]) {
+            this.logging.error(this.app_name + ".slider() - type not supported (" + type + ")");
+            return;
+        }
+
+        if (data[4] && status_data[data[4]]) {
+            init = status_data[data[4]];
+        }
+
+        let min = 0;
+        let max = 100;
+        let display_start = "<button id=\"slider_" + device + "_" + data[1] + "\" class=\"rm-slider-button\">";
+        let display_end = "</button>";
+
+        if (data.length > 3) {
+            let min_max = data[3].split("-");
+            min = min_max[0];
+            max = min_max[1];
+        }
+
+        let text = display_start;
+        text += this.e_slider.sliderHTML(data[1], data[2], device, data[1], min, max, init, disabled);
+        text += display_end;
+        return text;
+    }
+
+    /* create toggle element (ON | OFF) - "TOGGLE||<status-field>||<description/label>||<TOGGLE_CMD_ON>||<TOGGLE_CMD_OFF>" */
+    toggle(api_data, id, device, type = "device", data, short = false) {
+
+        this.logging.debug(this.app_name + ".toggle: " + id + "/" + device + "/" + type + "/" + data);
+        this.update(api_data);
+
+        let init, key, status_data;
+        let reset_value = "";
+        let min = 0;
+        let max = 1;
+        let device_id = device.split("_");
+        device_id = device_id[0].split("||");
+
+        if (this.data["CONFIG"]["devices"][device_id[1]] && this.data["CONFIG"]["devices"][device_id[1]]["interface"]["method"] !== "query") {
+            reset_value = "<font style='color:gray'>[<status onclick=\"appFW.requestAPI('GET',['set','" + device_id[1] + "','power','OFF'], '', '', '' );\" style='cursor:pointer;'>OFF</status> | ";
+            reset_value += "<status onclick=\"appFW.requestAPI('GET',['set','" + device_id[1] + "','power','ON'], '', '', '' );\" style='cursor:pointer;'>ON</status>]</font>";
+        }
+        let toggle_start = "";
+        let toggle_end = "";
+        if (!short) {
+            toggle_start += "<button id=\"slider_" + device + "_" + data[1] + "\" class=\"rm-toggle-label long\">" + data[2] + " &nbsp; &nbsp;  " + reset_value + "</button>";
+            toggle_start += "<button id=\"slider_" + device + "_" + data[1] + "2\" class=\"rm-toggle-button\">";
+            toggle_end += "</button>";
+        } else {
+            toggle_start += "<div class='header_image_toggle'>"
+            toggle_end += "</div>"
+        }
+
+        let disabled = false;
+        let device_key = data[1].split("_");
+        if (device_key.length > 1) {
+            device = device_key[0];
+            key = device_key[1]
+        } else {
+            key = data[1];
+        }
+
+        let device_api = "";
+        let device_api_status = "";
+
+        if (this.data["STATUS"]["devices"][device]) {
+            status_data = this.data["STATUS"]["devices"][device];
+            device_api = this.data["STATUS"]["devices"][device]["api"];
+            device_api_status = this.data["STATUS"]["interfaces"][device_api];
+        }
+        if (status_data[key] && device_api_status === "Connected") {
+            if (status_data[key].toUpperCase() === "TRUE") {
+                init = "1";
+            } else if (status_data[key].toUpperCase() === "FALSE") {
+                init = "0";
+            } else if (status_data[key].toUpperCase() === "ON") {
+                init = "1";
+            } else if (status_data[key].toUpperCase() === "OFF") {
+                init = "0";
+            } else {
+                init = "";
+            }
+        } else {
+            init = "";
+            disabled = true;
+        }
+
+        if (data[3].indexOf("_") < 0)   { data[3] = device + "_" + data[3]; }
+        if (data[4].indexOf("_") < 0)   { data[4] = device + "_" + data[4]; }
+
+        let text = "<div class=\"rm-toggle-container\">";
+        text += toggle_start;
+        text += this.e_slider.toggleHTML(data[1], data[2], device, data[3], data[4], init, disabled);
+        text += toggle_end;
+        text += "</div>";
+        return text;
+    }
+}
+

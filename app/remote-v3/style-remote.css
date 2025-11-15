@@ -263,10 +263,9 @@ ul.help ul li {
     color           : var(--rm-color-power-information-text);
     font-size       : var(--rm-size-remote-header-info);
     font-weight     : normal;
-    text-align      : center;
+    text-align      : left;
     opacity         : 90%;
     display         : none;
-    cursor          : zoom-in;
 }
 
 .remote-power-information.big {
@@ -275,6 +274,18 @@ ul.help ul li {
     border          : none;
     font-size       : 18px;
     display         : block;
+}
+
+.remote-power-information-image {
+    float    : left;
+    background-image  : url('/icon/info.png');
+    background-size   : contain;
+    background-repeat: no-repeat;
+    height            : 100%;
+    width             : 25px;
+    margin-right      : 10px;
+    margin-top        : 5px;
+    cursor            : zoom-in;
 }
 
 /* adaptive sizes for smart phones -> see style-screensize-big.css */

@@ -437,9 +437,10 @@ class RemoteJsonElements {
     /* add color picker to JSON*/
     add_color_picker(device_select, command_select, model_select, description_input, scene="", position = "") {
 
-        if (this.remote_type === "scene") {
-            this.logging.warn("Color Picker not implemented for scenes yet.");
-        }
+        //if (this.remote_type === "scene") {
+        //    this.logging.warn("Color Picker not implemented for scenes yet.");
+        //}
+
 
         let device = device_select;
         if (document.getElementById(device_select)) { device = getValueById(device_select); }
@@ -458,8 +459,10 @@ class RemoteJsonElements {
         }
         if (description === undefined) { description = ""; }
 
+
         let button_check = "COLOR-PICKER||send-" + command + "||" + color_model;
         let button = "COLOR-PICKER||send-" + command + "||" + color_model + "||" + description;
+        console.error(device, button);
         if (this.remote_type === "scene") {
             button = device + "_" + button;
             button_check = device + "_" + button_check;

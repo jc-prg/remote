@@ -9,7 +9,7 @@
 
 
 /* class to create a text field in the remote for sending text data, e.g., to be used for a content search */
-class rmRemoteKeyboard {
+class RemoteControlKeyboard {
     constructor(name) {
     
         this.app_name = name;

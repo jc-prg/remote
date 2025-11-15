@@ -3,7 +3,7 @@
 //-----------------------------------------
 
 
-function rmSlider(name) {
+function RemoteElementSlider(name) {
 	this.appName      = name;
 	this.callOnChange = this.info;
 	this.showVolume   = this.info;
