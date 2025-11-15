@@ -4,65 +4,68 @@
 // (c) Christoph Kloth
 // Build standard Remote Controls
 //-----------------------------
-/* INDEX:
-function rmRemoteKeyboard(name)
-	this.set_device	= function ( device )
-	this.input		= function ()
-	this.toggle_cmd	= function ()
-	this.input_toggle	= function ()
-	this.update		= function ()
-	this.send		= function ()
-*/
-//--------------------------------
+// jc://remote/keyboard
+// --------------------------------
 
 
-function rmRemoteKeyboard(name) {
+/* class to create a text field in the remote for sending text data, e.g., to be used for a content search */
+class rmRemoteKeyboard {
+    constructor(name) {
+    
+        this.app_name = name;
+        this.logging  = new jcLogging(this.app_name);
 
-	this.app_name = name;
-	this.logging  = new jcLogging(this.app_name);
-	
-	this.set_device	= function ( device ) {
-		this.active_name = device;
-		this.logging.default("Set device name for remote keyboard: "+this.active_name);
-		}
-                
-	this.input		= function () {
-		var cmd_update  = this.app_name + ".update();";
-		var cmd_send    = this.app_name + ".send();";		
-		var cmd_enter   = "if (event.keyCode==13) {"+cmd_send+"}";
-		var remote      = "<center><div id='"+this.app_name+"_keyboard' class='remote-keyboard'><br/>";
-		remote         += "<input id='"+this.app_name+"_keyboard_input' onkeypress='"+cmd_enter+"' oninput='"+cmd_update+"' type='text' style='width:80%;font-size:18px;'>&nbsp;";
-		remote         += "<button onclick=\""+cmd_send+"\">&nbsp;&gt;&nbsp;</button></div></center>";
-		return remote;
-		}
-        
-	this.toggle_cmd	= function () {
-		return this.app_name+'.input_toggle();';
-		}
-        
-	this.input_toggle	= function () {
-		input      = document.getElementById(this.app_name+"_keyboard");
-		input_text = document.getElementById(this.app_name+"_keyboard_input");
-		if (input.style.display == "block")	{ input.style.display = "none";  input_text.blur(); input_text.value = ""; }
-		else					{ input.style.display = "block"; input_text.focus(); }
-		}
-        
-	this.update		= function () {
-		this.logging.default("Update text via keyboard: "+this.active_name);
-	
-		if (this.kupdate) { return; }
-		this.kupdate = true;
-		input = document.getElementById(this.app_name+"_keyboard_input").value;
-		appFW.requestAPI('GET',[ 'send-data', this.active_name, 'send-text', input ], '','');
-		this.kupdate = false;
-		}
+    }
 
-	this.send		= function () {
-		input = document.getElementById(this.app_name+"_keyboard_input").value;
-		appFW.requestAPI('GET',[ 'send-data', this.active_name, 'send-text-enter', input ], '','');
-		}
+    /* create text input field to activate device keyboard */
+    input() {
+        let cmd_update = this.app_name + ".update();";
+        let cmd_send = this.app_name + ".send();";
+        let cmd_enter = "if (event.keyCode==13) {"+cmd_send+"}";
+        let remote = "<center><div id='"+this.app_name+"_keyboard' class='remote-keyboard'><br/>";
+        remote += "<input id='"+this.app_name+"_keyboard_input' onkeypress='"+cmd_enter+"' oninput='"+cmd_update+"' type='text' style='width:80%;font-size:18px;'>&nbsp;";
+        remote += "<button onclick=\""+cmd_send+"\">&nbsp;&gt;&nbsp;</button></div></center>";
+        return remote;
+    }
 
-	}
+    /* Set device name for remote keyboard */
+    set_device(device ) {
+            this.active_name = device;
+            this.logging.default("Set device name for remote keyboard: "+this.active_name);
+            }
 
-//--------------------------------
-// EOF
+    /* update text via keyboard */
+    update() {
+        this.logging.default("Update text via keyboard: "+this.active_name);
+
+        if (this.kupdate) { return; }
+        this.kupdate = true;
+        let input = document.getElementById(this.app_name+"_keyboard_input").value;
+        appFW.requestAPI('GET',[ 'send-data', this.active_name, 'send-text', input ], '','');
+        this.kupdate = false;
+        }
+
+    /* send input to API */
+    send() {
+        let input = document.getElementById(this.app_name+"_keyboard_input").value;
+        appFW.requestAPI('GET',[ 'send-data', this.active_name, 'send-text-enter', input ], '','');
+    }
+
+    /* command to toggle between visible and hidden */
+    toggle_cmd() {
+        return this.app_name+'.input_toggle();';
+        }
+
+    /* toggle between visible and hidden, indirectly used - cmd created by toggle_cmd() */
+    input_toggle() {
+        const input = document.getElementById(this.app_name+"_keyboard");
+        const input_text = document.getElementById(this.app_name+"_keyboard_input");
+        if (input.style.display === "block") {
+            input.style.display = "none";  input_text.blur(); input_text.value = "";
+        }
+        else {
+            input.style.display = "block"; input_text.focus();
+        }
+    }
+}
+
