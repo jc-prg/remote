@@ -1,23 +1,24 @@
 /* display information within the remote control */
 
 .display {
-   float           : left;
-/*
-   width           : 48%;
-   height          : 40px;
-*/
-   margin          : 1%;
-   padding         : 0.5vw;
-   border-radius   : 6px;
-   border          : solid 0.5px var(--rm-color-display-default-border);
-   background-color: var(--rm-color-display-default);
-   color           : var(--rm-color-display-default-text);
-   font-size       : var(--rm-size-remote-display-text);
-   overflow        : visible;
-   position        : relative;
-   display         : inline-block;
-   vertical-align  : top;
-   opacity         : var(--rm-opacity-display-var);
+    /*
+       float           : left;
+       width           : 48%;
+       height          : 40px;
+       margin          : 1%;
+    */
+    min-width       : 0;
+    min-height      : 0;
+    border-radius   : 6px;
+    border          : solid 0.5px var(--rm-color-display-default-border);
+    background-color: var(--rm-color-display-default);
+    color           : var(--rm-color-display-default-text);
+    font-size       : var(--rm-size-remote-display-text);
+    overflow        : visible;
+    position        : relative;
+    display         : inline-block;
+    vertical-align  : top;
+    opacity         : var(--rm-opacity-display-var);
 }
 
 .display.right  { float  : right; }
@@ -36,14 +37,30 @@
 .display.h3w2 { grid-row: span 3; grid-column: span 2; }
 .display.h4w2 { grid-row: span 4; grid-column: span 2; }
 
+.display-content {
+    position: absolute;
+    inset: 0;
+    padding         : 0.5vw;
+
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    overflow : hidden;
+    display: flex;         /* so children don't overflow */
+    flex-direction: column;
+}
 
 .display-element {
-   width	: 56px;
-   margin	: 2px;
-   padding	: 0px;
-   float	: left;
-   color	: var(--rm-color-display-element);
-   text-align   : left;
+    width	: 56px;
+    margin	: 2px;
+    padding	: 0px;
+    float	: left;
+    color	: var(--rm-color-display-element);
+    text-align   : left;
+    overflow: hidden;
+    min-height: 0;
+    min-width: 0;
 }
 
 .display-element.alert   { color : black; }

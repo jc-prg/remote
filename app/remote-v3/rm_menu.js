@@ -4,7 +4,7 @@
 // class for drop down menu
 //--------------------------------
 
-var rmMenu_visibleWidth = 875;
+let rmMenu_visibleWidth = 875;
 
 function rmMenu(name, menu) {
 
@@ -204,8 +204,4 @@ function rmMenu(name, menu) {
         		}
         	}
 	}
-
-//-----------------------------
-// EOF
-
 
