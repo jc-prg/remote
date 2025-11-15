@@ -17,10 +17,16 @@ class RemoteJsonHandling {
     /* get JSON value (and check if correct) */
     get_value(id, default_data="" ) {
 
-            if (typeof id !== "string") {
+            if (typeof id === "object") {
+                let stack = new Error().stack;
+                let called_by = stack.split("\n")[2].replace("at ", "(call by: ") + ")";
+                this.logging.error(this.app_name + ".get_value: id is not type 'string' but '" + (typeof id) + "' (" + JSON.stringify(id) + "). " + called_by);
+                return;
+            }
+            else if (typeof id !== "string") {
+                let stack = new Error().stack;
+                let called_by = stack.split("\n")[2].replace("at ", "(call by: ") + ")";
                 this.logging.error(this.app_name+".get_value: id is not type 'string' but '"+(typeof id)+"'.");
-                this.logging.error(id);
-                this.logging.error(default_data);
                 return;
             }
 
@@ -311,5 +317,499 @@ class RemoteJsonEditing {
             }
         );
     }
+}
+
+
+/*
+* class to add elements to the JSON remote definition
+*/
+class RemoteJsonElements {
+
+    constructor(name, remote_type, remote) {
+
+        this.data = {};
+        this.app_name = name;
+        this.remote = remote;
+        this.remote_type = remote_type;
+
+        this.json = new RemoteJsonHandling(name + ".json");		// rm_remotes-elements.js
+        this.logging = new jcLogging(this.app_name);
+        this.logging.debug("Create RemoteJsonElements (" + name + "/" + remote_type + "/" + this.json_field_id + ")");
+
+        if (this.remote_type === "scene") {
+            this.json_field_id = "json::remote";
+            this.json_field_id_channel = "json::macro-channel";
+            this.json_field_id_display = "json::display";
+            this.json_field_id_display2 = "json::display-size";
+        } else if (this.remote_type === "device") {
+            this.json_field_id = "remote_json_buttons";
+            this.json_field_id_channel = "";
+            this.json_field_id_display = 'remote_json_display';
+            this.json_field_id_display2 = 'remote_display_size';
+        } else {
+
+            this.logging.error("Remote type '" + this.remote_type + "' not supported.");
+        }
+    }
+
+    /* create preview of changed remote control (former .scene_preview and .remote_preview) */
+    preview(scene_device) {
+
+        if (this.remote_type === "scene") {
+            this.remote.scene_remote(this.remote.frames_remote[0], scene_device, this.json_field_id, this.json_field_id_display, this.json_field_id_display2);
+            this.remote.scene_channels(this.remote.frames_remote[2], scene_device, this.json_field_id_channel);
+        } else if (this.remote_type === "device") {
+            this.remote.device_remote(this.remote.frames_remote[0], scene_device, this.json_field_id, this.json_field_id_display, this.json_field_id_display2);
+            this.remote.device_not_used(this.remote.frames_remote[2], scene_device);
+        }
+    }
+
+    /* update configuration data */
+    update(data) {
+
+        this.data = data;
+    }
+
+    /* add button to JSON (former this.remote_add_button) */
+    add_button(scene, button, position = "", multiple = false) {
+
+        if (document.getElementById(button)) {
+            button = getValueById(button);
+        }
+        if (button === "" || button === undefined) {
+            appMsg.alert(lang("BUTTON_INSERT_NAME"));
+            return;
+        }
+
+        let value = this.json.get_value(this.json_field_id);
+        let value_new = [];
+
+        if (this.remote_type === "scene" && button.indexOf("_") < 0) { button = scene + "_" + button; }
+
+        if (position === "FIRST") {
+            value_new.push(button);
+        }
+        for (let i = 0; i < value.length; i++) {
+            if (i === Number(position) && position !== "" && position !== "FIRST") {
+                value_new.push(button);
+            }
+            value_new.push(value[i]);
+        }
+
+        if (position === "") {
+            value_new.push(button);
+        }
+
+        this.json.textarea_replace(this.json_field_id, value_new);
+
+        if (!multiple) {
+            this.preview(scene);
+        }
+    }
+
+    /* check if alternative image button and then add to JSON */
+    add_button_select_image(scene, button, button_choice, button_value) {
+        const radio_select = document.getElementsByName(button_choice);
+        const button_select = document.getElementById(button);
+        let selected_value = 'default';
+        if (button_select) {
+            button = button_select.value;
+        }
+        if (radio_select) {
+            // Loop through them to find which one is checked
+            for (const radio of radio_select) {
+                if (radio.checked) {
+                    selected_value = radio.value;
+                    break;
+                }
+            }
+            if (selected_value !== 'default') {
+                const image_select = document.getElementById(button_value+"_"+selected_value);
+                if (image_select) {
+                    let image = image_select.value;
+                    button += "||" + image;
+                }
+            }
+        }
+        this.add_button(scene, button);
+    }
+
+    /* add color picker to JSON*/
+    add_color_picker(device_select, command_select, model_select, description_input, scene="", position = "") {
+
+        if (this.remote_type === "scene") {
+            this.logging.warn("Color Picker not implemented for scenes yet.");
+        }
+
+        let device = device_select;
+        if (document.getElementById(device_select)) { device = getValueById(device_select); }
+
+        let color_model = getValueById(model_select);
+        let command = getValueById(command_select);
+        let description = getValueById(description_input);
+
+        if (command === "" || command === undefined) {
+            appMsg.alert(lang("COLOR_PICKER_SELECT_CMD"));
+            return;
+        }
+        if (color_model === "" || color_model === undefined) {
+            appMsg.alert(lang("COLOR_PICKER_SELECT_MODEL"));
+            return;
+        }
+        if (description === undefined) { description = ""; }
+
+        let button_check = "COLOR-PICKER||send-" + command + "||" + color_model;
+        let button = "COLOR-PICKER||send-" + command + "||" + color_model + "||" + description;
+        if (this.remote_type === "scene") {
+            button = device + "_" + button;
+            button_check = device + "_" + button_check;
+        }
+        else {
+            scene = device;
+        }
+
+        if (document.getElementById(this.json_field_id).innerHTML.indexOf(button_check) > -1) {
+            appMsg.alert(lang("MSG_ONLY_ONE_COLOR_PICKER"));
+        } else {
+            this.add_button(scene, button, position);
+            this.preview(scene);
+        }
+    }
+
+    /* add display to JSON */
+    add_display(scene, position = "") {
+
+        let value = this.json.get_value(this.json_field_id);
+
+        if (value.indexOf("DISPLAY") < 0) {
+            this.add_button(scene, "DISPLAY", position);
+            this.preview(scene);
+        } else {
+            appMsg.alert(lang("DISPLAY_EXISTS"));
+        }
+    }
+
+    /* add display value from JSON */
+    add_display_value(scene, device, value, label) {
+
+        let device_new = getValueById(device);
+        let value_new = getValueById(value);
+        let label_new = getValueById(label);
+
+        if (device_new === "" || value_new === undefined) {
+            appMsg.alert(lang("DISPLAY_VALUE_SELECT"));
+            return;
+        }
+        if (value_new === "" || value_new === undefined) {
+            appMsg.alert(lang("DISPLAY_VALUE_SELECT"));
+            return;
+        }
+        if (label_new === "" || label_new === undefined) {
+            appMsg.alert(lang("DISPLAY_LABEL_ADD"));
+            return;
+        }
+
+        let display_new = this.json.get_value(this.json_field_id_display);
+
+        if (display_new[label_new] !== undefined) {
+            appMsg.alert(lang("DISPLAY_LABEL_EXISTS_ALREADY"));
+            return;
+        }
+
+        if (!display_new[label_new] && device_new !== "X") {
+            display_new[label_new] = device_new + "_" + value_new;
+        }
+        else if (!display_new[label_new]) {
+            display_new[label_new] = value_new;
+        }
+
+        this.json.textarea_replace(this.json_field_id_display, display_new);
+        this.preview(scene);
+    }
+
+    /* remote header from JSON */
+    add_header(scene, button, position = "") {
+
+        let value = this.json.get_value(this.json_field_id);
+
+        if (value.indexOf("HEADER-IMAGE") >= 0 || value.indexOf("HEADER-IMAGE||toggle") >= 0) {
+            appMsg.alert(lang("HEADER_IMAGE_EXISTS"));
+        } else if (value.indexOf("HEADER-IMAGE||toggle") < 0 && button === "HEADER-IMAGE||toggle") {
+
+            // CHECK IF VALUES FOR TOGGLE ARE SET ...
+            let header_toggle_value = getValueById("header_toggle_1value");
+            let header_toggle_on = getValueById("header_toggle_1on");
+            let header_toggle_off = getValueById("header_toggle_1off");
+
+            if (header_toggle_value === undefined) {
+                appMsg.alert("Select the power device value first!");
+                return;
+            } else if (header_toggle_on === undefined || header_toggle_on === "") {
+                appMsg.alert("Select the power device ON command first!");
+                return;
+            } else if (header_toggle_off === undefined || header_toggle_off === "") {
+                appMsg.alert("Select the power device OFF command first!");
+                return;
+            }
+
+            let toggle_button = "TOGGLE||" + header_toggle_value + "||Power Device||" + header_toggle_on + "||" + header_toggle_off;
+
+            this.add_button(scene, toggle_button, "FIRST", true);
+            this.add_button(scene, button, "FIRST");
+        } else if (value.indexOf("HEADER-IMAGE") < 0 && button === "HEADER-IMAGE") {
+            this.add_button(scene, button, "FIRST");
+        }
+    }
+
+    /* add a line with description */
+    add_line(scene, button, position = "", multiple = false) {
+
+        if (document.getElementById(button)) {
+            button = "LINE||" + getValueById(button);
+        }
+
+        this.add_button(scene, button, position, multiple = false);
+    }
+
+    /* add a slider with description */
+    add_slider(scene, slider_cmd, slider_param, slider_descr, slider_minmax, slider_device = "", position = "") {
+
+        let button;
+        let s_cmd = getValueById(slider_cmd);
+        let s_param = getValueById(slider_param);
+        let s_descr = getValueById(slider_descr);
+        let s_minmax = getValueById(slider_minmax);
+        let s_device = getValueById(slider_device);
+
+        if (s_cmd === "" || s_cmd === undefined) {
+            appMsg.alert(lang("SLIDER_SELECT_CMD"));
+            return;
+        }
+        if (s_param === "" || s_param === undefined) {
+            appMsg.alert(lang("SLIDER_SELECT_PARAM"));
+            return;
+        }
+        if (s_descr === "" || s_descr === undefined) {
+            appMsg.alert(lang("SLIDER_INSERT_DESCR"));
+            return;
+        }
+        if (s_minmax === "" || s_minmax === undefined) {
+            appMsg.alert(lang("SLIDER_INSERT_MINMAX"));
+            return;
+        }
+
+        if (this.remote_type === "scene") {
+            button = s_device + "_SLIDER||send-" + s_cmd + "||" + s_descr + "||" + s_minmax + "||" + s_param;
+        } else {
+            button = "SLIDER||send-" + s_cmd + "||" + s_descr + "||" + s_minmax + "||" + s_param;
+        }
+        this.add_button(scene, button, position);
+        this.preview(scene);
+    }
+
+    /* add a toggle with description */
+    add_toggle(scene, t_device, t_descr, t_value, t_on, t_off, position = "") {
+
+        t_device = getValueById(t_device);
+        t_value = getValueById(t_value);
+        t_descr = getValueById(t_descr);
+        t_on = getValueById(t_on);
+        t_off = getValueById(t_off);
+        let button;
+
+        if (t_value === "" || t_value === undefined) {
+            appMsg.alert(lang("TOGGLE_SELECT_VALUE"));
+            return;
+        }
+        if (t_descr === "" || t_descr === undefined) {
+            appMsg.alert(lang("TOGGLE_SELECT_DESCR"));
+            return;
+        }
+        if (t_on === "" || t_on === undefined) {
+            appMsg.alert(lang("TOGGLE_SELECT_ON"));
+            return;
+        }
+        if (t_off === "" || t_off === undefined) {
+            appMsg.alert(lang("TOGGLE_SELECT_OFF"));
+            return;
+        }
+
+        if (this.remote_type === "scene") {
+            if (t_device === "" || t_device === undefined) {
+                appMsg.alert(lang("TOGGLE_SELECT_DEVICE"));
+                return;
+            }
+            button = "TOGGLE||" + t_device + "_" + t_value + "||" + t_descr + "||" + t_device + "_" + t_on + "||" + t_device + "_" + t_off;
+        } else {
+            button = "TOGGLE||" + t_value + "||" + t_descr + "||" + t_on + "||" + t_off;
+        }
+
+        this.add_button(scene, button, position);
+        this.preview(scene);
+    }
+
+    /* delete button from JSON */
+    delete_button(scene, button) {
+
+        if (Number.isInteger(Number(button))) {}
+        else if (document.getElementById(button)) {
+            button = getValueById(button);
+        }
+        if (button === "") {
+            appMsg.alert(lang("BUTTON_SELECT"));
+            return;
+        }
+
+        let value_org = this.json.get_value(this.json_field_id);
+        let value_new = [];
+        for (let i = 0; i < value_org.length; i++) {
+            if (i !== Number(button)) {
+                value_new.push(value_org[i]);
+            }
+        }
+
+        this.json.textarea_replace(this.json_field_id, value_new);
+        this.preview(scene);
+    }
+
+    /* delete value from display */
+    delete_display_value(scene, remove_label) {
+
+        let label_new = getValueById(remove_label);
+        let display_new = this.json.get_value(this.json_field_id_display);
+
+        if (label_new === "" || label_new === undefined) {
+            appMsg.alert(lang("DISPLAY_LABEL_SELECT"));
+            return;
+        }
+        if (!display_new[label_new]) {
+            appMsg.alert(lang("DISPLAY_LABEL_DONT_EXIST"));
+            return;
+        } else {
+            delete display_new[label_new];
+        }
+
+        this.json.textarea_replace(this.json_field_id_display, display_new);
+        this.preview(scene);
+    }
+
+    /* delete header from JSON */
+    delete_header(scene) {
+
+        let value = this.json.get_value(this.json_field_id);
+
+        if (value.indexOf("HEADER-IMAGE||toggle") >= 0) {
+            this.delete_button(scene, "0");
+            this.delete_button(scene, "0");
+            this.preview(scene);
+        } else if (value.indexOf("HEADER-IMAGE") >= 0) {
+            this.delete_button(scene, "0");
+            this.preview(scene);
+        } else {
+            appMsg.alert(lang("HEADER_IMAGE_EXISTS"));
+        }
+    }
+
+    /* import remote definition from template to JSON */
+    import_templates(scene, template) {
+
+        let value = getValueById(template);
+        if (value === "") {
+            appMsg.alert(lang("DEVICE_SELECT_TEMPLATE"));
+            return;
+        }
+
+        template = this.data["CONFIG"]["templates"]["definition"][value];
+        let value_new = template["remote"];
+        if (template["display"]) {
+            let display_new = template["display"];
+        } else {
+            let display_new = {};
+        }
+        if (template["display-size"]) {
+            let displaysize_new = template["display"];
+        } else {
+            let displaysize_new = "";
+        }
+
+        if (this.remote_type === "scene") {
+            for (let i = 0; i < value_new.length; i++) {
+                if (value_new[i] !== "." && value_new[i].indexOf("DISPLAY") < 0 && value_new[i].indexOf("LINE") < 0 && value_new[i].indexOf("_") < 0) {
+                    value_new[i] = "XXXX_" + value_new[i];
+                }
+            }
+        }
+
+        this.json.textarea_replace(this.json_field_id, value_new);
+        this.preview(scene);
+    }
+
+    /* move button in JSON (left or right) */
+    move_button(scene, button, left_right) {
+
+        let value = this.json.get_value(this.json_field_id);
+        let temp = value[button];
+
+        if (left_right === "left") {
+            if (button > 0) {
+                let target = button - 1;
+                value[button] = value[target];
+                value[target] = temp;
+            }
+        }
+        if (left_right === "right") {
+            if (button < value.length) {
+                let target = button + 1;
+                value[button] = value[target];
+                value[target] = temp;
+            }
+        }
+
+        this.json.textarea_replace(this.json_field_id, value);
+        this.preview(scene);
+    }
+
+    /* get slider configuration */
+    prepare_slider(device, slider_cmd, slider_param, slider_description, slider_minmax, position = "") {
+
+        let s_param = getValueById(slider_param);
+        let s_description = "description";
+        let s_device = this.data["CONFIG"]["devices"][device]["settings"]["label"];
+        if (s_param === "" || s_param === undefined) {
+            appMsg.alert(lang("SLIDER_SELECT_PARAM"));
+            return;
+        }
+
+        if (this.remote_type === "scene") {
+            s_description = s_device + ": " + s_param.charAt(0).toUpperCase() + s_param.slice(1);
+        } else {
+            s_description = s_param.charAt(0).toUpperCase() + s_param.slice(1);
+        }
+        setValueById(slider_description, s_description);
+
+        let cmd_definition = this.data["CONFIG"]["devices"][device]["commands"]["definition"];
+
+        this.logging.info(JSON.stringify(cmd_definition[s_param]));
+
+        if (cmd_definition && cmd_definition[s_param]) {
+            let min = "min";
+            let max = "max";
+            let exist = false;
+            if (cmd_definition[s_param]["values"]) {
+                if (cmd_definition[s_param]["values"]["min"] !== undefined) {
+                    min = cmd_definition[s_param]["values"]["min"];
+                    exist = true;
+                }
+                if (cmd_definition[s_param]["values"]["max"] !== undefined) {
+                    max = cmd_definition[s_param]["values"]["max"];
+                    exist = true;
+                }
+            }
+            if (exist) {
+                setValueById(slider_minmax, min + "-" + max);
+            }
+        }
+    }
+
 }
 
