@@ -15,6 +15,7 @@ remote_js = [
     "rm_sort-list.js",
     "rm_remotes-json.js",
     "rm_remotes-color-picker.js",
+    "rm_remotes-display.js",
     "rm_remotes-elements.js",
     "rm_remotes-keyboard.js",
     "rm_remotes-slider.js",
