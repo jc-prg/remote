@@ -435,7 +435,7 @@ class RemoteSettingsRemotes {
 
             html += "<li id='"+device+"'>";
             html += "<div class='slist_li_content"+style+"'>" + devices[device]["settings"]["label"] + "<br/>";
-            html += "<font style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>"+ device + " (" + api+")</rm-id></font></div>";
+            html += "<div style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>"+ device + "</rm-id> (" + api + ")</div></div>";
             html += "<div class='slist_li_edit'>" + this.remote_edit("device", device, devices[device]["settings"]["visible"]) + "</div>";
             html += "</li>";
         }
@@ -1375,12 +1375,12 @@ class RemoteSettingsInfo {
         // button color codes
         let buttons = "";
         for (let key in colors_power) {
-            buttons += "<button class='rm-button' style='background-color:"+colors_power[key]+";width:22%;'>"+key+"</button>";
+            buttons += "<button class='rm-button sample' style='background-color:"+colors_power[key]+";width:22%;'>"+key+"</button>";
         }
-        let button_style = "width:30%;max-width:none;height:40px;";
-        buttons += "<button class='rm-button notfound' style='"+button_style+"' disabled>command not found</button>";
-        buttons += "<button class='rm-button notfound' style='"+button_style+"'>edit mode: cmd not found</button>";
-        buttons += "<button class='rm-button small_edit' style='"+button_style+"'>edit mode: invisible</button>";
+        let button_style = "width:22%;max-width:none;";
+        buttons += "<button class='rm-button sample notfound' style='"+button_style+"' disabled>command not found</button>";
+        buttons += "<button class='rm-button sample notfound' style='"+button_style+"'>edit mode: cmd not found</button>";
+        buttons += "<button class='rm-button sample small_edit' style='"+button_style+"'>edit mode: invisible</button>";
 
         let set_temp  = this.tab.start();
         set_temp += this.tab.row( "<center>" + buttons + "</center>" );
@@ -1407,11 +1407,10 @@ class RemoteSettingsInfo {
         for (let key in colors) {
             let onclick = "appMsg.info(\"Copied button key ["+key+"] to clipboard.\");";
             onclick    += "navigator.clipboard.writeText(\""+key+"\");";
-
-            set_temp += "<button class='image_list key'>";
+            set_temp += "<button class='rm-button sample empty' style='width:22%;float:left'>";
             set_temp += key;
             set_temp += "</button>";
-            set_temp += "<button class='rm-button bg"+key+"' style='width:50px;' onclick='"+onclick+"'>";
+            set_temp += "<button class='rm-button sample bg"+key+"' style='width:22%;' onclick='"+onclick+"'>";
             set_temp += "";
             set_temp += "</button>";
         }

@@ -157,6 +157,21 @@ button.rm-button.small {
     border           : solid 2px var(--rm-color-button-edit-border);
 }
 
+.rm-button.sample {
+    float: left;
+    display: block;
+    grid-column: unset;
+    grid-row: unset;
+    width: 60px;
+    height: auto;
+    margin: 4px;
+    overflow: hidden;
+    font-size: 14px;
+}
+.rm-button.sample.empty {
+    background-color: transparent;
+}
+
 .rm-button-image {
     height          : 55%;
     width           : auto;
