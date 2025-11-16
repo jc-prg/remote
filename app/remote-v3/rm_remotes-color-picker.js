@@ -1,5 +1,9 @@
+//--------------------------------
+// jc://remote/color-picker/
+//--------------------------------
 // uses parts from source: https://www.w3docs.com/tools/color-picker
 
+/* create a color-picker, to be embedded into a button -> RemoteControlAdvanced.colorPicker() */
 class RemoteElementColorPicker {
     constructor(name) {
 
@@ -12,34 +16,6 @@ class RemoteElementColorPicker {
     set_device(name) {
 
             this.active_name = name;
-            }
-
-    // send color code for brightness
-    sendColorCode_brightness(send_command, input, device) {
-            let pure_cmd = send_command.replace("send-", "");
-            let check_device = device;
-
-            if (device.indexOf("group") >= 0) {
-                let group_id = device.split("_")[1];
-                let devices = dataAll["CONFIG"]["macros"]["groups"][group_id]["devices"];
-                check_device = devices[0];
-            }
-
-            let min_max  = dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]["values"];
-            let type     = dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]["type"];
-            if (min_max === undefined || min_max["min"] === undefined || min_max["max"] === undefined) {
-                appMsg.info("Could not set brightness: no min-max values for " + check_device + " / " + pure_cmd + ".  Check remote configuration!","error");
-                this.logging.error(dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]);
-                this.logging.error(min_max["min"]);
-                }
-            else {
-                let range = min_max["max"] - min_max["min"];
-                let value = (range * input) / 100 + min_max["min"];
-                if (type === "integer") { value = Math.round(value); }
-                this.logging.log("BRIGHTNESS: " + send_command + " / " + input + " / min=" + min_max["min"] + "; max=" + min_max["max"] + " / " + value);
-                this.logging.debug(min_max);
-                appFW.requestAPI('GET',[ 'send-data', device, send_command, value ], '','');
-                }
             }
 
     // color picker visualization
@@ -134,6 +110,34 @@ class RemoteElementColorPicker {
             appFW.requestAPI('GET',[ 'send-data', device, send_command, '"'+input+'"' ], '','');
         }
 
+    // send color code for brightness
+    sendColorCode_brightness(send_command, input, device) {
+        let pure_cmd = send_command.replace("send-", "");
+        let check_device = device;
+
+        if (device.indexOf("group") >= 0) {
+            let group_id = device.split("_")[1];
+            let devices = dataAll["CONFIG"]["macros"]["groups"][group_id]["devices"];
+            check_device = devices[0];
+        }
+
+        let min_max  = dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]["values"];
+        let type     = dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]["type"];
+        if (min_max === undefined || min_max["min"] === undefined || min_max["max"] === undefined) {
+            appMsg.info("Could not set brightness: no min-max values for " + check_device + " / " + pure_cmd + ".  Check remote configuration!","error");
+            this.logging.error(dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]);
+            this.logging.error(min_max["min"]);
+        }
+        else {
+            let range = min_max["max"] - min_max["min"];
+            let value = (range * input) / 100 + min_max["min"];
+            if (type === "integer") { value = Math.round(value); }
+            this.logging.log("BRIGHTNESS: " + send_command + " / " + input + " / min=" + min_max["min"] + "; max=" + min_max["max"] + " / " + value);
+            this.logging.debug(min_max);
+            appFW.requestAPI('GET',[ 'send-data', device, send_command, value ], '','');
+        }
+    }
+
     // send color code for temperature
     sendColorCode_temperature(send_command, input, device) {
             let pure_cmd = send_command.replace("send-", "");
@@ -196,3 +200,4 @@ class RemoteElementColorPicker {
             return [x, y];
             }
 }
+

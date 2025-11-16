@@ -1,11 +1,6 @@
 //--------------------------------
-// jc://remote/
+// jc://remote/keyboard/
 //--------------------------------
-// (c) Christoph Kloth
-// Build standard Remote Controls
-//-----------------------------
-// jc://remote/keyboard
-// --------------------------------
 
 
 /* class to create a text field in the remote for sending text data, e.g., to be used for a content search */

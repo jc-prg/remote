@@ -1,5 +1,5 @@
 //--------------------------------
-// jc://remote/
+// jc://remote/settings/
 //--------------------------------
 
 function rmSettings (name) {	// IN PROGRESS

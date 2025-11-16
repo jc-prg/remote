@@ -1,11 +1,6 @@
 //--------------------------------
-// jc://remote/
+// jc://remote/display/
 //--------------------------------
-// (c) Christoph Kloth
-// Build standard Remote Controls
-//-----------------------------
-// jc://remote/keyboard
-// --------------------------------
 
 
 /* create displays for scene and device remote controls, format defined in style-display.css */

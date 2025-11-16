@@ -1,5 +1,5 @@
 //--------------------------------------
-// jc://app-framework/, (c) Christoph Kloth
+// jc://remote/language/
 //--------------------------------------
 // multi-language support (implementation just started)
 //--------------------------------------
