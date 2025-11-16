@@ -1295,6 +1295,7 @@ class RemoteAPI(RemoteDefaultClass):
         device_info = self.config.read_status()
         devices = []
 
+        self.logging.info("send_text: " + button + " / " + device)
         if device.startswith("group"):
             group_id = device.replace("group_","")
             act_macros = self.config.read(rm3presets.active_macros)
