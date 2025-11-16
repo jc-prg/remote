@@ -1309,7 +1309,7 @@ class RemoteSettingsInfo {
 
         // version information
         let set_temp  = this.tab.start();
-        set_temp += this.tab.row( "Client:",	 appVersion + " / " + this.test_info + " (" + rollout + ")" );
+        set_temp += this.tab.row( "Client:",	 appVersion + " / " + this.settings.test_info + " (" + rollout + ")" );
         set_temp += this.tab.row( "Server:",	 this.data["API"]["version"] + " / " + this.data["API"]["rollout"] );
         set_temp += this.tab.row( "Modules:",
             "jcMsg "        + appMsg.appVersion +
