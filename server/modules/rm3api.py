@@ -1304,11 +1304,12 @@ class RemoteAPI(RemoteDefaultClass):
             devices = [device]
 
         for device_id in devices:
+            self.logging.info("         : " + device_id + " / " + button)
             if device_id in device_info:
                 interface = device_info[device_id]["config"]["api_key"]
                 data["REQUEST"]["Return"] += self.queue_send.add2queue([[interface, device_id, button, text]]) + "\n"
             else:
-                data["REQUEST"]["Return"] += "ERROR: Device '" + device + "' not defined." + "\n"
+                data["REQUEST"]["Return"] += "ERROR: Device '" + device_id + "' not defined." + "\n"
 
         if "ERROR" in data["REQUEST"]["Return"]:
             self.logging.error(data["REQUEST"]["Return"])
