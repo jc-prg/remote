@@ -219,7 +219,7 @@ class RemoteSettings {
             }
 
     // create index page and small index on the top
-    index(small=false, selected="", wrapper=false) {
+    index(small=false, selected="") {
         let html  = "";
         if (!small) { html += "&nbsp;<br/>"; }
 
@@ -351,7 +351,7 @@ class RemoteSettingsRemotes {
     }
 
     // create dialogs to add scenes
-    add_scene(direct_cmd="", direct_data="") {
+    add_scene(direct_cmd="") {
         let setting = "";
         let set_temp = "";
         this.button.width  = "120px";
@@ -401,8 +401,8 @@ class RemoteSettingsRemotes {
 
     // create dialogs to add devices
     add_device(direct_cmd="", direct_data="") {
+        let set_temp;
         let setting = "";
-        let set_temp = "";
         this.button.width  = "120px";
         this.button.height = "30px";
 
@@ -410,7 +410,7 @@ class RemoteSettingsRemotes {
         if (direct_cmd === "add_device" && direct_data !== "") { set_temp = this.add_remote_dialog(direct_data); open_add_device = true; }
         else                                                   { set_temp = this.add_remote_dialog(); }
 
-        setting  += this.basic.container("setting_add_device",lang("ADD_DEVICE"),set_temp,open_add_device);
+        setting += this.basic.container("setting_add_device",lang("ADD_DEVICE"),set_temp,open_add_device);
         return setting;
     }
 
@@ -482,10 +482,9 @@ class RemoteSettingsRemotes {
 
         this.on_change_api = function(value) {
 
-            let  api               = value.split("_")[0];
-            let  device_config     = this.data["CONFIG"]["devices"][api];
-            let  api_config        = this.data["CONFIG"]["apis"]["list_api_configs"]["list"];
-            let  remote_config     = this.data["CONFIG"]["remotes"]["list"];
+            let  api = value.split("_")[0];
+            let  api_config = this.data["CONFIG"]["apis"]["list_api_configs"]["list"];
+            let  remote_config = this.data["CONFIG"]["remotes"]["list"];
 
             if (value === "") {
                 let  dev_config     = lang("SELECT_API_FIRST");
@@ -810,7 +809,7 @@ class RemoteSettingsApi {
                     details += this.tab.start("");
                     Object.keys(detected_devices[api+"_"+api_device]).forEach(key => {
                         let description = detected_devices[api+"_"+api_device][key]["description"];
-                        let connected_remotes = "";
+                        let connected_remotes;
 
                         if (key in connected_vs_detected)   { connected_remotes = "<br/><span style='color:gray;'>used by: " + connected_vs_detected[key] + "</span>"; }
                         else                                { connected_remotes = "<br/>" + this.button_add_device(api, api_device, key); }
@@ -850,7 +849,7 @@ class RemoteSettingsApi {
 
             if (!connect_status) { connect_status = "NO DEVICE connected yet."; }
 
-            let on_off_status = "";
+            let on_off_status;
             if (connect_status_api === false || connected_devices === 0)  { on_off_status = "N/A"; }
             else if (connect_status.indexOf("OFF") > -1)                  { on_off_status = "OFF"; }
             else if (connect_status.indexOf("ERROR") > -1)                { on_off_status = "ERROR"; }
@@ -1118,7 +1117,7 @@ class RemoteSettingsGeneral {
 
         // draw icon images
         this.icon_img = function (url, printUrl=true, onclick=false, selected=false, icon_type="favicon") {
-            let icon = "";
+            let icon;
             let onclick_img = "";
             let onclick_style = "";
             let on_select = "";
@@ -1241,7 +1240,6 @@ class RemoteSettingsGeneral {
             deactivateButton = true;
             this.manual_mode = true;
         }
-        return;
     }
 
     // get updated config data from parent class
