@@ -1295,7 +1295,7 @@ class RemoteAPI(RemoteDefaultClass):
         device_info = self.config.read_status()
         devices = []
 
-        self.logging.info("send_text: " + button + " / " + device)
+        self.logging.debug("send_text: " + button + " / " + device)
         if device.startswith("group"):
             group_id = device.replace("group_","")
             act_macros = self.config.read(rm3presets.active_macros)
@@ -1305,7 +1305,7 @@ class RemoteAPI(RemoteDefaultClass):
             devices = [device]
 
         for device_id in devices:
-            self.logging.info("         : " + device_id + " / " + button)
+            self.logging.debug("         : " + device_id + " / " + button)
             if device_id in device_info:
                 interface = device_info[device_id]["config"]["api_key"]
                 data["REQUEST"]["Return"] += self.queue_send.add2queue([[interface, device_id, button, text]]) + "\n"
