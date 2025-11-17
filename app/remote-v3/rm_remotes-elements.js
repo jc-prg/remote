@@ -7,114 +7,125 @@ let rmSheetBox_open = {};
 
 
 /* create elements for remote control editing */
-function RemoteElementsEdit(name) {
+class RemoteElementsEdit {
+    constructor(name) {
 
-	this.app_name       = name;
-	this.data           = {};
-	this.edit_mode      = false;
-	this.input_width    = "100px";
-    this.container_open = {};
+        this.app_name       = name;
+        this.data           = {};
+        this.edit_mode      = false;
+        this.input_width    = "100px";
+        this.container_open = {};
 
-	this.logging        = new jcLogging(this.app_name);
+        this.logging        = new jcLogging(this.app_name);
+    }
 
-	// input for text
-	this.input	            = function (id,value="")   {
+    // create a basic container element that can be opened or closed dynamically
+    container(id, title, text="", open=true) {
 
-	    return "<div style='width:" + this.input_width + ";margin:0px;'><input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"'></div>";
-	    }
+        if (this.container_open[id] !== undefined) {
+            open = this.container_open[id];
+        } else {
+            this.container_open[id] = open;
+        }
 
-	// select for different data 
-	this.select	            = function (id,title,data,onchange="",selected_value="",sort=false, change_key_value=false) {
+        let onclick  = ' onclick="'+this.app_name+'.container_showHide(\''+id+'\')"; '
+        let display  = "";
+        let link     = "&minus;";
+        let ct       = "";
 
-	            if (change_key_value) {
-	                let new_data = {};
-	                for (key in data) {
-	                    new_data[data[key]] = key;
-	                    }
-	                data = new_data;
-	                }
+        if (open === false) {
+            link    = "+";
+            display = "display:none;";
+            }
 
-                let item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
-                item     += "<option value='' disabled='disabled' selected>"+lang("SELECT")+" " + title + "</option>";
-                let keys = Object.keys(data);
+        ct  += "<div id='"+id+"_header' class='remote_group_header' "+onclick+">[<span id='"+id+"_link'>"+link+"</span>]&nbsp;&nbsp;<b>"+title+"</b></div>";
+        ct  += "<div id='"+id+"_status' style='display:none;'>"+open+"</div>";
+        ct  += "<div id='"+id+"_body'   class='remote_group' style='"+display+"'>";
+        ct  += text;
+        ct  += "</div>";
 
-                if (sort) { keys.sort(); }
-                for (let i=0;i<keys.length;i++) {
-                        let key = keys[i];
-                        let selected = "";
-                        if (selected_value === key) { selected = "selected"; }
-                        if (key !== "default") {
-                                item += "<option value=\"" + key + "\" "+selected+">" + data[key] + "</option>";
-                        }       }
-                item     += "</select>";
-                return item;
+        return ct;
+    }
+
+    // open or close the basic container element
+    container_showHide(id, open="" ) {
+        let status = document.getElementById(id+"_status").innerHTML;
+        if (status === "true") {
+            document.getElementById(id+"_body").style.display = "none";
+            document.getElementById(id+"_status").innerHTML   = "false";
+            document.getElementById(id+"_link").innerHTML     = "+";
+            this.container_open[id] = false;
+        }
+        else {
+            document.getElementById(id+"_body").style.display = "block";
+            document.getElementById(id+"_status").innerHTML   = "true";
+            document.getElementById(id+"_link").innerHTML     = "&minus;";
+            this.container_open[id] = true;
+        }
+    }
+
+    // create a simple input field
+    input(id, value="") {
+
+        return "<div style='width:" + this.input_width + ";margin:0;'><input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"'></div>";
+    }
+
+    // create a select field with options from a dict
+    select(id, title, data, onchange="", selected_value="", sort=false, change_key_value=false) {
+
+        if (change_key_value) {
+            let new_data = {};
+            for (let key in data) {
+                new_data[data[key]] = key;
                 }
+            data = new_data;
+            }
 
-	this.select_array       = function (id,title,data,onchange="",selected_value="") {
-	            let control = {};
-                let item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
-                item     += "<option value='' disabled='disabled' selected>"+lang("SELECT")+" " + title + "</option>";
-                data.forEach(function(key) {
-                        let selected = "";
-                        if (selected_value === key) { selected = "selected"; }
-                        if (key !== "default" && !control[key]) {
-                                item += "<option value=\"" + key + "\" "+selected+">" + key + "</option>";
-                                control[key] = 1;
-                                }
-                        });
-                item     += "</select>";
-                return item;
+        let item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
+        item     += "<option value='' disabled='disabled' selected>"+lang("SELECT")+" " + title + "</option>";
+        let keys = Object.keys(data);
+
+        if (sort) { keys.sort(); }
+        for (let i=0;i<keys.length;i++) {
+            let key = keys[i];
+            let selected = "";
+            if (selected_value === key) { selected = "selected"; }
+            if (key !== "default") {
+                item += "<option value=\"" + key + "\" "+selected+">" + data[key] + "</option>";
+            }
+        }
+        item     += "</select>";
+        return item;
+    }
+
+    // create a select field with options from an array
+    select_array(id, title, data, onchange="", selected_value="") {
+        let control = {};
+        let item  = "<select style=\"width:" + this.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
+        item     += "<option value='' disabled='disabled' selected>"+lang("SELECT")+" " + title + "</option>";
+        data.forEach(function(key) {
+            let selected = "";
+            if (selected_value === key) { selected = "selected"; }
+            if (key !== "default" && !control[key]) {
+                item += "<option value=\"" + key + "\" "+selected+">" + key + "</option>";
+                control[key] = 1;
                 }
+            });
+        item     += "</select>";
+        return item;
+    }
 
-	this.edit_line	        = function (text="") {
+    // create a line with a text on it, if given
+    edit_line(text="") {
         let remote = "";
-		remote += "<div style='border:1px solid;height:1px;margin:5px;margin-top:10px;padding:0px;'>";
-		if (text !== "") { remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>"; }
-		remote += "</div>";
-		return remote;
-		}
-		
-	this.container           = function(id,title,text="",open=true) {
-	
-		if (this.container_open[id] !== undefined)	{ open = this.container_open[id]; }
-		else						{ this.container_open[id] = open; }
-	
-		let onclick  = ' onclick="'+this.app_name+'.container_showHide(\''+id+'\')"; '
-		let display  = "";
-		let link     = "&minus;";
-		let ct       = "";
-		
-		if (open === false) {
-			link    = "+";
-			display = "display:none;";
-			}
-		
-		ct  += "<div id='"+id+"_header' class='remote_group_header' "+onclick+">[<span id='"+id+"_link'>"+link+"</span>]&nbsp;&nbsp;<b>"+title+"</b></div>";	
-		ct  += "<div id='"+id+"_status' style='display:none;'>"+open+"</div>";
-		ct  += "<div id='"+id+"_body'   class='remote_group' style='"+display+"'>";	
-		ct  += text;	
-		ct  += "</div>";	
-		
-		return ct;
+        remote += "<div style='border:1px solid;height:1px;margin: 10px 5px 5px;padding:0;'>";
+        if (text !== "") { remote += "<div class='remote-line-text'>&nbsp;"+text+"&nbsp;</div>"; }
+        remote += "</div>";
+        return remote;
     }
 
-	this.container_showHide = function( id, open="" ) {
-		status = document.getElementById(id+"_status").innerHTML;
-		if (status === "true") { 
-			document.getElementById(id+"_body").style.display = "none"; 
-			document.getElementById(id+"_status").innerHTML   = "false";
-			document.getElementById(id+"_link").innerHTML     = "+";
-			this.container_open[id] = false;
-			}
-		else {
-			document.getElementById(id+"_body").style.display = "block"; 
-			document.getElementById(id+"_status").innerHTML   = "true";
-			document.getElementById(id+"_link").innerHTML     = "&minus;";
-			this.container_open[id] = true;
-			}
-    }
 }
-	
+
 
 /* class to draw a table */
 class RemoteElementTable {
