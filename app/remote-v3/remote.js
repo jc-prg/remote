@@ -2,7 +2,7 @@
 // jc://remote/
 //--------------------------------
 
-remote_js = [
+const remote_js = [
     "config_language.js",
     "config_main.js",
     "config_stage.js",
@@ -24,7 +24,7 @@ remote_js = [
     "rm_main.js",
     ];
 
-remote_css = [
+const remote_css = [
     "style-theme-colors.css",
     "style-menu.css",
     "style-json.css",

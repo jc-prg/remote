@@ -10,7 +10,7 @@ var app_setting_style_header    = "setting_bg header";
 
 var app_last_load               = 0;
 var app_title                   = "jc://remote/";
-var app_version                 = "v3.0.11";
+var app_version                 = "v3.0.12";
 var app_api_dir                 = "api/";
 var app_api_status              = "list";
 
@@ -80,7 +80,7 @@ function app_initialize(data) {
 function app_theme_changed(theme) {
 	if (theme == "dark") {
 		color_button_inactive 	= "#111111";
-		//colors_power["ERROR"]	= "lightpink";		
+		//colors_power["ERROR"]	= "lightpink";
 		}
 	else {
 		color_button_inactive 	= "#666666";
