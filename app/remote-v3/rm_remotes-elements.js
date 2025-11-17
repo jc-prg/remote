@@ -727,12 +727,25 @@ class RemoteControlAdvanced {
         let reset_value = "";
         let min = 0;
         let max = 1;
-        let device_id = device.split("_");
-        device_id = device_id[0].split("||");
+        let group = false;
+        let device_id;
+        let definition = device.split("||");
 
-        if (this.data["CONFIG"]["devices"][device_id[1]] && this.data["CONFIG"]["devices"][device_id[1]]["interface"]["method"] !== "query") {
-            reset_value = "<font style='color:gray'>[<status onclick=\"appFW.requestAPI('GET',['set','" + device_id[1] + "','power','OFF'], '', '', '' );\" style='cursor:pointer;'>OFF</status> | ";
-            reset_value += "<status onclick=\"appFW.requestAPI('GET',['set','" + device_id[1] + "','power','ON'], '', '', '' );\" style='cursor:pointer;'>ON</status>]</font>";
+        if (definition.length > 1) {
+            // if scene
+            device_id = definition[1].split("_")[0];
+            if (device_id.indexOf("group") >= 0) {
+                device_id = definition[1].split("_")[0] + "_" + definition[1].split("_")[1];
+                group = true;
+            }
+        } else {
+            // else if device
+            device_id = device;
+        }
+
+        if (this.data["CONFIG"]["devices"][device_id] && this.data["CONFIG"]["devices"][device_id]["interface"]["method"] !== "query") {
+            reset_value = "<font style='color:gray'>[<status onclick=\"appFW.requestAPI('GET',['set','" + device_id + "','power','OFF'], '', '', '' );\" style='cursor:pointer;'>OFF</status> | ";
+            reset_value += "<status onclick=\"appFW.requestAPI('GET',['set','" + device_id + "','power','ON'], '', '', '' );\" style='cursor:pointer;'>ON</status>]</font>";
         }
         let toggle_start = "";
         let toggle_end = "";
@@ -762,7 +775,7 @@ class RemoteControlAdvanced {
             device_api = this.data["STATUS"]["devices"][device]["api"];
             device_api_status = this.data["STATUS"]["interfaces"][device_api];
         }
-        if (status_data[key] && device_api_status === "Connected") {
+        if (!group && status_data[key] && device_api_status === "Connected") {
             if (status_data[key].toUpperCase() === "TRUE") {
                 init = "1";
             } else if (status_data[key].toUpperCase() === "FALSE") {

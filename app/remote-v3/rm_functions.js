@@ -19,7 +19,6 @@ function showRemoteInBackground(show=false) {
         }
     }
 
-
 function setNavTitle (title) {
 
         setTextById("navTitle", "<div onClick=\"javascript:remoteMainMenu();\" id='header_title'>"+title.replace(/#/g,"\"")+"</div>");

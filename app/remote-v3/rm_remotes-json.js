@@ -12,6 +12,7 @@ class RemoteJsonHandling {
         this.app_name       = name;
         this.data           = {};
         this.logging        = new jcLogging(this.app_name);
+        this.json_highlight = new RemoteJsonEditing(this.app_name+".json_highlight");
     }
 
     /* get JSON value (and check if correct) */
@@ -71,6 +72,7 @@ class RemoteJsonHandling {
 
         if (element) {
             element.value = text;
+            //this.json_highlight.update_text(id, text);
         } else {
             this.logging.error("Replace JSON in textarea - Element not found: "+id );
         }
@@ -139,9 +141,12 @@ class RemoteJsonHandling {
 */
 class RemoteJsonEditing {
 
-    constructor(id, format_style = "default", style = "width: 95%; height: 160px;") {
+    constructor(name, format_style = "default", style = "width: 95%; height: 160px;") {
+        this.app_name = name;
         this.default_size = style;
         this.format_style = format_style;   // other options: default, leafs, row4
+        this.main_instance = "rm3json_edit";
+        this.logging = new jcLogging(this.app_name);
 
         this.start = this.start.bind(this);
         this.create = this.create.bind(this);
@@ -156,7 +161,7 @@ class RemoteJsonEditing {
             this.start(id);
         }
         else {
-            console.error("RemoteJsonEditing.create: container for json editor '" + container_id + "' not found." );
+            this.logging.error("create: container for json editor '" + container_id + "' not found." );
         }
     }
 
@@ -178,24 +183,34 @@ class RemoteJsonEditing {
         return this.editor;
     }
 
+    update_text(id, json) {
+        let id_highlight = id + "_highlight";
+        if (!document.getElementById(id) || !document.getElementById(id_highlight)) {
+            this.logging.error("This is not a highlight container!");
+            return;
+        }
+        document.getElementById(id_highlight).innerHTML = this.syntaxHighlight(json);
+    }
+
     start(id) {
         const highlight = document.getElementById(id + "_highlight");
         const textarea  = document.getElementById(id);
 
         if (textarea) {
             // overlay highlighted text
-            textarea.addEventListener("input", () => {
-                highlight.innerHTML = this.syntaxHighlight(textarea.value);
+            textarea.addEventListener("input", function () {
+                highlight.innerHTML = rm3json_edit.syntaxHighlight(textarea.value);
             });
+            textarea.dispatchEvent(new Event("input"));
 
             // Sync scroll position
-            textarea.addEventListener("scroll", () => {
+            textarea.addEventListener("scroll", function () {
                 highlight.scrollTop = textarea.scrollTop;
                 highlight.scrollLeft = textarea.scrollLeft;
             });
 
             // Sync size changes with ResizeObserver
-            const resizeObserver = new ResizeObserver(() => {
+            const resizeObserver = new ResizeObserver(function () {
                 highlight.style.width = textarea.offsetWidth + "px";
                 highlight.style.height = textarea.offsetHeight + "px";
             });
@@ -355,13 +370,7 @@ class RemoteJsonElements {
     /* create preview of changed remote control (former .scene_preview and .remote_preview) */
     preview(scene_device) {
 
-        if (this.remote_type === "scene") {
-            this.remote.scene_remote(this.remote.frames_remote[0], scene_device, this.json_field_id, this.json_field_id_display, this.json_field_id_display2);
-            this.remote.scene_channels(this.remote.frames_remote[2], scene_device, this.json_field_id_channel);
-        } else if (this.remote_type === "device") {
-            this.remote.device_remote(this.remote.frames_remote[0], scene_device, this.json_field_id, this.json_field_id_display, this.json_field_id_display2);
-            this.remote.device_not_used(this.remote.frames_remote[2], scene_device);
-        }
+       this.remote.preview(this.remote_type, scene_device);
     }
 
     /* update configuration data */
@@ -384,7 +393,7 @@ class RemoteJsonElements {
         let value = this.json.get_value(this.json_field_id);
         let value_new = [];
 
-        if (this.remote_type === "scene" && button.indexOf("_") < 0) { button = scene + "_" + button; }
+        if (this.remote_type === "scene" && button.indexOf("_") < 0 && button.indexOf("LINE") < 0) { button = scene + "_" + button; }
 
         if (position === "FIRST") {
             value_new.push(button);

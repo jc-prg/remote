@@ -24,22 +24,22 @@ class RemoteMain {
         this.frames_remote = ["frame3", "frame4", "frame5"];
         this.frames_notouch = false;
 
-        this.basic = new RemoteElementsEdit(name + ".basic");		// rm_remotes-elements.js
-        this.advanced = new RemoteControlAdvanced(name + ".advanced", this);
-        this.button = new RemoteControlBasic(name + ".button");			// rm_remotes-elements.js
-        this.display = new RemoteControlDisplay(name + ".display");		// rm_remotes-elements.js
+        this.basic = new RemoteElementsEdit(this.app_name + ".basic");
+        this.advanced = new RemoteControlAdvanced(this.app_name + ".advanced", this);
+        this.button = new RemoteControlBasic(this.app_name + ".button");
+        this.display = new RemoteControlDisplay(this.app_name + ".display");
 
-        this.json = new RemoteJsonHandling(name + ".json");		// rm_remotes-elements.js
-        this.tab = new RemoteElementTable(name + ".tab");		// rm_remotes-elements.js
-        this.keyboard = new RemoteControlKeyboard(name + ".keyboard");	// rm_remotes-keyboard.js
+        this.json = new RemoteJsonHandling(this.app_name + ".json");
+        this.tab = new RemoteElementTable(this.app_name + ".tab");
+        this.keyboard = new RemoteControlKeyboard(this.app_name + ".keyboard");
 
-        this.logging = new jcLogging(this.app_name);
-        this.tooltip = new JcTooltip2(this.app_name + ".tooltip");	// jc-function-0.1.9.js
+        this.logging = new jcLogging(this.app_name + ".logging");
+        this.tooltip = new JcTooltip2(this.app_name + ".tooltip");
 
         this.rm_scene = new RemoteJsonElements(this.app_name + ".rm_scene", "scene", this);
         this.rm_device = new RemoteJsonElements(this.app_name + ".rm_device", "device", this);
-        this.dialog_scene = new RemoteEditDialogs(name + ".dialog_scene", "scene", this);
-        this.dialog_device = new RemoteEditDialogs(name + ".dialog_device", "device", this);
+        this.dialog_scene = new RemoteEditDialogs(this.app_name + ".dialog_scene", "scene", this);
+        this.dialog_device = new RemoteEditDialogs(this.app_name + ".dialog_device", "device", this);
     }
 
     /* load data with devices (deviceConfig["devices"]) */
@@ -145,7 +145,7 @@ class RemoteMain {
             this.device_edit_json(this.frames_edit[1], rm_id);
 
             // show
-            this.show(rm_id);
+            this.show();
             scrollTop();
         } else if (type === "scene") {
 
@@ -173,14 +173,27 @@ class RemoteMain {
         rm3menu.menu_height();
     }
 
-    /* create from unsaved data for preview */
-    preview(type, name) {
+    /* create preview from unsaved data */
+    preview(remote_type, scene_device) {
 
-        if (type === "scene") {
-            this.rm_scene.preview(name);
-        } else {
-            this.rm_device.preview(name);
+        if (remote_type === "scene") {
+            this.scene_remote(this.frames_remote[0], scene_device, this.rm_scene.json_field_id, this.rm_scene.json_field_id_display, this.rm_scene.json_field_id_display2);
+            this.scene_channels(this.frames_remote[2], scene_device, this.rm_scene.json_field_id_channel);
+            this.scene_reload_json(scene_device);
         }
+        else if (remote_type === "device") {
+            this.device_remote(this.frames_remote[0], scene_device, this.rm_device.json_field_id, this.rm_device.json_field_id_display, this.rm_device.json_field_id_display2);
+            this.device_not_used(this.frames_remote[2], scene_device);
+            this.device_reload_json(scene_device);
+        }
+    }
+
+    /* ensure, that all elements are visible and settings are hidden */
+    show() {
+
+        statusCheck_load();			// ... check if part of class ...
+        showRemoteInBackground(0);			// ... check if part of this class ...
+        rm3settings.hide();				// ... check if part of another class ...
     }
 
     // DEVICE REMOTES - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -297,7 +310,7 @@ class RemoteMain {
                     button_name = button_name_test[0];
                 }
 
-                let link_preview = this.app_name + ".rm_device.preview('" + device + "');";
+                let link_preview = this.app_name + ".preview('device','" + device + "');";
                 let link_delete = this.app_name + ".rm_device.delete_button('" + device + "','" + i + "');";
                 let link_move_left = this.app_name + ".rm_device.move_button('" + device + "'," + i + ",'left');";
                 let link_move_right = this.app_name + ".rm_device.move_button('" + device + "'," + i + ",'right');";
@@ -358,13 +371,7 @@ class RemoteMain {
             remote += next_button;
         }
         remote += "</div>";
-
-        // --------------------------- test send text ----
-
         remote += this.keyboard.input();
-
-        // --------------------------- test send text ----
-        //remote += this.device_remote_json(id,device,remote_definition,remote_display);
 
         setTextById(id, remote);
         if (this.edit_mode) {
@@ -411,7 +418,7 @@ class RemoteMain {
         let display = "";
         this.button.width = "120px";
 
-        let link_preview = this.app_name + ".rm_device.preview('" + device + "');";
+        let link_preview = this.app_name + ".preview('device','" + device + "');";
         let device_buttons = device_config["buttons"];
 
         if (preview_remote === "") {
@@ -839,7 +846,7 @@ class RemoteMain {
                 this.app_name + ".device_remote('" + this.frames_remote[0] + "','" + device + "','remote_json_buttons','remote_json_channel');" +
                 this.app_name + ".device_not_used('" + this.frames_remote[2] + "','" + device + "','remote_json_buttons');", lang("BUTTON_T_RESET")) + "&nbsp;" +
             this.button.edit("apiDeviceJsonEdit('" + device + "','remote_json_buttons','remote_json_display','remote_display_size');", lang("BUTTON_T_SAVE")) + "&nbsp;" +
-            this.button.edit(this.app_name + ".rm_device.preview('" + device + "');", lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
+            this.button.edit(this.app_name + ".preview('" + device + "');", lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
             this.button.edit("remoteToggleEditMode(false);" + this.app_name + ".create('" + this.active_type + "','" + device + "');", "stop edit") +
             "</center><br/>";
 
@@ -859,19 +866,30 @@ class RemoteMain {
         myBoxJson.addSheet(lang("DISPLAY"), "<h4>" + lang("JSON_DISPLAY") + "</h4>" + "<div id='container_remote_json_display'></div><br/>" + lang("MANUAL_DISPLAY"));
         myBoxJson.addSheet(lang("MACROS"), "<h4>" + lang("JSON_REMOTE_MACROS") + "</h4>" + macro_edit);
 
-        const myJson = new RemoteJsonEditing("remote-edit", "default", "width:100%;height:200px");
+        const myJson = new RemoteJsonEditing("myJson", "default", "width:100%;height:200px");
         myJson.create("container_remote_json_buttons", "remote_json_buttons", remote_definition, "rmc");
         myJson.create("container_remote_json_display", "remote_json_display", remote_display, "default");
 
         const myBox = new RemoteElementSheetBox("remote-edit-add", height = "280px", scroll = true);
         myBox.addSheet(lang("INFO"), lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") + this.dialog_device.edit_fields("template", id, device));
         myBox.addSheet(lang("BUTTONS"), this.dialog_device.edit_fields("button_line", id, device, preview_remote));
-// !!!!!!!! ---------------
         myBox.addSheet(lang("DISPLAY"), this.dialog_device.edit_fields("display", id, device));
         myBox.addSheet(lang("TOGGLE"), this.dialog_device.edit_fields("toggle", id, device));
         if (this.device_has_ranges(device))  myBox.addSheet(lang("SLIDER"), this.dialog_device.edit_fields("slider", id, device));
         if (this.device_has_colors(device))  myBox.addSheet(lang("COLOR_PICKER"), this.dialog_device.edit_fields( "color_picker", id, device));
         myBox.addSheet(lang("DELETE"), this.dialog_device.edit_fields("delete", id, device));
+    }
+
+    /* reload JSON fields for remote and device definition as part of preview */
+    device_reload_json(device) {
+
+        let device_config = this.data["CONFIG"]["devices"][device];
+        let remote_definition = this.json.get_value("remote_json_buttons", device_config["remote"]["remote"])
+        let remote_display = this.json.get_value("remote_json_display", device_config["remote"]["display"])
+
+        const myJson = new RemoteJsonEditing("myJson", "default", "width:100%;height:200px");
+        myJson.create("container_remote_json_buttons", "remote_json_buttons", remote_definition, "rmc");
+        myJson.create("container_remote_json_display", "remote_json_display", remote_display, "default");
     }
 
     // SCENE REMOTES - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1028,7 +1046,7 @@ class RemoteMain {
                     button_name = button_name_test[0];
                 }
 
-                let link_preview = this.app_name + ".rm_scene.preview('" + scene + "');";
+                let link_preview = this.app_name + ".preview('scene','" + scene + "');";
 
                 let link_delete = this.app_name + ".rm_scene.delete_button('" + scene + "','" + i + "');";
                 let link_move_left = this.app_name + ".rm_scene.move_button('" + scene + "'," + i + ",'left');";
@@ -1391,8 +1409,19 @@ class RemoteMain {
         myBox1.addSheet(lang("TOGGLE"), this.dialog_scene.edit_fields("toggle", id, scene));
         myBox1.addSheet(lang("SLIDER"), this.dialog_scene.edit_fields("slider", id, scene));
         myBox1.addSheet(lang("COLOR_PICKER"), this.dialog_scene.edit_fields("color_picker", id, scene));
-// !!!!
         myBox1.addSheet(lang("DELETE"), this.dialog_scene.edit_fields("delete", id, scene));
+    }
+
+    /* reload JSON fields for remote and device definition as part of preview */
+    scene_reload_json(scenes) {
+
+        let scene_config = this.data["CONFIG"]["scenes"][scenes];
+        let remote_definition = this.json.get_value("json::remote", scene_config["remote"]["remote"])
+        let remote_display = this.json.get_value("json::display", scene_config["remote"]["display"])
+
+        const myJson = new RemoteJsonEditing("scene-edit-json", "default", "width:100%;height:150px;");
+        myJson.create("scene-edit-display", "json::display", remote_display);
+        myJson.create("scene-edit-remote", "json::remote", remote_definition, "rmc", "width:100%;height:220px;");
     }
 
     // SUPPORT FUNCTIONS - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1539,8 +1568,7 @@ class RemoteMain {
             }
         }
         device_info.sort();
-        let device_display_values = this.basic.select_array(id, "display value", device_info, "");
-        return device_display_values;
+        return this.basic.select_array(id, "display value", device_info, "");
     }
 
     /* check if device has ranges - for slider option */
@@ -1788,21 +1816,6 @@ class RemoteMain {
         }
         item += "</select>";
         return item;
-    }
-
-    /* empty field */
-    empty(id, comment = "") {
-
-        setTextById(id, comment);
-    }
-
-    /* ensure, that all elements are visible and settings are hidden */
-    show(device = "") {
-
-        statusCheck_load();			// ... check if part of class ...
-        setTextById("buttons_all", "");		// ... move to showRemote() ...
-        showRemoteInBackground(0);			// ... check if part of this class ...
-        rm3settings.hide();				// ... check if part of another class ...
     }
 
 }
@@ -2137,8 +2150,8 @@ class RemoteEditDialogs {
                 );
             }
             edit += this.tab.row(
-                this.basic.select("remote_display_size", "display size", display_sizes, "", remote_display_size),
-                this.button.edit(this.app_name + ".rm_device.preview('" + device + "');", lang("BUTTON_T_PREVIEW"))
+                this.basic.select("remote_display_size", "display size", display_sizes, this.remote.app_name + ".preview('device','" + device + "');", remote_display_size),
+                this.button.edit(this.remote.app_name + ".preview('device','" + device + "');", lang("BUTTON_T_PREVIEW"))
             );
             edit += this.tab.line();
             edit += this.tab.row(
@@ -2328,9 +2341,8 @@ class RemoteEditDialogs {
                 );
             }
             edit += this.tab.row(
-                this.basic.select("json::display-size", "display size", display_sizes, "", json_edit_values["display-size"]),
-                this.button.edit(this.remote.app_name + ".scene_remote(  '" + this.remote.frames_remote[0] + "','" + scene + "','json::remote','json::display','json::display-size');" +
-                    this.remote.app_name + ".scene_channels('" + this.remote.frames_remote[2] + "','" + scene + "','json::macro-channel');",
+                this.basic.select("json::display-size", "display size", display_sizes, this.remote.app_name + ".preview(  'scene','" + scene + "');", json_edit_values["display-size"]),
+                this.button.edit(this.remote.app_name + ".preview(  'scene','" + scene + "');",
                     lang("BUTTON_T_PREVIEW"))
             );
             edit += this.tab.line();
