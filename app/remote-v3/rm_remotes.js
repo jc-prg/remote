@@ -38,8 +38,8 @@ class RemoteMain {
 
         this.rm_scene = new RemoteJsonElements(this.app_name + ".rm_scene", "scene", this);
         this.rm_device = new RemoteJsonElements(this.app_name + ".rm_device", "device", this);
-        this.dialog_scene = new RemoteEditDialogs(this.app_name + ".dialog_scene", "scene", this);
-        this.dialog_device = new RemoteEditDialogs(this.app_name + ".dialog_device", "device", this);
+        this.dialog_scene = new RemoteMainEditDialogs(this.app_name + ".dialog_scene", "scene", this);
+        this.dialog_device = new RemoteMainEditDialogs(this.app_name + ".dialog_device", "device", this);
     }
 
     /* load data with devices (deviceConfig["devices"]) */
@@ -1824,7 +1824,7 @@ class RemoteMain {
 /*
 * class to create GUI dialogs to add, edit or delete elements of the remote definition, when edit mode is set true
 */
-class RemoteEditDialogs {
+class RemoteMainEditDialogs {
 
     constructor (name, remote_type, remote) {
         this.data = {};
