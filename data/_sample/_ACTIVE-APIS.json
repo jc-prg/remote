@@ -1,0 +1,224 @@
+{
+    "BROADLINK": {
+        "active": true,
+        "config_file": "devices/BROADLINK/00_interface.json",
+        "config_info": "Don't edit config here!",
+        "description": "Infrared Broadlink RM-Controller",
+        "devices": {
+            "RM3mini": {
+                "Description": "Infrared RM3 mini",
+                "DeviceType": "10039",
+                "IPAddress": "192.168.1.10",
+                "MACAddress": "11:22:33:44:55:66",
+                "Methods": [
+                    "send",
+                    "record"
+                ],
+                "MultiDevice": true,
+                "Port": 80,
+                "PowerDevice": "TAPO-P100_plug02",
+                "Timeout": 5
+            },
+            "default": {
+                "Description": "Infrared RM4 mini",
+                "DeviceType": "21004",
+                "IPAddress": "192.168.1.11",
+                "MACAddress": "11:22:33:44:55:77",
+                "Methods": [
+                    "send",
+                    "record"
+                ],
+                "MultiDevice": true,
+                "Port": 80,
+                "PowerDevice": "TAPO-P100_plug02",
+                "Timeout": 5
+            }
+        },
+        "devices_active": {
+            "RM3mini": true,
+            "default": true
+        },
+        "devices_count": 2
+    },
+    "EISCP-ONKYO": {
+        "active": true,
+        "config_file": "devices/EISCP-ONKYO/00_interface.json",
+        "config_info": "Don't edit config here!",
+        "description": "API for ONKYO Devices",
+        "devices": {
+            "ONKYO-TXNR686": {
+                "Description": "ONKYO AV-Receiver",
+                "IPAddress": "192.168.1.12",
+                "MACAddress": "N/A",
+                "Methods": [
+                    "send",
+                    "query"
+                ],
+                "MultiDevice": false,
+                "PowerDevice": "TAPO-P100_plug02",
+                "Timeout": 5
+            }
+        },
+        "devices_active": {
+            "ONKYO-TXNR686": true
+        },
+        "devices_count": 1
+    },
+    "KODI": {
+        "active": true,
+        "config_file": "devices/KODI/00_interface.json",
+        "config_info": "Don't edit config here!",
+        "description": "API for KODI Servers (basic functionality, under development)",
+        "devices": {
+            "default": {
+                "Description": "Media Center",
+                "IPAddress": "192.168.1.13",
+                "Methods": [
+                    "send",
+                    "query"
+                ],
+                "Port": "8080",
+                "PowerDevice": "TAPO-P100_plug02",
+                "Timeout": 5
+            }
+        },
+        "devices_active": {
+            "default": true
+        },
+        "devices_count": 1
+    },
+    "MAGIC-HOME": {
+        "active": false,
+        "config_file": "devices/MAGIC-HOME/00_interface.json",
+        "config_info": "Don't edit config here!",
+        "description": "API for LED compatible to Magic Home App",
+        "devices": {
+            "default": {
+                "Description": "Magic Home LED",
+                "DeviceType": 1,
+                "IPAddress": "192.168.1.14",
+                "Methods": [
+                    "send",
+                    "query"
+                ],
+                "Timeout": 4
+            }
+        },
+        "devices_active": {
+            "default": true
+        },
+        "devices_count": 1
+    },
+    "SONY": {
+        "active": true,
+        "config_file": "devices/SONY/00_interface.json",
+        "config_info": "Don't edit config here!",
+        "description": "API for SONY Devices",
+        "devices": {
+            "SONY-BDP-S4500": {
+                "Description": "Sony BD-Player",
+                "IPAddress": "192.168.1.15",
+                "Methods": [
+                    "send",
+                    "query"
+                ],
+                "MultiDevice": false,
+                "PowerDevice": "TAPO-P100_plug02",
+                "Timeout": 5
+            }
+        },
+        "devices_active": {
+            "SONY-BDP-S4500": true
+        },
+        "devices_count": 1
+    },
+    "TAPO-P100": {
+        "active": true,
+        "config_file": "devices/TAPO-P100/00_interface.json",
+        "config_info": "Don't edit config here!",
+        "description": "PyP100 API for SmartPlugs Tapo P100",
+        "devices": {
+            "plug01": {
+                "Description": "SmartPlug 01",
+                "IPAddress": "192.168.1.16",
+                "Methods": [
+                    "send",
+                    "query"
+                ],
+                "MultiDevice": false,
+                "TapoPwd": "sample_pwd",
+                "TapoUser": "your@mail.com",
+                "Timeout": 5
+            },
+            "plug02": {
+                "Description": "SmartPlug 02",
+                "IPAddress": "192.168.1.17",
+                "Methods": [
+                    "send",
+                    "query"
+                ],
+                "MultiDevice": false,
+                "TapoPwd": "sample_pwd",
+                "TapoUser": "your@mail.com",
+                "Timeout": 5
+            }
+        },
+        "devices_active": {
+            "plug01": true,
+            "plug02": true,
+            "plug03": true
+        },
+        "devices_count": 3
+    },
+    "TEST": {
+        "active": false,
+        "config_file": "devices/TEST/00_interface.json",
+        "config_info": "Don't edit config here!",
+        "description": "Test interface for automated tests",
+        "devices": {
+            "default": {
+                "Description": "Test device",
+                "IPAddress": "127.0.0.1",
+                "MacAddress": "",
+                "Methods": [
+                    "send",
+                    "query"
+                ],
+                "Timeout": 5
+            }
+        },
+        "devices_active": {
+            "default": true
+        },
+        "devices_count": 1
+    },
+    "ZIGBEE2MQTT": {
+        "active": true,
+        "config_file": "devices/ZIGBEE2MQTT/00_interface.json",
+        "config_info": "Don't edit config here!",
+        "description": "ZigBee2MQTT interfaces",
+        "devices": {
+            "default": {
+                "AdminURL": "http://192.168.1.20:8181/",
+                "Description": "ZigBee2MQTT Server",
+                "IPAddress": "192.168.1.20",
+                "MacAddress": "",
+                "Methods": [
+                    "send",
+                    "query"
+                ],
+                "MqttPassword": "",
+                "MqttUser": "",
+                "MultiDevice": true,
+                "Port": 1883,
+                "PowerDevice": "",
+                "Timeout": 5,
+                "USBDongle": ""
+            }
+        },
+        "devices_active": {
+            "default": true
+        },
+        "devices_count": 1
+    }
+}
