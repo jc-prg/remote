@@ -1184,7 +1184,7 @@ class RemoteAPI(RemoteDefaultClass):
             commands = macro.split("::")
         else:
             commands = [macro]
-        decomposed = self.data.macro_decode_new(commands)
+        decomposed = self.data.macro_decode(commands)
 
         # check if buttons exist
         for command in decomposed:
