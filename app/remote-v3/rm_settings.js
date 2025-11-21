@@ -1488,16 +1488,26 @@ class RemoteSettingsTimer {
         let data;
         let value = getValueById(selected);
 
-        if (value.indexOf("macro_") > -1)   {
+        if (value.indexOf("macro_group") > -1)   {
+            value = value.split("_")[2];
+            let devices = dataAll["CONFIG"]["macros"]["groups"][value]["devices"];
+            const buttonArrays = devices.map(device => dataAll["CONFIG"]["devices"][device]["buttons"]);
+            data = buttonArrays.reduce((acc, arr) => acc.filter(btn => arr.includes(btn)));
+        }
+        else if (value.indexOf("macro_") > -1)   {
             value = value.split("_")[1];
             data = Object.keys(dataAll["CONFIG"]["macros"][value]);
         }
         else {
             data = dataAll["CONFIG"]["devices"][value]["buttons"];
         }
-        this.settings.basic.input_width = "125px;";
+        this.settings.basic.input_width = "200px;";
         let onchange = "document.getElementById('add_button_"+key+"').removeAttribute('disabled');";
-        let select = this.settings.basic.select_array("add_button_command2_"+key, " ("+value+") ...", data, onchange);
+        let select_title = value;
+        if (getValueById(selected).indexOf("group") >= 0) {
+            select_title = "group " + getValueById(selected).split("_")[2]; }
+        else if (getValueById(selected).indexOf("macro") >= 0) { select_title = "macro " + select_title; }
+        let select = this.settings.basic.select_array("add_button_command2_"+key, " button from "+select_title+" ...", data, onchange);
         setTextById(target, select);
     }
 
@@ -1507,15 +1517,22 @@ class RemoteSettingsTimer {
         let tab = this.settings.tab;
         let input = this.settings.input;
         let basic = this.settings.basic;
-        this.settings.button.width = "70px;"
+        this.settings.button.width = "70px;";
+
 
         this.dialog = function (key, entry) {
 
             let data_fields = "timer_name_"+key+",timer_description_"+key+",timer_regular_"+key+",timer_once_"+key+",timer_commands_"+key;
             let link_save   = "val=document.getElementById(\"timer_name_"+key+"\").value; if(val!=\"\") { apiTimerEdit(\""+key+"\",\""+data_fields+"\"); } else { appMsg.alert(\"Add a title!\"); }";
-            let link_reset  = "rm3settings.module_timer();";
+            let link_reset  = "rm3settings.module_timer.create();";
             let link_delete = "appMsg.confirm(#Delete timer?#, #apiTimerDelete(##"+key+"##);#, 140);";
             let link_try    = "appMsg.confirm(#Try out timer?#, #apiTimerTry(##"+key+"##);#, 140);";
+
+            const now = new Date();
+            const hours = now.getHours();
+            const server_time = data["REQUEST"]["server-time-local"];
+            const server_hours = Number(server_time.split(" | ")[1].split(":")[0]);
+            const difference = hours - server_hours;
 
             let tab = this.settings.tab;
 
@@ -1543,6 +1560,9 @@ class RemoteSettingsTimer {
             entry_html += tab.row("Repeating timer:");
             entry_html += tab.row("<textarea id='timer_regular_"+key+"' style='width:95%;height:80px;display:none;'>" + JSON.stringify(entry["timer_regular"]) + "</textarea>");
             entry_html += tab.row(this.element("regular", key, entry["timer_regular"]));
+            if (difference !== 0) {
+                entry_html += tab.row("<i>Note:</i> server time differs "+difference+" hour(s).");
+            }
             entry_html += tab.row("&nbsp;");
             entry_html += tab.row("<textarea id='timer_once_"+key+"'    style='width:95%;height:80px;display:none;'>" + JSON.stringify(entry["timer_once"]) + "</textarea>");
             entry_html += tab.row("Commands:");
@@ -1550,20 +1570,21 @@ class RemoteSettingsTimer {
             entry_html += tab.row("&nbsp;");
 
             this.settings.basic.input_width = "125px;";
-            let onchange = "rm3settings.module_timer_select('"+key+"', 'add_button_command_"+key+"','add_button_device_"+key+"');";
+            let onchange = "rm3settings.module_timer.select('"+key+"', 'add_button_command_"+key+"','add_button_device_"+key+"');";
             let onclick = "let command = getValueById(\"add_button_device_"+key+"\") + \"_\" + getValueById(\"add_button_command2_"+key+"\");";
             onclick += "let value = JSON.parse(getValueById(\"timer_commands_"+key+"\")); value.push(command); ";
             onclick += "setValueById(\"timer_commands_"+key+"\", JSON.stringify(value));";
 
             let device_macro = {};
             for (let key2 in dataAll["CONFIG"]["devices"]) { device_macro[key2] = "Device: " + dataAll["CONFIG"]["devices"][key2]["settings"]["label"]; }
-            for (let key2 in dataAll["CONFIG"]["macros"])  { if (key2 !== "description") { device_macro["macro_"+key2] = "Macro: " + key2; } }
+            for (let key2 in dataAll["CONFIG"]["macros"])  { if (key2 !== "description" && key2 !== "groups") { device_macro["macro_"+key2] = "Macro: " + key2; } }
+            for (let key2 in dataAll["CONFIG"]["macros"]["groups"])  { device_macro["macro_groups_"+key2] = "Group: " + key2; }
 
             entry_html += tab.row("Add Command:");
             entry_html += tab.row(
                 "<div style='float:left;'>" + this.settings.basic.select("add_button_device_"+key,"...", device_macro, onchange) + "&nbsp; </div>" +
                 "<div style='float:left;' id='add_button_command_"+key+"'><select style='width:"+this.settings.basic.input_width+";margin:1px;' disabled><option>...</option></select></div>" +
-                "<div style='float:left;'>&nbsp;<button id='add_button_"+key+"'style='height:25px;margin:1px;' onclick='"+onclick+"' disabled>&nbsp;add&nbsp;</button>"
+                "<div style='float:left;'>&nbsp;<button id='add_button_"+key+"' style='height:25px;margin:1px;' onclick='"+onclick+"' disabled>&nbsp;add&nbsp;</button>"
             );
             entry_html += tab.row("&nbsp;");
             entry_html += tab.line();
