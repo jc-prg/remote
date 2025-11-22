@@ -215,27 +215,28 @@ function statusShow_powerButton(id, status) {
 
 // check if api is connected
 function statusCheck_apiConnection(data) {
-	// check api status
-	var api_summary    = {};
-	var config_errors  = data["STATUS"]["config_errors"]["devices"];
-	var config_devices = data["STATUS"]["devices"];
+	let status;
+    let key;
+    let api_summary = {};
+    const config_errors = data["STATUS"]["config_errors"]["devices"];
+    const config_devices = data["STATUS"]["devices"];
 
-	var success_no     = {};
-	var error_no       = {};
-	var off_no         = {};
+    let success_no     = {};
+	let error_no       = {};
+	let off_no         = {};
 
 
-	for (var api in data["CONFIG"]["apis"]["structure"]) {
+	for (let api in data["CONFIG"]["apis"]["structure"]) {
         // set toggle values for apis
-	    var slider = document.getElementById("toggle__" + api + "_input");
+	    const slider = document.getElementById("toggle__" + api + "_input");
 	    if (slider) {
-            var status = data["STATUS"]["connections"][api]["active"];
-            if (status == true) {
+            status = data["STATUS"]["connections"][api]["active"];
+            if (status === true) {
                 slider.value = 1;
                 slider.className = "rm-slider device_active";
                 slider.disabled = false;
                 }
-            else if (status == false) {
+            else if (status === false) {
                 slider.value = 0;
                 slider.className = "rm-slider device_disabled";
                 slider.disabled = false;
@@ -246,15 +247,15 @@ function statusCheck_apiConnection(data) {
                 }
             }
 
-	    for (var api_device in data["STATUS"]["connections"][api]["api_devices"]) {
+	    for (let api_device in data["STATUS"]["connections"][api]["api_devices"]) {
 
             // power status API-Device details in API settings - depending power device
-	        var key = api + "_" + api_device;
-	        var element = document.getElementById("power_status_"+key);
-	        if (element && data["STATUS"]["connections"][api]["api_devices"][api_device]["power"] != "") {
+            key = api + "_" + api_device;
+            const element = document.getElementById("power_status_" + key);
+            if (element && data["STATUS"]["connections"][api]["api_devices"][api_device]["power"] !== "") {
                 console.debug("Set power status: " + api + "_" + api_device + " - " + data["STATUS"]["connections"][api]["api_devices"][api_device]["power_device"]);
-                var status = data["STATUS"]["connections"][api]["api_devices"][api_device]["power"]
-	            setTextById("power_status_"+key, "&nbsp;(" + status + ")");
+                status = data["STATUS"]["connections"][api]["api_devices"][api_device]["power"];
+                setTextById("power_status_"+key, "&nbsp;(" + status + ")");
 	            }
 	        }
 	    }
@@ -262,62 +263,62 @@ function statusCheck_apiConnection(data) {
     // ******************************* !!! refactoring of following lines to be done
 
     // summarize connection status for API based on API Devices
-	for (var key in data["STATUS"]["interfaces"]["connect"]) {
+	for (key in data["STATUS"]["interfaces"]["connect"]) {
 		var [api, dev] = key.split("_");
-		var status_api = data["STATUS"]["interfaces"]["active"][api];
-		var status_dev = data["STATUS"]["interfaces"]["connect"][key];
+        const status_api = data["STATUS"]["interfaces"]["active"][api];
+        const status_dev = data["STATUS"]["interfaces"]["connect"][key];
 
-		if (!api_summary[api])   { api_summary[api] = ""; }
+        if (!api_summary[api])   { api_summary[api] = ""; }
         if (!error_no[api])      { error_no[api] = 0; }
         if (!success_no[api])    { success_no[api] = 0; }
         if (!off_no[api])        { off_no[api] = 0; }
 
-		if (status_dev == "Connected")                { success_no[api] += 1; }
-		else if (status_dev.indexOf("OFF") > -1)      { off_no[api]     += 1; }
-		else if (status_dev.indexOf("DISABLED") > -1) { off_no[api]     += 1; }
-		else                                          { error_no[api]   += 1; }
+		if (status_dev === "Connected") { success_no[api] += 1; }
+		else if (status_dev.indexOf("OFF") > -1) { off_no[api] += 1; }
+		else if (status_dev.indexOf("DISABLED") > -1) { off_no[api] += 1; }
+		else { error_no[api] += 1; }
 
-        if (status_api == false)                              { api_summary[api] = "OFF"; }
-        else if (error_no[api] > 0 && success_no[api] == 0)   { api_summary[api] = "ERROR"; }
+        if (status_api === false)                             { api_summary[api] = "OFF"; }
+        else if (error_no[api] > 0 && success_no[api] === 0)  { api_summary[api] = "ERROR"; }
         else if (error_no[api] > 0 && success_no[api] > 0)    { api_summary[api] = "OK + ERROR"; }
         else                                                  { api_summary[api] = "OK"; }
 
-		for (key2 in config_devices) {
-			if (config_errors && config_errors[key2] && config_errors[key2] != {} && config_devices[key2]["api"] == key)	{ api_summary[api] = "ERROR"; }
+		for (let key2 in config_devices) {
+			if (config_errors && config_errors[key2] && config_errors[key2] !== {} && config_devices[key2]["api"] === key)	{ api_summary[api] = "ERROR"; }
 			}
 		}
 
     // update API status in settings
-	for (var key in api_summary) {
+	for (key in api_summary) {
 	    if (document.getElementById("api_status_icon_" + key)) {
-	        var message = "<font style='font-size:18px;' color='";
-            if (api_summary[key] == "OK")         { message += color_api_connect +      "'>" + sign_ok; }
-            else if (api_summary[key] == "ERROR") { message += color_api_error +        "'>" + sign_error; }
-            else if (api_summary[key] == "OFF")   { message += color_api_no_connect +   "'>" + ""; }
-            else                                  { message += color_api_warning +      "'>" + sign_ok + " " + sign_error; }
+            let message = "<span style='font-size:18px;color:";
+            if (api_summary[key] === "OK")         { message += color_api_connect +      "'>" + sign_ok; }
+            else if (api_summary[key] === "ERROR") { message += color_api_error +        "'>" + sign_error; }
+            else if (api_summary[key] === "OFF")   { message += color_api_no_connect +   "'>" + ""; }
+            else                                   { message += color_api_warning +      "'>" + sign_ok + " " + sign_error; }
 
-            setTextById("api_status_icon_" + key, "</font> " + message);
+            setTextById("api_status_icon_" + key, "</span> " + message);
             }
 		}
 
     // update API status in settings
-	for (var key in data["STATUS"]["interfaces"]["connect"]) {
+	for (key in data["STATUS"]["interfaces"]["connect"]) {
 	    if (document.getElementById("api_status_" + key)) {
             let status = data["STATUS"]["interfaces"]["connect"][key];
-            if (status == "Connected")                { setTextById("api_status_" + key, "<span style='color:" + color_api_connect + "'>" + status + "</span>"); }
-            else if (status == "Start")               { setTextById("api_status_" + key, "<span style='color:" + color_api_warning + "'>" + status + "</span>"); }
+            if (status === "Connected")                { setTextById("api_status_" + key, "<span style='color:" + color_api_connect + "'>" + status + "</span>"); }
+            else if (status === "Start")               { setTextById("api_status_" + key, "<span style='color:" + color_api_warning + "'>" + status + "</span>"); }
             else if (status.indexOf("OFF") > -1)      { setTextById("api_status_" + key, "<span style='color:" + color_api_no_connect + "'>" + status + "</span>"); }
             else if (status.indexOf("DISABLED") > -1) { setTextById("api_status_" + key, "<span style='color:" + color_api_no_connect + "'>DISABLED</span>"); }
             else                                      { setTextById("api_status_" + key, "<span style='color:" + color_api_error + "'>" + status + "</span>"); }
 
-            if (status == "Connected")                { setTextById("api_status_short_" + key, "<span style='color:" + color_api_connect + "'>OK</span>"); }
-            else if (status == "Start")               { setTextById("api_status_short_" + key, "<span style='color:" + color_api_warning + "'>START</span>"); }
+            if (status === "Connected")                { setTextById("api_status_short_" + key, "<span style='color:" + color_api_connect + "'>OK</span>"); }
+            else if (status === "Start")               { setTextById("api_status_short_" + key, "<span style='color:" + color_api_warning + "'>START</span>"); }
             else if (status.indexOf("OFF") > -1)      { setTextById("api_status_short_" + key, "<span style='color:" + color_api_no_connect + "'>OFF</span>"); }
             else if (status.indexOf("DISABLED") > -1) { setTextById("api_status_short_" + key, "<span style='color:" + color_api_no_connect + "'>DISABLED</span>"); }
             else                                      { setTextById("api_status_short_" + key, "<span style='color:" + color_api_error + "'>ERROR</span>"); }
 
-            if (status == "Connected")                { setTextById("api_status_icon_" + key, "<span style='color:" + color_api_connect +    "'>" + sign_ok + "</span>"); }
-            else if (status == "Start")               { setTextById("api_status_icon_" + key, "<span style='color:" + color_api_warning +    "'>" + sign_start + "</span>"); }
+            if (status === "Connected")                { setTextById("api_status_icon_" + key, "<span style='color:" + color_api_connect +    "'>" + sign_ok + "</span>"); }
+            else if (status === "Start")               { setTextById("api_status_icon_" + key, "<span style='color:" + color_api_warning +    "'>" + sign_start + "</span>"); }
             else if (status.indexOf("OFF") > -1)      { setTextById("api_status_icon_" + key, "<span style='color:" + color_api_no_connect + "'>" + sign_off + "</span>"); }
             else if (status.indexOf("DISABLED") > -1) { setTextById("api_status_icon_" + key, "<span style='color:" + color_api_no_connect + "'>" + sign_disabled + "</span>"); }
             else                                      { setTextById("api_status_icon_" + key, "<span style='color:" + color_api_error +      "'>" + sign_error + "</span>"); }
@@ -336,17 +337,17 @@ function statusCheck_apiConnection(data) {
 
             //if (api == "TEST") { alert(api+":"+connect_status_api); }
 
-            if (connect_status_api == false || connected_devices == 0) { value = "N/A"; }
+            if (connect_status_api === false || connected_devices === 0) { value = "N/A"; }
             else if (connect_status.indexOf("OFF") > -1)      { value = "OFF"; }
             else if (connect_status.indexOf("DISABLED") > -1) { value = "OFF"; }
             else if (connect_status.indexOf("ERROR") > -1)    { value = "ERROR"; }
             else                                              { value = "ON"; }
             button.innerHTML = value;
 
-            if (value == "ON")          { button.style.backgroundColor = colors_power["ON"];     button.disabled = false; }
-            else if (value == "OFF")    { button.style.backgroundColor = colors_power["OFF"];    button.disabled = false; }
-            else if (value == "ERROR")  { button.style.backgroundColor = colors_power["ERROR"];  button.disabled = false; }
-            else if (value == "N/A")    { button.style.backgroundColor = "";                     button.disabled = true; button2.disabled = true; }
+            if (value === "ON")          { button.style.backgroundColor = colors_power["ON"];     button.disabled = false; }
+            else if (value === "OFF")    { button.style.backgroundColor = colors_power["OFF"];    button.disabled = false; }
+            else if (value === "ERROR")  { button.style.backgroundColor = colors_power["ERROR"];  button.disabled = false; }
+            else if (value === "N/A")    { button.style.backgroundColor = "";                     button.disabled = true; button2.disabled = true; }
             }
 		}			
 
