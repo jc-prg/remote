@@ -68,7 +68,6 @@ class ApiControl(RemoteApiClass):
                         host=(self.api_config["IPAddress"], int(self.api_config["Port"])),
                         mac=bytearray.fromhex(mac_address)
                         )
-
             self.api.auth()
             self.status = "Connected"
 
@@ -156,19 +155,27 @@ class ApiControl(RemoteApiClass):
         self.last_action_cmd = "RECORD: " + device + "/" + command
 
         if self.status == "Connected":
-            if self.log_command:
-                self.logging.info("__RECORD " + device + "/" + command[:shorten_info_to] +
-                                  " ... (" + self.api_name + ")")
+            self.logging.info("__RECORD " + device + "/" + command[:shorten_info_to] +
+                              " ... (" + self.api_name + ")")
 
             code = device + "_" + command
-            self.api.enter_learning()
-            time.sleep(5)
-            LearnedCommand = self.api.check_data()
-            if LearnedCommand is None:
-                return 'ERROR: Learn Button (' + code + '): No IR command received'
-            EncodedCommand = codecs.encode(LearnedCommand, 'hex')  # python3
+            try:
+                self.api.enter_learning()
+                time.sleep(5)
+                LearnedCommand = self.api.check_data()
+                if LearnedCommand is None:
+                    self.working = False
+                    return 'ERROR: Learn Button (' + code + '): No IR command received'
+                EncodedCommand = codecs.encode(LearnedCommand, 'hex')  # python3
+            except Exception as e:
+                self.working = False
+                message = "ERROR " + self.api_name + ": Could not learn command (" + str(e) + ")"
+                if "The device storage is full" in message:
+                    message += " ... Check whether the remote control actually sent a signal and is pointing close enough to the " + self.api_name + " device."
+                return message
 
         else:
+            self.working = False
             return "ERROR " + self.api_name + ": Not connected"
 
         self.working = False

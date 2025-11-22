@@ -631,9 +631,9 @@ class Connect(RemoteThreadingClass):
         return_msg = ""
         api_dev = self.device_api_string(device)
         device_id = self.device_id_get(device)
-        self.api_errors(call_api, device)
+        self.api_errors(device)
 
-        self.logging.debug("__RECORD " + api_dev + " (" + self.api[api_dev].status + ")")
+        self.logging.info("__RECORD " + api_dev + " (" + self.api[api_dev].status + ")")
         self.add2log("record", [api_dev, device, button, "", self.api[api_dev].status])
 
         if self.api[api_dev].status == "Connected":

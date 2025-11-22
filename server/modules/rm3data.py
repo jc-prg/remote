@@ -583,7 +583,7 @@ class RemotesData(RemoteThreadingClass):
 
         # add entries to queue if some in the list
         if len(queue_entries) > 0:
-            self.logging.info("devices_get_status: Request device status information: " + str(len(queue_entries)) + " entries ...")
+            self.logging.debug("devices_get_status: Request device status information: " + str(len(queue_entries)) + " entries ...")
             if read_api:
                 self.queue.add2queue(["START_OF_RELOAD"])
 
@@ -899,8 +899,15 @@ class RemotesEdit(RemoteDefaultClass):
 
         if scene in active_json:
             return "WARNING: Scene " + scene + " already exists (active)."
+
         if rm3json.if_exist(rm3presets.remotes + "scene_" + scene):
-            return "WARNING: Scene " + scene + " already exists (remotes)."
+            self.logging.warning("WARNING: Scene " + scene + " already exists (remotes).")
+            counter = 1
+            while True:
+                scene = f"{scene}-{counter:02d}"
+                if not rm3json.if_exist(rm3presets.remotes + "scene_" + scene):
+                    break
+                counter += 1
 
         self.logging.info("remotesEdit.scene_add(): add " + scene)
 

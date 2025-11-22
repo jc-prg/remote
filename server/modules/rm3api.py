@@ -300,7 +300,7 @@ class RemoteAPI(RemoteDefaultClass):
             dict: API response
         """
         data = self._start()
-        interface = data["DATA"]["devices"][device]["config"]["api_key"]
+        interface = data["CONFIG"]["devices"][device]["interface"]["api_key"]
         data["DATA"] = {}
 
         EncodedCommand = self.apis.api_record(interface, device, button)
