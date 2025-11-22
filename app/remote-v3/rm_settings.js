@@ -562,7 +562,7 @@ class RemoteSettingsRemotes {
         set_temp += this.tab.row( "Device name:"+asterix, this.elements.input("add_device_descr", "", onchange, device_data["description"]) );
         set_temp += this.tab.row( "Label in menu:"+asterix, this.elements.input("add_device_label", "", onchange, device_data["label"]) );
         set_temp += this.tab.row( "External ID:", this.elements.input("add_device_id_external", "", "", device_data["external_id"]) );
-        set_temp += this.tab.row( icon_container, rm3remotes.button_image_select("edit_image", 'device_edit_button_image') );
+        set_temp += this.tab.row( icon_container, rm3remotes.edit.button_image_select("edit_image", 'device_edit_button_image') );
         set_temp += this.tab.line();
         set_temp += this.tab.row( "Device config:"+asterix, "<span id='txt_add_device_device'>"+lang("SELECT_API_FIRST")+"</span> " +
             "<span id='txt_add_device_device_2' style='display:none;'>" + this.elements.input("add_device_device")+".json</span>" );
