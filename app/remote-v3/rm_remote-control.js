@@ -251,11 +251,11 @@ class RemoteControlAdvanced {
                 let remote_data = this.data["CONFIG"][type][device]["remote"];
                 let status_data = this.data["STATUS"]["devices"][device];
         */
-        let display_start = "<button id=\"colorpicker_" + sub_id + "_button\" class=\"color-picker\"><center>";
-        display_start += "<canvas id=\"colorpicker_" + sub_id + "\">";
+        let display_start = "<button id=\"color-picker_" + sub_id + "_button\" class=\"color-picker\"><center>";
+        display_start += "<canvas id=\"color-picker_" + sub_id + "\">";
 
         let display_end = "</canvas>";
-        display_end += "<canvas id=\"colorpicker_demo_" + sub_id + "\" class=\"color-picker-demo\">" + label + "</canvas></center>";
+        display_end += "<canvas id=\"color-picker_demo_" + sub_id + "\" class=\"color-picker-demo\">" + label + "</canvas></center>";
         display_end += "</center></button>";
 
         let text = display_start;
@@ -263,7 +263,7 @@ class RemoteControlAdvanced {
         text += display_end;
 
         setTimeout(() => {
-            this.e_color_picker.colorPickerHTML("colorpicker_" + sub_id, sub_id, send_command, color_model);
+            this.e_color_picker.colorPickerHTML("color-picker_" + sub_id, sub_id, send_command, color_model);
         }, 100);
         return text;
     }

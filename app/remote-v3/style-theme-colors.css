@@ -105,9 +105,9 @@
     --rm-color-line: red;
     --rm-color-line-text: red;
 
-    --rm-color-colorpicker: #CCCCCC;
-    --rm-color-colorpicker-text: yellow;
-    --rm-color-colorpicker-border: #BBBBBB;
+    --rm-color-color-picker: #CCCCCC;
+    --rm-color-color-picker-text: yellow;
+    --rm-color-color-picker-border: #BBBBBB;
 
     --rm-color-frame-remote: #DDDDDD;
     --rm-color-frame-remote-border: #DDDDDD;
@@ -164,6 +164,8 @@
     --rm-color-slider2-handle-device_undef-border: #cccccc;
     --rm-color-slider2-handle-device_set: darkcyan;
     --rm-color-slider2-handle-device_set-border: cyan;
+    --rm-color-slider2-handle-device_middle: darkcyan;
+    --rm-color-slider2-handle-device_middle-border: cyan;
 
     --rm-opacity-button-var: 1.0;
     --rm-opacity-button-fix: 1.0;
@@ -228,9 +230,9 @@
             rgba(0,0,0,1) 100%
             );
 
-        --rm-color-colorpicker: #000000;
-        --rm-color-colorpicker-text: yellow;
-        --rm-color-colorpicker-border: #222222;
+        --rm-color-color-picker: #000000;
+        --rm-color-color-picker-text: yellow;
+        --rm-color-color-picker-border: #222222;
 
         --rm-color-keyboard: darkgray;
         --rm-color-keyboard-border: white;

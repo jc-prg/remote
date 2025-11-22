@@ -40,7 +40,7 @@ class RemoteElementColorPicker {
             }
 
             // Get the canvas element and its context
-            const color_demo = document.getElementById("colorpicker_demo_" + sub_id);
+            const color_demo = document.getElementById("color-picker_demo_" + sub_id);
             const canvas = document.getElementById(container_id);
             const ctx = canvas.getContext('2d', { willReadFrequently: true });
             const color_send_command = send_command;

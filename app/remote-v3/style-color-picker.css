@@ -5,11 +5,11 @@
     padding         : 4px 2px;
     grid-column     : span 4;
 
-    color           : var(--rm-color-colorpicker-text);
+    color           : var(--rm-color-color-picker-text);
     font-size       :   9px;
     border-radius   :   6px;
-    border          : solid 1px var(--rm-color-colorpicker-border);
-    background-color: var(--rm-color-colorpicker);
+    border          : solid 1px var(--rm-color-color-picker-border);
+    background-color: var(--rm-color-color-picker);
     overflow        : visible;
     display         : flex;
     position        : relative;
@@ -23,8 +23,8 @@
     right           : 20px;
     top             : 20px;
     padding         : 2px;
-    color           : var(--rm-color-colorpicker-text);
-    background-color: var(--rm-color-colorpicker);
+    color           : var(--rm-color-color-picker-text);
+    background-color: var(--rm-color-color-picker);
     font-size       : 10px;
 }
 
@@ -42,7 +42,7 @@
    opacity          : var(--rm-opacity-image-fix);
 }
 
-#colorpicker_demo {
+#color-picker_demo {
     margin-top      : 10px;
     border-radius   : 5px;
     height          : 10px;

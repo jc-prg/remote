@@ -92,7 +92,7 @@
 
 .rm-slide-container {
     border          : none;
-    background-color: unset; //var(--rm-color-colorpicker);
+    background-color: unset; //var(--rm-color-color-picker);
 
     z-index       : 99;
     width         : 100%;
@@ -206,6 +206,9 @@
 
 .rm-slider.device_undef::-webkit-slider-thumb             { background : var(--rm-color-slider2-handle-device_undef);  border-color :  var(--rm-color-slider2-handle-device_undef-border); }
 .rm-slider.device_undef::-moz-range-thumb                 { background : var(--rm-color-slider2-handle-device_undef);  border-color :  var(--rm-color-slider2-handle-device_undef-border); }
+
+.rm-slider.device_middle::-webkit-slider-thumb             { background : var(--rm-color-slider2-handle-device_middle);  border-color :  var(--rm-color-slider2-handle-device_middle-border); }
+.rm-slider.device_middle::-moz-range-thumb                 { background : var(--rm-color-slider2-handle-device_middle);  border-color :  var(--rm-color-slider2-handle-device_middle-border); }
 
 .rm-slider.device_set::-webkit-slider-thumb               { background : var(--rm-color-slider2-handle-device_set);  border-color :  var(--rm-color-slider2-handle-device_set-border); }
 .rm-slider.device_set::-moz-range-thumb                   { background : var(--rm-color-slider2-handle-device_set);  border-color :  var(--rm-color-slider2-handle-device_set-border); }
