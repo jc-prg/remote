@@ -1453,7 +1453,7 @@ class RemoteMain {
     }
 
     /* return list of buttons for a device */
-    button_list(device) {
+    device_list_buttons(device) {
         if (this.data["CONFIG"]["devices"][device]) {
             return this.data["CONFIG"]["devices"]["buttons"];
         } else {
@@ -1461,16 +1461,37 @@ class RemoteMain {
         }
     }
 
+    /* create a list of the buttons all group devices hav in common */
+    group_list_buttons(group) {
+        const group_data = this.data["CONFIG"]["macros"]["groups"][group];
+        if (group_data) {
+            let devices = group_data["devices"];
+            let buttonArrays = devices.map(device => this.data["CONFIG"]["devices"][device]["buttons"]);
+            return buttonArrays.reduce((acc, arr) => acc.filter(btn => arr.includes(btn)));
+        } else {
+            return ["error:" + group];
+        }
+    }
+
+    /* create a list of the commands all group devices hav in common */
+    group_list_commands(group, get_set) {
+        const group_data = this.data["CONFIG"]["macros"]["groups"][group];
+        if (group_data && (get_set === "get" || get_set === "set")) {
+            let devices = group_data["devices"];
+            let buttonArrays = devices.map(device => this.data["CONFIG"]["devices"][device]["commands"][get_set]);
+            return buttonArrays.reduce((acc, arr) => acc.filter(btn => arr.includes(btn)));
+        } else {
+            return ["error:" + group + "|" + get_set];
+        }
+    }
+
     /* return drop-down with buttons */
     button_select(id, device = "", remote_definition = {}) {
         let list = {};
-        let device_buttons = [];
 
         if (device !== "" && device in this.data["CONFIG"]["devices"]) {
             let a;
             let count1 = 0;
-            let count2 = 0;
-            let button_list = this.data["CONFIG"]["devices"][device]["buttons"];
 
             for (let i = 0; i < remote_definition.length; i++) {
                 if (i < 10) {
@@ -1503,7 +1524,7 @@ class RemoteMain {
         let list = {};
         let button_list;
         if (device !== "" && device in this.data["CONFIG"]["devices"]) {
-            button_list = this.button_list(device);
+            button_list = this.device_list_buttons(device);
             for (let i = 0; i < button_list.length; i++) {
                 list[device + "_" + button_list[i]] = button_list[i];
             }
@@ -2382,7 +2403,6 @@ class RemoteMainEditDialogs {
             edit += this.tab.start();
             edit += this.tab.row(
                 this.remote.button_select("del_button", scene, json_edit_values["remote"]),
-                //this.button_select("del_button",scene,json_preview_values["remote"]),
                 this.button.edit(this.app_name + ".rm_scene.delete_button('" + scene + "','del_button');", lang("BUTTON_T_DEL"), "")
             );
             edit += this.tab.end();

@@ -442,17 +442,20 @@ function statusCheck_sliderToggleColorPicker(data) {
             if (document.getElementById("toggle_"+device+"_"+key+"_input")) {
                 console.debug("statusCheck_sliderToggle: "+device+"_"+key+" - "+device_status);
 
-                if (device_status === "ON") {
-                    statusShow_toggle(device,"toggle_"+device+"_"+key+"_input","toggle_"+device+"_"+key+"_last_value", "slider_"+device+"_"+key, device_status, "on");
+                let value = data["STATUS"]["devices"][device][key].toUpperCase();
+                if (device_status !== "ON" && device_status !== "OFF" && device_status !== "N/A") { value = "ERROR"; }
+
+                if (devices_status === "N/A") {
+                    statusShow_toggle(device, "toggle_" + device + "_" + key + "_input", "toggle_" + device + "_" + key + "_last_value", "slider_" + device + "_" + key, devices_status, "middle");
                 }
-                else if (device_status === "OFF") {
-                    statusShow_toggle(device, "toggle_" + device + "_" + key + "_input", "toggle_" + device + "_" + key + "_last_value", "slider_" + device + "_" + key, device_status, "off");
+                else if (value === "ON") {
+                    statusShow_toggle(device,"toggle_"+device+"_"+key+"_input","toggle_"+device+"_"+key+"_last_value", "slider_"+device+"_"+key, value, "on");
                 }
-                else if (device_status === "N/A") {
-                    statusShow_toggle(device, "toggle_" + device + "_" + key + "_input", "toggle_" + device + "_" + key + "_last_value", "slider_" + device + "_" + key, device_status, "middle");
+                else if (value.includes("OFF") >= 0) {
+                    statusShow_toggle(device, "toggle_" + device + "_" + key + "_input", "toggle_" + device + "_" + key + "_last_value", "slider_" + device + "_" + key, value, "off");
                 }
                 else {
-                    statusShow_toggle(device,"toggle_"+device+"_"+key+"_input","toggle_"+device+"_"+key+"_last_value", device_status, "error");
+                    statusShow_toggle(device,"toggle_"+device+"_"+key+"_input","toggle_"+device+"_"+key+"_last_value", value, "error");
                 }
             }
 
@@ -657,7 +660,6 @@ function statusCheck_groupPowerButton(data) {
 
     if (rm3remotes.active_type === "device") { return; }
 
-
     const groups = data["CONFIG"]["macros"]["groups"];
     for (let key in groups) {
 
@@ -727,9 +729,6 @@ function statusCheck_groupPowerButton(data) {
         }
     }
 }
-
-
-// show power status for group power toggle
 
 
 // show power status of devices required for a scene -> color button
