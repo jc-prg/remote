@@ -75,7 +75,7 @@ let language_app = {
         "BUTTON_ASK_DELETE"     : "Do you really want to delete the button '{0}' from '{1}'?",
         "BUTTON_ASK_DELETE_NUMBER" : "Do you really want to delete the button number [{0}] from '{1}'?",
         "BUTTON_INSERT_NAME"    : "Please insert name for button.",
-        "BUTTON_RECORD"         : "Record button &quot;{0}&quot; for device &quot;{1}&quot;: click OK and then press button within the next 5 seconds.",
+        "BUTTON_RECORD"         : "Record button &quot;{0}&quot; for device &quot;{1}&quot;: click OK and then press the respective button on your remote control within the next 5 seconds.",
         "BUTTON_SELECT"         : "Please select button.",
         "BUTTON_INFOS"          : "Button Information",
         "BUTTON_IMAGE_DEFAULT"  : "default button image",
@@ -321,6 +321,7 @@ let language_app = {
         "NOT_USED"                     : "not used in remote control",
         "NO_DEVICE_CONNECTED"          : "no device connected",
         "NO_REMOTE_CONNECTED"          : "no remote control connected",
+        "NO_HEADER_DEFINED"            : "No header image selected yet, edit in the scene settings.",
 
         "OFFLINE"                      : "Offline",
 
