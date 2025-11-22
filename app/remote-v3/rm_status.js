@@ -41,8 +41,8 @@ function statusCheck(data={}) {
         setTextById("edit1", "");
         }
     else {
-        var stop = "remoteToggleEditMode(false);remoteFirstLoad_load();";
-        var html = "<img src='/icon/edit_stop.png' onclick='"+stop+"' style='cursor:pointer;width:100%' name='stop editing'>";
+        const stop = "remoteToggleEditMode(false);remoteFirstLoad_load();";
+        const html = "<img src='/icon/edit_stop.png' onclick='" + stop + "' style='cursor:pointer;width:100%' name='stop editing' alt=''>";
         setTextById("edit1", html);
         statusCheck_audioMute(data);
     }
@@ -61,12 +61,13 @@ function statusCheck(data={}) {
 // check and display current volume -> partly removed, final check open if still required
 function statusShow_volume_old( volume, maximum, vol_color, novol_color="" ) {
 
-	var volume  = Math.round( volume * 20 / maximum );
-	var vol_str = "<font color='" + vol_color + "'>";
-	for (var i=0; i<volume; i++) { vol_str += "I"; }
-	vol_str += "</font>";
-	if (novol_color != "") { vol_str += "<font color='" + novol_color + "'>"; }
-	for (var i=0; i<20-volume; i++) { vol_str += "I"; }
+	volume  = Math.round( volume * 20 / maximum );
+	let vol_str = "<span style='color:" + vol_color + "'>";
+	for (let i=0; i<volume; i++) { vol_str += "I"; }
+	vol_str += "</span>";
+	if (novol_color !== "") { vol_str += "<span style='color:" + novol_color + "'>"; }
+	for (let i=0; i<20-volume; i++) { vol_str += "I"; }
+    vol_str += "</span>";
 	return vol_str;
 	}
 
@@ -74,17 +75,19 @@ function statusShow_volume_old( volume, maximum, vol_color, novol_color="" ) {
 // check and display current volume
 function statusShow_volume( volume ) {
 
-	var vol_color   = "white";
-	var novol_color = "#333333";
+    let i;
+    const vol_color = "white";
+    const no_vol_color = "#333333";
 
-	var volume  = Math.round( volume * 20 / rm3slider.audioMax );
-	var vol_str = "<font color='" + vol_color + "'>";
-	for (var i=0; i<volume; i++) { vol_str += "I"; }
-	vol_str += "</font>";
+    volume  = Math.round( volume * 20 / rm3slider.audioMax );
+    let vol_str = "<span style='color:" + vol_color + "'>";
+    for (i = 0; i<volume; i++) { vol_str += "I"; }
+	vol_str += "</span>";
 	
-	if (novol_color != "") { vol_str += "<font color='" + novol_color + "'>"; }
-	for (var i=0; i<20-volume; i++) { vol_str += "I"; }
-	
+	if (no_vol_color !== "") { vol_str += "<span style='color:" + no_vol_color + "'>"; }
+	for (i = 0; i<20-volume; i++) { vol_str += "I"; }
+    vol_str += "</span>";
+
 	setTextById("audio3",vol_str);
 	}
 
