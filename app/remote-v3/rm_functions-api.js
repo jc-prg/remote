@@ -104,16 +104,16 @@ function apiTemplateAdd(device_id, template_id) {
 // create new device
 function apiSceneAdd(data) {
 
-	send_data                   = {};
-	send_data["id"]             = getValueById(data[0]);
+	let send_data = {};
+	send_data["id"]             = getValueById(data[0]).replaceAll("_","-");
 	send_data["label"]          = getValueById(data[1]);
 	send_data["description"]    = getValueById(data[2]);
 	
 	console.debug("apiSceneAdd: " + JSON.stringify(send_data));
 
     if (dataAll["CONFIG"]["scenes"][send_data["id"]])   { appMsg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
-    else if (send_data["id"] == "")                     { appMsg.alert(lang("SCENE_INSERT_ID")); return; }
-    else if (send_data["label"] == "")                  { appMsg.alert(lang("SCENE_INSERT_LABEL")); return; }
+    else if (send_data["id"] === "")                    { appMsg.alert(lang("SCENE_INSERT_ID")); return; }
+    else if (send_data["label"] === "")                 { appMsg.alert(lang("SCENE_INSERT_LABEL")); return; }
 
 	appFW.requestAPI("PUT",["scene",send_data["id"]], send_data, apiAlertReturn);
 	}
@@ -326,11 +326,9 @@ function apiMovePosition(id, dnd_list, from, to) {
 // create new device
 function apiDeviceAdd(data,onchange) {
 
-    console.error(data);
+    if (getValueById(data[5]) === "" || getValueById(data[6]) === "") { onchange(); }
 
-	if (getValueById(data[5]) == "" || getValueById(data[6]) == "") { onchange(); }
-
-	send_data		   = {};
+	let send_data = {};
 	send_data["id"]            = getValueById(data[0]).replaceAll("_", "-");
 	send_data["description"]   = getValueById(data[1]);
 	send_data["label"]         = getValueById(data[2]);
@@ -341,14 +339,14 @@ function apiDeviceAdd(data,onchange) {
 	send_data["id_ext"]        = getValueById(data[7]);
 	send_data["image"]         = getValueById(data[8]);
 
-	console.error(send_data);
-	console.error(dataAll["CONFIG"]["devices"]);
+	console.debug("apiDeviceAdd ...");
+	console.debug(send_data);
 
 	if (dataAll["CONFIG"]["devices"][send_data["id"]])  { appMsg.alert(lang("DEVICE_EXISTS",[send_data["id"]])); return; }
-	else if (send_data["id"] == "")                     { appMsg.alert(lang("DEVICE_INSERT_ID")); return; }
-	else if (send_data["label"] == "")                  { appMsg.alert(lang("DEVICE_INSERT_LABEL")); return; }
-	else if (send_data["api"] == "")                    { appMsg.alert(lang("DEVICE_SELECT_API")); return; }
-	else if (send_data["device"] == "")                 { appMsg.alert(lang("DEVICE_INSERT_NAME")); return;	}
+	else if (send_data["id"] === "")                     { appMsg.alert(lang("DEVICE_INSERT_ID")); return; }
+	else if (send_data["label"] === "")                  { appMsg.alert(lang("DEVICE_INSERT_LABEL")); return; }
+	else if (send_data["api"] === "")                    { appMsg.alert(lang("DEVICE_SELECT_API")); return; }
+	else if (send_data["device"] === "")                 { appMsg.alert(lang("DEVICE_INSERT_NAME")); return;	}
 
 	appFW.requestAPI("PUT",["device",send_data["id"]], send_data, apiAlertReturn);
 	}
@@ -467,20 +465,28 @@ function apiCommandDelete(device_id, button_id) {
 // add button to device
 function apiCommandRecord(device_id, button_id) {
 
-	if (document.getElementById(device_id)) 	{ var device	= document.getElementById(device_id).value.toLowerCase(); }
-	else					 	{ var device	= device_id;}
-	if (document.getElementById(button_id)) 	{ var button	= document.getElementById(button_id).value; 
-							  if (button != "LINE")	{ button = button.toLowerCase(); }
-							  if (button == ".")		{ button = "DOT"; }
-							}
-	else						{ var button    = button_id; }	
-	
-        cmd = "appFW.requestAPI('POST',['command','"+device+"','"+button+"'], '', appMsg.alertReturn );";
+	let device;
+    let button;
 
-	if (device == "") { appMsg.alert(lang("DEVICE_SELECT")); return; }
-	if (button == "") { appMsg.alert(lang("BUTTON_INSERT_NAME")); return; }
+    if (document.getElementById(device_id)) {
+        device	= document.getElementById(device_id).value.toLowerCase();
+    } else {
+        device	= device_id;
+    }
+	if (document.getElementById(button_id)) {
+        button	= document.getElementById(button_id).value;
+		if (button !== "LINE")	{ button = button.toLowerCase(); }
+		if (button === ".")		{ button = "DOT"; }
+    } else {
+        button    = button_id;
+    }
+	//let cmd = "appFW.requestAPI('POST',['command','"+device+"','"+button+"'], '', appMsg.alertReturn );";
+	let cmd = "appFW.requestAPI('POST',['command','"+device+"','"+button+"'], '', apiAlertReturn );";
+
+	if (device === "") { appMsg.alert(lang("DEVICE_SELECT")); return; }
+	if (button === "") { appMsg.alert(lang("BUTTON_INSERT_NAME")); return; }
 	
-	appMsg.confirm(lang("BUTTON_RECORD",[button,device]),cmd); return; 
+	appMsg.confirm(lang("BUTTON_RECORD",[button,device]),cmd);
 	}
 
 

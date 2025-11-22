@@ -141,7 +141,8 @@ class RemoteElementTable {
     }
 
     /* add a table row with up to two cells */
-    row(td1, td2="") {
+    row(td1, td2=undefined) {
+        if (td2 === undefined)   { td2 = ""; }
         if (td1 === "start")     { return "<table border=\"0\" width=\""+td2+"\">"; }
         else if (td1 === "end")  { return "</table>"; }
         else if (td2 === false)  { return "<tr><td valign=\"top\" colspan=\"2\">" + td1 + "</td></tr>"; }

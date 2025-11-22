@@ -365,7 +365,7 @@ class RemoteSettingsRemotes {
         set_temp += this.tab.row( "Label:",         this.elements.input("add_scene_label") );
         set_temp += this.tab.row( "Description:",   this.elements.input("add_scene_descr") );
         set_temp += this.tab.row( "<center>" +
-            this.button.sized("add_scene",lang("ADD_SCENE"),"settings","apiSceneAdd([#add_scene_id#,#add_scene_descr#,#add_scene_label#]);") +
+            this.button.sized("add_scene",lang("ADD_SCENE"),"settings","apiSceneAdd([#add_scene_id#,#add_scene_label#,#add_scene_descr#]);") +
             "</center>", false);
         set_temp += this.tab.end();
         setting  += this.basic.container("setting_add_scene",lang("ADD_SCENE"),set_temp,open_add_scene);
@@ -489,14 +489,16 @@ class RemoteSettingsRemotes {
             if (value === "") {
                 let  dev_config     = lang("SELECT_API_FIRST");
                 let  rm_definition  = lang("SELECT_API_FIRST");
+                setTextById("txt_add_device_device", dev_config);
+                setTextById("txt_add_device_remote", rm_definition);
                 elementHidden("txt_add_device_device_2");
                 elementHidden("txt_add_device_remote_2");
             }
             else {
-                let  on_change_1    = "if (this.value == 'other') { " + this.app_name + ".edit_filenames(1); } ";
-                on_change_1       += "else                       { setValueById('add_device_device', this.value); }"
-                let  on_change_2    = "if (this.value == 'other') { " + this.app_name + ".edit_filenames(2); } ";
-                on_change_2       += "else                       { setValueById('add_device_remote', this.value); }"
+                let  on_change_1 = "if (this.value == 'other') { " + this.app_name + ".edit_filenames(1); } ";
+                on_change_1 += "else { setValueById('add_device_device', this.value); }";
+                let  on_change_2 = "if (this.value == 'other') { " + this.app_name + ".edit_filenames(2); } ";
+                on_change_2 += "else { setValueById('add_device_remote', this.value); }";
 
                 api_config[api]["other"] = "__new file__";
                 remote_config["other"]   = "__new file__";

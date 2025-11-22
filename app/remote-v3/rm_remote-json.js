@@ -393,7 +393,7 @@ class RemoteJsonElements {
         let value = this.json.get_value(this.json_field_id);
         let value_new = [];
 
-        if (this.remote_type === "scene" && button.indexOf("_") < 0 && button.indexOf("LINE") < 0) { button = scene + "_" + button; }
+        if (this.remote_type === "scene" && button.indexOf("_") < 0 && button.indexOf("LINE") < 0  && button.indexOf("HEADER-IMAGE") < 0) { button = scene + "_" + button; }
 
         if (position === "FIRST") {
             value_new.push(button);
@@ -471,7 +471,7 @@ class RemoteJsonElements {
 
         let button_check = "COLOR-PICKER||send-" + command + "||" + color_model;
         let button = "COLOR-PICKER||send-" + command + "||" + color_model + "||" + description;
-        console.error(device, button);
+        this.logging.debug(device, button);
         if (this.remote_type === "scene") {
             button = device + "_" + button;
             button_check = device + "_" + button_check;
@@ -786,6 +786,18 @@ class RemoteJsonElements {
 
         let s_param = getValueById(slider_param);
         let s_description = "description";
+
+        if (device.startsWith("group_")) {
+            let group = device.split("_")[1];
+            let group_devices = this.data["CONFIG"]["macros"]["groups"][group]["devices"];
+            if (group_devices.length > 0) {
+                device = group_devices[0];
+            } else {
+                this.logging.warn("No devices defined for group '"+group+"'");
+                return;
+            }
+        }
+
         let s_device = this.data["CONFIG"]["devices"][device]["settings"]["label"];
         if (s_param === "" || s_param === undefined) {
             appMsg.alert(lang("SLIDER_SELECT_PARAM"));

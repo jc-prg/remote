@@ -760,7 +760,6 @@ class RemoteMain {
         }
 
         this.button.width = "100px";
-        let display_sizes = this.display.sizes();
         let device_info = device_config["settings"];
 
         // check data for preview
@@ -1102,12 +1101,20 @@ class RemoteMain {
                 this.active_buttons.push(cmd);
             } else if (button[0].indexOf("HEADER-IMAGE") === 0) {
                 let toggle_html = "";
-                if (remote_definition[i + 1].indexOf("TOGGLE") === 0 && button_def.indexOf("toggle") > 0) {
+                if (remote_definition.length > 1 && remote_definition[i + 1].indexOf("TOGGLE") === 0 && button_def.indexOf("toggle") > 0) {
                     let toggle = remote_definition[i + 1];
                     toggle_html = this.advanced.toggle(this.data, id, toggle, "devices", toggle.split("||"), true);
                     toggle_done = i + 1;
                 }
                 next_button = this.edit.scene_header_image(id, scene, toggle_html);
+                if (next_button === undefined) {
+                    let message = lang("NO_HEADER_DEFINED");
+                    this.logging.error(message);
+                    if (this.edit_mode) {
+                        appMsg.alert(message);
+                    }
+                    next_button = "";
+                }
             } else if (button[0] === "DISPLAY") {
                 next_button = this.display.default(id, scene, "scenes", remote_display_size, remote_display);
             } else if (button.length > 1 && button[1].indexOf("COLOR-PICKER") >= 0) {
@@ -1131,7 +1138,7 @@ class RemoteMain {
             }
 
             // add tooltip data to new element
-            if (this.edit_mode) {
+            if (this.edit_mode && next_button !== undefined && next_button !== "") {
                 next_button = this.tooltip.create(["button","div"], next_button, context_menu);
             }
 
@@ -1167,7 +1174,6 @@ class RemoteMain {
             macros = scene_data["remote"]["macro-channel"];
         } else {
             macros = this.json.get_value(preview_channel, scene_data["remote"]["macro-channel"]);
-            preview = true;
         }
 
         let channels = Object.keys(macros);
@@ -1542,12 +1548,20 @@ class RemoteMainEditDialogs {
             }
 
             for (let key in this.data["CONFIG"]["macros"]["groups"]) {
+                let label_long = "Group: " + this.data["CONFIG"]["macros"]["groups"][key]["description"] + " (" + key + ")"
+                let label_short = "Group: " + key;
                 if (this.data["CONFIG"]["macros"]["groups"][key]["description"]) {
-                    device_macro["group_" + key] = "Group: " + this.data["CONFIG"]["macros"]["groups"][key]["description"] + " (" + key + ")";
-                    devices_groups["group_" + key] = "Group: " + this.data["CONFIG"]["macros"]["groups"][key]["description"] + " (" + key + ")";
+                    device_macro["group_" + key] = label_long;
+                    devices_groups["group_" + key] = label_short;
                 } else {
-                    device_macro["group_" + key] = "Group: " + key;
-                    devices_groups["group_" + key] = "Group: " + key;
+                    device_macro["group_" + key] = label_short;
+                    devices_groups["group_" + key] = label_short;
+                }
+                if (this.edit.group_has_ranges(key)) {
+                    devices_slider["group_"+key] = label_long;
+                }
+                if (this.edit.group_has_colors(key)) {
+                    devices_color_picker["group_"+key] = label_long;
                 }
             }
             for (let key in this.data["CONFIG"]["macros"]) {
@@ -1565,12 +1579,6 @@ class RemoteMainEditDialogs {
             onchange_device_display = this.edit.app_name + ".scene_display_select('add_display_input','add_display_value','add_display_device');";
 
             // prepare field values
-            json_preview_values = {
-                "remote": this.preview_remote,
-                "display": this.preview_display,
-                "display-size": this.preview_display_size,
-                "macro-channel": this.preview_channel,
-            };
             json_edit_values = {
                 "remote": JSON.parse(getValueById("json::remote")),
                 "display": JSON.parse(getValueById("json::display")),
@@ -1801,7 +1809,7 @@ class RemoteMainEditDialogs {
             edit += this.tab.row(
                 "Device:",
                 //this.basic.select("add_toggle_device","device / group", devices_groups, onchange_toggle),
-                this.basic.select("add_toggle_device", "device", devices, onchange_toggle),
+                this.basic.select("add_toggle_device", "device", devices_groups, onchange_toggle),
             );
             edit += this.tab.row(
                 "Description:",
@@ -1928,7 +1936,6 @@ class RemoteMainEditDialogs {
         else if (this.remote_type === "scene" && element === "display") {
 
             let check_display = JSON.stringify(json_edit_values["remote"]);
-            //let check_display   = JSON.stringify(json_preview_values["remote"]);
             let display_add_cmd = this.app_name + ".rm_scene.add_display_value('" + scene + "','add_display_device','scene_display_value','scene_display_label')";
             let display_del_cmd = this.app_name + ".rm_scene.delete_display_value('" + scene + "','scene_display_delete')";
 
@@ -1966,7 +1973,6 @@ class RemoteMainEditDialogs {
             edit += this.tab.line();
             edit += this.tab.row(
                 this.basic.select_array("scene_display_delete", "display value", Object.keys(json_edit_values["display"]), "", ""),
-                //this.basic.select_array("scene_display_delete","display value", Object.keys(json_preview_values["display"]),"",""),
                 this.button.edit(display_del_cmd, lang("BUTTON_T_DEL_VALUE"))
             );
             edit += this.tab.end();
@@ -2148,50 +2154,11 @@ class RemoteMainEditElements {
         let images = this.data["CONFIG"]["elements"]["button_images"];
         let selected = getValueById(source_id);
         if (images[selected]) {
-            let image_html = "<img src='icon/" + images[selected] + "' class='rm-button_image_start'>";
+            let image_html = "<img src='icon/" + images[selected] + "' class='rm-button_image_start' alt=''>";
             setTextById(target_id, image_html);
         }
         else {
             setTextById(target_id, selected);
-        }
-    }
-
-    /* return list of buttons for a device */
-    device_list_buttons(device) {
-        this.update();
-
-        if (this.data["CONFIG"]["devices"][device]) {
-            return this.data["CONFIG"]["devices"]["buttons"];
-        } else {
-            return ["error:" + device];
-        }
-    }
-
-    /* create a list of the buttons all group devices hav in common */
-    group_list_buttons(group) {
-        this.update();
-
-        const group_data = this.data["CONFIG"]["macros"]["groups"][group];
-        if (group_data) {
-            let devices = group_data["devices"];
-            let buttonArrays = devices.map(device => this.data["CONFIG"]["devices"][device]["buttons"]);
-            return buttonArrays.reduce((acc, arr) => acc.filter(btn => arr.includes(btn)));
-        } else {
-            return ["error:" + group];
-        }
-    }
-
-    /* create a list of the commands all group devices hav in common */
-    group_list_commands(group, get_set) {
-        this.update();
-
-        const group_data = this.data["CONFIG"]["macros"]["groups"][group];
-        if (group_data && (get_set === "get" || get_set === "set")) {
-            let devices = group_data["devices"];
-            let buttonArrays = devices.map(device => this.data["CONFIG"]["devices"][device]["commands"][get_set]);
-            return buttonArrays.reduce((acc, arr) => acc.filter(btn => arr.includes(btn)));
-        } else {
-            return ["error:" + group + "|" + get_set];
         }
     }
 
@@ -2268,34 +2235,6 @@ class RemoteMainEditElements {
         return this.basic.select(id, "button", list);
     }
 
-    /* return drop-down with scene images */
-    image_select(id, selected = "") {
-        this.update();
-
-        let list = {};
-        let images = this.data["CONFIG"]["elements"]["scene_images"];
-
-        for (let key in images) {
-            list[key] = key;
-        }
-
-        return this.basic.select(id, "header-image", list, this.app_name + ".image_preview('" + id + "');", selected);
-    }
-
-    /* header-image preview */
-    image_preview(id) {
-        this.update();
-
-        let images = this.data["CONFIG"]["elements"]["scene_images"];
-        let selected = getValueById("edit_image");
-        if (images[selected]) {
-            //let image_html = this.scene_header_image(id, scene, selected);
-            let image_html = "<img src='" + rm3scene_dir + images[selected][0] + "' style='width:100%;'>";
-            image_html += "<br/><small><a href='" + images[selected][1] + "' target='_blank'>" + images[selected][1] + "</a></small><br/>&nbsp;";
-            setTextById("scene_edit_header_image", image_html);
-        }
-    }
-
     /* return drop-down with display values */
     device_display_select(device, id) {
         this.update();
@@ -2355,6 +2294,138 @@ class RemoteMainEditElements {
         }
     }
 
+    /* return list of buttons for a device */
+    device_list_buttons(device) {
+        this.update();
+
+        if (this.data["CONFIG"]["devices"][device]) {
+            return this.data["CONFIG"]["devices"]["buttons"];
+        } else {
+            return ["error:" + device];
+        }
+    }
+
+    /* return list of devices of a group */
+    group_list_devices(group, description=false) {
+        this.update();
+
+        if (!this.data["CONFIG"]["macros"]["groups"][group]) {
+            this.logging.error("Group '"+group+"' doesn't exist.");
+            return [];
+        }
+        if (description) {
+            let list = {};
+            let devices = this.data["CONFIG"]["macros"]["groups"][group]["devices"];
+            for (let key in devices) {
+                let label = this.data["CONFIG"]["devices"][devices[key]]["settings"]["label"];
+            }
+        }
+        else {
+            return this.data["CONFIG"]["macros"]["groups"][group]["devices"];
+        }
+    }
+
+    /* create a list of the buttons all group devices hav in common */
+    group_list_buttons(group) {
+        this.update();
+
+        const group_data = this.data["CONFIG"]["macros"]["groups"][group];
+        if (group_data) {
+            let devices = group_data["devices"];
+            let buttonArrays = devices.map(device => this.data["CONFIG"]["devices"][device]["buttons"]);
+            return buttonArrays.reduce((acc, arr) => acc.filter(btn => arr.includes(btn)));
+        } else {
+            return ["error:" + group];
+        }
+    }
+
+    /* create a list of the commands all group devices hav in common */
+    group_list_commands(group, get_set) {
+        this.update();
+
+        const group_data = this.data["CONFIG"]["macros"]["groups"][group];
+        if (group_data && (get_set === "get" || get_set === "set")) {
+            let devices = group_data["devices"];
+            let buttonArrays = devices.map(device => this.data["CONFIG"]["devices"][device]["commands"][get_set]);
+            return buttonArrays.reduce((acc, arr) => acc.filter(btn => arr.includes(btn)));
+        } else {
+            return ["error:" + group + "|" + get_set];
+        }
+    }
+
+    /* check if device has ranges - for slider option */
+    group_has_ranges(group, commands) {
+        this.update();
+
+        let has_ranges_count = 0;
+        let has_ranges_cmd = [];
+
+        if (!this.data["CONFIG"]["macros"]["groups"][group]) {
+            this.logging.error("Group '"+group+"' doesn't exist.");
+            return false;
+        }
+        let devices = this.data["CONFIG"]["macros"]["groups"][group]["devices"];
+        for (let key in devices) {
+            if (!commands && this.device_has_ranges(devices[key])) { has_ranges_count += 1; }
+            else { has_ranges_cmd.push(this.device_has_ranges(devices[key], true)); }
+        }
+        if (!commands) {
+            return (devices.length === has_ranges_count);
+        } else {
+            return has_ranges_cmd.reduce((acc, arr) => acc.filter(btn => arr.includes(btn)));
+        }
+    }
+
+    group_has_colors(group, commands) {
+        this.update();
+
+        let has_colors_count = 0;
+        let has_colors_cmd = [];
+        if (!this.data["CONFIG"]["macros"]["groups"][group]) {
+            this.logging.error("Group '"+group+"' doesn't exist.");
+            return false;
+        }
+        let devices = this.data["CONFIG"]["macros"]["groups"][group]["devices"];
+        for (let key in devices) {
+            if (!commands && this.device_has_colors(devices[key])) { has_colors_count += 1; }
+            else { has_colors_cmd.push(this.device_has_colors(devices[key], true)); }
+        }
+        if (!commands) {
+            return (devices.length === has_colors_count);
+        } else {
+            return has_colors_cmd.reduce((acc, arr) => acc.filter(btn => arr.includes(btn)));
+        }
+    }
+    /* check if devices of the group hav color settings - for color picker options */
+
+    /* return drop-down with scene images */
+    image_select(id, selected = "") {
+        this.update();
+
+        let list = {};
+        let images = this.data["CONFIG"]["elements"]["scene_images"];
+
+        for (let key in images) {
+            list[key] = key;
+        }
+
+        return this.basic.select(id, "header-image", list, this.app_name + ".image_preview('" + id + "');", selected);
+    }
+
+    /* header-image preview */
+    image_preview(id) {
+        this.update();
+
+        let images = this.data["CONFIG"]["elements"]["scene_images"];
+        let selected = getValueById("edit_image");
+        if (images[selected]) {
+            //let image_html = this.scene_header_image(id, scene, selected);
+            let image_html = "<img src='" + rm3scene_dir + images[selected][0] + "' style='width:100%;' alt=''>";
+            image_html += "<br/><small><a href='" + images[selected][1] + "' target='_blank'>" + images[selected][1] + "</a></small><br/>&nbsp;";
+            setTextById("scene_edit_header_image", image_html);
+        }
+    }
+
     /* create header image for scenes */
     scene_header_image(id, scene, toggle_html, selected = "") {
         this.update();
@@ -2407,13 +2478,7 @@ class RemoteMainEditElements {
         this.update();
 
         device = check_if_element_or_value(device, false);
-        let device_config = this.data["CONFIG"]["devices"];
-        let device_macro = {};
-        let device_macro_button = {};
         let macros_scene = dictCopy(this.data["CONFIG"]["scenes"][scene]["remote"]["macro-scene"]);
-        let macros = {"scene": macros_scene};
-        let groups = {};
-        let group_devices = {};
         let available_buttons = [];
         let type = "";
         [type, device] = device.split("_");
@@ -2447,7 +2512,7 @@ class RemoteMainEditElements {
         }
 
         let on_change = "document.getElementById('" + id + "').value = this.value;";
-        let device_macro_select = this.basic.select_array("add_button_device_" + device, "button (" + device + ")", available_buttons, on_change, '', true);
+        let device_macro_select = this.basic.select_array("add_button_device_" + device, "button (" + device + ")", available_buttons, on_change, '');
 
         setTextById(div_id, device_macro_select);
     }
@@ -2458,11 +2523,11 @@ class RemoteMainEditElements {
 
         device = check_if_element_or_value(device, false);
         let select = "<i>" + lang("SELECT_DEV_FIRST") + "</i>";
-        let select_value = "";
-        let select_on = "";
-        let select_off = "";
+        let select_value;
+        let select_on;
+        let select_off;
 
-        if (device !== "" && this.data["CONFIG"]["devices"][device]) {
+        if (device !== "" && !device.startsWith("group_") && this.data["CONFIG"]["devices"][device]) {
             let device_config = this.data["CONFIG"]["devices"][device];
             let device_name = this.data["CONFIG"]["devices"][device]["settings"]["label"];
 
@@ -2471,6 +2536,19 @@ class RemoteMainEditElements {
             select_off = this.basic.select_array("add_toggle_off", "button OFF", device_config["buttons"], "", "off");
 
             setValueById("add_toggle_descr", "Toggle " + device_name + " (" + device + ")")
+        }
+        else if (device !== "" && device.startsWith("group_") && this.data["CONFIG"]["macros"]["groups"][device.split("_")[1]]) {
+            let group = device.split("_")[1];
+            let group_name = this.data["CONFIG"]["macros"]["groups"][group]["description"];
+            let group_cmd = this.group_list_commands(group, "get");
+            let group_buttons = this.group_list_buttons(group);
+
+            select_value = this.basic.select_array("add_toggle_value", "value (boolean)", group_cmd, "", "power");
+            select_on = this.basic.select_array("add_toggle_on", "button ON", group_buttons, "", "on");
+            select_off = this.basic.select_array("add_toggle_off", "button OFF", group_buttons, "", "off");
+
+            setValueById("add_toggle_descr", "Toggle " + group_name + " (" + device + ")")
+
         } else {
             select_value = select;
             select_on = select;
@@ -2490,18 +2568,28 @@ class RemoteMainEditElements {
         let select = "<i>" + lang("SELECT_DEV_FIRST") + "</i>";
         let select_cmd, select_param, select_min_max = "";
 
-        if (device !== "" && this.data["CONFIG"]["devices"][device]) {
-            let device_config = this.data["CONFIG"]["devices"][device];
+        if (device !== "" && !device.startsWith("group_") && this.data["CONFIG"]["devices"][device]) {
             let device_name = this.data["CONFIG"]["devices"][device]["settings"]["label"];
             let device_cmd = this.device_has_ranges(device, true);
-
-            let onchange_slider_param = this.app_name + ".rm_scene.prepare_slider('" + device + "','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax');";
+            let onchange_slider_param = this.remote.app_name + ".rm_scene.prepare_slider('" + device + "','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax');";
 
             select_cmd = this.basic.select_array("add_slider_cmd", lang("BUTTON_T_SEND"), device_cmd, "", "")
             select_param = this.basic.select_array("add_slider_param", lang("BUTTON_T_PARAMETER"), device_cmd, onchange_slider_param, "")
             select_min_max = this.basic.input("add_slider_minmax", lang("BUTTON_T_MINMAX"))
 
             setValueById("add_slider_descr", "Slider " + device_name + " (" + device + ")")
+        }
+        else if (device !== "" && device.startsWith("group_") && this.data["CONFIG"]["macros"]["groups"][device.split("_")[1]]) {
+            let group = device.split("_")[1];
+            let group_name = this.data["CONFIG"]["macros"]["groups"][group]["description"];
+            let group_cmd = this.group_has_ranges(group, true);
+            let onchange_slider_param = this.remote.app_name + ".rm_scene.prepare_slider('" + device + "','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax');";
+
+            select_cmd = this.basic.select_array("add_slider_cmd", lang("BUTTON_T_SEND"), group_cmd, "", "")
+            select_param = this.basic.select_array("add_slider_param", lang("BUTTON_T_PARAMETER"), group_cmd, onchange_slider_param, "")
+            select_min_max = this.basic.input("add_slider_minmax", lang("BUTTON_T_MINMAX"))
+
+            setValueById("add_slider_descr", "Slider " + group_name + " (" + device + ")")
         } else {
             select_cmd = select;
             select_param = select;
@@ -2523,16 +2611,24 @@ class RemoteMainEditElements {
         let select_model = "";
         let color_models = this.advanced.color_picker_models;
 
-        if (device !== "" && this.data["CONFIG"]["devices"][device]) {
+        if (device !== "" && !device.startsWith("group_") && this.data["CONFIG"]["devices"][device]) {
             let device_name = this.data["CONFIG"]["devices"][device]["settings"]["label"];
             let device_cmd = this.device_has_colors(device, true);
-
-            //let onchange_color_picker_param = this.app_name + ".rm_scene.prepare_slider('" + device + "','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax');";
 
             select_cmd = this.basic.select_array("add_color_picker_cmd", lang("BUTTON_T_SEND"), device_cmd, "", "")
             select_model = this.basic.select_array("add_color_picker_model", lang("BUTTON_T_PARAMETER"), color_models, "", "")
 
             setValueById("add_color_picker_description", "CP " + device_name + " (" + device + ")")
+        }
+        else if (device !== "" && device.startsWith("group_") && this.data["CONFIG"]["macros"]["groups"][device.split("_")[1]]) {
+            let group = device.split("_")[1];
+            let group_name = this.data["CONFIG"]["macros"]["groups"][group]["description"];
+            let group_cmd = this.group_has_colors(group, true);
+
+            select_cmd = this.basic.select_array("add_color_picker_cmd", lang("BUTTON_T_SEND"), group_cmd, "", "")
+            select_model = this.basic.select_array("add_color_picker_model", lang("BUTTON_T_PARAMETER"), color_models, "", "")
+
+            setValueById("add_color_picker_description", "CP " + group_name + " (" + device + ")")
         } else {
             select_cmd = select;
             select_model = select;
