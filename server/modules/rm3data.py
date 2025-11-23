@@ -1287,14 +1287,37 @@ class RemotesEdit(RemoteDefaultClass):
 
     def device_edit_api_settings(self, device, info):
         """
-        add api settings for a device, incl. (1) API + API-Device, (2) interface config-file and (3) remote config-file
+        add api settings for a device, incl. (1) API config-file, (2) device config-file and (3) remote config-file;
+        makes changes in the _ACTIVE-DEVICES.json
 
         Args:
             device (str): device id
-            info (dict): device information
+            info (dict): device information -> { "api_file": "", "device_file": "", "remote_file": ""}
         Return:
             dict: API response
         """
+        status = self.config.read_status()
+        main_config = self.config.read(rm3presets.active_devices).copy()
+
+        if not device in main_config:
+            message = "ERROR: Device '" + device + "' not defined in main config file (" + rm3presets.active_devices + ".json)."
+            self.logging.error(message)
+            return message
+
+        if not "config_org" in main_config[device]:
+            main_config[device]["config_org"] = main_config[device]["config"].copy()
+
+        main_config[device]["config"] = {
+            "api_device": info["api_file"].split("_")[1],
+            "api_key": info["api_file"].split("_")[0],
+            "device": info["device_file"],
+            "remote": info["remote_file"]
+        }
+
+        self.logging.info("New configuration for '"+device+"': " + str(main_config[device]["config"]))
+        self.config.write(rm3presets.active_devices, main_config)
+        return "Wrote new configuration for " + device
+
         self.logging.warning("--> not fully implemented yet!")
         return "Function 'edit_device_api_settings' not fully implemented yet! (rm3data.py -> line 1369ff)"
 

@@ -463,7 +463,7 @@ class RemoteAPI(RemoteDefaultClass):
         Return:
             dict: API response
         """
-        self.logging.info("edit_device_api_settings: " + str(info))
+        self.logging.debug("edit_device_api_settings: " + str(info))
 
         data = self._start(["request-only"])
         data["REQUEST"]["Return"] = self.edit.device_edit_api_settings(device, info)
