@@ -280,6 +280,9 @@ class RemoteMain {
             remote += "<div id='remote-power-information-" + device + "' class='remote-power-information'>POWER INFORMATION</div>";
         }
 
+        // minimum size
+        if (remote_definition.length === 0 && !this.edit_mode) { remote_definition = ["."]; }
+
         // add remote buttons
         for (let i = 0; i < remote_definition.length; i++) {
 
@@ -987,7 +990,7 @@ class RemoteMain {
         // include edit button
         let edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"scene\",\"" + scene + "\");";
         if (!this.edit_mode && easyEdit) {
-            remote += "<div class='remote-edit-button' onclick='" + edit_cmd + "' style='top:17px;left:17px;'><img src='icon/edit.png' style='height:20px;width:20px;'></div>";
+            remote += "<div class='remote-edit-button' onclick='" + edit_cmd + "'><img src='icon/edit.png' style='height:20px;width:20px;'></div>";
         }
 
         // create remote
@@ -997,6 +1000,9 @@ class RemoteMain {
         } else {
             remote += "<div id='scene-power-information-" + scene + "' class='remote-power-information' onclick='statusCheck_bigMessage(\"scene-power-information-" + scene + "\");'>POWER INFORMATION</div>";
         }
+
+        // minimum size
+        if (remote_definition.length === 0 && !this.edit_mode) { remote_definition = ["."]; }
 
         // add buttons
         for (let i = 0; i < remote_definition.length; i++) {

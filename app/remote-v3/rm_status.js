@@ -524,6 +524,7 @@ function statusCheck_devicePowerStatus (data) {
         let device_api        = devices_config[device]["interface"]["api"];
         let device_api_status = data["STATUS"]["interfaces"]["connect"][device_api];
         let device_api_power  = data["CONFIG"]["apis"]["list_api_power_device"][device_api];
+        let buttons = data["CONFIG"]["devices"][device]["remote"]["remote"].length;
 
         // check API status
         if (device_api_status.toUpperCase().indexOf("DISABLED") >= 0)        { status = "API_DISABLED"; }
@@ -566,7 +567,8 @@ function statusCheck_devicePowerStatus (data) {
         }
 
         // create status messages // IN PROGRESS
-        if (status === "ON" || status === "OFF")     { status_msg = lang("STATUS_DEV_OK", [label]); }
+        if (buttons === 0)                           { status_msg = lang("STATUS_DEV_EMPTY", [label]); }
+        else if (status === "ON" || status === "OFF"){ status_msg = lang("STATUS_DEV_OK", [label]); }
         else if (status === "N/A")                   { status_msg = lang("STATUS_DEV_N/A", [label]); }
         else if (status === "POWER_OFF")             { status_msg = lang("STATUS_DEV_POWER_OFF", [label_pwr]); }
         else if (status === "API_DISABLED")          { status_msg = lang("STATUS_DEV_API_DISABLED", [device_api, label]); }
@@ -598,11 +600,12 @@ function statusCheck_scenePowerStatus(data) {
 
 	for (let key in data["STATUS"]["scenes"]) {
 
-        let dev_status      = {"ON": 0,  "OFF": 0,  "N/A": 0,  "DISABLED": 0,  "ERROR": 0};
-        let dev_list        = {"ON": [], "OFF": [], "N/A": [], "DISABLED": [], "ERROR": []};
-		let required        = data["STATUS"]["scenes"][key];
+        let dev_status = {"ON": 0,  "OFF": 0,  "N/A": 0,  "DISABLED": 0,  "ERROR": 0};
+        let dev_list = {"ON": [], "OFF": [], "N/A": [], "DISABLED": [], "ERROR": []};
+		let required = data["STATUS"]["scenes"][key];
 		let required_length = required.length;
-		let label           = data["CONFIG"]["scenes"][key]["settings"]["label"] + " (" + key + ")";
+		let label = data["CONFIG"]["scenes"][key]["settings"]["label"] + " (" + key + ")";
+		let buttons = data["CONFIG"]["scenes"][key]["remote"]["remote"].length;
 
         // power device and power status
 		let power_device    = "N/A";
@@ -629,7 +632,11 @@ function statusCheck_scenePowerStatus(data) {
             dev_list[status_check].push(device_label);
             }
 
-        if (power_status === "OFF") {
+        if (buttons === 0) {
+            scene_status[key] = "N/A";
+            scene_status_info[key] = lang("STATUS_SCENE_EMPTY", [label, power_device]);
+        }
+        else if (power_status === "OFF") {
             scene_status[key] = "POWER_OFF";
             scene_status_info[key] = lang("STATUS_SCENE_POWER_OFF", [label, power_device]);
             }
