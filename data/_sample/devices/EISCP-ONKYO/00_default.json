@@ -30,8 +30,11 @@
         "type"   : "enum",
         "param"  : [ "on", "off" ],
         "values" : [ "on", "off", "toggle" ]
-        }
-      },
+        },
+    "api-discovery": {
+      "get": "api-discovery"
+      }
+    },
     "query" : {
       "load_intervals" : {
         "10": ["power", "vol", "mute"]

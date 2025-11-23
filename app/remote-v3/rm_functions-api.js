@@ -701,14 +701,14 @@ function apiTimerDelete(key) {
 
 // send a command directly to an API of a device
 function apiSendToDeviceApi( device, api_command, external_id=false ) {
-    var send_cmd  = ["send-api", device];
-    var send_data = api_command;
+    let send_cmd  = ["send-api", device];
+    let send_data = api_command;
     if (external_id) { send_cmd[0] += "-external"; }
 	appFW.requestAPI( "POST", send_cmd, send_data, apiSendToDeviceApi_return );
 }
 
 function apiSendToApi( api_command ) {
-    var send_cmd  = ["send-api-command", api_command];
+    let send_cmd  = ["send-api-command", api_command];
 	appFW.requestAPI( "POST", send_cmd, "", apiSendToDeviceApi_return );
 }
 
@@ -718,6 +718,7 @@ function apiSendToDeviceApi_return( data ) {
 
     let formatted = "N/A";
     const response = data["REQUEST"]["Return"];
+    const response_id = data["REQUEST"]["Return"]["request_id"];
     const timecode = response["answer"]["last_action"]; // timestamp (seconds)
     if (timecode > 0) {
         const date = new Date(timecode * 1000); // convert to milliseconds
@@ -744,7 +745,12 @@ function apiSendToDeviceApi_return( data ) {
     answer       += "<br/>&nbsp;<br/>-----<br/><i>";
     answer       += "total: " + (data["REQUEST"]["load-time-app"])/1000 + "s / srv: " + Math.round(data["REQUEST"]["load-time"]*10000)/10000 + "s / " +
                     "last: " + formatted;
-    setTextById('api_response', answer);
+
+    if (response_id !== "") {
+        setTextById('api_response_' + response_id, answer);
+    } else {
+        setTextById('api_response', answer);
+    }
 }
 
 

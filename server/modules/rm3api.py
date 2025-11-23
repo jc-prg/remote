@@ -887,9 +887,12 @@ class RemoteAPI(RemoteDefaultClass):
             "device": device,
             "command": command,
             "interface": self.apis.device_api_string(device),
-            "status": pwr_status
+            "status": pwr_status,
+            "request_id": ""
         }
         data["REQUEST"]["Command"] = "RemoteSendApiCmd"
+        if "||" in device and len(device.split("||")) > 2:
+            data["REQUEST"]["Return"]["request_id"] = device.split("||")[2]
 
         data = self._end(data, ["no-data", "no-config", "no-status"])
         return data

@@ -8,6 +8,7 @@ services:
   remote_server:
     build: ${REMOTE_DOCKERIMAGE_SERVER}
     container_name: ${REMOTE_DOCKER_SERVER}
+    network_mode: host
     volumes:
       - ${REMOTE_DIR}:${REMOTE_DIR}
       - ${REMOTE_DIR}:/usr/src/app

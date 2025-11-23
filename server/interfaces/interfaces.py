@@ -499,7 +499,9 @@ class Connect(RemoteThreadingClass):
                 }
         else:
             if external:
-                api_dev, device_id = device.split("||")
+                dev_data = device.split("||")
+                api_dev = dev_data[0]
+                device_id = dev_data[1]
                 self.logging.info("__SEND DIRECTLY: " + api_dev + "/** | " + command)
 
                 if self.api[api_dev].status == "Connected":

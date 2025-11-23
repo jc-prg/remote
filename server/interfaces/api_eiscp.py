@@ -24,7 +24,10 @@ class ApiControl(RemoteApiClass):
                                 self.api_description, device, device_config, log_command, config)
 
         self.api_timeout = 5
+        self.api_discovery = {}
         self.api_ip = self.api_config["IPAddress"]
+        self.api_info_url = "https://github.com/jc-prg/remote/blob/master/server/interfaces/eiscp/README.md"
+        self.api_source_url = "https://github.com/miracle2k/onkyo-eiscp"
 
     def reconnect(self):
         self.api.command_socket = None
@@ -51,6 +54,7 @@ class ApiControl(RemoteApiClass):
             self.api.command("system-power query")  # send a command to check if connected
             # self.api    = eiscp.Receiver(self.api_ip)
             # self.api.on_message = callback_method
+            self.discover()
 
         except Exception as e:
             self.status = "Error connecting to ONKYO device: " + str(e)
@@ -155,6 +159,10 @@ class ApiControl(RemoteApiClass):
                     self.working = False
                     return "ERROR " + self.api_name + " - query: " + str(e)
 
+            elif command == "api-discovery":
+                self.working = False
+                return self.api_discovery
+
             else:
                 button_code = command_param[0]  # format: zone.parameter=command
                 self.logging.debug("Button-Code: " + button_code[:shorten_info_to] + "... (" + self.api_name + ")")
@@ -199,6 +207,39 @@ class ApiControl(RemoteApiClass):
         Record command, especially build for IR devices
         """
         return "ERROR " + self.api_name + ": Not supported by this API"
+
+    def discover(self):
+        """
+        discover available EISCP-ONKYO devices in the network
+        """
+        devices = eiscp.eISCP.discover(timeout=3)
+        device_information = {}
+        count = 0
+        for device in devices:
+            count += 1
+            dev_name = self.api_name + "_" + str(count)
+            device_information[dev_name] = {
+                "Description": device.info["model_name"],
+                "DeviceType": device.info["device_category"],
+                "IPAddress": device.host,
+                "MACAddress": "N/A",
+                "Methods": [ "send", "query" ],
+                "MultiDevice": False,
+                "PowerDevice": "",
+                "Port": device.port,
+                "Timeout": 5,
+                "Status": {}
+            }
+        api_config = {
+            "API-Description": self.api_description,
+            "API-Devices": device_information,
+            "API-Info": self.api_info_url,
+            "API-Source": self.api_source_url
+        }
+
+        self.api_discovery = api_config
+        self.logging.info("__DISCOVER: " + self.api_name + " - " + str(api_config))
+        return api_config
 
     def register(self, command, pin=""):
         """
@@ -288,7 +329,7 @@ class APIaddOn(RemoteDefaultClass):
                     md = artist + ": " + title + " (Album: " + album + ")"
 
                 #self.api.disconnect()
-                self.logging.info(md)
+                #self.logging.info(md)
 
             except Exception as e:
                 #self.api.disconnect()

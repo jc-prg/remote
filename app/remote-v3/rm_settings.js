@@ -790,7 +790,7 @@ class RemoteSettingsApi {
                     if (device_settings["settings"]["device_id"] && device_settings["settings"]["device_id"] !== "") {
                         let external_id_connected = "";
                         let device_id= device_settings["settings"]["device_id"];
-                        if (!detected_devices[api+"_"+api_device][device_id]) {
+                        if (!detected_devices[api+"_"+api_device] || !detected_devices[api+"_"+api_device][device_id]) {
                             external_id_connected = " (N/A at the moment)";
                         }
                         external_id = "<br/><span style='color:gray;'>connected to: " + device_settings["settings"]["device_id"] + external_id_connected + "</span>";
@@ -867,7 +867,7 @@ class RemoteSettingsApi {
                 if (show_buttons === undefined) { buttons_plus += "<hr style='width:100%;float:left;'/>"; }
                 for (let i=0;i<this.data["CONFIG"]["apis"]["list_api_commands"][api_name+"_"+device].length > 0;i++) {
                     let command = this.data["CONFIG"]["apis"]["list_api_commands"][api_name+"_"+device][i];
-                    let command_link = "apiSendToApi(\"" + api_name + "_" + device + "::" +command + "\");appMsg.info(\"Command send: " + api_name + "_" + device + "::" + command + "\");";
+                    let command_link = "apiSendToApi(\"" + api_name + "_" + device + "::" +command + "\", \""+api_name+"\");appMsg.info(\"Command send: " + api_name + "_" + device + "::" + command + "\");";
                     buttons_plus += this.button.sized("api_cmd_"+api_name+"_"+device, command, "settings", command_link);
                 }
             }
@@ -927,18 +927,38 @@ class RemoteSettingsApi {
 
             if (config_create) {
                 this.button.width = "80px;";
-                temp += lang("API_CREATE_CONFIG_INFO", [api_name]);
+                temp += lang("API_CREATE_DEV_CONFIG_INFO", [api_name]);
                 temp += "<br/>&nbsp;";
-                //temp += "<div id='api_device-"+interface+"_"+device+"'>light</div><br/>";
                 temp += this.tab.start();
                 temp += this.tab.row("Detected:","<div id='api_device-"+api_name+"_"+device+"_container'>"+select+"</div>");
                 temp += this.tab.row("API Call:<br/>","<div id='api_command-"+api_name+"_"+device+"'>get=device-configuration</div><br/>");
-                temp += this.tab.row("<div class='remote-edit-cmd' id='api_response'></div><br/>",false);
+                temp += this.tab.row("<div class='remote-edit-cmd' id='api_response_"+api_name+"_"+device+"'></div><br/>",false);
                 temp += this.tab.end();
-                temp += this.button.edit("apiSendToDeviceApi( getValueById('api_device-"+api_name+"_"+device+"'), getTextById('api_command-"+api_name+"_"+device+"'), true);"+activate_copy_button, lang("CREATE"), "disabled", "create_button_"+api_name+"_"+device) + "&nbsp;";
+                temp += this.button.edit("apiSendToDeviceApi( getValueById('api_device-"+api_name+"_"+device+"')+'||"+api_name+"_"+device+"', getTextById('api_command-"+api_name+"_"+device+"'), true);"+activate_copy_button, lang("CREATE"), "disabled", "create_button_"+api_name+"_"+device) + "&nbsp;";
                 temp += this.button.edit("copyTextById('JSON_copy',appMsg,'"+lang("COPIED_TO_CLIPBOARD")+"');"+activate_copy_button, lang("COPY"), "disabled", "copy_button_"+api_name+"_"+device);
             }
             return temp;
+        }
+        this.create_api_configuration = function (api_name, device) {
+
+            let config_create = ("api-discovery" in interfaces[api_name]["API-Config"]["commands"]);
+            let activate_copy_button = "document.getElementById('copy_button_"+api_name+"_"+device+"').disabled=false;document.getElementById('copy_button_"+api_name+"_"+device+"').style.backgroundColor='';";
+            let activate_create_button = "document.getElementById('create_button_"+api_name+"_"+device+"').disabled=false;document.getElementById('create_button_"+api_name+"_"+device+"').style.backgroundColor='';";
+
+            if (config_create) {
+                this.button.width = "80px;";
+                let temp = lang("API_CREATE_CONFIG_INFO", [api_name]);
+                temp += "<br/>&nbsp;";
+                temp += this.tab.start();
+                temp += this.tab.row("API Call:<br/>","<div id='api_command-"+api_name+"_"+device+"'>api-discovery</div><br/>");
+                temp += this.tab.row("<div class='remote-edit-cmd' id='api_response_"+api_name+"_"+device+"'></div><br/>", false);
+                temp += this.tab.end();
+                temp += this.button.edit("apiSendToDeviceApi( '"+api_name+"_"+device+"||xx||"+api_name+"_"+device+"', getTextById('api_command-"+api_name+"_"+device+"'), true);"+activate_copy_button, lang("CREATE"), "", "create_button_"+api_name+"_"+device) + "&nbsp;";
+                temp += this.button.edit("copyTextById('JSON_copy',appMsg,'"+lang("COPIED_TO_CLIPBOARD")+"');"+activate_copy_button, lang("COPY"), "disabled", "copy_button_"+api_name+"_"+device);
+
+                return temp;
+            }
+            return "";
         }
 
         this.button.width = "72px";
@@ -959,12 +979,14 @@ class RemoteSettingsApi {
             // create sheet boxes for all devices of this interface
             for (let dev in api_config["API-Devices"]) {
                 let buttons = this.list_api_device_settings(key, dev, true);
-                let config_create = this.create_device_configuration(key, dev);
+                let config_device = this.create_device_configuration(key, dev);
+                let config_api = this.create_api_configuration(key, dev);
 
                 sheet_boxes[key+"_"+dev] = new RemoteElementSheetBox("api-setting-"+key+"_"+dev, "410px", true, false, false);
                 sheet_boxes[key+"_"+dev].addSheet(lang("API_DEFINITION"), this.list_api_device_settings(key, dev, false));
                 if (buttons !== "")         { sheet_boxes[key+"_"+dev].addSheet(lang("API_ADMIN"), buttons); }
-                if (config_create !== "")   { sheet_boxes[key+"_"+dev].addSheet(lang("API_CREATE_CONFIG"), config_create); }
+                if (config_device !== "")   { sheet_boxes[key+"_"+dev].addSheet(lang("API_CREATE_DEV_CONFIG"), config_device); }
+                if (config_api !== "")      { sheet_boxes[key+"_"+dev].addSheet(lang("API_CREATE_CONFIG"), config_api); }
                 sheet_boxes[key+"_"+dev].addSheet(lang("CONNECTED"), this.list_connected_devices(key, dev, data)[1]);
             }
 

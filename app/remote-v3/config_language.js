@@ -52,8 +52,12 @@ let language_app = {
         
         "API"                   : "API",
         "API_ADMIN"             : "API admin",
-        "API_CREATE_CONFIG"     : "API create config",
-        "API_CREATE_CONFIG_INFO" : "Create a <b>device config file</b> for a device from its configuration and save this to the folder ./data/devices/{0}/&lt;device-name&gt;.json. " +
+        "API_CREATE_CONFIG"     : "create API config",
+        "API_CREATE_DEV_CONFIG" : "create device config",
+        "API_CREATE_CONFIG_INFO" : "Create a complete <b>API configuration</b> for all detected API devices to be saved as ./data/devices/{0}/00_interface.json. " +
+                                   "The 'API-Devices' are created based on the default API definitions. Adapt the values such as 'PowerDevice' to your needs. " +
+                                   "If a new device is not detected, reconnect the API, wait a few minutes, and try again.",
+        "API_CREATE_DEV_CONFIG_INFO" : "Create a <b>device config file</b> for a device from its configuration and save this to the folder ./data/devices/{0}/&lt;device-name&gt;.json. " +
                                    "You can adapt key names for buttons and commands and the query section to your needs. " +
                                    "Select this file as device config when creating a new remote control for a device.",
         "API_DEVICE"            : "API device",

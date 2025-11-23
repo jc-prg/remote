@@ -35,6 +35,10 @@ class ApiControl(RemoteApiClass):
         self.config_add_key("MACAddress", "")
         self.config_add_key("DeviceType", "")
         self.config_set_methods(["send", "record"])
+        self.api_discovery = {}
+
+        self.api_info_url = "https://github.com/jc-prg/remote/blob/master/server/interfaces/broadlink/README.md"
+        self.api_source_url = "https://github.com/davorf/BlackBeanControl"
 
     def connect(self):
         """
@@ -71,8 +75,7 @@ class ApiControl(RemoteApiClass):
             self.api.auth()
             self.status = "Connected"
 
-        except broadlink.exceptions.AuthenticationError:
-            self.status = self.not_connected + " ... CONNECT not found or no access, check with the Broadlink app if the device isn't locked."
+            self.discover()
 
         except Exception as e:
             self.status = self.not_connected + " ... CONNECT " + str(e)
@@ -141,7 +144,14 @@ class ApiControl(RemoteApiClass):
         """
         Send command to API and wait for answer
         """
-        msg = "WARN " + self.api_name + ": Not supported for this API"
+        msg = "N/A"
+        available_queries = ["api-discovery"]
+        if command in available_queries:
+            if command == "api-discovery":
+                msg = self.api_discovery
+        else:
+            msg = "WARN " + command + " for is not available for API " + self.api_name
+
         self.logging.debug(msg)
         return msg
 
@@ -180,6 +190,42 @@ class ApiControl(RemoteApiClass):
 
         self.working = False
         return EncodedCommand
+
+    def discover(self):
+        """
+        check if broadlink devices are available in the network
+        """
+        devices = broadlink.discover(timeout=3)
+        device_information = {}
+        count = 0
+        for device in devices:
+            count += 1
+            dev_name = self.api_name + "_" + str(count)
+            device_information[dev_name] = {
+                "Description": device.model + " (" + device.manufacturer + ")",
+                "DeviceType": "10039",
+                "IPAddress": device.host[0],
+                "MACAddress": str(':'.join(format(x, '02x') for x in device.mac)).upper(),
+                "Methods": [ "send", "record" ],
+                "MultiDevice": True,
+                "Port": device.host[1],
+                "PowerDevice": "",
+                "Timeout": device.timeout,
+                "Status": {
+                    "Locked": device.is_locked,
+                    "Auth": device.auth()
+                }
+            }
+        api_config = {
+            "API-Description": self.api_description,
+            "API-Devices": device_information,
+            "API-Info": self.api_info_url,
+            "API-Source": self.api_source_url
+        }
+
+        self.api_discovery = api_config
+        self.logging.info("__DISCOVER: " + self.api_name + " - " + str(device_information))
+        return api_config.copy()
 
     def register(self, command, pin=""):
         """
