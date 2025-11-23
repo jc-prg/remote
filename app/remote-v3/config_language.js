@@ -57,6 +57,7 @@ let language_app = {
         "API_DEVICE"            : "API device",
         "API_DEFINITION"        : "API definition",
         "API_INTERFACE"         : "API / API-Device",
+        "API_CONNECTION"        : "API connection",
         "API_COMMANDS"          : "API commands",
         "API_COMMANDS_TEST"     : "API commands - manual testing",
         "API_INFORMATION"       : "API information",
@@ -68,9 +69,9 @@ let language_app = {
         "API_TEST"              : "API test",
 
         "API_EDIT_REALLY_CHANGE": "Do you really want to <b>change the API settings</b> for this remote control?",
-        "API_EDIT_SELECT_API_CONFIG": "Please select an <b>API-Device config</b> file",
-        "API_EDIT_SELECT_API_DEVICE": "Please select an <b>Interface config</b> file",
-        "API_EDIT_SELECT_REMOTE": "Please select an <b>Remote config</b> file",
+        "API_EDIT_SELECT_API_CONFIG": "Please select an <b>API config</b> file",
+        "API_EDIT_SELECT_API_DEVICE": "Please select a <b>device config</b> file",
+        "API_EDIT_SELECT_REMOTE": "Please select a <b>remote control config</b> file",
 
         "BUTTON_ASK_DELETE"     : "Do you really want to delete the button '{0}' from '{1}'?",
         "BUTTON_ASK_DELETE_NUMBER" : "Do you really want to delete the button number [{0}] from '{1}'?",
@@ -139,7 +140,9 @@ let language_app = {
         "COLOR_PICKER"          : "color picker",
 
         "CONFIG_INTERFACE"      : "Interface-Config",
-        "CONFIG_REMOTE"         : "Remote-Config",
+        "CONFIG_API"            : "Config file <u>API</u>",
+        "CONFIG_REMOTE"         : "Config file <u>remote control</u>",
+        "CONFIG_DEVICE"         : "Config file <u>device</u>",
         "COMMANDS"              : "Commands",
         
         "COMMAND_DELETE_INFO"   : "When deleted you can record a command for a button again.",

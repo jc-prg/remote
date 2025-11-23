@@ -566,30 +566,31 @@ class RemoteMain {
         }
         edit += this.tab.end();
 
-        //remote  += this.basic.container("remote_main","Main settings",edit,true);
         remote += this.basic.container("remote_edit_main", lang("MAIN_SETTINGS"), "<div id='remote-edit-main'></div>", true);
 
         let edit_main = edit;
         let edit_test;
 
-        edit = "<p><b>" + lang("API_INTERFACE") + ":</b><br/><text id='edit_dev_api_select'></text>";
-        edit += "<br>&nbsp;<text id='edit_dev_api_field'></text>";
+        edit = "<p><b>" + lang("CONFIG_API") + ":</b><br/><span id='edit_dev_api_select'></span>";
+        edit += "<br>&nbsp;<span id='edit_dev_api_field' class='edit-config-files'></span>";
         edit += "<div id='edit_dev_api_current' style='display:none;'>"+device_config["interface"]["api"]+"</div>";
-        edit += "<p><b>" + lang("CONFIG_INTERFACE") + ":</b><br/><text id='edit_dev_config_select'></text>";
-        edit += "<br/>&nbsp;<text id='edit_dev_config_field'></text>";
+
+        edit += "<p><b>" + lang("CONFIG_DEVICE") + ":</b><br/><span id='edit_dev_config_select'></span>";
+        edit += "<br/>&nbsp;<span id='edit_dev_config_field' class='edit-config-files'></span>";
         edit += "<div id='edit_dev_config_current' style='display:none;'>"+device_config["interface"]["device"]+"</div>";
-        edit += "<p><b>" + lang("CONFIG_REMOTE") + ":</b><br/><text id='edit_dev_rm_select'></text>";
-        edit += "<br/>&nbsp;<text id='edit_dev_rm_field'></text>";
+
+        edit += "<p><b>" + lang("CONFIG_REMOTE") + ":</b><br/><span id='edit_dev_rm_select'></span>";
+        edit += "<br/>&nbsp;<span id='edit_dev_rm_field' class='edit-config-files'></span>";
         edit += "<div id='edit_dev_rm_current' style='display:none;'>"+device_config["interface"]["remote"]+"</div>";
 
-        edit += "<p><b>" + lang("METHOD") + ":</b><br/>" + device_config["interface"]["method"]; //device_data["interface"]["remote"]+".json" );
+        edit += "<p><b>" + lang("METHOD") + ":</b><br/>";
+        edit += "<span id='edit_dev_rm_method'>"+device_config["interface"]["method"]+"</span>";
+
         edit += "<hr/><center>";
-        edit += this.button.edit(this.app_name+".device_edit_api_update(true);", lang("BUTTON_T_RESET")) + "&nbsp;";
+        edit += this.button.edit(this.app_name+".device_edit_api_update('',true);", lang("BUTTON_T_RESET")) + "&nbsp;";
         edit += this.button.edit(this.app_name+".device_edit_api_confirm()", lang("BUTTON_T_SAVE"));
         edit += "</center>";
         let edit_info = edit;
-
-        //remote  += this.basic.container("remote_api01",lang("API_INFORMATION"),edit,false);
 
         // API details
         edit = "<i><b>" + lang("COMMANDS") + "</b> (" + lang("BUTTON_T") + ")</i>";
@@ -599,7 +600,6 @@ class RemoteMain {
         edit += "<i><b>" + lang("SEND_DATA") + "</b> (" + lang("SLIDER") + ", " + lang("BUTTON_T_KEYBOARD") + ", " + lang("BUTTON_T_COLOR_PICKER") + ")</i>";
         edit += "<ul><li>" + JSON.stringify(device_config["commands"]["set"]).replace(/,/g, ", ") + "</li></ul>";
         let edit_cmd = edit;
-        //remote  += this.basic.container("remote_api02",lang("API_COMMANDS"),edit,false);
 
         if (device_method === "query") {
             // API Testing
@@ -637,12 +637,12 @@ class RemoteMain {
             myBox.addSheet(lang("API_TEST"), edit_test);
         }
 
-        this.device_edit_api_update();
+        this.device_edit_api_update(device);
         apiGetConfig_createDropDown(device, this.device_edit_api_commands);
     }
 
     /* set / update / reset drop-downs to edit API settings for a device */
-    device_edit_api_update(reset = false) {
+    device_edit_api_update(device = "", reset = false) {
 
         let select = function (id, title, data, onchange = "", value = "", input_width="") {
             let item = "<select style=\"width:" + input_width + ";margin:1px;max-width:100%;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
@@ -660,16 +660,19 @@ class RemoteMain {
             return item;
         }
 
-        let device_config = this.data["CONFIG"]["devices"][device];
-        let api_key = device_config["interface"]["api"].split("_")[0];
+        let selected = {};
+        let api_key;
 
-        let selected = {
-            "api" : device_config["interface"]["api"],
-            "config" : device_config["interface"]["device"],
-            "rm" : device_config["interface"]["remote"]
+        if (device !== "") {
+            let device_config = this.data["CONFIG"]["devices"][device];
+            selected = {
+                "api": device_config["interface"]["api"],
+                "config": device_config["interface"]["device"],
+                "rm": device_config["interface"]["remote"]
+            }
+            api_key = device_config["interface"]["api"].split("_")[0];
         }
-
-        if (document.getElementById("edit_dev_api") && reset === false) {
+        else if (document.getElementById("edit_dev_api") && reset === false) {
             selected["api"] = document.getElementById("edit_dev_api").value;
             selected["config"] = document.getElementById("edit_dev_config").value;
             selected["rm"] = document.getElementById("edit_dev_rm").value;
@@ -683,8 +686,8 @@ class RemoteMain {
         }
 
         let on_change1 = "setTextById('edit_dev_api_field', this.value);" + this.app_name + ".device_edit_api_update();"; // + change int
-        let on_change2 = "setTextById('edit_dev_config_field', this.value + '.json');";
-        let on_change3 = "setTextById('edit_dev_rm_field', this.value + '.json');";
+        let on_change2 = "setTextById('edit_dev_config_field', 'devices/' + document.getElementById('edit_dev_api').value.split('_')[0] + '/<u>' + this.value + '.json</u>');";
+        let on_change3 = "setTextById('edit_dev_rm_field', 'remotes/<u>' + this.value + '.json</u>');";
 
         let api_interface = select("edit_dev_api", "interface", this.data["CONFIG"]["apis"]["list_description"], on_change1, selected["api"], this.input_width);
         let dev_config = select("edit_dev_config", "device config", this.data["CONFIG"]["apis"]["list_api_configs"]["list"][api_key], on_change2, selected["config"], this.input_width);
@@ -698,9 +701,9 @@ class RemoteMain {
         const select_1 = document.getElementById("edit_dev_config");
         const select_2 = document.getElementById("edit_dev_rm");
 
-        setTextById("edit_dev_api_field", select_0.value+".json");
-        setTextById("edit_dev_config_field", select_1.value+".json");
-        setTextById("edit_dev_rm_field", select_2.value+".json");
+        setTextById("edit_dev_api_field", "devices/<u>" + select_0.value.replace("_","/")+".json</u>");
+        setTextById("edit_dev_config_field", "devices/" + select_0.value.split("_")[0] + "/<u>" + select_1.value+".json</u>");
+        setTextById("edit_dev_rm_field", "remotes/<u>" + select_2.value+".json</u>");
     }
 
     /* confirm dialog if to save changes */
@@ -713,7 +716,7 @@ class RemoteMain {
         if (select_1.value === "") { appMsg.alert(lang("API_EDIT_SELECT_API_DEVICE")); return; }
         if (select_2.value === "") { appMsg.alert(lang("API_EDIT_SELECT_REMOTE")); return; }
 
-        let cmd = "alert('not implemented yet')";
+        let cmd = "apiDeviceChangeConfigs('"+device+"');";
         appMsg.confirm(lang("API_EDIT_REALLY_CHANGE"),cmd);
     }
 

@@ -392,3 +392,7 @@ ul.help ul li {
 .slider         { border: solid 1px var(--rm-color-slider-border); }
 .slidervalue    { border: solid 1px var(--rm-color-slider-border); }
 .sliderlabel    { color: var(--rm-color-slider-text); }
+
+.edit-config-files {
+    color: #666666;
+}

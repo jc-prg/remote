@@ -26,24 +26,25 @@ function apiCheckUpdates_msg( data ) {
 function apiAlertReturn(data) {
 
     setTimeout(function() {
-        if (data["REQUEST"]["Command"] == "DeleteDevice") 	{ appCookie.erase("remote"); rm3remotes.active_name = ""; }
-        if (data["REQUEST"]["Command"] == "DeleteScene") 	{ appCookie.erase("remote"); rm3remotes.active_name = ""; }
+        if (data["REQUEST"]["Command"] === "DeleteDevice") 	{ appCookie.erase("remote"); rm3remotes.active_name = ""; }
+        if (data["REQUEST"]["Command"] === "DeleteScene") 	{ appCookie.erase("remote"); rm3remotes.active_name = ""; }
         remoteReload_load();
         }, 1000);
 
     setTimeout(function() {
-        if (data["REQUEST"]["Command"] == "AddTemplate")  	    { rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
-        else if (data["REQUEST"]["Command"] == "AddDevice")   	{ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
-        else if (data["REQUEST"]["Command"] == "EditDevice")   	{ rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
-        else if (data["REQUEST"]["Command"] == "AddScene")   	{ rm3remotes.create( "scene",  data["REQUEST"]["Scene"] ); }
-        else if (data["REQUEST"]["Command"] == "EditScene")   	{ rm3remotes.create( "scene",  data["REQUEST"]["Scene"] ); }
-        else if (data["REQUEST"]["Command"] == "ChangeVisibility" )	{
-            if (data["REQUEST"]["Device"] == "device")          { rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
-            if (data["REQUEST"]["Device"] == "scene")           { rm3remotes.create( "scene", data["REQUEST"]["Device"] ); }
+        if (data["REQUEST"]["Command"] === "AddTemplate") { rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
+        else if (data["REQUEST"]["Command"] === "AddDevice") { rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
+        else if (data["REQUEST"]["Command"] === "EditDevice") { rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
+        else if (data["REQUEST"]["Command"] === "EditDeviceApiSettings") { rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
+        else if (data["REQUEST"]["Command"] === "AddScene") { rm3remotes.create( "scene",  data["REQUEST"]["Scene"] ); }
+        else if (data["REQUEST"]["Command"] === "EditScene") { rm3remotes.create( "scene",  data["REQUEST"]["Scene"] ); }
+        else if (data["REQUEST"]["Command"] === "ChangeVisibility" ) {
+            if (data["REQUEST"]["Device"] === "device") { rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
+            if (data["REQUEST"]["Device"] === "scene") { rm3remotes.create( "scene", data["REQUEST"]["Device"] ); }
             }
-        else if (data["REQUEST"]["Command"] == "DeleteDevice") 	{ remoteMainMenu(); }
-        else if (data["REQUEST"]["Command"] == "DeleteScene") 	{ remoteMainMenu(); }
-        else                                                    {}
+        else if (data["REQUEST"]["Command"] === "DeleteDevice") { remoteMainMenu(); }
+        else if (data["REQUEST"]["Command"] === "DeleteScene") { remoteMainMenu(); }
+        else {}
 
         if (data["REQUEST"]["Return"].indexOf("ERROR") > -1 && data["REQUEST"]["Command"]) {
             appMsg.alert("<b>" + data["REQUEST"]["Command"] + "</b>: " + data["REQUEST"]["Return"]);
@@ -61,7 +62,7 @@ function apiAlertReturn(data) {
             appMsg.info(data["REQUEST"]["Return"]);
             }
 
-        }, 2000);
+        }, 5000);
     }
 
 
@@ -359,6 +360,19 @@ function apiDeviceAddCheckID(element) {
         element.style.color = "";
         }
     }
+
+
+// change config files for a device remote control
+function apiDeviceChangeConfigs(remote_id) {
+    const send_command = ["device-api-settings", remote_id];
+    const send_data = {
+        "api_file": document.getElementById("edit_dev_api").value,
+        "device_file": document.getElementById("edit_dev_config").value,
+        "remote_file": document.getElementById("edit_dev_rm").value,
+    }
+
+    appFW.requestAPI("POST", send_command, send_data, apiAlertReturn);
+}
 
 
 // delete device
