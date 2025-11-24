@@ -537,7 +537,7 @@ class RemoteMain {
         // Main Settings
         let edit = "";
         let images = this.data["CONFIG"]["elements"]["button_images"];
-        let icon = "<img src='icon/" + images[device_config["settings"]["image"]] + "' class='rm-button_image_start' alt=''>";
+        let icon = "<img src='icon/" + images[device_config["settings"]["image"]] + "' class='rm-button_image_start' alt='' style='height:40px;width:60px;'>";
         icon = "<button class='button device_off small' style='height:40px;'><div id='device_edit_button_image'>" + icon + "</div></button>";
         edit += this.tab.start();
         edit += this.tab.row(lang("ID"), "<b>" + device + "</b>");
@@ -1084,8 +1084,7 @@ class RemoteMain {
                 next_button = this.button.line(button[0].split("||")[1]);
             } else if (button[0] === ".") {
                 next_button = this.button.device(scene + i, ".", scene_label, "empty", "", "disabled");
-            } else if (button[0] === "macro") {
-console.error(button);
+            } else if (button[0] === "macro" || button[0] === "global") {
                 let pure_macro = button[1];
                 if (pure_macro.indexOf("||") > 0) { pure_macro = pure_macro.split("||")[0]; }
                 next_button = this.button.macro(cmd, button[1], scene_label, "", macros[pure_macro], "");
@@ -1699,8 +1698,8 @@ class RemoteMainEditDialogs {
         }
         else if (this.remote_type === "device" && element === "button_line") {
 
-            let icon_default = "<button class='button device_off small' style='height:40px;'><div id='add_button_image_default'>&nbsp;</div></button>";
-            let icon_select = "<button class='button device_off small' style='height:40px;'><div id='add_button_image_select_show'>&nbsp;</div></button>";
+            let icon_default = "<button class='button device_off small' style='height:40px;width:60px;'><div id='add_button_image_default'>&nbsp;</div></button>";
+            let icon_select = "<button class='button device_off small' style='height:40px;width:60px;'><div id='add_button_image_select_show'>&nbsp;</div></button>";
             let onchange_default = this.edit.app_name+".button_image_preview('add_button_select','add_button_image_default');";
             let chose_default = "<input type='radio' name='button-image-select' id='button-select-default' value='default' checked>";
             let chose_select = "<input type='radio' name='button-image-select' id='button-select-select' value='select'>";
@@ -1913,6 +1912,11 @@ class RemoteMainEditDialogs {
         }
         else if (this.remote_type === "scene" && element === "default") {
 
+            let icon_default = "<button class='button device_off small' style='height:40px;width:60px;'><div id='add_button_image_default'>&nbsp;</div></button>";
+            let icon_select = "<button class='button device_off small' style='height:40px;width:60px;'><div id='add_button_image_select_show'>&nbsp;</div></button>";
+            let chose_default = "<input type='radio' name='button-image-select' id='button-select-default' value='default' checked>";
+            let chose_select = "<input type='radio' name='button-image-select' id='button-select-select' value='select'>";
+
             edit = "&nbsp;";
             edit += this.tab.start();
             edit += this.tab.row(
@@ -1922,8 +1926,15 @@ class RemoteMainEditDialogs {
             edit += this.tab.row(
                 "<input id='add_button_value' style='display:none;'/>" +
                 "<div id='add_button_device_input'><i><small>-&gt; " + lang("SELECT_DEV_MACRO") + "</small></i></div>",
-                this.button.edit(this.app_name + ".rm_scene.add_button('" + scene + "','add_button_value');", lang("BUTTON_T"), "")
+                //this.button.edit(this.app_name + ".rm_scene.add_button('" + scene + "','add_button_value');", lang("BUTTON_T"), "")
+                this.button.edit(this.app_name + ".rm_scene.add_button_select_image('" + scene + "','add_button_value', 'button-image-select','add_button_image');", lang("BUTTON_T"), "")
             );
+            let button_select = this.tab.start("");
+            button_select += this.tab.row(icon_default, "&nbsp;" + chose_default + lang("BUTTON_IMAGE_DEFAULT"));
+            button_select += this.tab.row(icon_select, "&nbsp;" + chose_select + this.edit.button_image_select("add_button_image_select", 'add_button_image_select_show', "", "140px"));
+            button_select += this.tab.end();
+
+            edit += this.tab.row(button_select,false);
             edit += this.tab.line();
             edit += this.tab.row(
                 this.basic.input("add_line_text"),
@@ -2160,6 +2171,11 @@ class RemoteMainEditElements {
 
         let images = this.data["CONFIG"]["elements"]["button_images"];
         let selected = getValueById(source_id);
+
+        console.error(selected);
+
+        if (selected && selected.indexOf("_") >= 0) { selected = selected.split("_")[1]; }
+
         if (images[selected]) {
             let image_html = "<img src='icon/" + images[selected] + "' class='rm-button_image_start' alt=''>";
             setTextById(target_id, image_html);
@@ -2518,7 +2534,7 @@ class RemoteMainEditElements {
             }
         }
 
-        let on_change = "document.getElementById('" + id + "').value = this.value;";
+        let on_change = "document.getElementById('" + id + "').value = this.value; "+this.app_name+".button_image_preview('add_button_device_"+device+"','add_button_image_default');";
         let device_macro_select = this.basic.select_array("add_button_device_" + device, "button (" + device + ")", available_buttons, on_change, '');
 
         setTextById(div_id, device_macro_select);
