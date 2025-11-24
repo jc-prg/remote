@@ -1182,6 +1182,7 @@ class RemoteAPI(RemoteDefaultClass):
         return_msg = ""
         commands_exist = []
         commands_dont_exist = []
+        prepare_queue = []
 
         if "::" in macro:
             commands = macro.split("::")
@@ -1250,15 +1251,20 @@ class RemoteAPI(RemoteDefaultClass):
                                        str(data["STATUS"]["devices"][device][status_var]) + " -> " + status)
 
                     if data["STATUS"]["devices"][device][status_var] != status:
-                        return_msg += ";" + self.queue_send.add2queue([[interface, device, button, status]])
+                        #return_msg += ";" + self.queue_send.add2queue([[interface, device, button, status]])
+                        prepare_queue.append([interface, device, button, status])
 
                 # if no future state is defined just add command to queue
                 elif status == "":
-                    return_msg += ";" + self.queue_send.add2queue([[interface, device, button, ""]])
+                    #return_msg += ";" + self.queue_send.add2queue([[interface, device, button, ""]])
+                    prepare_queue.append([interface, device, button, ""])
 
             # if command is numeric, add to queue directly (time to wait)
             elif command_str.isnumeric():
-                return_msg += ";" + self.queue_send.add2queue([float(command)])
+                #return_msg += ";" + self.queue_send.add2queue([float(command)])
+                prepare_queue.append(float(command))
+
+        return_msg = self.queue_send.add2queue(prepare_queue)
 
         self._refresh()
         if return_msg != "":

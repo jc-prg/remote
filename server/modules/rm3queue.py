@@ -43,29 +43,51 @@ class QueueApiCalls(RemoteThreadingClass):
         count = 0
         while self._running:
 
-            if len(self.queue) > 0:
-                command = self.queue.pop(0)
-                self.execute(command)
-                count = 0
-
-            else:
-                # send life sign from time to time
-                if count > 360:
+            if len(self.queue) == 0:
+                time.sleep(0.01)
+                count += 1
+                if count > 10000:
                     self.logging.info("Queue still running.")
                     count = 0
-                count += 1
+                continue
 
-            self.thread_wait()
+            now = time.time()
+            if "," in str(self.queue[0]):
+                interface, device, button, state, request_time, execution_time = self.queue[0]
+
+                if now >= execution_time:
+                    self.logging.debug("Execute now:     " + str(device) + "/" + str(button) + " - " + time.strftime("%H:%M:%S", time.localtime(execution_time)))
+                    cmd = self.queue.pop(0)
+                    self.execute(cmd)
+                else:
+                    self.logging.debug("Wait to execute: " + str(device) + "/" + str(button) + " - " + time.strftime("%H:%M:%S", time.localtime(execution_time)))
+                    cmd = self.queue.pop(0)
+                    self.queue.append(cmd)
+
+            elif type(self.queue[0]) is int or type(self.queue[0]) is float:
+                command = self.queue.pop(0)
+
+            else:
+                command = self.queue.pop(0)
+                self.logging.debug("Execute now: " + str(command))
+                self.execute(command)
+
+            time.sleep(0.01)
+            count = 0
 
         self.logging.info("Exiting " + self.name)
 
     def execute(self, command):
         """
-        execute command or wait
+        execute command or wait, the command has the following formats
+        (1) START_OF_RELOAD
+        (2) [interface, device, button, state, request_time,execution_time]
+        (3) integer (waiting time)
+
         Args:
             command (Any): command separated in parameters, depending on purpose:
-                           SEND  -> number or command = [interface,device,button,state];
-                           QUERY -> number or command = [interface,device,[query1,query2,query3,...],state]
+                           SEND  -> number or command = [interface,device,button,state,request_time,execution_time];
+                           QUERY -> number or command = [interface,device,[query1,query2,query3,...],state,request_time,execution_time]
         """
         devices = self.config.read_status()
 
@@ -76,19 +98,15 @@ class QueueApiCalls(RemoteThreadingClass):
 
         elif "END_OF_RELOAD" in str(command):
             self.reload = False
-            self.logging.debug("__RELOAD: execution = " + str(round(time.time() - self.reload_time, 2)) + "s (Queue: " +
-                               str(len(self.queue)) + " entries)")
+            self.logging.debug("__RELOAD: execution = " + str(round(time.time() - self.reload_time, 2)) + "s (Queue: " + str(len(self.queue)) + " entries)")
 
         # if is an array / not a number
         elif "," in str(command):
 
-            interface, device, button, state, request_time = command
+            interface, device, button, state, request_time, execution_time = command
 
             if device not in devices:
                 self.logging.error("ERROR: Could not find '" + device + "' in current configuration!")
-
-                #self.logging.debug("Queue: Execute - " + str(interface) + ":" + str(device) + ":" + str(button) + ":" + str(state) + ":" + str(request_time))
-                #self.logging.debug(str(command))
 
             elif self.query_send == "send":
                 try:
@@ -145,7 +163,6 @@ class QueueApiCalls(RemoteThreadingClass):
 
                 if self.config != "":
                     self.config.device_set_values(device, "status", devices[device]["status"])
-                    #self.config.write_status(devices, "execute (" + str(command) + ")")
 
         # if is a number
         else:
@@ -154,6 +171,11 @@ class QueueApiCalls(RemoteThreadingClass):
     def execution_time(self, device, start_time, end_time):
         """
         calculate the average execution time per device (duration between request time and time when executed)
+
+        Args:
+            device (str): device_id
+            start_time (float): timecode when command was added to the queue
+            end_time (float): timecode when execution was done
         """
 
         average_round = 6
@@ -198,11 +220,22 @@ class QueueApiCalls(RemoteThreadingClass):
         else:
             self.device_reload.append(commands)
 
-    def add2queue(self, commands):
+    def add2queue(self, commands, wait=0):
         """
-        add single command or list of commands to queue
+        add single command or list of commands to queue, the command has the following formats
+        (1) START_OF_RELOAD
+        (2) [interface, device, button, state] while button can be a list of queries
+        (3) integer (waiting time)
+
+        Args:
+            commands (Any): command separated in parameters, depending on purpose:
+                           SEND  -> number or command = [interface,device,button,state];
+                           QUERY -> number or command = [interface,device,[query1,query2,query3,...],state]
+            wait (float): waiting time in seconds
         """
         self.logging.debug("Add2Queue: " + str(commands))
+        request_time = time.time()
+        execution_time = time.time() + wait
 
         # set reload status
         if "START_OF_RELOAD" in str(commands):
@@ -211,9 +244,16 @@ class QueueApiCalls(RemoteThreadingClass):
         # or add command to queue
         for command in commands:
             self.add2log("add2Q", command)
-            if "," in str(command):
-                command.append(time.time())  # add element to array
-            self.queue.append(command)       # add command array to queue
+
+            if type(command) is int or type(command) is float:
+                execution_time += float(command)
+
+            elif "," in str(command):
+                command.append(request_time)    # add element to array
+                command.append(execution_time)  # add element to array
+
+            if not type(command) is int and not type(command) is float:
+                self.queue.append(command)      # add command array to queue
 
         return "OK: Added command(s) to the queue '" + self.name + "': " + str(commands)
 
