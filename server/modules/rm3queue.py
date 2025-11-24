@@ -206,7 +206,7 @@ class QueueApiCalls(RemoteThreadingClass):
             self.average_exec[device] = -1
             average_diff = -1
 
-        self.logging.info("__EXEC TIME: '" + device + "' average: " + str(
+        self.logging.debug("__EXEC TIME: '" + device + "' average: " + str(
             round(self.average_exec[device], average_round)) + " / last " + str(
             round(duration, average_round)) + " / change " + str(round(average_diff, average_round)))
 
