@@ -1085,7 +1085,10 @@ class RemoteMain {
             } else if (button[0] === ".") {
                 next_button = this.button.device(scene + i, ".", scene_label, "empty", "", "disabled");
             } else if (button[0] === "macro") {
-                next_button = this.button.macro(cmd, button[1], scene_label, "", macros[button[1]], "");
+console.error(button);
+                let pure_macro = button[1];
+                if (pure_macro.indexOf("||") > 0) { pure_macro = pure_macro.split("||")[0]; }
+                next_button = this.button.macro(cmd, button[1], scene_label, "", macros[pure_macro], "");
                 this.active_buttons.push(cmd);
             } else if (button[0] === "scene-on") {
                 next_button = this.button.macro("scene_on_" + button[1], "on", scene_label, "", scene_macros["scene-on"], "");

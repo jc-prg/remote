@@ -160,6 +160,9 @@ class RemoteControlBasic {
 
     // create button for multiple commands (macro)
     macro(id, label, scene, style, macro, disabled ) {
+
+        if (label.indexOf("||") > 0) { label = label.split("||")[1]; }
+
         if (macro) {
             let d = this.image( label, style );
             let macro_string = "";
@@ -179,7 +182,9 @@ class RemoteControlBasic {
             this.logging.debug("button_macro - "+b);
             return b;
         }
-        else { return this.default( id, label, style+" notfound", "", "disabled" ); }
+        else {
+            return this.default( id, label, style+" notfound", "", "disabled" );
+        }
     }
 
     // default with size from values
