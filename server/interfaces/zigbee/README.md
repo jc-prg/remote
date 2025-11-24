@@ -73,10 +73,15 @@ This can be done using the API settings in the app. If you want to use an extern
 Currently, there is a default configuration [data/devices/ZIGBEE2MQTT/00_default.json](../../../data/_sample/devices/ZIGBEE2MQTT/00_default.json) and two device types are defined:
 
 * Plug:  [data/devices/ZIGBEE2MQTT/zigbee-plug.json](../../../data/_sample/devices/ZIGBEE2MQTT/zigbee-plug.json)
-* RGB+CCT Bulb:  [data/devices/ZIGBEE2MQTT/zigbee-plug.json](../../../data/_sample/devices/ZIGBEE2MQTT/zigbee-bulb.json)
+* RGB+CCT Bulb:  [data/devices/ZIGBEE2MQTT/zigbee-bulb.json](../../../data/_sample/devices/ZIGBEE2MQTT/zigbee-bulb.json)
 
-The definition might differ per vendor. When starting the server with ZIGBEE2MQTT enabled, a file ```10_devices.json``' will be create. 
-This file contains all relevant information to create a definition file as shown here:
+Those definitions can be created automatically from the configuration that comes with the devices. There in the app move
+to "Settings > API Settings > API: ZIGBEE2MQTT", select the API-Device and jump to the sheet "create device config".
+Here you can select all detected devices and can create a fitting config file. Adjust and save this config as a JSON 
+file in the folder [data/devices/ZIGBEE2MQTT/](../../../data/_sample/devices/ZIGBEE2MQTT/).
+
+If you want to create this file on your own, use the file ```10_devices.json``', tha will be created when starting the 
+server with ZIGBEE2MQTT enabled. This file contains all relevant information to create a definition file as shown here:
 
 ```json
 {
@@ -92,9 +97,6 @@ This file contains all relevant information to create a definition file as shown
     },
     "commands": {
       "availability": {
-        "cmd": [
-          "get"
-        ],
         "get": "get=availability",
         "type": "enum",
         "values": [
@@ -103,16 +105,9 @@ This file contains all relevant information to create a definition file as shown
         ]
       },
       "link-quality": {
-        "cmd": [
-          "get"
-        ],
         "get": "get=linkquality"
       },
       "state": {
-        "cmd": [
-          "get",
-          "set"
-        ],
         "get": "get=state",
         "set": "get={'state': '{DATA}'}",
         "type": "enum",
@@ -129,5 +124,5 @@ This file contains all relevant information to create a definition file as shown
 ## Connect devices
 
 Per default the server doesn't accept new devices. Use the API setting ```permit-join``` in the app to activate this for 2 min. 
-Further settings can be done using web front end of ZigBee2MQTT, which is accessible via http://localhost:8080/ or what you've configured.
-In the settings you can add a device based on identified metadata. 
+Further settings can be done using web front end of ZigBee2MQTT, which is accessible via http://localhost:8080/ or what you've 
+configured.  In the settings you can add a device based on identified metadata. 
