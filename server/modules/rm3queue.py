@@ -44,7 +44,7 @@ class QueueApiCalls(RemoteThreadingClass):
         while self._running:
 
             if len(self.queue) == 0:
-                time.sleep(0.01)
+                self.thread_wait(use_priority=False)
                 count += 1
                 if count > 10000:
                     self.logging.info("Queue still running.")
@@ -72,7 +72,7 @@ class QueueApiCalls(RemoteThreadingClass):
                 self.logging.debug("Execute now: " + str(command))
                 self.execute(command)
 
-            time.sleep(0.01)
+            self.thread_wait(use_priority=False)
             count = 0
 
         self.logging.info("Exiting " + self.name)
