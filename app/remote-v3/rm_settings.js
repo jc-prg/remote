@@ -1107,6 +1107,7 @@ class RemoteSettingsGeneral {
         // Edit Server Settings
         let q1 = lang("RESET_SWITCH_OFF");
         let q2 = lang("RESET_VOLUME_TO_ZERO");
+        let q3 = lang("RELOAD_ALL_SCRIPTS");
 
         this.button.height = "30px";
         this.button.width  = "120px";
@@ -1121,9 +1122,12 @@ class RemoteSettingsGeneral {
             this.button.sized("set01","reload (scroll)","settings","appForceReload(true);") + "&nbsp;" +
             this.button.sized("set02","check updates","settings","appFW.requestAPI(\"GET\",[\"version\",\"" + appVersion +"\"], \"\", appMsg.alertReturn, \"wait\");")
         );
-        set_temp += this.tab.row("<i>Devices</i>",
+        set_temp += this.tab.row("<i>Devices:</i>",
             this.button.sized("set21","Dev ON/OFF", "settings","appMsg.confirm(#" + q1 + "#, #appFW.requestAPI(##GET##,[##reset##],####,apiAlertReturn );#);") + "&nbsp;" +
             this.button.sized("set22","Audio Level","settings", "appMsg.confirm(#" + q2 + "#, #appFW.requestAPI(##GET##,[##reset-audio##],####,apiAlertReturn );# );")
+        );
+        set_temp += this.tab.row("<i>Reload CSS and JavaScript files:</i>",
+            this.button.sized("set23","Reload", "settings","appMsg.confirm(#" + q3 + "#, #reloadScriptsAndCss();#);") + "&nbsp;"
         );
         set_temp += this.tab.end();
         let settings_reload = set_temp;
@@ -1337,6 +1341,7 @@ class RemoteSettingsInfo {
             "jcMsg "        + appMsg.appVersion +
             " / jcApp "     + appFW.appVersion +
             " / jcAppFW "   + appFwVersion +
+            " / jcModules " + modules_version +
             " / jcCookies " + appCookie.appVersion +
             " / jcFunction "+ jc_functions_version +
             " / jcSlider "  + rm3slider.appVersion );

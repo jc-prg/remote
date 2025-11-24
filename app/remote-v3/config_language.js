@@ -354,6 +354,7 @@ let language_app = {
         "RELOAD_TAKES_MUCH_LONGER"     : "Reload takes longer than much expected ...",
         "RESET_SWITCH_OFF"             : "Reset devices:<br/>switch off all devices before.",
         "RESET_VOLUME_TO_ZERO"         : "Reset audio settings:<br/>set the volume of all audio devices to mininum (0) before.",
+        "RELOAD_ALL_SCRIPTS"           : "Reload all CSS and JavaScript files.",
 
         "SAVE"                         : "Save",
 

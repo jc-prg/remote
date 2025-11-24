@@ -1,6 +1,6 @@
 <?xml version=„1.0“ encoding=„utf-8“?>
 <!doctype html>
-<html><!-- manifest="cache.manifest"> -->
+<html lang="EN"><!-- manifest="cache.manifest"> -->
 <head>
     <title id="title">jc://remote/</title>
 
@@ -20,20 +20,20 @@
 
     <!-- load main javascript files, dynamic load of additional files is managed at the end of this file -->
 
-    <script src="/modules/modules_1.2.3.js"></script>
+    <script src="/modules/modules_1.2.4.js"></script>
     <script src="/framework/app-fw.js"></script>
     <script src="/remote-v3/remote.js"></script>
     <style>
         .loading_overlay {
             position: absolute;
-            top: 0px;
-            left: 0px;
+            top: 0;
+            left: 0;
             z-index: 200;
             background: lightgray;
             height: 100%;
             width: 100%;
-            border-radius: 0px;
-            border: 0px;
+            border-radius: 0;
+            border: 0;
             display: flex; /* Add flexbox */
             justify-content: center; /* Center horizontally */
             align-items: center; /* Center vertically */
@@ -43,7 +43,7 @@
 </head>
 <body>
     <div id="loading_overlay" class="loading_overlay">
-        <img src="framework/img/loading3.gif" height="100px" width="100px" />
+        <img src="framework/img/loading3.gif" style='height:100px;width:100px' alt="loading" />
     </div>
 
     <nav id="nav">
@@ -61,7 +61,7 @@
 
     <nav-title id="navTitle">Loading ...</nav-title>
     <ul>
-      <li id="navi"><div onClick="javascript:appClickMenu();"  id="navi-click"><img src="img/button.png" /></div>
+      <li id="navi"><div onClick="appClickMenu();"  id="navi-click"><img src="img/button.png" alt="menu"/></div>
         <ul id='menuItems' style="visibility:hidden;"><!-- drop down menu - filled by script --></ul>
       </li>
     </ul>
