@@ -10,7 +10,7 @@ class ScheduleTimer(RemoteThreadingClass):
     class to schedule events based on macros and buttons
     """
 
-    def __init__(self, config, apis, data):
+    def __init__(self, config, apis, data, send_queue):
         """
         Class constructor
         """
@@ -31,6 +31,7 @@ class ScheduleTimer(RemoteThreadingClass):
         self.config = config
         self.apis = apis
         self.data = data
+        self.queue = send_queue
 
         self.schedule = self.config.read(rm3presets.active_timer)
         self.schedule_tryout = []
@@ -191,6 +192,7 @@ class ScheduleTimer(RemoteThreadingClass):
         try:
             commands = timer_config["commands"]
             commands_decomposed = self.data.macro_decode(commands)
+            commands_queue = []
             self.logging.info("__EXECUTE TIMER: " + str(commands_decomposed))
 
             act_devices = self.config.read(rm3presets.active_devices)
@@ -201,18 +203,21 @@ class ScheduleTimer(RemoteThreadingClass):
 
                 if "||" in str(command):
                     command, value = command.split("||")
+
                 if "_" in str(command):
                     device, rest = command.split("_")
                     button = command.replace(device+"_", "")
 
-                if type(command) is int:
-                    time.sleep(command)
-                    self.logging.debug("WAIT: " + str(command) + "s")
+                if type(command) is int or type(command) is float:
+                    self.logging.debug("TIMER WAIT: " + str(command) + "s")
+                    commands_queue.append(command)
 
                 elif device in act_devices and button != "":
                     call_api = act_devices[device]["config"]["api_key"] + "_" + act_devices[device]["config"]["api_device"]
-                    self.logging.debug("SEND: call_api="+call_api+", device="+device+", button="+button+", value="+value)
-                    self.apis.api_send(call_api=call_api, device=device, button=button, value=value)
+                    self.logging.debug("TIMER SEND: call_api="+call_api+", device="+device+", button="+button+", value="+value)
+                    commands_queue.append([call_api, device, button, value])
+
+            self.queue.add2queue(commands_queue)
 
         except Exception as e:
             self.logging.error("Could not execute timer event: " + str(e))

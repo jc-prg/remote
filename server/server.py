@@ -53,7 +53,7 @@ if __name__ == "__main__":
     queueQuery = rm3queue.QueueApiCalls("queueQuery", "query", deviceAPIs, configFiles)
     remotesData = rm3data.RemotesData(configFiles, configInterfaces, deviceAPIs, queueQuery)
     remotesEdit = rm3data.RemotesEdit(remotesData, configFiles, configInterfaces, deviceAPIs, queueQuery)
-    remoteSchedule = rm3timer.ScheduleTimer(configFiles, deviceAPIs, remotesData)
+    remoteSchedule = rm3timer.ScheduleTimer(configFiles, deviceAPIs, remotesData, queueSend)
     remoteAPI = rm3api.RemoteAPI(remotesData, remotesEdit, configFiles, deviceAPIs,
                                  queueQuery, queueSend, remoteSchedule)
 
