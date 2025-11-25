@@ -59,6 +59,7 @@ class Connect(RemoteThreadingClass):
         self.checking_last = 0
         self.check_error = time.time()
         self.last_message = ""
+        self.info_no_devices_found = {}
 
         if rm3presets.log_api_data == "NO":
             self.log_commands = False
@@ -208,8 +209,10 @@ class Connect(RemoteThreadingClass):
 
         for key in self.api:
             if key not in self.api_device_list:
-                self.logging.warning("Device Activity: Could not find list of devices for '" + key + "'; " +
-                                     "Assumption: no devices connected yet.")
+                if key not in self.info_no_devices_found or not self.info_no_devices_found[key]:
+                    self.logging.warning("Device Activity: Could not find list of devices for '" + key + "'; " +
+                                         "Assumption: no devices connected yet.")
+                    self.info_no_devices_found[key] = True
                 continue
 
             device_list = self.api_device_list[key]
@@ -350,6 +353,9 @@ class Connect(RemoteThreadingClass):
             reread_config (bool): reread configuration data
         """
         config = {}
+        if interface in self.info_no_devices_found:
+            self.info_no_devices_found[interface] = False
+
         if reread_config or interface == "all":
             config = self.config.interfaces_identify()
             if interface != "all":
