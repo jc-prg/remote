@@ -50,7 +50,7 @@ class ScheduleTimer(RemoteThreadingClass):
         Run to schedule events
         """
         time.sleep(10)
-        self.logging.info("Starting ScheduleTimer ...")
+        self.logging.info("Starting Schedule Timer (interval ~60s) ...")
         self.schedule_create_short()
         while self._running:
 
@@ -136,12 +136,11 @@ class ScheduleTimer(RemoteThreadingClass):
         """
         check if there are events to be started
         """
-        #now = datetime.now().strftime("%Y-%m-%d-%H-%M-%w")
         now = self.config.local_time().strftime("%Y-%m-%d-%H-%M-%w")
         if now == self.last_execute:
             return
 
-        self.logging.info("Check if timer is scheduled (~60s) ...")
+        self.logging.debug("Check if timer is scheduled (~60s) ...")
         self.last_execute = now
         n_year, n_month, n_day, n_hour, n_minute, n_week_day = now.split("-")
 
