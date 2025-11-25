@@ -213,7 +213,7 @@ class RemoteThreadingClass(threading.Thread, RemoteDefaultClass):
         wait = self._thread_waiting_times[self._thread_priority]
 
         if not use_priority:
-            time.sleep(0.02)
+            time.sleep(0.05)
         else:
             while self._running and start_time + wait > time.time():
                 time.sleep(0.1)
