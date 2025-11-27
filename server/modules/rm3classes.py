@@ -205,14 +205,20 @@ class RemoteThreadingClass(threading.Thread, RemoteDefaultClass):
         self._processing = False
         rm3presets.server_health[self.class_id] = "stopped"
 
-    def thread_wait(self, use_priority=True):
+    def thread_wait(self, use_priority=True, use_wait_time=0):
         """
         wait some time and register health signal
+
+        Args:
+            use_priority (bool): use in class defined waiting time for the priority set for the class (True) or a default value of 0.05s instead (False)
+            use_wait_time (float): use a specific waiting time in seconds
         """
         start_time = time.time()
         wait = self._thread_waiting_times[self._thread_priority]
 
-        if not use_priority:
+        if use_wait_time != 0:
+            time.sleep(use_wait_time)
+        elif not use_priority:
             time.sleep(0.05)
         else:
             while self._running and start_time + wait > time.time():

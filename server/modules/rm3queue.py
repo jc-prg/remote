@@ -46,7 +46,7 @@ class QueueApiCalls(RemoteThreadingClass):
         while self._running:
 
             if len(self.queue) == 0:
-                self.thread_wait(use_priority=False)
+                self.thread_wait(use_wait_time=0.04)
                 count += 1
                 if count > 10000:
                     self.logging.info("Queue still running.")
@@ -74,7 +74,7 @@ class QueueApiCalls(RemoteThreadingClass):
                 self.logging.debug("Execute now: " + str(command))
                 self.execute(command)
 
-            self.thread_wait(use_priority=False)
+            self.thread_wait(use_wait_time=0.01)
             count = 0
 
         self.logging.info("Exiting " + self.name)
@@ -113,7 +113,7 @@ class QueueApiCalls(RemoteThreadingClass):
             elif self.query_send == "send":
                 try:
                     result = self.device_apis.api_send(interface, device, button, state)
-                    self.execution_time(device, request_time, time.time())
+                    self.execution_time(device, execution_time, time.time())
                     self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')
                     self.logging.debug("send '" + interface + "/" + device + "/" + button + "=" + state + "': "+result)
 
@@ -145,8 +145,7 @@ class QueueApiCalls(RemoteThreadingClass):
                         self.last_query_time = datetime.datetime.now().strftime('%H:%M:%S (%d.%m.%Y)')
                         devices[device]["status"]["api-last-query"] = self.last_query_time
                         devices[device]["status"]["api-last-query-tc"] = int(time.time())
-                        devices[device]["status"]["api-status"] = \
-                            self.device_apis.api[self.device_apis.device_api_string(device)].status
+                        devices[device]["status"]["api-status"] = self.device_apis.api[self.device_apis.device_api_string(device)].status
                         log_results.append(value + "=" + str(result))
 
                     except Exception as e:
@@ -160,8 +159,7 @@ class QueueApiCalls(RemoteThreadingClass):
 
                 if log_error > 1:
                     log_results.append("...")
-                self.logging.debug("query " + interface + " (" + str(round(time.time() - log_time_start, 1)) + "s): " +
-                                   ", ".join(log_results))
+                self.logging.debug("query " + interface + " (" + str(round(time.time() - log_time_start, 1)) + "s): " + ", ".join(log_results))
 
                 if self.config != "":
                     self.config.device_set_values(device, "status", devices[device]["status"])
