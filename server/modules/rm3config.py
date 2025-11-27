@@ -35,7 +35,7 @@ class ConfigInterfaces(RemoteThreadingClass):
 
             self.thread_wait()
 
-        self.logging.info("Exiting " + self.name)
+        self.logging.info("Stopped " + self.name)
 
     def stop(self):
         """
@@ -118,7 +118,7 @@ class ConfigCache(RemoteThreadingClass):
 
             self.thread_wait()
 
-        self.logging.info("Exiting " + self.name)
+        self.logging.info("Stopped " + self.name)
 
     def user_action(self):
         """

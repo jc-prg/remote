@@ -77,7 +77,7 @@ class QueueApiCalls(RemoteThreadingClass):
             self.thread_wait(use_wait_time=0.01)
             count = 0
 
-        self.logging.info("Exiting " + self.name)
+        self.logging.info("Stopped " + self.name)
 
     def execute(self, command):
         """

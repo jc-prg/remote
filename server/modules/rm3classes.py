@@ -200,7 +200,7 @@ class RemoteThreadingClass(threading.Thread, RemoteDefaultClass):
         """
         Stop if thread (set self._running = False)
         """
-        self.logging.debug("GOT STOPPING SIGNAL ...")
+        self.logging.info("STOP SIGNAL for "+self.name+" ...")
         self._running = False
         self._processing = False
         rm3presets.server_health[self.class_id] = "stopped"

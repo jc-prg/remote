@@ -62,7 +62,7 @@ class ScheduleTimer(RemoteThreadingClass):
             self.schedule_check()
             self.thread_wait()
 
-        self.logging.info("Stopped " + self.name + ".")
+        self.logging.info("Stopped " + self.name)
 
     def get_timer_events(self):
         """

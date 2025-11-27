@@ -5,6 +5,7 @@ import sys
 import logging
 import traceback
 import connexion
+import signal
 from flask_cors import CORS
 
 import server.modules.rm3config as rm3cache
@@ -24,8 +25,64 @@ def on_exception(exc_type, value, trace_back):
     log.error("EXCEPTION:\n\n" + tb_str + "\n")
 
 
+def on_exit(signum, handler):
+    """
+    Clean exit on Strg+C
+    All shutdown functions are defined in the "finally:" section in the end of this script
+    """
+    print('\nSTRG+C pressed! (Signal: %s)' % (signum,))
+    time.sleep(1)
+    confirm = "yes"
+    while True:
+        if confirm == "":
+            confirm = input('Enter "yes" to cancel program now or "no" to keep running [yes/no]: ').strip().lower()
+
+        if confirm == 'yes':
+            print("Cancel!\n")
+            shutdown()
+            time.sleep(5)
+            sys.exit()
+        elif confirm == 'no':
+            print("Keep running!\n")
+            break
+        else:
+            confirm = ""
+            print('Sorry, no valid answer...\n')
+        pass
+
+
+def on_kill(signum, handler):
+    """
+    Clean exit on kill command
+    All shutdown functions are defined in the "finally:" section in the end of this script
+    """
+    print('\nKILL command detected! (Signal: %s)' % (signum,))
+    shutdown()
+    time.sleep(5)
+    sys.exit()
+
+
+def shutdown():
+    eval("log_srv." + rm3presets.log_level.lower() + "('---------------------------------------------------------------')")
+    configFiles.stop()
+    configInterfaces.stop()
+    queueSend.stop()
+    queueQuery.stop()
+    deviceAPIs.stop()
+    remotesData.stop()
+    remoteSchedule.stop()
+    time.sleep(5)
+    eval("log_srv." + rm3presets.log_level.lower() + "('---------------------------------------------------------------')")
+    eval("log_srv." + rm3presets.log_level.lower() + "('OK')")
+    pass
+
+
 log_srv = rm3presets.set_logging("server")
 log = logging.getLogger("werkzeug")
+
+# set system signal handler
+signal.signal(signal.SIGINT, on_exit)
+signal.signal(signal.SIGTERM, on_kill)
 sys.excepthook = on_exception
 
 eval("log_srv."+rm3presets.log_level.lower()+"('---------------------------------------------------------------')")
@@ -54,15 +111,14 @@ if __name__ == "__main__":
     remotesData = rm3data.RemotesData(configFiles, configInterfaces, deviceAPIs, queueQuery)
     remotesEdit = rm3data.RemotesEdit(remotesData, configFiles, configInterfaces, deviceAPIs, queueQuery)
     remoteSchedule = rm3timer.ScheduleTimer(configFiles, deviceAPIs, remotesData, queueSend)
-    remoteAPI = rm3api.RemoteAPI(remotesData, remotesEdit, configFiles, deviceAPIs,
-                                 queueQuery, queueSend, remoteSchedule)
+    remoteAPI = rm3api.RemoteAPI(remotesData, remotesEdit, configFiles, deviceAPIs, queueQuery, queueSend, remoteSchedule)
 
     configFiles.start()
     configInterfaces.start()
     queueSend.start()
     queueQuery.start()
     deviceAPIs.start()
-    remotesData.start()   # !!! create threading class
+    remotesData.start()
     remoteSchedule.start()
 
     # Create REST API

@@ -64,7 +64,7 @@ class RemotesData(RemoteThreadingClass):
             else:
                 self.logging.debug("Skipping status requests due to missing user activity.")
 
-        self.logging.info("Exiting " + self.name)
+        self.logging.info("Stopped " + self.name)
 
     def api_devices_connections(self):
         """

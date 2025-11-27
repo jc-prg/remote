@@ -100,7 +100,7 @@ class Connect(RemoteThreadingClass):
                     self.api_reconnect(key)
                 self.api_request_reconnect = {}
 
-        self.logging.info("Exiting " + self.name)
+        self.logging.info("Stopped " + self.name)
 
     def check_connection(self):
         """
