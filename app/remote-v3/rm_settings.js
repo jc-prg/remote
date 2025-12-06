@@ -1122,6 +1122,9 @@ class RemoteSettingsGeneral {
             this.button.sized("set01","reload (scroll)","settings","appForceReload(true);") + "&nbsp;" +
             this.button.sized("set02","check updates","settings","appFW.requestAPI(\"GET\",[\"version\",\"" + appVersion +"\"], \"\", appMsg.alertReturn, \"wait\");")
         );
+        set_temp += this.tab.row("",
+            this.button.sized("set03","restart server","settings","apiShutdownRestart();")
+        );
         set_temp += this.tab.row("<i>Devices:</i>",
             this.button.sized("set21","Dev ON/OFF", "settings","appMsg.confirm(#" + q1 + "#, #appFW.requestAPI(##GET##,[##reset##],####,apiAlertReturn );#);") + "&nbsp;" +
             this.button.sized("set22","Audio Level","settings", "appMsg.confirm(#" + q2 + "#, #appFW.requestAPI(##GET##,[##reset-audio##],####,apiAlertReturn );# );")

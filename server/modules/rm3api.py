@@ -1,3 +1,4 @@
+import sys
 import time
 import server.modules.rm3presets as rm3presets
 from server.modules.rm3classes import RemoteDefaultClass
@@ -1432,6 +1433,17 @@ class RemoteAPI(RemoteDefaultClass):
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
+        return data
+
+    def shutdown(self):
+        """
+        shutdown server (reboot if started with docker-compose)
+        """
+        data = self._start(["request-only"])
+        data["REQUEST"]["Return"] = "OK: Requested shutdown."
+        data["REQUEST"]["Command"] = "shutdown"
+        data = self._end(data)
+        self.config.shutdown_request = True
         return data
 
     def test(self):

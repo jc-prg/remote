@@ -11,12 +11,12 @@ function apiCheckUpdates() {
 
 function apiCheckUpdates_msg( data ) {
 
-	msg = data["REQUEST"]["Return"];
+	let msg = data["REQUEST"]["Return"];
 	msg = "<br/></b><i>"+msg+"</i>";
 
 	appMsg.wait("Loading App ..."+msg, "remoteInit();" );
 
-	if (data["REQUEST"]["ReturnCode"] != "802") {
+	if (data["REQUEST"]["ReturnCode"] !== "802") {
 		rm3update = true;
 		}
 	}
@@ -761,7 +761,7 @@ function apiGetConfig_createDropDown( device, callback ) {
 }
 
 function apiGetConfig_showInterfaceData( callback ) {
-    var send_cmd = ["config", "interface", "all"];
+    let send_cmd = ["config", "interface", "all"];
 	appFW.requestAPI( "GET", send_cmd, "", callback );
 }
 
@@ -790,12 +790,12 @@ function apiLoggingLoad() {
 }
 
 function apiLoggingWrite(data) {
-    var log_data = data["DATA"];
+    let log_data = data["DATA"];
     if (!log_data) {
         console.error("apiLoggingWrite: got no logging data!");
         return;
         }
-    title    = "<b>API Send</b><hr/>";
+    let title = "<b>API Send</b><hr/>";
     setTextById("logging_api_send",     title + log_data["log_api"]["send"].join("<br/>"));
     title    = "<b>QUEUE Send</b><hr/>";
     setTextById("logging_queue_send",   title + log_data["log_send"].join("<br/>"));
@@ -804,4 +804,14 @@ function apiLoggingWrite(data) {
     setTextById("logging_api_query",     title + log_data["log_api"]["query"].join("<br/>"));
     title    = "<b>QUEUE Query</b><hr/>";
     setTextById("logging_queue_query",   title + log_data["log_query"].join("<br/>"));
+}
+
+// shutdown server
+function apiShutdownRestart() {
+    appMsg.confirm(lang("RESTART"), "appShutdownRestart_exec();");
+}
+
+function appShutdownRestart_exec() {
+    appFW.requestAPI( "GET", ["shutdown"], "", apiAlertReturn);
+
 }

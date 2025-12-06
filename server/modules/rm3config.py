@@ -1,5 +1,7 @@
+import sys
 import time
 import os
+import signal
 import server.modules.rm3presets as rm3presets
 import server.modules.rm3json as rm3json
 from server.modules.rm3classes import RemoteThreadingClass
@@ -83,6 +85,7 @@ class ConfigCache(RemoteThreadingClass):
         self.write_cache = False
         self.thread_priority(4)
 
+        self.shutdown_request = False
         self.load_after_update = {}
         self.load_after = {}
         self.config_errors = {}
@@ -115,6 +118,9 @@ class ConfigCache(RemoteThreadingClass):
             # Reread values from config files
             if self.cache_update:
                 self.cache_refill_from_files()
+
+            # check if shutdown is requested ...
+            self.check_shutdown()
 
             self.thread_wait()
 
@@ -645,3 +651,11 @@ class ConfigCache(RemoteThreadingClass):
         target_date = today - timedelta(days=days)
         self.logging.debug("Target date: " + str(target_date))
         return target_date.strftime('%Y%m%d')
+
+    def check_shutdown(self):
+        """
+        shutdown server
+        """
+        if self.shutdown_request:
+            self.logging.info("Shutdown request via API ...")
+            os.kill(os.getpid(), signal.SIGTERM)

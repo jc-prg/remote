@@ -96,6 +96,28 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
 
+  /shutdown/:
+    get:
+      operationId: __main__.remoteAPI.shutdown
+      tags:
+        - status
+      summary: shutdown the server
+      description: shutdown the server
+      responses:
+        200:
+          description: Successfully requested shutdown
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
+
+
+
   /config/device/{device}/:
     get:
       operationId: __main__.remoteAPI.get_config_device

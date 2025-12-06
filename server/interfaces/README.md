@@ -16,13 +16,12 @@ The following interfaces are integrated at the moment.
 
 ## Definitions
 
-* **Remote** - Remote control for a single device
+* **Device** - Remote control for an end device such as receiver, bluray player, smart sockets, light bulbs
 * **Scene** - Remote control to control a set of devices
-* **Device** - End device to be control such as receiver, bluray player, smart sockets, light bulbs
-* **API** - Interface to control one or more API Devices
+* **API** - Interface to control one or more API Devices (part of the server)
 * **API-Device** - Device that controls the end devices which can be the end devices itself or hub devices the control several end devices (like the [BROADLINK](broadlink/README.md) device)
 
-## How to integrate new interfaces
+## How to integrate a new API
 
 * Find Python sources for the device API you want to integrate
 * Create a subdirectory for your new API connector using small letters and/or "_"
@@ -38,7 +37,52 @@ The following interfaces are integrated at the moment.
 ## How to create the configuration files
 
 * create a directory (capital letters) for your device in the directory [/data/devices/](../../data/devices/)
-* create the file **00_default.json** in this directory that defines commands for all devices controlled by this API using the following format:
+ 
+### API-Device configuration
+
+* Create the file **00_interface.json** in this directory that defines the connection to the API-devices controlled by this API
+  * the content of the device definition might be different depending on the API, i.e., it might contain username and password
+  * there are multi device API-devices that are used to control several devices (such as ZigBee Hubs or Broadlink RM4)
+  * other devices are connected directly to the API such as ONKYO or SONY devices
+* Hint: For some APIs a devices discovery is available. 
+  There you can create this file in the app (Settings > API Settings > API > API-Device > create API config).
+  (available for BROADLINK and EISCP-ONKYO)
+
+```json
+{
+  "API-Description": "",
+  "API-Info": "https://put-url-here/",
+  "API-Source": "https://put-url-here/",
+  "API-Devices" : {
+    "device01" : {
+      "AdminURL": "http://192.168.1.10:8081/",
+      "Description" : "API Device 01",
+      "IPAddress": "192.168.1.10",
+      "MACAddress": "AA:BB:CC:DD:EE:FF",
+      "Methods": ["send","query"],
+      "MultiDevice": true,
+      "Port": "8080",
+      "PowerDevice": "TAPO-P100_plug02",
+      "Timeout": 5
+      },
+    "device02" : {
+      "AdminURL": "http://192.168.1.11:8081/",
+      "Description": "API Device 02",
+      "IPAddress": "192.168.1.11",
+      "MACAddress": "AA:BB:CC:DD:EE:00",
+      "Methods": ["send","query"],
+      "MultiDevice": true,
+      "Port": "8080",
+      "PowerDevice": "",
+      "Timeout": 5
+      }
+    }
+}
+```
+
+### Default commands for all devices
+
+* create the file **00_default.json** in this directory that defines commands that are valid for all devices controlled by this API using the following format:
 ```json
 {
   "data": {
@@ -82,8 +126,6 @@ The following interfaces are integrated at the moment.
   }
 }
 ```
-* For ZigBee devices this file can be generated automatically in the API Settings of the app. 
-  Open 'API: ZIGBEE2MQTT' and the desired API-Device, navigate to the sheet "API create config".
 * In the **query** section you can set the following
   * _load_interval_: load specific commands in a defined interval, e.g., "cmd_name_3" and "cmd_name_4" every 5 seconds (values from "commands")
   * _load_default_: load all commands at this default interval (integer)
@@ -92,41 +134,15 @@ The following interfaces are integrated at the moment.
   * _load_never_: not implemented yet
   * _load_only_: not implemented yet
 
+### Device specific configurations
 
-* Create a file with device specific buttons and commands using the same format
-* Create the file **00_interface.json** in this directory that defines the connection to the devices controlled by this API (the content of the device definition might be different depending on the API, i.e., it might contain username and password):
+* Create a JSON file with device specific buttons and commands using the same format as **00_default.json**, 
+  the device specific definition is added to the default configuration or overwrites where things are defined in both files.
+* For ZigBee devices this file can be generated automatically in the API Settings of the app. 
+  Open 'API: ZIGBEE2MQTT' and the desired API-Device, navigate to the sheet "API create config".
 
-```json
-{
-  "API-Description": "",
-  "API-Info": "https://put-url-here/",
-  "API-Source": "https://put-url-here/",
-  "API-Devices" : {
-    "device01" : {
-      "AdminURL": "http://192.168.1.10:8081/",
-      "Description" : "API Device 01",
-      "IPAddress": "192.168.1.10",
-      "MACAddress": "AA:BB:CC:DD:EE:FF",
-      "Methods": ["send","query"],
-      "MultiDevice": true,
-      "Port": "8080",
-      "PowerDevice": "TAPO-P100_plug02",
-      "Timeout": 5
-      },
-    "device02" : {
-      "AdminURL": "http://192.168.1.11:8081/",
-      "Description": "API Device 02",
-      "IPAddress": "192.168.1.11",
-      "MACAddress": "AA:BB:CC:DD:EE:00",
-      "Methods": ["send","query"],
-      "MultiDevice": true,
-      "Port": "8080",
-      "PowerDevice": "",
-      "Timeout": 5
-      }
-    }
-}
-```
+
+
 
 --------
 
