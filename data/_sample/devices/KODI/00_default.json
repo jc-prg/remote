@@ -83,7 +83,8 @@
 		"current-audiostream": { "get" : "jc.get_metadata('currentaudiostream')" },
 		"current-audiostream-name": { "get" : "jc.get_metadata('currentaudiostream','name')" },
 		"text" : { "set" : "Input.SendText(text='{DATA}',done=False)" },
-		"text-enter" : { "set" : "Input.SendText(text='{DATA}',done=True)" }
+		"text-enter" : { "set" : "Input.SendText(text='{DATA}',done=True)" },
+        "api-discovery": { "get": "api-discovery" }
 	},
     "query" : {
       "load_intervals" : {
