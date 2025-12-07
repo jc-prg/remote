@@ -1,6 +1,6 @@
 # jc://remote/
 
-With this software you can control several **home media devices** via Infrared and API with an app on your smartphone.
+With this software you can control several **home media devices** via Infrared and API with a web-app, e.g., on your smartphone.
 It requires a small server such as a Raspberry Pi and can control the hardware listed below. 
 You can define remote controls for devices and create scenes that use those commands from 
 those devices or macros to combine several commands on a single button. 
@@ -18,13 +18,13 @@ There are a few templates available to be used and modified.
 - [Disclaimer](#disclaimer)
 
 
-## Currently Supported Interfaces
+## Currently Supported Devices
 
 1. Broadlink Remote Controls  ... [API Info](./server/interfaces/broadlink/README.md)
-3. SONY devices with API ... [API Info](./server/interfaces/sonyapi/README.md)
+2. KODI server  ... [API Info](./server/interfaces/kodi/README.md)
+3. Magic Home compatible LED strips  ... [API Info](./server/interfaces/magichome/README.md)
 4. ONKYO devices with API ... [API Info](./server/interfaces/eiscp/README.md)
-4. KODI server  ... [API Info](./server/interfaces/kodi/README.md)
-5. Magic Home compatible LED strips  ... [API Info](./server/interfaces/magichome/README.md)
+5. SONY devices with API ... [API Info](./server/interfaces/sonyapi/README.md)
 6. Tapo SmartPlugs P100 ... [API Info](./server/interfaces/p100/README.md)
 7. ZigBee Devices via ZigBee2MQTT API ... [API Info](./server/interfaces/zigbee/README.md)
 
@@ -57,7 +57,7 @@ Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 * color picker for RGB, CIE_1391, brightness and color temperature
 * RGB+CCT light templates
 * improved layout for editing of remotes, and improved JSON editing
-* improved setting section and API configuration via app
+* improved setting section and API configuration via app, incl. device discovery for EISCP-ONKYO, KODI, and BROADLINK
 * improved adaptive layout plus additional icons and scene headers
 * improved error messages for device and scene status
 
@@ -215,7 +215,7 @@ In order to use jc://remote/ as it is, the following software must be installed:
 ## Integration of additional APIs and devices
 
 Additional APIs can be added with a little effort if an API source written in Python is available. 
-Find additional information [how to integrate APIs here](server/interfaces/README.md).
+Find here additional information [how to integrate APIs](server/interfaces/README.md).
 
 ## Disclaimer
 
