@@ -224,7 +224,7 @@ class ApiControl(RemoteApiClass):
         }
 
         self.api_discovery = api_config
-        self.logging.info("__DISCOVER: " + self.api_name + " - " + str(device_information))
+        self.logging.info("__DISCOVER: " + self.api_name + " - " + str(self.api_discovery))
         return api_config.copy()
 
     def register(self, command, pin=""):

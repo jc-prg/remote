@@ -40,13 +40,11 @@ The following interfaces are integrated at the moment.
  
 ### API-Device configuration
 
-* Create the file **00_interface.json** in this directory that defines the connection to the API-devices controlled by this API
-  * the content of the device definition might be different depending on the API, i.e., it might contain username and password
-  * there are multi device API-devices that are used to control several devices (such as ZigBee Hubs or Broadlink RM4)
-  * other devices are connected directly to the API such as ONKYO or SONY devices
-* Hint: For some APIs a devices discovery is available. 
-  There you can create this file in the app (Settings > API Settings > API > API-Device > create API config).
-  (available for BROADLINK and EISCP-ONKYO)
+* For completely new APIs create the file **00_interface.json** in this directory that defines the connection to the 
+  API-devices controlled by this API in the following format.
+  * The content of the device definition might be different depending on the API, i.e., it might contain username and password.
+  * There are multi device API-devices that are used to control several devices (such as ZigBee Hubs or Broadlink RM4).
+  * Other devices are connected directly to the API such as ONKYO or SONY devices.
 
 ```json
 {
@@ -79,6 +77,12 @@ The following interfaces are integrated at the moment.
     }
 }
 ```
+
+### Add API devices to the configuration
+
+* Add API devices using the API Settings in the app: select the API and look for your device. The server will scan the network defined
+  in [.env](../../sample.env) as "REMOTE_LOCAL_NETWORK" for devices. If available it uses the discovery mechanism of the API.
+
 
 ### Default commands for all devices
 

@@ -60,21 +60,28 @@ class RemoteApiClass(RemoteDefaultClass):
         self.api_config = device_config
         self.api_device = device
         self.api_description = description
+        self.api_device_config_default = {
+            "API-Description": "",
+            "API-Devices": {},
+            "API-Info": "",
+            "API-Source": ""
+        }
         self.api_config_default = {
+            "AdminURL": "",
             "Description": "",
             "IPAddress": "",
             "Methods": ["send", "query", "record"],
             "MultiDevice": False,
             "Port": "",
             "PowerDevice": "",
-            "Timeout": 5,
-            "USBConnect": ""
+            "Timeout": 5
         }
 
         self.method = method
         self.status = "Start"
         self.working = False
         self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
+        self.detected_devices = []
 
         self.count_error = 0
         self.count_success = 0
@@ -148,6 +155,13 @@ class RemoteApiClass(RemoteDefaultClass):
             dict: empty dict, as not implemented for this API
         """
         self.logging.debug("Method 'devices_listen()' is not implemented for the API '" + self.name + "'.")
+        return {}
+
+    def discover(self):
+        """
+        discover available API devices
+        """
+        self.logging.debug("Method 'discover()' is not implemented for the API '" + self.name + "'.")
         return {}
 
     def send_api(self, command):
