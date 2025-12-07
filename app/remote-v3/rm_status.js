@@ -222,6 +222,7 @@ function statusCheck_apiConnection(data) {
     const config_devices = data["STATUS"]["devices"];
 
     let success_no     = {};
+    let start_no     = {};
 	let error_no       = {};
 	let off_no         = {};
 
@@ -264,21 +265,24 @@ function statusCheck_apiConnection(data) {
 
     // summarize connection status for API based on API Devices
 	for (key in data["STATUS"]["interfaces"]["connect"]) {
-		var [api, dev] = key.split("_");
+		let [api, dev] = key.split("_");
         const status_api = data["STATUS"]["interfaces"]["active"][api];
         const status_dev = data["STATUS"]["interfaces"]["connect"][key];
 
         if (!api_summary[api])   { api_summary[api] = ""; }
         if (!error_no[api])      { error_no[api] = 0; }
         if (!success_no[api])    { success_no[api] = 0; }
+        if (!start_no[api])      { start_no[api] = 0; }
         if (!off_no[api])        { off_no[api] = 0; }
 
 		if (status_dev === "Connected") { success_no[api] += 1; }
+		else if (status_dev.indexOf("Start") > -1) { start_no[api] += 1; }
 		else if (status_dev.indexOf("OFF") > -1) { off_no[api] += 1; }
 		else if (status_dev.indexOf("DISABLED") > -1) { off_no[api] += 1; }
 		else { error_no[api] += 1; }
 
         if (status_api === false)                             { api_summary[api] = "OFF"; }
+        else if (start_no[api] > 0)                           { api_summary[api] = "START"; }
         else if (error_no[api] > 0 && success_no[api] === 0)  { api_summary[api] = "ERROR"; }
         else if (error_no[api] > 0 && success_no[api] > 0)    { api_summary[api] = "OK + ERROR"; }
         else                                                  { api_summary[api] = "OK"; }
@@ -293,6 +297,7 @@ function statusCheck_apiConnection(data) {
 	    if (document.getElementById("api_status_icon_" + key)) {
             let message = "<span style='font-size:18px;color:";
             if (api_summary[key] === "OK")         { message += color_api_connect +      "'>" + sign_ok; }
+            else if (api_summary[key] === "START") { message += color_api_warning +      "'>" + sign_start; }
             else if (api_summary[key] === "ERROR") { message += color_api_error +        "'>" + sign_error; }
             else if (api_summary[key] === "OFF")   { message += color_api_no_connect +   "'>" + ""; }
             else                                   { message += color_api_warning +      "'>" + sign_ok + " " + sign_error; }
