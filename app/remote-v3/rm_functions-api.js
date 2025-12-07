@@ -782,6 +782,28 @@ function apiReconnectInterface(interface_id) {
 	appFW.requestAPI( "POST", send_cmd, "", apiAlertReturn );
 }
 
+
+// add API device
+function apiAddApiDevice(api_name) {
+    let command = ["edit_api_device", api_name];
+    let data = {
+        "ip": getValueById("add_api_ip_"+api_name),
+        "description": getValueById("add_api_description_"+api_name),
+        "api": api_name
+    };
+    appFW.requestAPI("PUT", command, data, apiAlertReturn);
+}
+
+function apiDeleteApiDevice(api_name, api_device) {
+    appMsg.confirm(lang("API_DEVICE_DELETE", [api_name, api_device]), "apiDeleteApiDevice_exec(#"+api_name+"#, #"+api_device+"#);", 140);
+}
+
+function apiDeleteApiDevice_exec(api_name, api_device) {
+    let command = ["edit_api_device", api_name + "_" + api_device];
+    appFW.requestAPI("DELETE", command, "", apiAlertReturn);
+}
+
+
 // load logging information from API
 function apiLoggingLoad() {
     var send_cmd = ["log_queue"];
@@ -805,6 +827,7 @@ function apiLoggingWrite(data) {
     title    = "<b>QUEUE Query</b><hr/>";
     setTextById("logging_queue_query",   title + log_data["log_query"].join("<br/>"));
 }
+
 
 // shutdown server
 function apiShutdownRestart() {

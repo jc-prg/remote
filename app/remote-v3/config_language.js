@@ -66,6 +66,7 @@ let language_app = {
         "API_CONNECTION"        : "API connection",
         "API_COMMANDS"          : "API commands",
         "API_COMMANDS_TEST"     : "API commands - manual testing",
+        "API_DEVICE_DELETE"     : "Do you really want to delete the device <b>{1}</b> from the <b>API {0}</b>?",
         "API_INFORMATION"       : "API information",
         "API_SELECT_CMD"        : "API command or use your own ...",
         "API_INFO"              : "API info",
@@ -251,6 +252,8 @@ let language_app = {
 
         "MANUAL_ADD_ELEMENTS"   : "<h4>Add elements</h4><p>Here you can add different new elements to the remote control. All new elements will be added at the end of the remote control and can be moved up using the tool tip.</p>",
         "MANUAL_ADD_TEMPLATE"   : "<h4>Load template</h4><p>By loading a template you will overwrite the existing remote definition.</p>",
+        "MANUAL_ADD_API-DEVICE" : "Select a detected <b>API device</b> from the list or chose &quot;OTHER&quot; to set an IPv4 address manually. " +
+                                  "If the expected device is not in the list ensure the API device is switched on and try again in a few minutes.",
 
         "MANUAL_CHANNEL"        : "<i>Edit Channels:</i><br/><br/><ul class='help'>" +
                                   "<li>Fill dict for channel definition using the JSON format: " +

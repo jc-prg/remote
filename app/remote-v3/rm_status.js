@@ -334,10 +334,11 @@ function statusCheck_apiConnection(data) {
             let button2 = document.getElementById("reconnect_"+key.toLowerCase());
             let [api, dev] = key.split("_");
 
+            let connected_devices = 0;
             let connect_status_api      = data["STATUS"]["interfaces"]["active"][api];
             let connect_status          = data["STATUS"]["interfaces"]["connect"][key];
             let devices_per_interface   = data["CONFIG"]["apis"]["structure"];
-            let connected_devices       = devices_per_interface[api][dev].length;
+            if (devices_per_interface[api][dev]) { connected_devices = devices_per_interface[api][dev].length; }
             let value = "";
 
             //if (api == "TEST") { alert(api+":"+connect_status_api); }

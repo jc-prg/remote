@@ -840,6 +840,7 @@ class RemoteSettingsApi {
                 "document.getElementById(\"save_"+api_dev+"\").className=\"rm-button settings\";";
             let link_api_info = "window.open(\""+interfaces[api_name]["API-Info"]+"\")";
             let link_on_off = "apiApiDeviceOnOff_button(\""+api_name+"\", \""+device+"\", this);";
+            let link_delete = "apiDeleteApiDevice(\""+api_name+"\",\""+device+"\");";
 
             let buttons = "";
             let buttons_plus = "";
@@ -862,6 +863,7 @@ class RemoteSettingsApi {
             buttons      += this.button.sized("edit_"+api_dev,       lang("EDIT"),     "settings",  link_edit)
             buttons      += this.button.sized("save_"+api_dev,       lang("SAVE"),     "hidden",    link_save);
             buttons      += this.button.sized("info_"+api_dev,       lang("API_INFO"), "settings",  link_api_info);
+            buttons      += this.button.sized("delete_"+api_dev,     lang("DELETE"),   "settings",  link_delete);
 
             if (this.data["CONFIG"]["apis"]["list_api_commands"][api_name+"_"+device] && dataAll["CONFIG"]["apis"]["list_api_commands"][api_name+"_"+device].length > 0) {
                 if (show_buttons === undefined) { buttons_plus += "<hr style='width:100%;float:left;'/>"; }
@@ -934,7 +936,7 @@ class RemoteSettingsApi {
                 temp += this.tab.row("API Call:<br/>","<div id='api_command-"+api_name+"_"+device+"'>get=device-configuration</div><br/>");
                 temp += this.tab.row("<div class='remote-edit-cmd' id='api_response_"+api_name+"_"+device+"'></div><br/>",false);
                 temp += this.tab.end();
-                temp += this.button.edit("apiSendToDeviceApi( getValueById('api_device-"+api_name+"_"+device+"')+'||"+api_name+"_"+device+"', getTextById('api_command-"+api_name+"_"+device+"'), true);"+activate_copy_button, lang("CREATE"), "disabled", "create_button_"+api_name+"_"+device) + "&nbsp;";
+                temp += this.button.edit("apiSendToDeviceApi(getValueById('api_device-"+api_name+"_"+device+"')+'||"+api_name+"_"+device+"', getTextById('api_command-"+api_name+"_"+device+"'), true);"+activate_copy_button, lang("CREATE"), "disabled", "create_button_"+api_name+"_"+device) + "&nbsp;";
                 temp += this.button.edit("copyTextById('JSON_copy',appMsg,'"+lang("COPIED_TO_CLIPBOARD")+"');"+activate_copy_button, lang("COPY"), "disabled", "copy_button_"+api_name+"_"+device);
             }
             return temp;
@@ -960,6 +962,43 @@ class RemoteSettingsApi {
             }
             return "";
         }
+        this.create_api_add_dialog = function (api_name, data) {
+
+            //return this.elements.select(id,"device",list,onchange);
+            let onchange = "setValueById('add_api_ip_"+api_name+"', this.value);";
+            onchange += "let description = ''; ";
+            onchange += "if (this.options[this.selectedIndex].text === 'OTHER') { } ";
+            onchange += "else { description = this.options[this.selectedIndex].text.split('| ')[1]; description = description.replace('API: ',''); } ";
+            onchange += "setValueById('add_api_description_"+api_name+"', description);";
+            let list = {};
+            let available_devices = data["DATA"]["available"]["OTHER"]
+            if (data["DATA"]["available"][api_name] && data["DATA"]["available"][api_name].length >= 1) {
+                available_devices = data["DATA"]["available"][api_name];
+            }
+
+            for (let device in available_devices) {
+                let device_info = available_devices[device];
+                let identified = "";
+                if (device_info["description"]) { device_info["hostname"] = device_info["description"]; }
+                if (device_info["identified"]) { identified = "API: "; }
+                list[device_info["ip"]] = device_info["ip"] + " | " + identified + device_info["hostname"];
+            }
+            list["aaa.bbb.ccc.ddd"] = "OTHER";
+
+            let temp = "<div style='padding:3px;'>";
+            temp += this.tab.start("");
+            temp += this.tab.row(lang("MANUAL_ADD_API-DEVICE")+"<br/>&nbsp;", false);
+            temp += this.tab.row("API:", api_name);
+            temp += this.tab.row("API-Device:", this.elements.select("add_api_device_"+api_name,"API device",list,onchange));
+            temp += this.tab.row("IP-Address:", this.elements.input("add_api_ip_"+api_name));
+            temp += this.tab.row("Description:&nbsp;", this.elements.input("add_api_description_"+api_name));
+            temp += this.tab.end();
+            temp += "<br/>";
+
+            temp += this.button.edit("apiAddApiDevice('"+api_name+"');", lang("ADD"));
+            temp += "</div>";
+            return temp;
+        }
 
         this.button.width = "72px";
 
@@ -974,6 +1013,8 @@ class RemoteSettingsApi {
                 let container_title = "</b>API-Device: "+dev+"&nbsp;&nbsp;<text id='api_status_icon_"+key+"_"+dev+"' style='font-size:16px;'></text>";
                 setting += this.basic.container("details_"+key+"_"+dev, container_title, temp_edit_device_config, false);
             }
+            let temp_add = this.create_api_add_dialog(key, data)
+            setting += this.basic.container("add_api_"+key, lang("ADD"), temp_add, false);
             setTextById(id, setting + "<br/>");
 
             // create sheet boxes for all devices of this interface
