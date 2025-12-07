@@ -60,6 +60,7 @@ class RemoteApiClass(RemoteDefaultClass):
         self.api_config = device_config
         self.api_device = device
         self.api_description = description
+        self.api_discovery = {}
         self.api_device_config_default = {
             "API-Description": "",
             "API-Devices": {},

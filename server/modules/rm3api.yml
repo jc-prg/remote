@@ -115,8 +115,57 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
 
+  /edit_api_device/{api}/:
+    put:
+      operationId: __main__.remoteAPI.edit_api_add
+      tags:
+        - edit
+      summary: add api device
+      description: add api device
+      parameters:
+        - name: api
+          in: path
+          type: string
+          required: true
+        - name: api_data
+          in: body
+          schema:
+            type: object
+          required: true
+      responses:
+        200:
+          description: Successfully added api device
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
 
-
+    delete:
+      operationId: __main__.remoteAPI.edit_api_delete
+      tags:
+        - edit
+      summary: add api device
+      description: add api device
+      parameters:
+        - name: api
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully added api device
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
 
   /config/device/{device}/:
     get:

@@ -202,6 +202,7 @@ try:
     scene_img_dir = get_env('REMOTE_DIR_SCENES')
     app_language = get_env('REMOTE_LANGUAGE')
     timezone_offset = int(get_env('REMOTE_TIMEZONE_OFFSET'))
+    local_network = get_env('REMOTE_LOCAL_NETWORK')
 
     log_level = get_env('REMOTE_LOG_LEVEL')  # set log level: INFO, DEBUG, WARNING, ERROR
     log_to_file = get_env('REMOTE_LOG_TO_FILE')  # shall logging done into a logfile: YES, NO

@@ -487,7 +487,7 @@ class ConfigCache(RemoteThreadingClass):
 
     def interfaces_identify(self):
         """
-        Identify existing interfaces
+        Identify existing interfaces and create / recreate _ACTIVE-APIS.json
 
         Returns:
             dict: interface configuration
@@ -516,7 +516,7 @@ class ConfigCache(RemoteThreadingClass):
                 interface_config[key] = {
                     "active":           True,
                     "config_file":      str(interface_config_dir) + ".json",
-                    "config_info":      "Don't edit config here!",
+                    "config_info":      "Don't edit config here, this is just temporary!",
                     "devices":          {},
                     "devices_active":   {},
                     "devices_count":    0
@@ -621,6 +621,82 @@ class ConfigCache(RemoteThreadingClass):
 
         self.write(rm3presets.active_apis, interface_config)
         self.interface_configuration = interface_config.copy()
+        return "OK"
+
+    def interface_device_add(self, interface, api_device, api_data):
+        """
+        add an API device to the API configuration
+
+        Args:
+            interface (str): API type
+            api_device (str): API device id
+            api_data (object): API device definition
+        Returns:
+            str: 'OK' or 'ERROR'
+        """
+        interface_config_dir = os.path.join(rm3presets.commands, interface, "00_interface")
+        config_file = os.path.join(rm3presets.data_dir, interface_config_dir + ".json")
+
+        if not os.path.exists(config_file):
+            self.logging.error("Configuration file for API doesn't exist: " + config_file)
+            return "ERROR"
+
+        elif "IPAddress" in api_data and "Description" in api_data:
+            configuration = self.read(interface_config_dir, True)
+            if not "API-Devices" in configuration:
+                self.logging.error("Configuration file doesn't fit the requirements: " + config_file)
+                return "ERROR"
+
+            self.logging.debug("Add configuration to API configuration " + config_file)
+            if api_device not in configuration["API-Devices"]:
+                configuration["API-Devices"][api_device] = api_data
+            else:
+                counter = 1
+                device = api_device
+                while api_device in configuration["API-Devices"]:
+                    api_device = f"{device}-{counter:02d}"
+                    counter += 1
+
+                configuration["API-Devices"][api_device] = api_data
+
+            self.write(interface_config_dir, configuration)
+
+        else:
+            self.logging.error("Configuration doesn't fit the requirements: " + str(api_data))
+            return "ERROR"
+
+        self.interfaces_identify()
+        return "OK"
+
+    def interface_device_delete(self, interface, api_device):
+        """
+        remote API device from configuration and reload all
+
+        Args:
+            interface (str): API type
+            api_device (str): API device id
+        Returns:
+            str: 'OK' or 'ERROR'
+        """
+        interface_config_dir = os.path.join(rm3presets.commands, interface, "00_interface")
+        config_file = os.path.join(rm3presets.data_dir, interface_config_dir + ".json")
+
+        if not os.path.exists(config_file):
+            self.logging.error("Configuration file for API doesn't exist: " + config_file)
+            return "ERROR"
+
+        configuration = self.read(interface_config_dir, True)
+        if not "API-Devices" in configuration:
+            self.logging.error("Configuration file for API doesn't fit required format: " + config_file)
+            return "ERROR"
+        elif not api_device in configuration["API-Devices"]:
+            self.logging.error("API device "+api_device+" not found in configuration file for API: " + config_file)
+            return "ERROR"
+        else:
+            del configuration["API-Devices"][api_device]
+            self.write(interface_config_dir, configuration)
+
+        self.interfaces_identify()
         return "OK"
 
     def local_time(self, day="today"):

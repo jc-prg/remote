@@ -1,5 +1,6 @@
 import time
 import sys
+import re
 import datetime
 import importlib
 import socket
@@ -33,6 +34,7 @@ class Connect(RemoteThreadingClass):
         self.api_device_list = {}
         self.api_device_settings = {}
         self.api_request_reconnect = {}
+        self.api_request_reconnect_all = False
         self.api_modules = {
             "KODI": "api_kodi",
             "SONY": "api_sony",
@@ -112,9 +114,15 @@ class Connect(RemoteThreadingClass):
             self.thread_wait()
 
             if self.api_request_reconnect != {}:
+                start_time = time.time()
                 for key in self.api_request_reconnect:
                     self.api_reconnect(key)
                 self.api_request_reconnect = {}
+
+            if self.api_request_reconnect_all:
+                start_time = time.time()
+                self.load_api_connectors()
+                self.api_request_reconnect_all = False
 
         self.logging.info("Stopped " + self.name)
 
@@ -141,21 +149,22 @@ class Connect(RemoteThreadingClass):
                 api_active = True
 
             api_device_power = True
-            if "PowerDevice" in self.config.interface_configuration[api]["devices"][dev]:
-                power_device = self.config.interface_configuration[api]["devices"][dev]["PowerDevice"]
-                if "_" in power_device:
-                    [power_api, power_dev] = power_device.split("_")
-                    check_devices = {}
-                    check_devices_last_key = ""
-                    for device in device_status:
-                        if (device_status[device]["config"]["api_key"] == power_api
-                                and device_status[device]["config"]["api_device"] == power_dev
-                                and "power" in device_status[device]["status"]):
-                            check_devices_last_key = power_api+"_"+power_dev+"_"+device
-                            check_devices[check_devices_last_key] = device_status[device]["status"]["power"]
-                    if len(check_devices) == 1:
-                        if "OFF" in check_devices[check_devices_last_key].upper():
-                            api_device_power = False
+            if dev in self.config.interface_configuration[api]["devices"]:
+                if "PowerDevice" in self.config.interface_configuration[api]["devices"][dev]:
+                    power_device = self.config.interface_configuration[api]["devices"][dev]["PowerDevice"]
+                    if "_" in power_device:
+                        [power_api, power_dev] = power_device.split("_")
+                        check_devices = {}
+                        check_devices_last_key = ""
+                        for device in device_status:
+                            if (device_status[device]["config"]["api_key"] == power_api
+                                    and device_status[device]["config"]["api_device"] == power_dev
+                                    and "power" in device_status[device]["status"]):
+                                check_devices_last_key = power_api+"_"+power_dev+"_"+device
+                                check_devices[check_devices_last_key] = device_status[device]["status"]["power"]
+                        if len(check_devices) == 1:
+                            if "OFF" in check_devices[check_devices_last_key].upper():
+                                api_device_power = False
 
             if not api_active:
                 self.logging.debug("API '" + key + "' is disabled.")
@@ -259,6 +268,7 @@ class Connect(RemoteThreadingClass):
         """
         check devices available in the local network
         """
+        start_time = time.time()
         network = "192.168.2.0/24"
         if "." in rm3presets.local_network:
             network = rm3presets.local_network
@@ -308,17 +318,27 @@ class Connect(RemoteThreadingClass):
         for key in self.api:
             self.api[key].detected_devices = devices
 
+        if time.time() - start_time > 5:
+            self.logging.warning(f"check_devices() took longer than expected: {time.time() - start_time}s")
+
     def check_discover_all(self, wait=0):
         """
         discover all devices where available
         """
+        start_time = time.time()
         if wait > 0:
             time.sleep(wait)
 
-        self.logging.info("Discover all devices ...")
+        self.logging.info(f"Discover all devices for all {len(self.api_check)} APIs ...")
         discover_list = {}
         for api in self.api_check:
+            start_time_api = time.time()
             discover = self.api_check[api].discover()
+
+            for key in self.api:
+                if api in key:
+                    self.api[key].api_discovery = discover
+
             temp = []
             if "API-Devices" in discover:
                 for entry in discover["API-Devices"]:
@@ -336,9 +356,13 @@ class Connect(RemoteThreadingClass):
                     })
 
             discover_list[api] = temp
-            self.logging.info("- " + api)
+            self.logging.debug("- " + api)
+            if time.time() - start_time_api > 10:
+                self.logging.warning(f"check_discover_all():{api} took longer than expected: {round(time.time() - start_time_api, 1)}s")
 
         self.available_discover = discover_list.copy()
+        if time.time() - start_time > 25:
+            self.logging.warning(f"check_discover_all() took longer than expected: {round(time.time() - start_time,1)}s")
 
     def load_api_connectors(self):
         """
@@ -350,6 +374,14 @@ class Connect(RemoteThreadingClass):
         if self.api_first_load:
             self.logging.info(".................... 1st CONNECT OF INTERFACES ....................")
             self.api_first_load = False
+
+            for api in self.api_modules:
+                cmd_interface_mod = "server.interfaces." + self.api_modules[api]
+                api_device = "test"
+                api_device_config = {}
+                module = importlib.import_module(cmd_interface_mod)
+                self.api_check[api] = module.ApiControl(api, api_device, api_device_config, self.log_commands, self.config)
+
         else:
             self.logging.info(".................... RECONNECT OF INTERFACES ....................")
 
@@ -365,13 +397,6 @@ class Connect(RemoteThreadingClass):
             self.api_device_list[api_dev].append(device)
 
         self.logging.debug("---> api_device_list: " + str(self.api_device_list))
-
-        for api in self.api_modules:
-            cmd_interface_mod = "server.interfaces." + self.api_modules[api]
-            api_device = "test"
-            api_device_config = {}
-            module = importlib.import_module(cmd_interface_mod)
-            self.api_check[api] = module.ApiControl(api, api_device, api_device_config, self.log_commands, self.config)
 
         if config_api != {}:
             for api in config_api:
@@ -962,8 +987,12 @@ class Connect(RemoteThreadingClass):
         if interface in self.api:
             result = self.api[interface].devices_available()
             return result
-        else:
+
+        elif not self.api_request_reconnect_all:
             self.logging.warning("devices_available() ... API for '" + interface + "' not loaded.")
+            return {}
+
+        else:
             return {}
 
     def device_listen(self, interface, active):
@@ -984,26 +1013,65 @@ class Connect(RemoteThreadingClass):
         """
         add an API device
 
-        UNDER CONSTRUCTION
-        - check if IP is detected
-        - translate description to ID (remove all characters not [A..Z][-][0..9])
-        - handover required data to config -> to save entry to 00_interface.json
-        - trigger reload of all API devices and configs
+        Args:
+            interface (str): API
+            api_data (dict): data to create API device configuration {"ip":"", "description":"", "mac": ""}
+        Returns:
+            bool: True if successful
         """
-        self.logging.info(f"Add an API device for {interface} ... NOT IMPLEMENTED YET")
+
+        api_entry = {}
+        if "API-Devices" in self.api_check[interface].api_discovery:
+            for key in self.api_check[interface].api_discovery["API-Devices"]:
+                entry = self.api_check[interface].api_discovery["API-Devices"][key]
+                self.logging.error(str(self.api_check[interface].api_discovery["API-Devices"]))
+                if entry["IPAddress"] == api_data.get("ip"):
+                    api_entry = entry
+                    api_entry["Description"] = api_data.get("description")
+
+        if api_entry == {}:
+            api_entry = self.api_check[interface].api_config_default.copy()
+            api_entry["Description"] = api_data.get("description")
+            api_entry["IPAddress"] = api_data.get("ip")
+            api_entry["MACAddress"] = api_data.get("mac")
+
+        if api_entry != {}:
+            self.logging.info(f"{api_entry}")
+            api_key = api_data["description"].upper()
+            api_key = api_key.lstrip()
+            api_key = api_key.rstrip()
+            api_key = api_key.replace(" ","-")
+            api_key = api_key.replace("_","-")
+            clean_key = re.sub(r'[^A-Za-z0-9-]', '', api_key)
+
+            if self.config.interface_device_add(interface, clean_key, api_entry) == "OK":
+                self.api_request_reconnect_all = True
+                return True
+
+        self.logging.error("Could not add the API Device for " + interface + " - " + str(api_data))
         return False
 
-    def device_delete_api(self, interface, api_data):
+    def device_delete_api(self, interface):
         """
         add an API device
 
-        UNDER CONSTRUCTION
-        - check if IP is detected
-        - translate description to ID (remove all characters not [A..Z][-][0..9])
-        - handover required data to config -> to save entry to 00_interface.json
-        - trigger reload of all API devices and configs
+        Args:
+            interface (str): API
+        Returns:
+            bool: True if successful
         """
-        self.logging.info(f"Delete an API device for {interface} ... NOT IMPLEMENTED YET")
+        api = interface.split("_")[0]
+        api_device = interface.split("_")[1]
+
+        if api not in self.api_check or interface not in self.api:
+            self.logging.error(f"Delete API device failed, {interface} is not defined.")
+            return False
+
+        if self.config.interface_device_delete(api, api_device) == "OK":
+            self.api_request_reconnect_all = True
+            self.logging.info(f"Deleted API device {api_device} from API {api}.")
+            return True
+
         return False
 
     def command_get(self, dev_api, button_query, device, button):

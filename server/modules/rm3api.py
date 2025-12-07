@@ -609,6 +609,37 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._end(data, ["no-data", "no-config"])
         return data
 
+    def edit_api_add(self, api, api_data):
+        """
+        add an api device
+        """
+        data = self._start(["request-only"])
+        if self.apis.device_add_api(api, api_data):
+            data["REQUEST"]["Return"] = f"OK: add API device ({api})"
+        else:
+            data["REQUEST"]["Return"] = f"ERROR: add API device ({api})"
+
+        data["REQUEST"]["Command"] = "edit_api_device/add"
+        data = self._end(data)
+        self.logging.info(f"Add API device for {api}: " + str(api_data))
+        return data
+
+    def edit_api_delete(self, api):
+        """
+        delete an api device from config file
+        """
+        data = self._start(["request-only"])
+
+        if self.apis.device_delete_api(api):
+            data["REQUEST"]["Return"] = f"OK: delete API device ({api})"
+        else:
+            data["REQUEST"]["Return"] = f"ERROR: delete API device ({api})"
+
+        data["REQUEST"]["Command"] = "edit_api_device/delete"
+        data = self._end(data)
+        self.logging.info(f"Delete API device {api}")
+        return data
+
     def get_config(self):
         """
         Load and list all data
@@ -705,6 +736,8 @@ class RemoteAPI(RemoteDefaultClass):
 
                 data["DATA"]["interfaces"][api] = api_config.copy()
                 data["DATA"]["interfaces"][api]["API-Config"] = api_device_config["data"].copy()
+                data["DATA"]["available"] = self.apis.available_discover
+                data["DATA"]["available"]["OTHER"] = self.apis.available_devices
 
         elif interface in interfaces:
             data["REQUEST"]["Return"] = "OK"
@@ -1024,7 +1057,6 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Return"] = ""
 
         # decompose group
-        self.logging.info(device)
         if "group" in device:
             group_id = device.split("_")[1]
             act_macros = self.config.read(rm3presets.active_macros)
