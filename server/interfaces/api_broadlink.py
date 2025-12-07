@@ -34,6 +34,8 @@ class ApiControl(RemoteApiClass):
 
         self.config_add_key("MACAddress", "")
         self.config_add_key("DeviceType", "")
+        self.config_add_key("Port", 80)
+        self.config_add_key("MultiDevice", True)
         self.config_set_methods(["send", "record"])
         self.api_discovery = {}
 
@@ -75,9 +77,14 @@ class ApiControl(RemoteApiClass):
             self.api.auth()
             self.status = "Connected"
 
-            self.discover()
+            #self.discover()
 
         except Exception as e:
+            if "invalid literal for int()" in str(e):
+                e = "'DeviceType' or 'Port' not defined correctly."
+            elif "non-hexadecimal number" in str(e):
+                e = "'MACAddress' not defined correctly."
+
             self.status = self.not_connected + " ... CONNECT " + str(e)
             self.logging.error(self.status)
 
@@ -91,7 +98,7 @@ class ApiControl(RemoteApiClass):
                 self.logging.error(self.status)
 
         if self.status == "Connected":
-            self.logging.info("Connected BROADLINK (" + self.api_config["IPAddress"] + ")")
+            self.logging.info(f"Connected {self.api_config["IPAddress"]} - {self.api_name}:{self.api_device}")
 
         return self.status
 
@@ -216,6 +223,7 @@ class ApiControl(RemoteApiClass):
                     "Auth": device.auth()
                 }
             }
+
         api_config = {
             "API-Description": self.api_description,
             "API-Devices": device_information,
@@ -223,7 +231,7 @@ class ApiControl(RemoteApiClass):
             "API-Source": self.api_source_url
         }
 
-        self.api_discovery = api_config
+        self.api_discovery = api_config.copy()
         self.logging.info("__DISCOVER: " + self.api_name + " - " + str(self.api_discovery))
         return api_config.copy()
 

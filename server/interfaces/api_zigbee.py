@@ -266,7 +266,7 @@ class ApiControl(RemoteApiClass):
             except Exception as e:
                 return "ERROR: An error occurred: " + str(e)
         else:
-            self.logging.info("No USBDongle defined, try to connect with external server.")
+            self.logging.debug("No USBDongle defined, try to connect with external server.")
 
         return "OK"
 
@@ -381,7 +381,6 @@ class ApiControl(RemoteApiClass):
                     result["features"][key] = value
 
         return result
-
 
     def device_configuration_command(self, cmd_information):
         """

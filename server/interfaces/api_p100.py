@@ -64,7 +64,7 @@ class ApiControl(RemoteApiClass):
             return self.status
 
         if self.status == "Connected":
-            self.logging.info("Connected TAPO P100 (" + self.api_config["IPAddress"] + ")")
+            self.logging.info(f"Connected {self.api_config["IPAddress"]} - {self.api_name}:{self.api_device}")
 
         return self.status
 

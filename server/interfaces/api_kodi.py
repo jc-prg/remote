@@ -69,10 +69,10 @@ class ApiControl(RemoteApiClass):
             self.logging.warning(self.status)
 
         if self.status == "Connected":
-            self.discover()
-            self.logging.info("Connected KODI (" + self.api_config["IPAddress"] + ")")
+            #self.discover()
+            self.logging.info(f"Connected {self.api_config["IPAddress"]} - {self.api_name}:{self.api_device}")
 
-        return None
+        return self.status
 
     def wait_if_working(self):
         """

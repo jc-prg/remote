@@ -54,7 +54,7 @@ class ApiControl(RemoteApiClass):
             self.api.command("system-power query")  # send a command to check if connected
             # self.api    = eiscp.Receiver(self.api_ip)
             # self.api.on_message = callback_method
-            self.discover()
+            #self.discover()
 
         except Exception as e:
             self.status = "Error connecting to ONKYO device: " + str(e)
@@ -71,7 +71,9 @@ class ApiControl(RemoteApiClass):
             self.logging.warning(self.status)
 
         if self.status == "Connected":
-            self.logging.info("Connected ONKYO (" + self.api_config["IPAddress"] + ")")
+            self.logging.info(f"Connected {self.api_config["IPAddress"]} - {self.api_name}:{self.api_device}")
+
+        return self.status
 
     def wait_if_working(self):
         """

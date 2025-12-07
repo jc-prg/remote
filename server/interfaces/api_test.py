@@ -100,6 +100,7 @@ class ApiControl(RemoteApiClass):
         return discover command for test API
         """
         self.logging.info("__DISCOVER: " + self.api_name + " - " + str(self.default_config))
+        self.api_discovery = self.default_config
         return self.default_config
 
     def test(self):
