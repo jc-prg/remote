@@ -89,11 +89,12 @@ function app_theme_changed(theme) {
 
 //--------------------------------
 
-var app_connection_error = true;
+app_connection_error = true;
 function app_connection_lost(error=false) {
-    if (app_connection_error != error) {
+    if (app_connection_error !== error) {
         if (error) {
             // code if lost connection
+            statusCheck_offline(dataAll);
         }
         else {
             // code if got back connection
@@ -186,18 +187,6 @@ var connect2stage    = "Prod";	// default stage to connect to (changed if rm3_te
 var showButtonTime   = 0.2;     // time to show LED when button pressed
 var showButton       = false;   // default: show pressed button in headline
 var deactivateButton = false;   // default: deactivate buttons if device is not ON
-
-
-/*
-const appleIcon1 = document.querySelector("link[rel='apple-touch-icon']");
-const appleIcon2 = document.querySelector("link[rel='apple-touch-icon-precomposed']");
-
-// change its href
-if (appleIcon) {
-  appleIcon1.setAttribute("href", "favicon_light2.png");
-  appleIcon2.setAttribute("href", "favicon_light2.png");
-}
-*/
 
 
 //--------------------------------------

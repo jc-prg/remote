@@ -25,17 +25,21 @@ let language_app = {
         "STATUS_DEV_POWER_OFF"          : "Der Strom ist ausgeschaltet: <b>{0}</b>",
         "STATUS_DEV_ERROR"              : "Beim Gerät <b>{0}</b> ist ein Fehler aufgetreten. {1}",
         "STATUS_DEV_API_DISABLED"       : "Die API <b>{0}</b> für das Gerät <b>{1}</b> wurde deaktiviert.",
+        "STATUS_DEV_API_STARTING"       : "Die API <b>{0}</b> für das Gerät <b>{1}</b> wird gerade gestartet, bitte warten.",
         "STATUS_DEV_API_ERROR"          : "Bei der API <b>{0}</b> für das angeschlossene Gerät <b>{1}</b> ist ein Fehler aufgetreten. {2}",
         "STATUS_DEV_OTHER_ERROR"        : "Es ist ein unbekannter Fehler beim Gerät <b>{0}</b> aufgetreten.",
         "STATUS_DEV_EMPTY"              : "Für dieses Gerät <b>{0}</b> wurde bislang noch keine Fernbedienung definiert.",
 
         "STATUS_SCENE_OK"               : "Die Szene <b>{0}</b> ist OK.",
         "STATUS_DEV_OFF"                : "Alle Geräte der Szene <b>{0}</b> sind ausgeschaltet.",
+        "STATUS_SCENE_STARTING"         : "Mindestens eine für die Szene <b>{0}</b> nötige API startet gerade, bitte warten.",
         "STATUS_SCENE_POWER_OFF"        : "Der Strom über für Szene <b>{0}</b> ist ausgeschaltet. Nutze <b>{1}</b> zum einschalten.",
         "STATUS_SCENE_PARTLY"           : "Für die Szene <b>{0}</b> sind noch nicht alle nötigen Geräte eingeschaltet: <i>{1}</i>.",
         "STATUS_SCENE_DISABLED"         : "Mindestens eine für die Szene <b>{0}</b> erforderliche API ist deaktiviert.",
         "STATUS_SCENE_ERROR"            : "Für mindestens eines der für die Szene <b>{0}</b> benötigten Geräte ist ein Fehler aufgetreten: <i>{1}</i>.",
         "STATUS_SCENE_EMPTY"            : "Für die Szene <b>{0}</b> wurde bislang noch keine Fernbedienung definiert.",
+
+        "STATUS_NO_SERVER_CONNECT"      : "Aktuell besteht keine Verbindung zum Server.",
         },
     "EN" : {
         "ADD_ELEMENTS"          : "Add elements",
@@ -401,17 +405,21 @@ let language_app = {
         "STATUS_DEV_POWER_OFF"         : "The power device is switched off: <b>{0}</b>.",
         "STATUS_DEV_ERROR"             : "An error occurred for device <b>{0}</b>. {1}",
         "STATUS_DEV_API_DISABLED"      : "The API <b>{0}</b> for the device <b>{1}</b> has been disabled.",
+        "STATUS_DEV_API_STARTING"      : "The API <b>{0}</b> for the device <b>{1}</b> is starting, please wait.",
         "STATUS_DEV_API_ERROR"         : "An API error occurred for <b>{0}</b> and the connected device <b>{1}</b>. {2}",
         "STATUS_DEV_OTHER_ERROR"       : "Unknown error occurred for the device <b>{0}</b>.",
         "STATUS_DEV_EMPTY"             : "For this device <b>{0}</b> no remote control layout is defined yet.",
 
         "STATUS_SCENE_OK"              : "Scene <b>{0}</b> is OK.",
         "STATUS_DEV_OFF"               : "All devices of the scene <b>{0}</b> are switched off.",
+        "STATUS_SCENE_STARTING"        : "At least one required API the scene <b>{0}</b> is (re)starting, please wait.",
         "STATUS_SCENE_POWER_OFF"       : "Power device <b>{1}</b> for scene <b>{0}</b> is switched off.",
         "STATUS_SCENE_PARTLY"          : "For the scene <b>{0}</b> required devices are still switched off: <i>{1}</i>. Press 'ON' to switch on the missing devices.",
         "STATUS_SCENE_DISABLED"        : "At least one for the scene <b>{0}</b> required API  is disabled.",
         "STATUS_SCENE_ERROR"           : "For at least one of the required devices for the scene <b>{0}</b> an error occurred: <i>{1}</i>.",
         "STATUS_SCENE_EMPTY"           : "For this scene <b>{0}</b> no remote control layout is defined yet.",
+
+        "STATUS_NO_SERVER_CONNECT"      : "At the moment there is no connection to the server.",
 
         "TEXT_INPUT"                   : "Text input",
         "TEMPLATE"                     : "template",
