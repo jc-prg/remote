@@ -14,7 +14,9 @@ let device_media_info       = {};
 
 
 // load the devices status -> visualization via function statusCheck();
-function statusCheck_load() { appFW.requestAPI("GET",["list"], "", statusCheck, "" ); }
+function statusCheck_load() {
+    appFW.requestAPI("GET",["list"], "", statusCheck, "" );
+}
 
 
 // coordinate visualization of the devices status
@@ -57,6 +59,7 @@ function statusCheck(data={}) {
     console.log("statusCheck: Updated all status elements ("+duration+"ms)");
 	}
 
+
 // status messages in case the server is offline
 function statusCheck_offline(data) {
     console.error("Lost connection to the server.");
@@ -64,6 +67,7 @@ function statusCheck_offline(data) {
     statusCheck_devicePowerButtonDisplay(data, true);
     statusCheck_scenePowerButtonDisplay(data, true);
 }
+
 
 // check and display current volume -> partly removed, final check open if still required
 function statusShow_volume_old( volume, maximum, vol_color, novol_color="" ) {
