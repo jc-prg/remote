@@ -25,7 +25,6 @@ function statusCheck(data={}) {
 	// if not data includes -> error
 	if (!data["CONFIG"] || !data["STATUS"]) {
 		console.error("statusCheck: data not loaded.");
-		statusShowApiStatus("red", showButtonTime);
 		return;
 		}
     const start = Date.now();
@@ -63,6 +62,7 @@ function statusCheck(data={}) {
 // status messages in case the server is offline
 function statusCheck_offline(data) {
     console.error("Lost connection to the server.");
+    statusCheck_health(data, true);
     statusCheck_deviceActive(data, true);
     statusCheck_devicePowerButtonDisplay(data, true);
     statusCheck_scenePowerButtonDisplay(data, true);
@@ -823,7 +823,6 @@ function statusCheck_deviceActive(data, app_connection_error=false) {
 	if (deactivateButton)	{ return; }
 	if (!data["CONFIG"]) {
 		console.error("statusCheck_deviceActive: data not loaded.");
-		statusShowApiStatus("red", showButtonTime);
 		return;
 		}
 
@@ -936,6 +935,7 @@ function statusCheck_deviceActive(data, app_connection_error=false) {
             }
 
 			// check if device of buttons is active
+            devices_config[device]["buttons"].push("keyboard");
 			for (let i=0;i<devices_config[device]["buttons"].length;i++) {
 				let button   = devices_config[device]["buttons"][i].toLowerCase();
 
@@ -953,23 +953,22 @@ function statusCheck_deviceIdle(data) {
 
 	if (!data["CONFIG"]) {
 		console.error("statusCheck_deviceActive: data not loaded.");
-		statusShowApiStatus("red", showButtonTime);
 		return;
 		}
 
-	for (var device in data["STATUS"]["devices"]) {
-	    var device_status   = data["STATUS"]["devices"][device];
-	    var last_send       = device_status["api-last-send-tc"];
-	    var auto_power_off  = device_status["auto-power-off"];
-	    var power_status    = device_status["power"];
-	    var current_time    = Math.round(new Date().getTime() / 1000);
+	for (let device in data["STATUS"]["devices"]) {
+        const device_status = data["STATUS"]["devices"][device];
+        const last_send = device_status["api-last-send-tc"];
+        const auto_power_off = device_status["auto-power-off"];
+        const power_status = device_status["power"];
+        const current_time = Math.round(new Date().getTime() / 1000);
 
-	    if (document.getElementById("display_"+device+"_auto-power-off")) {
+        if (document.getElementById("display_"+device+"_auto-power-off")) {
 	        setTextById("display_"+device+"_auto-power-off", power_status);
 	    }
 
-        if (last_send != undefined && auto_power_off != undefined) {
-            if (power_status == "ON" && (auto_power_off - (current_time - last_send)) > 0) {
+        if (last_send !== undefined && auto_power_off !== undefined) {
+            if (power_status === "ON" && (auto_power_off - (current_time - last_send)) > 0) {
 	            //console.log(" ....... " + (current_time - last_send) + " ... " + auto_power_off);
 	            var off = convert_second2time(auto_power_off - (current_time - last_send));
                 setTextById("device_auto_off_"+device, "-&gt;&nbsp;Auto-Power-Off  in " + off);
@@ -1055,26 +1054,26 @@ function statusCheck_devicePowerButtonDisplay(data={}, app_connection_error=fals
 
 
 // check system health
-function statusCheck_health(data={}) {
+function statusCheck_health(data={}, app_connection_error=false) {
 
     if (!data || !data["STATUS"]) { return; }
 
-    var system_health      = data["STATUS"]["system_health"];
-    var modules = [];
-    var threads = [];
+    const system_health = data["STATUS"]["system_health"];
+    let threads = [];
 
     for (const [key, value] of Object.entries(system_health)) {
 
-        if (value == "registered")      { modules.push(key); }
-        else if (value == "stopped")    { threads.push(key + " (stopped)"); }
-        else                            {
-            var message = key + " (" + value + "s)";
-            if (value >= 20)            { threads.push("<font color='darkred'>" + message + "</font>"); }
-            else if (value >= 10)       { threads.push("<font color='orange'>" + message + "</font>"); }
-            else                        { threads.push("<font color='green'>" + message + "</font>"); }
+        if (value === "registered") {}
+        else if (value === "stopped") { threads.push(key + " (stopped)"); }
+        else {
+            let message = key + " (" + value + "s)";
+            if (value >= 20)            { threads.push("<span style='color:var(--rm-color-signal-power-error)'>" + message + "</span>"); }
+            else if (value >= 10)       { threads.push("<span style='color:var(--rm-color-signal-power-off)'>" + message + "</span>"); }
+            else                        { threads.push("<span style='color:var(--rm-color-signal-power-on)'>" + message + "</span>"); }
             }
     }
-    health_msg = threads.join(", ");
+    let health_msg = threads.join(", ");
+    if (app_connection_error) { health_msg = "<span style='color:var(--rm-color-signal-power-error)'><b>" + lang("STATUS_NO_SERVER_CONNECT") + "</b></span>";}
     if (document.getElementById("system_health")) {
         document.getElementById("system_health").innerHTML = health_msg;
         }
