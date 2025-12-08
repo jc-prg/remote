@@ -24,7 +24,7 @@ var appAutoLoad                 = false;
 //--------------------------------
 
 function app_menu_entries() {
-	var app_menu = [];
+	let app_menu = [];
 	return app_menu;
 	}
 
@@ -78,7 +78,7 @@ function app_initialize(data) {
 //--------------------------------
 
 function app_theme_changed(theme) {
-	if (theme == "dark") {
+	if (theme === "dark") {
 		color_button_inactive 	= "#111111";
 		//colors_power["ERROR"]	= "lightpink";
 		}
