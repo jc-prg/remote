@@ -23,6 +23,7 @@ server_status = "Starting"
 server_health = {}
 
 rollout = server_port = client_port = data_dir = icons_dir = scene_img_dir = app_language = git_branch = None
+timezone_offset = local_network = config_dir = start_string = None
 
 log_level = log_to_file = log_webserver = log_api_data = log_api_ext = log_set2level = None
 log_level_module = {"INFO": [], "DEBUG": [], "WARNING": [], "ERROR": []}
@@ -182,60 +183,78 @@ def get_git_branch_from_head():
     return None
 
 
-# ---------------------------
+def read_from_env():
+    env_path = ".env"
+    env_sample_path = "sample.env"
+
+    global rollout, server_port, client_port, data_dir, icons_dir,scene_img_dir, app_language, timezone_offset
+    global local_network, log_level, log_to_file, log_filename, log_webserver, log_api_data, log_api_ext, log_set2level
+    global test, config_dir
+
+    try:
+        path = os.path.join(os.path.dirname(__file__), "..", "..", env_path)
+        if not os.path.exists(path):
+            print("Can't find configuration file .env: " + str(path))
+            print("Copy the file 'sample.env' to '.env' and adjust the file for your purposes.")
+            exit()
+
+        load_dotenv(path)
+
+        rollout = get_env('REMOTE_CURRENT_STAGE')
+        server_port = int(get_env('REMOTE_SERVER_PORT'))
+        client_port = int(get_env('REMOTE_CLIENT_PORT'))
+        data_dir = get_env('REMOTE_DIR_DATA')
+        icons_dir = get_env('REMOTE_DIR_ICONS')
+        scene_img_dir = get_env('REMOTE_DIR_SCENES')
+        app_language = get_env('REMOTE_LANGUAGE')
+        timezone_offset = int(get_env('REMOTE_TIMEZONE_OFFSET'))
+        local_network = get_env('REMOTE_LOCAL_NETWORK')
+
+        log_level = get_env('REMOTE_LOG_LEVEL')  # set log level: INFO, DEBUG, WARNING, ERROR
+        log_to_file = get_env('REMOTE_LOG_TO_FILE')  # shall logging done into a logfile: YES, NO
+        log_filename = get_env('REMOTE_LOG_FILENAME')  # path to logfile (if YES)
+        log_webserver = get_env('REMOTE_LOG_WEBSERVER')  # shall webserver logging be done with default level: YES, NO
+        log_api_data = get_env('REMOTE_LOG_API_QUERY')  # shall data from API request be logged: YES, NO
+        log_api_ext = get_env('REMOTE_LOG_API_EXTERNAL')  # shall external API data be logged: YES, NO
+        log_set2level = eval("logging." + log_level)
+
+        for key in log_level_module:
+            value = get_env('REMOTE_LOGGING_' + key)
+            if value is not None:
+                log_level_module[key] = value.split(",")
+
+        if rollout == "test":
+            test = True
+
+        config_dir = data_dir + "/"
+
+    except Exception as e:
+        print("Error reading configuration defined in the file '.env': " + str(e))
+        print("Check or rebuild your configuration file based on the file 'sample.env'.")
+        os._exit(os.EX_CONFIG)
 
 
-try:
-    path = os.path.join(os.path.dirname(__file__), "../../.env")
-    if not os.path.exists(path):
-        print("Can't find configuration file .env: " + str(path))
-        print("Copy the file 'sample.env' to '.env' and adjust the file for your purposes.")
-        exit()
+def write_config_information():
+    """
+    print main version and configuration information to console
+    """
+    global start_string
 
-    load_dotenv(path)
+    start_string = API_name + API_version + "   (stage:" + str(rollout) + "/log-level:" + log_level + ")"
 
-    rollout = get_env('REMOTE_CURRENT_STAGE')
-    server_port = int(get_env('REMOTE_SERVER_PORT'))
-    client_port = int(get_env('REMOTE_CLIENT_PORT'))
-    data_dir = get_env('REMOTE_DIR_DATA')
-    icons_dir = get_env('REMOTE_DIR_ICONS')
-    scene_img_dir = get_env('REMOTE_DIR_SCENES')
-    app_language = get_env('REMOTE_LANGUAGE')
-    timezone_offset = int(get_env('REMOTE_TIMEZONE_OFFSET'))
-    local_network = get_env('REMOTE_LOCAL_NETWORK')
-
-    log_level = get_env('REMOTE_LOG_LEVEL')  # set log level: INFO, DEBUG, WARNING, ERROR
-    log_to_file = get_env('REMOTE_LOG_TO_FILE')  # shall logging done into a logfile: YES, NO
-    log_filename = get_env('REMOTE_LOG_FILENAME')  # path to logfile (if YES)
-    log_webserver = get_env('REMOTE_LOG_WEBSERVER')  # shall webserver logging be done with default level: YES, NO
-    log_api_data = get_env('REMOTE_LOG_API_QUERY')  # shall data from API request be logged: YES, NO
-    log_api_ext = get_env('REMOTE_LOG_API_EXTERNAL')  # shall external API data be logged: YES, NO
-    log_set2level = eval("logging." + log_level)
-
-    for key in log_level_module:
-        value = get_env('REMOTE_LOGGING_' + key)
-        if value is not None:
-            log_level_module[key] = value.split(",")
-
-    if rollout == "test":
-        test = True
-
-    config_dir = data_dir + "/"
-
-except Exception as e:
-    print("Error reading configuration defined in the file '.env': " + str(e))
-    print("Check or rebuild your configuration file based on the file 'sample.env'.")
-    os._exit(os.EX_CONFIG)
-
-start_string = API_name + API_version + "   (stage:" + str(rollout) + "/log-level:" + log_level + ")"
-
-print("----------------------------------------------------------------")
-print(start_string)
-print("----------------------------------------------------------------")
-print(" * Starting server on port: " + str(server_port) + " (http://<url>:" + str(server_port) + "/api/list/)")
-print(" * Starting client on port: " + str(client_port) + "   (http://<url>:" + str(client_port) + "/)")
+    print("----------------------------------------------------------------")
+    print(start_string)
+    print("----------------------------------------------------------------")
+    print(" * Starting server on port: " + str(server_port) + " (http://<url>:" + str(server_port) + "/api/list/)")
+    print(" * Starting client on port: " + str(client_port) + "   (http://<url>:" + str(client_port) + "/)")
 
 # ---------------------------------
+
+read_from_env()
+write_config_information()
+
+# ---------------------------------
+
 
 start_time = time.time()
 start_duration = 0
@@ -254,6 +273,7 @@ rest_api_dir = os.path.join(os.path.dirname(__file__))
 rest_api = os.path.join("rm3api.yml")
 
 directory_main = os.path.abspath(__file__)
+directory_sample = os.path.join(os.path.dirname(__file__), "..", "..", "data", "_sample")
 interfaces = "interfaces/"  # interface definition
 devices = "devices/"  # devices, overview in "_active.json"
 commands = "devices/"  # device definition (queries and commands)

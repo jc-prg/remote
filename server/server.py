@@ -14,6 +14,7 @@ import server.modules.rm3queue as rm3queue
 import server.modules.rm3presets as rm3presets
 import server.modules.rm3api as rm3api
 import server.modules.rm3timer as rm3timer
+import server.modules.rm3install as rm3install
 import server.interfaces as interfaces
 
 
@@ -98,6 +99,9 @@ if __name__ == "__main__":
 
     # Create threads and other classes
     rm3presets.server_status = "Initializing"
+
+    remoteInstall = rm3install.RemoteInstall()
+    init_check = remoteInstall.check_configuration()
 
     configFiles = rm3cache.ConfigCache("ConfigFiles")
     configInterfaces = rm3cache.ConfigInterfaces("configInterfaces")
