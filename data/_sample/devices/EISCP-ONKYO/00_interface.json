@@ -4,7 +4,7 @@
 			"IPAddress"   : "192.168.1.32",
 			"Timeout"     : 5,
 			"Methods"     : ["send","query"],
-			"Description" : "ONKY AV-Receiver"
+			"Description" : "ONKYO AV-Receiver"
 			}
 		},
 	"API-Source"      : "https://github.com/miracle2k/onkyo-eiscp",
