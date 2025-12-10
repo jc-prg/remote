@@ -101,7 +101,8 @@ if __name__ == "__main__":
     rm3presets.server_status = "Initializing"
 
     remoteInstall = rm3install.RemoteInstall()
-    init_check = remoteInstall.check_configuration()
+    if not remoteInstall.check_configuration():
+        sys.exit()
 
     configFiles = rm3cache.ConfigCache("ConfigFiles")
     configInterfaces = rm3cache.ConfigInterfaces("configInterfaces")

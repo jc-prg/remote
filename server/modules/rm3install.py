@@ -37,6 +37,7 @@ class RemoteInstall():
             bool: True if everything exists or could be created
         """
         print("\nCheck if configuration is complete ...")
+        count_solved = 0
 
         for entry in self.config_files:
             if entry["type"] == "json":
@@ -46,20 +47,29 @@ class RemoteInstall():
 
             if os.path.exists(entry["path"]):
                 print(f"- {entry["type"]} exists: {entry["path"]}")
+                count_solved += 1
             else:
                 print(f"- {entry["type"]} doesn't exist: {entry["path"]}")
 
                 if entry["type"] == "log":
-                    self.create_log_file(entry)
+                    if self.create_log_file(entry):
+                        count_solved += 1
 
                 if entry["type"] == "directory":
-                    self.create_copy_directory(entry)
+                    if self.create_copy_directory(entry):
+                        count_solved += 1
 
                 if entry["type"] == "json":
-                    self.create_copy_file(entry)
+                    if self.create_copy_file(entry):
+                        count_solved += 1
 
         print("\n")
-        return True
+        if len(self.config_files) == count_solved:
+            print("OK.")
+            return True
+        else:
+            print("ERROR: Could not solve all config file issues.")
+            return False
 
     def create_copy_directory(self, entry):
         """
@@ -71,6 +81,7 @@ class RemoteInstall():
                 print(f"  -> OK: created {entry["type"]}.")
             else:
                 print(f"  -> ERROR: could not create {entry["type"]}.")
+                return False
 
         elif entry["action"] == "create":
             try:
@@ -78,6 +89,9 @@ class RemoteInstall():
                 print(f"  -> OK: copied content from source {entry["source"]}.")
             except Exception as e:
                 print(f"  -> ERROR: could not copy content from source {e}.")
+                return False
+
+        return True
 
     def create_log_file(self, entry):
         """
@@ -90,8 +104,12 @@ class RemoteInstall():
                     print(f"  -> OK: created empty log file")
                 else:
                     print(f"  -> ERROR: could not create log file {entry["path"]}")
+                    return False
             except Exception as e:
                 print(f"  -> ERROR: could not create log file {e}")
+                return False
+
+        return True
 
     def create_copy_file(self, entry):
         if entry["action"] == "copy":
