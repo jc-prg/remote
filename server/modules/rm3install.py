@@ -49,7 +49,7 @@ class RemoteInstall():
             else:
                 print(f"- {entry["type"]} doesn't exist: {entry["path"]}")
 
-                if entry["log"] == "log":
+                if entry["type"] == "log":
                     self.create_log_file(entry)
 
                 if entry["type"] == "directory":
