@@ -47,6 +47,25 @@ source .env
 external="$EXTERNAL_DRIVE"
 mountpoint="$EXTERNAL_MOUNT"
 
+if [-e $REMOTE_DIR/app/modules && -e $REMOTE_DIR/app/framework] ; then
+  :
+else
+  echo "Required submodules not installed yet."
+  echo "Do you want to do this now [y|n]?"
+  while : ; do
+    read -n 1 k <& 1
+    if [[ $k = y ]] ; then
+      sudo git submodule update --init --recursive
+      break
+    elif [[ $k = n ]] ; then
+      echo
+      exit 0
+    else
+      echo
+      echo " -> Press 'y' to create a file or 'n' to exit now: "
+    fi
+fi
+
 if test -f "$DOCKERCOMPOSE_DIR/docker-compose"; then
   :
 else
