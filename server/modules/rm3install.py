@@ -14,19 +14,19 @@ class RemoteInstall():
         self.directory_data = rm3presets.data_dir
         self.directory_sample = os.path.abspath(os.path.join(self.directory_main, "data/_sample/"))
 
-    self.config_files = [
-        {"type": "log", "path": os.path.join(self.directory_data, rm3presets.log_filename), "action": "create"},
-        {"type": "directory", "path": self.directory_data, "action": "create"},
-        {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.remotes), "action": "copy", "source": os.path.join(self.directory_sample, rm3presets.remotes)},
-        {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.devices), "action": "copy", "source": os.path.join(self.directory_sample, rm3presets.devices)},
-        {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.templates), "action": "copy", "source": os.path.join(self.directory_sample, rm3presets.templates)},
-        {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_devices), "action": "info"},
-        {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_scenes), "action": "info"},
-        {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_macros), "action": "info"},
-        {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_apis), "action": "copy", "source": os.path.join(self.directory_sample, rm3presets.active_apis)},
-        {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_timer), "action": "copy", "source": os.path.join(self.directory_sample, rm3presets.active_timer)},
-        {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_device_types),"action": "copy", "source": os.path.join(self.directory_sample, rm3presets.active_device_types)},
-    ]
+        self.config_files = [
+            {"type": "log", "path": os.path.join(self.directory_data, rm3presets.log_filename), "action": "create"},
+            {"type": "directory", "path": self.directory_data, "action": "create"},
+            {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.remotes), "action": "copy", "source": os.path.join(self.directory_sample, rm3presets.remotes)},
+            {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.devices), "action": "copy", "source": os.path.join(self.directory_sample, rm3presets.devices)},
+            {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.templates), "action": "copy", "source": os.path.join(self.directory_sample, rm3presets.templates)},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_devices), "action": "info"},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_scenes), "action": "info"},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_macros), "action": "info"},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_apis), "action": "copy", "source": os.path.join(self.directory_sample, rm3presets.active_apis)},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_timer), "action": "copy", "source": os.path.join(self.directory_sample, rm3presets.active_timer)},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_device_types),"action": "copy", "source": os.path.join(self.directory_sample, rm3presets.active_device_types)},
+        ]
 
     def check_configuration(self):
         """
