@@ -707,8 +707,13 @@ class ConfigCache(RemoteThreadingClass):
         Returns:
             datetime: local time for the current timezone
         """
-        date_tz_info = datetime.now(timezone(timedelta(hours=rm3presets.timezone_offset)))
-        date_tz_info_1 = datetime.now(timezone(timedelta(hours=rm3presets.timezone_offset) - timedelta(days=1)))
+        if rm3presets.timezone_offset == 0:
+            date_tz_info = datetime.now()
+            date_tz_info_1 = datetime.now(timezone(timedelta(days=1)))
+        else:
+            date_tz_info = datetime.now(timezone(timedelta(hours=rm3presets.timezone_offset)))
+            date_tz_info_1 = datetime.now(timezone(timedelta(hours=rm3presets.timezone_offset) - timedelta(days=1)))
+
         self.logging.debug("Local time: " + str(date_tz_info) + " / " + str(date_tz_info_1))
 
         if day == "yesterday":
