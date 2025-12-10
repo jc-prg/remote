@@ -23,12 +23,29 @@ fi
 if [ -e ".env" ]; then
     :
 else
-    echo "Configuration file '.env' does not exist yet, create a copy from the file 'sample.env' and adapt it to your needs.'"
+  echo
+  echo "Configuration file '.env' does not exist yet, create a copy from the file 'sample.env' and adapt it to your needs.'"
+  echo "Do you want to create and edit the this file now [y|n]?"
+  while : ; do
+    read -n 1 k <& 1
+    if [[ $k = y ]] ; then
+      cp sample.env .env
+      nano .env
+      break
+    elif [[ $k = n ]] ; then
+      echo "EXIT"
+      echo
+      exit 0
+    else
+      echo "Press 'y' to create a file or 'n' to exit now."
+    fi
+  done
 fi
 
 if test -f "$DOCKERCOMPOSE_DIR/docker-compose"; then
   :
 else
+  echo
   echo "Check the location of your docker-compose file in the configuration!"
   echo "The file/path '$DOCKERCOMPOSE_DIR/docker-compose' doesn't exist. "
   echo
@@ -43,7 +60,7 @@ if [ ! $config ]; then
   echo " 's' - start"
   echo " 'r' - restart"
   echo " 'x' - stop"
-  echo " 'i' - install sample configuration"
+  #echo " 'i' - install sample configuration"
   echo " 'u' - update from github (branch:$branch)"
   echo " 'v' - update from github (branch:$branch) and rebuild container"
   echo " 'c' - clean docker (stopped container / dangling images)"
