@@ -81,17 +81,18 @@ fi
 if [ ! $config ]; then
   echo
   echo "Press key - your options:"
-  echo " 'q' - exit"
   echo " 's' - start"
   echo " 'r' - restart"
   echo " 'x' - stop"
   echo " -----------------------------------------"
   #echo " 'i' - install sample configuration"
-  echo " 'i' - starting with visible messages (not as daemon)"
+  echo " 'i' - start with messages (not as daemon)"
   echo " 'u' - update from github (branch:$branch)"
   echo " 'v' - update from github (branch:$branch) and rebuild container"
   echo " 'c' - clean docker (stopped container / dangling images)"
   echo " 'd' - clean docker (system incl. build cache)"
+  echo " -----------------------------------------"
+  echo " 'q' - quit"
   count=0
   while : ; do
     read -n 1 k <&1
