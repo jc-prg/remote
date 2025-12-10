@@ -20,7 +20,8 @@ class RemoteInstall:
 
         # initial main config files
         self.init_config = {
-            "APIS" : {"data": {}, "info": "jc://remote/ - This file collects API information and enables or disables APIs or devices."},
+            "APIS_new" : {"data": {}, "info": "jc://remote/ - This file collects API information and enables or disables APIs or devices."},
+            "APIS" : {},
             "MACRO" : {"dev_on": {}, "dev_off": {}, "groups": {}, "macro": {}, "info": "jc://remote/ - This file defines global macros and groups."},
             "DEVICE_new" : {"data": {}, "info": "jc://remote/ - This file defines remote controls for devices."},
             "DEVICE" : {},
@@ -41,7 +42,11 @@ class RemoteInstall:
                 key = str(directory).split("/")
                 key = key[len(key)-1]
                 active = (directory == "TEST")
-                self.init_config["APIS"]["data"][key] = {
+                self.init_config["APIS_new"]["data"][key] = {
+                    "active": active,
+                    "directory": f"devices/{key}/00_interface.json"
+                }
+                self.init_config["APIS"][key] = {
                     "active": active,
                     "directory": f"devices/{key}/00_interface.json"
                 }
