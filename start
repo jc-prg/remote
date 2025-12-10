@@ -1,10 +1,5 @@
 #!/bin/bash
 
-source .env
-
-external="$EXTERNAL_DRIVE"
-mountpoint="$EXTERNAL_MOUNT"
-config=$1
 user=`whoami`
 branch=`git rev-parse --abbrev-ref HEAD`
 
@@ -42,6 +37,12 @@ else
     fi
   done
 fi
+
+source .env
+
+external="$EXTERNAL_DRIVE"
+mountpoint="$EXTERNAL_MOUNT"
+config=$1
 
 if test -f "$DOCKERCOMPOSE_DIR/docker-compose"; then
   :
