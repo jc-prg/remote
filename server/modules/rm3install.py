@@ -37,6 +37,8 @@ class RemoteInstall:
         path = Path(os.path.join(self.directory_sample,"devices"))
         dirs = [p for p in path.iterdir() if p.is_dir()]
         for directory in dirs:
+            print(dirs)
+            print(directory)
             if os.path.exists(os.path.join(directory, "00_interface.json")):
                 active = (directory == "TEST")
                 self.init_config["APIS"]["data"][directory] = {
