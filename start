@@ -20,6 +20,12 @@ if [ $user != "root" ]; then
   exit 0
 fi
 
+if [ -e ".env" ]; then
+    :
+else
+    echo "Configuration file '.env' does not exist yet, create a copy from the file 'sample.env' and adapt it to your needs.'"
+fi
+
 if test -f "$DOCKERCOMPOSE_DIR/docker-compose"; then
   :
 else
