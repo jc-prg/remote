@@ -712,7 +712,7 @@ class ConfigCache(RemoteThreadingClass):
         else:
             date_tz_info = datetime.now(timezone(timedelta(hours=rm3presets.timezone_offset)))
 
-        self.logging.debug("Local time: " + str(date_tz_info) + " / " + str(date_tz_info_1))
+        self.logging.debug("Local time: " + str(date_tz_info))
         return date_tz_info
 
 
