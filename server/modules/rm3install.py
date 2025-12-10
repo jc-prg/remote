@@ -127,7 +127,7 @@ class RemoteInstall:
 
         elif entry["action"] == "create":
             try:
-                shutil.copytree(entry["source"], entry["path"], dirs_exist_ok=True)
+                shutil.copytree(entry["source"], entry["path"], dirs_exist_ok=True, symlinks=False)
                 print(f"  -> OK: copied content from source {entry["source"]}.")
             except Exception as e:
                 print(f"  -> ERROR: could not copy content from source {e}.")
