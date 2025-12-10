@@ -37,8 +37,6 @@ class RemoteInstall:
         path = Path(os.path.join(self.directory_sample,"devices"))
         dirs = [p for p in path.iterdir() if p.is_dir()]
         for directory in dirs:
-            print(dirs)
-            print(directory)
             if os.path.exists(os.path.join(directory, "00_interface.json")):
                 key = str(directory).split("/")
                 key = key[len(key)-1]
@@ -47,6 +45,8 @@ class RemoteInstall:
                     "active": active,
                     "directory": f"devices/{key}/00_interface.json"
                 }
+
+        print(self.init_config["APIS"])
 
         # add sample timer entry
         self.init_config["TIMER"]["data"]["sample_timer"] = {
@@ -127,7 +127,7 @@ class RemoteInstall:
 
         elif entry["action"] == "create":
             try:
-                shutil.copytree(entry["source"], entry["path"])
+                shutil.copytree(entry["source"], entry["path"], dirs_exist_ok=True)
                 print(f"  -> OK: copied content from source {entry["source"]}.")
             except Exception as e:
                 print(f"  -> ERROR: could not copy content from source {e}.")
