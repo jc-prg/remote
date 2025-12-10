@@ -65,7 +65,9 @@ if [ ! $config ]; then
   echo " 's' - start"
   echo " 'r' - restart"
   echo " 'x' - stop"
+  echo " -----------------------------------------"
   #echo " 'i' - install sample configuration"
+  echo " 'i' - starting with visible messages (not as daemon)"
   echo " 'u' - update from github (branch:$branch)"
   echo " 'v' - update from github (branch:$branch) and rebuild container"
   echo " 'c' - clean docker (stopped container / dangling images)"
@@ -92,9 +94,13 @@ if [ ! $config ]; then
        config="update"
        printf "\n... update from Github.\n"
        break
-    elif [[ $k = i ]] ; then
+    elif [[ $k = u ]] ; then
        config="install"
        printf "\n... install sample configuration.\n"
+       break
+    elif [[ $k = i ]] ; then
+       config="initial_start"
+       printf "\n... starting visible.\n"
        break
     elif [[ $k = v ]] ; then
        config="rebuild"
@@ -124,6 +130,13 @@ if [ $config == "start" ]; then
     if [ $ZIGBEE2MQTT_START == "YES" ]; then
       $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml up -d
     fi
+
+if [ $config == "initial_start" ]; then
+    if [ $ZIGBEE2MQTT_START == "YES" ]; then
+      $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml up -d
+    fi
+
+    $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml up
 
 elif [ $config == "restart" ]; then
     $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml restart
