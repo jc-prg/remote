@@ -68,7 +68,7 @@ class RemoteInstall():
             print("OK.")
             return True
         else:
-            print("ERROR: Could not solve all config file issues.")
+            print(f"ERROR: Couldn't solve {len(self.config_files)-count_solved} config file issues.")
             return False
 
     def create_copy_directory(self, entry):

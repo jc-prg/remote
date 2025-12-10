@@ -102,11 +102,10 @@ if __name__ == "__main__":
 
     remoteInstall = rm3install.RemoteInstall()
     if not remoteInstall.check_configuration():
-        sys.exit()
+        exit()
 
     configFiles = rm3cache.ConfigCache("ConfigFiles")
     configInterfaces = rm3cache.ConfigInterfaces("configInterfaces")
-
     if configFiles.check_main_config_files() == "ERROR":
         exit()
 
