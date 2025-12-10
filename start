@@ -3,6 +3,7 @@
 user=`whoami`
 branch=`git rev-parse --abbrev-ref HEAD`
 config=$1
+initial_start=0
 
 echo
 echo "-------------------------------------"
@@ -26,8 +27,10 @@ else
   while : ; do
     read -n 1 k <& 1
     if [[ $k = y ]] ; then
-      cp sample.env .env
+      #cp sample.env .env
+      cp sample.env .env && sed -i "s|^REMOTE_DIR=.*|REMOTE_DIR=\"$(pwd)\"|" .env
       nano .env
+      initial_start=1
       break
     elif [[ $k = n ]] ; then
       echo
