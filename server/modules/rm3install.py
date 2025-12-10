@@ -72,6 +72,7 @@ class RemoteInstall:
             {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.devices), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.devices)},
             {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.templates), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.templates)},
             {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.buttons), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.buttons)},
+            {"type": "file", "path": os.path.join(self.directory_data, rm3presets.buttons, "default", "00_index.json"), "action": "create", "source": os.path.join(self.directory_data, rm3presets.buttons, "default", "00_index.json")},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_devices), "action": "create", "source": self.init_config["DEVICE"]},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_scenes), "action": "create", "source": self.init_config["SCENE"]},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_timer), "action": "create", "source": self.init_config["TIMER"]},
@@ -106,11 +107,15 @@ class RemoteInstall:
                         count_solved += 1
 
                 if entry["type"] == "directory":
-                    if self.create_copy_directory(entry):
+                    if self.copy_directory(entry):
                         count_solved += 1
 
                 if entry["type"] == "json":
-                    if self.create_file(entry):
+                    if self.create_json(entry):
+                        count_solved += 1
+
+                if entry["type"] == "file":
+                    if self.copy_file(entry):
                         count_solved += 1
 
         if len(self.config_files) == count_solved:
@@ -120,7 +125,7 @@ class RemoteInstall:
             print(f"ERROR: Couldn't solve {len(self.config_files)-count_solved} config file issues.")
             return False
 
-    def create_copy_directory(self, entry):
+    def copy_directory(self, entry):
         """
         create and (if source) copy content of a directory
         """
@@ -138,6 +143,20 @@ class RemoteInstall:
                 print(f"  -> OK: copied content from source {entry["source"]}.")
             except Exception as e:
                 print(f"  -> ERROR: could not copy content from source {e}.")
+                return False
+
+        return True
+
+    def copy_file(self, entry):
+        """
+        copy a file from source to target
+        """
+        if entry["action"] == "create":
+            try:
+                shutil.copy(entry["source"], entry["path"])
+                print(f"  -> OK: copied file from source {entry["source"]}.")
+            except Exception as e:
+                print(f"  -> ERROR: could not copy file from source {e}.")
                 return False
 
         return True
@@ -160,7 +179,7 @@ class RemoteInstall:
 
         return True
 
-    def create_file(self, entry):
+    def create_json(self, entry):
         """
         create file from initial configuration
         """
