@@ -21,9 +21,11 @@ class RemoteInstall:
         # initial main config files
         self.init_config = {
             "APIS" : {"data": {}, "info": "jc://remote/ - This file collects API information and enables or disables APIs or devices."},
-            "MACRO" : {"data": {}, "info": "jc://remote/ - This file defines global macros and groups."},
-            "DEVICE" : {"data": {}, "info": "jc://remote/ - This file defines remote controls for devices."},
-            "SCENE" : {"data": {}, "info": "jc://remote/ - This file defines remote controls for scenes."},
+            "MACRO" : {"dev_on": {}, "dev_off": {}, "groups": {}, "macro": {}, "info": "jc://remote/ - This file defines global macros and groups."},
+            "DEVICE_new" : {"data": {}, "info": "jc://remote/ - This file defines remote controls for devices."},
+            "DEVICE" : {},
+            "SCENE_new" : {"data": {}, "info": "jc://remote/ - This file defines remote controls for scenes."},
+            "SCENE" : {},
             "TIMER" : {"data": {}, "info": "jc://remote/ - This file defines timer events."},
             "TYPES" : {
                 "data": ["audio","beamer","bluray","bulb","dvd","led","light","media-center","other","phono","playstation","plug","receiver","sensor","screen","switch","tv"],
@@ -42,6 +44,15 @@ class RemoteInstall:
                     "directory": f"devices/{directory}/00_interface.json"
                 }
 
+        # add sample timer entry
+        self.init_config["TIMER"]["data"]["sample_timer"] = {
+            "commands": ["plug10_toggle", "group_led_on"],
+            "description": "Sample timer event, to demonstrate the timer functionality",
+            "name": "Sample timer",
+            "timer_once": [{"active": false, "date": "2024-05-11", "time": "18:00"}],
+            "timer_regular": {"active": false, "day_of_month": "-1", "day_of_week": "-1", "hour": "-1", "minute": "-1", "month": "-1"}
+        }
+
         # configuration files to be checked
         self.config_files = [
             {"type": "log", "path": os.path.join(self.directory_data, rm3presets.log_filename), "action": "create"},
@@ -49,12 +60,13 @@ class RemoteInstall:
             {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.remotes), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.remotes)},
             {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.devices), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.devices)},
             {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.templates), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.templates)},
-            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_devices), "action": "info"},
-            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_scenes), "action": "info"},
+            {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.buttons), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.buttons)},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_devices), "action": "create", "source": self.init_config["DEVICE"]},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_scenes), "action": "create", "source": self.init_config["SCENE"]},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_timer), "action": "create", "source": self.init_config["TIMER"]},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_device_types),"action": "create", "source": self.init_config["TYPES"]},
-            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_macros), "action": "info"},
-            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_apis), "action": "info"},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_macros), "action": "create", "source": self.init_config["MACRO"]},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_apis), "action": "create", "source": self.init_config["APIS"]},
         ]
 
     def check_configuration(self):

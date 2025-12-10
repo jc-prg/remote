@@ -70,13 +70,13 @@ function statusCheck_offline(data) {
 
 
 // check and display current volume -> partly removed, final check open if still required
-function statusShow_volume_old( volume, maximum, vol_color, novol_color="" ) {
+function statusShow_volume_old( volume, maximum, vol_color, no_vol_color="" ) {
 
 	volume  = Math.round( volume * 20 / maximum );
 	let vol_str = "<span style='color:" + vol_color + "'>";
 	for (let i=0; i<volume; i++) { vol_str += "I"; }
 	vol_str += "</span>";
-	if (novol_color !== "") { vol_str += "<span style='color:" + novol_color + "'>"; }
+	if (no_vol_color !== "") { vol_str += "<span style='color:" + no_vol_color + "'>"; }
 	for (let i=0; i<20-volume; i++) { vol_str += "I"; }
     vol_str += "</span>";
 	return vol_str;
@@ -409,8 +409,8 @@ function statusCheck_audioMute(data) {
 
 	// check audio status and show mut status in navigation bar
 	let power = devices[main_audio]["power"].toUpperCase();
-	if (device_api_status.toLowerCase() != "connected") { power = "OFF"; }
-	if (devices[main_audio]["mute"].toUpperCase() == "ON" || power.includes("OFF") || devices[main_audio]["vol"] == 0) {
+	if (device_api_status.toLowerCase() !== "connected") { power = "OFF"; }
+	if (devices[main_audio]["mute"].toUpperCase() === "ON" || power.includes("OFF") || devices[main_audio]["vol"] === 0) {
 		document.getElementById("audio1").style.display = "block";
 		document.getElementById("audio2").style.display = "none";
 		vol_color = "gray";
@@ -436,8 +436,7 @@ function statusCheck_audioMute(data) {
 
 	// check volume and show in navigation bar
 	rm3slider.set_value( main_audio_vol );
-	vol_str = statusShow_volume_old( main_audio_vol, main_audio_max, vol_color );
-	document.getElementById("audio3").innerHTML = vol_str;
+    document.getElementById("audio3").innerHTML = statusShow_volume_old(main_audio_vol, main_audio_max, vol_color);
 	}
 
 
@@ -1083,57 +1082,60 @@ function statusCheck_health(data={}, app_connection_error=false) {
 // check status information of device -> insert into display
 function statusCheck_displayValues(data={}) {
 
-	// check status for displays
-	var devices     = data["CONFIG"]["devices"];
-	var scenes      = data["CONFIG"]["scenes"];
-    var [device_status, device_status_log]  = statusCheck_devicePowerStatus(data);
+	let key_status;
+    let element2;
+    let value_key;
+    let key;
+// check status for displays
+    const devices = data["CONFIG"]["devices"];
+    const scenes = data["CONFIG"]["scenes"];
+    const [device_status, device_status_log] = statusCheck_devicePowerStatus(data);
 
-	// set colors
-	var vol_color   = "white";
-	var vol_color2  = "yellow";
-	var novol_color = "darkgray";
+    // set colors
+    const vol_color2 = "yellow";
+    const no_vol_color = "darkgray";
 
     // fill in values for all device displays
-	for (var key in devices) {
+	for (key in devices) {
 
-	    if (key == "default") { continue; }
+	    if (key === "default") { continue; }
 		if (!data["CONFIG"]["devices"][key]) {
 		    console.warn("Device not defined correctly: '" + key + "' has no configuration.");
 		    continue;
 		    }
 
 	    // device status
-	    var status      = device_status[key];
-	    var message     = device_status_log[key];
-        var dev_status  = data["STATUS"]["devices"][key];
-        var dev_config  = data["CONFIG"]["devices"][key];
+        const status = device_status[key];
+        const message = device_status_log[key];
+        const dev_status = data["STATUS"]["devices"][key];
+        const dev_config = data["CONFIG"]["devices"][key];
 
         // set values if device is active or scene is active (which can contain several devices)
-        if (status == "ON" && (rm3remotes.active_type == "scene" || rm3remotes.active_name == key)) {
+        if (status === "ON" && (rm3remotes.active_type === "scene" || rm3remotes.active_name === key)) {
 
-			var remote      = devices[key]["remote"]["remote"];
-			var display     = devices[key]["remote"]["display"];
+            const remote = devices[key]["remote"]["remote"];
+            const display = devices[key]["remote"]["display"];
 
-			if (!remote.includes("DISPLAY"))            { continue; }
-			if (display == {} || display == undefined)  { continue; }
+            if (!remote.includes("DISPLAY"))         { continue; }
+			if (display === {} || display === undefined)  { continue; }
 
             // set display values
-			for (var display_key in display) {
-				var value_key      = display[display_key];
-				var element        = document.getElementById("display_" + key + "_" + value_key);
-				var element2       = document.getElementById("display_full_" + key + "_" + value_key);
-				var key_status     = dev_status[value_key];
+			for (const display_key in display) {
+                value_key = display[display_key];
+                const element = document.getElementById("display_" + key + "_" + value_key);
+                element2 = document.getElementById("display_full_" + key + "_" + value_key);
+                key_status = dev_status[value_key];
 
-				if (value_key == "vol"
+                if (value_key === "vol"
 				    && dev_config["commands"]["definition"]
 				    && dev_config["commands"]["definition"][value_key]
 				    && dev_config["commands"]["definition"][value_key]["values"]
 				    && dev_config["commands"]["definition"][value_key]["values"]["max"]) {
 
-					key_status = statusShow_volume_old( dev_status[value_key], dev_config["commands"]["definition"][value_key]["values"]["max"], vol_color2, novol_color ) + " &nbsp; ["+dev_status[value_key]+"]";
+					key_status = statusShow_volume_old( dev_status[value_key], dev_config["commands"]["definition"][value_key]["values"]["max"], vol_color2, no_vol_color ) + " &nbsp; ["+dev_status[value_key]+"]";
 					}
 
-				if (key_status && value_key == "power") {
+				if (key_status && value_key === "power") {
 					//if (connected != "connected")                           { key_status = use_color("<b>"+lang("CONNECTION_ERROR")+":</b><br/>","error")+connected; }
 /// ------------> status auswerten
 					//if (online_status && online_status == "offline")   { key_status = use_color("<b>"+lang("OFFLINE")+"</b><br/>","hint"); }
@@ -1149,7 +1151,7 @@ function statusCheck_displayValues(data={}) {
             }
 
         // set display detail popup values (for devices only)
-        if (rm3remotes.active_type == "device" && dev_status && dev_config && dev_config["commands"]["get"]) {
+        if (rm3remotes.active_type === "device" && dev_status && dev_config && dev_config["commands"]["get"]) {
 
             var additional_keys = ["api","api-status","api-last-query","api-last-record",
                                    "api-last-send","api-auto-off"];
@@ -1161,9 +1163,9 @@ function statusCheck_displayValues(data={}) {
                 }
 
             for (var i=0; i<display_keys.length; i++) {
-                var value_key   = display_keys[i];
-                var key_status  = dev_status[value_key];
-                var element2    = document.getElementById("display_full_" + key + "_" + value_key);
+                value_key = display_keys[i];
+                key_status = dev_status[value_key];
+                element2 = document.getElementById("display_full_" + key + "_" + value_key);
 
                 if (typeof(key_status) == "string") {
                     key_status          = key_status.replaceAll("'", "\"");
@@ -1172,7 +1174,7 @@ function statusCheck_displayValues(data={}) {
                     }
                 key_status      = syntaxHighlightJSON(key_status);
 
-                if (value_key == "power") {
+                if (value_key === "power") {
                     if (connected.indexOf("ERROR") >= 0)                    { key_status = use_color("<b>"+lang("CONNECTION_ERROR")+":</b><br/>","error")+connected; }
                     else if (typeof(key_status) != "string")                { key_status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+key_status; }
                     else if (key_status.toUpperCase().indexOf("ON") >= 0)   { key_status = use_color("<b>"+lang("CONNECTED")+"<b/>","on"); }
@@ -1187,21 +1189,21 @@ function statusCheck_displayValues(data={}) {
         }
 
 	// fill in values for all scene displays
-	for (var key in scenes) {
+	for (key in scenes) {
 
 		if (scenes[key]["remote"] && scenes[key]["remote"]["display-detail"]) {
 			// .......
-			for (var vkey in scenes[key]["remote"]["display-detail"]) {
-				var value           = scenes[key]["remote"]["display-detail"][vkey];
-				var element2        = document.getElementById("display_full_" + key + "_" + vkey);
-				var values1         = value.split("_");
-				var values2         = values1[1].split("||");
-				var replace_tag     = values2[0]; // tag/parameter from device to be displayed
-				var replace_value   = "";         // value for this tag
-				var replace_device  = values1[0]; // device id for displays in scenes
-				var replace_index   = values2[1]; // grab index, if value is a dict -> e.g. ['plot']
+			for (const vkey in scenes[key]["remote"]["display-detail"]) {
+				let value           = scenes[key]["remote"]["display-detail"][vkey];
+                element2 = document.getElementById("display_full_" + key + "_" + vkey);
+                let values1         = value.split("_");
+				let values2         = values1[1].split("||");
+				let replace_tag     = values2[0]; // tag/parameter from device to be displayed
+				let replace_value   = "";         // value for this tag
+				let replace_device  = values1[0]; // device id for displays in scenes
+				let replace_index   = values2[1]; // grab index, if value is a dict -> e.g. ['plot']
 
-				var replace_device_status = data["STATUS"]["devices"][replace_device];
+				let replace_device_status = data["STATUS"]["devices"][replace_device];
 				
 				if (devices[replace_device] && replace_device_status && replace_device_status[replace_tag]) {
 					replace_value = replace_device_status[replace_tag];
@@ -1256,20 +1258,20 @@ function statusShow_display(id, view) {
 
 // check if some fatal error occurred
 function statusCheck_error(data) {
-    var html = "";
-    var alert = "";
-    var count = 0;
-    var errors = data["STATUS"]["config_errors"];
+    let html = "";
+    let alert = "";
+    let count = 0;
+    let errors = data["STATUS"]["config_errors"];
 
 
     Object.keys(errors["devices"]).forEach(key => {
-        if (errors["devices"][key] != {}) {
+        if (errors["devices"][key] !== {}) {
             count += 1;
             alert += "<b>DEVICE - " + key + "</b>:<br>" + JSON.stringify(errors["devices"][key]);
             }
         });
     Object.keys(errors["scenes"]).forEach(key => {
-        if (errors["scenes"][key] != {}) {
+        if (errors["scenes"][key] !== {}) {
             count += 1;
             alert += "SCENE - " + key + ": " + JSON.stringify(errors["scenes"][key]);
             }
@@ -1280,7 +1282,7 @@ function statusCheck_error(data) {
         alert = alert.replaceAll('"','');
         alert = alert.replaceAll('\'','');
         alert = "appMsg.confirm(\""+alert+"\", \"\", 300);";
-        html = "<img src='icon/attention.png' onclick='"+alert+"' style='cursor:pointer;'>";
+        html = "<img src='icon/attention.png' onclick='"+alert+"' style='cursor:pointer;' alt=''>";
         }
 
     setTextById("attention", html);
