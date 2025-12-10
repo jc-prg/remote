@@ -27,7 +27,6 @@ else
   while : ; do
     read -n 1 k <& 1
     if [[ $k = y ]] ; then
-      #cp sample.env .env
       cp sample.env .env && sed -i "s|^REMOTE_DIR=.*|REMOTE_DIR=\"$(pwd)\"|" .env
       nano .env
       initial_start=1
@@ -50,6 +49,7 @@ mountpoint="$EXTERNAL_MOUNT"
 if [ -e "$REMOTE_DIR/app/modules/jc-app" ] && [ -e "$REMOTE_DIR/app/framework/app-fw" ]; then
   :
 else
+  echo
   echo "Required submodules not installed yet."
   echo "Do you want to do this now [y|n]?"
   while : ; do
