@@ -1,6 +1,7 @@
 import os
 import shutil
 import json
+import codecs
 import server.modules.rm3presets as rm3presets
 import pathlib
 from pathlib import Path
