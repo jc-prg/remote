@@ -1,9 +1,12 @@
 import os
 import shutil
+import json
 import server.modules.rm3presets as rm3presets
+import pathlib
+from pathlib import Path
 
 
-class RemoteInstall():
+class RemoteInstall:
     """
     Class to check whether relevant config and data exist, install from sample files if not.
     Important: the .env file is not part of this installation, as this file is minimum requirement to start docker-compose.
@@ -14,6 +17,31 @@ class RemoteInstall():
         self.directory_data = rm3presets.data_dir
         self.directory_sample = os.path.abspath(os.path.join(self.directory_main, "data/_sample/"))
 
+        # initial main config files
+        self.init_config = {
+            "APIS" : {"data": {}, "info": "jc://remote/ - This file collects API information and enables or disables APIs or devices."},
+            "MACRO" : {"data": {}, "info": "jc://remote/ - This file defines global macros and groups."},
+            "DEVICE" : {"data": {}, "info": "jc://remote/ - This file defines remote controls for devices."},
+            "SCENE" : {"data": {}, "info": "jc://remote/ - This file defines remote controls for scenes."},
+            "TIMER" : {"data": {}, "info": "jc://remote/ - This file defines timer events."},
+            "TYPES" : {
+                "data": ["audio","beamer","bluray","bulb","dvd","led","light","media-center","other","phono","playstation","plug","receiver","sensor","screen","switch","tv"],
+                "info": "jc://remote/ - This file defines available device types."
+            },
+        }
+
+        # add data depending on available APIs - deactivate all APIs except TEST API
+        path = Path(os.path.join(self.directory_sample,"devices"))
+        dirs = [p for p in path.iterdir() if p.is_dir()]
+        for directory in dirs:
+            if os.path.exists(os.path.join(directory, "00_interface.json")):
+                active = (directory == "TEST")
+                self.init_config["APIS"]["data"][directory] = {
+                    "active": active,
+                    "directory": f"devices/{directory}/00_interface.json"
+                }
+
+        # configuration files to be checked
         self.config_files = [
             {"type": "log", "path": os.path.join(self.directory_data, rm3presets.log_filename), "action": "create"},
             {"type": "directory", "path": self.directory_data, "action": "create"},
@@ -23,9 +51,9 @@ class RemoteInstall():
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_devices), "action": "info"},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_scenes), "action": "info"},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_macros), "action": "info"},
-            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_apis), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.active_apis)},
-            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_timer), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.active_timer)},
-            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_device_types),"action": "create", "source": os.path.join(self.directory_sample, rm3presets.active_device_types)},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_apis), "action": "info"},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_timer), "action": "create", "source": self.init_config["TIMER"]},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_device_types),"action": "create", "source": self.init_config["TYPES"]},
         ]
 
     def check_configuration(self):
@@ -60,7 +88,7 @@ class RemoteInstall():
                         count_solved += 1
 
                 if entry["type"] == "json":
-                    if self.create_copy_file(entry):
+                    if self.create_file(entry):
                         count_solved += 1
 
         if len(self.config_files) == count_solved:
@@ -110,7 +138,23 @@ class RemoteInstall():
 
         return True
 
-    def create_copy_file(self, entry):
-        if entry["action"] == "copy":
-            pass
+    def create_file(self, entry):
+        """
+        create file from initial configuration
+        """
+        if entry["action"] == "create":
+            try:
+                with open(entry["path"], 'wb') as outfile:
+                    json.dump(entry["source"], codecs.getwriter('utf-8')(outfile), ensure_ascii=False, sort_keys=True, indent=4)
+
+                if os.path.exists(entry["path"]):
+                    print(f"  -> OK: created empty JSON file")
+                else:
+                    print(f"  -> ERROR: could not create JSON file {entry["path"]}")
+                    return False
+            except Exception as e:
+                print(f"  -> ERROR: could not create JSON file {e}")
+                return False
+
+        return True
 
