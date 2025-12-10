@@ -71,8 +71,8 @@ class RemoteInstall:
             {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.remotes), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.remotes)},
             {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.devices), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.devices)},
             {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.templates), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.templates)},
-            {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.buttons), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.buttons)},
-            {"type": "file", "path": os.path.join(self.directory_data, rm3presets.buttons, "default", "index.json"), "action": "create", "source": os.path.join(self.directory_data, rm3presets.buttons, "default", "00_index.json")},
+            #{"type": "directory", "path": os.path.join(self.directory_data, rm3presets.buttons), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.buttons)},
+            #{"type": "file", "path": os.path.join(self.directory_data, rm3presets.buttons, "default", "index.json"), "action": "create", "source": os.path.join(self.directory_data, rm3presets.buttons, "default", "00_index.json")},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_devices), "action": "create", "source": self.init_config["DEVICE"]},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_scenes), "action": "create", "source": self.init_config["SCENE"]},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_timer), "action": "create", "source": self.init_config["TIMER"]},
@@ -99,6 +99,7 @@ class RemoteInstall:
             if os.path.exists(entry["path"]):
                 print(f"- OK: {entry["path"]}")
                 count_solved += 1
+
             else:
                 print(f"- {entry["type"]} doesn't exist: {entry["path"]}")
 
@@ -140,7 +141,7 @@ class RemoteInstall:
         elif entry["action"] == "create":
             try:
                 os.mkdir(entry["path"])
-                shutil.copytree(entry["source"], entry["path"], dirs_exist_ok=True, symlinks=False)
+                shutil.copytree(entry["source"], entry["path"], dirs_exist_ok=True, symlinks=True)
                 print(f"  -> OK: copied content from source {entry["source"]}.")
             except Exception as e:
                 print(f"  -> ERROR: could not copy content from source {e}.")
