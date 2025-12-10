@@ -80,7 +80,7 @@ if [ ! $config ]; then
        exit 0
     elif [[ $k = s ]] ; then
        config="start"
-       printf "\n... starting (via docker-compose).\n"
+       printf "\n... starting (via docker-compose up -d).\n"
        break
     elif [[ $k = r ]] ; then
        config="restart"
@@ -99,8 +99,8 @@ if [ ! $config ]; then
        printf "\n... install sample configuration.\n"
        break
     elif [[ $k = i ]] ; then
-       config="initial_start"
-       printf "\n... starting visible.\n"
+       config="start_visible"
+       printf "\n... starting (via docker-compose up -d).\n"
        break
     elif [[ $k = v ]] ; then
        config="rebuild"
@@ -131,7 +131,7 @@ if [ $config == "start" ]; then
       $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml up -d
     fi
 
-if [ $config == "initial_start" ]; then
+elif [ $config == "start_visible" ]; then
     if [ $ZIGBEE2MQTT_START == "YES" ]; then
       $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml up -d
     fi
