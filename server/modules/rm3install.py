@@ -40,10 +40,12 @@ class RemoteInstall:
             print(dirs)
             print(directory)
             if os.path.exists(os.path.join(directory, "00_interface.json")):
+                key = str(directory).split("/")
+                key = key[len(key)-1]
                 active = (directory == "TEST")
-                self.init_config["APIS"]["data"][directory] = {
+                self.init_config["APIS"]["data"][key] = {
                     "active": active,
-                    "directory": f"devices/{directory}/00_interface.json"
+                    "directory": f"devices/{key}/00_interface.json"
                 }
 
         # add sample timer entry
