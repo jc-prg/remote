@@ -49,8 +49,8 @@ class RemoteInstall:
             "commands": ["plug10_toggle", "group_led_on"],
             "description": "Sample timer event, to demonstrate the timer functionality",
             "name": "Sample timer",
-            "timer_once": [{"active": false, "date": "2024-05-11", "time": "18:00"}],
-            "timer_regular": {"active": false, "day_of_month": "-1", "day_of_week": "-1", "hour": "-1", "minute": "-1", "month": "-1"}
+            "timer_once": [{"active": False, "date": "2024-05-11", "time": "18:00"}],
+            "timer_regular": {"active": False, "day_of_month": "-1", "day_of_week": "-1", "hour": "-1", "minute": "-1", "month": "-1"}
         }
 
         # configuration files to be checked
