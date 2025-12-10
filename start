@@ -2,6 +2,7 @@
 
 user=`whoami`
 branch=`git rev-parse --abbrev-ref HEAD`
+config=$1
 
 echo
 echo "-------------------------------------"
@@ -42,7 +43,6 @@ source .env
 
 external="$EXTERNAL_DRIVE"
 mountpoint="$EXTERNAL_MOUNT"
-config=$1
 
 if test -f "$DOCKERCOMPOSE_DIR/docker-compose"; then
   :
