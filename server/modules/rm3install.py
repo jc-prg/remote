@@ -50,10 +50,10 @@ class RemoteInstall:
             {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.templates), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.templates)},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_devices), "action": "info"},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_scenes), "action": "info"},
-            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_macros), "action": "info"},
-            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_apis), "action": "info"},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_timer), "action": "create", "source": self.init_config["TIMER"]},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_device_types),"action": "create", "source": self.init_config["TYPES"]},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_macros), "action": "info"},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_apis), "action": "info"},
         ]
 
     def check_configuration(self):
@@ -70,8 +70,6 @@ class RemoteInstall:
         for entry in self.config_files:
             if entry["type"] == "json":
                 entry["path"] += ".json"
-                if "source" in entry:
-                    entry["source"] += ".json"
 
             if os.path.exists(entry["path"]):
                 print(f"- OK: {entry["path"]}")
