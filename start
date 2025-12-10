@@ -47,7 +47,7 @@ source .env
 external="$EXTERNAL_DRIVE"
 mountpoint="$EXTERNAL_MOUNT"
 
-if [ -d "$REMOTE_DIR/app/modules" ] && [ -d "$REMOTE_DIR/app/framework" ]; then
+if [ -e "$REMOTE_DIR/app/modules/jc-app" ] && [ -e "$REMOTE_DIR/app/framework/app-fw" ]; then
   :
 else
   echo "Required submodules not installed yet."
