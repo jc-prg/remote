@@ -72,7 +72,7 @@ class RemoteInstall:
             {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.devices), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.devices)},
             {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.templates), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.templates)},
             {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.buttons), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.buttons)},
-            {"type": "file", "path": os.path.join(self.directory_data, rm3presets.buttons, "default", "00_index.json"), "action": "create", "source": os.path.join(self.directory_data, rm3presets.buttons, "default", "00_index.json")},
+            {"type": "file", "path": os.path.join(self.directory_data, rm3presets.buttons, "default", "index.json"), "action": "create", "source": os.path.join(self.directory_data, rm3presets.buttons, "default", "00_index.json")},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_devices), "action": "create", "source": self.init_config["DEVICE"]},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_scenes), "action": "create", "source": self.init_config["SCENE"]},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_timer), "action": "create", "source": self.init_config["TIMER"]},
@@ -139,6 +139,7 @@ class RemoteInstall:
 
         elif entry["action"] == "create":
             try:
+                os.mkdir(entry["path"])
                 shutil.copytree(entry["source"], entry["path"], dirs_exist_ok=True, symlinks=False)
                 print(f"  -> OK: copied content from source {entry["source"]}.")
             except Exception as e:
