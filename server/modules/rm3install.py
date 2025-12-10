@@ -17,15 +17,15 @@ class RemoteInstall():
         self.config_files = [
             {"type": "log", "path": os.path.join(self.directory_data, rm3presets.log_filename), "action": "create"},
             {"type": "directory", "path": self.directory_data, "action": "create"},
-            {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.remotes), "action": "copy", "source": os.path.join(self.directory_sample, rm3presets.remotes)},
-            {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.devices), "action": "copy", "source": os.path.join(self.directory_sample, rm3presets.devices)},
-            {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.templates), "action": "copy", "source": os.path.join(self.directory_sample, rm3presets.templates)},
+            {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.remotes), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.remotes)},
+            {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.devices), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.devices)},
+            {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.templates), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.templates)},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_devices), "action": "info"},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_scenes), "action": "info"},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_macros), "action": "info"},
-            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_apis), "action": "copy", "source": os.path.join(self.directory_sample, rm3presets.active_apis)},
-            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_timer), "action": "copy", "source": os.path.join(self.directory_sample, rm3presets.active_timer)},
-            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_device_types),"action": "copy", "source": os.path.join(self.directory_sample, rm3presets.active_device_types)},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_apis), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.active_apis)},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_timer), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.active_timer)},
+            {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_device_types),"action": "create", "source": os.path.join(self.directory_sample, rm3presets.active_device_types)},
         ]
 
     def check_configuration(self):
@@ -46,7 +46,7 @@ class RemoteInstall():
                     entry["source"] += ".json"
 
             if os.path.exists(entry["path"]):
-                print(f"- {entry["type"]} exists: {entry["path"]}")
+                print(f"- OK: {entry["path"]}")
                 count_solved += 1
             else:
                 print(f"- {entry["type"]} doesn't exist: {entry["path"]}")
@@ -63,7 +63,6 @@ class RemoteInstall():
                     if self.create_copy_file(entry):
                         count_solved += 1
 
-        print("\n")
         if len(self.config_files) == count_solved:
             print("OK.")
             return True
