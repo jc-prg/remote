@@ -64,6 +64,7 @@ else
       echo
       echo " -> Press 'y' to create a file or 'n' to exit now: "
     fi
+  done
 fi
 
 if test -f "$DOCKERCOMPOSE_DIR/docker-compose"; then
