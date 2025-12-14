@@ -352,6 +352,8 @@ class RemoteSettingsRemotes {
 
     // create dialogs to add scenes
     add_scene(direct_cmd="") {
+        this.update_data();
+
         let setting = "";
         let set_temp = "";
         this.button.width  = "120px";
@@ -410,6 +412,8 @@ class RemoteSettingsRemotes {
 
     // create dialogs to add devices
     add_device(direct_cmd="", direct_data="") {
+        this.update_data();
+
         let set_temp;
         let setting = "";
         this.button.width  = "120px";
