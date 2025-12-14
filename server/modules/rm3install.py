@@ -53,8 +53,6 @@ class RemoteInstall:
                     "devices": {}
                 }
 
-        print(self.init_config["APIS"])
-
         # add sample timer entry
         self.init_config["TIMER"]["data"]["sample_timer"] = {
             "commands": ["plug10_toggle", "group_led_on"],

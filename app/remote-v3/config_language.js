@@ -181,6 +181,7 @@ let language_app = {
         "DEVICE_SELECT_VISIBILITY"  : "Please select if device should be visible or hidden.",
         "DEVICES"                   : "devices",
         "DEVICES_NOT_CONNECTED"     : "Devices not connected",
+        "DEVICES_NOT_DEFINED_YET"   : "No devices defined yet.",
 
         "DISPLAY"                       : "display",
         "DISPLAY_EXISTS"                : "Display active for this remote.",
@@ -376,6 +377,7 @@ let language_app = {
         "SCENE_INSERT_ID"              : "Please insert ID for scene (no special characters).",
         "SCENE_INSERT_LABEL"           : "Please insert label for scene.",
         "SCENE_SELECT"                 : "Please select scene.",
+        "SCENES_NOT_DEFINED_YET"       : "No scenes defined yet.",
 
         "SEND_DATA"                    : "Send data",
         "SELECT"                       : "Select",

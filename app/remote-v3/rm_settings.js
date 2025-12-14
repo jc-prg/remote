@@ -358,7 +358,7 @@ class RemoteSettingsRemotes {
         this.button.height = "30px";
 
         let open_add_scene = false;
-        if (direct_cmd === "add_scene") { open_add_scene = true; }
+        if (direct_cmd === "add_scene" || this.data["CONFIG"]["scenes"].length === 0) { open_add_scene = true; }
 
         set_temp  = this.tab.start();
         set_temp += this.tab.row( "ID:",            this.elements.input("add_scene_id", "", "apiSceneAddCheckID(this);") );
@@ -382,18 +382,26 @@ class RemoteSettingsRemotes {
 
         for (let key in scenes) { scenes[key]["position"] = scenes[key]["settings"]["position"]; }
         let order  = sortDict(scenes, "position");
-        for (let key in order) {
-            let scene = order[key];
-            let visible = "";
-            let style = "";
-            if (scenes[scene]["settings"]["visible"] === "no") { style = " hidden"; }
+        if (order.length > 0) {
+            for (let key in order) {
+                let scene = order[key];
+                let visible = "";
+                let style = "";
+                if (scenes[scene]["settings"]["visible"] === "no") {
+                    style = " hidden";
+                }
 
-            html += "<li id='"+scene+"'>";
-            html += "<div class='slist_li_content"+style+"'>" + scenes[scene]["settings"]["label"] + "<br/>";
-            html += "<font style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>"+scene+"</rm-id></font></div>";
-            html += "<div class='slist_li_edit'>" + this.remote_edit("scene", scene, scenes[scene]["settings"]["visible"]) + "</div>";
-            html += "</li>";
+                html += "<li id='" + scene + "'>";
+                html += "<div class='slist_li_content" + style + "'>" + scenes[scene]["settings"]["label"] + "<br/>";
+                html += "<font style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>" + scene + "</rm-id></font></div>";
+                html += "<div class='slist_li_edit'>" + this.remote_edit("scene", scene, scenes[scene]["settings"]["visible"]) + "</div>";
+                html += "</li>";
+            }
         }
+        else {
+            html += "<div style='width:100%;padding:15px;'>" + lang("SCENES_NOT_DEFINED_YET") + "</div>";
+        }
+
 
         html += "</ul>";
         return html;
@@ -409,6 +417,8 @@ class RemoteSettingsRemotes {
         let open_add_device = false;
         if (direct_cmd === "add_device" && direct_data !== "") { set_temp = this.add_remote_dialog(direct_data); open_add_device = true; }
         else                                                   { set_temp = this.add_remote_dialog(); }
+        if (this.data["CONFIG"]["devices"].length === 0)       { open_add_device = true; }
+
 
         setting += this.basic.container("setting_add_device",lang("ADD_DEVICE"),set_temp,open_add_device);
         return setting;
@@ -425,19 +435,26 @@ class RemoteSettingsRemotes {
             devices[key]["position"] = devices[key]["settings"]["position"];
         }
         let order  = sortDict(devices, "position");
-        for (let key in order) {
-            let device          = order[key];
-            let api             = devices[device]["interface"]["api"].replace("_","/");
-            api                 = api.replace("/default","");
-            let visible         = "";
-            let style           = "";
-            if (devices[device]["settings"]["visible"] === "no") { style = " hidden"; }
+        if (order.length > 0) {
+            for (let key in order) {
+                let device = order[key];
+                let api = devices[device]["interface"]["api"].replace("_", "/");
+                api = api.replace("/default", "");
+                let visible = "";
+                let style = "";
+                if (devices[device]["settings"]["visible"] === "no") {
+                    style = " hidden";
+                }
 
-            html += "<li id='"+device+"'>";
-            html += "<div class='slist_li_content"+style+"'>" + devices[device]["settings"]["label"] + "<br/>";
-            html += "<div style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>"+ device + "</rm-id> (" + api + ")</div></div>";
-            html += "<div class='slist_li_edit'>" + this.remote_edit("device", device, devices[device]["settings"]["visible"]) + "</div>";
-            html += "</li>";
+                html += "<li id='" + device + "'>";
+                html += "<div class='slist_li_content" + style + "'>" + devices[device]["settings"]["label"] + "<br/>";
+                html += "<div style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>" + device + "</rm-id> (" + api + ")</div></div>";
+                html += "<div class='slist_li_edit'>" + this.remote_edit("device", device, devices[device]["settings"]["visible"]) + "</div>";
+                html += "</li>";
+            }
+        }
+        else {
+            html += "<div style='width:100%;padding:15px;'>" + lang("DEVICES_NOT_DEFINED_YET") + "</div>";
         }
 
         return html;
