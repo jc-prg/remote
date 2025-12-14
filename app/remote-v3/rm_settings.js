@@ -423,7 +423,7 @@ class RemoteSettingsRemotes {
         let open_add_device = false;
         if (direct_cmd === "add_device" && direct_data !== "") { set_temp = this.add_remote_dialog(direct_data); open_add_device = true; }
         else                                                   { set_temp = this.add_remote_dialog(); }
-        if (this.data["CONFIG"]["devices"].length === 0)       { open_add_device = true; }
+        if (Object.keys(this.data["CONFIG"]["devices"]).length === 0) { open_add_device = true; }
 
 
         setting += this.basic.container("setting_add_device",lang("ADD_DEVICE"),set_temp,open_add_device);
