@@ -75,7 +75,7 @@ function remoteInit (first_load=true) {
 	remoteMainMenu(false);
 	if (first_load) {
 		showRemoteInBackground(1);			// show start screen
-		setTextById("frame4","<center>"+lang("LOADING_DATA")+"</center>");
+		setTextById("frame4","<div style='width:100%;padding:15px;text-align:center;'>"+lang("LOADING_DATA")+"</div>");
 		remoteFirstLoad_load();			// init load of data
 		}
 	}
