@@ -1263,13 +1263,15 @@ function statusCheck_error(data) {
     let count = 0;
     let errors = data["STATUS"]["config_errors"];
 
-    if (errors) {
+    if (errors["devices"]) {
         Object.keys(errors["devices"]).forEach(key => {
             if (errors["devices"][key] !== {}) {
                 count += 1;
                 alert += "<b>DEVICE - " + key + "</b>:<br>" + JSON.stringify(errors["devices"][key]);
             }
         });
+    }
+    if (errors["scenes"]) {
         Object.keys(errors["scenes"]).forEach(key => {
             if (errors["scenes"][key] !== {}) {
                 count += 1;
