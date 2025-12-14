@@ -143,7 +143,7 @@ function remoteReload(data) {
 function remoteSetSliderDevice(data) {
 
 	let main_audio = data["CONFIG"]["main-audio"];
-    if (main_audio === undefined) {
+    if (main_audio === undefined || data["CONFIG"]["devices"][main_audio] === undefined) {
         return;
     }
 
