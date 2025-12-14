@@ -361,7 +361,7 @@ class RemoteSettingsRemotes {
 
         let open_add_scene = false;
         if (direct_cmd === "add_scene") { open_add_scene = true; }
-        if (!this.data["CONFIG"]["scenes"] || this.data["CONFIG"]["scenes"].length === 0) { open_add_scene = true; }
+        if (!this.data["CONFIG"]["scenes"] || this.data["CONFIG"]["scenes"] === {}) { open_add_scene = true; }
         console.error(this.data["CONFIG"]["scenes"]);
 
         set_temp  = this.tab.start();
