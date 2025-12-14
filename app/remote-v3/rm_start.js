@@ -80,7 +80,7 @@ class RemoteStart {
             // create small buttons for devices
             for (let key in data) { data[key]["position"] = data[key]["settings"]["position"]; }
             let order  = sortDict(data,"position");
-            if (order.length > 0) {
+            if (Object.keys(order).length > 0) {
                 for (let key in order) {
                     let device = order[key];
                     if (device !== "default") {
