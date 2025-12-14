@@ -1,7 +1,7 @@
 {
     "API-Description": "Infrared Broadlink RM-Controller",
     "API-Devices": {
-        "sample_api_device": {
+        "sample-api-device": {
             "Description": "Infrared RM4 mini",
             "IPAddress": "192.168.1.40",
             "MACAddress": "AA:BB:CC:DD:EE:FF",

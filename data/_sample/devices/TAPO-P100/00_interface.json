@@ -1,6 +1,6 @@
 {
 	"API-Devices" : {
-		"sample_api_device" : {
+		"sample-api-device" : {
 			"IPAddress"   : "192.168.1.53",
 			"TapoUser"    : "your@email.com",
 			"TapoPwd"     : "your-password-at-tapo",

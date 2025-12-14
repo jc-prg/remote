@@ -1,7 +1,7 @@
 {
 	"API-Description"  : "ZigBee2MQTT interfaces",
 	"API-Devices"    : {
-		"sample_api_device_internal" : {
+		"sample-api-device-internal" : {
 			"AdminURL"    : "http://192.168.1.42:8080/",
 			"IPAddress"   : "192.168.1.42",
 			"MacAddress"  : "",
@@ -14,7 +14,7 @@
 			"Timeout"     : 5,
 			"USBDongle"   : "/dev/ttyACM0"
 		},
-		"sample_api_device_external" : {
+		"sample-api-device-external" : {
 			"AdminURL"    : "http://192.168.1.41:8080/",
 			"IPAddress"   : "192.168.1.41",
 			"MacAddress"  : "",
