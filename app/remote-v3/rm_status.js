@@ -969,7 +969,7 @@ function statusCheck_deviceIdle(data) {
         if (last_send !== undefined && auto_power_off !== undefined) {
             if (power_status === "ON" && (auto_power_off - (current_time - last_send)) > 0) {
 	            //console.log(" ....... " + (current_time - last_send) + " ... " + auto_power_off);
-	            var off = convert_second2time(auto_power_off - (current_time - last_send));
+                const off = convert_second2time(auto_power_off - (current_time - last_send));
                 setTextById("device_auto_off_"+device, "-&gt;&nbsp;Auto-Power-Off  in " + off);
     	        setTextById("display_"+device+"_auto-power-off", "-" + off);
                 }
@@ -1263,19 +1263,20 @@ function statusCheck_error(data) {
     let count = 0;
     let errors = data["STATUS"]["config_errors"];
 
-
-    Object.keys(errors["devices"]).forEach(key => {
-        if (errors["devices"][key] !== {}) {
-            count += 1;
-            alert += "<b>DEVICE - " + key + "</b>:<br>" + JSON.stringify(errors["devices"][key]);
+    if (errors) {
+        Object.keys(errors["devices"]).forEach(key => {
+            if (errors["devices"][key] !== {}) {
+                count += 1;
+                alert += "<b>DEVICE - " + key + "</b>:<br>" + JSON.stringify(errors["devices"][key]);
             }
         });
-    Object.keys(errors["scenes"]).forEach(key => {
-        if (errors["scenes"][key] !== {}) {
-            count += 1;
-            alert += "SCENE - " + key + ": " + JSON.stringify(errors["scenes"][key]);
+        Object.keys(errors["scenes"]).forEach(key => {
+            if (errors["scenes"][key] !== {}) {
+                count += 1;
+                alert += "SCENE - " + key + ": " + JSON.stringify(errors["scenes"][key]);
             }
         });
+    }
 
     if (count > 0) {
         alert = "<font style='color:var(--rm-color-font-error)'><b>Configuration Error:</b></font><br/>&nbsp;<br/>" + alert;
