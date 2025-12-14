@@ -80,20 +80,24 @@ class RemoteStart {
             // create small buttons for devices
             for (let key in data) { data[key]["position"] = data[key]["settings"]["position"]; }
             let order  = sortDict(data,"position");
-            for (let key in order) {
-                let device = order[key];
-                if (device !== "default") {
-                    if (data[device]["settings"]["visible"] === "yes") {
-                        let id = "device_"+device;
-                        menu += this.entry_device( data, id, device, "small" );
-                    }
-                    else if (this.edit_mode && data[device]["settings"]["visible"] === "no") {
-                        let id = "device_"+device;
-                        menu += this.entry_device( data, id, device, "small_edit" );
+            if (order.length > 0) {
+                for (let key in order) {
+                    let device = order[key];
+                    if (device !== "default") {
+                        if (data[device]["settings"]["visible"] === "yes") {
+                            let id = "device_" + device;
+                            menu += this.entry_device(data, id, device, "small");
+                        } else if (this.edit_mode && data[device]["settings"]["visible"] === "no") {
+                            let id = "device_" + device;
+                            menu += this.entry_device(data, id, device, "small_edit");
+                        }
                     }
                 }
+                menu = "<div class='rm-button-grid device-buttons'>" + menu + "</div>";
             }
-            menu = "<div class='rm-button-grid device-buttons'>" + menu + "</div>";
+            else {
+                menu = "<div style='width:100%;text-align:center;padding:15px;'>" + lang("DEVICES_NOT_DEFINED_YET") + "</div>";
+            }
 
             // replace old menu
             setTextById(menuItems,menu);

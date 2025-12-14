@@ -72,10 +72,10 @@ function remoteMainMenu (cookie_erase=true) {
 
 function remoteInit (first_load=true) {
 
-	remoteMainMenu(cookie_erase=false);
+	remoteMainMenu(false);
 	if (first_load) {
 		showRemoteInBackground(1);			// show start screen
-		setTextById("frame4","<center>Loading data ...</center>");
+		setTextById("frame4","<center>"+lang("LOADING DATA")+"</center>");
 		remoteFirstLoad_load();			// init load of data
 		}
 	}
