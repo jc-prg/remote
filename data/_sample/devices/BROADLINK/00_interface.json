@@ -1,25 +1,11 @@
 {
     "API-Description": "Infrared Broadlink RM-Controller",
     "API-Devices": {
-        "default": {
+        "sample_api_device": {
             "Description": "Infrared RM4 mini",
             "IPAddress": "192.168.1.40",
             "MACAddress": "AA:BB:CC:DD:EE:FF",
             "DeviceType": "21004",
-            "Methods": [
-                "send",
-                "record"
-            ],
-            "MultiDevice": true,
-            "Port": 80,
-            "PowerDevice": "TAPO-P100_plug02",
-            "Timeout": 5
-        },
-        "RM3mini": {
-            "Description": "Infrared RM3 mini",
-            "IPAddress": "192.168.1.30",
-            "MACAddress": "AA:BB:CC:DD:EE:00",
-            "DeviceType": "10039",
             "Methods": [
                 "send",
                 "record"

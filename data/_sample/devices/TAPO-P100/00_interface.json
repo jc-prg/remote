@@ -1,28 +1,12 @@
 {
 	"API-Devices" : {
-		"plug01" : {
+		"sample_api_device" : {
 			"IPAddress"   : "192.168.1.53",
 			"TapoUser"    : "your@email.com",
 			"TapoPwd"     : "your-password-at-tapo",
 			"Timeout"     : 5,
 			"Methods"     : ["send","query"],
 			"Description" : "SmartPlug 01"
-			},
-		"plug02" : {
-			"IPAddress"   : "192.168.1.55",
-			"TapoUser"    : "your@email.com",
-			"TapoPwd"     : "your-password-at-tapo",
-			"Timeout"     : 5,
-			"Methods"     : ["send","query"],
-			"Description" : "SmartPlug 02"
-			},
-		"plug03" : {
-			"IPAddress"   : "192.168.1.56",
-			"TapoUser"    : "your@email.com",
-			"TapoPwd"     : "your-password-at-tapo",
-			"Timeout"     : 5,
-			"Methods"     : ["send","query"],
-			"Description" : "SmartPlug 03"
 			}
 		},
 	"API-Source"      : "https://github.com/fishbigger/TapoP100",
