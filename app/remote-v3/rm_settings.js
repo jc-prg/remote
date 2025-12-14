@@ -363,6 +363,7 @@ class RemoteSettingsRemotes {
         if (direct_cmd === "add_scene") { open_add_scene = true; }
         if (!this.data["CONFIG"]["scenes"] || this.data["CONFIG"]["scenes"] === {}) { open_add_scene = true; }
         console.error(this.data["CONFIG"]["scenes"]);
+        open_add_scene = true;
 
         set_temp  = this.tab.start();
         set_temp += this.tab.row( "ID:",            this.elements.input("add_scene_id", "", "apiSceneAddCheckID(this);") );
