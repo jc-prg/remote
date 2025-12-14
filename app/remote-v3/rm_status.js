@@ -1199,7 +1199,8 @@ function statusCheck_displayValues(data={}) {
                 let values1         = value.split("_");
 				let values2         = values1[1].split("||");
 				let replace_tag     = values2[0]; // tag/parameter from device to be displayed
-				let replace_value   = "";         // value for this tag
+				let replace_value = "";         // value for this tag
+				let replace_value_org = "";         // value for this tag
 				let replace_device  = values1[0]; // device id for displays in scenes
 				let replace_index   = values2[1]; // grab index, if value is a dict -> e.g. ['plot']
 
@@ -1208,10 +1209,10 @@ function statusCheck_displayValues(data={}) {
 				if (devices[replace_device] && replace_device_status && replace_device_status[replace_tag]) {
 					replace_value = replace_device_status[replace_tag];
 					replace_value_org = replace_value;
-					if (replace_index && replace_index != "") {
+					if (replace_index && replace_index !== "") {
 					
 						// workaround, check why not in the correct format (KODI?!)
-						if (replace_value != "no media" && replace_value != "Error") {
+						if (replace_value !== "no media" && replace_value !== "Error") {
 							//console.warn(replace_value);
 							replace_value       = replace_value.replaceAll(": \"", "##!##");
 							replace_value       = replace_value.replaceAll("\",", "',");
