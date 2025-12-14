@@ -96,7 +96,9 @@ class RemoteStart {
                 menu = "<div class='rm-button-grid device-buttons'>" + menu + "</div>";
             }
             else {
-                menu = "<div style='width:100%;text-align:center;padding:15px;'>" + lang("DEVICES_NOT_DEFINED_YET") + "</div>";
+                menu = "<div style='width:100%;text-align:center;padding:15px;'>" + lang("DEVICES_NOT_DEFINED_YET") +
+                    "<br/><div onclick='rm3settings.create('index');'><u>" + lang("DEVICES_ADD_SETTINGS") + "</u></div>" +
+                    "</div>";
             }
 
             // replace old menu

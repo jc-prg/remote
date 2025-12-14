@@ -182,6 +182,7 @@ let language_app = {
         "DEVICES"                   : "devices",
         "DEVICES_NOT_CONNECTED"     : "Devices not connected",
         "DEVICES_NOT_DEFINED_YET"   : "No devices defined yet.",
+        "DEVICES_ADD_SETTINGS"      : "Use settings to create remote controls.",
 
         "DISPLAY"                       : "display",
         "DISPLAY_EXISTS"                : "Display active for this remote.",
