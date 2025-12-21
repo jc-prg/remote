@@ -101,7 +101,7 @@ class RemoteControlBasic {
     }
 
     // create button for single command
-    device_keyboard(id, label, device, style, cmd, disabled ) {
+    device_keyboard(keyboard, id, label, device, style, cmd, disabled) {
 
         let label2 	= this.image( label, style );
         if (label === ".") {
@@ -109,7 +109,7 @@ class RemoteControlBasic {
             label2[0] = "&nbsp;";
         }
         if (cmd !== "") {
-            cmd = this.keyboard.toggle_cmd();
+            cmd = keyboard.toggle_cmd();
         }
         return this.default( id, label2[0], label2[1], cmd, disabled );
     }

@@ -354,7 +354,7 @@ class RemoteMain {
             } else if (button === "DISPLAY") {
                 next_button = this.display.default(id, device, "devices", remote_display_size, remote_display);
             } else if (button === "keyboard") {
-                next_button = this.button.device_keyboard(cmd, button, device, "", cmd, "");
+                next_button = this.button.device_keyboard(this.keyboard, cmd, button, device, "", cmd, "");
                 this.active_buttons.push(cmd);
             } else if (remote_buttons.includes(button.split("||")[0])) {
                 next_button = this.button.device(cmd, button, device, button_style, cmd, "");
@@ -1103,7 +1103,7 @@ class RemoteMain {
                 this.active_buttons.push(button[1] + "_off");
             } else if (button[1] === "keyboard") {
                 this.keyboard.set_device(button[0]);
-                next_button = this.button.device_keyboard(cmd, button[1], device, "", cmd, "");
+                next_button = this.button.device_keyboard(this.keyboard, cmd, button[1], button[0], "", cmd, "");
                 this.active_buttons.push(cmd);
             } else if (button[0].indexOf("HEADER-IMAGE") === 0) {
                 let toggle_html = "";

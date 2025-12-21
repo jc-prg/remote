@@ -53,6 +53,7 @@ class RemoteControlKeyboard {
 
     /* toggle between visible and hidden, indirectly used - cmd created by toggle_cmd() */
     input_toggle() {
+        console.error(this.app_name+"_keyboard");
         const input = document.getElementById(this.app_name+"_keyboard");
         const input_text = document.getElementById(this.app_name+"_keyboard_input");
         if (input.style.display === "block") {
