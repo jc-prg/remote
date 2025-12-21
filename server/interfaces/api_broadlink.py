@@ -29,7 +29,7 @@ class ApiControl(RemoteApiClass):
         Initialize API / check connect to device
         """
         self.api_description = "API for Broadlink RM Controller"
-        RemoteApiClass.__init__(self, "api.RM3", api_name, "record",
+        RemoteApiClass.__init__(self, "api.BROAD", api_name, "record",
                                 self.api_description, device, device_config, log_command, config)
 
         self.config_add_key("MACAddress", "")
@@ -99,6 +99,8 @@ class ApiControl(RemoteApiClass):
 
         if self.status == "Connected":
             self.logging.info(f"Connected {self.api_config["IPAddress"]} - {self.api_name}:{self.api_device}")
+        else:
+            self.logging.warning(f"Could not connect {self.api_config["IPAddress"]} - {self.api_name}:{self.api_device}")
 
         return self.status
 
@@ -232,7 +234,8 @@ class ApiControl(RemoteApiClass):
         }
 
         self.api_discovery = api_config.copy()
-        self.logging.info("__DISCOVER: " + self.api_name + " - " + str(self.api_discovery))
+        self.logging.info("__DISCOVER: " + self.api_name + " - " + str(len(self.api_discovery["API-Devices"])) + " devices")
+        self.logging.debug("            " + self.api_name + " - " + str(self.api_discovery))
         return api_config.copy()
 
     def register(self, command, pin=""):

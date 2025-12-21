@@ -137,7 +137,6 @@ class QueueApiCalls(RemoteThreadingClass):
                         continue
                     try:
                         result = self.device_apis.api_query(interface, device, value)
-                        # self.execution_time(device,request_time,time.time())
                         if "ERROR" in str(result):
                             log_error += 1
 

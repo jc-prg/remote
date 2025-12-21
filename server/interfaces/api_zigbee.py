@@ -62,11 +62,15 @@ class ApiControl(RemoteApiClass):
         """
         self.logging.debug("on_connect: flags= " + str(flags) + "; userdata=" + str(userdata) + "; rc=" + str(rc))
         if rc == 0:
-            self.logging.info("Connected " + self.api_name + ".")
+            if self.api_config["USBDongle"] != "":
+                self.logging.info("Connected " + self.api_config["USBDongle"] + " - " + self.api_name)
+            else:
+                self.logging.info("Connected " + self.api_config["IPAddress"] + " - " + self.api_name)
+
             self.status = "Connected"
         else:
-            self.logging.error("Could not connect to ZigBee broker (" + self.api_config["IPAddress"] +
-                               "), return code: " + str(rc))
+            self.logging.warning("Could not connect to ZigBee broker (" + self.api_config["IPAddress"] +
+                                 "), return code: " + str(rc))
             self.status = "ERROR: Could not connect, return code=" + str(rc)
 
     def _on_connect_fail(self, client_id):

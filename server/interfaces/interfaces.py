@@ -214,12 +214,12 @@ class Connect(RemoteThreadingClass):
                 else:
                     connected.append(key.replace("_default", ""))
 
-        self.logging.info("Checked device connections (duration=" + str(round(time.time() - start_time, 1)) +
+        self.logging.debug("Checked device connections (duration=" + str(round(time.time() - start_time, 1)) +
                           "s / interval=" + str(self.checking_interval) + "s) ...")
         if len(connected) > 0:
-            self.logging.info("-> CONNECTION OK: " + ", ".join(connected))
+            self.logging.debug("-> CONNECTION OK: " + ", ".join(connected))
         if len(not_connected) > 0:
-            self.logging.info("-> NO CONNECTION: " + ", ".join(not_connected))
+            self.logging.debug("-> NO CONNECTION: " + ", ".join(not_connected))
 
     def check_activity(self):
         """
@@ -235,8 +235,9 @@ class Connect(RemoteThreadingClass):
         for key in self.api:
             if key not in self.api_device_list:
                 if key not in self.info_no_devices_found or not self.info_no_devices_found[key]:
-                    self.logging.warning("Device Activity: Could not find list of devices for '" + key + "'; " +
-                                         "Assumption: no devices connected yet.")
+                    if self.api[key].status == "Connected":
+                        self.logging.warning("Device Activity: Could not find list of devices for '" + key + "'; " +
+                                             "Assumption: API device enabled but no devices defined yet.")
                     self.info_no_devices_found[key] = True
                 continue
 
@@ -558,7 +559,10 @@ class Connect(RemoteThreadingClass):
         status_all_interfaces = {}
         api_dev = interface + "_" + device
 
-        self.logging.debug(str(api_dev))
+        if api_dev != "_":
+            self.logging.debug("api_get_status: " + str(api_dev))
+        else:
+            self.logging.debug("api_get_status: all api devices")
 
         for key in self.api:
             status_all_interfaces[key] = self.api[key].status

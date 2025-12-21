@@ -65,6 +65,8 @@ class ApiControl(RemoteApiClass):
 
         if self.status == "Connected":
             self.logging.info(f"Connected {self.api_config["IPAddress"]} - {self.api_name}:{self.api_device}")
+        else:
+            self.logging.warning(f"Could not connect {self.api_config["IPAddress"]} - {self.api_name}:{self.api_device}")
 
         return self.status
 

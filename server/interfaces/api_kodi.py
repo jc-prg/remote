@@ -203,7 +203,8 @@ class ApiControl(RemoteApiClass):
                     result["API-Devices"][identifier] = config
 
         self.api_discovery = result.copy()
-        self.logging.info("__DISCOVER ("+str(len(self.detected_devices))+"): " + self.api_name + " - " + str(self.api_discovery))
+        self.logging.info("__DISCOVER: " + self.api_name + " - " + str(len(self.api_discovery["API-Devices"])) + " devices")
+        self.logging.debug("            " + self.api_name + " - " + str(self.api_discovery))
         return self.api_discovery.copy()
 
     def discover_ip(self, ip, port):
