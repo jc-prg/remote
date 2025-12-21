@@ -1,0 +1,35 @@
+{
+    "data": {
+        "description": "Scene for light",
+        "devices": [],
+        "display": {},
+        "display-size": "json::display-size",
+        "label": "LED Licht",
+        "macro-channel": {},
+        "macro-scene": {},
+        "macro-scene-off": [],
+        "macro-scene-on": [],
+        "remote": [
+            "HEADER-IMAGE",
+            "TOGGLE||light_l1-power||Light Table||light_l1-on||light_l1-off",
+            "TOGGLE||light_l2-power||Light Couch||light_l2-on||light_l2-off",
+            "TOGGLE||plug_power||Other Lights||plug_on||plug_off",
+            "LINE",
+            "TOGGLE||group_led_power||LED Color Lights||group_led_on||group_led_off",
+            "LINE||Colors",
+            "group_led_yellow",
+            "group_led_orange",
+            "group_led_red",
+            "group_led_pink",
+            "group_led_cyan",
+            "group_led_blue",
+            "group_led_green",
+            "LINE",
+            "group_led_COLOR-PICKER||send-brightness||Brightness||CP LED Streifen (led)",
+            "group_led_COLOR-PICKER||send-color-temp2||Color temperature||CP RGB Lampe (bulb01)",
+            "group_led_COLOR-PICKER||send-color-xy||Color CIE_1931 (small)||CP LED Streifen (led)"
+        ],
+        "scene_power_status": "N/A",
+        "type": "scene"
+    }
+}
