@@ -1045,9 +1045,7 @@ class RemoteMain {
 
                 let button_name = cmd.split("||")[0];
                 let button_name_test = button_name.split("_");
-                if (button_name_test[1] === "undefined") {
-                    button_name = button_name_test[0];
-                }
+                if (button_name_test[1] === "undefined") { button_name = button_name_test[0]; }
 
                 let link_preview = this.app_name + ".preview('scene','" + scene + "');";
 
@@ -1058,6 +1056,7 @@ class RemoteMain {
                 let link_button_left = this.app_name + ".rm_scene.add_button('" + scene + "','add_button_" + i + "','" + i + "');";
                 let link_button_right = this.app_name + ".rm_scene.add_button('" + scene + "','add_button_" + i + "','" + (i + 1) + "');";
 
+                if (button_name.indexOf("TOGGLE") >= 0) { button_name = cmd.split("||")[1].split("_")[0] + "_" + button_name; }
                 context_menu = "[" + i + "] <b>" + button_name + "</b><br/><br/>";
 
                 if (i > 0) {
