@@ -861,7 +861,7 @@ class RemoteMain {
         this.rm_device.update(this.data);
         this.dialog_device.update(this.data, preview_remote, preview_display, preview_display_size);
 
-        const myBoxJson = new RemoteElementSheetBox("remote-edit-json", height = "350px", scroll = true);
+        const myBoxJson = new RemoteElementSheetBox("remote-edit-json", "350px", true);
         myBoxJson.addSheet(lang("REMOTE"), "<h4>" + lang("JSON_REMOTE") + "</h4>" + "<div id='container_remote_json_buttons'></div><br/>" + lang("MANUAL_REMOTE"));
         myBoxJson.addSheet(lang("DISPLAY"), "<h4>" + lang("JSON_DISPLAY") + "</h4>" + "<div id='container_remote_json_display'></div><br/>" + lang("MANUAL_DISPLAY"));
         myBoxJson.addSheet(lang("MACROS"), "<h4>" + lang("JSON_REMOTE_MACROS") + "</h4>" + macro_edit);
@@ -870,7 +870,7 @@ class RemoteMain {
         myJson.create("container_remote_json_buttons", "remote_json_buttons", remote_definition, "rmc");
         myJson.create("container_remote_json_display", "remote_json_display", remote_display, "default");
 
-        const myBox = new RemoteElementSheetBox("remote-edit-add", height = "280px", scroll = true);
+        const myBox = new RemoteElementSheetBox("remote-edit-add", "280px", true);
         myBox.addSheet(lang("INFO"), lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") + this.dialog_device.edit_fields("template", id, device));
         myBox.addSheet(lang("BUTTONS"), this.dialog_device.edit_fields("button_line", id, device, preview_remote));
         myBox.addSheet(lang("DISPLAY"), this.dialog_device.edit_fields("display", id, device));
@@ -1391,7 +1391,7 @@ class RemoteMain {
             "</i>&nbsp;<br/>" + lang("MANUAL_MACROS_SCENE");
 
         // create sheet box JSON
-        const myBox2 = new RemoteElementSheetBox("scene-edit-json", height = "400px", scroll = true);
+        const myBox2 = new RemoteElementSheetBox("scene-edit-json", "400px", true);
         myBox2.addSheet(lang("DEVICES"), edit_json_required);
         myBox2.addSheet(lang("REMOTE"), edit_json_remote);
         myBox2.addSheet(lang("DISPLAY"), edit_json_display);
@@ -1412,7 +1412,7 @@ class RemoteMain {
         this.dialog_scene.update(this.data, preview_remote, preview_display, preview_display_size, preview_channel);
 
         // create sheet box elements
-        const myBox1 = new RemoteElementSheetBox("scene-edit-elements", height = "300px", scroll = true);
+        const myBox1 = new RemoteElementSheetBox("scene-edit-elements", "300px", true);
         myBox1.addSheet(lang("INFO"), lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") + this.dialog_scene.edit_fields("template", id, scene));
         myBox1.addSheet(lang("BUTTONS"), this.dialog_scene.edit_fields("default", id, scene));
         myBox1.addSheet(lang("HEADER"), this.dialog_scene.edit_fields("header", id, scene));

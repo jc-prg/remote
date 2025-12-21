@@ -1454,7 +1454,7 @@ class RemoteSettingsInfo {
         set_temp += this.tab.end();
         let setting_other = set_temp;
 
-        const myBox = new RemoteElementSheetBox("module_system_info", height="220px", scroll=true);
+        const myBox = new RemoteElementSheetBox("module_system_info", "220px", true);
         myBox.addSheet("Info",   "&nbsp;" + setting_info);
         myBox.addSheet("Health", "&nbsp;" + setting_health);
         myBox.addSheet("Screen", "&nbsp;" + setting_display);
