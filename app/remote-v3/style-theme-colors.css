@@ -123,7 +123,7 @@
 
     --rm-color-signal-power-on: darkgreen;
     --rm-color-signal-power-off: darkred;
-    --rm-color-signal-power-other: darkcyan;
+    --rm-color-signal-power-other: #4690f1;
     --rm-color-signal-power-error: blueviolet;
     --rm-color-signal-value-on: #22BB22;
     --rm-color-signal-value-ok: #22BB22;
@@ -239,7 +239,7 @@
 
         --rm-color-signal-power-on: darkgreen;
         --rm-color-signal-power-off: darkred;
-        --rm-color-signal-power-other: darkcyan;
+        --rm-color-signal-power-other: #4690f1;
         --rm-color-signal-power-error: blueviolet;
         --rm-color-signal-value-ok: lightgreen;
         --rm-color-signal-value-on: lightgreen;
