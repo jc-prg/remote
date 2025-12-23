@@ -540,6 +540,11 @@ function statusCheck_devicePowerStatus (data, app_connection_error=false) {
         let device_api_power  = data["CONFIG"]["apis"]["list_api_power_device"][device_api];
         let buttons = data["CONFIG"]["devices"][device]["remote"]["remote"].length;
 
+        if (device_api_status === undefined || device_api_power === undefined) {
+            console.error("statusCheck_devicePowerStatus: No API status available for " + device_api + " / " + device);
+            continue;
+        }
+
         // check API status
         if (device_api_status.toUpperCase().indexOf("DISABLED") >= 0)        { status = "API_DISABLED"; }
         else if (device_api_status.toUpperCase().indexOf("START") >= 0)      { status = "API_STARTING"; }
@@ -635,6 +640,12 @@ function statusCheck_scenePowerStatus(data, app_connection_error=false) {
 		    let device       = required[i];
     		let device_label = data["CONFIG"]["devices"][device]["settings"]["label"] + " (" + device + ")";
 		    let status       = device_status_x[device];
+
+            if (status === undefined) {
+                console.error("statusCheck_scenePowerStatus: No API status available for " + device);
+                continue;
+            }
+
 
             let status_check = status;
             if (status === "POWER_OFF") { status_check = "OFF"; }
@@ -998,6 +1009,11 @@ function statusCheck_devicePowerButtonDisplay(data={}, app_connection_error=fals
 
         let power_status  = device_status[device];
         let power_message = device_status_log[device];
+
+        if (power_status === undefined) {
+            console.error("statusCheck_devicePowerButtonDisplay: No API status available for " + device);
+            continue;
+        }
 
         // format power buttons
         if (deactivateButton === false) {

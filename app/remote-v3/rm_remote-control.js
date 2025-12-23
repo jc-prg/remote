@@ -59,6 +59,8 @@ class RemoteControlBasic {
         if (!isNaN(label)) { label = "<big>" + label + "</big>"; }
         if (style !== "")   { style = " " + style; }
 
+        if (id.indexOf("||") > 0) { id = id.split("||")[0]; }
+
         return "<button id='" + id.toLowerCase() + "' class='rm-button" + style + "' " + button_style + " " +
             onClick + " " + onContext + " " + disabled + " >" + label + "</button>";
     }
