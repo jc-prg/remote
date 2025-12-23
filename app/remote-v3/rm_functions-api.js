@@ -454,7 +454,7 @@ function apiCommandSend(cmdButton, sync="", callback="", device="") {
 
 
 // delete commands
-function apiCommandDelete_exe(button) { b = button.split("_"); appFW.requestAPI("DELETE",["command",b[0],b[1]], "", apiAlertReturn); }
+function apiCommandDelete_exe(button) { let b = button.split("_"); appFW.requestAPI("DELETE",["command",b[0],b[1]], "", apiAlertReturn); }
 
 function apiCommandDelete(device_id, button_id) {
 
@@ -476,7 +476,7 @@ function apiCommandDelete(device_id, button_id) {
 	}
 
 
-// add button to device
+// record command for a button
 function apiCommandRecord(device_id, button_id) {
 
 	let device;
