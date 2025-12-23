@@ -14,7 +14,7 @@ class QueueApiCalls(RemoteThreadingClass):
         """
         create queue, set name
         """
-        RemoteThreadingClass.__init__(self, "Q."+query_send, name)
+        RemoteThreadingClass.__init__(self, "Q-"+query_send, name)
 
         self.last_query_time = None
         self.last_query = None
@@ -58,11 +58,11 @@ class QueueApiCalls(RemoteThreadingClass):
                 interface, device, button, state, request_time, execution_time = self.queue[0]
 
                 if now >= execution_time:
-                    self.logging.debug("Execute now:     " + str(device) + "/" + str(button) + " - " + time.strftime("%H:%M:%S", time.localtime(execution_time)))
+                    self.logging.debug("Execute: - " + str(device) + " " + str(button) + " - " + time.strftime("%H:%M:%S", time.localtime(execution_time)))
                     cmd = self.queue.pop(0)
                     self.execute(cmd)
                 else:
-                    self.logging.debug("Wait to execute: " + str(device) + "/" + str(button) + " - " + time.strftime("%H:%M:%S", time.localtime(execution_time)))
+                    self.logging.debug("Wait to execute: " + str(device) + " " + str(button) + " - " + time.strftime("%H:%M:%S", time.localtime(execution_time)))
                     cmd = self.queue.pop(0)
                     self.queue.append(cmd)
 
@@ -71,7 +71,7 @@ class QueueApiCalls(RemoteThreadingClass):
 
             else:
                 command = self.queue.pop(0)
-                self.logging.debug("Execute now: " + str(command))
+                self.logging.debug("Execute: " + str(command))
                 self.execute(command)
 
             self.thread_wait(use_wait_time=0.01)
@@ -158,7 +158,12 @@ class QueueApiCalls(RemoteThreadingClass):
 
                 if log_error > 1:
                     log_results.append("...")
-                self.logging.debug("query " + interface + " (" + str(round(time.time() - log_time_start, 1)) + "s): " + ", ".join(log_results))
+
+                log_results = ", ".join(log_results)
+                if len(log_results) > 50:
+                    log_results = log_results[:50] + "..."
+
+                self.logging.debug("Execute: - query done " + interface + " (" + str(round(time.time() - log_time_start, 1)) + "s): " + log_results)
 
                 if self.config != "":
                     self.config.device_set_values(device, "status", devices[device]["status"])

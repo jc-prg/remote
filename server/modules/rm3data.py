@@ -159,9 +159,17 @@ class RemotesData(RemoteThreadingClass):
             interface_def_default = self.config.read(rm3presets.commands + interface + "/00_default", True)
 
             if "ERROR" in interface_def_device or "ERROR" in interface_def_default:
-                error_msg = "Error while reading configuration for device (" + device_key + ")"
+                error_msg = f"Error while reading configuration for device: "
                 if "ERROR" in interface_def_device:
-                    error_msg += " ... " + str(interface_def_device["ERROR"])
+                    error_msg += f" ({rm3presets.commands}{interface}/{device_key}.json - {interface_def_device["ERROR"]})"
+                    if "ERROR_MSG" in interface_def_device:
+                        error_msg += f" ({interface_def_device["ERROR_MSG"]})"
+
+                if "ERROR" in interface_def_default:
+                    error_msg += f" ({rm3presets.commands}{interface}/00_default.json - {interface_def_default["ERROR"]})"
+                    if "ERROR_MSG" in interface_def_default:
+                        error_msg += f" ({interface_def_default["ERROR_MSG"]})"
+
                 self.logging.error(error_msg)
 
             else:
