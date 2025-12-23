@@ -30,8 +30,9 @@ class RemoteControlDisplay {
             }
 
             // create link for details (for scenes not defined yet)
-            if (rm_type === "devices")   { let onclick = "onclick=\"" + this.app_name + ".alert('"+id+"','"+device+"','"+rm_type+"','##STYLE##');\""; }
-            else                        { let onclick = "disabled"; }
+            let onclick;
+            if (rm_type === "devices") { onclick = "onclick=\"" + this.app_name + ".alert('"+id+"','"+device+"','"+rm_type+"','##STYLE##');\""; }
+            else { onclick = "disabled"; }
 
             // create display
             let display_start = "<button id=\"display_"+device+"_##STATUS##\" class=\"display ##STYLE##\" style=\"display:##DISPLAY##\" "+onclick+">";
@@ -85,8 +86,8 @@ class RemoteControlDisplay {
 
                 for (let key in display_data) {
                     let input_id = "";
-                    if (display_data[key].indexOf("_") >= 0)    { input_id = 'display_' + display_data[key]; }
-                    else                                        { input_id = 'display_' + device + '_' + display_data[key]; }
+                    if (display_data[key].indexOf("_") >= 0) { input_id = 'display_' + display_data[key]; }
+                    else { input_id = 'display_' + device + '_' + display_data[key]; }
                     let label    = "<span class='display-label'>"+key+":</span>";
                     let input    = "<span class='display-input' id='"+input_id+"'>no data</span>";
                     text += "<div class='display-element "+style+"'>"+label+input+"</div>";
@@ -111,7 +112,7 @@ class RemoteControlDisplay {
                 text += "<center><b>"+lang("CONNECTION_DEVICE_OFF")+"</b><br/><i><text id='display_OFF_info_"+device+"'></text></i></center>";
                 text += display_end;
 
-                // display if OFF
+                // display if POWER_OFF
                 text += display_start;
                 text  = text.replace( /##STATUS##/g, "POWER_OFF" );
                 text  = text.replace( /##STYLE##/g, style + " display_off" );
