@@ -29,7 +29,7 @@ TEXT_DEBUG='\(DEBUG\)'
 # Function to monitor logfile
 monitor_logfile() {
     DATE=`date`
-    INFO="WATCH jc://birdhouse/logfile/ ... end with <Strg+C>"
+    INFO="WATCH jc://remote/logfile/ ... end with <Strg+C>"
     term_width=$(tput cols)
     text_length=${#INFO}
     date_length=${#DATE}
