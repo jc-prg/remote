@@ -22,10 +22,13 @@ class RemoteDefaultClass(object):
 
         self.log_level = None
         self.log_level_name = ""
+        self.log_level_set = ""
+
         for key in rm3presets.log_level_module:
             if self.class_id in rm3presets.log_level_module[key]:
                 self.log_level = eval("logging." + key.upper())
                 self.log_level_name = key
+                self.log_level_set = key.upper()
 
         if self.log_level is None:
             self.log_level = rm3presets.log_set2level
@@ -34,6 +37,9 @@ class RemoteDefaultClass(object):
         rm3presets.server_health[class_id] = "registered"
         self.logging = rm3presets.set_logging(self.class_id, self.log_level)
         self.logging.debug("Creating class " + name + " (Log Level: " + self.log_level_name + ") ...")
+
+        if self.log_level_set != "":
+            self.logging.info(f"Set log-level for {self.class_id} to {self.log_level_name}.")
 
 
 class RemoteApiClass(RemoteDefaultClass):
@@ -83,6 +89,7 @@ class RemoteApiClass(RemoteDefaultClass):
         self.working = False
         self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
         self.detected_devices = []
+        self.devices_available_message = True
 
         self.count_error = 0
         self.count_success = 0
@@ -131,7 +138,9 @@ class RemoteApiClass(RemoteDefaultClass):
         Returns:
             dict: empty dict, as not implemented for this API
         """
-        self.logging.debug("Method 'devices_available()' is not implemented for the API '" + self.name + "'.")
+        if self.devices_available_message:
+            self.logging.debug("Method 'devices_available()' is not implemented for the API '" + self.name + "'.")
+            self.devices_available_message = False
         return {}
 
     def api_device_available(self, api_device):
@@ -179,6 +188,15 @@ class RemoteApiClass(RemoteDefaultClass):
 
     def register(self, command, pin=""):
         return "ERROR: 'register' not implemented (" + self.api_name + ")"
+
+    def wait_if_working(self):
+        """
+        Some devices run into problems, if send several requests at the same time
+        """
+        while self.working:
+            self.logging.debug(".")
+            time.sleep(0.2)
+        return
 
     def test(self):
         return "ERROR: 'test' not implemented (" + self.api_name + ")"

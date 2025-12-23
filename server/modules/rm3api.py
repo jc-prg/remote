@@ -729,10 +729,14 @@ class RemoteAPI(RemoteDefaultClass):
                 api_config = self.config.read(rm3presets.commands + api + "/00_interface")
                 api_device_config = self.config.read(rm3presets.commands + api + "/00_default")
                 # data["DATA"]["interfaces"][api] = str(api_config)
-                for key1 in api_config["API-Devices"]:
-                    for key2 in api_config["API-Devices"][key1]:
-                        if key2 == "MACAddress":
-                            api_config["API-Devices"][key1][key2] = str(api_config["API-Devices"][key1][key2])
+                if "API-Devices" in api_config:
+                    for key1 in api_config["API-Devices"]:
+                        for key2 in api_config["API-Devices"][key1]:
+                            if key2 == "MACAddress":
+                                api_config["API-Devices"][key1][key2] = str(api_config["API-Devices"][key1][key2])
+                else:
+                    self.logging.warning("No 'API-Devices' in config-file " + rm3presets.commands + api + "/00_interface.json!")
+                    continue
 
                 data["DATA"]["interfaces"][api] = api_config.copy()
                 data["DATA"]["interfaces"][api]["API-Config"] = api_device_config["data"].copy()

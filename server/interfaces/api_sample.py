@@ -24,7 +24,7 @@ class ApiControl(RemoteApiClass):
             device_config = {}
 
         self.api_description = "Sample API Description"
-        RemoteApiClass.__init__(self, "api.SAMPLE", api_name, "query",
+        RemoteApiClass.__init__(self, "api-SAMPLE", api_name, "query",
                                 self.api_description, device, device_config, log_command, config)
 
     def connect(self):

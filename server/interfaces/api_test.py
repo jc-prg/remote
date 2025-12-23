@@ -30,7 +30,7 @@ class ApiControl(RemoteApiClass):
         Initialize API / check connect to device
         """
         self.api_description = "Test API for automatic testing"
-        RemoteApiClass.__init__(self, "api.TEST", api_name, "query",
+        RemoteApiClass.__init__(self, "api-TEST", api_name, "query",
                                 self.api_description, device, device_config, log_command, config)
 
         self.default_config = {

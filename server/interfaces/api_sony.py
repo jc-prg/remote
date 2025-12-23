@@ -23,7 +23,7 @@ class ApiControl(RemoteApiClass):
         API Class constructor
         """
         self.api_description = "API for SONY Devices (SonyAPILib)"
-        RemoteApiClass.__init__(self, "api.SONY", api_name, "query",
+        RemoteApiClass.__init__(self, "api-SONY", api_name, "query",
                                 self.api_description, device, device_config, log_command, config)
 
         if rm3config.log_api_ext == "NO":

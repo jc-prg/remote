@@ -220,6 +220,7 @@ def read_from_env():
 
         for key in log_level_module:
             value = get_env('REMOTE_LOGGING_' + key)
+            print(f"REMOTE_LOGGING_{key}={value}")
             if value is not None:
                 log_level_module[key] = value.split(",")
 
@@ -266,6 +267,7 @@ refresh_config_sleep = 3 * 60
 refresh_config_cache = 60
 refresh_device_status = 10
 refresh_device_connection = 60
+discover_devices_interval = 10 * 60
 
 shorten_info_to = 50
 

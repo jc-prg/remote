@@ -29,7 +29,7 @@ class ApiControl(RemoteApiClass):
         Initialize API / check connect to device
         """
         self.api_description = "API for Broadlink RM Controller"
-        RemoteApiClass.__init__(self, "api.BROAD", api_name, "record",
+        RemoteApiClass.__init__(self, "api-BROAD", api_name, "record",
                                 self.api_description, device, device_config, log_command, config)
 
         self.config_add_key("MACAddress", "")
@@ -103,16 +103,6 @@ class ApiControl(RemoteApiClass):
             self.logging.warning(f"Could not connect {self.api_config["IPAddress"]} - {self.api_name}:{self.api_device}")
 
         return self.status
-
-    def wait_if_working(self):
-        """
-        Some devices run into problems, if send several requests at the same time
-        """
-
-        while self.working:
-            self.logging.debug(".")
-            time.sleep(0.2)
-        return
 
     def power_status(self):
         """

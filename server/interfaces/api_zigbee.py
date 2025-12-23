@@ -29,7 +29,7 @@ class ApiControl(RemoteApiClass):
             device_config = {}
 
         self.api_description = "API Zigbee2MQTT"
-        RemoteApiClass.__init__(self, "api.zigbee", api_name, "query",
+        RemoteApiClass.__init__(self, "api-zigbee", api_name, "query",
                                 self.api_description, device, device_config, log_command, config)
 
         self.config_add_key("USBDongle", "")

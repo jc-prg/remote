@@ -21,7 +21,7 @@ class ApiControl(RemoteApiClass):
         Initialize API / check connect to device
         """
         self.api_description = "API for KODI Servers"
-        RemoteApiClass.__init__(self, "api.KODI", api_name, "query",
+        RemoteApiClass.__init__(self, "api-KODI", api_name, "query",
                                 self.api_description, device, device_config, log_command, config)
         self.api_url = ""
         self.check_ports = ["8080"]
@@ -259,7 +259,7 @@ class APIaddOn(RemoteDefaultClass):
     def __init__(self, api):
 
         self.api_description = "API-Addon for KODI Servers"
-        RemoteDefaultClass.__init__(self, "api.KODI", self.api_description)
+        RemoteDefaultClass.__init__(self, "api-KODI", self.api_description)
 
         self.status = None
         self.not_connected = None

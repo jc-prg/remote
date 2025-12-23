@@ -20,7 +20,7 @@ class ApiControl(RemoteApiClass):
         Initialize API / check connect to device
         """
         self.api_description = "API for ONKYO Devices"
-        RemoteApiClass.__init__(self, "api.ONKYO", api_name, "query",
+        RemoteApiClass.__init__(self, "api-ONKYO", api_name, "query",
                                 self.api_description, device, device_config, log_command, config)
 
         self.api_timeout = 5
@@ -276,7 +276,7 @@ class APIaddOn(RemoteDefaultClass):
     """
     def __init__(self, api):
         self.api_description = "API-Addon for ONKYO Devices"
-        RemoteDefaultClass.__init__(self, "api.ONKYO", self.api_description)
+        RemoteDefaultClass.__init__(self, "api-ONKYO", self.api_description)
 
         self.status = None
         self.not_connected = None

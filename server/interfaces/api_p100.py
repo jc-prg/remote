@@ -19,7 +19,7 @@ class ApiControl(RemoteApiClass):
         Initialize API / check connect to device
         """
         self.api_description = "API for Tapo-Link P100"
-        RemoteApiClass.__init__(self, "api.P100", api_name, "query",
+        RemoteApiClass.__init__(self, "api-P100", api_name, "query",
                                 self.api_description, device, device_config, log_command, config)
 
         self.config_add_key("TapoUser", "")
@@ -210,7 +210,7 @@ class APIaddOn(RemoteDefaultClass):
 
     def __init__(self, api, logger):
         self.api_description = "API-Addon for Tapo-Link P100"
-        RemoteDefaultClass.__init__(self, "api.P100", self.api_description)
+        RemoteDefaultClass.__init__(self, "api-P100", self.api_description)
 
         self.addon = "jc://addon/p100/"
         self.api = api
