@@ -1289,7 +1289,7 @@ function statusCheck_error(data) {
        Object.keys(errors[error_key]).forEach(key => {
            if (errors[error_key][key] !== {}) {
                count += 1;
-               let msg = "<b>" + error_key.toUpperCase() + " - " + key + "</b>:<br>" + JSON.stringify(errors[error_key][key]);
+               let msg = "<b>" + error_key.toUpperCase() + " - " + key + "</b>:<br>" + JSON.stringify(errors[error_key][key]) + "<br/>&nbsp;<br/>";
                alert += msg;
                console.warn(alert);
            }
@@ -1299,7 +1299,7 @@ function statusCheck_error(data) {
     console.warn(count);
 
     if (count > 0) {
-        alert = "<div style='color:var(--rm-color-font-warning);'><b>Configuration Error:</b></div><div id='attention-alert' style='text-align:left;'>" + alert + "</div>";
+        alert = "<div style='color:var(--rm-color-font-warning);'><b>" + count + " Configuration Error(s):</b></div><div id='attention-alert' style='text-align:left;'>" + alert + "</div>";
         alert = alert.replaceAll('"','');
         alert = alert.replaceAll('\'','');
         alert = "appMsg.confirm(\""+alert+"\", \"\", 300);";
