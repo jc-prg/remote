@@ -236,6 +236,9 @@ class RemotesData(RemoteThreadingClass):
                 if "commands" in interface_def_combined:
                     data_config[device]["commands"]["definition"] = interface_def_combined["commands"].copy()
 
+                    if "volume" in data_config[device]["commands"]["definition"] and not "vol" in data_config[device]["commands"]["definition"]:
+                        data_config[device]["commands"]["definition"]["vol"] = data_config[device]["commands"]["definition"]["volume"].copy()
+
                     if more_details:
                         for key in interface_def_combined["commands"]:
                             if "get" in interface_def_combined["commands"][key]:
@@ -472,6 +475,9 @@ class RemotesData(RemoteThreadingClass):
             status[device] = data[device]["status"]
             status[device]["api"] = (data[device]["config"]["api_key"] + "_" +
                                      data[device]["config"]["api_device"])
+
+            if "volume" in status[device]:
+                status[device]["vol"] = status[device]["volume"]
 
             if status[device]["api"] in self.apis.api:
                 status[device]["api-status"] = self.apis.api[status[device]["api"]].status
