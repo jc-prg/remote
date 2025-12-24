@@ -51,13 +51,20 @@ hr         { border: solid 1px var(--rm-color-hr); }
 }
 
 #attention {
-  position  : absolute;
+  position  : fixed;
+  width     : 50px;
   left      : 20px;
-  bottom    : 30px;
+  bottom    : 20px;
 }
 
 #attention img {
   height   : 5cqw;
+}
+
+#attention-alert {
+    overflow: auto;
+    height: 190px;
+    margin-top: 15px;
 }
 
 /* manual text */

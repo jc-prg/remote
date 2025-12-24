@@ -538,12 +538,17 @@ function statusCheck_devicePowerStatus (data, app_connection_error=false) {
         let device_api        = devices_config[device]["interface"]["api"];
         let device_api_status = data["STATUS"]["interfaces"]["connect"][device_api];
         let device_api_power  = data["CONFIG"]["apis"]["list_api_power_device"][device_api];
-        let buttons = data["CONFIG"]["devices"][device]["remote"]["remote"].length;
 
         if (device_api_status === undefined || device_api_power === undefined) {
             console.error("statusCheck_devicePowerStatus: No API status available for " + device_api + " / " + device);
             continue;
         }
+        if (data["CONFIG"]["devices"][device]["remote"]["remote"] === undefined) {
+            console.error("statusCheck_devicePowerStatus: No remote definition available for " + device_api + " / " + device);
+            continue;
+        }
+
+        let buttons = data["CONFIG"]["devices"][device]["remote"]["remote"].length;
 
         // check API status
         if (device_api_status.toUpperCase().indexOf("DISABLED") >= 0)        { status = "API_DISABLED"; }
@@ -1278,34 +1283,35 @@ function statusCheck_error(data) {
     let html = "";
     let alert = "";
     let count = 0;
-    let errors = data["STATUS"]["config_errors"];
+    const errors = data["STATUS"]["config_errors"];
 
-    if (errors["devices"]) {
-        Object.keys(errors["devices"]).forEach(key => {
-            if (errors["devices"][key] !== {}) {
-                count += 1;
-                alert += "<b>DEVICE - " + key + "</b>:<br>" + JSON.stringify(errors["devices"][key]);
-            }
-        });
-    }
-    if (errors["scenes"]) {
-        Object.keys(errors["scenes"]).forEach(key => {
-            if (errors["scenes"][key] !== {}) {
-                count += 1;
-                alert += "SCENE - " + key + ": " + JSON.stringify(errors["scenes"][key]);
-            }
-        });
-    }
+    Object.keys(errors).forEach(error_key => {
+       Object.keys(errors[error_key]).forEach(key => {
+           if (errors[error_key][key] !== {}) {
+               count += 1;
+               let msg = "<b>" + error_key.toUpperCase() + " - " + key + "</b>:<br>" + JSON.stringify(errors[error_key][key]);
+               alert += msg;
+               console.warn(alert);
+           }
+       });
+    });
+
+    console.warn(count);
 
     if (count > 0) {
-        alert = "<font style='color:var(--rm-color-font-error)'><b>Configuration Error:</b></font><br/>&nbsp;<br/>" + alert;
+        alert = "<div style='color:var(--rm-color-font-warning);'><b>Configuration Error:</b></div><div id='attention-alert' style='text-align:left;'>" + alert + "</div>";
         alert = alert.replaceAll('"','');
         alert = alert.replaceAll('\'','');
         alert = "appMsg.confirm(\""+alert+"\", \"\", 300);";
-        html = "<img src='icon/attention.png' onclick='"+alert+"' style='cursor:pointer;' alt=''>";
-        }
 
-    setTextById("attention", html);
+        html = "<img src='icon/attention.png' onclick='"+alert+"' style='cursor:pointer;width:100%;height:auto;' alt=''>";
+        setTextById("attention", html);
+        elementVisible("attention");
+        }
+    else {
+        setTextById("attention", "");
+    }
+
 }
 
 

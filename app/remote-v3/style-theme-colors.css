@@ -6,6 +6,7 @@
     --rm-color-font-error: red;
     --rm-color-font-ok: green;
     --rm-color-font-data: cyan;
+    --rm-color-font-warning: yellow;
 
     --rm-color-button-default: #000044;
     --rm-color-button-default-text: white;
