@@ -1296,8 +1296,6 @@ function statusCheck_error(data) {
        });
     });
 
-    console.warn(count);
-
     if (count > 0) {
         alert = "<div style='color:var(--rm-color-font-warning);'><b>" + count + " Configuration Error(s):</b></div><div id='attention-alert' style='text-align:left;'>" + alert + "</div>";
         alert = alert.replaceAll('"','');
