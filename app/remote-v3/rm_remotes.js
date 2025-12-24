@@ -591,7 +591,7 @@ class RemoteMain {
 
         edit += "<hr/><center>";
         edit += this.button.edit(this.app_name+".device_edit_api_update('',true);", lang("BUTTON_T_RESET")) + "&nbsp;";
-        edit += this.button.edit(this.app_name+".device_edit_api_confirm()", lang("BUTTON_T_SAVE"));
+        edit += this.button.edit(this.app_name+".device_edit_api_confirm('"+device+"')", lang("BUTTON_T_SAVE"));
         edit += "</center>";
         let edit_info = edit;
 
@@ -705,7 +705,7 @@ class RemoteMain {
     }
 
     /* confirm dialog if to save changes */
-    device_edit_api_confirm() {
+    device_edit_api_confirm(device) {
         const select_0 = document.getElementById("edit_dev_api");
         const select_1 = document.getElementById("edit_dev_config");
         const select_2 = document.getElementById("edit_dev_rm");
