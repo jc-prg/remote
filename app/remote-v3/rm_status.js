@@ -1291,7 +1291,6 @@ function statusCheck_error(data) {
                count += 1;
                let msg = "<b>" + error_key.toUpperCase() + " - " + key + "</b>:<br>" + JSON.stringify(errors[error_key][key]) + "<br/>&nbsp;<br/>";
                alert += msg;
-               console.warn(alert);
            }
        });
     });
