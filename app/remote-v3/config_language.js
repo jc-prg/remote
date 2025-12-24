@@ -52,7 +52,7 @@ let language_app = {
 
         "AUDIO_IS_MAIN"         : "This device is defined as main AUDIO device.",
         "AUDIO_SET_AS_MAIN"     : "Set as main AUDIO device (change from &quot;{0}&quot;).",
-        "AUDIO_N/A_AS_MAIN"     : "This device can't be set as main AUDIO device, no audio volume control available.",
+        "AUDIO_N/A_AS_MAIN"     : "This device can't be set as main AUDIO device, no audio volume control available. (There is no key 'vol' or 'volume' defined in the device commands.)",
         
         "API"                   : "API",
         "API_ADMIN"             : "API admin",
