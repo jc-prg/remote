@@ -643,15 +643,19 @@ function statusCheck_scenePowerStatus(data, app_connection_error=false) {
         // check status of all required devices
 		for (let i=0;i<required.length;i++) {
 		    let device       = required[i];
-    		let device_label = data["CONFIG"]["devices"][device]["settings"]["label"] + " (" + device + ")";
 		    let status       = device_status_x[device];
 
             if (status === undefined) {
                 console.error("statusCheck_scenePowerStatus: No API status available for " + device);
                 continue;
             }
+            if (data["CONFIG"]["devices"][device]["settings"] === undefined) {
+                console.error("statusCheck_scenePowerStatus: No device settings available for " + device);
+                continue;
+            }
 
 
+            let device_label = data["CONFIG"]["devices"][device]["settings"]["label"] + " (" + device + ")";
             let status_check = status;
             if (status === "POWER_OFF") { status_check = "OFF"; }
             else if (status === "API_STARTING") { status_check = "API_STARTING"; }
