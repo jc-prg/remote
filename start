@@ -54,12 +54,20 @@ source .env
 
 # SHOW DOCKER-CONTAINER STATUS
 
-CONTAINERS=(
-  $REMOTE_DOCKER_SERVER
-  $REMOTE_DOCKER_CLIENT
-  mqtt4zigbee
-  zigbee2mqtt
-)
+if [[ $ZIGBEE2MQTT_START = "YES" ]]; then
+  CONTAINERS=(
+    $REMOTE_DOCKER_SERVER
+    $REMOTE_DOCKER_CLIENT
+    mqtt4zigbee
+    zigbee2mqtt
+  )
+else
+  CONTAINERS=(
+    $REMOTE_DOCKER_SERVER
+    $REMOTE_DOCKER_CLIENT
+  )
+fi
+
 
 for CONTAINER in "${CONTAINERS[@]}"; do
   CID=$(docker ps --filter "name=^/${CONTAINER}$" --format "{{.ID}}")
@@ -74,6 +82,9 @@ for CONTAINER in "${CONTAINERS[@]}"; do
     echo -e " ${RED}Offline${NC}: ${CONTAINER} "
   fi
 done
+if [[ $ZIGBEE2MQTT_START = "NO" ]]; then
+  echo -e " ${RED}Offline${NC}: ZigBee container inactive (edit .env to activate)"
+fi
 echo
 
 # CHECK IF GIT SUBMODULES ARE INSTALLED
@@ -192,12 +203,12 @@ echo ""
 if [ $config == "start" ]; then
     $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml up -d
 
-    if [ $ZIGBEE2MQTT_START == "YES" ]; then
+    if [ $ZIGBEE2MQTT_START = "YES" ]; then
       $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml up -d
     fi
 
 elif [ $config == "start_visible" ]; then
-    if [ $ZIGBEE2MQTT_START == "YES" ]; then
+    if [ $ZIGBEE2MQTT_START = "YES" ]; then
       $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml up -d
     fi
 
@@ -206,7 +217,7 @@ elif [ $config == "start_visible" ]; then
 elif [ $config == "restart" ]; then
     $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml restart
 
-    if [ $ZIGBEE2MQTT_START == "YES" ]; then
+    if [ $ZIGBEE2MQTT_START = "YES" ]; then
       $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml restart
     fi
 
@@ -215,7 +226,7 @@ elif [ $config == "install" ]; then
     ./install-config
     cd ../..
 
-elif [ $config == "stop" ]; then
+elif [ $config = "stop" ]; then
 
     echo "Stop docker container:"
     $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml stop
