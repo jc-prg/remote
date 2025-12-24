@@ -68,10 +68,10 @@ class ApiControl(RemoteApiClass):
         #         try:
         #           result  = self.api.command(xxx)
         #         except Exception as e:
-        #           self.working = True
+        #           self.working = False
         #           return "ERROR "+self.api_name+" - send: " + str(e)
         #       else:
-        #         self.working = True
+        #         self.working = False
         #         return "ERROR "+self.api_name+": Not connected"
 
         self.working = False
@@ -94,10 +94,10 @@ class ApiControl(RemoteApiClass):
         #         try:
         #           result  = self.api.command(xxx)
         #         except Exception as e:
-        #           self.working = True
+        #           self.working = False
         #           return "ERROR "+self.api_name+" - query: " + str(e)
         #       else:
-        #         self.working = True
+        #         self.working = False
         #         return "ERROR "+self.api_name+": Not connected"
 
         self.working = False
@@ -119,10 +119,10 @@ class ApiControl(RemoteApiClass):
         #         try:
         #           result  = self.api.command(xxx)
         #         except Exception as e:
-        #           self.working = True
+        #           self.working = False
         #           return "ERROR "+self.api_name+" - record: " + str(e)
         #       else:
-        #         self.working = True
+        #         self.working = False
         #         return "ERROR "+self.api_name+": Not connected"
 
         self.working = False
@@ -134,18 +134,15 @@ class ApiControl(RemoteApiClass):
         self.wait_if_working()
         self.working = True
 
-        if self.log_command:
-            self.logging.info("_TEST: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
-
         # ---- change for your api ----
         #       if self.status == "Connected":
         #         try:
         #           result  = self.api.command(xxx)
         #         except Exception as e:
-        #           self.working = True
+        #           self.working = False
         #           return "ERROR "+self.api_name+" - test: " + str(e)
         #       else:
-        #         self.working = True
+        #         self.working = False
         #         return "ERROR "+self.api_name+": Not connected"
 
         self.working = False

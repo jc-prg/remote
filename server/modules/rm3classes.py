@@ -89,7 +89,7 @@ class RemoteApiClass(RemoteDefaultClass):
         self.working = False
         self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
         self.detected_devices = []
-        self.devices_available_message = True
+        self.devices_available_message = {}
 
         self.count_error = 0
         self.count_success = 0
@@ -138,9 +138,9 @@ class RemoteApiClass(RemoteDefaultClass):
         Returns:
             dict: empty dict, as not implemented for this API
         """
-        if self.devices_available_message:
+        if not "devices_available" in self.devices_available_message:
             self.logging.debug("Method 'devices_available()' is not implemented for the API '" + self.name + "'.")
-            self.devices_available_message = False
+            self.devices_available_message["devices_available"] = True
         return {}
 
     def api_device_available(self, api_device):
@@ -152,7 +152,9 @@ class RemoteApiClass(RemoteDefaultClass):
         Returns:
             bool: True (otherwise redefine function in API connector)
         """
-        self.logging.debug("Method 'api_device_available()' is not implemented for the API '" + self.name + "'.")
+        if not "api_device_available" in self.devices_available_message:
+            self.devices_available_message["api_device_available"] = True
+            self.logging.warning("Method 'api_device_available()' is not implemented for the API '" + self.name + "'.")
         return "OK"
 
     def devices_listen(self, active):
@@ -164,29 +166,48 @@ class RemoteApiClass(RemoteDefaultClass):
         Returns:
             dict: empty dict, as not implemented for this API
         """
-        self.logging.debug("Method 'devices_listen()' is not implemented for the API '" + self.name + "'.")
+        if not "devices_listen" in self.devices_available_message:
+            self.devices_available_message["devices_listen"] = True
+            self.logging.warning("Method 'devices_listen()' is not implemented for the API '" + self.name + "'.")
         return {}
 
     def discover(self):
         """
         discover available API devices
         """
-        self.logging.debug("Method 'discover()' is not implemented for the API '" + self.name + "'.")
+        if not "discover" in self.devices_available_message:
+            self.devices_available_message["discover"] = True
+            self.logging.warning("Method 'discover()' is not implemented for the API '" + self.name + "'.")
         return {}
 
     def send_api(self, command):
+        if not "send_api" in self.devices_available_message:
+            self.devices_available_message["send_api"] = True
+            self.logging.warning("Method 'send_api()' is not implemented for the API '" + self.name + "'.")
         return "ERROR: 'send_api' not implemented (" + self.api_name + ")"
 
     def send(self, device, device_id, command):
+        if not "send" in self.devices_available_message:
+            self.devices_available_message["send"] = True
+            self.logging.warning("Method 'send()' is not implemented for the API '" + self.name + "'.")
         return "ERROR: 'send' not implemented (" + self.api_name + ")"
 
     def query(self, device, device_id, command):
+        if not "query" in self.devices_available_message:
+            self.devices_available_message["query"] = True
+            self.logging.warning("Method 'record()' is not implemented for the API '" + self.name + "'.")
         return "ERROR: 'query' not implemented (" + self.api_name + ")"
 
     def record(self, device, device_id, command):
+        if not "record" in self.devices_available_message:
+            self.devices_available_message["record"] = True
+            self.logging.warning("Method 'record()' is not implemented for the API '" + self.name + "'.")
         return "ERROR: 'record' not implemented (" + self.api_name + ")"
 
     def register(self, command, pin=""):
+        if not "register" in self.devices_available_message:
+            self.devices_available_message["register"] = True
+            self.logging.warning("Method 'register()' is not implemented for the API '" + self.name + "'.")
         return "ERROR: 'register' not implemented (" + self.api_name + ")"
 
     def wait_if_working(self):
@@ -199,6 +220,9 @@ class RemoteApiClass(RemoteDefaultClass):
         return
 
     def test(self):
+        if not "test" in self.devices_available_message:
+            self.devices_available_message["test"] = True
+            self.logging.warning("Method 'test()' is not implemented for the API '" + self.name + "'.")
         return "ERROR: 'test' not implemented (" + self.api_name + ")"
 
 
