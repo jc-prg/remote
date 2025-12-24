@@ -29,6 +29,11 @@ class RemoteControlDisplay {
                 status = device_status[device];
             }
 
+            if (status === undefined) {
+                console.error("RemoteControlDisplay.default(): No status available for "+device);
+                return
+            }
+
             // create link for details (for scenes not defined yet)
             let onclick;
             if (rm_type === "devices") { onclick = "onclick=\"" + this.app_name + ".alert('"+id+"','"+device+"','"+rm_type+"','##STYLE##');\""; }
