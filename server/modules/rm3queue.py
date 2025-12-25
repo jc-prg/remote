@@ -39,7 +39,7 @@ class QueueApiCalls(RemoteThreadingClass):
         loop running in the background
         """
 
-        time.sleep(10)
+        time.sleep(20)
         self.logging.info("Starting " + self.name)
         count = 0
 

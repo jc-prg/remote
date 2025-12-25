@@ -177,7 +177,7 @@ class RemoteApiClass(RemoteDefaultClass):
         """
         if not "discover" in self.devices_available_message:
             self.devices_available_message["discover"] = True
-            self.logging.warning("Method 'discover()' is not implemented for the API '" + self.name + "'.")
+            self.logging.debug("Method 'discover()' is not implemented for the API '" + self.name + "'.")
         return {}
 
     def send_api(self, command):
