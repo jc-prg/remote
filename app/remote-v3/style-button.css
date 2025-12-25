@@ -68,10 +68,15 @@ button.small {
     display: -webkit-box;
     -webkit-line-clamp: 2;         /* show up to 2 lines */
     -webkit-box-orient: vertical;
+
     overflow: hidden;
-    display         : inline-block;
+    display : inline-block;
     max-width :  100%;
-    max-height :  100%;
+    max-height : 100%;
+
+    user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none;     /* ältere Edge/IE */
 }
 
 .rm-button:hover {
@@ -177,11 +182,15 @@ button.rm-button.small {
 .rm-button-image {
     height          : 55%;
     width           : auto;
-    max-width: 100%;
-    max-height: 100%;
-    display: block;
+    max-width       : 100%;
+    max-height      : 100%;
+    display         : block;
     margin          : 0px;
     padding         : 0px;
+
+    user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none;     /* ältere Edge/IE */
 }
 
 /* other buttons */
