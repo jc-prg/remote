@@ -162,10 +162,10 @@ class ConfigCache(RemoteThreadingClass):
         check = self.read(rm3presets.active_apis)
         if "ERROR" in check:
             self.logging.warning("Error while reading MAIN CONFIG FILES:")
-            self.logging.warning(
-                " - " + rm3presets.data_dir + "/" + rm3presets.active_apis + ".json: " + check["ERROR"])
+            self.logging.warning(" - " + rm3presets.data_dir + "/" + rm3presets.active_apis + ".json: " + check["ERROR"])
 
         if error_msg != {}:
+            print("\nFATAL ERROR while reading MAIN CONFIG FILES! See logfile for details.\n")
             self.logging.error("Error while reading MAIN CONFIG FILES:")
             for key in error_msg:
                 self.logging.error(" - " + rm3presets.data_dir + "/" + key + ".json: " + str(error_msg[key]))

@@ -80,6 +80,9 @@ class RemotesData(RemoteThreadingClass):
         for key in self.apis.api:
             status_apis_connect[key] = self.apis.api[key].status
 
+        self.report_config_error("main", rm3presets.active_devices, status_devices)
+        self.report_config_error("main", rm3presets.active_apis, status_apis)
+
         connection = {}
         for api in status_apis:
             connection[api] = {"active": status_apis[api]["active"], "api_devices": {}}
@@ -159,6 +162,9 @@ class RemotesData(RemoteThreadingClass):
             interface_def_default = self.config.read(rm3presets.commands + interface + "/00_default", True)
 
             if "ERROR" in interface_def_device or "ERROR" in interface_def_default:
+                self.report_config_error("api_devices", interface+"/"+device_key, interface_def_device)
+                self.report_config_error("api_devices", interface+"/00_default", interface_def_default)
+
                 error_msg = f"Error while reading configuration for device: "
                 if "ERROR" in interface_def_device:
                     error_msg += f" ({rm3presets.commands}{interface}/{device_key}.json - {interface_def_device["ERROR"]})"
@@ -291,6 +297,8 @@ class RemotesData(RemoteThreadingClass):
         devices = self.devices_read_config()
         devices_per_interface = {}
 
+        self.report_config_error("main", rm3presets.active_apis, status_devices)
+
         for api in status_devices:
             devices_per_interface[api] = {}
             for api_device in status_devices[api]["devices"]:
@@ -335,7 +343,9 @@ class RemotesData(RemoteThreadingClass):
         """
         api_power_devices = {}
         for api in api_structure:
-            interface_info = self.config.read(rm3presets.commands + api + "/00_interface")
+            key = rm3presets.commands + api + "/00_interface"
+            interface_info = self.config.read(key)
+            self.report_config_error("api_devices", key, interface_info)
             for api_device in api_structure[api]:
 
                 if "API-Devices" in interface_info and api_device in interface_info["API-Devices"] and "PowerDevice" in interface_info["API-Devices"][api_device]:
@@ -382,6 +392,8 @@ class RemotesData(RemoteThreadingClass):
             self.logging.error("ERROR while requesting devices status, main config file seems to be defect!")
             return data
 
+        self.report_config_error("devices", category_fresh=True)
+
         # read data for active devices
         for device in data:
 
@@ -393,19 +405,10 @@ class RemotesData(RemoteThreadingClass):
                     interface = data[device]["config"]["api_key"]
                     remote = self.config.read(rm3presets.remotes + key_remote)  # remote layout & display
 
-                    if "devices" not in self.errors:
-                        self.errors["devices"] = {}
                     if "ERROR" in remote:
                         self.logging.error("Error reading config file '" + key_remote + "': " + remote["ERROR_MSG"])
-                        if device not in self.errors["devices"]:
-                            self.errors["devices"][device] = {}
-                        self.errors["devices"][device][rm3presets.remotes + key_remote + ".json"] = \
-                            remote["ERROR_MSG"]
+                        self.report_config_error("devices", rm3presets.remotes+key_remote, remote)
                         continue
-                    elif device in self.errors["devices"]:
-                        if device not in self.errors["devices"]:
-                            self.errors["devices"] = {}
-                        del self.errors["devices"][device]
 
                     data_temp = data[device]
                     data_temp["remote"] = remote["data"]
@@ -417,21 +420,13 @@ class RemotesData(RemoteThreadingClass):
                         interface_def_default = self.config.read(rm3presets.commands + interface + "/00_default")
 
                         if "ERROR" in interface_def_device:
-                            logging.error(
-                                "Error reading config file '" + device_key + "': " + interface_def_device["ERROR_MSG"])
-                            if device not in self.errors["devices"]:
-                                self.errors["devices"][device] = {}
-                            error_key = rm3presets.commands + interface + "/" + device_key + ".json"
-                            self.errors["devices"][device][error_key] = interface_def_device["ERROR_MSG"]
+                            self.logging.error("Error reading config file '" + device_key + "': " + interface_def_device["ERROR_MSG"])
+                            #self.report_config_error("devices", rm3presets.commands+interface+"/"+device_key, interface_def_device)
                             continue
 
                         if "ERROR" in interface_def_default:
-                            logging.error(
-                                "Error reading config file '" + device_key + "': " + interface_def_default["ERROR_MSG"])
-                            if device not in self.errors["devices"]:
-                                self.errors["devices"][device] = {}
-                            error_key = rm3presets.commands + interface + "/00_default.json"
-                            self.errors["devices"][device][error_key] = interface_def_default["ERROR_MSG"]
+                            self.logging.error("Error reading config file '" + device_key + "': " + interface_def_default["ERROR_MSG"])
+                            #self.report_config_error("devices", rm3presets.commands+interface+"/00_default", interface_def_default)
                             continue
 
                         interface_def_device = interface_def_device["data"]
@@ -619,9 +614,8 @@ class RemotesData(RemoteThreadingClass):
         if selected is None:
             selected = []
         data = self.config.read(rm3presets.active_scenes)
-
-        if "scenes" not in self.errors:
-            self.errors["scenes"] = {}
+        self.report_config_error("main", rm3presets.active_scenes, data)
+        self.report_config_error("scenes", category_fresh=True)
 
         if remotes:
             for scene in data:
@@ -637,27 +631,21 @@ class RemotesData(RemoteThreadingClass):
                                     toggle = data[scene]["remote"]["remote"][1].split("||")
                                     data[scene]["remote"]["power_status"] = toggle[1]
                         else:
-                            logging.error("Could not read remote data: " + rm3presets.scenes + remote_file)
+                            self.logging.error("Could not read remote data: " + rm3presets.scenes + remote_file)
                             data[scene]["remote_error"] = {
                                 "file": rm3presets.scenes + remote_file,
                                 "file_data": remote_config
                             }
 
                         if "ERROR" in remote_config:
-                            logging.error("Error reading config file '" + remote_file + "': " +
-                                          remote_config["ERROR_MSG"])
-                            if scene not in self.errors["scenes"]:
-                                self.errors["scenes"][scene] = {}
-                            error_key = rm3presets.scenes + remote_file + ".json"
-                            self.errors["scenes"][scene][error_key] = remote_config["ERROR_MSG"]
+                            self.logging.error("Error reading config file '" + remote_file + "': " + remote_config["ERROR_MSG"])
+                            self.report_config_error("scenes", rm3presets.scenes + remote_file, remote_config)
                             data[scene]["remote"] = "error"
 
                     except Exception as e:
                         error_msg = "Reading scene failed: " + str(scene) + " / " + str(selected) + " (" + str(e) + ")"
                         logging.error(error_msg)
-                        if scene not in self.errors["scenes"]:
-                            self.errors["scenes"][scene] = {}
-                        self.errors["scenes"][scene][rm3presets.scenes + remote_file + ".json"] = error_msg
+                        self.report_config_error("scenes", rm3presets.scenes + remote_file, {"ERROR":True, "ERROR_MSG": error_msg})
                         data[scene]["remote"] = "error"
 
                 else:
@@ -703,6 +691,8 @@ class RemotesData(RemoteThreadingClass):
         read config data for macros
         """
         data = self.config.read(rm3presets.active_macros)
+        self.report_config_error("main", rm3presets.active_macros, data)
+
         return data
 
     def macros_write(self, data):
@@ -728,6 +718,7 @@ class RemotesData(RemoteThreadingClass):
         if selected is None:
             selected = []
         data = {"templates": {}, "template_list": {}}
+        self.report_config_error("templates", category_fresh=True)
 
         if not selected:
             templates = rm3json.available(rm3presets.templates)
@@ -736,6 +727,7 @@ class RemotesData(RemoteThreadingClass):
                 template_keys = template.split("/")
                 template_key = template_keys[len(template_keys) - 1]
                 template_data = self.config.read(rm3presets.templates + template)
+                self.report_config_error("templates", rm3presets.templates+template, template_data)
 
                 logging.debug(rm3presets.templates + template)
 
@@ -772,7 +764,7 @@ class RemotesData(RemoteThreadingClass):
             key = keys[len(keys) - 1]
             file_data = self.config.read(rm3presets.remotes + key)
 
-            logging.debug(rm3presets.remotes + key)
+            self.logging.debug(f"remotes_read(): {rm3presets.remotes + key}")
 
             if "ERROR" in file_data:
                 data["list_error"].append(key)
@@ -871,6 +863,37 @@ class RemotesData(RemoteThreadingClass):
         decomposed = self.macro_decode_inside(decomposed.copy())
         decomposed = self.macro_decode_inside(decomposed.copy())
         return decomposed
+
+    def report_config_error(self, category, key="", json_result=None, category_fresh=False):
+        """
+        add config error
+
+        Args:
+            category (str): error category
+            key (str): error key
+            json_result (dict): result from json.read()
+            category_fresh (bool): if True reset complete category
+        """
+        if category_fresh:
+            self.errors[category] = {}
+
+        if not key.endswith(".json"):
+            key += ".json"
+
+        if json_result and "ERROR" in json_result:
+            if category not in self.errors:
+                self.errors[category] = {}
+
+            if not key in self.errors[category]:
+                self.errors[category][key] = {}
+
+            if "ERROR_MSG" in json_result:
+                self.errors[category][key] = json_result["ERROR_MSG"]
+            else:
+                self.errors[category][key] = "Unknown error"
+
+        elif category in self.errors and key in self.errors[category]:
+            del self.errors[category][key]
 
 
 class RemotesEdit(RemoteDefaultClass):
@@ -1854,3 +1877,4 @@ class RemotesEdit(RemoteDefaultClass):
         self.data.macros_write(macro_file)
 
         return "OK, saved macro file."
+
