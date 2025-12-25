@@ -164,6 +164,12 @@ button.rm-button.small {
     border           : solid 2px var(--rm-color-button-edit-border);
 }
 
+.rm-button svg {
+    display: block;
+    max-width: 90%;
+    max-height: 90%;
+}
+
 .rm-button.sample {
     float: left;
     display: block;

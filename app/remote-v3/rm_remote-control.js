@@ -3,6 +3,133 @@
 //--------------------------------
 
 
+class RemoteSvgTextImage {
+    constructor() {
+        this.text = "Even much longer button text ...";
+        this.fontSize = 40;
+        this.fontFamily = "Arial";
+        this.fontColor = "white";
+        this.fontWeight = "";
+        this.targetRatio = 4 / 2;
+        this.image_cache = {};
+        this.image_cache_layout = {};
+    }
+
+    // --- split text into lines ---
+    splitIntoLines(words, lineCount) {
+        const lines = Array.from({ length: lineCount }, () => []);
+        const wordsPerLine = Math.ceil(words.length / lineCount);
+
+        let index = 0;
+        for (let i = 0; i < lineCount; i++) {
+            for (let j = 0; j < wordsPerLine && index < words.length; j++) {
+                lines[i].push(words[index++]);
+            }
+        }
+        return lines.map(l => l.join(" "));
+    }
+
+    // --- Helper: measure text ---
+    measure(lines) {
+        const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        const g = document.createElementNS(tempSvg.namespaceURI, "g");
+
+        tempSvg.appendChild(g);
+        document.body.appendChild(tempSvg);
+
+        lines.forEach((line, i) => {
+            const t = document.createElementNS(tempSvg.namespaceURI, "text");
+            t.setAttribute("y", i * this.fontSize * 1.2);
+            t.setAttribute("font-size", this.fontSize);
+            t.setAttribute("font-family", this.fontFamily);
+            t.setAttribute("font-weight", this.fontWeight);
+            t.setAttribute("fill", this.fontColor);
+            t.textContent = line;
+            g.appendChild(t);
+        });
+
+        const box = g.getBBox();
+        document.body.removeChild(tempSvg);
+
+        return box;
+    }
+
+    // --- Try different line breaks ---
+    bestLayout(text) {
+        let words = undefined;
+        if (text.length > 8) {
+            words = text.split(/(\s|-)/).filter(Boolean);
+        } else {
+            let amount = Math.ceil((10 - text.length)/2);
+            for (let i = 0; i < amount; i++) {
+                text = "\u00A0"+text+"\u00A0";
+            }
+            words = [text];
+        }
+        let best = null;
+        let bestScore = Infinity;
+
+        for (let linesCount = 1; linesCount <= words.length; linesCount++) {
+            const textLines = this.splitIntoLines(words, linesCount);
+
+            const box = this.measure(textLines);
+            const ratio = box.width / box.height;
+            const score = Math.abs(ratio - this.targetRatio);
+
+            if (score < bestScore) {
+                bestScore = score;
+                best = { lines: textLines, box };
+            }
+        }
+        return best;
+    }
+
+
+    // --- Build final SVG ---
+    create(container, text="") {
+
+        if (!this.image_cache[text]) {
+
+            const layout = this.bestLayout(text);
+            const padding = this.fontSize * 0.1; // 10% padding
+            let svg = document.getElementById(container);
+            svg.innerHTML = "";
+            svg.setAttribute("viewBox", `${-padding} ${-padding} ${layout.box.width + padding * 2} ${layout.box.height + padding * 2}`);
+            svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+
+            const lineHeight = this.fontSize * 1.2; // adjust spacing between lines
+            const totalTextHeight = layout.lines.length * lineHeight;
+            const startY = layout.box.height / 2 - totalTextHeight / 2 + lineHeight / 2;
+
+            layout.lines.forEach((line, i) => {
+                const t = document.createElementNS(svg.namespaceURI, "text");
+                t.setAttribute("x", layout.box.width / 2); // horizontal center
+                t.setAttribute("y", startY + i * lineHeight); // vertical position per line
+                t.setAttribute("text-anchor", "middle"); // center horizontally
+                t.setAttribute("dominant-baseline", "middle"); // center each line vertically on its y
+                t.setAttribute("font-size", this.fontSize);
+                t.setAttribute("font-family", this.fontFamily);
+                t.setAttribute("font-weight", this.fontWeight);
+                t.setAttribute("fill", this.fontColor);
+                t.textContent = line;
+                svg.appendChild(t);
+            });
+            this.image_cache[text] = svg.innerHTML;
+            this.image_cache_layout[text] = layout;
+        }
+        else {
+            const layout = this.image_cache_layout[text];
+            const padding = this.fontSize * 0.1; // 10% padding
+            let svg = document.getElementById(container);
+            svg.setAttribute("viewBox", `${-padding} ${-padding} ${layout.box.width + padding * 2} ${layout.box.height + padding * 2}`);
+            svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+            svg.innerHTML = this.image_cache[text];
+        }
+    }
+
+}
+
+
 /* class to create some basic elements for remote controls*/
 class RemoteControlBasic {
     constructor(name) {
@@ -13,6 +140,7 @@ class RemoteControlBasic {
 
         this.logging        = new jcLogging(this.app_name);
         this.keyboard       = new RemoteControlKeyboard(name+".keyboard");	// rm_remotes-keyboard.js
+        this.svg_image      = new RemoteSvgTextImage();
 
         this.default_size();
     }
@@ -55,9 +183,16 @@ class RemoteControlBasic {
             onClick    = onClick.replaceAll("{{!!}}", "#");
         }
 
-        if (!isNaN(label)) { label = "<big>" + label + "</big>"; }
+        //if (!isNaN(label)) { label = "<big>" + label + "</big>"; }
         if (style !== "") { style = " " + style; }
         if (id.indexOf("||") > 0) { id = id.split("||")[0]; }
+        if (label.indexOf("<img") < 0) {
+            let label_id = label;
+            label = "<svg id='svg_image_"+label_id+"'></svg>";
+            setTimeout(() => {
+                this.svg_image.create("svg_image_"+label_id, label_id);
+            }, 100);
+        }
 
         return "<button id='" + id.toLowerCase() + "' class='rm-button" + style + "' " + button_style + " " + onClick + " " + onContext + " " + disabled + " >" + label + "</button>";
     }
@@ -75,13 +210,10 @@ class RemoteControlBasic {
         if (label.indexOf("||") > 0) { label = label.split("||")[1]; }
         if (cmd.indexOf("||") > 0)   { cmd = cmd.split("||")[0]; }
 
-        let label2 	= this.image( label, style );
+        let label2 = this.image( label, style );
         if (label === ".") {
             disabled = "disabled";
             label2[0] = "&nbsp;";
-        }
-        else if (label2[0].indexOf("<img") < 0) {
-            label2[0] = "<span class='rm-button-text'>" + label2[0] + "</span>";
         }
         if (cmd !== "") {
             cmd = 'apiCommandSend("'+cmd+'","","","'+device+'");';
