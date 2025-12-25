@@ -18,21 +18,9 @@ var rm3start       = undefined;
 var rm3remotes     = undefined;
 var rm3settings    = undefined;
 var rm3json_edit   = undefined;
-
-
+var rm3audio       = undefined;
 
 function startRemote() {
-    rm3slider  = new jcSlider(name="rm3slider", container="audio_slider");              // create slider
-    rm3slider.init(min=0,max=100,label="loading");                                      // set device information
-    rm3slider.setPosition(top="45px",bottom=false,left=false,right="10px");             // set position (if not default)
-
-    if (apiSetVolume && statusShow_volume) {
-        rm3slider.setOnChange(apiSetVolume);                                            // -> setVolume (api call to set volume -> this.callOnChange( this.value ))
-        rm3slider.setShowVolume(statusShow_volume);                                     // -> showVolume e.g. in header
-        }
-    else {
-        console.error("Could not connect 'apiSetVolume' and 'statusShow_volume'.");
-        }
 
     rm3menu      = new rmMenu(     "rm3menu", ["menuItems","menuItems2"] );
     rm3start     = new RemoteStart(    "rm3start");
@@ -129,41 +117,12 @@ function remoteReload(data) {
     // remoteForceReload_checkIfReady(data); // check if reloaded
 	remoteInitData(data);               // init and reload data
 	remoteDropDown(data);               // update drop down menu
-	remoteSetSliderDevice(data);        // set device for volume slider
-        
+
 	// check device & audio status
 	statusCheck(data);	
 
 	// reset button info in header
 	//setTimeout(function(){setTextById("audio4", "");}, 1000);
-	}
-	
-//--------------------------------
-
-function remoteSetSliderDevice(data) {
-
-	let main_audio = data["CONFIG"]["main-audio"];
-    if (main_audio === undefined || data["CONFIG"]["devices"][main_audio] === undefined) {
-        return;
-    }
-
-	let values = data["CONFIG"]["devices"][main_audio]["commands"]["definition"]["vol"]["values"];
-	let min    = 0;
-	let max    = 100;
-	         
-	if (values["min"] >= 0 && values["max"] > 0) {
-		min     = values["min"];
-		max     = values["max"];
-		}
-	else {
-		min    = 0;
-		max    = 100;
-		console.error("Min and max values not defined, set to 0..100!");
-		}
-	let label = data["CONFIG"]["devices"][main_audio]["settings"]["label"];
-
-	rm3slider.init(min,max,label+" ("+main_audio+")");
-	rm3slider.device = main_audio;
 	}
 	
 //--------------------------------

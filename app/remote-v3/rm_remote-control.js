@@ -44,8 +44,7 @@ class RemoteControlBasic {
         let onClick    = "";
 
         if (Array.isArray(script_apiCommandSend)) {
-            onClick    = "onmousedown_left_right(event,\"" + script_apiCommandSend[0].replaceAll("\"","#") +
-                "\",\"" + script_apiCommandSend[1].replaceAll("\"","#") + "\");";
+            onClick    = "onmousedown_left_right(event,\"" + script_apiCommandSend[0].replaceAll("\"","#") + "\",\"" + script_apiCommandSend[1].replaceAll("\"","#") + "\");";
             onClick    = "onmousedown='"+onClick+"'";
             onContext  = "oncontextmenu=\"return false;\"";
         }
@@ -57,12 +56,10 @@ class RemoteControlBasic {
         }
 
         if (!isNaN(label)) { label = "<big>" + label + "</big>"; }
-        if (style !== "")   { style = " " + style; }
-
+        if (style !== "") { style = " " + style; }
         if (id.indexOf("||") > 0) { id = id.split("||")[0]; }
 
-        return "<button id='" + id.toLowerCase() + "' class='rm-button" + style + "' " + button_style + " " +
-            onClick + " " + onContext + " " + disabled + " >" + label + "</button>";
+        return "<button id='" + id.toLowerCase() + "' class='rm-button" + style + "' " + button_style + " " + onClick + " " + onContext + " " + disabled + " >" + label + "</button>";
     }
 
     // set default button size

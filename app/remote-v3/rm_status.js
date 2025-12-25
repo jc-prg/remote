@@ -1,16 +1,8 @@
 //--------------------------------
 // jc://remote/
 //--------------------------------
-// Device Status:
-// - change color of remote buttons based on status
-// - change color of on/off buttons based on status
-// - update date in displays
-// - deactivate buttons if device OFF
-//--------------------------------
 
 let device_media_info       = {};
-
-//-----------------------------------------
 
 
 // load the devices status -> visualization via function statusCheck();
@@ -45,12 +37,15 @@ function statusCheck(data={}) {
         const stop = "remoteToggleEditMode(false);remoteFirstLoad_load();";
         const html = "<img src='/icon/edit_stop.png' onclick='" + stop + "' style='cursor:pointer;width:100%' name='stop editing' alt=''>";
         setTextById("edit1", html);
-        statusCheck_audioMute(data);
+        //statusCheck_audioMute(data);
     }
 	statusCheck_apiConnection(data);
 	statusCheck_deviceIdle(data);
     statusCheck_health(data);
     statusCheck_error(data);
+
+    if (statusCheck_audio === undefined) { statusCheck_audio = new RemoteMainAudio("statusCheck_audio"); }
+    statusCheck_audio.show_status(data);
 
     setTextById("current_server_time", data["REQUEST"]["server-time-local"]);
 
@@ -67,41 +62,6 @@ function statusCheck_offline(data) {
     statusCheck_devicePowerButtonDisplay(data, true);
     statusCheck_scenePowerButtonDisplay(data, true);
 }
-
-
-// check and display current volume -> partly removed, final check open if still required
-function statusShow_volume_old( volume, maximum, vol_color, no_vol_color="" ) {
-
-	volume  = Math.round( volume * 20 / maximum );
-	let vol_str = "<span style='color:" + vol_color + "'>";
-	for (let i=0; i<volume; i++) { vol_str += "I"; }
-	vol_str += "</span>";
-	if (no_vol_color !== "") { vol_str += "<span style='color:" + no_vol_color + "'>"; }
-	for (let i=0; i<20-volume; i++) { vol_str += "I"; }
-    vol_str += "</span>";
-	return vol_str;
-	}
-
-
-// check and display current volume
-function statusShow_volume( volume ) {
-
-    let i;
-    const vol_color = "white";
-    const no_vol_color = "#333333";
-
-    volume  = Math.round( volume * 20 / rm3slider.audioMax );
-    let vol_str = "<span style='color:" + vol_color + "'>";
-    for (i = 0; i<volume; i++) { vol_str += "I"; }
-	vol_str += "</span>";
-	
-	if (no_vol_color !== "") { vol_str += "<span style='color:" + no_vol_color + "'>"; }
-	for (i = 0; i<20-volume; i++) { vol_str += "I"; }
-    vol_str += "</span>";
-
-	setTextById("audio3",vol_str);
-	}
-
 
 // change slider color
 function statusShow_sliderActive(id, id_button, active, toggle=false) {
@@ -383,61 +343,6 @@ function statusCheck_modes() {
         }
     }
 }
-
-
-// check and show if main audio device is mute
-function statusCheck_audioMute(data) {
-
-	// set colors
-	let vol_color       = "white";
-	let vol_color2      = "yellow";
-	let novol_color     = "darkgray";
-
-	let devices             = data["STATUS"]["devices"];
-	let devices_config      = data["CONFIG"]["devices"];
-	let main_audio          = data["CONFIG"]["main-audio"];
-
-	if (!data["STATUS"]["devices"][main_audio]) { return; }
-
-    let device_api          = data["STATUS"]["devices"][main_audio]["api"];
-    let device_api_status   = data["STATUS"]["interfaces"]["connect"][device_api];
-
-    if (!data["STATUS"]["interfaces"]["connect"][device_api]) {
-        console.error("Error in device_api definition ("+device_api+").");
-        return;
-    }
-
-	// check audio status and show mut status in navigation bar
-	let power = devices[main_audio]["power"].toUpperCase();
-	if (device_api_status.toLowerCase() !== "connected") { power = "OFF"; }
-	if (devices[main_audio]["mute"].toUpperCase() === "ON" || power.includes("OFF") || devices[main_audio]["vol"] === 0) {
-		document.getElementById("audio1").style.display = "block";
-		document.getElementById("audio2").style.display = "none";
-		vol_color = "gray";
-		}
-	else {
-		document.getElementById("audio1").style.display = "none";
-		document.getElementById("audio2").style.display = "block";
-		}
-
-	// get data from main audio device
-	let main_audio_max	= 100;
-	let main_audio_vol	= devices[main_audio]["vol"];
-	let main_audio_mute	= devices[main_audio]["mute"].toUpperCase();
-
-	if (devices_config[main_audio]
-	    && devices_config[main_audio]["commands"]["definition"]
-	    && devices_config[main_audio]["commands"]["definition"]["vol"]
-	    && devices_config[main_audio]["commands"]["definition"]["vol"]["values"]
-	    && devices_config[main_audio]["commands"]["definition"]["vol"]["values"]["max"]
-	    ) {
-		main_audio_max  = devices_config[main_audio]["commands"]["definition"]["vol"]["values"]["max"];
-		}
-
-	// check volume and show in navigation bar
-	rm3slider.set_value( main_audio_vol );
-    document.getElementById("audio3").innerHTML = statusShow_volume_old(main_audio_vol, main_audio_max, vol_color);
-	}
 
 
 // check status for all sliders and toggles -> show via color // IN PROGRESS
@@ -1150,21 +1055,11 @@ function statusCheck_displayValues(data={}) {
                 const element = document.getElementById("display_" + key + "_" + value_key);
                 element2 = document.getElementById("display_full_" + key + "_" + value_key);
                 key_status = dev_status[value_key];
-
-                if (value_key === "vol"
-				    && dev_config["commands"]["definition"]
-				    && dev_config["commands"]["definition"][value_key]
-				    && dev_config["commands"]["definition"][value_key]["values"]
-				    && dev_config["commands"]["definition"][value_key]["values"]["max"]) {
-
-					key_status = statusShow_volume_old( dev_status[value_key], dev_config["commands"]["definition"][value_key]["values"]["max"], vol_color2, no_vol_color ) + " &nbsp; ["+dev_status[value_key]+"]";
-					}
-
 				if (key_status && value_key === "power") {
 					//if (connected != "connected")                           { key_status = use_color("<b>"+lang("CONNECTION_ERROR")+":</b><br/>","error")+connected; }
 /// ------------> status auswerten
 					//if (online_status && online_status == "offline")   { key_status = use_color("<b>"+lang("OFFLINE")+"</b><br/>","hint"); }
-			        if (key_status.toUpperCase().indexOf("ON") >= 0)   { key_status = use_color("<b>Power On<b/>","on"); }
+			        if (key_status.toUpperCase().indexOf("ON") >= 0)        { key_status = use_color("<b>Power On<b/>","on"); }
 					else if (key_status.toUpperCase().indexOf("OFF") >= 0)  { key_status = use_color("<b>Power Off<b/>","hint"); }
 					else if (key_status.toUpperCase().indexOf("N/A") >= 0)  { key_status = use_color("<b>Power Status N/A<b/>","hint"); }
                     else                                                    { key_status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+key_status; }
@@ -1322,3 +1217,4 @@ function statusCheck_bigMessage(id) {
     message = "<div class=\"remote-power-information big\">" + message + "</div>";
     appMsg.confirm(message, "", 280);
 }
+
