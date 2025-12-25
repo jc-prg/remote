@@ -154,7 +154,7 @@ class RemoteApiClass(RemoteDefaultClass):
         """
         if not "api_device_available" in self.devices_available_message:
             self.devices_available_message["api_device_available"] = True
-            self.logging.warning("Method 'api_device_available()' is not implemented for the API '" + self.name + "'.")
+            self.logging.debug("Method 'api_device_available()' is not implemented for the API '" + self.name + "'.")
         return "OK"
 
     def devices_listen(self, active):
@@ -168,7 +168,7 @@ class RemoteApiClass(RemoteDefaultClass):
         """
         if not "devices_listen" in self.devices_available_message:
             self.devices_available_message["devices_listen"] = True
-            self.logging.warning("Method 'devices_listen()' is not implemented for the API '" + self.name + "'.")
+            self.logging.debug("Method 'devices_listen()' is not implemented for the API '" + self.name + "'.")
         return {}
 
     def discover(self):

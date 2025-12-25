@@ -35,6 +35,7 @@ class Connect(RemoteThreadingClass):
         self.api_device_settings = {}
         self.api_request_reconnect = {}
         self.api_request_reconnect_all = False
+        self.api_request_reconnect_all_message = {}
         self.api_modules = {
             "BROADLINK": "api_broadlink",
             #"DENON": "api_denon",
@@ -997,7 +998,9 @@ class Connect(RemoteThreadingClass):
             return result
 
         elif not self.api_request_reconnect_all:
-            self.logging.warning("devices_available() ... API for '" + interface + "' not loaded.")
+            if not interface in self.api_request_reconnect_all_message:
+                self.logging.warning("devices_available() ... API for '" + interface + "' not loaded but defined.")
+                self.api_request_reconnect_all_message[interface] = True
             return {}
 
         else:
