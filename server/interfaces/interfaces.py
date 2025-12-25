@@ -36,13 +36,14 @@ class Connect(RemoteThreadingClass):
         self.api_request_reconnect = {}
         self.api_request_reconnect_all = False
         self.api_modules = {
-            "KODI": "api_kodi",
-            "SONY": "api_sony",
-            "TEST": "api_test",
-            "MAGIC-HOME": "api_magichome",
-            "TAPO-P100": "api_p100",
             "BROADLINK": "api_broadlink",
+            #"DENON": "api_denon",
             "EISCP-ONKYO": "api_eiscp",
+            "KODI": "api_kodi",
+            "MAGIC-HOME": "api_magichome",
+            "SONY": "api_sony",
+            "TAPO-P100": "api_p100",
+            "TEST": "api_test",
             "ZIGBEE2MQTT": "api_zigbee"
         }
         self.api_configuration = {
@@ -68,6 +69,10 @@ class Connect(RemoteThreadingClass):
         self.last_message = ""
         self.info_no_devices_found = {}
 
+        self.discover_interval = rm3presets.discover_devices_interval
+        self.discover_last = 0
+        self.discover_now = False
+
         if rm3presets.log_api_data == "NO":
             self.log_commands = False
         else:
@@ -88,28 +93,24 @@ class Connect(RemoteThreadingClass):
         if not api_load:
             self.logging.error("First load of API connectors didn't work. Try again ...")
             if not self.load_api_connectors():
-                self.logging.critical("Could not load any API Connector! " +
-                                      "Check your basic API and DEVICE configuration.")
+                self.logging.critical("Could not load any API Connector! Check your basic API and DEVICE configuration.")
                 sys.exit()
             else:
                 self.logging.info("Loading API connectors OK.")
 
-        self.check_devices()
-        self.check_discover_all(2)
-
-        count = 0
         while self._running:
-            if self.checking_last + self.checking_interval < time.time():
-                self.checking_last = time.time()
+            if time.time() - self.checking_last > self.checking_interval:
+                self.logging.debug(f"Check connected devices (interval={self.checking_interval}s) ...")
                 self.check_connection()
                 self.check_activity()
+                self.checking_last = time.time()
 
-            if count > 180:
+            if time.time() - self.discover_last > self.discover_interval or self.discover_now:
+                self.logging.debug(f"Discover available devices (now={self.discover_now};interval={self.discover_interval}s) ...")
                 self.check_devices()
                 self.check_discover_all()
-                count = 0
-            else:
-                count += 1
+                self.discover_last = time.time()
+                self.discover_now = False
 
             self.thread_wait()
 
@@ -486,6 +487,10 @@ class Connect(RemoteThreadingClass):
             interface (str): interface id (<api>_<api_device>)
             reread_config (bool): reread configuration data
         """
+        if interface != "all" and interface not in self.api:
+            self.logging.warning(f"API Reconnect not possible, '{interface}' doesn't exist in self.api.")
+            return
+
         config = {}
         if interface in self.info_no_devices_found:
             self.info_no_devices_found[interface] = False
@@ -828,8 +833,7 @@ class Connect(RemoteThreadingClass):
                 button_code = "ERROR query, get_command: "+str(e)
 
             if "ERROR" in button_code:
-                return_msg = "ERROR: could not read/create command from button code (query/" + device + "/" + button + \
-                             "); " + button_code
+                return_msg = f"ERROR: could not read/create command from button code (query/{device}/{button}); " + button_code
             elif api_dev in self.api:
                 return_msg = self.api[api_dev].query(device, device_id, button_code)
             else:

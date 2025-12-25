@@ -216,7 +216,13 @@ class ApiControl(RemoteApiClass):
         """
         discover available EISCP-ONKYO devices in the network
         """
-        devices = eiscp.eISCP.discover(timeout=3)
+        try:
+            devices = eiscp.eISCP.discover(timeout=3)
+            self.logging.debug(f"Discovery for EISCP-ONKYO done: Found {len(devices)} devices.")
+        except Exception as e:
+            devices = {}
+            self.logging.warning(f"Discovery for EISCP-ONKYO failed: {e}")
+
         device_information = {}
         count = 0
         for device in devices:
