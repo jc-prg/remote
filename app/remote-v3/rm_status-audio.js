@@ -33,6 +33,7 @@ class RemoteMainAudio {
         this.temp_audio_time = 0;
         this.temp_audio_offset = 10;
 
+        // bind volume slider
         this.slider = new jcSlider(this.app_name+".slider", "audio_slider");
         this.slider.init(0, 100, "loading");
         this.slider.setPosition("45px",false,false,"10px");
@@ -47,16 +48,13 @@ class RemoteMainAudio {
         }
 
         this.main_audio_settings();
-        this.show_status_slider = this.show_status_slider.bind(this);
-        this.change_volume = this.change_volume.bind(this);
-
+        //this.show_status_slider = this.show_status_slider.bind(this);
+        //this.change_volume = this.change_volume.bind(this);
     }
 
     // read properties from main audio device
     main_audio_settings(data=undefined) {
-        if (data !== undefined) {
-            this.data = data;
-        }
+        if (data !== undefined) { this.data = data || dataAll; }
 
         this.audio_device = this.data["CONFIG"]["main-audio"];
         this.audio_active = (this.audio_device !== undefined);
@@ -159,8 +157,8 @@ class RemoteMainAudio {
             this.mute();
         }
         else {
-            let status_mute = data["STATUS"]["devices"][this.audio_device]["mute"];
-            let status_volume = data["STATUS"]["devices"][this.audio_device]["vol"];
+            let status_mute = this.data["STATUS"]["devices"][this.audio_device]["mute"];
+            let status_volume = this.data["STATUS"]["devices"][this.audio_device]["vol"];
             status_volume = this.volume_temp(status_volume);
             this.volume(status_volume);
             if (status_volume === 0) { status_mute = true; }
@@ -176,12 +174,12 @@ class RemoteMainAudio {
     show_status_slider(data) {
         statusCheck_audio.temp_audio_level = data;
         statusCheck_audio.temp_audio_time = Math.floor(Date.now() / 1000);
-        statusCheck_audio.show_status(data);
+        statusCheck_audio.show_status();
     }
 
     // send API call to set volume
     change_volume(volume) {
-        console.error("RemoteMainAudio.change_volume(): " + statusCheck_audio.audio_device+" -> "+volume);
+        console.debug("RemoteMainAudio.change_volume(): " + statusCheck_audio.audio_device+" -> "+volume);
         appFW.requestAPI( "GET",  ["set",statusCheck_audio.audio_device,"send-vol",volume], "", remoteReload_load );
     }
 }
