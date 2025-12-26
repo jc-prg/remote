@@ -177,6 +177,7 @@ class RemoteControlBasic {
 
         let onContext  = "";
         let onClick    = "";
+        let button_color = this.data["CONFIG"]["elements"]["button_colors"];  // definition of button color
 
         if (Array.isArray(script_apiCommandSend)) {
             onClick    = "onmousedown_left_right(event,\"" + script_apiCommandSend[0].replaceAll("\"","#") + "\",\"" + script_apiCommandSend[1].replaceAll("\"","#") + "\");";
@@ -193,7 +194,7 @@ class RemoteControlBasic {
         //if (!isNaN(label)) { label = "<big>" + label + "</big>"; }
         if (style !== "") { style = " " + style; }
         if (id.indexOf("||") > 0) { id = id.split("||")[0]; }
-        if (label.indexOf("<img") < 0 && label !== "&nbsp;") {
+        if (label.indexOf("<img") < 0 && label !== "&nbsp;" && !label in button_color) {
             let label_id = label;
             label = "<svg id='svg_image_"+label_id+"'></svg>";
             setTimeout(() => {
