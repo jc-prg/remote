@@ -194,7 +194,7 @@ class RemoteControlBasic {
         //if (!isNaN(label)) { label = "<big>" + label + "</big>"; }
         if (style !== "") { style = " " + style; }
         if (id.indexOf("||") > 0) { id = id.split("||")[0]; }
-        if (label.indexOf("<img") < 0 && label !== "&nbsp;" && !label in button_color) {
+        if (label.indexOf("<img") < 0 && label !== "&nbsp;" && !(label in button_color)) {
             let label_id = label;
             label = "<svg id='svg_image_"+label_id+"'></svg>";
             setTimeout(() => {
