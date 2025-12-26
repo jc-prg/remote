@@ -49,8 +49,9 @@ function statusCheck(data={}) {
 
     setTextById("current_server_time", data["REQUEST"]["server-time-local"]);
 
-    const duration = Date.now() - start;
-    console.log("statusCheck: Updated all status elements ("+duration+"ms)");
+    const duration = (Date.now() - start) / 1000;
+    if (duration < 0.1) { console.debug("statusCheck: Updated all status elements (" + String(duration) + "s)"); }
+    else { console.warn("statusCheck: Updated all status elements - longer than expected (max 0.1s): " + String(duration) + "s"); }
 	}
 
 

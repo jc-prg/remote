@@ -846,7 +846,7 @@ class RemoteMain {
                 this.app_name + ".device_remote('" + this.frames_remote[0] + "','" + device + "','remote_json_buttons','remote_json_channel');" +
                 this.app_name + ".device_not_used('" + this.frames_remote[2] + "','" + device + "','remote_json_buttons');", lang("BUTTON_T_RESET")) + "&nbsp;" +
             this.button.edit("apiDeviceJsonEdit('" + device + "','remote_json_buttons','remote_json_display','remote_display_size');", lang("BUTTON_T_SAVE")) + "&nbsp;" +
-            this.button.edit(this.app_name + ".preview('" + device + "');", lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
+            this.button.edit(this.app_name + ".preview('device','" + device + "');", lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
             this.button.edit("remoteToggleEditMode(false);" + this.app_name + ".create('" + this.active_type + "','" + device + "');", "stop edit") +
             "</center><br/>";
 

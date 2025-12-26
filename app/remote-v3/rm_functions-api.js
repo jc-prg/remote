@@ -478,24 +478,23 @@ function apiCommandDelete(device_id, button_id) {
 
 
 // record command for a button
-function apiCommandRecord(device_id, button_id) {
+function apiCommandRecord(device_id, button_id, read_from_input=false) {
 
 	let device;
     let button;
 
-    if (document.getElementById(device_id)) {
+    if (document.getElementById(device_id) && read_from_input) {
         device	= document.getElementById(device_id).value.toLowerCase();
     } else {
         device	= device_id;
     }
-	if (document.getElementById(button_id)) {
+	if (document.getElementById(button_id) && read_from_input) {
         button	= document.getElementById(button_id).value;
 		if (button !== "LINE")	{ button = button.toLowerCase(); }
 		if (button === ".")		{ button = "DOT"; }
     } else {
         button    = button_id;
     }
-	//let cmd = "appFW.requestAPI('POST',['command','"+device+"','"+button+"'], '', appMsg.alertReturn );";
 	let cmd = "appFW.requestAPI('POST',['command','"+device+"','"+button+"'], '', apiAlertReturn );";
 
 	if (device === "") { appMsg.alert(lang("DEVICE_SELECT")); return; }
