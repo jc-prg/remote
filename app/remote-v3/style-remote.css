@@ -62,6 +62,7 @@ hr         { border: solid 1px var(--rm-color-hr); }
   height            : 14px;
   width             : 14px;
   right             : 150px;
+  z-index: 100;
 }
 
 #attention {

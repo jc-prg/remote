@@ -177,7 +177,7 @@ class RemoteControlBasic {
 
         let onContext  = "";
         let onClick    = "";
-        let button_color = this.data["CONFIG"]["elements"]["button_colors"];  // definition of button color
+        let button_color = dataAll["CONFIG"]["elements"]["button_colors"];  // definition of button color
 
         if (Array.isArray(script_apiCommandSend)) {
             onClick    = "onmousedown_left_right(event,\"" + script_apiCommandSend[0].replaceAll("\"","#") + "\",\"" + script_apiCommandSend[1].replaceAll("\"","#") + "\");";

@@ -591,7 +591,7 @@ class RemoteSettingsRemotes {
         set_temp += this.tab.line();
         set_temp += this.tab.row( "Device config:"+asterix, "<span id='txt_add_device_device'>"+lang("SELECT_API_FIRST")+"</span> " +
             "<span id='txt_add_device_device_2' style='display:none;'>" + this.elements.input("add_device_device")+".json</span>" );
-        set_temp += this.tab.row( "Remote config:"+asterix, "<span id='txt_add_device_remote'>"+lang("SELECT_API_FIRST")+"</span>" +
+        set_temp += this.tab.row( "Remote config (copy):"+asterix, "<span id='txt_add_device_remote'>"+lang("SELECT_API_FIRST")+"</span>" +
             "<span id='txt_add_device_remote_2' style='display:none;'>" + this.elements.input("add_device_remote")+".json</span>" );
         set_temp += this.tab.end();
 
