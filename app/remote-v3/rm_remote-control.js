@@ -173,7 +173,7 @@ class RemoteControlBasic {
     }
 
     // default buttons
-    default(id, label, style, script_apiCommandSend, disabled="", button_style="" ) {
+    default(id, label, style, script_apiCommandSend, disabled="", button_style="", text_as_image=true) {
 
         let onContext  = "";
         let onClick    = "";
@@ -194,7 +194,7 @@ class RemoteControlBasic {
         //if (!isNaN(label)) { label = "<big>" + label + "</big>"; }
         if (style !== "") { style = " " + style; }
         if (id.indexOf("||") > 0) { id = id.split("||")[0]; }
-        if (label.indexOf("<img") < 0 && label !== "&nbsp;" && !(label in button_color)) {
+        if (label.indexOf("<img") < 0 && label !== "&nbsp;" && !(label in button_color) && text_as_image) {
             let label_id = label;
             label = "<svg id='svg_image_"+label_id+"'></svg>";
             setTimeout(() => {
@@ -256,7 +256,7 @@ class RemoteControlBasic {
     // button edit mode
     edit(onclick, label, disabled="", id="") {
         let style = "";
-        if (this.width !== "")  { style += "width:" + this.width + ";"; }
+        if (this.width !== "")  { style += "width:"+this.width+";"; }
         if (this.height !== "") { style += "height:"+this.height+";"; }
         if (this.margin !== "") { style += "margin:"+this.margin+";"; }
 
@@ -333,7 +333,7 @@ class RemoteControlBasic {
         if (this.height !== "") { button_style += "height:" + this.height + ";max-height:" + this.height + ";"; }
         if (button_style !== "") { button_style  = "style='" + button_style + "'"; }
 
-        return this.default(id, label, style, script_apiCommandSend, disabled, button_style);
+        return this.default(id, label, style, script_apiCommandSend, disabled, button_style, false);
     }
 
 }

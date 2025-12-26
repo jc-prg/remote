@@ -964,7 +964,7 @@ class RemoteSettingsApi {
             }
             return temp;
         }
-        this.create_api_configuration = function (api_name, device) {
+        this.create_api_configuration = function (api_name, device="default") {
 
             let config_create = ("api-discovery" in interfaces[api_name]["API-Config"]["commands"]);
             let activate_copy_button = "document.getElementById('copy_button_"+api_name+"_"+device+"').disabled=false;document.getElementById('copy_button_"+api_name+"_"+device+"').style.backgroundColor='';";
@@ -1020,6 +1020,7 @@ class RemoteSettingsApi {
 
             temp += this.button.edit("apiAddApiDevice('"+api_name+"');", lang("ADD"));
             temp += "</div>";
+
             return temp;
         }
 
@@ -1036,7 +1037,7 @@ class RemoteSettingsApi {
                 let container_title = "</b>API-Device: "+dev+"&nbsp;&nbsp;<text id='api_status_icon_"+key+"_"+dev+"' style='font-size:16px;'></text>";
                 setting += this.basic.container("details_"+key+"_"+dev, container_title, temp_edit_device_config, false);
             }
-            let temp_add = this.create_api_add_dialog(key, data)
+            let temp_add = "<div id='api-settings-add-"+key+"'></div>"
             setting += this.basic.container("add_api_"+key, lang("ADD"), temp_add, false);
             setTextById(id, setting + "<br/>");
 
@@ -1050,9 +1051,14 @@ class RemoteSettingsApi {
                 sheet_boxes[key+"_"+dev].addSheet(lang("API_DEFINITION"), this.list_api_device_settings(key, dev, false));
                 if (buttons !== "")         { sheet_boxes[key+"_"+dev].addSheet(lang("API_ADMIN"), buttons); }
                 if (config_device !== "")   { sheet_boxes[key+"_"+dev].addSheet(lang("API_CREATE_DEV_CONFIG"), config_device); }
-                if (config_api !== "")      { sheet_boxes[key+"_"+dev].addSheet(lang("API_CREATE_CONFIG"), config_api); }
                 sheet_boxes[key+"_"+dev].addSheet(lang("CONNECTED"), this.list_connected_devices(key, dev, data)[1]);
             }
+
+            // add device sheet box
+            let config_api = this.create_api_configuration(key);
+            sheet_boxes[key+"_add-api-device"] = new RemoteElementSheetBox("api-settings-add-"+key, "380px", true, false, false);
+            sheet_boxes[key+"_add-api-device"].addSheet("Add API-Device", this.create_api_add_dialog(key, data));
+            if (config_api !== "") { sheet_boxes[key+"_add-api-device"].addSheet("Create API config", config_api); }
 
             // fill JSON edit field
             for (let dev in api_config["API-Devices"]) {

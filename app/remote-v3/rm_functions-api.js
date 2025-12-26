@@ -733,19 +733,16 @@ function apiSendToDeviceApi_return( data ) {
             }
 
     let answer = "";
-    answer       += "<i>Request:</i> <b>" + response["command"] + "</b><br/>";
-    if (response["answer"]["device_id"]) {
-        answer       += "<i>Interface &amp; device:</i> " + response["device"].replace("||", " / ");
-        }
-    else {
-        answer       += "<i>Interface &amp; device:</i> " + response["interface"] + " / " + response["device"] + " (" + response["status"] + ")";
-        }
-    answer       += "<br/>-----<br/>";
-    answer       += "<pre>" + syntaxHighlightJSON(response["answer"]["answer"]) + "</pre>";
-    answer       += "<pre id='JSON_copy' style='display:none;'>" + JSON.stringify(response["answer"]["answer"], null, 2) + "</pre>";
-    answer       += "<br/>&nbsp;<br/>-----<br/><i>";
-    answer       += "total: " + (data["REQUEST"]["load-time-app"])/1000 + "s / srv: " + Math.round(data["REQUEST"]["load-time"]*10000)/10000 + "s / " +
-                    "last: " + formatted;
+    answer += "<i>Request:</i> <b>" + response["command"] + "</b><br/>";
+    if (response["command"] === "api-discovery")    { answer += "<i>Interface:</i> " + response["device"].split("_")[0]; }
+    else if (response["answer"]["device_id"])       { answer += "<i>Interface &amp; device:</i> " + response["device"].replace("||", " / "); }
+    else                                            { answer += "<i>Interface &amp; device:</i> " + response["interface"] + " / " + response["device"] + " (" + response["status"] + ")"; }
+    answer += "<br/>-----<br/>";
+    answer += "<pre>" + syntaxHighlightJSON(response["answer"]["answer"]) + "</pre>";
+    answer += "<pre id='JSON_copy' style='display:none;'>" + JSON.stringify(response["answer"]["answer"], null, 2) + "</pre>";
+    answer += "<br/>&nbsp;<br/>-----<br/><i>";
+    answer += "total: " + (data["REQUEST"]["load-time-app"])/1000 + "s / srv: " + Math.round(data["REQUEST"]["load-time"]*10000)/10000 + "s / " +
+              "last: " + formatted;
 
     if (response_id !== "") {
         setTextById('api_response_' + response_id, answer);

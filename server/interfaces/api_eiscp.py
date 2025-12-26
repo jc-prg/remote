@@ -143,7 +143,7 @@ class ApiControl(RemoteApiClass):
 
         self.logging.debug(command)
 
-        if self.status == "Connected":
+        if self.status == "Connected" or command == "api-discovery":
             if self.log_command:
                 self.logging.info("__QUERY " + device + "/" + command[:shorten_info_to] +
                                   " ... (" + self.api_name + ")")
