@@ -38,7 +38,7 @@ class Connect(RemoteThreadingClass):
         self.api_request_reconnect_all_message = {}
         self.api_modules = {
             "BROADLINK": "api_broadlink",
-            #"DENON": "api_denon",
+        #    "DENON": "api_denon",
             "EISCP-ONKYO": "api_eiscp",
             "KODI": "api_kodi",
             "MAGIC-HOME": "api_magichome",
@@ -1135,6 +1135,11 @@ class Connect(RemoteThreadingClass):
                     and type_new in buttons_default["data"]["commands"][button]:
                 return buttons_default["data"]["commands"][button][type_new]
 
+            elif (button == "vol" and "commands" in buttons_default["data"]
+                  and "volume" in buttons_default["data"]["commands"]
+                  and type_new in buttons_default["data"]["commands"]["volume"]):
+                return buttons_default["data"]["commands"]["volume"][type_new]
+
             # -> check if still required for some device configurations ->
             elif button_query in buttons_device["data"] and button in buttons_device["data"][button_query]:
                 return buttons_device["data"][button_query][button]
@@ -1142,9 +1147,13 @@ class Connect(RemoteThreadingClass):
             elif button_query in buttons_default["data"] and button in buttons_default["data"][button_query]:
                 return buttons_default["data"][button_query][button]
 
+
             else:
-                return ("ERROR get_command: button not defined (" + dev_api + "," + button_query +
-                        ": " + device + "_" + button + ")")
+                self.logging.error(str(buttons_default["data"]))
+                self.logging.error("---")
+                self.logging.error(str(buttons_default["data"][button_query]))
+
+                return f"ERROR get_command: button not defined ({dev_api},{button_query}: {device}_{button})"
 
         else:
             return "ERROR get_command: device not found (" + dev_api + ": " + device + ")"
