@@ -23,7 +23,7 @@ function statusCheck(data={}) {
     const start = Date.now();
     dataAll = data;
 
-     statusCheck_modes();
+    statusCheck_modes();
 
     if (!rm3remotes.edit_mode) {
         statusCheck_displayValues(data);
