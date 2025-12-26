@@ -50,16 +50,23 @@ function statusCheck(data={}) {
 
     setTextById("current_server_time", data["REQUEST"]["server-time-local"]);
 
+    const duration = (Date.now() - start) / 1000;
+
+    statusCheck_measure(data, duration);
+}
+
+// measure Status Check durations
+function statusCheck_measure(data, duration) {
+
+    if (duration < 0.1) { console.debug("statusCheck: Updated all status elements (" + String(duration) + "s)"); }
+    else { console.warn("statusCheck: Updated all status elements - longer than expected (max 0.1s): " + String(duration) + "s"); }
+
     let average = status_duration.reduce((a, b) => a + b, 0) / status_duration.length;
     let average_load = status_duration_load.reduce((a, b) => a + b, 0) / status_duration_load.length;
     average = Math.round(average * 1000)/1000;
     average_load = Math.round(average_load * 1000)/1000;
     setTextById("average_status_duration", "~"+average+"s ");
     setTextById("average_status_duration_load", "~"+average_load+"s ");
-
-    const duration = (Date.now() - start) / 1000;
-    if (duration < 0.1) { console.debug("statusCheck: Updated all status elements (" + String(duration) + "s)"); }
-    else { console.warn("statusCheck: Updated all status elements - longer than expected (max 0.1s): " + String(duration) + "s"); }
 
     status_duration.push(duration);
     if (status_duration.length > 10) { status_duration.shift(); }

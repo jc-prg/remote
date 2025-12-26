@@ -1433,6 +1433,7 @@ class RemoteSettingsInfo {
         set_temp  = this.tab.start();
         set_temp += this.tab.row( 	"Threads:&nbsp;", "<div id='system_health'></div>" );
         set_temp += this.tab.row( 	"APIs:&nbsp;", modules.join(", ") );
+        set_temp += this.tab.row( 	"&nbsp;");
         set_temp += this.tab.row( 	"StatusCheck&nbsp(Load):&nbsp;",  "<div id='average_status_duration_load'>"+lang("PLEASE_WAIT")+"</div>");
         set_temp += this.tab.row( 	"StatusCheck&nbsp(Write):&nbsp;",  "<div id='average_status_duration'>"+lang("PLEASE_WAIT")+"</div>");
         set_temp += this.tab.end();
