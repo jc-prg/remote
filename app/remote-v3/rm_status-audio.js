@@ -2,7 +2,7 @@
 // jc://remote/
 //--------------------------------
 
-let statusCheck_audio = undefined;
+let statusCheck_audio;
 
 
 // class for audio functionality (used in rm_status.js > statusCheck())

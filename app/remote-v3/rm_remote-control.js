@@ -57,7 +57,7 @@ class RemoteSvgTextImage {
 
     // --- Try different line breaks ---
     bestLayout(text) {
-        let words = undefined;
+        let words;
         if (text.length > 8) {
             words = text.split(/(\s|-)/).filter(Boolean);
         }
@@ -118,7 +118,7 @@ class RemoteSvgTextImage {
                 t.setAttribute("font-family", this.fontFamily);
                 t.setAttribute("font-weight", this.fontWeight);
                 t.setAttribute("fill", this.fontColor);
-                t.textContent = line;
+                t.textContent = String(line);
                 svg.appendChild(t);
             });
             this.image_cache[text] = svg.innerHTML;
@@ -169,7 +169,7 @@ class RemoteControlBasic {
         for (let i=0; i<macro.length; i++) { macro_string = macro_string + macro[i] + "::"; }
 
         this.logging.debug(label+" - "+macro_string);
-        return "<button id='" + id + "' class='channel-entry " + style + "' " + disabled + " onclick=\"javascript:apiMacroSend('" + macro_string + "','"+scene+"','"+label+"');\">" + label + "</button>";
+        return "<button id='" + id + "' class='channel-entry " + style + "' " + disabled + " onclick=\"apiMacroSend('" + macro_string + "','"+scene+"','"+label+"');\">" + label + "</button>";
     }
 
     // default buttons
@@ -483,8 +483,6 @@ class RemoteControlAdvanced {
 
         let init, key, status_data;
         let reset_value = "";
-        let min = 0;
-        let max = 1;
         let group = false;
         let device_id;
         let definition = device.split("||");
@@ -502,8 +500,8 @@ class RemoteControlAdvanced {
         }
 
         if (this.data["CONFIG"]["devices"][device_id] && this.data["CONFIG"]["devices"][device_id]["interface"]["method"] !== "query") {
-            reset_value = "<font style='color:gray'>[<status onclick=\"appFW.requestAPI('GET',['set','" + device_id + "','power','OFF'], '', '', '' );\" style='cursor:pointer;'>OFF</status> | ";
-            reset_value += "<status onclick=\"appFW.requestAPI('GET',['set','" + device_id + "','power','ON'], '', '', '' );\" style='cursor:pointer;'>ON</status>]</font>";
+            reset_value = "<span style='color:gray'>[<status onclick=\"appFW.requestAPI('GET',['set','" + device_id + "','power','OFF'], '', '', '' );\" style='cursor:pointer;'>OFF</status> | ";
+            reset_value += "<status onclick=\"appFW.requestAPI('GET',['set','" + device_id + "','power','ON'], '', '', '' );\" style='cursor:pointer;'>ON</status>]</span>";
         }
         let toggle_start = "";
         let toggle_end = "";

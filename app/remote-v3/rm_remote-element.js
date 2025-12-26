@@ -48,7 +48,7 @@ class RemoteElementsEdit {
     }
 
     // open or close the basic container element
-    container_showHide(id, open="" ) {
+    container_showHide(id) {
         let status = document.getElementById(id+"_status").innerHTML;
         if (status === "true") {
             document.getElementById(id+"_body").style.display = "none";
@@ -135,7 +135,7 @@ class RemoteElementTable {
     }
 
     /* add a table row with a line in it*/
-    line(text="") {
+    line() {
 
         return "<tr><td colspan='2'><hr style='border:1px solid white;'/></td></tr>";
     }
@@ -143,16 +143,16 @@ class RemoteElementTable {
     /* add a table row with up to two cells */
     row(td1, td2=undefined) {
         if (td2 === undefined)   { td2 = ""; }
-        if (td1 === "start")     { return "<table border=\"0\" width=\""+td2+"\">"; }
+        if (td1 === "start")     { return "<table style=\"border:0;widt:"+td2+"\">"; }
         else if (td1 === "end")  { return "</table>"; }
-        else if (td2 === false)  { return "<tr><td valign=\"top\" colspan=\"2\">" + td1 + "</td></tr>"; }
-        else                     { return "<tr><td valign=\"top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
+        else if (td2 === false)  { return "<tr><td style=\"vertical-align:top\" colspan=\"2\">" + td1 + "</td></tr>"; }
+        else                     { return "<tr><td style=\"vertical-align:top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
     }
 
     /* add a table start */
     start(width="100%") {
 
-        return "<table border=\"0\" width=\""+width+"\">";
+        return "<table style=\"border:0;width:"+width+"\">";
     }
 
     /* add a table end */
@@ -179,7 +179,6 @@ class RemoteElementSheetBox {
             this.created = true;
             this.container.innerHTML = "";
             this.sheets = [];
-            this.activeIndex = 0;
             this.scroll = scroll_bar;
             this.scroll_into_view = scroll_view;
             this.keep_open = keep_open;
@@ -277,7 +276,6 @@ class RemoteElementSheetBox {
         }
 
     setActiveSheet(index) {
-        this.activeIndex = index;
         this.updateArrowVisibility();
 
         this.sheets.forEach((sheet, i) => {
