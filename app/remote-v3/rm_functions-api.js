@@ -78,7 +78,8 @@ function setVolume(main_audio,volume) {
 }
 
 function apiSetVolume(volume) {
-    appFW.requestAPI( "GET",  ["set",rm3slider.device,"send-vol",volume], "", remoteReload_load );
+    //appFW.requestAPI( "GET",  ["set",rm3slider.device,"send-vol",volume], "", remoteReload_load );
+    appFW.requestAPI( "GET",  ["set",statusCheck_audio.slider.device,"send-vol",volume], "", remoteReload_load );
 }
 
 

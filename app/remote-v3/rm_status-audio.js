@@ -29,11 +29,15 @@ class RemoteMainAudio {
         this.volume_bar_length = 20;
         this.volume_bar_element = "I";
 
+        this.temp_audio_level = 0;
+        this.temp_audio_time = 0;
+        this.temp_audio_offset = 10;
+
         this.slider = new jcSlider(this.app_name+".slider", "audio_slider");
         this.slider.init(0, 100, "loading");
         this.slider.setPosition("45px",false,false,"10px");
-        this.slider.setOnChange(apiSetVolume);
-        this.slider.setShowVolume(this.show);
+        this.slider.setOnChange(this.change_volume);
+        this.slider.setShowVolume(this.show_status_slider);
 
         for (let key in this.audio_info) {
             let element = document.getElementById(this.audio_info[key]);
@@ -43,6 +47,9 @@ class RemoteMainAudio {
         }
 
         this.main_audio_settings();
+        this.show_status_slider = this.show_status_slider.bind(this);
+        this.change_volume = this.change_volume.bind(this);
+
     }
 
     // read properties from main audio device
@@ -107,6 +114,15 @@ class RemoteMainAudio {
         }
     }
 
+    // check if temp volume level is relevant
+    volume_temp(volume) {
+        let current_time = Math.floor(Date.now() / 1000);
+        if (this.temp_audio_time !== 0 && current_time - this.temp_audio_time <= this.temp_audio_offset) {
+            return this.temp_audio_level;
+        }
+        return volume;
+    }
+
     // display volume level
     volume(volume_level=undefined) {
         let volume_bar = "";
@@ -143,8 +159,9 @@ class RemoteMainAudio {
             this.mute();
         }
         else {
-            let status_volume = data["STATUS"]["devices"][this.audio_device]["vol"];
             let status_mute = data["STATUS"]["devices"][this.audio_device]["mute"];
+            let status_volume = data["STATUS"]["devices"][this.audio_device]["vol"];
+            status_volume = this.volume_temp(status_volume);
             this.volume(status_volume);
             if (status_volume === 0) { status_mute = true; }
             this.mute(status_mute);
@@ -153,5 +170,18 @@ class RemoteMainAudio {
             console.debug("StatusCheckMainAudio.show(): device=" + this.audio_device + "; status=" + this.audio_status +"; volume=" + status_volume + "; mute=" + status_mute);
         }
 
+    }
+
+    // show audio status after slider change
+    show_status_slider(data) {
+        statusCheck_audio.temp_audio_level = data;
+        statusCheck_audio.temp_audio_time = Math.floor(Date.now() / 1000);
+        statusCheck_audio.show_status(data);
+    }
+
+    // send API call to set volume
+    change_volume(volume) {
+        console.error("RemoteMainAudio.change_volume(): " + statusCheck_audio.audio_device+" -> "+volume);
+        appFW.requestAPI( "GET",  ["set",statusCheck_audio.audio_device,"send-vol",volume], "", remoteReload_load );
     }
 }
