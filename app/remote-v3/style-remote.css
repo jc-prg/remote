@@ -7,39 +7,53 @@ hr         { border: solid 1px var(--rm-color-hr); }
 
 /* AUDIO INFO */
 
+#audio {
+    display: block;
+    position: absolute;
+    right: 40px;
+    top: 10px;
+    height: 20px;
+    width: auto;
+}
+
 #audio1 {
-  position          : absolute;
-  right             : 122px;
-  background-image  : url('/icon/mute.png');
-  background-size   : 14px;
-  height            : 14px;
-  width             : 14px;
-  color             : var(--rm-color-audio-text);
+    float : right;
+    position: unset;
+    margin: 1px 7px 1px 1px;
+    background-image  : url('/icon/mute.png');
+    background-size   : 14px;
+    height            : 14px;
+    width             : 14px;
+    color             : var(--rm-color-audio-text);
 }
 
 #audio2 {
-  position          : absolute;
-  right             : 122px;
-  background-image  : url('/icon/vol+.png');
-  background-size   : 14px;
-  height            : 14px;
-  width             : 14px;
-  color             : var(--rm-color-audio-text);
+    float : right;
+    position: unset;
+    margin: 1px 7px 1px 1px;
+    background-image  : url('/icon/vol+.png');
+    background-size   : 14px;
+    height            : 14px;
+    width             : 14px;
+    color             : var(--rm-color-audio-text);
 }
 
 #audio3 {
-  position          : absolute;
-  height            : 10px;
-  right             : 45px;
+    margin-top: 1px;
+    float : right;
+    position: unset;
+    height            : 10px;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 #audio4 {
-  right             : 160px;
-  height            : 14px;
-  width             : 140px;
-  color             : var(--rm-color-audio-vol-text);
-  text-align        : right;
-  font-weight       : unset;
+    float : right;
+    position: unset;
+    margin: 1px 7px 1px 1px;
+    width             : 140px;
+    color             : var(--rm-color-audio-vol-text);
+    text-align        : right;
+    font-weight       : unset;
 }
 
 #edit1 {

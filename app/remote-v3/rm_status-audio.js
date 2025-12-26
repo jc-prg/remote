@@ -76,12 +76,11 @@ class RemoteMainAudio {
             this.audio_active = false;
             this.audio_status = "ERROR: device_api not found ("+device_api+")";
         }
-
+        
+        this.main_audio_status(this.data);
         if (this.audio_status.indexOf("ERROR") < 0) {
             if (device_definition && device_definition["vol"] && device_definition["vol"]["values"] && device_definition["vol"]["values"]["max"]) { this.audio_level["max"] = device_definition["vol"]["values"]["max"]; }
             if (device_definition && device_definition["vol"] && device_definition["vol"]["values"] && device_definition["vol"]["values"]["max"]) { this.audio_level["min"] = device_definition["vol"]["values"]["min"]; }
-
-            this.main_audio_status(this.data);
 
             this.slider.init(this.audio_level["min"],this.audio_level["max"],this.audio_device_label+" ("+this.audio_device+")");
             this.slider.device = this.audio_device;
