@@ -97,6 +97,9 @@ class RemoteSvgTextImage {
             const padding = this.fontSize * 0.1; // 10% padding
 
             let svg = document.getElementById(container);
+
+            if (!svg) { console.error("RemoteSvgTextImage.create(): container '"+container+"' not found.")}
+
             svg.innerHTML = "";
             svg.setAttribute("viewBox", `${-padding} ${-padding} ${layout.box.width + padding * 2} ${layout.box.height + padding * 2}`);
             svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
@@ -190,7 +193,7 @@ class RemoteControlBasic {
         //if (!isNaN(label)) { label = "<big>" + label + "</big>"; }
         if (style !== "") { style = " " + style; }
         if (id.indexOf("||") > 0) { id = id.split("||")[0]; }
-        if (label.indexOf("<img") < 0) {
+        if (label.indexOf("<img") < 0 && label !== "&nbsp;") {
             let label_id = label;
             label = "<svg id='svg_image_"+label_id+"'></svg>";
             setTimeout(() => {
