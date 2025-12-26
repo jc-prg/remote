@@ -308,7 +308,11 @@ class RemotesData(RemoteThreadingClass):
             if "interface" in devices[key] and "api" in devices[key]["interface"]:
                 api_dev = devices[key]["interface"]["api"]
                 if "_" in api_dev:
-                    [api, dev] = api_dev.split("_")
+                    api_data = api_dev.split("_")
+                    if len(api_data) > 2:
+                        self.logging.error(f"Too many parts in API Device name: {api_dev}")
+                    api = api_data[0]
+                    dev = api_data[1]
                     if api not in devices_per_interface:
                         devices_per_interface[api] = {}
                     if dev not in devices_per_interface[api]:
@@ -1103,6 +1107,37 @@ class RemotesEdit(RemoteDefaultClass):
         else:
             return message
 
+    def device_add_filename(self, base_path, name, max_copies=99):
+        """
+        create filename for the copy
+
+        Args:
+            base_path (str): rm3presets.remotes
+            name (str): info["config_remote"]
+            max_copies (int): default = 99
+        """
+        # If it doesn't exist at all, return as-is
+        if not rm3json.if_exist(base_path + name):
+            return name
+
+        # Normalize to "-copy" first
+        match = re.search(r"-copy(\d{2})?$", name)
+        if not match:
+            name = name + "-copy"
+
+        # Start counting
+        for i in range(1, max_copies + 1):
+            candidate = re.sub(
+                r"-copy(\d{2})?$",
+                f"-copy{i:02d}",
+                name
+            )
+            if not rm3json.if_exist(base_path + candidate):
+                return candidate
+
+        # Nothing free up to max_copies
+        raise RuntimeError("No free filename available up to -copy99")
+
     def device_add(self, device, info):
         """
         add new device to config file and create command/remote files
@@ -1131,6 +1166,8 @@ class RemotesEdit(RemoteDefaultClass):
                 active_json_position = active_json[key]["settings"]["position"]
         active_json_position += 1
 
+        self.logging.warning(str(info))
+
         # add to _active.json
         active_json[device] = {
             "config": {
@@ -1138,7 +1175,7 @@ class RemotesEdit(RemoteDefaultClass):
                 "device_id": info["id_ext"],
                 "remote": info["config_remote"],
                 "api_key": interface,
-                "api_device": "default"
+                "api_device": interface_dev
             },
             "settings": {
                 "description": info["description"],
@@ -1193,7 +1230,23 @@ class RemotesEdit(RemoteDefaultClass):
             if not rm3json.if_exist(rm3presets.remotes + info["config_remote"]):
                 self.config.write(rm3presets.remotes + info["config_remote"], remote)
             else:
-                raise "Device " + device + " already exists (remotes)."
+                msg += "Device " + device + " already exists (remotes), create a copy."
+                original_remote = self.config.read(rm3presets.remotes + info["config_remote"])
+                info["config_remote"] = self.device_add_filename(rm3presets.remotes, info["config_remote"])
+
+                if " (copy" in original_remote["data"]["description"]:
+                    description_add = info["config_remote"].split("-copy")[1]
+                    original_remote["data"]["description"] = original_remote["data"]["description"].split(" (copy")[0]
+                    original_remote["data"]["description"] += f" (copy{description_add})"
+                else:
+                    original_remote["data"]["description"] += " (copy)"
+
+                self.config.write(rm3presets.remotes + info["config_remote"], original_remote)
+
+                active_json[device]["config"]["remote"] = info["config_remote"]
+                active_json[device]["config"]["api_device"] = interface_dev
+                msg += self.config.device_add(device, active_json[device])
+
         except Exception as e:
             msg += "WARNING: " + str(e)
 

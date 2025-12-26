@@ -649,7 +649,7 @@ class ConfigCache(RemoteThreadingClass):
 
             self.logging.debug("Add configuration to API configuration " + config_file)
             if api_device not in configuration["API-Devices"]:
-                configuration["API-Devices"][api_device] = api_data
+                configuration["API-Devices"][api_device] = api_data.copy()
             else:
                 counter = 1
                 device = api_device
