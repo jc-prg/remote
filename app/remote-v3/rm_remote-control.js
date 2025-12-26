@@ -3,6 +3,7 @@
 //--------------------------------
 
 
+/* class to generate from text for buttons SVG images that can be scaled automatically with the button size */
 class RemoteSvgTextImage {
     constructor() {
         this.text = "Even much longer button text ...";
@@ -18,7 +19,7 @@ class RemoteSvgTextImage {
     // --- split text into lines ---
     splitIntoLines(words, lineCount) {
         const lines = Array.from({ length: lineCount }, () => []);
-        const wordsPerLine = Math.ceil(words.length / lineCount);
+        const wordsPerLine = Math.ceil(Number(words.length / lineCount));
 
         let index = 0;
         for (let i = 0; i < lineCount; i++) {
@@ -39,7 +40,7 @@ class RemoteSvgTextImage {
 
         lines.forEach((line, i) => {
             const t = document.createElementNS(tempSvg.namespaceURI, "text");
-            t.setAttribute("y", i * this.fontSize * 1.2);
+            t.setAttribute("y", String(i * this.fontSize * 1.2));
             t.setAttribute("font-size", this.fontSize);
             t.setAttribute("font-family", this.fontFamily);
             t.setAttribute("font-weight", this.fontWeight);
@@ -59,8 +60,10 @@ class RemoteSvgTextImage {
         let words = undefined;
         if (text.length > 8) {
             words = text.split(/(\s|-)/).filter(Boolean);
-        } else {
-            let amount = Math.ceil((10 - text.length)/2);
+        }
+        else {
+            let amount = Number((10 - text.length)/2);
+            amount = Math.ceil(amount);
             for (let i = 0; i < amount; i++) {
                 text = "\u00A0"+text+"\u00A0";
             }
@@ -74,7 +77,7 @@ class RemoteSvgTextImage {
 
             const box = this.measure(textLines);
             const ratio = box.width / box.height;
-            const score = Math.abs(ratio - this.targetRatio);
+            const score = Math.abs(Number(ratio - this.targetRatio));
 
             if (score < bestScore) {
                 bestScore = score;
@@ -92,6 +95,7 @@ class RemoteSvgTextImage {
 
             const layout = this.bestLayout(text);
             const padding = this.fontSize * 0.1; // 10% padding
+
             let svg = document.getElementById(container);
             svg.innerHTML = "";
             svg.setAttribute("viewBox", `${-padding} ${-padding} ${layout.box.width + padding * 2} ${layout.box.height + padding * 2}`);
@@ -103,8 +107,8 @@ class RemoteSvgTextImage {
 
             layout.lines.forEach((line, i) => {
                 const t = document.createElementNS(svg.namespaceURI, "text");
-                t.setAttribute("x", layout.box.width / 2); // horizontal center
-                t.setAttribute("y", startY + i * lineHeight); // vertical position per line
+                t.setAttribute("x", String(layout.box.width / 2)); // horizontal center
+                t.setAttribute("y", String(startY + i * lineHeight)); // vertical position per line
                 t.setAttribute("text-anchor", "middle"); // center horizontally
                 t.setAttribute("dominant-baseline", "middle"); // center each line vertically on its y
                 t.setAttribute("font-size", this.fontSize);
