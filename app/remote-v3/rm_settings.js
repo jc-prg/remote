@@ -1417,7 +1417,7 @@ class RemoteSettingsInfo {
             " / jcModules " + modules_version +
             " / jcCookies " + appCookie.appVersion +
             " / jcFunction "+ jc_functions_version +
-            " / jcSlider "  + rm3slider.appVersion );
+            " / jcSlider "  + statusCheck_audio.slider.appVersion );
         set_temp += this.tab.row( "Sources:",  "<a href='https://github.com/jc-prg/remote/tree/"+git_branch+"/' target='_blank'>https://github.com/jc-prg/remote/tree/"+git_branch+"/</a>");
         set_temp += this.tab.row( "REST API:", "<a href='"+ RESTurl + "api/list/' target='_blank'>" + RESTurl + "api/list/</a>");
         set_temp += this.tab.end();
@@ -1433,6 +1433,8 @@ class RemoteSettingsInfo {
         set_temp  = this.tab.start();
         set_temp += this.tab.row( 	"Threads:&nbsp;", "<div id='system_health'></div>" );
         set_temp += this.tab.row( 	"APIs:&nbsp;", modules.join(", ") );
+        set_temp += this.tab.row( 	"StatusCheck&nbsp(Load):&nbsp;",  "<div id='average_status_duration_load'>"+lang("PLEASE_WAIT")+"</div>");
+        set_temp += this.tab.row( 	"StatusCheck&nbsp(Write):&nbsp;",  "<div id='average_status_duration'>"+lang("PLEASE_WAIT")+"</div>");
         set_temp += this.tab.end();
         let setting_health = set_temp;
 

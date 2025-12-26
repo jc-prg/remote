@@ -2,8 +2,9 @@
 // jc://remote/
 //--------------------------------
 
-let device_media_info       = {};
-
+let device_media_info = {};
+let status_duration = [];
+let status_duration_load = [];
 
 // load the devices status -> visualization via function statusCheck();
 function statusCheck_load() {
@@ -22,7 +23,7 @@ function statusCheck(data={}) {
     const start = Date.now();
     dataAll = data;
 
-    statusCheck_modes();
+     statusCheck_modes();
 
     if (!rm3remotes.edit_mode) {
         statusCheck_displayValues(data);
@@ -49,10 +50,22 @@ function statusCheck(data={}) {
 
     setTextById("current_server_time", data["REQUEST"]["server-time-local"]);
 
+    let average = status_duration.reduce((a, b) => a + b, 0) / status_duration.length;
+    let average_load = status_duration_load.reduce((a, b) => a + b, 0) / status_duration_load.length;
+    average = Math.round(average * 1000)/1000;
+    average_load = Math.round(average_load * 1000)/1000;
+    setTextById("average_status_duration", "~"+average+"s ");
+    setTextById("average_status_duration_load", "~"+average_load+"s ");
+
     const duration = (Date.now() - start) / 1000;
     if (duration < 0.1) { console.debug("statusCheck: Updated all status elements (" + String(duration) + "s)"); }
     else { console.warn("statusCheck: Updated all status elements - longer than expected (max 0.1s): " + String(duration) + "s"); }
-	}
+
+    status_duration.push(duration);
+    if (status_duration.length > 10) { status_duration.shift(); }
+    status_duration_load.push(data["REQUEST"]["load-time-app"]/1000);
+    if (status_duration_load.length > 10) { status_duration_load.shift(); }
+}
 
 
 // status messages in case the server is offline
