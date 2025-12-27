@@ -5,7 +5,7 @@
 * Python sources: https://github.com/miracle2k/onkyo-eiscp/
 * API documentation: https://github.com/miracle2k/onkyo-eiscp/blob/master/eiscp-commands.yaml
 
-## How to install a EISCP-ONKYO device
+## How to install an EISCP-ONKYO device
 
 1. Prepare the EISCP-ONKYO device
     - Connect the EISCP-ONKYO device to your Wi-Fi network 
