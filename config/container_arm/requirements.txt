@@ -17,3 +17,4 @@ pythonping==1.1.4
 python-dotenv
 paho-mqtt==2.0.0
 scapy
+denonavr

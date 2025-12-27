@@ -21,6 +21,7 @@ There are a few templates available to be used and modified.
 ## Currently Supported Devices
 
 1. Broadlink Remote Controls  ... [API Info](./server/interfaces/broadlink/README.md)
+2. DENON devices with API ... [API Info](./server/interfaces/denon/README.md)
 2. KODI server  ... [API Info](./server/interfaces/kodi/README.md)
 3. Magic Home compatible LED strips  ... [API Info](./server/interfaces/magichome/README.md)
 4. ONKYO devices with API ... [API Info](./server/interfaces/eiscp/README.md)
@@ -49,7 +50,11 @@ Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 
 ## Main features
 
-### App v3.0 / Server v3.0 (in progress)
+### v3.1 (in progress)
+
+* integration of Denon API incl. discovery
+
+### App v3.0 / Server v3.0
 
 * simple implementation of device groups (use buttons for all devices of a group at the same time)
 * integration of ZigBee interface (using a Zigbee USB Dongle and ZigBee2MQTT): Smart Socket + RGB+CCT Bulb + Smart Switch

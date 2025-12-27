@@ -38,7 +38,7 @@ class Connect(RemoteThreadingClass):
         self.api_request_reconnect_all_message = {}
         self.api_modules = {
             "BROADLINK": "api_broadlink",
-        #    "DENON": "api_denon",
+            "DENON": "api_denon",
             "EISCP-ONKYO": "api_eiscp",
             "KODI": "api_kodi",
             "MAGIC-HOME": "api_magichome",
@@ -647,13 +647,19 @@ class Connect(RemoteThreadingClass):
                 "last_action_cmd": self.api[device].last_action_cmd
                 }
         else:
+            discovery = False
             if external:
                 dev_data = device.split("||")
                 api_dev = dev_data[0]
                 device_id = dev_data[1]
                 self.logging.info("__SEND DIRECTLY: " + api_dev + "/** | " + command)
 
-                if self.api[api_dev].status == "Connected":
+                if api_dev.endswith("_default") and command == "api-discovery":
+                    api = api_dev.split("_")[0]
+                    answer = self.api_check[api].query(device_id, device_id, command)
+                    power = "N/A"
+                    discovery = True
+                elif self.api[api_dev].status == "Connected":
                     answer = self.api[api_dev].query(device_id, device_id, command)
                     power = "N/A"
             else:
@@ -665,15 +671,26 @@ class Connect(RemoteThreadingClass):
                     answer = self.api[api_dev].query(device, device_id, command)
                     power = self.device_status(device)["status"]["power"]
 
-            return_msg = {
-                "connect": self.api[api_dev].status,
-                "command": command,
-                "power": power,
-                "answer": answer,
-                "device_id": external,
-                "last_action": self.api[api_dev].last_action,
-                "last_action_cmd": self.api[api_dev].last_action_cmd
-                }
+            if discovery:
+                return_msg = {
+                    "connect": "Connected",
+                    "command": command,
+                    "power": power,
+                    "answer": answer,
+                    "device_id": external,
+                    "last_action": "",
+                    "last_action_cmd": ""
+                    }
+            else:
+                return_msg = {
+                    "connect": self.api[api_dev].status,
+                    "command": command,
+                    "power": power,
+                    "answer": answer,
+                    "device_id": external,
+                    "last_action": self.api[api_dev].last_action,
+                    "last_action_cmd": self.api[api_dev].last_action_cmd
+                    }
 
         return return_msg
 

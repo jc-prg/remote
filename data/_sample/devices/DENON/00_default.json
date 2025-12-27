@@ -1,0 +1,19 @@
+{
+  "data": {
+	"description": "API to connect to DENON devices using denonavr",
+	"buttons"    : {},
+	"commands"   : {
+      "api-discovery": {
+        "get": "api-discovery"
+      }
+    },
+	"method"     : "query",
+    "query" : {
+      "load_intervals" : {},
+      "load_default" : 10,
+      "load_after" : [],
+      "load_after_values" : []
+      }
+  },
+  "information": "This file defines default buttons and commands that are valid for all connected devices."
+}

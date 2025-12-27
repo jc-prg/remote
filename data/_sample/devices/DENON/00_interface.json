@@ -1,0 +1,20 @@
+{
+    "API-Description": "DENON Devices",
+    "API-Devices": {
+        "sample-api-device": {
+            "Description": "Denon Device",
+            "IPAddress": "192.168.1.40",
+            "MACAddress": "AA:BB:CC:DD:EE:FF",
+            "Methods": [
+                "send",
+                "query"
+            ],
+            "MultiDevice": true,
+            "Port": 80,
+            "PowerDevice": "TAPO-P100_plug02",
+            "Timeout": 5
+        }
+    },
+    "API-Info": "https://github.com/jc-prg/remote/blob/master/server/interfaces/denon/README.md",
+    "API-Source": ""
+}
