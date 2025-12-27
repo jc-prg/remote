@@ -161,7 +161,6 @@ Remote controls for devices can be added, changed and deleted via edit mode in t
 * use "COLOR-PICKER||send-command" to add a color picker
 * use "SLIDER||send-command||description||min-max||parameter" to add a slider
 
-
 ### SCENES
 
 Remote controls for scenes can be added, changed and deleted via edit mode in the GUI already and there are a few templates available:
