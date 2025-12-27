@@ -21,8 +21,7 @@ src="./app_light/remotes_13.PNG" width="17%">
 <img src="./app_light/settings_01.PNG" width="17%"> <img 
 src="./app_light/settings_02.PNG" width="17%"> <img 
 src="./app_light/settings_03.PNG" width="17%"> <img 
-src="./app_light/settings_04.PNG" width="17%"> <img 
-src="./app_light/settings_05.PNG" width="17%"> <img 
+src="./app_light/settings_04.PNG" width="17%">  <img 
 src="./app_light/settings_06.PNG" width="17%"> <img 
 src="./app_light/settings_07.PNG" width="17%"> <img 
 src="./app_light/settings_08.PNG" width="17%">
@@ -59,12 +58,11 @@ src="./app_dark/settings_05.PNG" width="17%"> <img
 src="./app_dark/settings_06.PNG" width="17%"> <img 
 src="./app_dark/settings_07.PNG" width="17%">
 
-## Add desktop
+## App desktop
 
 <img src="./desktop/remote_browser_01.png" width="48%"> <img 
 src="./desktop/remote_browser_03.png" width="48%"> <img 
 src="./desktop/remote_browser_edit_01.png" width="48%"> <img 
-src="./desktop/remote_browser_edit_02.png" width="48%"> <img 
-src="./desktop/remote_browser_edit_03.png" width="48%"> 
+src="./desktop/remote_browser_edit_02.png" width="48%"> 
 
 

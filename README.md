@@ -59,7 +59,7 @@ Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 * improved layout for editing of remotes, and improved JSON editing
 * improved setting section and API configuration via app, incl. device discovery for EISCP-ONKYO, KODI, and BROADLINK
 * improved adaptive remote layout, e.g., button grid, scaling text in buttons, additional icons and scene headers
-* improved error messages for device and scene status
+* improved error messages for device, scene status, config files, etc.
 
 **Note:** The data structure changed: recreate configuration files by coping them from the 
 folder [_sample/devices](data/_sample/devices) to the productive folders and adjusting them to your needs.
@@ -177,7 +177,7 @@ In order to use jc://remote/ as it is, the following software must be installed:
     $ nano .env              # modify configuration for your needs
     ```
 
-3. Install sample remote controls
+3. _Optional:_ Install sample remote controls. Alternatively jump to point (4) to create a fresh configuration and use the app settings to create your own remote controls.
 
     ```bash
     $ cd data/_sample
@@ -185,7 +185,7 @@ In order to use jc://remote/ as it is, the following software must be installed:
     $ cd ../..
     ```
 
-4. Build and start via docker-compose ..
+4. Build and start via docker-compose.
 
     ```bash
     $ docker-compose build
@@ -206,11 +206,12 @@ In order to use jc://remote/ as it is, the following software must be installed:
     $ sudo ./start update
     ```
 
-8. Additional options are available in the start script
+8. Additional options, such as live watching the logging, are available in the start script:
 
     ```bash
-    $ sudo ./start update
+    $ sudo ./start
     ```
+
 
 ## Integration of additional APIs and devices
 
@@ -219,5 +220,5 @@ Find here additional information [how to integrate APIs](server/interfaces/READM
 
 ## Disclaimer
 
-This is a private crafting project. Feel free to try out and improve ... and stay tuned.
+This is a private crafting project. Feel free to try out and improve ... and stay tuned. I'm also open for your contributions.
 
