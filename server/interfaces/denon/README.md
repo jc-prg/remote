@@ -74,6 +74,9 @@ for the DENON AVR X2800H DAB. The following example shows the structure of the d
 * to use the volume functionality in the app, use "volume" and "mute" as keys for the related commands
 * to connect buttons directly to an icon, name them as shown in the "Settings > Information > Image buttons" or defined 
   in the related [config file](../../../data/buttons/default/index.json).
+* **important:** if you rename inputs (or other values) on your device, you've to adapt the values in your configuration also - 
+  if you want to use the sample data set, check the naming on your device and make adjustments if required
+
 
 ## Additional jc://remote/ API Commands
 
