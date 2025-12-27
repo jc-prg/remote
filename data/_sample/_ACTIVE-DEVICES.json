@@ -3,7 +3,7 @@
         "config": {
             "api_device": "default",
             "api_key": "BROADLINK",
-            "device": "bluray_sony-bdp-s4500",
+            "device": "cfg-bluray_sony-bdp-s4500",
             "remote": "bluray_sony-bdp-s4500_ir"
         },
         "remote": {
@@ -79,7 +79,7 @@
         "config": {
             "api_device": "SONY-BDP-S4500",
             "api_key": "SONY",
-            "device": "bluray_sony-bdp-s4500",
+            "device": "cfg-bluray_sony-bdp-s4500",
             "remote": "bluray_sony-bdp-s4500_api"
         },
         "remote": {
@@ -174,7 +174,7 @@
         "config": {
             "api_device": "default",
             "api_key": "BROADLINK",
-            "device": "beamer_optoma-hd27",
+            "device": "cfg-beamer_optoma-hd27",
             "remote": "beamer_optoma-hd27_ir"
         },
         "remote": {
@@ -236,7 +236,7 @@
         "config": {
             "api_device": "default",
             "api_key": "ZIGBEE2MQTT",
-            "device": "zigbee-bulb",
+            "device": "cfg-zigbee-bulb",
             "device_id": "0xa4c138a2b7b53adc",
             "remote": "bulb_zigbee"
         },
@@ -332,7 +332,7 @@
         "config": {
             "api_device": "default",
             "api_key": "MAGIC-HOME",
-            "device": "light_magichome_LED",
+            "device": "cfg-light_magichome_LED",
             "remote": "light_magichome_LED"
         },
         "remote": {
@@ -388,7 +388,7 @@
         "config": {
             "api_device": "default",
             "api_key": "BROADLINK",
-            "device": "screen_elite-screens-100",
+            "device": "cfg-screen_elite-screens-100",
             "remote": "screen_elite-screens-100_ir"
         },
         "remote": {
@@ -442,7 +442,7 @@
         "config": {
             "api_device": "default",
             "api_key": "KODI",
-            "device": "kodi",
+            "device": "cfg-kodi",
             "remote": "kodi_api"
         },
         "remote": {
@@ -536,7 +536,7 @@
         "config": {
             "api_device": "plug01",
             "api_key": "TAPO-P100",
-            "device": "plug_tapo-p100",
+            "device": "cfg-plug_tapo-p100",
             "remote": "plug_tapo-p100_01"
         },
         "remote": {
@@ -582,7 +582,7 @@
         "config": {
             "api_device": "plug02",
             "api_key": "TAPO-P100",
-            "device": "plug_tapo-p100",
+            "device": "cfg-plug_tapo-p100",
             "remote": "plug_tapo-p100_02"
         },
         "remote": {
@@ -630,7 +630,7 @@
         "config": {
             "api_device": "plug03",
             "api_key": "TAPO-P100",
-            "device": "plug_tapo-p100",
+            "device": "cfg-plug_tapo-p100",
             "remote": "plug_tapo-p100_03"
         },
         "remote": {
@@ -734,7 +734,7 @@
         "config": {
             "api_device": "default",
             "api_key": "BROADLINK",
-            "device": "receiver_onkyo-txnr686",
+            "device": "cfg-receiver_onkyo-txnr686",
             "remote": "receiver_onkyo-txnr686_ir"
         },
         "remote": {
@@ -808,7 +808,7 @@
         "config": {
             "api_device": "ONKYO-TXNR686",
             "api_key": "EISCP-ONKYO",
-            "device": "receiver_onkyo-txnr686",
+            "device": "cfg-receiver_onkyo-txnr686",
             "remote": "receiver_onkyo-txnr686_api"
         },
         "remote": {
@@ -972,7 +972,7 @@
         "config": {
             "api_device": "default",
             "api_key": "BROADLINK",
-            "device": "tv-receiver_arion-arc-1010hr",
+            "device": "cfg-tv-receiver_arion-arc-1010hr",
             "remote": "tv-receiver_arion-arc-1010hr_ir"
         },
         "remote": {
@@ -1056,7 +1056,7 @@
         "config": {
             "api_device": "default",
             "api_key": "BROADLINK",
-            "device": "tv-receiver_topfield",
+            "device": "cfg-tv-receiver_topfield",
             "remote": "tv-receiver_topfield_ir"
         },
         "remote": {

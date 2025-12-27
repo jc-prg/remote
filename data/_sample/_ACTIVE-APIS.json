@@ -4,54 +4,170 @@
         "config_file": "devices/BROADLINK/00_interface.json",
         "config_info": "Don't edit config here!",
         "description": "Infrared Broadlink RM-Controller",
-        "devices": {},
-        "devices_active": {},
-        "devices_count": 0
+        "devices": {
+            "default": {
+                "Description": "Infrared RM4 mini",
+                "DeviceType": "21004",
+                "IPAddress": "192.168.1.100",
+                "MACAddress": "AA:BB:CC:DD:EE:FF",
+                "Methods": [
+                    "send",
+                    "record"
+                ],
+                "MultiDevice": true,
+                "Port": 80,
+                "PowerDevice": "TAPO-P100_default",
+                "Timeout": 5
+            }
+        },
+        "devices_active": {
+            "default": false
+        },
+        "devices_count": 1
+    },
+    "DENON": {
+        "active": false,
+        "config_file": "devices/DENON/00_interface.json",
+        "config_info": "Don't edit config here!",
+        "description": "Denon AVR API",
+        "devices": {
+            "default": {
+                "AdminURL": "http://192.168.1.101/",
+                "Description": "Denon AVR-X2800H",
+                "DescriptionUrl": "http://192.168.1.101:60006/upnp/desc/aios_device/aios_device.xml",
+                "IPAddress": "192.168.1.101",
+                "Methods": [
+                    "send",
+                    "query"
+                ],
+                "MultiDevice": false,
+                "Port": "",
+                "PowerDevice": "TAPO-P100_default",
+                "Timeout": 5
+            }
+
+        },
+        "devices_active": {
+            "default": false
+        },
+        "devices_count": 1
     },
     "EISCP-ONKYO": {
         "active": false,
         "config_file": "devices/EISCP-ONKYO/00_interface.json",
         "config_info": "Don't edit config here!",
         "description": "API for ONKYO Devices",
-        "devices": {},
-        "devices_active": {},
-        "devices_count": 0
+        "devices": {
+            "default": {
+                "Description": "ONKYO AV-Receiver",
+                "IPAddress": "192.168.1.102",
+                "Methods": [
+                    "send",
+                    "query"
+                ],
+                "MultiDevice": false,
+                "PowerDevice": "TAPO-P100_default",
+                "Timeout": 5
+            }
+
+        },
+        "devices_active": {
+            "default": false
+        },
+        "devices_count": 1
     },
     "KODI": {
         "active": false,
         "config_file": "devices/KODI/00_interface.json",
         "config_info": "Don't edit config here!",
         "description": "API for KODI Servers (basic functionality, under development)",
-        "devices": {},
-        "devices_active": {},
-        "devices_count": 0
+        "devices": {
+            "default": {
+                "Description": "Media Center",
+                "IPAddress": "192.168.1.103",
+                "Methods": [
+                    "send",
+                    "query"
+                ],
+                "Port": "8080",
+                "PowerDevice": "TAPO-P100_default",
+                "Timeout": 5
+            }
+
+        },
+        "devices_active": {
+            "default": false
+        },
+        "devices_count": 1
     },
     "MAGIC-HOME": {
         "active": false,
         "config_file": "devices/MAGIC-HOME/00_interface.json",
         "config_info": "Don't edit config here!",
         "description": "API for LED compatible to Magic Home App",
-        "devices": {},
-        "devices_active": {},
-        "devices_count": 0
+        "devices": {
+            "default": {
+                "Description": "Magic Home LED",
+                "DeviceType": 1,
+                "IPAddress": "192.168.1.104",
+                "Methods": [
+                    "send",
+                    "query"
+                ],
+                "Timeout": 4
+            }
+        },
+        "devices_active": {
+            "default": false
+        },
+        "devices_count": 1
     },
     "SONY": {
         "active": false,
         "config_file": "devices/SONY/00_interface.json",
         "config_info": "Don't edit config here!",
         "description": "API for SONY Devices",
-        "devices": {},
-        "devices_active": {},
-        "devices_count": 0
+        "devices": {
+            "default": {
+                "Description": "Sony BD-Player",
+                "IPAddress": "192.168.1.105",
+                "Methods": [
+                    "send",
+                    "query"
+                ],
+                "MultiDevice": false,
+                "PowerDevice": "TAPO-P100_default",
+                "Timeout": 5
+            }
+        },
+        "devices_active": {
+            "default": false
+        },
+        "devices_count": 1
     },
     "TAPO-P100": {
         "active": false,
         "config_file": "devices/TAPO-P100/00_interface.json",
         "config_info": "Don't edit config here!",
         "description": "PyP100 API for SmartPlugs Tapo P100",
-        "devices": {},
-        "devices_active": {},
-        "devices_count": 0
+        "devices": {
+            "default": {
+                "Description": "SmartPlug 01",
+                "IPAddress": "192.168.1.106",
+                "Methods": [
+                    "send",
+                    "query"
+                ],
+                "MultiDevice": false,
+                "TapoPwd": "your-password",
+                "TapoUser": "your@email.address",
+                "Timeout": 5
+            }
+        },
+        "devices_active": {
+            "default": false
+        },
+        "devices_count": 1
     },
     "TEST": {
         "active": true,
@@ -80,8 +196,45 @@
         "config_file": "devices/ZIGBEE2MQTT/00_interface.json",
         "config_info": "Don't edit config here!",
         "description": "ZigBee2MQTT interfaces",
-        "devices": {},
-        "devices_active": {},
-        "devices_count": 0
+        "devices": {
+            "default-device": {
+                "AdminURL": "http://192.168.1.108:8181/",
+                "Description": "ZigBee2MQTT Device (installed somewhere else reachable via network)",
+                "IPAddress": "192.168.1.108",
+                "MacAddress": "",
+                "Methods": [
+                    "send",
+                    "query"
+                ],
+                "MqttPassword": "",
+                "MqttUser": "",
+                "MultiDevice": true,
+                "Port": 1883,
+                "PowerDevice": "",
+                "Timeout": 5,
+                "USBDongle": ""
+            },
+            "default-server": {
+                "AdminURL": "http://192.168.1.109:8181/",
+                "Description": "ZigBee2MQTT Server (installed on the same server as jc://remote/ using a ZigBee USB-Dongle)",
+                "IPAddress": "192.168.1.109",
+                "MacAddress": "",
+                "Methods": [
+                    "send",
+                    "query"
+                ],
+                "MqttPassword": "",
+                "MqttUser": "",
+                "Port": 1883,
+                "PowerDevice": "",
+                "Timeout": 5,
+                "USBDongle": "/dev/ttyACM0"
+            }
+        },
+        "devices_active": {
+            "default-device": false,
+            "default-server": false
+        },
+        "devices_count": 2
     }
 }

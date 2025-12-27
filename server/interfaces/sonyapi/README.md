@@ -29,7 +29,7 @@
 ## Usage of API Commands
 
 The API commands are defined in two files. The definition of default commands for all DENON devices are defined in the file [data/devices/SONY/00_default.json](../../../data/_sample/devices/SONY/00_default.json).
-Commands for specific devices are defined in device configs such as the file [bluray_sony-bdp-s4500.json](../../../data/_sample/devices/SONY/bluray_sony-bdp-s4500.json)
+Commands for specific devices are defined in device configs such as the file [cfg-bluray_sony-bdp-s4500.json](../../../data/_sample/devices/SONY/bluray_sony-bdp-s4500.json)
 for the SONY BDP S4500. The following example shows the structure of the default and device specific configuration. 
 
  ```json
@@ -66,14 +66,14 @@ for the SONY BDP S4500. The following example shows the structure of the default
 * to connect buttons directly to an icon, name them as shown in the "Settings > Information > Image buttons" or defined 
   in the related [config file](../../../data/buttons/default/index.json).
 * use **commands** defined here such as the following examples 
-  (see [API documentation](https://github.com/alexmohr/sonyapilib) and [sample](../../../data/_sample/devices/SONY/bluray_sony-bdp-s4500.json) for details):
+  (see [API documentation](https://github.com/alexmohr/sonyapilib) and [sample](../../../data/_sample/devices/SONY/cfg-bluray_sony-bdp-s4500.json) for details):
   * Pause
   * Play
   * TopMenu
   * ZoomIn
   * ...
 * use **actions** defined such as the following example 
-  (see [API documentation](https://github.com/alexmohr/sonyapilib) and [sample](../../../data/_sample/devices/SONY/bluray_sony-bdp-s4500.json) for details):
+  (see [API documentation](https://github.com/alexmohr/sonyapilib) and [sample](../../../data/_sample/devices/SONY/cfg-bluray_sony-bdp-s4500.json) for details):
   * SOAP=GetMediaInfo::PlayMedium
   * SOAP=GetPositionInfo::AbsTime
   * ...
