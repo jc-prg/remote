@@ -316,8 +316,6 @@ class APIaddOn(RemoteDefaultClass):
         else:
             return ["error", "API " + self.api.api_name + " not connected."]
 
-    # -------------------------------------------
-
     def metadata(self, tags=""):
         """
         Return metadata ... combined values

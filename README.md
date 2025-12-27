@@ -58,7 +58,7 @@ Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 * RGB+CCT light templates
 * improved layout for editing of remotes, and improved JSON editing
 * improved setting section and API configuration via app, incl. device discovery for EISCP-ONKYO, KODI, and BROADLINK
-* improved adaptive layout plus additional icons and scene headers
+* improved adaptive remote layout, e.g., button grid, scaling text in buttons, additional icons and scene headers
 * improved error messages for device and scene status
 
 **Note:** The data structure changed: recreate configuration files by coping them from the 
