@@ -36,6 +36,10 @@
     - Save the remote control
     - press onto the blue red bordered buttons to start recording a command from the original remote control
 
+**Hint:**
+- to connect buttons directly to an icon, name them as shown in the "Settings > Information > Image buttons" or defined 
+  in the related [config file](../../../data/buttons/default/index.json).
+
 ## Additional jc://remote/ API Commands
 
 This device has no REST API that can be use to request information and there are no jc://remote/ API commands defined at the moment.

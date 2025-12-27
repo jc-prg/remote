@@ -79,6 +79,8 @@ for the DENON AVR X2800H DAB. The following example shows the structure of the d
   * tuning=up
   * audio-muting={DATA} ... _if you want to send data_
   * ...
+* to connect buttons directly to an icon, name them as shown in the "Settings > Information > Image buttons" or defined 
+  in the related [config file](../../../data/buttons/default/index.json).
   
 ## Additional jc://remote/ API Commands
 
