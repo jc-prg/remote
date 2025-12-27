@@ -1,13 +1,17 @@
 {
-    "data": {
+  "data": {
 	"description": "API to connect to IR devices (no default commands)",
 	"buttons"    : {},
 	"commands"   : {
 	   "power" : { 
 	       "type" : "enum",
-	       "values" : [ "ON", "OFF" ]
-	       }
+	       "values" : [ "ON ", "OFF" ]
+	       },
+      "api-discovery": {
+           "get": "api-discovery"
+           }
 	   },
 	"method"     : "record"
-   }
+  },
+  "information": "This file defines default buttons and commands that are valid for all connected devices."
 }

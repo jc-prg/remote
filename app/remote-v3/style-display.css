@@ -1,42 +1,63 @@
 /* display information within the remote control */
 
 .display {
-   width           :  48%;
-   margin          :   1%;
-   height          :  40px;
-   color           : yellow;
-   padding         :   2px;
-   font-size       :   9px;
-   border-radius   :   6px; 
-   background-color: #000044;
-   overflow        : hidden;
-   float           : left;
-   display         : inline-block;
-   vertical-align  : top;
+    min-width       : 0;
+    min-height      : 0;
+    border-radius   : 6px;
+    border          : solid 0.5px var(--rm-color-display-default-border);
+    background-color: var(--rm-color-display-default);
+    color           : var(--rm-color-display-default-text);
+    font-size       : var(--rm-size-remote-display-text);
+    overflow        : visible;
+    position        : relative;
+    display         : inline-block;
+    vertical-align  : top;
+    opacity         : var(--rm-opacity-display-var);
 }
 
 .display.right  { float  : right; }
 .display.edit   { opacity: 1; }
 
-.display.small  { width  : 48%;   height  :  40px; }
-.display.middle { width  : 48%;   height  :  88px; }
-.display.big    { width  : 98%;   height  :  88px; }
+.display        { width: auto; height: auto; margin : 0; }
+.display.small  { grid-column: span 2; grid-row: span 1; aspect-ratio: 4 / 1; }
+.display.middle { grid-column: span 2; grid-row: span 2; aspect-ratio: 4 / 2; }
+.display.big    { grid-column: span 4; grid-row: span 4; aspect-ratio: 4 / 2; }
 
-.display.h1w4   { width  : 98%;   height  :  40px; }
-.display.h1w2   { width  : 48%;   height  :  40px; }
-.display.h2w2   { width  : 48%;   height  :  88px; }
-.display.h2w3   { width  : 72%;   height  :  88px; }
-.display.h2w4   { width  : 98%;   height  :  88px; }
-.display.h3w2   { width  : 48%;   height  :  136px; }
-.display.h4w2   { width  : 48%;   height  :  184px; }
+.display.h1w2 { grid-row: span 1; grid-column: span 2; aspect-ratio: 4 / 1; }
+.display.h1w4 { grid-row: span 1; grid-column: span 4; aspect-ratio: 8 / 1; }
+.display.h2w2 { grid-row: span 2; grid-column: span 2; aspect-ratio: 4 / 2; }
+.display.h2w3 { grid-row: span 2; grid-column: span 3; aspect-ratio: 6 / 2; }
+.display.h2w4 { grid-row: span 2; grid-column: span 4; aspect-ratio: 8 / 2; }
+.display.h3w2 { grid-row: span 3; grid-column: span 2; }
+.display.h4w2 { grid-row: span 4; grid-column: span 2; aspect-ratio: 4 / 4; }
+.display.h4w4 { grid-row: span 4; grid-column: span 4; aspect-ratio: 4 / 2; }
+
+.display-content {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    overflow : hidden;
+    display: flex;         /* so children don't overflow */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
 .display-element {
-   width	: 56px;
-   margin	: 2px;
-   padding	: 0px;
-   float	: left;
-   color	: white;
-   text-align   : left;
+    width: 56px;
+    min-height: 0;
+    min-width: 0;
+
+    margin	: 1%;
+    padding	: 0;
+    padding-left: 5px;
+    float	: left;
+    color	: var(--rm-color-display-element);
+    text-align: left;
+    overflow: hidden;
 }
 
 .display-element.alert   { color : black; }
@@ -45,8 +66,10 @@
 .display-element.big     { width : 48%; }
 
 .display-element.h1w4    { width : 48%; }
-.display-element.h2w4    { width : 48%; }
+.display-element.h1w2    { width : 98%; }
+.display-element.h2w2    { width : 98%; }
 .display-element.h2w3    { width : 98%; }
+.display-element.h2w4    { width : 48%; }
 .display-element.h3w2    { width : 98%; }
 .display-element.h4w2    { width : 98%; }
 
@@ -74,8 +97,8 @@
    width        : 62%;
    max-width    : 62%;
 
-   white-space: nowrap;
-   overflow: hidden;
+   white-space  : nowrap;
+   overflow     : hidden;
    text-overflow: ellipsis;
 }
 
@@ -85,15 +108,18 @@
 }
 
 .display.display_off {
-   background	: #000033;
+   opacity      : 50%;
+   background   : var(--rm-color-display-off);
+   color        : var(--rm-color-display-off-text);
 }
 
 .display.display_error {
-   background	: #660000;
+   background   : var(--rm-color-display-error);
+   color        : var(--rm-color-display-error-text);
 }
 
 .display.display_manual {
-   background	: #222244;
-   color	: lightgray;
+   background   : var(--rm-color-display-manual);
+   color        : var(--rm-color-display-manual-text);
 }
 

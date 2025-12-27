@@ -2,26 +2,29 @@
 // config menu and main functions
 //--------------------------------
 
-var app_frame_count   = 5;
-var app_frame_style   = "remote";
-var app_setting_count = 6;
-var app_setting_style = "setting_bg";
-var app_last_load     = 0;
-var app_title         = "jc://remote/";
-var app_version       = "v2.9.8";
-var app_api_dir       = "api/";
-var app_api_status    = "list";
+var app_frame_count             = 5;
+var app_frame_style             = "remote";
+var app_setting_count           = 6;
+var app_setting_style           = "setting_bg";
+var app_setting_style_header    = "setting_bg header";
 
-var app_loading_image   = "";
-var app_status_commands = "";
-var appAutoLoad         = false;
+var app_last_load               = 0;
+var app_title                   = "jc://remote/";
+var app_version                 = "v3.0.18";
+var app_api_dir                 = "api/";
+var app_api_status              = "list";
+
+var app_loading_image           = "";
+var app_status_commands         = "";
+var appAutoLoad                 = false;
+
 
 //--------------------------------	
 // create menu entries
 //--------------------------------
 
 function app_menu_entries() {
-	var app_menu = [];
+	let app_menu = [];
 	return app_menu;
 	}
 
@@ -68,16 +71,16 @@ function app_force_reload(data) {
 //--------------------------------
 
 function app_initialize(data) {
-	}
+    }
 
 //--------------------------------
 // add code when theme changed
 //--------------------------------
 
 function app_theme_changed(theme) {
-	if (theme == "dark") {
+	if (theme === "dark") {
 		color_button_inactive 	= "#111111";
-		//colors_power["ERROR"]	= "lightpink";		
+		//colors_power["ERROR"]	= "lightpink";
 		}
 	else {
 		color_button_inactive 	= "#666666";
@@ -86,11 +89,13 @@ function app_theme_changed(theme) {
 
 //--------------------------------
 
-var app_connection_error = true;
+let app_connection_error = true;
+
 function app_connection_lost(error=false) {
-    if (app_connection_error != error) {
+    if (app_connection_error !== error) {
         if (error) {
             // code if lost connection
+            statusCheck_offline(dataAll);
         }
         else {
             // code if got back connection
@@ -98,6 +103,28 @@ function app_connection_lost(error=false) {
     }
     app_connection_error = error;
 }
+
+//--------------------------------
+// function to configure setting entries
+//--------------------------------
+
+function app_setting_entries() {
+    // add your setting entries here
+    // appSettings.add_entry(id, title, icon, call_function, show_header=true);
+    // leave 'icon' empty to work just with text
+    // leave 'call_function' empty to create an information tile that's not clickable
+
+    appSettings.icon_dir = "";
+
+    //appSettings.add_entry("INTRO",  appTitle,           "icon/remote_ctrl",          "");
+    appSettings.add_entry("SETTINGS_DEVICES",  lang("SETTINGS_DEVICES"), "icon/remote_ctrl",   "rm3settings.create('edit_devices');");
+    appSettings.add_entry("SETTINGS_SCENES",   lang("SETTINGS_SCENES"), "icon/cinema",    "rm3settings.create('edit_scenes');");
+    appSettings.add_entry("SETTINGS_TIMER",    lang("SETTINGS_TIMER"), "icon/timer",      "rm3settings.create('edit_timer');");
+    appSettings.add_entry("INFORMATION",       lang("INFORMATION"), "icon/info2",         "rm3settings.create('info');");
+    appSettings.add_entry("SETTINGS_API",      lang("INFORMATION"), "icon/plug2",         "rm3settings.create('edit_interfaces');");
+    appSettings.add_entry("SETTINGS_GENERAL",  lang("INFORMATION"), "icon/settings2",     "rm3settings.create('general');");
+    }
+
 
 //----------------------------------
 // Theme detection and color settings
@@ -107,22 +134,17 @@ function app_connection_lost(error=false) {
 var colors                  = [ "red", "green", "darkgreen", "blue", "darkblue" ];
 var colors_dev              = [];
 var color_api_connect       = "lightgreen";
-var color_api_no_connect    = "";
+var color_api_no_connect    = "white";
 var color_api_warning       = "yellow";
 var color_api_error         = "#FF6666";
 var color_button_inactive 	= "#666666";
 var colors_power            = {
-				"ON"        : "darkgreen",
-				"OFF"       : "darkred",
-				"OTHER"	    : "darkcyan",
-				"ERROR"	    : "blueviolet",
+				"ON"        : "var(--rm-color-signal-power-on)",
+				"OFF"       : "var(--rm-color-signal-power-off)",
+				"OTHER"	    : "var(--rm-color-signal-power-other)",
+				"PARTLY"    : "var(--rm-color-signal-power-other)",
+				"ERROR"	    : "var(--rm-color-signal-power-error)",
 				}
-var function_colors         = {
-                "ON"        : "#33FF33",
-                "OFF"       : "FF3333",
-                "ERROR"     : "FF3333",
-                "VALUE"     : "#66FFFF"
-                }
 
 var sign_ok       = "&#10003;";       // &#9745;
 var sign_error    = "&#10008;";       // &#9746;

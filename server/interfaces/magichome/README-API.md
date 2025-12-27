@@ -1,4 +1,5 @@
 # MagicHome-Python API
+
 MagicHome Wifi protocol for Python.
 
 This utility was designed for use with devices compatible with the MagicHome Wifi app.

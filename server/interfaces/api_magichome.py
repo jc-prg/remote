@@ -1,16 +1,10 @@
-# -----------------------------------
-# API integration for jc://remote/ MAGIC HOME
-# -----------------------------------
-# (c) Christoph Kloth
-# -----------------------------------
-
 import logging
 import time
-import modules.rm3json as rm3json
-import modules.rm3presets as rm3config
-import modules.rm3ping as rm3ping
-from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
-import interfaces.magichome.magichome as mh_device
+import server.modules.rm3json as rm3json
+import server.modules.rm3presets as rm3config
+import server.modules.rm3ping as rm3ping
+from server.modules.rm3classes import RemoteDefaultClass, RemoteApiClass
+import server.interfaces.magichome.magichome as mh_device
 
 # ######## to be solved:
 #  Error during requesting data: [Errno 9] Bad file descriptor
@@ -33,7 +27,7 @@ class ApiControl(RemoteApiClass):
         Initialize API / check connect to device
         """
         self.api_description = "API for LED via Magic Home"
-        RemoteApiClass.__init__(self, "api.MAGIC", api_name, "query",
+        RemoteApiClass.__init__(self, "api-MAGIC", api_name, "query",
                                 self.api_description, device, device_config, log_command, config)
 
         self.power_status = "STARTING"
@@ -235,7 +229,7 @@ class APIaddOn(RemoteDefaultClass):
 
     def __init__(self, api, logger):
         self.api_description = "API-Addon for LED via Magic Home"
-        RemoteDefaultClass.__init__(self, "api.MAGIC", self.api_description)
+        RemoteDefaultClass.__init__(self, "api-MAGIC", self.api_description)
 
         self.addon = "jc://addon/magic-home/"
         self.api = api

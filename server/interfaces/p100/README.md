@@ -4,6 +4,27 @@
 
 * Python sources: https://github.com/fishbigger/TapoP100
 
+## How to install a TAPO P100 device
+
+1. Prepare the TAPO P100 device
+    - Connect the TAPO P100 device to your Wi-Fi network using its default app
+    - Register / set username and password
+    - Ensure on your router that your DENON AVR device keeps the same IPv4 address everytime.
+2. Add Controller to configuration
+    - Restart the jc://remote/ server to trigger a device discovery immediately
+    - Navigate in the app to "Settings > API Settings > API: TAPO-100"
+    - Ensure the related toggle is activated
+    - Press "Add" to open the dialog, here you should find your TAPO-100 device in the list, if not check your router for the IP address
+    - When added change _TapoPwd_ and _TapoUser_ in the API device configuration
+3. _Optional:_ Alternatively you can create an API config file using the app
+    - save the config file as 00_interface.json in the folder [data/devices/TAPO-100/00_interface.json](../../../data/_sample/devices/TAPO-P100/00_interface.json) 
+      and restart the server
+4. _Optional:_ To make changes at the configuration of your broadlink device: 
+    - Option 1: change settings using the app in "Settings > API Settings > API: TAPO-100" and reconnect. 
+      Hint: there you only can change the configuration but not add another device.
+    - Option 2: edit directly the file [data/devices/TAPO-100/00_interface.json](../../../data/_sample/devices/TAPO-P100/00_interface.json) and restart the server when done.
+
+
 ## jc://remote/ API Commands
 
 The TAPO P100 API commands can't be used directly. Use the following jc://remote/ API commands instead:

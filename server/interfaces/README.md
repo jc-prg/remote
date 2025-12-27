@@ -16,16 +16,15 @@ The following interfaces are integrated at the moment.
 
 ## Definitions
 
-* **Remote** - Remote control for a single device
+* **Device** - Remote control for an end device such as receiver, bluray player, smart sockets, light bulbs
 * **Scene** - Remote control to control a set of devices
-* **Device** - End device to be control such as receiver, bluray player, smart sockets, light bulbs
-* **API** - Interface to control one or more API Devices
+* **API** - Interface to control one or more API Devices (part of the server)
 * **API-Device** - Device that controls the end devices which can be the end devices itself or hub devices the control several end devices (like the [BROADLINK](broadlink/README.md) device)
 
-## How to integrate new interfaces
+## How to integrate a new completely API
 
 * Find Python sources for the device API you want to integrate
-* Create a subdirectory for your new API connector using small letters and/or "_"
+* Create a subdirectory in the python interface directory [server/interfaces](./interfaces) for your new API connector using small letters and/or "_"
 * Copy sources to a subdirectory here or just add a README.md to describe your API implementation if the sources are available via 'pip3 install'
 * Create a copy of the sample API connector [api_sample.py](api_sample.py) and name it "api_<short-api-name>.py"
 * If you use new external sources in this API connector, add them to the docker requirements in both files [container/requirements.txt](../../config/container/requirements.txt) and
@@ -38,24 +37,18 @@ The following interfaces are integrated at the moment.
 ## How to create the configuration files
 
 * create a directory (capital letters) for your device in the directory [/data/devices/](../../data/devices/)
-* create the file **00_default.json** in this directory that defines commands for all devices controlled by this API using the following format :
+ 
+### API-Device integration and configuration
 
-```json
-{
-  "data": {
-    "description" : "",
-    "method" : "query",
-    "buttons" : {
-      "name": "api_command"
-      },
-    "commands" : {
-      "name": "api_command"
-      }
-  }
-}
-```
+* For all already implemented APIs new API devices can be added in the app in the "Settings > API Settings". 
+  The APIs Broadlink and Eiscp-Onkyo are supporting a discovery of related devices in the local network. For the others
+  config files in the right format will be created that can be adapted to the specific device needs.
 
-* create the file **00_interface.json** in this directory that defines the connection to the devices controlled by this API (the content of the device definition might be different depending on the API, i.e., it might contain username and password):
+* For completely new APIs create the file **00_interface.json** in this directory that defines the connection to the 
+  API-devices controlled by this API in the following format.
+  * The content of the device definition might be different depending on the API, i.e., it might contain username and password.
+  * There are multi device API-devices that are used to control several devices (such as ZigBee Hubs or Broadlink RM4).
+  * Other devices are connected directly to the API such as ONKYO or SONY devices.
 
 ```json
 {
@@ -64,22 +57,104 @@ The following interfaces are integrated at the moment.
   "API-Source": "https://put-url-here/",
   "API-Devices" : {
     "device01" : {
+      "AdminURL": "http://192.168.1.10:8081/",
+      "Description" : "API Device 01",
       "IPAddress": "192.168.1.10",
-      "Port": "8080",
-      "Timeout": 5,
+      "MACAddress": "AA:BB:CC:DD:EE:FF",
       "Methods": ["send","query"],
-      "Description" : ""
+      "MultiDevice": true,
+      "Port": "8080",
+      "PowerDevice": "TAPO-P100_plug02",
+      "Timeout": 5
       },
     "device02" : {
+      "AdminURL": "http://192.168.1.11:8081/",
+      "Description": "API Device 02",
       "IPAddress": "192.168.1.11",
-      "Port": "8080",
-      "Timeout": 5,
+      "MACAddress": "AA:BB:CC:DD:EE:00",
       "Methods": ["send","query"],
-      "Description": ""
+      "MultiDevice": true,
+      "Port": "8080",
+      "PowerDevice": "",
+      "Timeout": 5
       }
     }
 }
 ```
+
+### Add API devices to the configuration
+
+* Add API devices using the API Settings in the app: select the API and look for your device. The server will scan the network defined
+  in [.env](../../sample.env) as "REMOTE_LOCAL_NETWORK" for devices. If available it uses the discovery mechanism of the API.
+
+
+### Default commands for all devices
+
+* create the file **00_default.json** in this directory that defines commands that are valid for all devices controlled by this API using the following format:
+```json
+{
+  "data": {
+    "description" : "name or description of device or interface",
+    "method" : "query",
+    "buttons" : {
+      "btn-name-1": "api_command",
+      "btn-name-2": "api_command"
+    },
+    "commands" : {
+      "cmd-name-3": {
+        "get": "api_command",
+        "set": "api_command",
+        "type": "datatype (integer,boolean,...)",
+        "param": [],
+        "values": []
+      },
+      "cmd-name-4": {
+        "get": "api_command",
+        "set": "api_command",
+        "type": "datatype (integer,boolean,...)",
+        "param": [],
+        "values": []
+      },
+      "cmd-name-5": {
+        "get": "api_command",
+        "set": "api_command",
+        "type": "datatype (integer,boolean,...)",
+        "param": [],
+        "values": []
+      }
+    },
+    "query" : {
+      "load_interval": { "5": ["cmd-name-3", "cmd-name-4"] }, 
+      "load_default": 60,
+      "load_after": ["btn-name-1","cmd-name-3"],
+      "load_after_commands": ["cmd-name-3","cmd-name-4"],
+      "load_never": [],
+      "load_only": ["cmd-name-1","cmd-name-2","cmd-name-3","cmd-name-4"]
+    }
+  }
+}
+```
+**Hints:** 
+* key values never should use "_", use "-" instead.
+* to use the volume functionality in the app, use "volume" and "mute" as keys for the related commands
+* to connect buttons directly to an icon, name them as shown in the "Settings > Information > Image buttons" or defined 
+  in the related [config file](../../../data/buttons/default/index.json).
+* In the **query** section you can set the following:
+  * _load_interval_: load specific commands in a defined interval, e.g., "cmd_name_3" and "cmd_name_4" every 5 seconds (values from "commands")
+  * _load_default_: load all commands at this default interval (integer)
+  * _load_after_: after this commands load the values defined in _load_after_values_ in addition to the defined intervals (values from "commands" and "buttons")
+  * _load_after_values_: defines values that will be loaded when _load_after_ (values from "commands")
+  * _load_never_: not implemented yet
+  * _load_only_: not implemented yet
+
+### Device specific configurations
+
+* Create a JSON file with device specific buttons and commands using the same format as **00_default.json**, 
+  the device specific definition is added to the default configuration or overwrites where things are defined in both files.
+* For ZigBee devices this file can be generated automatically in the API Settings of the app. 
+  Open 'API: ZIGBEE2MQTT' and the desired API-Device, navigate to the sheet "API create config".
+
+
 
 --------
 

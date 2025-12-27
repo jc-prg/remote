@@ -2,7 +2,7 @@
 .hidden_entry_edit	{ color	: blue; }
 
 @media (prefers-color-scheme: dark) {
-  .entry_error		{ color	: #ff3333; }
+  .entry_error		    { color	: #ff3333; }
   .hidden_entry_edit	{ color	: yellow; }
   }
 
@@ -21,7 +21,7 @@
 }
 
 nav-title {
-    width       : 50%;
+    width           : 50%;
     max-width       : 50%;
 }
 

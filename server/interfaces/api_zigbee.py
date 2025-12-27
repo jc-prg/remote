@@ -1,10 +1,13 @@
 import os.path
 import time
 import json
-import modules.rm3json as rm3json
-import modules.rm3presets as rm3config
-import modules.rm3ping as rm3ping
-from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
+
+from flask import template_rendered
+
+import server.modules.rm3json as rm3json
+import server.modules.rm3presets as rm3config
+import server.modules.rm3ping as rm3ping
+from server.modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 import paho.mqtt.client as mqtt
 
 shorten_info_to = rm3config.shorten_info_to
@@ -26,7 +29,7 @@ class ApiControl(RemoteApiClass):
             device_config = {}
 
         self.api_description = "API Zigbee2MQTT"
-        RemoteApiClass.__init__(self, "api.zigbee", api_name, "query",
+        RemoteApiClass.__init__(self, "api-zigbee", api_name, "query",
                                 self.api_description, device, device_config, log_command, config)
 
         self.config_add_key("USBDongle", "")
@@ -44,12 +47,14 @@ class ApiControl(RemoteApiClass):
         self.mqtt_device_id = {}
         self.mqtt_device_availability = {}
         self.mqtt_device_availability_subscribed = []
+
         self.connect_config = {
             "FIRST_RECONNECT_DELAY": 1,
             "RECONNECT_RATE": 2,
             "MAX_RECONNECT_COUNT": 12,
             "MAX_RECONNECT_DELAY": 60
             }
+        self.not_available = [];
 
     def _on_connect(self, client, userdata, flags, rc, properties):
         """
@@ -57,11 +62,15 @@ class ApiControl(RemoteApiClass):
         """
         self.logging.debug("on_connect: flags= " + str(flags) + "; userdata=" + str(userdata) + "; rc=" + str(rc))
         if rc == 0:
-            self.logging.info("Connected " + self.api_name + ".")
+            if self.api_config["USBDongle"] != "":
+                self.logging.info("Connected " + self.api_config["USBDongle"] + " - " + self.api_name)
+            else:
+                self.logging.info("Connected " + self.api_config["IPAddress"] + " - " + self.api_name)
+
             self.status = "Connected"
         else:
-            self.logging.error("Could not connect to ZigBee broker (" + self.api_config["IPAddress"] +
-                               "), return code: " + str(rc))
+            self.logging.warning("Could not connect to ZigBee broker (" + self.api_config["IPAddress"] +
+                                 "), return code: " + str(rc))
             self.status = "ERROR: Could not connect, return code=" + str(rc)
 
     def _on_connect_fail(self, client_id):
@@ -125,6 +134,7 @@ class ApiControl(RemoteApiClass):
         self.status = "Starting ..."
         self.count_error = 0
         self.count_success = 0
+        self.not_available = []
 
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
@@ -259,6 +269,8 @@ class ApiControl(RemoteApiClass):
                 return "ERROR: " + device_file + " exists but is not accessible due to permissions."
             except Exception as e:
                 return "ERROR: An error occurred: " + str(e)
+        else:
+            self.logging.debug("No USBDongle defined, try to connect with external server.")
 
         return "OK"
 
@@ -306,6 +318,215 @@ class ApiControl(RemoteApiClass):
         permit new images to join for 2 min (120s)
         """
         self.execute_request("bridge/request/permit_join", "{\"value\": true, \"time\": 120}")
+
+    def device_info(self, device_id=""):
+        """
+        Topic: zigbee2mqtt/bridge/request/device/info
+        Payload: {"id": "<device_friendly_name>"}
+        """
+        device_infos = self.config.read(rm3config.commands + self.api_name + "/10_devices")
+        if device_id != "" and device_id in device_infos:
+            return device_infos[device_id]
+        else:
+            return device_infos
+
+    def device_features(self, device_information):
+        """
+        extract exposed features from 10_devices.json format
+        """
+        result = {
+            "ieee_address": device_information["ieee_address"],
+            "friendly_name": device_information["friendly_name"],
+            "description": device_information["definition"]["description"],
+            "model_id": device_information["model_id"],
+            "manufacturer": device_information["manufacturer"],
+            "features": {},
+            "options": [],
+            "endpoints": []
+        }
+        access = {
+            "1": ["get"],
+            "2": ["set"],
+            "3": ["get","set"],
+            "4": ["notify"],
+            "5": ["get","notify"],
+            "7": ["get","set","notify"]
+        }
+
+        endpoints = device_information["endpoints"]
+        features = device_information["definition"]["exposes"]
+        options = device_information["definition"]["options"]
+
+        for key in endpoints:
+            result["endpoints"].append(key)
+
+        for entry in options:
+            result["options"].append(entry["property"])
+
+        for entry in features:
+            if "property" in entry:
+                key = entry["property"]
+                value = {}
+                for key2 in ["access","label","description","type"]:
+                    if key2 in entry:
+                        if key2 == "access":
+                            value[key2] = access[str(entry[key2])]
+                        else:
+                            value[key2] = entry[key2]
+                result["features"][key] = value
+            elif "features" in entry:
+                subentries = entry["features"]
+                for subentry in subentries:
+                    key = subentry["property"]
+                    value = {}
+                    for key2 in ["label", "description", "type"]:
+                        if key2 in entry:
+                            value[key2] = subentry[key2]
+                    result["features"][key] = value
+
+        return result
+
+    def device_configuration_command(self, cmd_information):
+        """
+        create command entry
+        """
+        result = {
+            "cmd": [],
+            "description": "",
+            "type": ""
+        }
+        access = {
+            "1": ["get"],
+            "2": ["set"],
+            "3": ["get","set"],
+            "4": ["notify"],
+            "5": ["get","notify"],
+            "7": ["get","set","notify"]
+        }
+        if "access" in cmd_information:
+            result["cmd"] = access[str(cmd_information["access"])]
+        for key in ["unit", "type", "description", "values"]:
+            if key in cmd_information:
+                result[key] = cmd_information[key]
+        if "get" in result["cmd"]:
+            result["get"] = "get=" + cmd_information["property"]
+        if "set" in result["cmd"]:
+            result["set"] = "set={'" + cmd_information["property"] + "': '{DATA}'}"
+        if "value_min" and "value_max" in cmd_information:
+            result["values"] = { "min": cmd_information["value_min"], "max": cmd_information["value_max"] }
+        if "value_on" and "value_off" in cmd_information:
+            result["values"] = [cmd_information["value_on"], cmd_information["value_off"]]
+            if "value_toggle" in cmd_information:
+                result["values"].append(cmd_information["value_toggle"])
+
+        return result
+
+    def device_configuration_button(self, cmd_information):
+        """
+        create command entry
+        """
+        result = {}
+        button_result = {}
+        access = {
+            "1": ["get"],
+            "2": ["set"],
+            "3": ["get","set"],
+            "4": ["notify"],
+            "5": ["get","notify"],
+            "7": ["get","set","notify"]
+        }
+        if "access" in cmd_information:
+            result["cmd"] = access[str(cmd_information["access"])]
+        for key in ["values"]:
+            if key in cmd_information:
+                result[key] = cmd_information[key]
+        if "value_on" and "value_off" in cmd_information:
+            result["values"] = [cmd_information["value_on"], cmd_information["value_off"]]
+            if "value_toggle" in cmd_information:
+                result["values"].append(cmd_information["value_toggle"])
+
+        if "set" in result["cmd"] and "values" in result and len(result["values"]) > 0:
+            for value in result["values"]:
+                if type(value) is bool:
+                    if value:
+                        key = cmd_information["property"].lower() + "-true"
+                        key = key.replace("_","-")
+                        if key.startswith("state-"):
+                            key = key.replace("state-","")
+                        value = "set={'"+cmd_information["property"]+"': true}"
+                    else:
+                        key = cmd_information["property"].lower() + "-false"
+                        key = key.replace("_","-")
+                        if key.startswith("state-"):
+                            key = key.replace("state-","")
+                        value = "set={'"+cmd_information["property"]+"': false}"
+                else:
+                    key = cmd_information["property"].lower() + "-" + str(value).lower()
+                    key = key.replace("_","-")
+                    if key.startswith("state-"):
+                        key = key.replace("state-", "")
+                    value = "set={'"+cmd_information["property"]+"': '"+value+"'}"
+                button_result[key] = value
+
+        return button_result
+
+    def device_configuration(self, device_information):
+        """
+        extract exposed features from 10_devices.json format
+        """
+        result = {
+            "data": {
+                "buttons": {},
+                "commands": {},
+                "query": {
+                    "load_intervals": {},
+                    "load_default": 60,
+                    "load_after": [],
+                    "load_after_values": [],
+                    "load_only": [],
+                    "load_never": []
+                },
+                "details": {
+                    "description": device_information["definition"]["description"],
+                    "model_id": device_information["model_id"],
+                    "manufacturer": device_information["manufacturer"],
+                    "ieee_address": device_information["ieee_address"],
+                    "friendly_name": device_information["friendly_name"],
+                    "type": device_information["type"],
+                }
+            },
+            "info": "jc://remote/ device configuration for '" + device_information["definition"]["description"] + "' (" +
+                    device_information["manufacturer"] + " / " + device_information["model_id"] + ")",
+        }
+        features = device_information["definition"]["exposes"]
+
+        for entry in features:
+            if "property" in entry:
+                key = entry["property"]
+                cmd_value = self.device_configuration_command(entry)
+                btn_value = self.device_configuration_button(entry)
+                my_key = key.replace("_","-")
+                result["data"]["commands"][my_key] = cmd_value
+                for btn_key in btn_value:
+                    result["data"]["buttons"][btn_key] = btn_value[btn_key]
+            elif "features" in entry:
+                subentries = entry["features"]
+                for subentry in subentries:
+                    key = subentry["property"]
+                    cmd_value = self.device_configuration_command(subentry)
+                    btn_value = self.device_configuration_button(subentry)
+                    my_key = key.replace("_", "-")
+                    result["data"]["commands"][my_key] = cmd_value
+                    for btn_key in btn_value:
+                        result["data"]["buttons"][btn_key] = btn_value[btn_key]
+
+        important_commands = []
+        for key in result["data"]["commands"]:
+            if (key.startswith("state") or key.startswith("linkquality")) and "get" in result["data"]["commands"][key]["cmd"]:
+                important_commands.append(key)
+        result["data"]["query"]["load_intervals"]["10"] = important_commands
+
+        return result
 
     def wait_if_working(self):
         """Some devices run into problems, if send several requests at the same time"""
@@ -418,7 +639,9 @@ class ApiControl(RemoteApiClass):
         elif device_id in self.mqtt_device_id:
             friendly_name = device_id
         else:
-            self.logging.error("ERROR: No data for device '" + device_id + "' available.")
+            if device_id not in self.not_available:
+                self.logging.error("ERROR: No data for device '" + device_id + "' available (no further info for this device till reconnect).")
+                self.not_available.append(device_id)
             self.working = False
             return "N/A"
 
@@ -437,6 +660,23 @@ class ApiControl(RemoteApiClass):
 
                 if "availability" in command:
                     result = self.mqtt_device_availability[friendly_name]
+
+                if "device-info" in command:
+                    result = self.device_info(friendly_name)
+
+                if "device-features" in command:
+                    result = self.device_info(friendly_name)
+                    if "friendly_name" in result:
+                        result = self.device_features(result)
+                    else:
+                        result = {"error": "Device '" + friendly_name + "' not yet found in the configuration."}
+
+                if "device-configuration" in command:
+                    result = self.device_info(friendly_name)
+                    if "friendly_name" in result:
+                        result = self.device_configuration(result)
+                    else:
+                        result = {"error": "Device '" + friendly_name + "' not yet found in the configuration."}
 
                 if friendly_name in self.mqtt_devices_status and command_value in self.mqtt_devices_status[friendly_name]:
                     result = self.mqtt_devices_status[friendly_name][command_value]

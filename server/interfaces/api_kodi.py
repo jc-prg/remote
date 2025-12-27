@@ -1,9 +1,10 @@
 import time
-import modules.rm3json as rm3json
-import modules.rm3presets as rm3config
-import modules.rm3ping as rm3ping
-from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
-from interfaces.kodi import Kodi
+import requests
+import server.modules.rm3json as rm3json
+import server.modules.rm3presets as rm3config
+import server.modules.rm3ping as rm3ping
+from server.modules.rm3classes import RemoteDefaultClass, RemoteApiClass
+from server.interfaces.kodi import Kodi
 
 shorten_info_to = rm3config.shorten_info_to
 rm3config.api_modules.append("KODI")
@@ -20,9 +21,16 @@ class ApiControl(RemoteApiClass):
         Initialize API / check connect to device
         """
         self.api_description = "API for KODI Servers"
-        RemoteApiClass.__init__(self, "api.KODI", api_name, "query",
+        RemoteApiClass.__init__(self, "api-KODI", api_name, "query",
                                 self.api_description, device, device_config, log_command, config)
         self.api_url = ""
+        self.check_ports = ["8080"]
+        self.api_discovery = {}
+
+        self.api_device_config_default["API-Description"] = self.api_description
+        self.api_device_config_default["API-Info"] = "https://github.com/jc-prg/remote/blob/master/server/interfaces/kodi/README.md"
+        self.api_device_config_default["API-Source"] = "https://github.com/jcsaaddupuy/python-kodijson"
+
 
     def connect(self):
         """
@@ -61,7 +69,10 @@ class ApiControl(RemoteApiClass):
             self.logging.warning(self.status)
 
         if self.status == "Connected":
-            self.logging.info("Connected KODI (" + self.api_config["IPAddress"] + ")")
+            #self.discover()
+            self.logging.info(f"Connected {self.api_config["IPAddress"]} - {self.api_name}:{self.api_device}")
+
+        return self.status
 
     def wait_if_working(self):
         """
@@ -125,7 +136,10 @@ class ApiControl(RemoteApiClass):
         self.last_action = time.time()
         self.last_action_cmd = "QUERY: " + device + "/" + command
 
-        if "||" in command:
+        if command == "api-discovery":
+            self.working = False
+            return self.api_discovery
+        elif "||" in command:
             command_param = command.split("||")
         else:
             command_param = [command]
@@ -168,6 +182,57 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return result_param
 
+    def discover(self):
+        """
+        check list of locally discovered devices if it's a cody server (on its default port)
+        """
+        result = self.api_device_config_default
+        count = 0
+        for device in self.detected_devices:
+            for port in self.check_ports:
+                kodi_server = self.discover_ip(device["ip"], port)
+                if kodi_server != {}:
+                    config = self.api_config_default.copy()
+                    config["Description"] = kodi_server["name"] + " " + kodi_server["version"]
+                    config["IPAddress"] = kodi_server["ip"]
+                    config["MultiDevice"] = False
+                    config["MACAddress"] = device["mac"]
+                    config["Methods"] = ["send", "query"]
+                    count += 1
+                    identifier = "KODI_" + str(count)
+                    result["API-Devices"][identifier] = config
+
+        self.api_discovery = result.copy()
+        self.logging.info("__DISCOVER: " + self.api_name + " - " + str(len(self.api_discovery["API-Devices"])) + " devices")
+        self.logging.debug("            " + self.api_name + " - " + str(self.api_discovery))
+        return self.api_discovery.copy()
+
+    def discover_ip(self, ip, port):
+        """
+        check a specific IP address, if it's a KODI server
+        """
+        url = f"http://{ip}:{port}/jsonrpc"
+        kodi_server = {}
+
+        try:
+            test_kodi = Kodi(url)
+            version = test_kodi.Application.GetProperties({'properties': ['version']})['result']['version']
+            version_str = str(version['major']) + "." + str(version['minor']) + " " + str(version['tag'])
+
+            product = "KODI"
+            self.logging.debug(f"Discover KODI: {ip}:{port} is running {product} v{version_str}")
+
+            kodi_server = {
+                "ip": ip,
+                "name": product,
+                "version": f"{version_str}"
+            }
+
+        except Exception as e:
+            self.logging.debug(f"Discover KODI: {ip}:{port} is not a Kodi server or could not connect.")
+
+        return kodi_server
+
     def test(self):
         """
         Test device by sending a couple of commands
@@ -194,7 +259,7 @@ class APIaddOn(RemoteDefaultClass):
     def __init__(self, api):
 
         self.api_description = "API-Addon for KODI Servers"
-        RemoteDefaultClass.__init__(self, "api.KODI", self.api_description)
+        RemoteDefaultClass.__init__(self, "api-KODI", self.api_description)
 
         self.status = None
         self.not_connected = None

@@ -1,10 +1,12 @@
+import sys
 import time
 import os
-import modules.rm3presets as rm3presets
-import modules.rm3json as rm3json
-from modules.rm3classes import RemoteThreadingClass
+import signal
+import server.modules.rm3presets as rm3presets
+import server.modules.rm3json as rm3json
+from server.modules.rm3classes import RemoteThreadingClass
 from pathlib import Path
-
+from datetime import datetime, timezone, timedelta
 
 class ConfigInterfaces(RemoteThreadingClass):
     """
@@ -35,7 +37,7 @@ class ConfigInterfaces(RemoteThreadingClass):
 
             self.thread_wait()
 
-        self.logging.info("Exiting " + self.name)
+        self.logging.info("Stopped " + self.name)
 
     def stop(self):
         """
@@ -83,6 +85,11 @@ class ConfigCache(RemoteThreadingClass):
         self.write_cache = False
         self.thread_priority(4)
 
+        self.shutdown_request = False
+        self.load_after_update = {}
+        self.load_after = {}
+        self.config_errors = {}
+
     def run(self):
         """
         loop running in the background
@@ -112,9 +119,12 @@ class ConfigCache(RemoteThreadingClass):
             if self.cache_update:
                 self.cache_refill_from_files()
 
+            # check if shutdown is requested ...
+            self.check_shutdown()
+
             self.thread_wait()
 
-        self.logging.info("Exiting " + self.name)
+        self.logging.info("Stopped " + self.name)
 
     def user_action(self):
         """
@@ -152,10 +162,10 @@ class ConfigCache(RemoteThreadingClass):
         check = self.read(rm3presets.active_apis)
         if "ERROR" in check:
             self.logging.warning("Error while reading MAIN CONFIG FILES:")
-            self.logging.warning(
-                " - " + rm3presets.data_dir + "/" + rm3presets.active_apis + ".json: " + check["ERROR"])
+            self.logging.warning(" - " + rm3presets.data_dir + "/" + rm3presets.active_apis + ".json: " + check["ERROR"])
 
         if error_msg != {}:
+            print("\nFATAL ERROR while reading MAIN CONFIG FILES! See logfile for details.\n")
             self.logging.error("Error while reading MAIN CONFIG FILES:")
             for key in error_msg:
                 self.logging.error(" - " + rm3presets.data_dir + "/" + key + ".json: " + str(error_msg[key]))
@@ -477,7 +487,7 @@ class ConfigCache(RemoteThreadingClass):
 
     def interfaces_identify(self):
         """
-        Identify existing interfaces
+        Identify existing interfaces and create / recreate _ACTIVE-APIS.json
 
         Returns:
             dict: interface configuration
@@ -506,7 +516,7 @@ class ConfigCache(RemoteThreadingClass):
                 interface_config[key] = {
                     "active":           True,
                     "config_file":      str(interface_config_dir) + ".json",
-                    "config_info":      "Don't edit config here!",
+                    "config_info":      "Don't edit config here, this is just temporary!",
                     "devices":          {},
                     "devices_active":   {},
                     "devices_count":    0
@@ -613,3 +623,115 @@ class ConfigCache(RemoteThreadingClass):
         self.interface_configuration = interface_config.copy()
         return "OK"
 
+    def interface_device_add(self, interface, api_device, api_data):
+        """
+        add an API device to the API configuration
+
+        Args:
+            interface (str): API type
+            api_device (str): API device id
+            api_data (object): API device definition
+        Returns:
+            str: 'OK' or 'ERROR'
+        """
+        interface_config_dir = os.path.join(rm3presets.commands, interface, "00_interface")
+        config_file = os.path.join(rm3presets.data_dir, interface_config_dir + ".json")
+
+        if not os.path.exists(config_file):
+            self.logging.error("Configuration file for API doesn't exist: " + config_file)
+            return "ERROR"
+
+        elif "IPAddress" in api_data and "Description" in api_data:
+            configuration = self.read(interface_config_dir, True)
+            if not "API-Devices" in configuration:
+                self.logging.error("Configuration file doesn't fit the requirements: " + config_file)
+                return "ERROR"
+
+            self.logging.debug("Add configuration to API configuration " + config_file)
+            if api_device not in configuration["API-Devices"]:
+                configuration["API-Devices"][api_device] = api_data.copy()
+            else:
+                counter = 1
+                device = api_device
+                while api_device in configuration["API-Devices"]:
+                    api_device = f"{device}-{counter:02d}"
+                    counter += 1
+
+                configuration["API-Devices"][api_device] = api_data
+
+            self.write(interface_config_dir, configuration)
+
+        else:
+            self.logging.error("Configuration doesn't fit the requirements: " + str(api_data))
+            return "ERROR"
+
+        self.interfaces_identify()
+        return "OK"
+
+    def interface_device_delete(self, interface, api_device):
+        """
+        remote API device from configuration and reload all
+
+        Args:
+            interface (str): API type
+            api_device (str): API device id
+        Returns:
+            str: 'OK' or 'ERROR'
+        """
+        interface_config_dir = os.path.join(rm3presets.commands, interface, "00_interface")
+        config_file = os.path.join(rm3presets.data_dir, interface_config_dir + ".json")
+
+        if not os.path.exists(config_file):
+            self.logging.error("Configuration file for API doesn't exist: " + config_file)
+            return "ERROR"
+
+        configuration = self.read(interface_config_dir, True)
+        if not "API-Devices" in configuration:
+            self.logging.error("Configuration file for API doesn't fit required format: " + config_file)
+            return "ERROR"
+        elif not api_device in configuration["API-Devices"]:
+            self.logging.error("API device "+api_device+" not found in configuration file for API: " + config_file)
+            return "ERROR"
+        else:
+            del configuration["API-Devices"][api_device]
+            self.write(interface_config_dir, configuration)
+
+        self.interfaces_identify()
+        return "OK"
+
+    def local_time(self, day="today"):
+        """
+        return time that includes the current timezone (day="today")
+        other values: yesterday,
+
+        Returns:
+            datetime: local time for the current timezone
+        """
+        if rm3presets.timezone_offset == 0:
+            date_tz_info = datetime.now()
+        else:
+            date_tz_info = datetime.now(timezone(timedelta(hours=rm3presets.timezone_offset)))
+
+        self.logging.debug("Local time: " + str(date_tz_info))
+        return date_tz_info
+
+
+    def local_date(self, days=0):
+        """
+        get current date in format YYYYMMDD with an offset of days (1 = yesterday, 2 = 2 days ago, ...)
+
+        Returns:
+            str: date in format YYYYMMDD
+        """
+        today = datetime.now()
+        target_date = today - timedelta(days=days)
+        self.logging.debug("Target date: " + str(target_date))
+        return target_date.strftime('%Y%m%d')
+
+    def check_shutdown(self):
+        """
+        shutdown server
+        """
+        if self.shutdown_request:
+            self.logging.info("Shutdown request via API ...")
+            os.kill(os.getpid(), signal.SIGTERM)

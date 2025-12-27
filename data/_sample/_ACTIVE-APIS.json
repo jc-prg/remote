@@ -1,0 +1,87 @@
+{
+    "BROADLINK": {
+        "active": false,
+        "config_file": "devices/BROADLINK/00_interface.json",
+        "config_info": "Don't edit config here!",
+        "description": "Infrared Broadlink RM-Controller",
+        "devices": {},
+        "devices_active": {},
+        "devices_count": 0
+    },
+    "EISCP-ONKYO": {
+        "active": false,
+        "config_file": "devices/EISCP-ONKYO/00_interface.json",
+        "config_info": "Don't edit config here!",
+        "description": "API for ONKYO Devices",
+        "devices": {},
+        "devices_active": {},
+        "devices_count": 0
+    },
+    "KODI": {
+        "active": false,
+        "config_file": "devices/KODI/00_interface.json",
+        "config_info": "Don't edit config here!",
+        "description": "API for KODI Servers (basic functionality, under development)",
+        "devices": {},
+        "devices_active": {},
+        "devices_count": 0
+    },
+    "MAGIC-HOME": {
+        "active": false,
+        "config_file": "devices/MAGIC-HOME/00_interface.json",
+        "config_info": "Don't edit config here!",
+        "description": "API for LED compatible to Magic Home App",
+        "devices": {},
+        "devices_active": {},
+        "devices_count": 0
+    },
+    "SONY": {
+        "active": false,
+        "config_file": "devices/SONY/00_interface.json",
+        "config_info": "Don't edit config here!",
+        "description": "API for SONY Devices",
+        "devices": {},
+        "devices_active": {},
+        "devices_count": 0
+    },
+    "TAPO-P100": {
+        "active": false,
+        "config_file": "devices/TAPO-P100/00_interface.json",
+        "config_info": "Don't edit config here!",
+        "description": "PyP100 API for SmartPlugs Tapo P100",
+        "devices": {},
+        "devices_active": {},
+        "devices_count": 0
+    },
+    "TEST": {
+        "active": true,
+        "config_file": "devices/TEST/00_interface.json",
+        "config_info": "Don't edit config here!",
+        "description": "Test interface for automated tests",
+        "devices": {
+            "default": {
+                "Description": "Test device",
+                "IPAddress": "127.0.0.1",
+                "MacAddress": "",
+                "Methods": [
+                    "send",
+                    "query"
+                ],
+                "Timeout": 5
+            }
+        },
+        "devices_active": {
+            "default": true
+        },
+        "devices_count": 1
+    },
+    "ZIGBEE2MQTT": {
+        "active": true,
+        "config_file": "devices/ZIGBEE2MQTT/00_interface.json",
+        "config_info": "Don't edit config here!",
+        "description": "ZigBee2MQTT interfaces",
+        "devices": {},
+        "devices_active": {},
+        "devices_count": 0
+    }
+}

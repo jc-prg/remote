@@ -1,11 +1,18 @@
 {
-    "data": {
+  "data": {
 	"description" : "API to SONY devices",
 	"method" : "query",
 	"buttons" : {
        	},
 	"commands" : {
        	},
+    "query" : {
+      "load_intervals" : {
+        "10": ["power"]
+      },
+      "load_default" : 30,
+      "load_after" : ["power"]
+      },
 	"display" : {
        	}
    }

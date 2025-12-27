@@ -77,6 +77,96 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
 
+  /log_queue/:
+    get:
+      operationId: __main__.remoteAPI.get_queue_log
+      tags:
+        - queue log
+      summary: returns a logging of api requests
+      description: returns a logging of api requests handled using the que
+      responses:
+        200:
+          description: Successfully status data
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
+  /shutdown/:
+    get:
+      operationId: __main__.remoteAPI.shutdown
+      tags:
+        - status
+      summary: shutdown the server
+      description: shutdown the server
+      responses:
+        200:
+          description: Successfully requested shutdown
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
+  /edit_api_device/{api}/:
+    put:
+      operationId: __main__.remoteAPI.edit_api_add
+      tags:
+        - edit
+      summary: add api device
+      description: add api device
+      parameters:
+        - name: api
+          in: path
+          type: string
+          required: true
+        - name: api_data
+          in: body
+          schema:
+            type: object
+          required: true
+      responses:
+        200:
+          description: Successfully added api device
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
+    delete:
+      operationId: __main__.remoteAPI.edit_api_delete
+      tags:
+        - edit
+      summary: add api device
+      description: add api device
+      parameters:
+        - name: api
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully added api device
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
   /config/device/{device}/:
     get:
       operationId: __main__.remoteAPI.get_config_device
@@ -239,6 +329,34 @@ paths:
   /send-api/{device}/:
     post:
       operationId: __main__.remoteAPI.send_api
+      tags:
+        - send
+      summary: send API request for a specific command
+      description: send API request for a specific command and return answer given by the device
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: command
+          in: body
+          schema:
+            type:
+              string
+          required: true
+      responses:
+        200:
+          description: Successfully send API request
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+
+  /send-api-external/{device}/:
+    post:
+      operationId: __main__.remoteAPI.send_api_external
       tags:
         - send
       summary: send API request for a specific command
@@ -807,6 +925,35 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS_SYSTEM"
                 
+
+  /device-api-settings/{device}/:
+    post:
+      operationId: __main__.remoteAPI.edit_device_api_settings
+      tags:
+        - edit
+      summary: edit device api settings
+      description: edit device data in database
+      parameters:
+        - name: device
+          in: path
+          type: string
+          required: true
+        - name: info
+          in: body
+          description: parameters of device api settings that can be edited
+          schema:
+            type: object
+      responses:
+        200:
+          description: Successfully edited device
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS_SYSTEM"
 
   /template/{device}/{template}/:
     put:

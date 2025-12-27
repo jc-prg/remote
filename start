@@ -1,17 +1,21 @@
 #!/bin/bash
 
-source .env
+GREEN="\033[0;32m"
+RED="\033[0;31m"
+NC="\033[0m" # no color
+LINE="-----------------------------------------"
 
-external="$EXTERNAL_DRIVE"
-mountpoint="$EXTERNAL_MOUNT"
-config=$1
 user=`whoami`
 branch=`git rev-parse --abbrev-ref HEAD`
+config=$1
+initial_start=0
+
+source .env
 
 echo
-echo "-------------------------------------"
+echo $LINE
 echo " Start jc://remote/$REMOTE_CURRENT_STAGE/"
-echo "-------------------------------------"
+echo $LINE
 
 if [ $user != "root" ]; then
   echo
@@ -20,37 +24,135 @@ if [ $user != "root" ]; then
   exit 0
 fi
 
+# CHECK IF .env FILE EXIST OR CREATE ONE
+
+if [ -e ".env" ]; then
+    :
+else
+  echo
+  echo "Configuration file '.env' does not exist yet."
+  echo "Create a copy from the file 'sample.env' and adapt it to your needs.'"
+  echo "Do you want to create and edit the this file now [y|n]?"
+  while : ; do
+    read -n 1 k <& 1
+    if [[ $k = y ]] ; then
+      cp sample.env .env && sed -i "s|^REMOTE_DIR=.*|REMOTE_DIR=\"$(pwd)\"|" .env
+      nano .env
+      initial_start=1
+      break
+    elif [[ $k = n ]] ; then
+      echo
+      exit 0
+    else
+      echo
+      echo " -> Press 'y' to create a file or 'n' to exit now: "
+    fi
+  done
+fi
+
+source .env
+
+# SHOW DOCKER-CONTAINER STATUS
+
+if [[ $ZIGBEE2MQTT_START = "YES" ]]; then
+  CONTAINERS=(
+    $REMOTE_DOCKER_SERVER
+    $REMOTE_DOCKER_CLIENT
+    mqtt4zigbee
+    zigbee2mqtt
+  )
+else
+  CONTAINERS=(
+    $REMOTE_DOCKER_SERVER
+    $REMOTE_DOCKER_CLIENT
+  )
+fi
+
+
+for CONTAINER in "${CONTAINERS[@]}"; do
+  CID=$(docker ps --filter "name=^/${CONTAINER}$" --format "{{.ID}}")
+
+  if [[ -n "$CID" ]]; then
+    STARTED_AT_RAW=$(docker inspect -f '{{.State.StartedAt}}' "$CID")
+    STARTED_TS=$(date -d "$STARTED_AT_RAW" +%s)
+    STARTED_FMT=$(date -d "$STARTED_AT_RAW" "+%Y-%m-%d %H:%M:%S")
+
+    echo -e " ${GREEN}Running${NC}: ${CONTAINER}  (id = ${CID}, started @ ${STARTED_FMT})"
+  else
+    echo -e " ${RED}Offline${NC}: ${CONTAINER} "
+  fi
+done
+if [[ $ZIGBEE2MQTT_START = "NO" ]]; then
+  echo -e " ${RED}Offline${NC}: ZigBee container inactive (edit .env to activate)"
+fi
+echo
+
+# CHECK IF GIT SUBMODULES ARE INSTALLED
+
+external="$EXTERNAL_DRIVE"
+mountpoint="$EXTERNAL_MOUNT"
+
+if [ -e "$REMOTE_DIR/app/modules/jc-app" ] && [ -e "$REMOTE_DIR/app/framework/app-fw" ]; then
+  :
+else
+  echo
+  echo "Required submodules not installed yet."
+  echo "Do you want to do this now [y|n]?"
+  while : ; do
+    read -n 1 k <& 1
+    if [[ $k = y ]] ; then
+      sudo git submodule update --init --recursive
+      break
+    elif [[ $k = n ]] ; then
+      echo
+      exit 0
+    else
+      echo
+      echo " -> Press 'y' to create a file or 'n' to exit now: "
+    fi
+  done
+fi
+
+# CHECK IF DOCKER-COMPOSE EXISTS
+
 if test -f "$DOCKERCOMPOSE_DIR/docker-compose"; then
   :
 else
+  echo
   echo "Check the location of your docker-compose file in the configuration!"
   echo "The file/path '$DOCKERCOMPOSE_DIR/docker-compose' doesn't exist. "
   echo
   exit 0
 fi
 
+# START MENU WITH AVAILABLE START OPTIONS
 
 if [ ! $config ]; then
   echo
-  echo "Press key - your options:"
-  echo " 'q' - exit"
+  echo "Start menu (press key):"
+  echo $LINE
   echo " 's' - start"
   echo " 'r' - restart"
+  echo " 'l' - logfile"
   echo " 'x' - stop"
-  echo " 'i' - install sample configuration"
+  echo $LINE
+  #echo " 'i' - install sample configuration"
+  echo " 'i' - start with messages (not as daemon)"
   echo " 'u' - update from github (branch:$branch)"
   echo " 'v' - update from github (branch:$branch) and rebuild container"
   echo " 'c' - clean docker (stopped container / dangling images)"
   echo " 'd' - clean docker (system incl. build cache)"
+  echo $LINE
+  echo " 'q' - quit"
   count=0
   while : ; do
     read -n 1 k <&1
     if [[ $k = q ]] ; then
-       printf "\n... quitting the program.\n"
+       printf "\n... quitting start script.\n"
        exit 0
     elif [[ $k = s ]] ; then
        config="start"
-       printf "\n... starting (via docker-compose).\n"
+       printf "\n... starting (via docker-compose up -d).\n"
        break
     elif [[ $k = r ]] ; then
        config="restart"
@@ -64,9 +166,13 @@ if [ ! $config ]; then
        config="update"
        printf "\n... update from Github.\n"
        break
-    elif [[ $k = i ]] ; then
+    elif [[ $k = u ]] ; then
        config="install"
        printf "\n... install sample configuration.\n"
+       break
+    elif [[ $k = i ]] ; then
+       config="start_visible"
+       printf "\n... starting (via docker-compose up -d).\n"
        break
     elif [[ $k = v ]] ; then
        config="rebuild"
@@ -79,6 +185,10 @@ if [ ! $config ]; then
     elif [[ $k = d ]] ; then
        config="prune2"
        printf "\n... cleanup docker system.\n"
+       break
+    elif [[ $k = l ]] ; then
+       config="watchlog"
+       printf "\n... watch logfile.\n"
        break
     else
        ((count=$count+1))
@@ -93,14 +203,21 @@ echo ""
 if [ $config == "start" ]; then
     $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml up -d
 
-    if [ $ZIGBEE2MQTT_START == "YES" ]; then
+    if [ $ZIGBEE2MQTT_START = "YES" ]; then
       $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml up -d
     fi
+
+elif [ $config == "start_visible" ]; then
+    if [ $ZIGBEE2MQTT_START = "YES" ]; then
+      $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml up -d
+    fi
+
+    $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml up
 
 elif [ $config == "restart" ]; then
     $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml restart
 
-    if [ $ZIGBEE2MQTT_START == "YES" ]; then
+    if [ $ZIGBEE2MQTT_START = "YES" ]; then
       $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml restart
     fi
 
@@ -109,7 +226,7 @@ elif [ $config == "install" ]; then
     ./install-config
     cd ../..
 
-elif [ $config == "stop" ]; then
+elif [ $config = "stop" ]; then
 
     echo "Stop docker container:"
     $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml stop
@@ -185,6 +302,10 @@ elif [ $config == "prune" ]; then
 elif [ $config == "prune2" ]; then
 
    docker system prune
+
+elif [ $config == "watchlog" ]; then
+
+   ./watch_log
 
 else
     echo "not found."

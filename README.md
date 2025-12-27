@@ -1,6 +1,6 @@
-s# jc://remote/
+# jc://remote/
 
-With this software you can control several **home media devices** via Infrared and API with an app on your smartphone.
+With this software you can control several **home media devices** via Infrared and API with a web-app, e.g., on your smartphone.
 It requires a small server such as a Raspberry Pi and can control the hardware listed below. 
 You can define remote controls for devices and create scenes that use those commands from 
 those devices or macros to combine several commands on a single button. 
@@ -18,12 +18,13 @@ There are a few templates available to be used and modified.
 - [Disclaimer](#disclaimer)
 
 
-## Currently Supported Interfaces
+## Currently Supported Devices
 
-1. Broadlink RM 3 Mini (Infrared receiver/sender)  ... [API Info](./server/interfaces/broadlink/README.md)
-3. SONY devices with API ... [API Info](./server/interfaces/sonyapi/README.md)
-4. KODI server  ... [API Info](./server/interfaces/kodi/README.md)
-5. Magic Home compatible LED strips  ... [API Info](./server/interfaces/magichome/README.md)
+1. Broadlink Remote Controls  ... [API Info](./server/interfaces/broadlink/README.md)
+2. KODI server  ... [API Info](./server/interfaces/kodi/README.md)
+3. Magic Home compatible LED strips  ... [API Info](./server/interfaces/magichome/README.md)
+4. ONKYO devices with API ... [API Info](./server/interfaces/eiscp/README.md)
+5. SONY devices with API ... [API Info](./server/interfaces/sonyapi/README.md)
 6. Tapo SmartPlugs P100 ... [API Info](./server/interfaces/p100/README.md)
 7. ZigBee Devices via ZigBee2MQTT API ... [API Info](./server/interfaces/zigbee/README.md)
 
@@ -50,11 +51,15 @@ Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 
 ### App v3.0 / Server v3.0 (in progress)
 
-* integration of ZigBee interface (using a Zigbee USB Dongle and ZigBee2MQTT): Smart Plug + RGB+CCT Bulb 
+* simple implementation of device groups (use buttons for all devices of a group at the same time)
+* integration of ZigBee interface (using a Zigbee USB Dongle and ZigBee2MQTT): Smart Socket + RGB+CCT Bulb + Smart Switch
 * schedule events (device commands and macros)
 * color picker for RGB, CIE_1391, brightness and color temperature
 * RGB+CCT light templates
-* improved setting section and API configuration via app
+* improved layout for editing of remotes, and improved JSON editing
+* improved setting section and API configuration via app, incl. device discovery for EISCP-ONKYO, KODI, and BROADLINK
+* improved adaptive remote layout, e.g., button grid, scaling text in buttons, additional icons and scene headers
+* improved error messages for device, scene status, config files, etc.
 
 **Note:** The data structure changed: recreate configuration files by coping them from the 
 folder [_sample/devices](data/_sample/devices) to the productive folders and adjusting them to your needs.
@@ -172,7 +177,7 @@ In order to use jc://remote/ as it is, the following software must be installed:
     $ nano .env              # modify configuration for your needs
     ```
 
-3. Install sample remote controls
+3. _Optional:_ Install sample remote controls. Alternatively jump to point (4) to create a fresh configuration and use the app settings to create your own remote controls.
 
     ```bash
     $ cd data/_sample
@@ -180,7 +185,7 @@ In order to use jc://remote/ as it is, the following software must be installed:
     $ cd ../..
     ```
 
-4. Build and start via docker-compose ..
+4. Build and start via docker-compose.
 
     ```bash
     $ docker-compose build
@@ -201,18 +206,19 @@ In order to use jc://remote/ as it is, the following software must be installed:
     $ sudo ./start update
     ```
 
-8. Additional options are available in the start script
+8. Additional options, such as live watching the logging, are available in the start script:
 
     ```bash
-    $ sudo ./start update
+    $ sudo ./start
     ```
+
 
 ## Integration of additional APIs and devices
 
 Additional APIs can be added with a little effort if an API source written in Python is available. 
-Find additional information [how to integrate APIs here](server/interfaces/README.md).
+Find here additional information [how to integrate APIs](server/interfaces/README.md).
 
 ## Disclaimer
 
-This is a private crafting project. Feel free to try out and improve ... and stay tuned.
+This is a private crafting project. Feel free to try out and improve ... and stay tuned. I'm also open for your contributions.
 

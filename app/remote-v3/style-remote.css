@@ -1,30 +1,85 @@
+/* MAIN */
+
+img        { opacity: var(--rm-opacity-image-var); transition: opacity .5s ease-in-out; }
+img:hover  { opacity: var(--rm-opacity-image-fix); }
+body       { background: var(--rm-color-body); }
+hr         { border: solid 1px var(--rm-color-hr); }
+
 /* AUDIO INFO */
 
+#audio {
+    display: block;
+    position: absolute;
+    right: 40px;
+    top: 10px;
+    height: 20px;
+    width: auto;
+}
+
 #audio1 {
-  right             : 145px;
-  background-image  : url('/icon/mute.png');
-  background-size   : 14px;
-  height            : 14px;
-  width             : 14px;
-  color             : white;
+    float : right;
+    position: unset;
+    margin: 1px 7px 1px 1px;
+    background-image  : url('/icon/mute.png');
+    background-size   : 14px;
+    height            : 14px;
+    width             : 14px;
+    color             : var(--rm-color-audio-text);
 }
 
 #audio2 {
-  right             : 145px;
-  background-image  : url('/icon/vol+.png');
-  background-size   : 14px;
-  height            : 14px;
-  width             : 14px;
-  color             : white;
+    float : right;
+    position: unset;
+    margin: 1px 7px 1px 1px;
+    background-image  : url('/icon/vol+.png');
+    background-size   : 14px;
+    height            : 14px;
+    width             : 14px;
+    color             : var(--rm-color-audio-text);
+}
+
+#audio3 {
+    margin-top: 1px;
+    float : right;
+    position: unset;
+    height            : 10px;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 #audio4 {
-  right             : 160px;
+    float : right;
+    position: unset;
+    margin: 1px 7px 1px 1px;
+    width             : 140px;
+    color             : var(--rm-color-audio-vol-text);
+    text-align        : right;
+    font-weight       : unset;
+}
+
+#edit1 {
+  position          : absolute;
+  background-size   : 14px;
   height            : 14px;
-  width             : 140px;
-  color             : gray;
-  text-align        : right;
-  font-weight       : none;
+  width             : 14px;
+  right             : 150px;
+  z-index: 100;
+}
+
+#attention {
+  position  : fixed;
+  width     : 50px;
+  left      : 20px;
+  bottom    : 20px;
+}
+
+#attention img {
+  height   : 5cqw;
+}
+
+#attention-alert {
+    overflow: auto;
+    height: 190px;
+    margin-top: 15px;
 }
 
 /* manual text */
@@ -32,6 +87,8 @@
 ul.help { 
 	margin-bottom   : 5px;
 	margin-top      : 3px;
+	color           : inherit;
+	background      : inherit;
 	}
 ul.help li { 
 	margin-left     : -15px;
@@ -50,44 +107,92 @@ ul.help ul li {
    height           : 100vh;
    width            : 100%;
    position         : fixed;
-   left             : 0px;
-   top              : 0px;
+   left             : 0;
+   top              : 0;
    z-index          : 0;
 }
 
 .app_content {
-   width            : 100%;
+   width            : calc(100% - 30px);
    position         : absolute;
-   left             : 0px;
-   top              : 0px;
+   left             : 0;
+   top              : 0;
    z-index          : 1;
    padding          : 8px;
-   margin           : 0px;
+   margin           : 0;
 }
 
+/* frames */
+
+.frame_block_nav {
+    min-height      : 100%;
+    margin          : 0;
+    padding         : 0;
+    float           : left;
+}
+
+.frame_block_content {
+    display         : flex;
+    flex-direction  : column;
+    gap             : 0;
+    min-height      : 100%;
+    margin          : 0;
+    padding         : 0;
+    float           : left;
+}
+
+#frames {
+    display         : flex;
+    flex-wrap       : wrap;
+    align-items     : flex-start;
+}
+
+
+
 /* default size for boxes and buttons = iPhone 5c */
-/* boxes for remote controlls */
+/* boxes for remote controls */
+
 
 .remote {
    position         : relative;
+   container        : inline-size;
    float            : left;
-   width            : 290px;
+   width            : var(--app-frame-width-100);
    margin           : 4px;
-   padding          : 5px;
-   border-radius	: 5px;   
-   background-color	: #dddddd;
-   opacity		    : 0.9;
+    padding         : 5px 5px 8px;
+    border-radius	: 14px;
+   background-color	: var(--rm-color-frame-remote);
+   color            : var(--rm-color-frame-remote-text);
+   opacity		    : var(--rm-opacity-frame-var);
+   border           : 0.5px solid var(--rm-color-frame-remote-border);
    font-family      : sans-serif;
    font-size        : 12px;
    z-index          : 60;
 }
 
+.setting_bg {
+   font-family      : sans-serif;
+   container        : inline-size;
+   width            : calc(100% - 18px);
+       margin           : 4px;
+   padding          : 5px;
+   float            : left;
+   border-radius    : 5px;
+   background-color : var(--rm-color-frame-setting);
+   color            : var(--rm-color-frame-setting-text);
+   opacity		    : var(--rm-opacity-frame-fix);
+   font-size        : 14px;
+}
+
+.setting_bg.wide {
+   width            : calc(100% - 18px);
+}
+
 .remote_edit {
    position         : absolute;
-   bottom           : 0px;
-   left             : 0px;
-   
-   background-color	: #eeeeee;
+   bottom           : 0;
+   left             : 0;
+   background-color	: var(--rm-color-frame-remote-edit);
    display          : none;
    width            : 99%;
    height           : 40px;
@@ -104,10 +209,24 @@ ul.help ul li {
    width		: 90%;
    height		: 20px;
    }
-   
+
+.remote-edit-button {
+    position : relative;
+    top : 3px;
+    left : 3px;
+    height : 2px;
+    opacity : 10%;
+    z-index: 200;
+}
+
+.remote-edit-button:hover {
+    opacity : 1;
+}
+
 .remote_group {
-	width           : 96%;
-	background      : gray;
+	width           : calc(100% - 16px);
+	background      : var(--rm-color-frame-group);
+	color           : var(--rm-color-frame-group-text);
 	padding         : 5px;
 	border-radius   : 5px;
 	margin          : 2px;
@@ -116,29 +235,31 @@ ul.help ul li {
 	   
 .remote_group_header {
 	width           :  100%;
-	padding         :    5px;
-	padding-top     :   10px;
-	}
+    padding         : 10px 5px 5px;
+}
 
 .remote_group_header:hover {
-
-	color           : yellow;
+	color           : var(--rm-color-frame-group-text-hover);
 	}
 
-#frame3    { z-index: 61; }
+#frame3 {
+    z-index         : 61;
+    }
 
-#reload_msg { color : gray; font-family: sans-serif; font-size: 10px;}
+#reload_msg {
+    color           : gray;
+    font-family     : sans-serif;
+    font-size       : 10px;
+    }
 
 .remote-line {
     position		: relative;
-    float		    : left;
-    width		    : 96%;
+    grid-column     : span 4;
     height		    : 15px;
-    overflow		: hidden;
-    margin-top		: 10px;
-    margin-bottom	: 6px;
-    margin-left	    : 2%;
-    margin-right	: 2%;
+    overflow		: visible;
+    margin          : 1.2cqw 2% 1cqw;
+    border-color    : var(--rm-color-frame-line);
+    color		    : var(--rm-color-frame-line-text);
     }
 	
 .remote-line-text {
@@ -146,101 +267,156 @@ ul.help ul li {
     right		    : -10px;
     top		        : -15px;
     float		    : left;
-    background-color: #dddddd;
-    color		    : #333333;
-    font-size		: 10px;
+    background-color: var(--rm-color-frame-remote);
+    color		    : var(--rm-color-frame-line-text);
+    font-size       : var(--rm-size-remote-line-text);
     clear		    : left;
     }
 
-/* setting frames */
-
-.setting_bg {
-   font-family      : sans-serif;
-   width            : 290px;
-   margin           : 4px;
-   padding          : 5px;
-   float            : left;
-   border-radius    : 5px;
-   background-color : #444444;
-   color            : white;
-   font-size        : 14px;
-   opacity          : 0.9;
+.remote-power-information {
+    padding         : 4px 10px;
+    margin-bottom   : 10px;
+    grid-column     : span 4;
+    grid-row        : span 1;
+    background      : var(--rm-color-power-information-background);
+    border          : 0.5px solid var(--rm-color-power-information-border);
+    border-radius   : 10px;
+    line-height     : 1.5;
+    color           : var(--rm-color-power-information-text);
+    font-size       : var(--rm-size-remote-header-info);
+    font-weight     : normal;
+    text-align      : left;
+    opacity         : 90%;
+    display         : none;
 }
 
-.setting_bg.wide {
-   background       : #dddddd;
-   width            : 290px;
+.remote-power-information.big {
+    color           : inherit;
+    background      : inherit;
+    border          : none;
+    font-size       : 18px;
+    display         : block;
 }
+
+.remote-power-information-image {
+    float    : left;
+    background-image  : url('/icon/info.png');
+    background-size   : contain;
+    background-repeat: no-repeat;
+    height            : 100%;
+    width             : 25px;
+    margin-right      : 10px;
+    margin-top        : 5px;
+    cursor            : zoom-in;
+}
+
+/* adaptive sizes for smart phones -> see style-screensize-big.css */
 
 /* entries for channel lists */
 
 .channel-entry {
     width           : 48%;
     margin          :  1%;
-    height          :  28px;
-    padding         :   0px;
-    color           : white;
-    font-size       : 15px;
-    border          : gray;
+    height          : auto;
+    max-height      : none;
+    overflow        : visible;
+    position        : relative;
+
+    padding         : 8px 0;
+    font-size       : var(--rm-size-remote-channel-text);
+    color           : var(--rm-color-button-channel-text);
+    border          : var(--rm-color-button-channel-border);
+    background-color: var(--rm-color-button-channel);
     border-style    : solid;
     border-width    : 1px;
     border-radius   : 6px;
-    background-color: #333333;
     }
 
 .channel-entry:hover {
-    color		: black;
-    background-color	: #dddddd;
-    box-shadow		: 0 8px 8px 0 rgba(0,0,0,0.24), 0 8px 8px 0 rgba(0,0,0,0.19);
+    color		     : var(--rm-color-button-channel-hover-text);
+    background-color : var(--rm-color-button-channel-hover);
+    box-shadow		 : var(--rm-color-button-hover-shadow);
     }
 
+.channel-entry.device_off {
+   opacity          : 60%;
+   background-color : var(--rm-color-button-device-off);
+   border           : solid 0.5px var(--rm-color-button-disabled-border);
+}
+
 #show_hide_not_used {
-	width: 17px;
-	max-width: 17px;
-	height: 17px;
+	position        : relative;
+	top             : -10px;
+	width           : 17px;
+	max-width       : 17px;
+	height          : 17px;
 
-	border: solid 1px #333333;
-	border-radius: 17px;
+    background      : var(--rm-color-button-show-unused);
+	color           : var(--rm-color-button-show-unused-text);
+	border          : solid 1px var(--rm-color-button-show-unused-border);
+	border-radius   : 17px;
 
-	background-color: #555555;
-	color: white;
+	font-weight     : bold;
+	font-size       : 14px;
 
-	position: relative;
-	top: -10px;
-
-	font-weight: bold;
-	font-size: 14px;
-
-	padding-top:-5px;
-	padding-left:5px;
+	padding-top     : -5px;
+	padding-left    : 5px;
 	
-	cursor:pointer;
-	overflow:hidden;
-	display:inline-block;
+	cursor          : pointer;
+	overflow        : hidden;
+	display         : inline-block;
 	}
 	
 .remote-keyboard {
-	position   : fixed;
-	display    : none;
-	height     : 60px;
-	width      : 100%;
-	bottom     : 0px;
-	left       : 0px;
-	background : darkgray;
-	border-top : 1px solid black;
-	padding    : 5px;
-	z-index    : 120;
+	position        : fixed;
+	display         : none;
+	height          : 60px;
+	width           : 100%;
+	bottom          : 0;
+	left            : 0;
+	background      : var(--rm-color-keyboard);
+	color           : var(--rm-color-keyboard-text);
+	border-top      : 1px solid var(--rm-color-keyboard-border);
+	padding         : 5px;
+	z-index         : 120;
 	}
 	
 .remote-edit-cmd {
-    background  : #111111;
-    color       : #ffff88;
-    padding     : 6px;
-    width       : 95%;
-    height      : 200px;
-    overflow-y  : scroll;
-    text-align  : left;
-    font-size   : 11px;
-	border      : solid 1px #222222;
-	border-radius: 5px;
+    background      : var(--rm-color-edit-cmd);
+    color           : var(--rm-color-edit-cmd-text);
+    padding         : 6px;
+    width           : 95%;
+    max-width       : 95%;
+    height          : 150px;
+    overflow-y      : scroll;
+    text-align      : left;
+    font-size       : 11px;
+	border          : solid 1px var(--rm-color-edit-cmd-border);
+	border-radius   : 5px;
 }
+.remote-edit-cmd pre {
+    max-width       : 200px;
+}
+
+.favicon {
+    max-width: 60px;
+    max-height: 60px;
+    border: 1px solid black;
+    border-radius: 8px;
+    margin: 3px;
+}
+.favicon.selected {
+    border: 3px solid #ffff44;
+    margin: 1px;
+}
+
+.slidecontainer { background: var(--rm-color-slider); }
+.slider         { border: solid 1px var(--rm-color-slider-border); }
+.slidervalue    { border: solid 1px var(--rm-color-slider-border); }
+.sliderlabel    { color: var(--rm-color-slider-text); }
+
+
+.edit-config-files {
+    color: #666666;
+}
+

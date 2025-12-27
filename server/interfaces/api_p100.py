@@ -1,8 +1,8 @@
 import time
-import modules.rm3presets as rm3config
-import modules.rm3ping as rm3ping
-from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
-import interfaces.p100.PyP100 as PyP100
+import server.modules.rm3presets as rm3config
+import server.modules.rm3ping as rm3ping
+from server.modules.rm3classes import RemoteDefaultClass, RemoteApiClass
+import server.interfaces.p100.PyP100 as PyP100
 
 
 shorten_info_to = rm3config.shorten_info_to
@@ -19,7 +19,7 @@ class ApiControl(RemoteApiClass):
         Initialize API / check connect to device
         """
         self.api_description = "API for Tapo-Link P100"
-        RemoteApiClass.__init__(self, "api.P100", api_name, "query",
+        RemoteApiClass.__init__(self, "api-P100", api_name, "query",
                                 self.api_description, device, device_config, log_command, config)
 
         self.config_add_key("TapoUser", "")
@@ -64,7 +64,9 @@ class ApiControl(RemoteApiClass):
             return self.status
 
         if self.status == "Connected":
-            self.logging.info("Connected TAPO P100 (" + self.api_config["IPAddress"] + ")")
+            self.logging.info(f"Connected {self.api_config["IPAddress"]} - {self.api_name}:{self.api_device}")
+        else:
+            self.logging.warning(f"Could not connect {self.api_config["IPAddress"]} - {self.api_name}:{self.api_device}")
 
         return self.status
 
@@ -208,7 +210,7 @@ class APIaddOn(RemoteDefaultClass):
 
     def __init__(self, api, logger):
         self.api_description = "API-Addon for Tapo-Link P100"
-        RemoteDefaultClass.__init__(self, "api.P100", self.api_description)
+        RemoteDefaultClass.__init__(self, "api-P100", self.api_description)
 
         self.addon = "jc://addon/p100/"
         self.api = api

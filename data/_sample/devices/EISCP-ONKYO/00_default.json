@@ -1,38 +1,49 @@
 {
-    "data": {
-	"buttons" : {
-        	"on"      	: "system-power=on",
-        	"off"     	: "system-power=off",
-        	"vol+"    	: "master-volume=level-up",
-        	"vol-"    	: "master-volume=level-down",
-        	"mute"    	: "audio-muting=toggle",
-        	"mute-off"	: "audio-muting=off",
-        	"mute-on"	: "audio-muting=on"
-       	},
-	"commands" : {
-       	"vol"	: { 
-       		"get"		: "master-volume=query",
-       		"set"		: "master-volume={DATA}",
-       		"type"		: "integer",
-       		"param"	: [ "level-up", "level-down" ],
-       		"values"	: { "min" : 0, "max" : 70 }
-       		},
-       	"power" : { 
-       		"get"		: "system-power=query",
-       		"set"		: "system-power={DATA}",
-       		"type"		: "enum",
-       		"param"	: [ "on", "off" ],
-       		"values"	: [ "on", "off" ]
-       		},
-       	"mute"  : {
-       		"get"		: "audio-muting=query",
-       		"set"		: "audio-muting={DATA}",
-       		"type" 	: "enum",
-       		"param"	: [ "on", "off" ],
-       		"values"	: [ "on", "off", "toggle" ]
-       		}
-       	},
-	"description" : "API to connect to several devices from ONKYO - default set vor all devices",
-        "method" : "query"
-   }
+  "data": {
+    "buttons" : {
+      "on"       : "system-power=on",
+      "off"      : "system-power=off",
+      "vol+"     : "master-volume=level-up",
+      "vol-"     : "master-volume=level-down",
+      "mute"     : "audio-muting=toggle",
+      "mute-off" : "audio-muting=off",
+      "mute-on"  : "audio-muting=on"
+      },
+    "commands" : {
+      "vol" : {
+        "get"    : "master-volume=query",
+        "set"    : "master-volume={DATA}",
+        "type"   : "integer",
+        "param"  : [ "level-up", "level-down" ],
+        "values" : { "min" : 0, "max" : 70 }
+        },
+      "power" : {
+        "get"    : "system-power=query",
+        "set"    : "system-power={DATA}",
+        "type"   : "enum",
+        "param"  : [ "on", "off" ],
+        "values" : [ "on", "off" ]
+        },
+      "mute" : {
+        "get"    : "audio-muting=query",
+        "set"    : "audio-muting={DATA}",
+        "type"   : "enum",
+        "param"  : [ "on", "off" ],
+        "values" : [ "on", "off", "toggle" ]
+        },
+    "api-discovery": {
+      "get": "api-discovery"
+      }
+    },
+    "query" : {
+      "load_intervals" : {
+        "10": ["power", "vol", "mute"]
+      },
+      "load_default" : 60,
+      "load_after" : ["on", "off", "vol", "send-vol", "mute", "mute-off", "mute-on"],
+      "load_after_values" : ["power", "vol", "mute", "current-playing"]
+      },
+    "description" : "API to connect to several devices from ONKYO - default set vor all devices",
+    "method" : "query"
+  }
 }

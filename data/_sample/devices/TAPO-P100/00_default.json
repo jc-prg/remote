@@ -1,5 +1,5 @@
 {
-    "data": {
+  "data": {
 	"description" : "PyP100 API",
 	"method" : "query",
 	"buttons" : {
@@ -8,26 +8,33 @@
 		"test": "jc.test()"
 		},
 	"commands": {
-		   "location": {
-			"get" : "jc.get_info('location')"
-			},
-		   "model": {
-			"get" : "jc.get_info('model')"
-			},
-		   "overheated": {
-			"get" : "jc.get_info('overheated')"
-			},
-		   "power": {
-			"get" : "jc.get_info('power')",
-			"type" : "enum",
-			"values" : ["ON","OFF"]
-			},
-		   "signal": {
-			"get" : "jc.get_info('signal_level')"
-			},
-		   "type": {
-			"get" : "jc.get_info('type')"
-			}
-		}
-   }
+       "location": {
+          "get" : "jc.get_info('location')"
+          },
+       "model": {
+          "get" : "jc.get_info('model')"
+          },
+       "overheated": {
+          "get" : "jc.get_info('overheated')"
+          },
+       "power": {
+          "get" : "jc.get_info('power')",
+          "type" : "enum",
+          "values" : ["ON","OFF"]
+          },
+       "signal": {
+          "get" : "jc.get_info('signal_level')"
+          },
+       "type": {
+          "get" : "jc.get_info('type')"
+          }
+       },
+    "query" : {
+        "load_intervals" : {
+          "10": ["power"]
+        },
+        "load_default" : 30,
+        "load_after" : ["on", "off"]
+        }
+    }
 }

@@ -1,11 +1,11 @@
 import time
 import codecs
 import netaddr
-import modules.rm3json as rm3json
-import modules.rm3presets as rm3config
-import modules.rm3ping as rm3ping
-from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
-import interfaces.broadlink.broadlink as broadlink
+import server.modules.rm3json as rm3json
+import server.modules.rm3presets as rm3config
+import server.modules.rm3ping as rm3ping
+from server.modules.rm3classes import RemoteDefaultClass, RemoteApiClass
+import broadlink
 
 
 shorten_info_to = rm3config.shorten_info_to
@@ -21,25 +21,33 @@ check_on_startup_commands = [
 
 class ApiControl(RemoteApiClass):
     """
-    Integration of BROADLINK API to be use by jc://remote/
+    Integration of BROADLINK API to be used by jc://remote/
     """
 
     def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
         """
         Initialize API / check connect to device
         """
-        self.api_description = "API for Infrared Broadlink RM3"
-        RemoteApiClass.__init__(self, "api.RM3", api_name, "record",
+        self.api_description = "API for Broadlink RM Controller"
+        RemoteApiClass.__init__(self, "api-BROAD", api_name, "record",
                                 self.api_description, device, device_config, log_command, config)
 
         self.config_add_key("MACAddress", "")
+        self.config_add_key("DeviceType", "")
+        self.config_add_key("Port", 80)
+        self.config_add_key("MultiDevice", True)
         self.config_set_methods(["send", "record"])
+        self.api_discovery = {}
+
+        self.api_info_url = "https://github.com/jc-prg/remote/blob/master/server/interfaces/broadlink/README.md"
+        self.api_source_url = "https://github.com/davorf/BlackBeanControl"
 
     def connect(self):
         """
         Connect / check connection
         """
         self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
+        self.last_action = time.time()
 
         connect = rm3ping.ping(self.api_config["IPAddress"])
         if not connect:
@@ -47,19 +55,36 @@ class ApiControl(RemoteApiClass):
             self.logging.warning(self.status)
             return self.status
 
+        """
+        STATUS: it works, a few things are still open
+        TODO:
+        - check how to include 2 or more RM devices (compare with TAPO) - and include into description
+            - 2 configs works, if RM3mini is disabled in the _ACTIVE-APIS.json; how to enable both?
+        """
+
         self.count_error = 0
         self.count_success = 0
 
         try:
             self.logging.debug("Configuration: " + str(self.api_config))
-            self.api = broadlink.rm((self.api_config["IPAddress"], int(self.api_config["Port"])),
-                                    netaddr.EUI(self.api_config["MACAddress"]))
-            if self.api.auth():
-                self.status = "Connected"
-            else:
-                self.status = self.not_connected + " ... CONNECT not found or no access"
+
+            mac_address = str(self.api_config["MACAddress"]).replace(":","")
+            self.api = broadlink.gendevice(
+                        dev_type=int(self.api_config["DeviceType"]),
+                        host=(self.api_config["IPAddress"], int(self.api_config["Port"])),
+                        mac=bytearray.fromhex(mac_address)
+                        )
+            self.api.auth()
+            self.status = "Connected"
+
+            #self.discover()
 
         except Exception as e:
+            if "invalid literal for int()" in str(e):
+                e = "'DeviceType' or 'Port' not defined correctly."
+            elif "non-hexadecimal number" in str(e):
+                e = "'MACAddress' not defined correctly."
+
             self.status = self.not_connected + " ... CONNECT " + str(e)
             self.logging.error(self.status)
 
@@ -73,19 +98,11 @@ class ApiControl(RemoteApiClass):
                 self.logging.error(self.status)
 
         if self.status == "Connected":
-            self.logging.info("Connected BROADLINK (" + self.api_config["IPAddress"] + ")")
+            self.logging.info(f"Connected {self.api_config["IPAddress"]} - {self.api_name}:{self.api_device}")
+        else:
+            self.logging.warning(f"Could not connect {self.api_config["IPAddress"]} - {self.api_name}:{self.api_device}")
 
         return self.status
-
-    def wait_if_working(self):
-        """
-        Some devices run into problems, if send several requests at the same time
-        """
-
-        while self.working:
-            self.logging.debug(".")
-            time.sleep(0.2)
-        return
 
     def power_status(self):
         """
@@ -126,7 +143,14 @@ class ApiControl(RemoteApiClass):
         """
         Send command to API and wait for answer
         """
-        msg = "WARN " + self.api_name + ": Not supported for this API"
+        msg = "N/A"
+        available_queries = ["api-discovery"]
+        if command in available_queries:
+            if command == "api-discovery":
+                msg = self.api_discovery
+        else:
+            msg = "WARN " + command + " for is not available for API " + self.api_name
+
         self.logging.debug(msg)
         return msg
 
@@ -140,23 +164,69 @@ class ApiControl(RemoteApiClass):
         self.last_action_cmd = "RECORD: " + device + "/" + command
 
         if self.status == "Connected":
-            if self.log_command:
-                self.logging.info("__RECORD " + device + "/" + command[:shorten_info_to] +
-                                  " ... (" + self.api_name + ")")
+            self.logging.info("__RECORD " + device + "/" + command[:shorten_info_to] +
+                              " ... (" + self.api_name + ")")
 
             code = device + "_" + command
-            self.api.enter_learning()
-            time.sleep(5)
-            LearnedCommand = self.api.check_data()
-            if LearnedCommand is None:
-                return 'ERROR: Learn Button (' + code + '): No IR command received'
-            EncodedCommand = codecs.encode(LearnedCommand, 'hex')  # python3
+            try:
+                self.api.enter_learning()
+                time.sleep(5)
+                LearnedCommand = self.api.check_data()
+                if LearnedCommand is None:
+                    self.working = False
+                    return 'ERROR: Learn Button (' + code + '): No IR command received'
+                EncodedCommand = codecs.encode(LearnedCommand, 'hex')  # python3
+            except Exception as e:
+                self.working = False
+                message = "ERROR " + self.api_name + ": Could not learn command (" + str(e) + ")"
+                if "The device storage is full" in message:
+                    message += " ... Check whether the remote control actually sent a signal and is pointing close enough to the " + self.api_name + " device."
+                return message
 
         else:
+            self.working = False
             return "ERROR " + self.api_name + ": Not connected"
 
         self.working = False
         return EncodedCommand
+
+    def discover(self):
+        """
+        check if broadlink devices are available in the network
+        """
+        devices = broadlink.discover(timeout=3)
+        device_information = {}
+        count = 0
+        for device in devices:
+            count += 1
+            dev_name = self.api_name + "_" + str(count)
+            device_information[dev_name] = {
+                "Description": device.model + " (" + device.manufacturer + ")",
+                "DeviceType": "10039",
+                "IPAddress": device.host[0],
+                "MACAddress": str(':'.join(format(x, '02x') for x in device.mac)).upper(),
+                "Methods": [ "send", "record" ],
+                "MultiDevice": True,
+                "Port": device.host[1],
+                "PowerDevice": "",
+                "Timeout": device.timeout,
+                "Status": {
+                    "Locked": device.is_locked,
+                    "Auth": device.auth()
+                }
+            }
+
+        api_config = {
+            "API-Description": self.api_description,
+            "API-Devices": device_information,
+            "API-Info": self.api_info_url,
+            "API-Source": self.api_source_url
+        }
+
+        self.api_discovery = api_config.copy()
+        self.logging.info("__DISCOVER: " + self.api_name + " - " + str(len(self.api_discovery["API-Devices"])) + " devices")
+        self.logging.debug("            " + self.api_name + " - " + str(self.api_discovery))
+        return api_config.copy()
 
     def register(self, command, pin=""):
         """

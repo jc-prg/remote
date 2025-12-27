@@ -1,8 +1,9 @@
 import time
+import re
 import logging
-import modules.rm3presets as rm3presets
-import modules.rm3json as rm3json
-from modules.rm3classes import RemoteDefaultClass, RemoteThreadingClass
+import server.modules.rm3presets as rm3presets
+import server.modules.rm3json as rm3json
+from server.modules.rm3classes import RemoteDefaultClass, RemoteThreadingClass
 
 
 class RemotesData(RemoteThreadingClass):
@@ -29,7 +30,19 @@ class RemotesData(RemoteThreadingClass):
         self.queue = queue
         self.apis = apis
         self.errors = {}
-        self.thread_priority(6)
+        self.thread_priority(2)
+        self.first_device_get_status = time.time()
+        self.get_status_last_run = {}
+        self.get_status_default = 15
+        self.query_default = {
+            "load_intervals": {},
+            "load_default": self.get_status_default,
+            "load_after": []
+        }
+        self.cache_devices = {}
+        self.cache_config = {}
+        self.cache_last = time.time()
+        self.cache_timeout = 5 * 60
 
     def run(self):
         """
@@ -51,7 +64,7 @@ class RemotesData(RemoteThreadingClass):
             else:
                 self.logging.debug("Skipping status requests due to missing user activity.")
 
-        self.logging.info("Exiting " + self.name)
+        self.logging.info("Stopped " + self.name)
 
     def api_devices_connections(self):
         """
@@ -66,6 +79,9 @@ class RemotesData(RemoteThreadingClass):
         status_devices_power = {}
         for key in self.apis.api:
             status_apis_connect[key] = self.apis.api[key].status
+
+        self.report_config_error("main", rm3presets.active_devices, status_devices)
+        self.report_config_error("main", rm3presets.active_apis, status_apis)
 
         connection = {}
         for api in status_apis:
@@ -89,17 +105,21 @@ class RemotesData(RemoteThreadingClass):
                 connection[api]["api_devices"][api_device] = api_device_infos
 
         for device in status_devices:
-            dev_api = status_devices[device]["config"]["api_key"]
-            dev_api_device = status_devices[device]["config"]["api_device"]
-            if dev_api in connection and dev_api_device in connection[dev_api]["api_devices"]:
-                connection[dev_api]["api_devices"][dev_api_device]["devices"][device] = status_devices[device]["status"]
-                key_device = dev_api + "_" + dev_api_device + "_" + device
-                key_api_device = dev_api + "_" + dev_api_device
-                if "power" in status_devices[device]["status"]:
-                    status_devices_power[key_device] = status_devices[device]["status"]["power"]
-                    if "multi_device" in connection[dev_api]["api_devices"][dev_api_device] \
-                            and connection[dev_api]["api_devices"][dev_api_device]["multi_device"] is False:
-                        status_devices_power[key_api_device] = status_devices[device]["status"]["power"]
+            if "api_key" in status_devices[device]["config"]:
+                dev_api = status_devices[device]["config"]["api_key"]
+                dev_api_device = status_devices[device]["config"]["api_device"]
+                if dev_api in connection and dev_api_device in connection[dev_api]["api_devices"]:
+                    connection[dev_api]["api_devices"][dev_api_device]["devices"][device] = status_devices[device]["status"]
+                    key_device = dev_api + "_" + dev_api_device + "_" + device
+                    key_api_device = dev_api + "_" + dev_api_device
+                    if "power" in status_devices[device]["status"]:
+                        status_devices_power[key_device] = status_devices[device]["status"]["power"]
+                        if "multi_device" in connection[dev_api]["api_devices"][dev_api_device] \
+                                and connection[dev_api]["api_devices"][dev_api_device]["multi_device"] is False:
+                            status_devices_power[key_api_device] = status_devices[device]["status"]["power"]
+            else:
+                self.logging.warning("Device has no API defined (" + device + ")")
+                self.logging.warning(device + ": " + str(status_devices[device]["config"]))
 
         for api in connection:
             for api_device in connection[api]["api_devices"]:
@@ -119,7 +139,7 @@ class RemotesData(RemoteThreadingClass):
         Return:
             dict: device configuration
         """
-        config_keys = ["buttons", "commands", "url", "method"]
+        config_keys = ["buttons", "commands", "url", "method", "query"]
         data = self.config.read_status()
         devices = self.devices_read()
         data_config = {}
@@ -142,11 +162,21 @@ class RemotesData(RemoteThreadingClass):
             interface_def_default = self.config.read(rm3presets.commands + interface + "/00_default", True)
 
             if "ERROR" in interface_def_device or "ERROR" in interface_def_default:
-                self.logging.error("Error while reading configuration for device (" + device_key + ")")
+                self.report_config_error("api_devices", interface+"/"+device_key, interface_def_device)
+                self.report_config_error("api_devices", interface+"/00_default", interface_def_default)
+
+                error_msg = f"Error while reading configuration for device: "
                 if "ERROR" in interface_def_device:
-                    self.logging.error("... " + str(interface_def_device["ERROR"]))
+                    error_msg += f" ({rm3presets.commands}{interface}/{device_key}.json - {interface_def_device["ERROR"]})"
+                    if "ERROR_MSG" in interface_def_device:
+                        error_msg += f" ({interface_def_device["ERROR_MSG"]})"
+
                 if "ERROR" in interface_def_default:
-                    self.logging.error("... " + str(interface_def_default["ERROR"]))
+                    error_msg += f" ({rm3presets.commands}{interface}/00_default.json - {interface_def_default["ERROR"]})"
+                    if "ERROR_MSG" in interface_def_default:
+                        error_msg += f" ({interface_def_default["ERROR_MSG"]})"
+
+                self.logging.error(error_msg)
 
             else:
                 data_config[device] = {}
@@ -212,6 +242,9 @@ class RemotesData(RemoteThreadingClass):
                 if "commands" in interface_def_combined:
                     data_config[device]["commands"]["definition"] = interface_def_combined["commands"].copy()
 
+                    if "volume" in data_config[device]["commands"]["definition"] and not "vol" in data_config[device]["commands"]["definition"]:
+                        data_config[device]["commands"]["definition"]["vol"] = data_config[device]["commands"]["definition"]["volume"].copy()
+
                     if more_details:
                         for key in interface_def_combined["commands"]:
                             if "get" in interface_def_combined["commands"][key]:
@@ -234,6 +267,10 @@ class RemotesData(RemoteThreadingClass):
                                 and "set" not in interface_def_combined["commands"][key]):
                             data_config[device]["commands"]["get"].append(key)
 
+                data_config[device]["commands"]["query"] = interface_def_combined.get("query", self.query_default)
+                if "load_default" not in data_config[device]["commands"]["query"] or data_config[device]["commands"]["query"]["load_default"] == -1:
+                    data_config[device]["commands"]["query"]["load_default"] = self.get_status_default
+
                 for key in data_config[device]["commands"]["definition"]:
                     if "str" not in str(type(data_config[device]["commands"]["definition"][key])):
 
@@ -241,10 +278,9 @@ class RemotesData(RemoteThreadingClass):
 
                         if "get" in data_config[device]["commands"]["definition"][key]:
                             data_config[device]["commands"]["definition"][key]["cmd"].append("get")
-                        #    del data_config[device]["commands"]["definition"][key]["get"]
+
                         if "set" in data_config[device]["commands"]["definition"][key]:
                             data_config[device]["commands"]["definition"][key]["cmd"].append("set")
-                        #    del data_config[device]["commands"]["definition"][key]["set"]
 
                 data_config[device]["url"] = interface_def_combined["url"]
 
@@ -261,6 +297,8 @@ class RemotesData(RemoteThreadingClass):
         devices = self.devices_read_config()
         devices_per_interface = {}
 
+        self.report_config_error("main", rm3presets.active_apis, status_devices)
+
         for api in status_devices:
             devices_per_interface[api] = {}
             for api_device in status_devices[api]["devices"]:
@@ -270,7 +308,11 @@ class RemotesData(RemoteThreadingClass):
             if "interface" in devices[key] and "api" in devices[key]["interface"]:
                 api_dev = devices[key]["interface"]["api"]
                 if "_" in api_dev:
-                    [api, dev] = api_dev.split("_")
+                    api_data = api_dev.split("_")
+                    if len(api_data) > 2:
+                        self.logging.error(f"Too many parts in API Device name: {api_dev}")
+                    api = api_data[0]
+                    dev = api_data[1]
                     if api not in devices_per_interface:
                         devices_per_interface[api] = {}
                     if dev not in devices_per_interface[api]:
@@ -298,6 +340,23 @@ class RemotesData(RemoteThreadingClass):
                         api_info[api + "_" + api_device].append(key)
 
         return api_info
+
+    def devices_read_api_power_devices(self, api_structure):
+        """
+        read all power devices per API
+        """
+        api_power_devices = {}
+        for api in api_structure:
+            key = rm3presets.commands + api + "/00_interface"
+            interface_info = self.config.read(key)
+            self.report_config_error("api_devices", key, interface_info)
+            for api_device in api_structure[api]:
+
+                if "API-Devices" in interface_info and api_device in interface_info["API-Devices"] and "PowerDevice" in interface_info["API-Devices"][api_device]:
+                    api_power_devices[api+"_"+api_device] = interface_info["API-Devices"][api_device]["PowerDevice"]
+                else:
+                    api_power_devices[api+"_"+api_device] = ""
+        return api_power_devices
 
     def devices_read_api_new_devices(self):
         """
@@ -337,6 +396,8 @@ class RemotesData(RemoteThreadingClass):
             self.logging.error("ERROR while requesting devices status, main config file seems to be defect!")
             return data
 
+        self.report_config_error("devices", category_fresh=True)
+
         # read data for active devices
         for device in data:
 
@@ -348,19 +409,10 @@ class RemotesData(RemoteThreadingClass):
                     interface = data[device]["config"]["api_key"]
                     remote = self.config.read(rm3presets.remotes + key_remote)  # remote layout & display
 
-                    if "devices" not in self.errors:
-                        self.errors["devices"] = {}
                     if "ERROR" in remote:
                         self.logging.error("Error reading config file '" + key_remote + "': " + remote["ERROR_MSG"])
-                        if device not in self.errors["devices"]:
-                            self.errors["devices"][device] = {}
-                        self.errors["devices"][device][rm3presets.remotes + key_remote + ".json"] = \
-                            remote["ERROR_MSG"]
+                        self.report_config_error("devices", rm3presets.remotes+key_remote, remote)
                         continue
-                    elif device in self.errors["devices"]:
-                        if device not in self.errors["devices"]:
-                            self.errors["devices"] = {}
-                        del self.errors["devices"][device]
 
                     data_temp = data[device]
                     data_temp["remote"] = remote["data"]
@@ -372,21 +424,13 @@ class RemotesData(RemoteThreadingClass):
                         interface_def_default = self.config.read(rm3presets.commands + interface + "/00_default")
 
                         if "ERROR" in interface_def_device:
-                            logging.error(
-                                "Error reading config file '" + device_key + "': " + interface_def_device["ERROR_MSG"])
-                            if device not in self.errors["devices"]:
-                                self.errors["devices"][device] = {}
-                            error_key = rm3presets.commands + interface + "/" + device_key + ".json"
-                            self.errors["devices"][device][error_key] = interface_def_device["ERROR_MSG"]
+                            self.logging.error("Error reading config file '" + device_key + "': " + interface_def_device["ERROR_MSG"])
+                            #self.report_config_error("devices", rm3presets.commands+interface+"/"+device_key, interface_def_device)
                             continue
 
                         if "ERROR" in interface_def_default:
-                            logging.error(
-                                "Error reading config file '" + device_key + "': " + interface_def_default["ERROR_MSG"])
-                            if device not in self.errors["devices"]:
-                                self.errors["devices"][device] = {}
-                            error_key = rm3presets.commands + interface + "/00_default.json"
-                            self.errors["devices"][device][error_key] = interface_def_default["ERROR_MSG"]
+                            self.logging.error("Error reading config file '" + device_key + "': " + interface_def_default["ERROR_MSG"])
+                            #self.report_config_error("devices", rm3presets.commands+interface+"/00_default", interface_def_default)
                             continue
 
                         interface_def_device = interface_def_device["data"]
@@ -431,6 +475,9 @@ class RemotesData(RemoteThreadingClass):
             status[device]["api"] = (data[device]["config"]["api_key"] + "_" +
                                      data[device]["config"]["api_device"])
 
+            if "volume" in status[device]:
+                status[device]["vol"] = status[device]["volume"]
+
             if status[device]["api"] in self.apis.api:
                 status[device]["api-status"] = self.apis.api[status[device]["api"]].status
 
@@ -474,14 +521,18 @@ class RemotesData(RemoteThreadingClass):
         Return:
             dict: device status data
         """
-        devices = self.devices_read(None, True)
-        config = self.devices_read_config()
+        queue_entries = []
 
-        # set reload status
-        if read_api:
-            self.queue.add2queue([0.5])
-            self.queue.add2queue(["START_OF_RELOAD"])
-            self.logging.info("Request device status information ...")
+        # read device config (from file or cache)
+        if self.cache_devices == {} or self.cache_last + self.cache_timeout < time.time():
+            devices = self.devices_read(None, True)
+            config = self.devices_read_config()
+            self.cache_devices = devices
+            self.cache_config = config
+            self.cache_last = time.time()
+        else:
+            devices = self.cache_devices
+            config = self.cache_config
 
         # read status of all devices
         for device in devices:
@@ -492,12 +543,10 @@ class RemotesData(RemoteThreadingClass):
             if "status" not in devices[device]:
                 devices[device]["status"] = {}
 
-            if (device in config and "interface" in config[device]
-                    and "method" in config[device]["interface"]):
+            if device in config and "interface" in config[device] and "method" in config[device]["interface"]:
 
                 interface = config[device]["interface"]["api_key"]
-                api_dev = (config[device]["interface"]["api_key"] + "_" +
-                           config[device]["interface"]["api_device"])
+                api_dev = config[device]["interface"]["api_key"] + "_" + config[device]["interface"]["api_device"]
                 method = config[device]["interface"]["method"]
 
                 # get status values from config files, if connected
@@ -511,13 +560,53 @@ class RemotesData(RemoteThreadingClass):
 
                     # request update for devices with API query
                     if method == "query" and read_api:
+                        self.logging.debug(f"devices_get_status: check device {device}")
 
-                        #self.queue.add2queue([0.1])
-                        self.queue.add2queue([[interface, device, config[device]["commands"]["get"], ""]])
+                        now = time.time()
+                        interval_default = config[device]["commands"]["query"].get("load_default", self.get_status_default)
+                        intervals = config[device]["commands"]["query"].get("load_intervals", {})
+                        cmds_all = config[device]["commands"].get("get", [])
+                        self.config.load_after[device] = config[device]["commands"]["query"].get("load_after", [])
+                        if device not in self.config.load_after_update:
+                            self.config.load_after_update[device] = False
+                        cmds_now = []
 
-        # set reload status
-        if read_api:
-            self.queue.add2queue(["END_OF_RELOAD"])
+                        # load all data after send a specific command
+                        if self.config.load_after_update[device]:
+                            self.config.load_after_update[device] = False
+                            #self.queue.add2queue([1])
+                            cmds_now = config[device]["commands"]["query"].get("load_after_values", cmds_all)
+
+                        # else load selected data based on defined intervals
+                        else:
+                            cmd_intervals = {cmd: interval_default for cmd in cmds_all}
+                            for interval, cmd_list in intervals.items():
+                                for cmd in cmd_list:
+                                    cmd_intervals[cmd] = int(interval)
+
+                            for cmd, interval in cmd_intervals.items():
+                                key = (device, cmd)
+                                if key not in self.get_status_last_run or now - self.get_status_last_run[key] >= interval:
+                                    self.logging.debug(f"devices_get_status: add2queue -> {cmd} on {device} (every {interval}s)")
+                                    cmds_now.append(cmd)
+                                    self.get_status_last_run[key] = now
+
+                        if len(cmds_now) > 0:
+                            queue_entries.append([[interface, device, cmds_now, ""]])
+
+        # add entries to queue if some in the list
+        if len(queue_entries) > 0:
+            self.logging.debug("devices_get_status: Request device status information: " + str(len(queue_entries)) + " entries ...")
+            if read_api:
+                self.queue.add2queue(["START_OF_RELOAD"])
+
+            for entry in queue_entries:
+                self.queue.add2queue(entry)
+
+            if read_api:
+                self.queue.add2queue(["END_OF_RELOAD"])
+        else:
+            self.logging.debug("devices_get_status: NO DEVICE STATUS REQUEST")
 
         # mark API update as done
         self.interfaces.cache_update_api = False
@@ -529,9 +618,8 @@ class RemotesData(RemoteThreadingClass):
         if selected is None:
             selected = []
         data = self.config.read(rm3presets.active_scenes)
-
-        if "scenes" not in self.errors:
-            self.errors["scenes"] = {}
+        self.report_config_error("main", rm3presets.active_scenes, data)
+        self.report_config_error("scenes", category_fresh=True)
 
         if remotes:
             for scene in data:
@@ -541,28 +629,27 @@ class RemotesData(RemoteThreadingClass):
                         remote_config = self.config.read(rm3presets.scenes + remote_file)
                         if "data" in remote_config:
                             data[scene]["remote"] = remote_config["data"]
+                            data[scene]["remote"]["scene_power_status"] = "N/A"
+                            if len(data[scene]["remote"]["remote"]) > 0:
+                                if data[scene]["remote"]["remote"][0] == "HEADER-IMAGE||toggle" and data[scene]["remote"]["remote"][1].startswith("TOGGLE"):
+                                    toggle = data[scene]["remote"]["remote"][1].split("||")
+                                    data[scene]["remote"]["power_status"] = toggle[1]
                         else:
-                            logging.error("Could not read remote data: " + rm3presets.scenes + remote_file)
+                            self.logging.error("Could not read remote data: " + rm3presets.scenes + remote_file)
                             data[scene]["remote_error"] = {
                                 "file": rm3presets.scenes + remote_file,
                                 "file_data": remote_config
                             }
 
                         if "ERROR" in remote_config:
-                            logging.error("Error reading config file '" + remote_file + "': " +
-                                          remote_config["ERROR_MSG"])
-                            if scene not in self.errors["scenes"]:
-                                self.errors["scenes"][scene] = {}
-                            error_key = rm3presets.scenes + remote_file + ".json"
-                            self.errors["scenes"][scene][error_key] = remote_config["ERROR_MSG"]
+                            self.logging.error("Error reading config file '" + remote_file + "': " + remote_config["ERROR_MSG"])
+                            self.report_config_error("scenes", rm3presets.scenes + remote_file, remote_config)
                             data[scene]["remote"] = "error"
 
                     except Exception as e:
                         error_msg = "Reading scene failed: " + str(scene) + " / " + str(selected) + " (" + str(e) + ")"
                         logging.error(error_msg)
-                        if scene not in self.errors["scenes"]:
-                            self.errors["scenes"][scene] = {}
-                        self.errors["scenes"][scene][rm3presets.scenes + remote_file + ".json"] = error_msg
+                        self.report_config_error("scenes", rm3presets.scenes + remote_file, {"ERROR":True, "ERROR_MSG": error_msg})
                         data[scene]["remote"] = "error"
 
                 else:
@@ -608,13 +695,15 @@ class RemotesData(RemoteThreadingClass):
         read config data for macros
         """
         data = self.config.read(rm3presets.active_macros)
+        self.report_config_error("main", rm3presets.active_macros, data)
+
         return data
 
     def macros_write(self, data):
         """
         write config data for scenes and remove temp parameter required e.g. for REST API
         """
-        var_relevant = ["description", "macro", "dev-on", "dev-off", "scene-on", "scene-off"]
+        var_relevant = ["description", "groups", "macro", "dev-on", "dev-off", "scene-on", "scene-off"]
         var_delete = []
 
         for key in data:
@@ -633,6 +722,7 @@ class RemotesData(RemoteThreadingClass):
         if selected is None:
             selected = []
         data = {"templates": {}, "template_list": {}}
+        self.report_config_error("templates", category_fresh=True)
 
         if not selected:
             templates = rm3json.available(rm3presets.templates)
@@ -641,6 +731,7 @@ class RemotesData(RemoteThreadingClass):
                 template_keys = template.split("/")
                 template_key = template_keys[len(template_keys) - 1]
                 template_data = self.config.read(rm3presets.templates + template)
+                self.report_config_error("templates", rm3presets.templates+template, template_data)
 
                 logging.debug(rm3presets.templates + template)
 
@@ -662,83 +753,151 @@ class RemotesData(RemoteThreadingClass):
 
         return data
 
+    def remotes_read(self, selected=None):
+        """
+        read config data for existing remotes
+        """
+        if selected is None:
+            selected = []
+        data = {"list": {}, "list_error": []}
+
+        files = rm3json.available(rm3presets.remotes)
+
+        for file in files:
+            keys = file.split("/")
+            key = keys[len(keys) - 1]
+            file_data = self.config.read(rm3presets.remotes + key)
+
+            self.logging.debug(f"remotes_read(): {rm3presets.remotes + key}")
+
+            if "ERROR" in file_data:
+                data["list_error"].append(key)
+            elif "data" in file_data and "description" in file_data["data"]:
+                data["list"][key] = file_data["data"]["description"]
+            else:
+                data["list"][key] = key
+
+        return data
+
+    def api_config_read(self, selected=None):
+        """
+        read config data for existing remotes
+        """
+        if selected is None:
+            selected = []
+        data = {"list": {}, "list_error": []}
+
+        files = rm3json.available(rm3presets.devices)
+
+        for file in files:
+            keys = file.split("/")
+            key = keys[len(keys) - 2] + "/" + keys[len(keys) - 1]
+            file_data = self.config.read(rm3presets.devices + key)
+
+            logging.debug(rm3presets.remotes + key)
+            api, dev = key.split("/")
+            if api not in data["list"]:
+                data["list"][api] = {}
+
+            if not re.search(r'/\d{2}_', key):
+                if "ERROR" in file_data:
+                    data["list_error"].append(key)
+                elif "data" in file_data and "description" in file_data["data"]:
+                    data["list"][api][dev] = file_data["data"]["description"]
+                else:
+                    data["list"][api][dev] = key
+
+        return data
+
+    def macro_decode_inside(self, commands):
+        """
+        decompose macros in the commands list and return decomposed list
+
+        Args:
+            commands(list): list of buttons and macros
+        Returns:
+            list: list of buttons and macros
+        """
+        decomposed = []
+        act_devices = self.config.read(rm3presets.active_devices)
+        act_macros = self.config.read(rm3presets.active_macros)
+        act_scenes = self.config.read(rm3presets.active_scenes)
+
+        for command in commands:
+            command_str = str(command)
+            if not command_str.isnumeric():
+                if "_" not in str(command):
+                    decomposed.append(command)
+                    continue
+                parts = command.split("_")
+                if parts[0] in act_devices:
+                    decomposed.append(command)
+                elif parts[0] == "global" or parts[0] == "macro":
+                    global_macro = command.replace("global_", "").replace("macro_", "")
+                    decomposed.extend(act_macros["macro"][global_macro])
+                elif parts[0] == "group":
+                    groups, group, button = command.split("_")
+                    if group in act_macros["groups"]:
+                        devices = act_macros["groups"][group].get("devices", [])
+                        for device in devices:
+                            decomposed.append(device + "_" + button)
+                elif parts[0] == "dev-on" or parts[0] == "dev-off":
+                    global_macro = command.replace(parts[0]+"_", "")
+                    decomposed.extend(act_macros[parts[0]][global_macro])
+                elif parts[0] in act_scenes and "macro-scene" in act_scenes[parts[0]]["remote"]:
+                    macro_key = command.replace(parts[0] + "_", "")
+                    decomposed.extend(act_scenes[parts[0]]["remote"]["macro-scene"][macro_key])
+                else:
+                    decomposed.append(command)
+            else:
+                decomposed.append(command)
+
+        return decomposed
+
     def macro_decode(self, macro):
         """
-        decompose macro down to device commands
+        decompose macro down to device commands (at the moment only used in rm3timer.py)
 
         Args:
             macro (list): list of buttons and macros
         Returns:
             list: list of device strings
         """
-        decomposed_v1 = []
-        decomposed_v2 = []
-        decomposed_v3 = []
-        act_devices = self.config.read(rm3presets.active_devices)
-        act_macros = self.config.read(rm3presets.active_macros)
-        act_scenes = self.config.read(rm3presets.active_scenes)
+        decomposed = self.macro_decode_inside(macro.copy())
+        decomposed = self.macro_decode_inside(decomposed.copy())
+        decomposed = self.macro_decode_inside(decomposed.copy())
+        return decomposed
 
-        # <device>_*
-        # global_*
-        # device-on_*
-        # device-off_*
+    def report_config_error(self, category, key="", json_result=None, category_fresh=False):
+        """
+        add config error
 
-        for command in macro:
-            if "_" not in str(command):
-                decomposed_v1.append(command)
-                continue
-            parts = command.split("_")
-            if parts[0] in act_devices:
-                decomposed_v1.append(command)
-            elif parts[0] == "global" or parts[0] == "macro":
-                global_macro = command.replace("global_", "").replace("macro_", "")
-                decomposed_v1.extend(act_macros["macro"][global_macro])
-            elif parts[0] == "dev-on" or parts[0] == "dev-off":
-                global_macro = command.replace(parts[0]+"_", "")
-                decomposed_v1.extend(act_macros[parts[0]][global_macro])
-            elif parts[0] in act_scenes and "macro-scene" in act_scenes[parts[0]]["remote"]:
-                macro_key = command.replace(parts[0] + "_", "")
-                decomposed_v1.extend(act_scenes[parts[0]]["remote"]["macro-scene"][macro_key])
+        Args:
+            category (str): error category
+            key (str): error key
+            json_result (dict): result from json.read()
+            category_fresh (bool): if True reset complete category
+        """
+        if category_fresh:
+            self.errors[category] = {}
+
+        if not key.endswith(".json"):
+            key += ".json"
+
+        if json_result and "ERROR" in json_result:
+            if category not in self.errors:
+                self.errors[category] = {}
+
+            if not key in self.errors[category]:
+                self.errors[category][key] = {}
+
+            if "ERROR_MSG" in json_result:
+                self.errors[category][key] = json_result["ERROR_MSG"]
             else:
-                decomposed_v1.append(command)
+                self.errors[category][key] = "Unknown error"
 
-        for command in decomposed_v1:
-            if "_" in str(command):
-                parts = command.split("_")
-                if parts[0] in act_devices:
-                    decomposed_v2.append(command)
-                elif parts[0] == "global" or parts[0] == "macro":
-                    global_macro = command.replace("global_", "").replace("macro_", "")
-                    decomposed_v2.extend(act_macros["macro"][global_macro])
-                elif parts[0] == "dev-on" or parts[0] == "dev-off":
-                    global_macro = command.replace(parts[0]+"_", "")
-                    decomposed_v2.extend(act_macros[parts[0]][global_macro])
-                else:
-                    decomposed_v2.append(command)
-            else:
-                decomposed_v2.append(command)
-
-        for command in decomposed_v2:
-            if "_" in str(command):
-                parts = command.split("_")
-                if parts[0] in act_devices:
-                    decomposed_v3.append(command)
-                elif parts[0] == "global" or parts[0] == "macro":
-                    global_macro = command.replace("global_", "").replace("macro_", "")
-                    decomposed_v3.extend(act_macros["macro"][global_macro])
-                elif parts[0] == "dev-on" or parts[0] == "dev-off":
-                    global_macro = command.replace(parts[0]+"_", "")
-                    decomposed_v3.extend(act_macros[parts[0]][global_macro])
-                else:
-                    decomposed_v3.append(command)
-            else:
-                decomposed_v3.append(command)
-
-        # <scene>_*
-        # <scene>_scene-on
-        # <scene>_scene-off
-
-        return decomposed_v3
+        elif category in self.errors and key in self.errors[category]:
+            del self.errors[category][key]
 
 
 class RemotesEdit(RemoteDefaultClass):
@@ -781,8 +940,15 @@ class RemotesEdit(RemoteDefaultClass):
 
         if scene in active_json:
             return "WARNING: Scene " + scene + " already exists (active)."
+
         if rm3json.if_exist(rm3presets.remotes + "scene_" + scene):
-            return "WARNING: Scene " + scene + " already exists (remotes)."
+            self.logging.warning("WARNING: Scene " + scene + " already exists (remotes).")
+            counter = 1
+            while True:
+                scene = f"{scene}-{counter:02d}"
+                if not rm3json.if_exist(rm3presets.remotes + "scene_" + scene):
+                    break
+                counter += 1
 
         self.logging.info("remotesEdit.scene_add(): add " + scene)
 
@@ -822,12 +988,15 @@ class RemotesEdit(RemoteDefaultClass):
             "data": {
                 "label": info["label"],
                 "description": info["label"],
+                "display": {},
+                "display-size": "middle",
                 "remote": [],
                 "devices": [],
                 "macro-channel": {},
                 "macro-scene-on": [],
                 "macro-scene-off": [],
                 "macro-scene": {},
+                "type": "scene"
             }
         }
 
@@ -938,6 +1107,37 @@ class RemotesEdit(RemoteDefaultClass):
         else:
             return message
 
+    def device_add_filename(self, base_path, name, max_copies=99):
+        """
+        create filename for the copy
+
+        Args:
+            base_path (str): rm3presets.remotes
+            name (str): info["config_remote"]
+            max_copies (int): default = 99
+        """
+        # If it doesn't exist at all, return as-is
+        if not rm3json.if_exist(base_path + name):
+            return name
+
+        # Normalize to "-copy" first
+        match = re.search(r"-copy(\d{2})?$", name)
+        if not match:
+            name = name + "-copy"
+
+        # Start counting
+        for i in range(1, max_copies + 1):
+            candidate = re.sub(
+                r"-copy(\d{2})?$",
+                f"-copy{i:02d}",
+                name
+            )
+            if not rm3json.if_exist(base_path + candidate):
+                return candidate
+
+        # Nothing free up to max_copies
+        raise RuntimeError("No free filename available up to -copy99")
+
     def device_add(self, device, info):
         """
         add new device to config file and create command/remote files
@@ -966,6 +1166,8 @@ class RemotesEdit(RemoteDefaultClass):
                 active_json_position = active_json[key]["settings"]["position"]
         active_json_position += 1
 
+        self.logging.warning(str(info))
+
         # add to _active.json
         active_json[device] = {
             "config": {
@@ -973,7 +1175,7 @@ class RemotesEdit(RemoteDefaultClass):
                 "device_id": info["id_ext"],
                 "remote": info["config_remote"],
                 "api_key": interface,
-                "api_device": "default"
+                "api_device": interface_dev
             },
             "settings": {
                 "description": info["description"],
@@ -1028,7 +1230,23 @@ class RemotesEdit(RemoteDefaultClass):
             if not rm3json.if_exist(rm3presets.remotes + info["config_remote"]):
                 self.config.write(rm3presets.remotes + info["config_remote"], remote)
             else:
-                raise "Device " + device + " already exists (remotes)."
+                msg += "Device " + device + " already exists (remotes), create a copy."
+                original_remote = self.config.read(rm3presets.remotes + info["config_remote"])
+                info["config_remote"] = self.device_add_filename(rm3presets.remotes, info["config_remote"])
+
+                if " (copy" in original_remote["data"]["description"]:
+                    description_add = info["config_remote"].split("-copy")[1]
+                    original_remote["data"]["description"] = original_remote["data"]["description"].split(" (copy")[0]
+                    original_remote["data"]["description"] += f" (copy{description_add})"
+                else:
+                    original_remote["data"]["description"] += " (copy)"
+
+                self.config.write(rm3presets.remotes + info["config_remote"], original_remote)
+
+                active_json[device]["config"]["remote"] = info["config_remote"]
+                active_json[device]["config"]["api_device"] = interface_dev
+                msg += self.config.device_add(device, active_json[device])
+
         except Exception as e:
             msg += "WARNING: " + str(e)
 
@@ -1129,18 +1347,18 @@ class RemotesEdit(RemoteDefaultClass):
         """
         devices = {}
         active_json = self.config.read_status()
-        interface = active_json[device]["config"]["api_key"]
-        device_code = active_json[device]["config"]["device"]
         device_remote = active_json[device]["config"]["remote"]
         file_device_remote = rm3presets.remotes + device_remote
-        file_interface_remote = rm3presets.commands + interface + "/" + device_code
+        #interface = active_json[device]["config"]["api_key"]
+        #device_code = active_json[device]["config"]["device"]
+        #file_interface_remote = rm3presets.commands + interface + "/" + device_code
 
         if "ERROR" in active_json:
             return "ERROR: Could not read ACTIVE_JSON (active)."
         if device not in active_json:
             return "ERROR: Device " + device + " doesn't exists (active)."
-        if not rm3json.if_exist(rm3presets.commands + interface + "/" + device_code):
-            return "ERROR: Device " + device + " doesn't exists (commands)."
+        #if not rm3json.if_exist(rm3presets.commands + interface + "/" + device_code):
+        #    return "ERROR: Device " + device + " doesn't exists (commands)."
         if not rm3json.if_exist(rm3presets.remotes + device_remote):
             return "ERROR: Device " + device + " doesn't exists (remotes)."
 
@@ -1149,13 +1367,49 @@ class RemotesEdit(RemoteDefaultClass):
             return message
 
         msg1 = self.config.delete(file_device_remote)
-        msg2 = self.config.delete(file_interface_remote)
+        #msg2 = self.config.delete(file_interface_remote)
 
         if "OK:" in msg1 and "OK:" in msg2:
             message = "OK: Device '" + device + "' deleted."
         else:
             message = "ERROR: Could not fully delete device '" + device + "'. (" + msg1 + "; " + msg2 + ")"
         return message
+
+    def device_edit_api_settings(self, device, info):
+        """
+        add api settings for a device, incl. (1) API config-file, (2) device config-file and (3) remote config-file;
+        makes changes in the _ACTIVE-DEVICES.json
+
+        Args:
+            device (str): device id
+            info (dict): device information -> { "api_file": "", "device_file": "", "remote_file": ""}
+        Return:
+            dict: API response
+        """
+        status = self.config.read_status()
+        main_config = self.config.read(rm3presets.active_devices).copy()
+
+        if not device in main_config:
+            message = "ERROR: Device '" + device + "' not defined in main config file (" + rm3presets.active_devices + ".json)."
+            self.logging.error(message)
+            return message
+
+        if not "config_org" in main_config[device]:
+            main_config[device]["config_org"] = main_config[device]["config"].copy()
+
+        main_config[device]["config"] = {
+            "api_device": info["api_file"].split("_")[1],
+            "api_key": info["api_file"].split("_")[0],
+            "device": info["device_file"],
+            "remote": info["remote_file"]
+        }
+
+        self.logging.info("New configuration for '"+device+"': " + str(main_config[device]["config"]))
+        self.config.write(rm3presets.active_devices, main_config)
+        return "Wrote new configuration for " + device
+
+        self.logging.warning("--> not fully implemented yet!")
+        return "Function 'edit_device_api_settings' not fully implemented yet! (rm3data.py -> line 1369ff)"
 
     def device_status_get(self, device, key):
         """
@@ -1643,14 +1897,14 @@ class RemotesEdit(RemoteDefaultClass):
 
     def remote_edit_macros(self, macros):
         """
-        check if format is correct and save macros
+        check if format is correct and save macros or groups
 
         Args:
             macros (dict): macro information
         Returns:
             str: success or error message
         """
-        macro_keys = ["macro", "dev-on", "dev-off", "scene-on", "scene-off"]
+        macro_keys = ["groups", "macro", "dev-on", "dev-off", "scene-on", "scene-off"]
 
         if not isinstance(macros, dict):
             return "ERROR: wrong data format - not a dict."
@@ -1660,14 +1914,15 @@ class RemotesEdit(RemoteDefaultClass):
                 return "ERROR: wrong data format - not a dict (" + str(key) + ")."
             if key not in macro_keys:
                 return "ERROR: wrong data format - unknown key (" + str(key) + ")"
-            for key2 in macros[key]:
-                if not isinstance(macros[key][key2], list):
-                    return "ERROR: wrong data format - macro is not a list (" + str(key) + "/" + str(key2) + ")"
-                for list_key in macros[key][key2]:
-                    if not (isinstance(list_key, float) or isinstance(list_key, int)) and not isinstance(list_key, str):
-                        return "ERROR: wrong data format - list entry is not a number or string (" + str(
-                            key) + "/" + str(
-                            key2) + "/" + str(list_key) + ")"
+            if key != "groups":
+                for key2 in macros[key]:
+                    if not isinstance(macros[key][key2], list):
+                        return "ERROR: wrong data format - macro is not a list (" + str(key) + "/" + str(key2) + ")"
+                    for list_key in macros[key][key2]:
+                        if not (isinstance(list_key, float) or isinstance(list_key, int)) and not isinstance(list_key, str):
+                            return "ERROR: wrong data format - list entry is not a number or string (" + str(
+                                key) + "/" + str(
+                                key2) + "/" + str(list_key) + ")"
 
         macro_file = self.data.macros_read()
         for key in macros:
@@ -1675,3 +1930,4 @@ class RemotesEdit(RemoteDefaultClass):
         self.data.macros_write(macro_file)
 
         return "OK, saved macro file."
+

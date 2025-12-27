@@ -1,32 +1,50 @@
 /* display information within the remote control */
 
 .color-picker {
-   width           :  98%;
-   //height          :  300px;
-   height          :  auto;
-   margin          :   1%;
-   padding         :   2px;
-   padding-top     :   4px;
-   padding-bottom  :   4px;
+    height          :  auto;
+    padding         : 4px 2px;
+    grid-column     : span 4;
 
-   color           : yellow;
-   font-size       :   9px;
-   border-radius   :   6px; 
-   border-color    : #BBBBBB;
-   background-color: #CCCCCC;
-   overflow        : hidden;
-   float           : left;
-   display         : inline-block;
-   vertical-align  : top;
+    color           : var(--rm-color-color-picker-text);
+    font-size       :   9px;
+    border-radius   :   6px;
+    border          : solid 1px var(--rm-color-color-picker-border);
+    background-color: var(--rm-color-color-picker);
+    overflow        : visible;
+    display         : flex;
+    position        : relative;
+    vertical-align  : top;
+    justify-content : center;
+}
+
+.color-picker-label {
+    display         : none;
+    position        : relative;
+    right           : 20px;
+    top             : 20px;
+    padding         : 2px;
+    color           : var(--rm-color-color-picker-text);
+    background-color: var(--rm-color-color-picker);
+    font-size       : 10px;
+}
+
+.color-picker-demo {
+    border-radius   : 5px;
+    border          : 1px white solid;
+    color           : white;
+    padding         : 3px;
+    padding-bottom  : 5px;
+    font-size       : 11px;
+    overflow        : hidden;
 }
 
 .color-picker img {
-   opacity : 1.0;
+   opacity          : var(--rm-opacity-image-fix);
 }
 
-#colorpicker_demo {
-    margin-top    : 10px;
-    border-radius : 5px;
-    height        : 10px;
-    width         : 120px;
+#color-picker_demo {
+    margin-top      : 10px;
+    border-radius   : 5px;
+    height          : 10px;
+    width           : 120px;
 }

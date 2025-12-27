@@ -98,6 +98,15 @@
             "tv2_mute||OFF"
         ]
     },
+    "groups": {
+    "led": {
+      "description": "Group of LED devices",
+      "devices": [
+        "led01",
+        "bulb01"
+      ]
+    }
+  },
     "macro": {
         "aa": [
             "WAIT-66",

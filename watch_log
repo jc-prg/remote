@@ -20,7 +20,7 @@ TEXT_GREEN='\(INFO\|TRUE\)'
 TEXT_YELLOW='\(WARNING\)'
 TEXT_RED='\(ERROR\|CRITICAL\|FAILED\|FALSE\|EXCEPTION\:\)'
 TEXT_MAGENTA='\(---\|-->\|\.\.\.\.\|CHECK ACTIVITY\|CHECK CONNECTION\|1st CONNECT OF INTERFACES\|jc\:\/\/remote\/\)'
-TEXT_CYAN='\(\_\_BUTTON\|\_\_SEND-DATA\|\_\_SEND API\|\_\_SEND\|\_\_QUERY\|\_\_RECORD\|-> CONNECTION\ OK\:\|-> ACTIVITY\:\|-> NO\ CONNECTION\:\|-> INACTIVE\:\|\_\_EXEC\ TIME\:\|\_\_EXECUTE TIMER\:\)'
+TEXT_CYAN='\(\_\_BUTTON\|\_\_SEND-DATA\|\_\_SEND API\|\_\_SEND\|\_\_QUERY\|\_\_RECORD\|\_\_DISCOVER\|-> CONNECTION\ OK\:\|-> ACTIVITY\:\|-> NO\ CONNECTION\:\|-> INACTIVE\:\|\_\_EXEC\ TIME\:\|\_\_EXECUTE TIMER\:\)'
 TEXT_DEBUG='\(DEBUG\)'
 
 
@@ -29,7 +29,7 @@ TEXT_DEBUG='\(DEBUG\)'
 # Function to monitor logfile
 monitor_logfile() {
     DATE=`date`
-    INFO="WATCH jc://birdhouse/logfile/ ... end with <Strg+C>"
+    INFO="WATCH jc://remote/logfile/ ... end with <Strg+C>"
     term_width=$(tput cols)
     text_length=${#INFO}
     date_length=${#DATE}

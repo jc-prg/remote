@@ -1,7 +1,7 @@
 import logging
 import time
 import threading
-import modules.rm3presets as rm3presets
+import server.modules.rm3presets as rm3presets
 
 
 class RemoteDefaultClass(object):
@@ -22,10 +22,13 @@ class RemoteDefaultClass(object):
 
         self.log_level = None
         self.log_level_name = ""
+        self.log_level_set = ""
+
         for key in rm3presets.log_level_module:
             if self.class_id in rm3presets.log_level_module[key]:
                 self.log_level = eval("logging." + key.upper())
                 self.log_level_name = key
+                self.log_level_set = key.upper()
 
         if self.log_level is None:
             self.log_level = rm3presets.log_set2level
@@ -34,6 +37,9 @@ class RemoteDefaultClass(object):
         rm3presets.server_health[class_id] = "registered"
         self.logging = rm3presets.set_logging(self.class_id, self.log_level)
         self.logging.debug("Creating class " + name + " (Log Level: " + self.log_level_name + ") ...")
+
+        if self.log_level_set != "":
+            self.logging.info(f"Set log-level for {self.class_id} to {self.log_level_name}.")
 
 
 class RemoteApiClass(RemoteDefaultClass):
@@ -60,27 +66,39 @@ class RemoteApiClass(RemoteDefaultClass):
         self.api_config = device_config
         self.api_device = device
         self.api_description = description
+        self.api_discovery = {}
+        self.api_device_config_default = {
+            "API-Description": "",
+            "API-Devices": {},
+            "API-Info": "",
+            "API-Source": ""
+        }
         self.api_config_default = {
+            "AdminURL": "",
             "Description": "",
             "IPAddress": "",
             "Methods": ["send", "query", "record"],
             "MultiDevice": False,
             "Port": "",
             "PowerDevice": "",
-            "Timeout": 5,
-            "USBConnect": ""
+            "Timeout": 5
         }
 
         self.method = method
         self.status = "Start"
         self.working = False
         self.not_connected = "ERROR: Device not connected (" + api_name + "/" + device + ")."
+        self.detected_devices = []
+        self.devices_available_message = {}
 
         self.count_error = 0
         self.count_success = 0
         self.log_command = log_command
         self.last_action = 0
         self.last_action_cmd = ""
+
+        if "Description" in self.api_config:
+            self.api_description = self.api_config["Description"]
 
         self.logging.info("_INIT: " + str(self.api_name) + " - " + str(self.api_description) +
                           " (" + str(self.api_config["IPAddress"]) + ")")
@@ -120,7 +138,9 @@ class RemoteApiClass(RemoteDefaultClass):
         Returns:
             dict: empty dict, as not implemented for this API
         """
-        self.logging.debug("Method 'devices_available()' is not implemented for the API '" + self.name + "'.")
+        if not "devices_available" in self.devices_available_message:
+            self.logging.debug("Method 'devices_available()' is not implemented for the API '" + self.name + "'.")
+            self.devices_available_message["devices_available"] = True
         return {}
 
     def api_device_available(self, api_device):
@@ -132,7 +152,9 @@ class RemoteApiClass(RemoteDefaultClass):
         Returns:
             bool: True (otherwise redefine function in API connector)
         """
-        self.logging.debug("Method 'api_device_available()' is not implemented for the API '" + self.name + "'.")
+        if not "api_device_available" in self.devices_available_message:
+            self.devices_available_message["api_device_available"] = True
+            self.logging.debug("Method 'api_device_available()' is not implemented for the API '" + self.name + "'.")
         return "OK"
 
     def devices_listen(self, active):
@@ -144,25 +166,63 @@ class RemoteApiClass(RemoteDefaultClass):
         Returns:
             dict: empty dict, as not implemented for this API
         """
-        self.logging.debug("Method 'devices_listen()' is not implemented for the API '" + self.name + "'.")
+        if not "devices_listen" in self.devices_available_message:
+            self.devices_available_message["devices_listen"] = True
+            self.logging.debug("Method 'devices_listen()' is not implemented for the API '" + self.name + "'.")
+        return {}
+
+    def discover(self):
+        """
+        discover available API devices
+        """
+        if not "discover" in self.devices_available_message:
+            self.devices_available_message["discover"] = True
+            self.logging.debug("Method 'discover()' is not implemented for the API '" + self.name + "'.")
         return {}
 
     def send_api(self, command):
+        if not "send_api" in self.devices_available_message:
+            self.devices_available_message["send_api"] = True
+            self.logging.warning("Method 'send_api()' is not implemented for the API '" + self.name + "'.")
         return "ERROR: 'send_api' not implemented (" + self.api_name + ")"
 
     def send(self, device, device_id, command):
+        if not "send" in self.devices_available_message:
+            self.devices_available_message["send"] = True
+            self.logging.warning("Method 'send()' is not implemented for the API '" + self.name + "'.")
         return "ERROR: 'send' not implemented (" + self.api_name + ")"
 
     def query(self, device, device_id, command):
+        if not "query" in self.devices_available_message:
+            self.devices_available_message["query"] = True
+            self.logging.warning("Method 'record()' is not implemented for the API '" + self.name + "'.")
         return "ERROR: 'query' not implemented (" + self.api_name + ")"
 
     def record(self, device, device_id, command):
+        if not "record" in self.devices_available_message:
+            self.devices_available_message["record"] = True
+            self.logging.warning("Method 'record()' is not implemented for the API '" + self.name + "'.")
         return "ERROR: 'record' not implemented (" + self.api_name + ")"
 
     def register(self, command, pin=""):
+        if not "register" in self.devices_available_message:
+            self.devices_available_message["register"] = True
+            self.logging.warning("Method 'register()' is not implemented for the API '" + self.name + "'.")
         return "ERROR: 'register' not implemented (" + self.api_name + ")"
 
+    def wait_if_working(self):
+        """
+        Some devices run into problems, if send several requests at the same time
+        """
+        while self.working:
+            self.logging.debug(".")
+            time.sleep(0.2)
+        return
+
     def test(self):
+        if not "test" in self.devices_available_message:
+            self.devices_available_message["test"] = True
+            self.logging.warning("Method 'test()' is not implemented for the API '" + self.name + "'.")
         return "ERROR: 'test' not implemented (" + self.api_name + ")"
 
 
@@ -197,19 +257,29 @@ class RemoteThreadingClass(threading.Thread, RemoteDefaultClass):
         """
         Stop if thread (set self._running = False)
         """
-        self.logging.debug("GOT STOPPING SIGNAL ...")
+        self.logging.info("STOP SIGNAL for "+self.name+" ...")
         self._running = False
         self._processing = False
         rm3presets.server_health[self.class_id] = "stopped"
 
-    def thread_wait(self):
+    def thread_wait(self, use_priority=True, use_wait_time=0):
         """
         wait some time and register health signal
+
+        Args:
+            use_priority (bool): use in class defined waiting time for the priority set for the class (True) or a default value of 0.05s instead (False)
+            use_wait_time (float): use a specific waiting time in seconds
         """
         start_time = time.time()
         wait = self._thread_waiting_times[self._thread_priority]
-        while self._running and start_time + wait > time.time():
-            time.sleep(0.1)
+
+        if use_wait_time != 0:
+            time.sleep(use_wait_time)
+        elif not use_priority:
+            time.sleep(0.05)
+        else:
+            while self._running and start_time + wait > time.time():
+                time.sleep(0.1)
 
         rm3presets.server_health[self.class_id] = time.time()
 

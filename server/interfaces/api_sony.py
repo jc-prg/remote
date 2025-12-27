@@ -1,9 +1,9 @@
 import logging
 import time
-import modules.rm3presets as rm3config
-import modules.rm3ping as rm3ping
-from modules.rm3classes import RemoteApiClass
-import interfaces.sonyapi.sony as sony
+import server.modules.rm3presets as rm3config
+import server.modules.rm3ping as rm3ping
+from server.modules.rm3classes import RemoteApiClass
+import server.interfaces.sonyapi.sony as sony
 
 
 shorten_info_to = rm3config.shorten_info_to
@@ -23,7 +23,7 @@ class ApiControl(RemoteApiClass):
         API Class constructor
         """
         self.api_description = "API for SONY Devices (SonyAPILib)"
-        RemoteApiClass.__init__(self, "api.SONY", api_name, "query",
+        RemoteApiClass.__init__(self, "api-SONY", api_name, "query",
                                 self.api_description, device, device_config, log_command, config)
 
         if rm3config.log_api_ext == "NO":
@@ -58,7 +58,7 @@ class ApiControl(RemoteApiClass):
             return self.status
 
         if self.status == "Connected":
-            self.logging.info("Connected SONY (" + self.api_config["IPAddress"] + ")")
+            self.logging.info(f"Connected {self.api_config["IPAddress"]} - {self.api_name}:{self.api_device}")
 
         return self.status
 

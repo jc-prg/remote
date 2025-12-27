@@ -1,16 +1,21 @@
 {
-	"API-Devices" : {
-		"default" : {
-			"IPAddress"       : "192.168.1.30",
-			"Port"            : 80,
-			"MACAddress"      : "34:EA:34:E3:AF:0C",
-			"Timeout"         : 5,
-			"Methods"         : ["send","record"],
-			"Description"     : "Infrared RM3"
-			}
-		},
-	"API-Source"      : "https://github.com/davorf/BlackBeanControl",
-	"API-Info"        : "https://github.com/jc-prg/remote/blob/master/server/interfaces/broadlink/README.md",
-	"API-Description" : "Infrared Broadlink RM3"
-
+    "API-Description": "Infrared Broadlink RM-Controller",
+    "API-Devices": {
+        "sample-api-device": {
+            "Description": "Infrared RM4 mini",
+            "IPAddress": "192.168.1.40",
+            "MACAddress": "AA:BB:CC:DD:EE:FF",
+            "DeviceType": "21004",
+            "Methods": [
+                "send",
+                "record"
+            ],
+            "MultiDevice": true,
+            "Port": 80,
+            "PowerDevice": "TAPO-P100_plug02",
+            "Timeout": 5
+        }
+    },
+    "API-Info": "https://github.com/jc-prg/remote/blob/master/server/interfaces/broadlink/README.md",
+    "API-Source": "https://github.com/davorf/BlackBeanControl"
 }

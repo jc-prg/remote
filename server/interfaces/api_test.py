@@ -6,9 +6,9 @@
 
 import logging
 import time
-import modules.rm3json as rm3json
-import modules.rm3presets as rm3config
-from modules.rm3classes import RemoteApiClass
+import server.modules.rm3json as rm3json
+import server.modules.rm3presets as rm3config
+from server.modules.rm3classes import RemoteApiClass
 
 # import sampleAPI as sample
 
@@ -22,7 +22,7 @@ rm3config.api_modules.append("TEST")
 
 class ApiControl(RemoteApiClass):
     """
-     Integration of sample API to be use by jc://remote/
+     Integration of sample API to be used by jc://remote/
     """
 
     def __init__(self, api_name, device="", device_config=None, log_command=False, config=None):
@@ -30,8 +30,19 @@ class ApiControl(RemoteApiClass):
         Initialize API / check connect to device
         """
         self.api_description = "Test API for automatic testing"
-        RemoteApiClass.__init__(self, "api.TEST", api_name, "query",
+        RemoteApiClass.__init__(self, "api-TEST", api_name, "query",
                                 self.api_description, device, device_config, log_command, config)
+
+        self.default_config = {
+            "API-Description": "Test API",
+            "API-Devices": {
+                "default": self.api_config_default
+            },
+            "API-Info": "N/A",
+            "API-Source": "N/A"
+        }
+        self.default_config["API-Devices"]["default"]["Description"] = "Test device"
+        self.default_config["API-Devices"]["default"]["IPAddress"] = "127.0.0.1"
 
     def connect(self):
         """
@@ -83,6 +94,15 @@ class ApiControl(RemoteApiClass):
         if self.log_command: self.logging.info(
             "__RECORD " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
         return "OK: record test-" + device + "-" + command
+
+    def discover(self):
+        """
+        return discover command for test API
+        """
+        self.logging.info("__DISCOVER: " + self.api_name + " - " + str(len(self.default_config["API-Devices"])) + " devices")
+        self.logging.debug("            " + self.api_name + " - " + str(self.default_config))
+        self.api_discovery = self.default_config
+        return self.default_config
 
     def test(self):
         """

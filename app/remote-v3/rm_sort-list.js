@@ -100,8 +100,15 @@ function remote_slist(target, callback_pos) {
       return document.elementFromPoint(touch.clientX, touch.clientY);
     }
 
+    var count = 0;
     for (let i of items) {
       // Create and append the handle element
+      count += 1;
+      let number = document.createElement("span");
+      number.className = "slist_number";
+      number.innerHTML = count;
+      i.insertBefore(number, i.firstChild);
+
       let handle = document.createElement("span");
       handle.className = "slist_handle";
       handle.innerHTML = handle_element;

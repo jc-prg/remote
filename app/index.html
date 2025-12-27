@@ -1,6 +1,6 @@
 <?xml version=„1.0“ encoding=„utf-8“?>
 <!doctype html>
-<html><!-- manifest="cache.manifest"> -->
+<html lang="EN"><!-- manifest="cache.manifest"> -->
 <head>
     <title id="title">jc://remote/</title>
 
@@ -9,29 +9,31 @@
     <META http-equiv="cache-control" content="no-cache"></META>
 
     <meta name="theme-color" content="#000000"></meta>
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes"></meta>
     <meta name="apple-mobile-web-app-status-bar-style" content="black"></meta>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"></meta>
 
-    <LINK rel=apple-touch-icon href="favicon.png"></LINK>
-    <LINK rel=apple-touch-icon-precomposed href="favicon.png"></LINK>
+    <link rel="icon" href="remote-v3/icon/favicon.png" sizes="any" type="image/svg+xml">
+    <LINK rel=apple-touch-icon href="remote-v3/icon/rmc1.jpg"></LINK>
+    <LINK rel=apple-touch-icon-precomposed href="remote-v3/icon/rmc1.jpg"></LINK>
 
     <!-- load main javascript files, dynamic load of additional files is managed at the end of this file -->
 
-    <script src="/modules/modules_1.2.js"></script>
+    <script src="/modules/modules_1.2.4.js"></script>
     <script src="/framework/app-fw.js"></script>
     <script src="/remote-v3/remote.js"></script>
     <style>
         .loading_overlay {
             position: absolute;
-            top: 0px;
-            left: 0px;
+            top: 0;
+            left: 0;
             z-index: 200;
             background: lightgray;
             height: 100%;
             width: 100%;
-            border-radius: 0px;
-            border: 0px;
+            border-radius: 0;
+            border: 0;
             display: flex; /* Add flexbox */
             justify-content: center; /* Center horizontally */
             align-items: center; /* Center vertically */
@@ -41,7 +43,7 @@
 </head>
 <body>
     <div id="loading_overlay" class="loading_overlay">
-        <img src="framework/img/loading3.gif" height="100px" width="100px" />
+        <img src="framework/img/loading3.gif" style='height:100px;width:100px' alt="loading" />
     </div>
 
     <nav id="nav">
@@ -49,16 +51,20 @@
 
     <!-- APP specific header elements // START -->
 
-    <nav-info id="audio1" onClick="rm3slider.show_hide();" style="cursor:pointer;"></nav-info><!--icon-->
-    <nav-info id="audio2" onClick="rm3slider.show_hide();" style="cursor:pointer;"></nav-info><!--icon-->
-    <nav-info id="audio3" onClick="rm3slider.show_hide();" style="cursor:pointer;">IIIIIIIIIIIIIIIIIIII</nav-info>
-    <nav-info id="audio4"></nav-info><!--icon-->
+    <nav-info id="edit1"  onClick="" style="cursor:pointer;"></nav-info><!--icon-->
+    <nav-info id="audio">
+        <nav-info id="audio3" style="cursor:pointer;">IIIIIIIIIIIIIIIIIIII</nav-info>
+        <nav-info id="audio2" style="cursor:pointer;"></nav-info>
+        <nav-info id="audio1" style="cursor:pointer;"></nav-info>
+        <nav-info id="audio4"></nav-info><!--icon-->
+    </nav-info>
+
 
     <!-- APP specific header elements // END -->
 
     <nav-title id="navTitle">Loading ...</nav-title>
     <ul>
-      <li id="navi"><div onClick="javascript:appClickMenu();"  id="navi-click"><img src="img/button.png" /></div>
+      <li id="navi"><div onClick="appClickMenu();"  id="navi-click"><img src="img/button.png" alt="menu"/></div>
         <ul id='menuItems' style="visibility:hidden;"><!-- drop down menu - filled by script --></ul>
       </li>
     </ul>
@@ -74,21 +80,28 @@
     &nbsp;<br/>
     &nbsp;<br/>
     <div id='reload_info'  style="width:100%;display:none;"></div>
-    <div class='frame_block'>
-        <div class='remote_nav' id='remote_nav'><nav-b>
-         <ul>
-          <li>
-            <ul id='menuItems2'><!-- fixed menu for wide screens - filled by script --></ul>
-          </li>
-         </ul>
-        </nav-b></div>
-        <div id='setting_ext_top_frame' style="width:100%;"></div>
-        <div id='setting_ext_frames'></div>
-        <div id='frames'></div>
-        <div id='setting_frames'></div>
+    <div id='frame_block' class='frame_block'>
+        <div id='frame_block_nav' class='frame_block_nav'>
+            <div class='remote_nav' id='remote_nav'>
+                <nav-b>
+                    <ul>
+                        <li>
+                            <ul id='menuItems2'><!-- fixed menu for wide screens - filled by script --></ul>
+                        </li>
+                    </ul>
+                </nav-b>
+            </div>
+        </div>
+        <div id='setting_ext_top_frame' style="z-index:98;"></div>
+        <div id="frame_block_content" class="frame_block_content">
+            <div id='setting_ext_frames'></div>
+            <div id='frames'></div>
+            <div id='setting_frames'></div>
+        </div>
     </div>
 
     <div id="appMsg"></div>
+    <div id="attention">test</div>
     <div id="ontop"        style="display:none"></div>
     <div id="theme_check"  style="display:none"></div>
 
@@ -105,17 +118,17 @@
         loadScripts("/modules/",   modules_js);
         loadCss("/modules/",       modules_css);
 
-        loadCss("/remote-v3/",     remote_css);
-        loadScripts("/remote-v3/", remote_js);
-
         loadScripts("/framework/", app_js);
         loadCss("/framework/",     app_css);
+
+        loadCss("/remote-v3/",     remote_css);
+        loadScripts("/remote-v3/", remote_js);
 
         setTimeout( function() {
             startApp();
             startRemote();
             elementHidden("loading_overlay");
-        }, 500 );
+        }, 1000 );
 
     </script>
 

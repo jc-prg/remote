@@ -2,7 +2,7 @@
 	"data": {
         "api_commands": {
             "permit-join": "request/permit_join={'value': true, 'time': 120}",
-            "restart": "request/restart="
+            "restart-api": "request/restart="
         },
         "buttons" : {
 			"off": "set={'state': 'OFF'}",
@@ -35,6 +35,18 @@
                     "OFF"
                 ]
             },
+            "device-info": {
+                "cmd": ["get"],
+                "get": "get=device-info"
+            },
+            "device-features": {
+                "cmd": ["get"],
+                "get": "get=device-features"
+            },
+            "device-configuration": {
+                "cmd": ["get"],
+                "get": "get=device-configuration"
+            },
             "state": {
                 "cmd": [
                     "get",
@@ -49,6 +61,15 @@
                 ]
             }
 		},
+        "query" : {
+          "load_default" : 30,
+          "load_intervals" : {
+            "10": ["availability","power"]
+          },
+          "load_after" : ["on", "off", "toggle"],
+          "load_after_values" : ["availability","power"],
+          "load_never": ["device-info","device-features"]
+          },
 		"description" : "API for ZigBee Devices",
 		"method" : "query"
 	},

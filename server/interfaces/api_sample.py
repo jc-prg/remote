@@ -1,7 +1,7 @@
 import time
-import modules.rm3json as rm3json
-import modules.rm3presets as rm3config
-from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
+import server.modules.rm3json as rm3json
+import server.modules.rm3presets as rm3config
+from server.modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 
 # import sampleAPI as sample
 
@@ -24,7 +24,7 @@ class ApiControl(RemoteApiClass):
             device_config = {}
 
         self.api_description = "Sample API Description"
-        RemoteApiClass.__init__(self, "api.SAMPLE", api_name, "query",
+        RemoteApiClass.__init__(self, "api-SAMPLE", api_name, "query",
                                 self.api_description, device, device_config, log_command, config)
 
     def connect(self):
@@ -68,10 +68,10 @@ class ApiControl(RemoteApiClass):
         #         try:
         #           result  = self.api.command(xxx)
         #         except Exception as e:
-        #           self.working = True
+        #           self.working = False
         #           return "ERROR "+self.api_name+" - send: " + str(e)
         #       else:
-        #         self.working = True
+        #         self.working = False
         #         return "ERROR "+self.api_name+": Not connected"
 
         self.working = False
@@ -94,10 +94,10 @@ class ApiControl(RemoteApiClass):
         #         try:
         #           result  = self.api.command(xxx)
         #         except Exception as e:
-        #           self.working = True
+        #           self.working = False
         #           return "ERROR "+self.api_name+" - query: " + str(e)
         #       else:
-        #         self.working = True
+        #         self.working = False
         #         return "ERROR "+self.api_name+": Not connected"
 
         self.working = False
@@ -119,10 +119,10 @@ class ApiControl(RemoteApiClass):
         #         try:
         #           result  = self.api.command(xxx)
         #         except Exception as e:
-        #           self.working = True
+        #           self.working = False
         #           return "ERROR "+self.api_name+" - record: " + str(e)
         #       else:
-        #         self.working = True
+        #         self.working = False
         #         return "ERROR "+self.api_name+": Not connected"
 
         self.working = False
@@ -134,18 +134,15 @@ class ApiControl(RemoteApiClass):
         self.wait_if_working()
         self.working = True
 
-        if self.log_command:
-            self.logging.info("_TEST: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
-
         # ---- change for your api ----
         #       if self.status == "Connected":
         #         try:
         #           result  = self.api.command(xxx)
         #         except Exception as e:
-        #           self.working = True
+        #           self.working = False
         #           return "ERROR "+self.api_name+" - test: " + str(e)
         #       else:
-        #         self.working = True
+        #         self.working = False
         #         return "ERROR "+self.api_name+": Not connected"
 
         self.working = False

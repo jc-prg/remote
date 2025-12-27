@@ -1,0 +1,179 @@
+:root {
+    --sheet-box-color-background            : #f8f9fa;
+    --sheet-box-color-shadow                : 0 4px 10px rgba(0, 0, 0, 0.1);
+    --sheet-box-color-shadow-hover          : 0 4px 10px rgba(0, 0, 0, 0.1);
+    --sheet-box-color-bar-background        : #555;
+    --sheet-box-color-bar-border-bottom     : #ccc;
+    --sheet-box-color-tab-background        : #57606f;
+    --sheet-box-color-tab-background-hover  : #747d8c;
+    --sheet-box-color-tab-text              : white;
+    --sheet-box-color-tab-border-bottom     : #f1f2f6;
+    --sheet-box-color-tab-active-text       : #2f3542;
+    --sheet-box-color-tab-active-background : #ccc;
+    --sheet-box-color-tab-scroll-background : #2f3542;
+    --sheet-box-color-tab-scroll-text       : white;
+    --sheet-box-color-tab-scroll-text-hover : #3c4353;
+    --sheet-box-color-content-background    : #ccc;
+    --sheet-box-color-content-text          : black;
+}
+
+
+.sheet-box {
+    color: black;
+    width: calc(100vw - 45px);
+    //width: 100%;
+    //max-width: 700px;
+    max-width: 100%;
+    min-height: 300px;
+    border-radius: 4px;
+    background-color: var(--sheet-box-color-background);
+    box-shadow: var(--sheet-box-color-shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .sheet-box:hover {
+    box-shadow: var(--sheet-box-color-shadow-hover);
+  }
+
+  /* Tab-Bar Wrapper mit Pfeilen rechts */
+  .tab-bar-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: var(--sheet-box-color-bar-background);
+    border-bottom: 1px solid var(--sheet-box-color-bar-border-bottom);
+    position: relative;
+    padding-right: 45px; /* Platz für Pfeile */
+    flex-shrink: 0;
+  }
+
+  .tab-bar {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+    flex: 1;
+  }
+
+  .tab-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    flex-shrink: 0;
+    padding: 5px 8px;
+    background-color: var(--sheet-box-color-tab-background);
+    color: var(--sheet-box-color-tab-text);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    user-select: none;
+    font-weight: 500;
+    border-radius: 4px 4px 0 0;
+    margin-right: 2px;
+  }
+
+  .tab:hover {
+    background-color: #747d8c;
+    transform: translateY(-1px);
+  }
+
+  .tab.active {
+    background-color: var(--sheet-box-color-tab-active-background);
+    color: var(--sheet-box-color-tab-active-text);
+    font-weight: bold;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 3;
+    border-bottom: 1px solid var(--sheet-box-color-tab-border-bottom);
+  }
+
+  /* Pfeile rechts nebeneinander */
+  .tab-scroll-right {
+    display: flex;
+    position: absolute;
+    right: 0;
+    gap: 2px;
+    height: 100%;
+    align-items: center;
+    background-color: var(--sheet-box-color-tab-scroll-background);
+    padding: 0 6px;
+  }
+
+  .tab-scroll-btn {
+    background: var(--sheet-box-color-tab-scroll-background);
+    border: none;
+    color: var(--sheet-box-color-tab-scroll-text);
+    font-size: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    height: 12px;
+    width: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tab-scroll-btn:hover {
+    background: var(--sheet-box-color-tab-scroll-text-hover);
+  }
+
+  .sheet-content {
+    flex: 1;
+    background-color: var(--sheet-box-color-content-background);
+    color: var(--sheet-box-color-content-text);
+    padding: 8px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    border-radius: 0 0 4px 4px;
+    animation: fadeIn 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sheet-content h4 {
+    margin-top : 10px;
+    margin-bottom : 8px;
+  }
+
+  .sheet-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 8px 12px;
+    overflow: hidden;
+    text-align: left;
+  }
+
+  .sheet-panel.scrollable {
+    overflow-y: auto;
+  }
+
+  .fade-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 12px;
+    background: linear-gradient(to top, #ccc, transparent);
+    //background: linear-gradient(to top, var(--sheet-box-color-content-background), transparent);
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 80;
+  }
+
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }

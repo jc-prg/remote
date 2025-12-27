@@ -1,9 +1,9 @@
 import time
-import modules.rm3json as rm3json
-import modules.rm3presets as rm3config
-import modules.rm3ping as rm3ping
-from modules.rm3classes import RemoteDefaultClass, RemoteApiClass
-import interfaces.eiscp as eiscp
+import server.modules.rm3json as rm3json
+import server.modules.rm3presets as rm3config
+import server.modules.rm3ping as rm3ping
+from server.modules.rm3classes import RemoteDefaultClass, RemoteApiClass
+import server.interfaces.eiscp as eiscp
 
 
 shorten_info_to = rm3config.shorten_info_to
@@ -20,11 +20,14 @@ class ApiControl(RemoteApiClass):
         Initialize API / check connect to device
         """
         self.api_description = "API for ONKYO Devices"
-        RemoteApiClass.__init__(self, "api.ONKYO", api_name, "query",
+        RemoteApiClass.__init__(self, "api-ONKYO", api_name, "query",
                                 self.api_description, device, device_config, log_command, config)
 
         self.api_timeout = 5
+        self.api_discovery = {}
         self.api_ip = self.api_config["IPAddress"]
+        self.api_info_url = "https://github.com/jc-prg/remote/blob/master/server/interfaces/eiscp/README.md"
+        self.api_source_url = "https://github.com/miracle2k/onkyo-eiscp"
 
     def reconnect(self):
         self.api.command_socket = None
@@ -48,12 +51,13 @@ class ApiControl(RemoteApiClass):
 
         try:
             self.api = eiscp.eISCP(self.api_ip)
+            self.api.command("system-power query")  # send a command to check if connected
             # self.api    = eiscp.Receiver(self.api_ip)
             # self.api.on_message = callback_method
+            #self.discover()
 
         except Exception as e:
             self.status = "Error connecting to ONKYO device: " + str(e)
-            self.api.command("system-power query")  # send a command to check if connected
             self.logging.warning(self.status)
 
         try:
@@ -67,7 +71,11 @@ class ApiControl(RemoteApiClass):
             self.logging.warning(self.status)
 
         if self.status == "Connected":
-            self.logging.info("Connected ONKYO (" + self.api_config["IPAddress"] + ")")
+            self.logging.info(f"Connected {self.api_config["IPAddress"]} - {self.api_name}:{self.api_device}")
+        else:
+            self.logging.warning(f"Could not connect {self.api_config["IPAddress"]} - {self.api_name}:{self.api_device}")
+
+        return self.status
 
     def wait_if_working(self):
         """
@@ -105,9 +113,9 @@ class ApiControl(RemoteApiClass):
             button_code = command.replace("=", " ")
             try:
                 self.api.command(button_code)
-                self.api.disconnect()
+                #self.api.disconnect()
             except Exception as e:
-                self.api.disconnect()
+                #self.api.disconnect()
                 self.working = False
                 return "ERROR " + self.api_name + " - send (" + button_code + "): " + str(e)
 
@@ -135,7 +143,7 @@ class ApiControl(RemoteApiClass):
 
         self.logging.debug(command)
 
-        if self.status == "Connected":
+        if self.status == "Connected" or command == "api-discovery":
             if self.log_command:
                 self.logging.info("__QUERY " + device + "/" + command[:shorten_info_to] +
                                   " ... (" + self.api_name + ")")
@@ -155,14 +163,18 @@ class ApiControl(RemoteApiClass):
                     self.working = False
                     return "ERROR " + self.api_name + " - query: " + str(e)
 
+            elif command == "api-discovery":
+                self.working = False
+                return self.api_discovery
+
             else:
                 button_code = command_param[0]  # format: zone.parameter=command
                 self.logging.debug("Button-Code: " + button_code[:shorten_info_to] + "... (" + self.api_name + ")")
                 try:
                     result = self.api.command(button_code)
-                    self.api.disconnect()
+                    #self.api.disconnect()
                 except Exception as e:
-                    self.api.disconnect()
+                    #self.api.disconnect()
                     self.working = False
                     return "ERROR " + self.api_name + " - query (" + button_code + "): " + str(e)
 
@@ -200,6 +212,46 @@ class ApiControl(RemoteApiClass):
         """
         return "ERROR " + self.api_name + ": Not supported by this API"
 
+    def discover(self):
+        """
+        discover available EISCP-ONKYO devices in the network
+        """
+        try:
+            devices = eiscp.eISCP.discover(timeout=3)
+            self.logging.debug(f"Discovery for EISCP-ONKYO done: Found {len(devices)} devices.")
+        except Exception as e:
+            devices = {}
+            self.logging.warning(f"Discovery for EISCP-ONKYO failed: {e}")
+
+        device_information = {}
+        count = 0
+        for device in devices:
+            count += 1
+            dev_name = self.api_name + "_" + str(count)
+            device_information[dev_name] = {
+                "Description": device.info["model_name"],
+                "DeviceType": device.info["device_category"],
+                "IPAddress": device.host,
+                "MACAddress": "N/A",
+                "Methods": [ "send", "query" ],
+                "MultiDevice": False,
+                "PowerDevice": "",
+                "Port": device.port,
+                "Timeout": 5,
+                "Status": {}
+            }
+        api_config = {
+            "API-Description": self.api_description,
+            "API-Devices": device_information,
+            "API-Info": self.api_info_url,
+            "API-Source": self.api_source_url
+        }
+
+        self.api_discovery = api_config
+        self.logging.info("__DISCOVER: " + self.api_name + " - " + str(len(self.api_discovery["API-Devices"])) + " devices")
+        self.logging.debug("            " + self.api_name + " - " + str(self.api_discovery))
+        return api_config
+
     def register(self, command, pin=""):
         """
         Register command if device requires registration to initialize authentication
@@ -216,7 +268,7 @@ class ApiControl(RemoteApiClass):
         try:
             self.api.command('power on')
             self.api.command('source pc')
-            self.api.disconnect()
+            #self.api.disconnect()
         except Exception as e:
             return "ERROR " + self.api_name + " test: " + str(e)
 
@@ -230,7 +282,7 @@ class APIaddOn(RemoteDefaultClass):
     """
     def __init__(self, api):
         self.api_description = "API-Addon for ONKYO Devices"
-        RemoteDefaultClass.__init__(self, "api.ONKYO", self.api_description)
+        RemoteDefaultClass.__init__(self, "api-ONKYO", self.api_description)
 
         self.status = None
         self.not_connected = None
@@ -264,8 +316,6 @@ class APIaddOn(RemoteDefaultClass):
         else:
             return ["error", "API " + self.api.api_name + " not connected."]
 
-    # -------------------------------------------
-
     def metadata(self, tags=""):
         """
         Return metadata ... combined values
@@ -276,7 +326,7 @@ class APIaddOn(RemoteDefaultClass):
 
         input_device = self.api.command("input-selector=query")[1]
 
-        if tags == "net-info" and "net" in input_device:
+        if tags in ["net-info","current-playing"] and ("net" in input_device or "blu" in input_device):
             try:
                 artist = self.api.command("dock.net-usb-artist-name-info=query")[1]
                 title = self.api.command("dock.net-usb-title-name=query")[1]
@@ -287,11 +337,11 @@ class APIaddOn(RemoteDefaultClass):
                 else:
                     md = artist + ": " + title + " (Album: " + album + ")"
 
-                self.api.disconnect()
-                self.logging.info(md)
+                #self.api.disconnect()
+                #self.logging.info(md)
 
             except Exception as e:
-                self.api.disconnect()
+                #self.api.disconnect()
 
                 error = "ERROR " + self.addon + " - metadata (" + tags + "): " + str(e)
                 self.logging.warning(error)

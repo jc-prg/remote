@@ -42,6 +42,12 @@ data/_ACTIVE-MACROS.json
 
 data/_ACTIVE-APIS.json
 
+/data/_ACTIVE-TIMER.json
+
+/data/_DEVICE-TYPES.json
+
+/data/templates/
+
 data/devices/
 
 data/remotes/
@@ -61,5 +67,5 @@ server/interfaces/broadlink/__pycache__/
 server/server_org.py
 
 server/tryout
+
 /data/zigbee2mqtt/
-/data/_ACTIVE-TIMER.json
