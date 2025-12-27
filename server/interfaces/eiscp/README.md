@@ -28,7 +28,7 @@
 
 The API commands are defined in two files. The definition of default commands for all DENON devices are defined in the file [data/devices/EISCP-ONKYO/00_default.json](../../../data/_sample/devices/EISCP-ONKYO/00_default.json).
 Commands for specific devices are defined in device configs such as the file [receiver_onkyo-txnr686.json](../../../data/_sample/devices/EISCP-ONKYO/receiver_onkyo-txnr686.json)
-for the DENON AVR X2800H DAB. The following example shows the structure of the default and device specific configuration. 
+for the ONKY TXNR686. The following example shows the structure of the default and device specific configuration. 
 
 ```json
 {
