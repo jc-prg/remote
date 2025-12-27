@@ -19,10 +19,10 @@ Find here an overview of the folder and file structure:
 ```
 * SAMPLE CONFIGURATION
 
-  ./sample
-  ./sample/devices
-  ./sample/remotes
-  ./sample/install-config
+  ./_sample
+  ./_sample/devices
+  ./_sample/remotes
+  ./_sample/install-config
 
 * ACTIVE CONFIGURATION
 
@@ -30,16 +30,18 @@ Find here an overview of the folder and file structure:
   ./_ACTIVE-DEVICES.json                 -> defines devices and connect API, API device and remote control
   ./_ACTIVE-MACROS.json                  -> defines global macros and device on/off macros
   ./_ACTIVE-SCENES.json                  -> defines scenes and connect remote control
+  ./_ACTIVE-TIMER.json                   -> defines timer events
+  ./_ACTIVE-TYPEs.json                   -> defines available device types
 
 * ACTIVE API & API-DEVICE CONFIGURATION
 
   ./devices/<API>/00_interface.json     -> configures API and API device(s)
   ./devices/<API>/00_default.json       -> configures default commands that are applicable for all devices
-  ./devices/<API>/<device>.json         -> configures device specific commands
+  ./devices/<API>/cfg-<device>.json     -> configures device specific commands
 
 * ACTIVE REMOTE CONTROL CONFIGURATION
 
-  ./remotes/<device_api>.json           -> configures remote control for a specific device
+  ./remotes/rmc_<device_name>.json      -> configures remote control for a specific device
   ./remotes/scene_<name>.json           -> configures remote control for a scene incl. macros
 
 * REMOTE CONTROL TEMPLATES
@@ -158,7 +160,6 @@ Remote controls for devices can be added, changed and deleted via edit mode in t
 * use "DISPLAY" to add a display
 * use "COLOR-PICKER||send-command" to add a color picker
 * use "SLIDER||send-command||description||min-max||parameter" to add a slider
-
 
 ### SCENES
 
