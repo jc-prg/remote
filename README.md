@@ -49,7 +49,7 @@ Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 
 ## Main features
 
-### App v3.0 / Server v3.0 (in progress)
+### App v3.0 / Server v3.0
 
 * simple implementation of device groups (use buttons for all devices of a group at the same time)
 * integration of ZigBee interface (using a Zigbee USB Dongle and ZigBee2MQTT): Smart Socket + RGB+CCT Bulb + Smart Switch
