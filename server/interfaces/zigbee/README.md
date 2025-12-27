@@ -1,8 +1,6 @@
 
 # API Description: ZigBee2MQTT
 
-_Note:_ this API connection is still under construction ...
-
 ## Source
 
 * API Description: https://www.zigbee2mqtt.io/guide/usage/mqtt_topics_and_messages.html
@@ -35,8 +33,6 @@ serial:
   port: /dev/ttyACM0                # connect your ZigBee USB adapter here
   adapter: ezsp                     # depending on your adapter it might be necessary to specify the adapter type (ezsp|deconz|xbee|zigate|znp)
 ```
-
-
 ### Configure App
 
 Adjust the ZIGBEE2MQTT connector configuration: [data/devices/ZIGBEE2MQTT/00_interface.json](../../../data/_sample/devices/ZIGBEE2MQTT/00_interface.json).
@@ -74,13 +70,14 @@ Currently, there is a default configuration [data/devices/ZIGBEE2MQTT/00_default
 
 * Plug:  [data/devices/ZIGBEE2MQTT/zigbee-plug.json](../../../data/_sample/devices/ZIGBEE2MQTT/zigbee-plug.json)
 * RGB+CCT Bulb:  [data/devices/ZIGBEE2MQTT/zigbee-bulb.json](../../../data/_sample/devices/ZIGBEE2MQTT/zigbee-bulb.json)
+* Switch / Socket:  [data/devices/ZIGBEE2MQTT/zigbee-switch.json](../../../data/_sample/devices/ZIGBEE2MQTT/zigbee-switch.json)
 
-Those definitions can be created automatically from the configuration that comes with the devices. There in the app move
+Those definitions can be created automatically from the configuration that comes with the devices. Navigate in the app
 to "Settings > API Settings > API: ZIGBEE2MQTT", select the API-Device and jump to the sheet "create device config".
 Here you can select all detected devices and can create a fitting config file. Adjust and save this config as a JSON 
 file in the folder [data/devices/ZIGBEE2MQTT/](../../../data/_sample/devices/ZIGBEE2MQTT/).
 
-If you want to create this file on your own, use the file ```10_devices.json``', tha will be created when starting the 
+If you want to create this file on your own, use the file ```10_devices.json``', that will be created when starting the 
 server with ZIGBEE2MQTT enabled. This file contains all relevant information to create a definition file as shown here:
 
 ```json
@@ -121,8 +118,14 @@ server with ZIGBEE2MQTT enabled. This file contains all relevant information to 
 }
 ```
 
+**Hints:** 
+* key values never should use "_", use "-" instead.
+* to use the volume functionality in the app, use "volume" and "mute" as keys for the related commands
+* to connect buttons directly to an icon, name them as shown in the "Settings > Information > Image buttons" or defined 
+  in the related [config file](../../../data/buttons/default/index.json).
+
 ## Connect devices
 
 Per default the server doesn't accept new devices. Use the API setting ```permit-join``` in the app to activate this for 2 min. 
 Further settings can be done using web front end of ZigBee2MQTT, which is accessible via http://localhost:8080/ or what you've 
-configured.  In the settings you can add a device based on identified metadata. 
+configured. In the settings you can add a device based on identified metadata. 
