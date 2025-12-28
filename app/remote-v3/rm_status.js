@@ -317,7 +317,7 @@ function statusCheck_apiConnection(data) {
     for (let key in dataAll["CONFIG"]["apis"]["structure"]) {
         console.error(key);
         console.error(dataAll["CONFIG"]["apis"]["list_api_configs"]["list"]);
-        if (dataAll["CONFIG"]["apis"]["list_apis_configs"]["list"][key] === undefined) {
+        if (dataAll["CONFIG"]["apis"]["list_api_configs"]["list"][key] === undefined) {
             api_summary[key] = "ERROR";
         }
     }
