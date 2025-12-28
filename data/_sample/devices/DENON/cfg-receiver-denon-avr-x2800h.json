@@ -1,50 +1,55 @@
 {
     "data": {
         "buttons": {
+            "HEOS": "async_set_input_func('HEOS Music')",
+            "aux1": "async_set_input_func('PC')",
+            "aux2": "async_set_input_func('AUX2')",
+            "back": "async_cursor_back",
+            "blu-ray": "async_set_input_func('Blu-ray')",
+            "bluetooth": "async_set_input_func('Bluetooth')",
+            "cbl-sat": "async_set_input_func('TV')",
+            "cd": "async_set_input_func('CD')",
+            "dimmer-toggle": "telnet:DIM SEL",
+            "dimmer-toggle-1": "telnet_api.async_send_command(\"DIM SEL\")",
+            "down": "async_cursor_down",
+            "eco": "async_eco_mode",
+            "enter": "async_cursor_enter",
+            "fbw": "async_previous_track",
+            "ffw": "async_next_track",
+            "game": "async_set_input_func('Game')",
+            "hdmi-out": "async_hdmi_output",
             "info": "async_info",
+            "internet-radio": "",
+            "left": "async_cursor_left",
+            "media-player": "async_set_input_func('Media Player')",
+            "mute": "jc.mute",
             "mute-off": "async_mute(False)",
             "mute-on": "async_mute(True)",
-            "mute": "async_mute",
             "next": "async_next_track",
             "off": "async_power_off",
             "on": "async_power_on",
             "option": "async_option",
+            "option-menu": "telnet:MNOPT",
             "pause": "async_pause",
+            "phono": "async_set_input_func('Phono')",
             "play": "async_play",
             "previous": "async_previous_track",
+            "right": "async_cursor_right",
             "setup": "async_setup_menu(True)",
             "setup-close": "async_setup_menu(False)",
             "sleep": "async_sleep",
-            "status": "async_status",
-            "stop": "async_stop",
-            "vol+": "async_volume_up",
-            "vol-": "async_volume_down",
-
-            "right": "async_cursor_right",
-            "left": "async_cursor_left",
-            "back": "async_cursor_back",
-            "down": "async_cursor_down",
-            "enter": "async_cursor_enter",
-            "up": "async_cursor_up",
-
             "sound-game": "async_select_sound_mode('GAME')",
             "sound-movie": "async_select_sound_mode('MOVIE')",
             "sound-music": "async_select_sound_mode('MUSIC')",
             "sound-pure": "async_select_sound_mode('PURE')",
             "sound-stereo": "async_select_sound_mode('STEREO')",
-
-            "aux1": "async_set_input_func('PC')",
-            "aux2": "async_set_input_func('AUX2')",
-            "bluray": "async_set_input_func('Blu-ray')",
-            "bluetooth": "async_set_input_func('Bluetooth')",
-            "cbl-sat": "async_set_input_func('TV')",
-            "cd": "async_set_input_func('CD')",
-            "game": "async_set_input_func('Game')",
-            "phono": "async_set_input_func('Phono')",
-            "HEOS": "async_set_input_func('HEOS Music')",
-            "media-player": "async_set_input_func('Media Player')",
+            "status": "async_status",
+            "stop": "async_stop",
             "tuner": "async_set_input_func('Tuner')",
-            "tv-audio": "async_set_input_func('TV Audio')"
+            "tv-audio": "async_set_input_func('TV Audio')",
+            "up": "async_cursor_up",
+            "vol+": "async_volume_up",
+            "vol-": "async_volume_down"
         },
         "commands": {
             "album": {
@@ -60,6 +65,13 @@
                 ],
                 "description": "Get artist of currently playing song (DAB Tuner, if active)",
                 "get": "artist"
+            },
+            "eco-mode": {
+                "cmd": [
+                    "get"
+                ],
+                "description": "Get status of eco mode",
+                "get": "eco_mode"
             },
             "input-func": {
                 "cmd": [
@@ -95,7 +107,7 @@
                 ],
                 "get": "model_name"
             },
-            "muted": {
+            "mute": {
                 "cmd": [
                     "get"
                 ],
@@ -170,12 +182,24 @@
                     "set"
                 ],
                 "description": "get and set volume",
-                "get": "volume",
-                "set": "async_set_volume({DATA})",
+                "get": "jc.volume",
+                "set": "jc.set_volume({DATA})",
                 "type": "integer",
                 "values": {
                     "max": 98,
                     "min": 0
+                }
+            },
+            "volume-db": {
+                "cmd": [
+                    "get"
+                ],
+                "description": "get and set volume in dB",
+                "get": "volume",
+                "type": "integer",
+                "values": {
+                    "max": -80.0,
+                    "min": 18.0
                 }
             },
             "zone": {
@@ -186,14 +210,14 @@
                 "get": "zone"
             }
         },
-        "description": "Denon AVR-X2800H DAB",
+        "description": "Denon-AVR-X2800H",
         "query": {
             "load_default": 10,
             "load_intervals": {
                 "10": [
                     "power",
                     "volume",
-                    "muted"
+                    "mute"
                 ]
             },
             "load_only": []
