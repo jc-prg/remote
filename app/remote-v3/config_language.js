@@ -72,6 +72,7 @@ let language_app = {
         "API_COMMANDS_TEST"     : "API commands - manual testing",
         "API_DEVICE_DELETE"     : "Do you really want to delete the device <b>{1}</b> from the <b>API {0}</b>?",
         "API_DEVICE_DISCOVERY"  : "Do you want to start an API device discovery now? This will a few minutes and potentially slow down the server a bit.",
+        "API_DEVICE_CONFIG_NA"  : "<b>ERROR:</b> There is no API configuration available, or it's corrupt. Check the data files or use a copy from the sample data set (<u>data/_sample/devices/*/00_interface.json</u>).",
         "API_RECONNECT_ALL"     : "Do you want to reconnect all devices now?",
         "API_INFORMATION"       : "API information",
         "API_SELECT_CMD"        : "API command or use your own ...",
