@@ -189,10 +189,11 @@ ul.help ul li {
 }
 
 .setting-interface-error-message {
-    margin: 5px;
+    margin: 15px 5px 5px;
     padding: 10px;
     align-content: center;
     border: 1px red solid;
+    border-radius: 15px;
     background-color: var(--sheet-box-color-content-background);
     color: red;
 }
