@@ -67,8 +67,8 @@ hr         { border: solid 1px var(--rm-color-hr); }
 
 #attention {
   position : absolute;
-  height : 14px;
-  width : 14px;
+  height : 23px;
+  width : 23px;
   right : 170px;
   z-index : 100;
 }
