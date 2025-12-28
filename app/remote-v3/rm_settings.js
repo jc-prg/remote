@@ -1170,7 +1170,7 @@ class RemoteSettingsApi {
                 }
             }
             else {
-                setting += "<div>";
+                setting += "<div class='setting-interface-error-message'>";
                 setting += lang("API_DEVICE_CONFIG_NA");
                 setting += "</div>";
                 setTextById(id, setting + "<br/>");

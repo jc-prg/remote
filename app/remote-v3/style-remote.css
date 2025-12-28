@@ -188,6 +188,15 @@ ul.help ul li {
    width            : calc(100% - 18px);
 }
 
+.setting-interface-error-message {
+    margin: 5px;
+    padding: 10px;
+    align-content: center;
+    border: 1px red solid;
+    background-color: var(--sheet-box-color-content-background);
+    color: red;
+}
+
 .remote_edit {
    position         : absolute;
    bottom           : 0;
