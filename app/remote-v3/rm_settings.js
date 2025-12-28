@@ -813,7 +813,7 @@ class RemoteSettingsApi {
         this.update_data();
 
         let interfaces  = data["DATA"]["interfaces"];
-        let interfaces_available = this.data["CONFIG"]["apis"]["list"];
+        let interfaces_available = dataAll["CONFIG"]["apis"]["list"];
         let sheet_boxes = {};
 
         this.button_add_device = function(api, api_device, external_id) {
@@ -1151,10 +1151,10 @@ class RemoteSettingsApi {
         this.button.width = "72px";
 
         for (let key in interfaces_available) {
-            let api_device_config = (this.data["CONFIG"]["apis"]["list_api_configs"]["list"][key] !== undefined);
+            let api_device_config = (dataAll["CONFIG"]["apis"]["list_api_configs"]["list"][key] !== undefined);
 
-    console.error(this.data["CONFIG"]["apis"]["list_api_configs"]["list"][key]);
-    console.error(api_device_config);
+            console.error(key + "--->" + api_device_config);
+            console.error(dataAll["CONFIG"]["apis"]["list_api_configs"]["list"][key]);
 
             let id = "interface_edit_"+key;
             let api_config = interfaces[key];
