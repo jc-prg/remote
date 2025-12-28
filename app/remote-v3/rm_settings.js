@@ -1150,7 +1150,7 @@ class RemoteSettingsApi {
         this.button.width = "72px";
 
         for (let key in interfaces) {
-            let api_device_config = (this.data["CONFIG"]["list_api_configs"]["list"][key] !== undefined);
+            let api_device_config = (this.data["CONFIG"]["apis"]["list_api_configs"]["list"][key] !== undefined);
             let id = "interface_edit_"+key;
             let api_config = interfaces[key];
             let setting = "";
