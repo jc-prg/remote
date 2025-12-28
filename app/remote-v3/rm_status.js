@@ -24,6 +24,7 @@ function statusCheck(data={}) {
     dataAll = data;
 
     statusCheck_modes();
+    statusCheck_messages(data);
 
     if (!rm3remotes.edit_mode) {
         statusCheck_displayValues(data);
@@ -55,6 +56,7 @@ function statusCheck(data={}) {
     statusCheck_measure(data, duration);
 }
 
+
 // measure Status Check durations
 function statusCheck_measure(data, duration) {
 
@@ -74,6 +76,29 @@ function statusCheck_measure(data, duration) {
     if (status_duration_load.length > 10) { status_duration_load.shift(); }
 }
 
+
+// check if server sends asynchronous messages and open in alert, if exists
+function statusCheck_messages(data) {
+
+    let return_messages = data["REQUEST"]["server-messages"];
+    if (return_messages && return_messages.length > 0) {
+        let text = "";
+        for (let i=0; i<return_messages.length; i++) {
+            let message;
+            let values;
+            if (Array.isArray(return_messages[i])) {
+                message = return_messages[i][0];
+                values = return_messages[i][1];
+                if (!Array.isArray(values)) { values = [values]; }
+            }
+            else {
+                message = return_messages[i];
+            }
+            text += lang(message,values) + "<br/>&nbsp;<br/>";
+        }
+        appMsg.alert(text);
+    }
+}
 
 // status messages in case the server is offline
 function statusCheck_offline(data) {
@@ -218,32 +243,39 @@ function statusCheck_apiConnection(data) {
 	let error_no       = {};
 	let off_no         = {};
 
-
-	for (let api in data["CONFIG"]["apis"]["structure"]) {
-        // set toggle values for apis
-	    const slider = document.getElementById("toggle__" + api + "_input");
-	    if (slider) {
-            status = data["STATUS"]["connections"][api]["active"];
+    this.slider_status = function(slider, status) {
+        if (slider) {
             if (status === true) {
                 slider.value = 1;
                 slider.className = "rm-slider device_active";
                 slider.disabled = false;
-                }
+            }
             else if (status === false) {
                 slider.value = 0;
                 slider.className = "rm-slider device_disabled";
                 slider.disabled = false;
-                }
+            }
             else {
                 slider.className = "rm-slider device_undef";
                 slider.disabled = true;
-                }
             }
+        }
+    }
+
+	for (let api in data["CONFIG"]["apis"]["structure"]) {
+        // set toggle values for apis
+	    const slider = document.getElementById("toggle__" + api + "_input");
+        status = data["STATUS"]["connections"][api]["active"];
+        this.slider_status(slider, status);
 
 	    for (let api_device in data["STATUS"]["connections"][api]["api_devices"]) {
 
             // power status API-Device details in API settings - depending power device
             key = api + "_" + api_device;
+            const slider = document.getElementById(`toggle__${api}-${api_device}_input`);
+            status = data["STATUS"]["connections"][api]["api_devices"][api_device]["active"];
+            this.slider_status(slider, status);
+
             const element = document.getElementById("power_status_" + key);
             if (element && data["STATUS"]["connections"][api]["api_devices"][api_device]["power"] !== "") {
                 console.debug("Set power status: " + api + "_" + api_device + " - " + data["STATUS"]["connections"][api]["api_devices"][api_device]["power_device"]);
@@ -317,10 +349,10 @@ function statusCheck_apiConnection(data) {
             else if (status.indexOf("OFF") > -1)      { setTextById("api_status_icon_" + key, "<span style='color:" + color_api_no_connect + "'>" + sign_off + "</span>"); }
             else if (status.indexOf("DISABLED") > -1) { setTextById("api_status_icon_" + key, "<span style='color:" + color_api_no_connect + "'>" + sign_disabled + "</span>"); }
             else                                      { setTextById("api_status_icon_" + key, "<span style='color:" + color_api_error +      "'>" + sign_error + "</span>"); }
-            }
+        }
 
-        if (document.getElementById("onoff_"+key.toLowerCase())) {
-            let button  = document.getElementById("onoff_"+key.toLowerCase());
+        if (document.getElementById("reconnect_"+key.toLowerCase())) {
+
             let button2 = document.getElementById("reconnect_"+key.toLowerCase());
             let [api, dev] = key.split("_");
 
@@ -331,23 +363,18 @@ function statusCheck_apiConnection(data) {
             if (devices_per_interface[api][dev]) { connected_devices = devices_per_interface[api][dev].length; }
             let value = "";
 
-            //if (api == "TEST") { alert(api+":"+connect_status_api); }
-
-            if (connect_status_api === false || connected_devices === 0) { value = "N/A"; }
+            if (connect_status_api === false)                 { value = "N/A"; }
             else if (connect_status.indexOf("OFF") > -1)      { value = "OFF"; }
-            else if (connect_status.indexOf("DISABLED") > -1) { value = "OFF"; }
+            else if (connect_status.indexOf("DISABLED") > -1) { value = "DISABLED"; }
             else if (connect_status.indexOf("ERROR") > -1)    { value = "ERROR"; }
             else                                              { value = "ON"; }
-            button.innerHTML = value;
 
-            if (value === "ON")          { button.style.backgroundColor = colors_power["ON"];     button.disabled = false; }
-            else if (value === "OFF")    { button.style.backgroundColor = colors_power["OFF"];    button.disabled = false; }
-            else if (value === "ERROR")  { button.style.backgroundColor = colors_power["ERROR"];  button.disabled = false; }
-            else if (value === "N/A")    { button.style.backgroundColor = "";                     button.disabled = true; button2.disabled = true; }
+            if (value === "N/A" || value === "DISABLED") {
+                button2.disabled = true;
             }
-		}			
-
-	}
+        }
+    }
+}
 
 
 // check status edit mode, intelligent mode & CO

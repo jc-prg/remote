@@ -126,12 +126,27 @@
     --rm-color-signal-power-off: darkred;
     --rm-color-signal-power-other: #4690f1;
     --rm-color-signal-power-error: blueviolet;
+
     --rm-color-signal-value-on: #22BB22;
     --rm-color-signal-value-ok: #22BB22;
     --rm-color-signal-value-off: #FF3333;
     --rm-color-signal-value-error: #FF3333;
     --rm-color-signal-value-hint: gold;
     --rm-color-signal-value-value: #33AAAA;
+
+    --rm-color-signal-value-light-on: #22BB22;
+    --rm-color-signal-value-light-ok: #22BB22;
+    --rm-color-signal-value-light-off: #FF3333;
+    --rm-color-signal-value-light-error: #FF3333;
+    --rm-color-signal-value-light-hint: gold;
+    --rm-color-signal-value-light-value: #2166d1;
+    --rm-color-signal-value-dark-ok: lightgreen;
+    --rm-color-signal-value-dark-on: lightgreen;
+    --rm-color-signal-value-dark-off: #FF3333;
+    --rm-color-signal-value-dark-hint: gold;
+    --rm-color-signal-value-dark-error: #ee6666;
+    --rm-color-signal-value-dark-value: #66FFFF;
+
 
     --rm-color-slider: darkgray;
     --rm-color-slider-container: #DDDDEE;

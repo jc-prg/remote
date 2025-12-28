@@ -52,6 +52,16 @@ class RemoteMainAudio {
         //this.change_volume = this.change_volume.bind(this);
     }
 
+    // read main audio device status
+    main_audio_status(data) {
+        if (this.audio_active) {
+            const [device_status, device_status_info] = statusCheck_devicePowerStatus(data);
+            this.audio_status = device_status[this.audio_device];
+            if (this.audio_status.indexOf("ERROR") >= 0) { this.audio_status += " (" + device_status_info[this.audio_device] + ")"; }
+        }
+        return this.audio_status;
+    }
+
     // read properties from main audio device
     main_audio_settings(data=undefined) {
         if (data !== undefined) { this.data = data || dataAll; }
@@ -87,16 +97,6 @@ class RemoteMainAudio {
         }
     }
 
-    // read main audio device status
-    main_audio_status(data) {
-        if (this.audio_active) {
-            const [device_status, device_status_info] = statusCheck_devicePowerStatus(data);
-            this.audio_status = device_status[this.audio_device];
-            if (this.audio_status.indexOf("ERROR") >= 0) { this.audio_status += " (" + device_status_info[this.audio_device] + ")"; }
-        }
-        return this.audio_status;
-    }
-
     // display mute/active icon
     mute(status=true) {
         if (status === "True") { status = true; }
@@ -111,7 +111,7 @@ class RemoteMainAudio {
         }
     }
 
-    // check if temp volume level is relevant
+    // check if temp volume level is relevant (avoid a "jump back to old volume" while change_volume() is processed by the server)
     volume_temp(volume) {
         let current_time = Math.floor(Date.now() / 1000);
         if (this.temp_audio_time !== 0 && current_time - this.temp_audio_time <= this.temp_audio_offset) {

@@ -775,7 +775,21 @@ function apiSetConfig_InterfaceData( device, config ) {
 
 // reload API Device connections
 function apiReconnectInterface(interface_id) {
+    appMsg.confirm(lang("API_RECONNECT_ALL"), "apiReconnectInterface_exec('"+interface_id+"');", 140);
+}
+
+function apiReconnectInterface_exec(interface_id) {
     let send_cmd    = ["reconnect", interface_id];
+	appFW.requestAPI( "POST", send_cmd, "", apiAlertReturn );
+}
+
+// reload API Device connections
+function apiDiscoverDevices() {
+    appMsg.confirm(lang("API_DEVICE_DISCOVERY"), "apiDiscoverDevices_exec();", 140);
+}
+
+function apiDiscoverDevices_exec() {
+    let send_cmd    = ["discovery"];
 	appFW.requestAPI( "POST", send_cmd, "", apiAlertReturn );
 }
 

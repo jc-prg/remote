@@ -71,12 +71,15 @@ let language_app = {
         "API_COMMANDS"          : "API commands",
         "API_COMMANDS_TEST"     : "API commands - manual testing",
         "API_DEVICE_DELETE"     : "Do you really want to delete the device <b>{1}</b> from the <b>API {0}</b>?",
+        "API_DEVICE_DISCOVERY"  : "Do you want to start an API device discovery now? This will a few minutes and potentially slow down the server a bit.",
+        "API_RECONNECT_ALL"     : "Do you want to reconnect all devices now?",
         "API_INFORMATION"       : "API information",
         "API_SELECT_CMD"        : "API command or use your own ...",
         "API_INFO"              : "API info",
         "API_DEVICE_NOT_CONNECTED"   : "API device {0} not connected",
         "API_NOT_CONNECTED"          : "API {1} not connected",
         "API_SETTINGS"          : "API settings",
+        "API_SETTINGS_OVERVIEW" : "API overview",
         "API_TEST"              : "API test",
 
         "API_EDIT_REALLY_CHANGE": "Do you really want to <b>change the API settings</b> for this remote control?",
@@ -183,6 +186,9 @@ let language_app = {
         "DEVICES_NOT_CONNECTED"     : "Devices not connected",
         "DEVICES_NOT_DEFINED_YET"   : "No devices defined yet.",
         "DEVICES_ADD_SETTINGS"      : "Use settings to create remote controls.",
+
+        "DISCOVERY_DONE"                : "OK: Discovery of API devices done.",
+        "DISCOVERY_FAILED"              : "ERROR: Discovery of API devices failed.",
 
         "DISPLAY"                       : "display",
         "DISPLAY_EXISTS"                : "Display active for this remote.",
@@ -352,9 +358,12 @@ let language_app = {
 
         "QUICK_ACCESS"                 : "Quick Access",
 
-        "RECONNECT"                    : "Reconnect",
-        "RECORD_COMMAND"               : "Record command",
-        "RECORD_DELETE_COMMANDS"       : "Record / delete commands",
+        "RECONNECT"                    : "reconnect",
+        "RECONNECT_DONE"               : "OK: Reconnect done ({0}).",
+        "RECONNECT_FAILED"             : "ERROR: Reconnect failed ({0}).",
+
+        "RECORD_COMMAND"               : "record command",
+        "RECORD_DELETE_COMMANDS"       : "record / delete commands",
         "REMOTE"                       : "remote",
         "REMOTE_ADD"                   : "Add remote controls",
         "REMOTE_CONFIG_ERROR"          : "Error in remote config file(s) '{0}': ",

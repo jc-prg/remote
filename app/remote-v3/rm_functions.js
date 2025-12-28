@@ -44,10 +44,14 @@ function dictCopy(dict) {
     return JSON.parse(JSON.stringify(dict));
     }
 
-function use_color (value, color="VALUE") {
+function use_color (value, color="VALUE", light=false) {
 
-    return "<font style='color:var(--rm-color-signal-value-"+color.toLowerCase()+");'>" + value + "</font>";
+    if (light) {
+        return "<font style='color:var(--rm-color-signal-value-light-" + color.toLowerCase() + ");'>" + value + "</font>";
+    } else {
+        return "<font style='color:var(--rm-color-signal-value-" + color.toLowerCase() + ");'>" + value + "</font>";
     }
+}
 
 function scrollTop() {
   document.body.scrollTop = 0; // For Safari

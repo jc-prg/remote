@@ -131,7 +131,36 @@ class RemoteElementsEdit {
 class RemoteElementTable {
     constructor(name) {
 
-        this.app_name       = name;
+        this.app_name = name;
+        this.row_ratio = "auto";
+    }
+
+    /* add a table start */
+    start(width="100%", row_ratio="") {
+        this.row_ratio = row_ratio;
+        return "<table style=\"border:0;width:"+width+"\">";
+    }
+
+    /* add a table row with up to two cells */
+    row(td1, td2=undefined) {
+
+        let row_ratio_left = "";
+        let row_ratio_right = "";
+
+        if (this.row_ratio.indexOf("px:*") > 0) {
+            row_ratio_left = "width:" + this.row_ratio.split(":")[0] + ";";
+            row_ratio_right = "width:auto;";
+        }
+        else if (this.row_ratio.indexOf(":") > 0) {
+            row_ratio_left = "width:" + this.row_ratio.split(":")[0] + "%;";
+            row_ratio_right = "width:" + this.row_ratio.split(":")[1] + "%;";
+        }
+
+        if (td2 === undefined)   { td2 = ""; }
+        if (td1 === "start")     { return "<table style=\"border:0;widt:"+td2+"\">"; }
+        else if (td1 === "end")  { return "</table>"; }
+        else if (td2 === false)  { return "<tr><td style=\"vertical-align:top;\" colspan=\"2\">" + td1 + "</td></tr>"; }
+        else                     { return "<tr><td style=\"vertical-align:top;"+row_ratio_left+"\">" + td1 + "</td><td style=\"vertical-align:top;"+row_ratio_right+"\">" + td2 + "</td></tr>"; }
     }
 
     /* add a table row with a line in it*/
@@ -140,24 +169,9 @@ class RemoteElementTable {
         return "<tr><td colspan='2'><hr style='border:1px solid white;'/></td></tr>";
     }
 
-    /* add a table row with up to two cells */
-    row(td1, td2=undefined) {
-        if (td2 === undefined)   { td2 = ""; }
-        if (td1 === "start")     { return "<table style=\"border:0;widt:"+td2+"\">"; }
-        else if (td1 === "end")  { return "</table>"; }
-        else if (td2 === false)  { return "<tr><td style=\"vertical-align:top\" colspan=\"2\">" + td1 + "</td></tr>"; }
-        else                     { return "<tr><td style=\"vertical-align:top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
-    }
-
-    /* add a table start */
-    start(width="100%") {
-
-        return "<table style=\"border:0;width:"+width+"\">";
-    }
-
     /* add a table end */
     end() {
-
+        this.row_ratio = "auto";
         return "</table>";
     }
 

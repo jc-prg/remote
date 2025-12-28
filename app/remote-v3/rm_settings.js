@@ -129,12 +129,14 @@ class RemoteSettings {
             setNavTitle(lang('SETTINGS_API'));
             this.settings_ext_reset();
             this.settings_ext_append(0,"", this.index(true, "WRAPPER"), "", true);
-            this.module_api.edit();
-            this.settings_ext_append(1, "", this.module_api.create());
-            this.settings_ext_append(2, "", this.module_api.show_logs());
+            this.module_api.create_container_overview();
+            this.module_api.create_container_apis();
+            //this.settings_ext_append(1, "", this.module_api.show_device_details());
+            //this.settings_ext_append(2, "", this.module_api.show_logs());
             this.create_show_ext();
             this.index_buttons_html = this.index(true, "SETTINGS_API");
-            apiGetConfig_showInterfaceData(this.module_api.edit_info);
+            this.module_api.edit_api_config_load();
+            this.module_api.edit_api_overview();
             statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
         }
         else if (selected_mode === "edit_timer") {
@@ -649,41 +651,52 @@ class RemoteSettingsApi {
         this.elements = this.settings.elements;
         this.json_edit = new RemoteJsonEditing(name+".json", "compact", "width:100%;height:210px;");
 
-        this.edit_info = this.edit_info.bind(this);
+        this.edit_api_config = this.edit_api_config.bind(this);
     }
 
     // create container and load data for API settings
-    create() {
-        let setting = "<b>&nbsp;API details for devices</b><text style='font-size:25px;'>&nbsp;</text>";
-        setting    += "<hr style='border:1px lightgray solid;' />";
-        setting    += "<div style='padding:5px;padding-bottom:6px;'>";
+    show_device_details() {
+        let setting = "";
+        /*
+        setting += "<b>&nbsp;API details for devices</b><text style='font-size:25px;'>&nbsp;</text>";
+        setting += "<hr style='border:1px lightgray solid;' />";
+        */
 
         let set_temp  = this.tab.start();
-        set_temp += this.tab.row("Speed:&nbsp;&nbsp;", this.exec_time_list() );
+        set_temp += this.tab.row("API-Speed:&nbsp;&nbsp;", this.exec_time_list() );
+        set_temp += this.tab.row("");
+        set_temp += this.tab.row("API-Details:&nbsp;&nbsp;", this.device_list("select_dev_status", this.app_name+".device_list_status('select_dev_status','dev_status');"));
+        set_temp += this.tab.row("<span id='dev_status'>&nbsp;</span>", false);
         set_temp += this.tab.end();
-        set_temp += "</div><div style='padding:5px;'>";
-        set_temp += this.tab.start();
-        set_temp += this.tab.row("Details:&nbsp;&nbsp;", this.device_list("select_dev_status", this.app_name+".device_list_status('select_dev_status','dev_status');"));
-        set_temp += this.tab.row("<span id='dev_status'>&nbsp;</span>");
-        set_temp += this.tab.end();
+
+        setting += "<div style='padding:5px;padding-bottom:6px;'>";
         setting  += set_temp;
         setting  += "</div>";
 
         return setting;
     }
 
-    // create container to show API logging information, to be filled by apiLoggingLoad();
-    show_logs() {
-        let setting = "<b>&nbsp;API logging</b><text style='font-size:25px;'>&nbsp;</text>";
-        setting += " [<text onclick='apiLoggingLoad();' style='cursor:pointer;'>reload</text>]";
-        setting += "<hr style='border:1px lightgray solid;' />";
-        setting += "<div style='padding:5px;padding-bottom:6px;'>";
-
+    // show API logging information, to be filled by apiLoggingLoad();
+    show_logs(log_type="all") {
+        let setting = "";
         let set_temp = "";
-        set_temp += "<div class='server_logging queue' id='logging_queue_send'></div>";
-        set_temp += "<div class='server_logging' id='logging_api_send'></div>";
-        set_temp += "<div class='server_logging queue' id='logging_queue_query'></div>";
-        set_temp += "<div class='server_logging' id='logging_api_query'></div>";
+
+        if (log_type === "all") {
+            setting += "<b>&nbsp;API logging</b><text style='font-size:25px;'>&nbsp;</text>";
+            setting += " [<text onclick='apiLoggingLoad();' style='cursor:pointer;'>reload</text>]";
+            setting += this.line;
+        }
+
+        setting += "<div style='padding: 3px;'>";
+
+        if (log_type === "all" || log_type === "send") {
+            set_temp += "<div class='server_logging queue' id='logging_queue_send'></div>";
+            set_temp += "<div class='server_logging' id='logging_api_send'></div>";
+        }
+        if (log_type === "all" || log_type === "query") {
+            set_temp += "<div class='server_logging queue' id='logging_queue_query'></div>";
+            set_temp += "<div class='server_logging' id='logging_api_query'></div>";
+        }
 
         setting  += set_temp;
         setting  += "</div>";
@@ -692,8 +705,63 @@ class RemoteSettingsApi {
         return setting;
     }
 
+    // show an overview on APIs and connected devices plus buttons, to reconnect / discover API devices
+    show_overview() {
+        let text = "<br/>";
+
+        const all_apis = Object.entries(this.data["CONFIG"]["apis"]["list"]).length;
+        const all_apis_active = Object.values(this.data["STATUS"]["interfaces"]["active"]).filter(value => value === true).length;
+        const all_api_devices = Object.keys(this.data["CONFIG"]["apis"]["list_description"]).length;
+        const all_api_devices_active = Object.values(this.data["STATUS"]["connections"]).reduce((count, api) => { if (api.active === true) { return count + Object.values(api["api_devices"]).filter(device => device.active === true).length; } return count; }, 0);
+        const all_devices = Object.keys(this.data["CONFIG"]["devices"]).length;
+        const all_devices_active = Object.values(this.data["CONFIG"]["devices"]).filter(device => device["settings"]?.visible === "yes").length;
+
+        text += this.tab.start("100%", "140px:*");
+        text += this.tab.row("Active APIs:",        `<b>${String(all_apis_active).padStart(2,'0')}</b> / ${String(all_apis).padStart(2,'0')}`);
+        text += this.tab.row("Active API-devices:", `<b>${String(all_api_devices_active).padStart(2,'0')}</b> / ${String(all_api_devices).padStart(2,'0')}`);
+        text += this.tab.row("Active devices:",     `<b>${String(all_devices_active).padStart(2,'0')}</b> / ${String(all_devices).padStart(2,'0')}`);
+        text += this.tab.line()
+        text += this.tab.row("Last (re)connect:", `${this.data["STATUS"]["interfaces"]["last_reconnect"]} (${this.data["STATUS"]["interfaces"]["last_reconnect_device"]})`);
+        text += this.tab.row("Last discovery:",   `${this.data["STATUS"]["interfaces"]["last_discovery"]}`);
+        text += this.tab.end();
+        text += "<br/>&nbsp;<br/>";
+
+        this.button.width = "120px";
+        text += this.button.edit("apiReconnectInterface('all');", "Reconnect APIs", "", "api_reconnect_all") + "&nbsp;&nbsp;";
+        text += this.button.edit("apiDiscoverDevices();", "Device discovery", "", "api_discover_all");
+        return text;
+    }
+
+    // create a container header
+    create_container_header(left_text, right_text="") {
+        let text = "";
+        text += "<div style='width:100%;float:left;max-height:30px;'>";
+        text += "   <div style='width:60px;float:right;'>" + right_text + "</div>";
+        text += "   <div style='padding:5px;float:left;font-weight:bold;'>" + left_text + "</div>";
+        text += "</div>";
+        return text;
+    }
+
+    // create container content
+    create_container_content(container_content_id, visible=true, content="") {
+        return "<div id='"+container_content_id+"' style='width:100%;min-height:50px;float:left;"+visible+"'>"+content+"</div>";
+    }
+
+    // create a container with overarching settings for all APIs
+    create_container_overview() {
+        let count = 1;
+        let text = "";
+        let settings = "<hr style='border:1px lightgray solid;' />";
+        settings += "<div id='api_settings_sheetbox'></div>";
+
+        text += this.create_container_header(lang("API_SETTINGS_OVERVIEW").toUpperCase());
+        text += this.create_container_content("api_settings_overview", true, settings);
+
+        this.settings.settings_ext_append(count, "", text);
+    }
+
     // create a container for each existing API with some basic infos and the toggle to (de)activate */
-    edit() {
+    create_container_apis() {
 
         this.update_data();
 
@@ -715,20 +783,31 @@ class RemoteSettingsApi {
                 command_show_hide += "if (el_"+key2+".style.display == \"block\") { el_"+key2+".style.display = \"none\"; } else { el_"+key2+".style.display = \"block\"; }";
 
                 let init = "";
-                text += "<div style='width:100%;float:left;max-height:30px;'>";
-                text += "   <div style='width:60px;float:right;'>"
-                text +=     this.toggle.toggleHTML("active_"+key, "", "", command_on, command_off, init);
-                text += "   </div>";
-                text += "   <div style='padding:5px;float:left;'><b onclick='"+command_show_hide+"' style='cursor:pointer;'>API: "+key+" </b>&nbsp;<text id='api_status_icon_"+key+"' style='font-size:18px;'></text></div>";
-                text += "</div>";
-                text += "<div id='interface_edit_"+key+"' style='width:100%;min-height:50px;float:left;"+initial_visible+"'></div>";
+                let toggle = this.toggle.toggleHTML("active_"+key, "", "", command_on, command_off, init);
+                let headline = "<span onclick='"+command_show_hide+"' style='cursor:pointer;'>API: "+key+" </span>&nbsp;<text id='api_status_icon_"+key+"' style='font-size:18px;'></text>";
+                text += this.create_container_header(headline, toggle);
+                text += this.create_container_content("interface_edit_"+key, initial_visible);
 
                 this.settings.settings_ext_append(count, "", text);
             }   }
     }
 
+    // create dialogs to edit overarching settings
+    edit_api_overview() {
+        let sheet_box = new RemoteElementSheetBox("api_settings_sheetbox", "350px", true, false, false);
+        sheet_box.addSheet("Overview", this.show_overview());
+        sheet_box.addSheet("Device details", this.show_device_details());
+        sheet_box.addSheet("Logging QUERY", this.show_logs("query"));
+        sheet_box.addSheet("Logging SEND", this.show_logs("send"));
+    }
+
+    // load edit_ap_config()
+    edit_api_config_load() {
+        apiGetConfig_showInterfaceData(this.edit_api_config);
+    }
+
     // create dialogs to edit api settings */
-    edit_info(data) {
+    edit_api_config(data) {
 
         this.logging.debug(data);
         this.update_data();
@@ -848,6 +927,61 @@ class RemoteSettingsApi {
             details += "<br/>";
             return [count, details];
         }
+        this.list_api_device_information = function (api_name, device, show_buttons=undefined) {
+
+            let temp = "";
+            let information = "<div id='api_status_data_"+api_name+"_"+device+"'></div>";
+            let devices_per_interface = this.data["CONFIG"]["apis"]["structure"];
+            let connected_devices = devices_per_interface[api_name][device].length;
+
+            let api_dev = api_name.toLowerCase() + "_" + device.toLowerCase();
+            let link_reconnect = "apiReconnectInterface_exec( \""+api_name+"_"+device+"\");"
+            let link_on_off = "apiApiDeviceOnOff_button(\""+api_name+"\", \""+device+"\", this);";
+            let link_delete = "apiDeleteApiDevice(\""+api_name+"\",\""+device+"\");";
+
+            // create edit dialog
+            let command_on = `apiApiDeviceOnOff('${api_name}', '${device}', 'True');`;
+            let command_off = `apiApiDeviceOnOff('${api_name}', '${device}', 'False');`;
+            let init = this.data["STATUS"]["connections"][api_name]["api_devices"][device]["active"];
+
+            let power_device = interfaces[api_name]["API-Devices"][device]["PowerDevice"] || "N/A";
+            let toggle = this.toggle.toggleHTML("active_"+api_name+"-"+device, "", "", command_on, command_off, init);
+            toggle = `<div class='mode_setting_toggle' style='float:left;margin-left:-3px;'>${toggle}</div>`;
+
+            temp    += this.tab.start("100%", "110px:*");
+            temp    += this.tab.row("ID: ", `<div style="padding-bottom:6px;font-weight:bold">${api_name}_${device}</div>`);
+            temp    += this.tab.row("Active:", toggle);
+            temp    += this.tab.row("Status:", "<div id='api_status_"+api_name+"_"+device+"' class='api-status-info' style='margin: 3px 3px 3px 0;'></div>");
+            temp    += this.tab.line();
+            temp    += this.tab.row("Description: ", interfaces[api_name]["API-Devices"][device]["Description"]);
+            temp    += this.tab.row("PowerDevice: ", power_device + "<text id='power_status_"+api_name+"_"+device+"'></text>");
+            temp    += this.tab.row("Connected:", connected_devices + " devices");
+            temp    += this.tab.line();
+            if (interfaces[api_name]["API-Info"]) {
+                let link = interfaces[api_name]["API-Info"];
+                let link2 = "";
+                if (link.indexOf("github.com") > -1) {
+                    let parts = link.split("/");
+                    link2 = "http://github.com/" + parts[3] + "/" + parts[4]  + "/../" + parts[parts.length-2] + "/" + parts[parts.length-1];
+                }
+                let cmd_url = `<a href=\"${link}\" target=\"_blank\">${link2}</a>`;
+                temp    += this.tab.row("API information:", cmd_url);
+            }
+            if (interfaces[api_name]["API-Devices"][device]["AdminURL"]) {
+                let link = interfaces[api_name]["API-Devices"][device]["AdminURL"];
+                let cmd_url = `<a href=\"${link}\" target=\"_blank\">${link}</a>`;
+                temp    += this.tab.row("API admin tool:", cmd_url);
+            }
+            temp    += this.tab.end();
+            temp    += "<br/>&nbsp;<br/>";
+
+            this.button.height = "30px";
+            this.button.width = "90px";
+            temp += this.button.sized("reconnect_"+api_dev,  lang("RECONNECT"),"settings",  link_reconnect);
+            temp += this.button.sized("delete_"+api_dev,     lang("DELETE"),   "settings",  link_delete);
+
+            return temp;
+        }
         this.list_api_device_settings = function (api_name, device, show_buttons=undefined) {
 
             let temp = "";
@@ -857,13 +991,9 @@ class RemoteSettingsApi {
 
             let api_dev = api_name.toLowerCase() + "_" + device.toLowerCase();
             let link_save = "apiSetConfig_InterfaceData( \""+api_name+"_"+device+"\", \"api_status_edit_"+api_name+"_"+device+"\" );" + "rm3json_edit.disable(\"api_status_edit_"+api_name+"_"+device+"\");";
-            let link_reconnect = "apiReconnectInterface( \""+api_name+"_"+device+"\");"
             let link_edit = "rm3json_edit.disable(\"api_status_edit_"+api_name+"_"+device+"\",false);" +
                 "this.className=\"rm-button hidden\";" +
                 "document.getElementById(\"save_"+api_dev+"\").className=\"rm-button settings\";";
-            let link_api_info = "window.open(\""+interfaces[api_name]["API-Info"]+"\")";
-            let link_on_off = "apiApiDeviceOnOff_button(\""+api_name+"\", \""+device+"\", this);";
-            let link_delete = "apiDeleteApiDevice(\""+api_name+"\",\""+device+"\");";
 
             let buttons = "";
             let buttons_plus = "";
@@ -881,12 +1011,10 @@ class RemoteSettingsApi {
             else if (connect_status.indexOf("ERROR") > -1)                { on_off_status = "ERROR"; }
             else                                                          { on_off_status = "ON"; }
 
-            buttons      += this.button.sized("onoff_"+api_dev,      on_off_status,    "settings",  link_on_off);
-            buttons      += this.button.sized("reconnect_"+api_dev,  lang("RECONNECT"),"settings",  link_reconnect);
+            this.button.width = "90px";
+            this.button.height = "30px";
             buttons      += this.button.sized("edit_"+api_dev,       lang("EDIT"),     "settings",  link_edit)
             buttons      += this.button.sized("save_"+api_dev,       lang("SAVE"),     "hidden",    link_save);
-            buttons      += this.button.sized("info_"+api_dev,       lang("API_INFO"), "settings",  link_api_info);
-            buttons      += this.button.sized("delete_"+api_dev,     lang("DELETE"),   "settings",  link_delete);
 
             if (this.data["CONFIG"]["apis"]["list_api_commands"][api_name+"_"+device] && dataAll["CONFIG"]["apis"]["list_api_commands"][api_name+"_"+device].length > 0) {
                 if (show_buttons === undefined) { buttons_plus += "<hr style='width:100%;float:left;'/>"; }
@@ -912,11 +1040,6 @@ class RemoteSettingsApi {
                 // create edit dialog
                 temp    += this.tab.start();
                 temp    += this.tab.row("ID: ",    api_name+"_"+device);
-                if (interfaces[api_name]["API-Devices"][device]["PowerDevice"] && interfaces[api_name]["API-Devices"][device]["PowerDevice"] !== "") {
-                    temp    += this.tab.row("Power: ", interfaces[api_name]["API-Devices"][device]["PowerDevice"] + "<text id='power_status_"+api_name+"_"+device+"'></text>");
-                }
-                temp    += this.tab.row("Devices:", connected_devices);
-                temp    += this.tab.row("Status:", "<div id='api_status_"+api_name+"_"+device+"' class='api-status-info'></div>");
                 temp    += this.tab.row("<div style='height:5px;width:100%'></div>");
                 temp    += this.tab.row(information, false);
                 temp    += this.tab.row("<div style='width:100%;text-align:center;'>" + buttons + "</div>", false);
@@ -1045,9 +1168,11 @@ class RemoteSettingsApi {
             for (let dev in api_config["API-Devices"]) {
                 let buttons = this.list_api_device_settings(key, dev, true);
                 let config_device = this.create_device_configuration(key, dev);
-                let config_api = this.create_api_configuration(key, dev);
+                let sheet_box_height = "380px";
+                if (config_device !== "") { sheet_box_height = "420px"; }
 
-                sheet_boxes[key+"_"+dev] = new RemoteElementSheetBox("api-setting-"+key+"_"+dev, "410px", true, false, false);
+                sheet_boxes[key+"_"+dev] = new RemoteElementSheetBox("api-setting-"+key+"_"+dev, sheet_box_height, true, false, false);
+                sheet_boxes[key+"_"+dev].addSheet(lang("API_INFORMATION"), this.list_api_device_information(key, dev, false));
                 sheet_boxes[key+"_"+dev].addSheet(lang("API_DEFINITION"), this.list_api_device_settings(key, dev, false));
                 if (buttons !== "")         { sheet_boxes[key+"_"+dev].addSheet(lang("API_ADMIN"), buttons); }
                 if (config_device !== "")   { sheet_boxes[key+"_"+dev].addSheet(lang("API_CREATE_DEV_CONFIG"), config_device); }
@@ -1075,7 +1200,7 @@ class RemoteSettingsApi {
         let text = "<div id='setting_exec_time_list'>";
         if (dataAll["STATUS"] && dataAll["STATUS"]["request_time"]) {
             for (let key in dataAll["STATUS"]["request_time"]) {
-                text += key + ": " + use_color((Math.round(dataAll["STATUS"]["request_time"][key] * 1000) / 1000) + "s<br/>", "VALUE");
+                text += key + ": " + use_color((Math.round(dataAll["STATUS"]["request_time"][key] * 1000) / 1000) + "s<br/>", "VALUE", true);
             }
         }
         text += "</div>";
@@ -1109,13 +1234,14 @@ class RemoteSettingsApi {
         if (device_status["api-status"].indexOf("ERROR") > -1)          { color = "ERROR"; }
         else if (device_status["api-status"].indexOf("Connected") > -1) { color = "ON"; }
         else if (device_status["api-status"].indexOf("DISABLED") > -1)  { color = "OFF"; }
+        else if (device_status["api-status"].indexOf("OFF") > -1)       { color = "OFF"; }
 
         status += this.tab.start();
         status += this.tab.line();
-        status += this.tab.row("API:",             use_color(device_status["api"], "VALUE"));
-        status += this.tab.row("",                 use_color(device_status["api-status"],color));
-        status += this.tab.row("Last&nbsp;send:",  use_color(device_status["api-last-send"]),"VALUE");
-        status += this.tab.row("Last&nbsp;query:", use_color(device_status["api-last-query"],"VALUE"));
+        status += this.tab.row("API:",             use_color(device_status["api"], "VALUE", true));
+        status += this.tab.row("",                 use_color(device_status["api-status"],color, true));
+        status += this.tab.row("Last&nbsp;send:",  use_color(device_status["api-last-send"],"VALUE", true));
+        status += this.tab.row("Last&nbsp;query:", use_color(device_status["api-last-query"],"VALUE", true));
         status += this.tab.line();
 
         for (let key in device_status) {
@@ -1126,18 +1252,18 @@ class RemoteSettingsApi {
                 let command_link;
 
                 if (status_value === "ON"){
-                    command_link = "<div onclick=\""+command_off+"\" style=\"cursor:pointer\"><u>" + use_color("ON", "ON") + "</u></div>";
+                    command_link = "<div onclick=\""+command_off+"\" style=\"cursor:pointer\"><u>" + use_color("ON", "ON", true) + "</u></div>";
                 }
-                else if (status_value === "OFF")	{
-                    command_link = "<div onclick=\""+command_on +"\" style=\"cursor:pointer\"><u>" + use_color("OFF", "OFF") + "</u></div>";
+                else if (status_value.indexOf("OFF") >= 0)	{
+                    command_link = "<div onclick=\""+command_on +"\" style=\"cursor:pointer\"><u>" + use_color("OFF", "OFF", true) + "</u></div>";
                 }
                 else {
-                    command_link = use_color(status_value, "VALUE");
+                    command_link = use_color(status_value, "VALUE", true);
                 }
                 status += this.tab.row(key + ":", command_link);
             }
             else if (dont_use.indexOf(key) === -1 && (!device_values || device_values.indexOf(key) > -1)) {
-                status += this.tab.row(key + ": ", use_color(device_status[key], "VALUE"));
+                status += this.tab.row(key + ": ", use_color(device_status[key], "VALUE", true));
             }
         }
         status += this.tab.end();
