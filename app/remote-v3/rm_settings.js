@@ -1151,6 +1151,10 @@ class RemoteSettingsApi {
 
         for (let key in interfaces) {
             let api_device_config = (this.data["CONFIG"]["apis"]["list_api_configs"]["list"][key] !== undefined);
+
+    console.error(this.data["CONFIG"]["apis"]["list_api_configs"]["list"][key]);
+    console.error(api_device_config);
+
             let id = "interface_edit_"+key;
             let api_config = interfaces[key];
             let setting = "";
