@@ -314,12 +314,9 @@ function statusCheck_apiConnection(data) {
 			}
 		}
 
+    // check if there is an API with config file
     for (let key in dataAll["CONFIG"]["apis"]["structure"]) {
-        console.error(key);
-        console.error(dataAll["CONFIG"]["apis"]["list_api_configs"]["list"]);
-        if (dataAll["CONFIG"]["apis"]["list_api_configs"]["list"][key] === undefined) {
-            api_summary[key] = "ERROR";
-        }
+        if (dataAll["CONFIG"]["apis"]["list_api_configs"]["list"][key] === undefined) { api_summary[key] = "ERROR"; }
     }
 
     // update API status in settings
