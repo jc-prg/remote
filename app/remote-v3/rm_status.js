@@ -314,10 +314,10 @@ function statusCheck_apiConnection(data) {
 			}
 		}
 
-    for (let key in data["CONFIG"]["apis"]["structure"]) {
+    for (let key in dataAll["CONFIG"]["apis"]["structure"]) {
         console.error(key);
-        console.error(data["CONFIG"]["apis"]["list_apis_configs"]["list"]);
-        if (data["CONFIG"]["apis"]["list_apis_configs"]["list"][key] === undefined) {
+        console.error(dataAll["CONFIG"]["apis"]["list_apis_configs"]["list"]);
+        if (dataAll["CONFIG"]["apis"]["list_apis_configs"]["list"][key] === undefined) {
             api_summary[key] = "ERROR";
         }
     }
