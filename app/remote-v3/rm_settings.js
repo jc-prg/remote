@@ -1159,7 +1159,7 @@ class RemoteSettingsApi {
             let setting = "";
             setting += "<hr style='border:solid lightgray 1px;'/>";
 
-            if (api_device_config) {
+            if (api_config && api_device_config) {
                 for (let dev in api_config["API-Devices"]) {
                     let temp_edit_device_config = "<div id='api-setting-" + key + "_" + dev + "'></div>";
                     let container_title = "</b>API-Device: " + dev + "&nbsp;&nbsp;<text id='api_status_icon_" + key + "_" + dev + "' style='font-size:16px;'></text>";

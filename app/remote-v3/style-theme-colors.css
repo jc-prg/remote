@@ -286,4 +286,8 @@
         --rm-opacity-frame-var: 0.8;
         --rm-opacity-display-var: 0.7;
         }
+
+    #audio1 { opacity: 0.6 }
+    #audio2 { opacity: 0.6 }
+    #audio3 { opacity: 0.6 }
     }

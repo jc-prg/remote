@@ -36,7 +36,7 @@ function statusCheck(data={}) {
         setTextById("edit1", "");
         }
     else {
-        const stop = "remoteToggleEditMode(false);remoteFirstLoad_load();";
+        const stop = "remoteToggleEditMode(false);remoteSetCookie();remoteFirstLoad_load();";
         const html = "<img src='/icon/edit_stop.png' onclick='" + stop + "' style='cursor:pointer;width:100%' name='stop editing' alt=''>";
         setTextById("edit1", html);
         //statusCheck_audioMute(data);
