@@ -66,10 +66,11 @@ hr         { border: solid 1px var(--rm-color-hr); }
 }
 
 #attention {
-  position  : fixed;
-  width     : 50px;
-  left      : 20px;
-  bottom    : 20px;
+  position : absolute;
+  height : 14px;
+  width : 14px;
+  right : 170px;
+  z-index : 100;
 }
 
 #attention img {
