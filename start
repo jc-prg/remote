@@ -273,7 +273,7 @@ elif [ $config == "rebuild" ]; then
       $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml stop
     fi
 
-    echo "Update REMOTE from repository"
+    echo  "Update REMOTE from repository"
     git stash
     git pull
 
