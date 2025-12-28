@@ -1105,6 +1105,25 @@ paths:
               STATUS:
                 $ref: "#/definitions/STATUS"
 
+  /discovery/:
+    post:
+      operationId: __main__.remoteAPI.discover_api
+      tags:
+        - maintain
+      summary: discover api devices
+      description: discover api devices
+      responses:
+        200:
+          description: Successfully triggered discovery
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
   /reset/:
     get:
       operationId: __main__.remoteAPI.status_devices_reset

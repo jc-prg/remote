@@ -9,10 +9,10 @@ from logging.handlers import RotatingFileHandler
 # ---------------------------------
 
 API_name = "jc://remote/"
-API_version = "v3.0.2"
-APP_version = "v3.0.18"
+API_version = "v3.0.3"
+APP_version = "v3.0.19"
 APP_support = [APP_version,
-               "v3.0.17"
+               "v3.0.19"
                ]  # other supported versions
 
 # ---------------------------
@@ -267,7 +267,6 @@ refresh_config_sleep = 3 * 60
 refresh_config_cache = 60
 refresh_device_status = 10
 refresh_device_connection = 60
-discover_devices_interval = 10 * 60
 
 shorten_info_to = 50
 

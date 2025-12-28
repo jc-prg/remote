@@ -89,6 +89,7 @@ class ConfigCache(RemoteThreadingClass):
         self.load_after_update = {}
         self.load_after = {}
         self.config_errors = {}
+        self.config_messages = []
 
     def run(self):
         """
@@ -715,6 +716,22 @@ class ConfigCache(RemoteThreadingClass):
         self.logging.debug("Local time: " + str(date_tz_info))
         return date_tz_info
 
+    def config_messages_add(self, message):
+        """
+        add asynchronous message to list, to be returned to client
+
+        Args:
+            message (str): message to add
+        """
+        self.config_messages.append(message)
+
+    def config_messages_get(self):
+        """
+        get all current messages and clear array
+        """
+        messages = self.config_messages
+        self.config_messages = []
+        return messages
 
     def local_date(self, days=0):
         """

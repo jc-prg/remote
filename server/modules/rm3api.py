@@ -650,6 +650,7 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start()
         data["REQUEST"]["Return"] = "OK: Returned list and status data."
         data["REQUEST"]["Command"] = "List"
+        data["REQUEST"]["server-messages"] = self.config.config_messages_get()
         data = self._end(data)
         return data
 
@@ -878,10 +879,23 @@ class RemoteAPI(RemoteDefaultClass):
         trigger reconnect of APIs
         """
         data = self._start()
-        data["REQUEST"]["Return"] = "OK: Configuration reloaded"
-        data["REQUEST"]["Command"] = "Reload"
+        data["REQUEST"]["Return"] = "OK: Reconnect and configuration reload triggered"
+        data["REQUEST"]["Command"] = "Reconnect"
 
-        self.apis.api_reconnect(interface, True)
+        self.apis.api_request_reconnect(interface, True, True)
+
+        data = self._end(data, ["no-data", "no-config", "no-status"])
+        return data
+
+    def discover_api(self):
+        """
+        trigger discover of API devices
+        """
+        data = self._start()
+        data["REQUEST"]["Return"] = "OK: Triggered API device discovery"
+        data["REQUEST"]["Command"] = "Discovery"
+
+        self.apis.api_request_discovery()
 
         data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
@@ -1425,7 +1439,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Command"] = "Change API device status"
         data["REQUEST"]["Return"] = self.config.interface_device_active(interface, api_device, active)
 
-        self.apis.check_directly = True
+        self.apis.api_check_device_connection_now = True
         self._refresh()
 
         data = self._end(data, ["no-data", "no-config", "no-status"])

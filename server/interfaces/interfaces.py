@@ -33,9 +33,11 @@ class Connect(RemoteThreadingClass):
         self.api_first_load = True
         self.api_device_list = {}
         self.api_device_settings = {}
-        self.api_request_reconnect = {}
+        self.api_request_reconnect_data = {}
         self.api_request_reconnect_all = False
         self.api_request_reconnect_all_message = {}
+        self.api_reconnect_last = 0
+        self.api_reconnect_last_interface = "N/A"
         self.api_modules = {
             "BROADLINK": "api_broadlink",
             "DENON": "api_denon",
@@ -64,15 +66,17 @@ class Connect(RemoteThreadingClass):
         self.available_discover = {}
         self.available_devices = {}
 
-        self.checking_interval = rm3presets.refresh_device_connection
-        self.checking_last = 0
+        self.api_check_device_connection_interval = rm3presets.refresh_device_connection
+        self.api_check_device_connection_now = False
+        self.api_check_device_connection_last = 0
+
         self.check_error = time.time()
         self.last_message = ""
         self.info_no_devices_found = {}
 
-        self.discover_interval = rm3presets.discover_devices_interval
         self.discover_last = 0
-        self.discover_now = False
+        self.discover_now = True
+        self.discover_now_message = False
 
         if rm3presets.log_api_data == "NO":
             self.log_commands = False
@@ -100,31 +104,38 @@ class Connect(RemoteThreadingClass):
                 self.logging.info("Loading API connectors OK.")
 
         while self._running:
-            if time.time() - self.checking_last > self.checking_interval:
-                self.logging.debug(f"Check connected devices (interval={self.checking_interval}s) ...")
+            if time.time() - self.api_check_device_connection_last > self.api_check_device_connection_interval or self.api_check_device_connection_now:
+                self.logging.info(f"Check connected devices (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
                 self.check_connection()
                 self.check_activity()
-                self.checking_last = time.time()
+                self.api_check_device_connection_last = time.time()
+                self.api_check_device_connection_now = False
 
-            if time.time() - self.discover_last > self.discover_interval or self.discover_now:
-                self.logging.debug(f"Discover available devices (now={self.discover_now};interval={self.discover_interval}s) ...")
+            if self.discover_now:
+                self.logging.debug(f"Discover available devices (now={self.discover_now}) ...")
                 self.check_devices()
                 self.check_discover_all()
+
+                if self.discover_now_message:
+                    self.config.config_messages_add("DISCOVERY_DONE")
                 self.discover_last = time.time()
                 self.discover_now = False
+                self.discover_now_message = False
 
             self.thread_wait()
 
-            if self.api_request_reconnect != {}:
+            if self.api_request_reconnect_data != {}:
                 start_time = time.time()
-                for key in self.api_request_reconnect:
-                    self.api_reconnect(key)
-                self.api_request_reconnect = {}
+                for key in self.api_request_reconnect_data:
+                    [reread_config, done_message] = self.api_request_reconnect_data[key]
+                    self.api_reconnect(key, reread_config, done_message)
+                self.api_request_reconnect_data = {}
 
             if self.api_request_reconnect_all:
                 start_time = time.time()
                 self.load_api_connectors()
                 self.api_request_reconnect_all = False
+                self.api_check_device_connection_now = True
 
         self.logging.info("Stopped " + self.name)
 
@@ -132,7 +143,7 @@ class Connect(RemoteThreadingClass):
         """
         check IP connection and try to reconnect if IP connection exists and status is not "Connected"
         """
-        self.logging.debug(".................... CHECK CONNECTION (" + str(self.checking_interval) +
+        self.logging.debug(".................... CHECK CONNECTION (" + str(self.api_check_device_connection_interval) +
                            "s) ....................")
         self.logging.debug("Check Interface configuration: " + str(self.config.interface_configuration))
 
@@ -217,7 +228,7 @@ class Connect(RemoteThreadingClass):
                     connected.append(key.replace("_default", ""))
 
         self.logging.debug("Checked device connections (duration=" + str(round(time.time() - start_time, 1)) +
-                          "s / interval=" + str(self.checking_interval) + "s) ...")
+                          "s / interval=" + str(self.api_check_device_connection_interval) + "s) ...")
         if len(connected) > 0:
             self.logging.debug("-> CONNECTION OK: " + ", ".join(connected))
         if len(not_connected) > 0:
@@ -227,7 +238,7 @@ class Connect(RemoteThreadingClass):
         """
         check when the last command was send and if an auto-off has to be reflected in the system status
         """
-        self.logging.debug(".................... CHECK ACTIVITY (" + str(self.checking_interval) +
+        self.logging.debug(".................... CHECK ACTIVITY (" + str(self.api_check_device_connection_interval) +
                            "s) ....................")
 
         active = []
@@ -261,7 +272,7 @@ class Connect(RemoteThreadingClass):
                     if auto_power_off["switch_off"]:
                         self.device_save_status(device, button="power", status="OFF")
 
-        self.logging.info("Checked device activity (interval=" + str(self.checking_interval) + "s) ...")
+        self.logging.info(f"Checked device activity (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
         if len(active) > 0:
             self.logging.info("-> ACTIVITY: " + ", ".join(active))
         if len(inactive) > 0:
@@ -388,6 +399,9 @@ class Connect(RemoteThreadingClass):
         else:
             self.logging.info(".................... RECONNECT OF INTERFACES ....................")
 
+        self.api_reconnect_last = time.time()
+        self.api_reconnect_last_interface = "all"
+
         api_devices = []
         for device in config_dev:
             api = config_dev[device]["config"]["api_key"]
@@ -477,16 +491,18 @@ class Connect(RemoteThreadingClass):
                         self.logging.error("Could not connect API (6): Unknown reason (" + api_dev + ")")
 
             return True
+
         else:
             return False
 
-    def api_reconnect(self, interface="", reread_config=False):
+    def api_reconnect(self, interface="", reread_config=False, done_message=False):
         """
         reconnect single device or all devices if status is not "Connected"
 
         Args:
             interface (str): interface id (<api>_<api_device>)
             reread_config (bool): reread configuration data
+            done_message (bool): send asynchronous message when reconnect is done
         """
         if interface != "all" and interface not in self.api:
             self.logging.warning(f"API Reconnect not possible, '{interface}' doesn't exist in self.api.")
@@ -524,6 +540,28 @@ class Connect(RemoteThreadingClass):
         else:
             self.api[interface].connect()
 
+        self.api_reconnect_last = time.time()
+        self.api_reconnect_last_interface = interface
+        self.api_check_device_connection_now = True
+
+        if done_message:
+            self.config.config_messages_add(["RECONNECT_DONE", interface])
+
+    def api_request_reconnect(self, interface="", reread_config=False, done_message=False):
+        """
+        request a reconnect of a single or all API devices
+        """
+        self.api_request_reconnect_data[interface] = [reread_config, done_message]
+        self.logging.info(f"api_request_discovery('{interface}',{reread_config},{done_message})")
+
+    def api_request_discovery(self):
+        """
+        trigger a discovery run
+        """
+        self.discover_now = True
+        self.discover_now_message = True
+        self.logging.info("api_request_discovery()")
+
     def api_test(self):
         """
         test all APIs
@@ -553,7 +591,7 @@ class Connect(RemoteThreadingClass):
 
     def api_get_status(self, interface="", device=""):
         """
-        return status of all devices or a selected device
+        return status of all devices or a selected device-
 
         Args:
             interface (str): interface id
@@ -574,7 +612,20 @@ class Connect(RemoteThreadingClass):
             status_all_interfaces[key] = self.api[key].status
 
         if interface == "":
-            interface_config = {"connect": status_all_interfaces, "active": {}}
+            discover_last = str(round(time.time() - self.discover_last))+"s"
+            reconnect_last = str(round(time.time() - self.api_reconnect_last))+"s"
+            if self.discover_last == 0:
+                discover_last = "N/A"
+            if self.api_reconnect_last == 0:
+                reconnect_last = "N/A"
+
+            interface_config = {
+                "connect": status_all_interfaces,
+                "active": {},
+                "last_reconnect": reconnect_last,
+                "last_reconnect_device": self.api_reconnect_last_interface,
+                "last_discovery": discover_last
+            }
             for key in self.config.interface_configuration:
                 interface_config["active"][key] = self.config.interface_configuration[key]["active"]
             return interface_config
