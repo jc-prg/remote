@@ -62,6 +62,7 @@ button.small {
     overflow        : visible;
     position        : relative;
 
+    touch-action: manipulation;
 }
 
 .rm-button-text {
