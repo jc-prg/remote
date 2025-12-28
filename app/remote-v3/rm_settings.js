@@ -1157,6 +1157,13 @@ class RemoteSettingsApi {
             setting += "<hr style='border:solid lightgray 1px;'/>";
 
             if (!api_device_config) {
+                for (let dev in api_config["API-Devices"]) {
+                    let temp_edit_device_config = "<div id='api-setting-" + key + "_" + dev + "'></div>";
+                    let container_title = "</b>API-Device: " + dev + "&nbsp;&nbsp;<text id='api_status_icon_" + key + "_" + dev + "' style='font-size:16px;'></text>";
+                    setting += this.basic.container("details_" + key + "_" + dev, container_title, temp_edit_device_config, false);
+                }
+            }
+            else {
                 setting += "<div>";
                 setting += lang("API_DEVICE_CONFIG_NA");
                 setting += "</div>";
@@ -1164,11 +1171,6 @@ class RemoteSettingsApi {
                 continue;
             }
 
-            for (let dev in api_config["API-Devices"]) {
-                let temp_edit_device_config = "<div id='api-setting-"+key+"_"+dev+"'></div>";
-                let container_title = "</b>API-Device: "+dev+"&nbsp;&nbsp;<text id='api_status_icon_"+key+"_"+dev+"' style='font-size:16px;'></text>";
-                setting += this.basic.container("details_"+key+"_"+dev, container_title, temp_edit_device_config, false);
-            }
             let temp_add = "<div id='api-settings-add-"+key+"'></div>"
             setting += this.basic.container("add_api_"+key, lang("ADD"), temp_add, false);
             setTextById(id, setting + "<br/>");
