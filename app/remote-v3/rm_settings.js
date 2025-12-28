@@ -1150,10 +1150,19 @@ class RemoteSettingsApi {
         this.button.width = "72px";
 
         for (let key in interfaces) {
+            let api_device_config = (this.data["CONFIG"]["list_api_configs"]["list"][key] !== undefined);
             let id = "interface_edit_"+key;
             let api_config = interfaces[key];
             let setting = "";
             setting += "<hr style='border:solid lightgray 1px;'/>";
+
+            if (!api_device_config) {
+                setting += "<div>";
+                setting += lang("API_DEVICE_CONFIG_NA");
+                setting += "</div>";
+                setTextById(id, setting + "<br/>");
+                continue;
+            }
 
             for (let dev in api_config["API-Devices"]) {
                 let temp_edit_device_config = "<div id='api-setting-"+key+"_"+dev+"'></div>";
@@ -1172,11 +1181,11 @@ class RemoteSettingsApi {
                 if (config_device !== "") { sheet_box_height = "420px"; }
 
                 sheet_boxes[key+"_"+dev] = new RemoteElementSheetBox("api-setting-"+key+"_"+dev, sheet_box_height, true, false, false);
-                sheet_boxes[key+"_"+dev].addSheet(lang("API_INFORMATION"), this.list_api_device_information(key, dev, false));
-                sheet_boxes[key+"_"+dev].addSheet(lang("API_DEFINITION"), this.list_api_device_settings(key, dev, false));
-                if (buttons !== "")         { sheet_boxes[key+"_"+dev].addSheet(lang("API_ADMIN"), buttons); }
-                if (config_device !== "")   { sheet_boxes[key+"_"+dev].addSheet(lang("API_CREATE_DEV_CONFIG"), config_device); }
-                sheet_boxes[key+"_"+dev].addSheet(lang("CONNECTED"), this.list_connected_devices(key, dev, data)[1]);
+                sheet_boxes[key + "_" + dev].addSheet(lang("API_INFORMATION"), this.list_api_device_information(key, dev, false));
+                sheet_boxes[key + "_" + dev].addSheet(lang("API_DEFINITION"), this.list_api_device_settings(key, dev, false));
+                if (buttons !== "") { sheet_boxes[key + "_" + dev].addSheet(lang("API_ADMIN"), buttons); }
+                if (config_device !== "") { sheet_boxes[key + "_" + dev].addSheet(lang("API_CREATE_DEV_CONFIG"), config_device); }
+                sheet_boxes[key + "_" + dev].addSheet(lang("CONNECTED"), this.list_connected_devices(key, dev, data)[1]);
             }
 
             // add device sheet box
