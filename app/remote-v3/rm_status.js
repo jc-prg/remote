@@ -313,8 +313,11 @@ function statusCheck_apiConnection(data) {
 			if (config_errors && config_errors[key2] && config_errors[key2] !== {} && config_devices[key2]["api"] === key)	{ api_summary[api] = "ERROR"; }
 			}
 		}
+
     for (let key in data["CONFIG"]["apis"]["structure"]) {
-        if (data["STATUS"]["interfaces"]["connect"][key] === undefined) {
+        console.error(key);
+        console.error(data["CONFIG"]["apis"]["list_apis_configs"]["list"]);
+        if (data["CONFIG"]["apis"]["list_apis_configs"]["list"][key] === undefined) {
             api_summary[key] = "ERROR";
         }
     }
