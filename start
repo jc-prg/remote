@@ -273,7 +273,7 @@ elif [ $config == "rebuild" ]; then
       $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml stop
     fi
 
-    echo  "Update REMOTE from repository"
+    echo "Update REMOTE from repository"
     git stash
     git pull
 
@@ -281,10 +281,10 @@ elif [ $config == "rebuild" ]; then
     git submodule update --init --recursive
 
     echo "Rebuild docker container"
-    $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml up -d --build
+    $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose.yml up --build
 
     if [ $ZIGBEE2MQTT_START == "YES" ]; then
-      $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml up -d --build
+      $DOCKERCOMPOSE_DIR/docker-compose -f $REMOTE_DIR/docker-compose-zigbee.yml up --build
     fi
 
     echo "Restart docker"
