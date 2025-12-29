@@ -22,6 +22,7 @@ const remote_js = [
     "rm_remote-element.js",
     "rm_remote-element-slider.js",
     "rm_remote-json.js",
+    "rm_remote-macros.js",
     "rm_remotes.js",
     "rm_main.js",
     ];
@@ -37,6 +38,7 @@ const remote_css = [
     "style-settings.css",
     "style-display.css",
     "style-color-picker.css",
+    "style-macros.css",
     "style-sort-list.css",
     "style-sheet-box.css",
     "style-size.css",
