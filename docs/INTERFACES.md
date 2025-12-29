@@ -6,37 +6,38 @@ Find here some further information on the integrated APIs and how to integrate a
 
 The following interfaces are integrated at the moment. 
 
-* [BROADLINK](broadlink/README.md) / [api_broadlink.py](api_broadlink.py)
-* [EISCP ONKYO](eiscp/README.md) / [api_eiscp.py](api_eiscp.py)
-* [KODI v13](kodi/README.md) / [api_kodi.py](api_kodi.py)
-* [MAGIC-HOME](magichome/README.md) / [api_magichome.py](api_magichome.py)
-* [SONY API](sonyapi/README.md) / [api_sony.py](api_sony.py)
-* [TAPO P100](p100/README.md) / [api_p100.py](api_p100.py)
-* [ZIGBEE](zigbee/README.md) / [api_zigbee.py](api_zigbee.py)
+* [BROADLINK](../server/interfaces/broadlink/README.md) / [api_broadlink.py](../server/interfaces/api_broadlink.py)
+* [EISCP ONKYO](../server/interfaces/eiscp/README.md) / [api_eiscp.py](../server/interfaces/api_eiscp.py)
+* [DENON](../server/interfaces/denon/README.md) / [api_eiscp.py](../server/interfaces/api_denon.py)
+* [KODI v13](../server/interfaces/kodi/README.md) / [api_kodi.py](../server/interfaces/api_kodi.py)
+* [MAGIC-HOME](../server/interfaces/magichome/README.md) / [api_magichome.py](../server/interfaces/api_magichome.py)
+* [SONY API](../server/interfaces/sonyapi/README.md) / [api_sony.py](../server/interfaces/api_sony.py)
+* [TAPO P100](../server/interfaces/p100/README.md) / [api_p100.py](../server/interfaces/api_p100.py)
+* [ZIGBEE](../server/interfaces/zigbee/README.md) / [api_zigbee.py](../server/interfaces/api_zigbee.py)
 
 ## Definitions
 
 * **Device** - Remote control for an end device such as receiver, bluray player, smart sockets, light bulbs
 * **Scene** - Remote control to control a set of devices
 * **API** - Interface to control one or more API Devices (part of the server)
-* **API-Device** - Device that controls the end devices which can be the end devices itself or hub devices the control several end devices (like the [BROADLINK](broadlink/README.md) device)
+* **API-Device** - Device that controls the end devices which can be the end devices itself or hub devices the control several end devices (like the [BROADLINK](../server/interfaces/broadlink/README.md) device)
 
 ## How to integrate a new completely API
 
 * Find Python sources for the device API you want to integrate
-* Create a subdirectory in the python interface directory [server/interfaces](./interfaces) for your new API connector using small letters and/or "_"
+* Create a subdirectory in the python interface directory [server/interfaces](../server/interfaces/) for your new API connector using small letters and/or "_"
 * Copy sources to a subdirectory here or just add a README.md to describe your API implementation if the sources are available via 'pip3 install'
-* Create a copy of the sample API connector [api_sample.py](api_sample.py) and name it "api_<short-api-name>.py"
-* If you use new external sources in this API connector, add them to the docker requirements in both files [container/requirements.txt](../../config/container/requirements.txt) and
-  [container_arm/requirements.txt](../../config/container_arm/requirements.txt)
+* Create a copy of the sample API connector [api_sample.py](../server/interfaces/api_sample.py) and name it "api_<short-api-name>.py"
+* If you use new external sources in this API connector, add them to the docker requirements in both files [container/requirements.txt](../config/container/requirements.txt) and
+  [container_arm/requirements.txt](../config/container_arm/requirements.txt)
 * Add code to control the device API into the given framework (check-out the other APIs to learn more about the possibilities)
-* Add the new api_*.py into the var **self.api_modules** in the file [interfaces.py](interfaces.py)
-* Create a copy of the sample API configuration [data/_sample/devices/SAMPLE/](../../data/_sample/devices/SAMPLE/) and adjust it to your needs
-* Create a new device in the file [data/_ACTIVE_DEVICES.json](../../data/_sample/_ACTIVE-DEVICES.json) that uses this new interface
+* Add the new api_*.py into the var **self.api_modules** in the file [interfaces.py](../server/interfaces/interfaces.py)
+* Create a copy of the sample API configuration [data/_sample/devices/SAMPLE/](../data/_sample/devices/SAMPLE/) and adjust it to your needs
+* Create a new device in the file [data/_ACTIVE_DEVICES.json](../data/_sample/_ACTIVE-DEVICES.json) that uses this new interface
 
 ## How to create the configuration files
 
-* create a directory (capital letters) for your device in the directory [/data/devices/](../../data/devices/)
+* create a directory (capital letters) for your device in the directory [/data/devices/](../data/devices/)
  
 ### API-Device integration and configuration
 
@@ -85,7 +86,7 @@ The following interfaces are integrated at the moment.
 ### Add API devices to the configuration
 
 * Add API devices using the API Settings in the app: select the API and look for your device. The server will scan the network defined
-  in [.env](../../sample.env) as "REMOTE_LOCAL_NETWORK" for devices. If available it uses the discovery mechanism of the API.
+  in [.env](../sample.env) as "REMOTE_LOCAL_NETWORK" for devices. If available it uses the discovery mechanism of the API.
 
 
 ### Default commands for all devices
@@ -138,7 +139,7 @@ The following interfaces are integrated at the moment.
 * key values never should use "_", use "-" instead.
 * to use the volume functionality in the app, use "volume" and "mute" as keys for the related commands
 * to connect buttons directly to an icon, name them as shown in the "Settings > Information > Image buttons" or defined 
-  in the related [config file](../../../data/buttons/default/index.json).
+  in the related [config file](../data/buttons/default/index.json).
 * In the **query** section you can set the following:
   * _load_interval_: load specific commands in a defined interval, e.g., "cmd_name_3" and "cmd_name_4" every 5 seconds (values from "commands")
   * _load_default_: load all commands at this default interval (integer)
@@ -158,4 +159,4 @@ The following interfaces are integrated at the moment.
 
 --------
 
-_[Back to jc://remote/ documenation.](../../README.md)_
+_[Back to jc://remote/ documentation.](../README.md)_

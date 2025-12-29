@@ -22,12 +22,12 @@ There are a few templates available to be used and modified.
 
 1. Broadlink Remote Controls  ... [API Info](./server/interfaces/broadlink/README.md)
 2. DENON devices with API ... [API Info](./server/interfaces/denon/README.md)
-2. KODI server  ... [API Info](./server/interfaces/kodi/README.md)
-3. Magic Home compatible LED strips  ... [API Info](./server/interfaces/magichome/README.md)
-4. ONKYO devices with API ... [API Info](./server/interfaces/eiscp/README.md)
-5. SONY devices with API ... [API Info](./server/interfaces/sonyapi/README.md)
-6. Tapo SmartPlugs P100 ... [API Info](./server/interfaces/p100/README.md)
-7. ZigBee Devices via ZigBee2MQTT API ... [API Info](./server/interfaces/zigbee/README.md)
+3. KODI server  ... [API Info](./server/interfaces/kodi/README.md)
+4. Magic Home compatible LED strips  ... [API Info](./server/interfaces/magichome/README.md)
+5. ONKYO devices with API ... [API Info](./server/interfaces/eiscp/README.md)
+6. SONY devices with API ... [API Info](./server/interfaces/sonyapi/README.md)
+7. Tapo SmartPlugs P100 ... [API Info](./server/interfaces/p100/README.md)
+8. ZigBee Devices via ZigBee2MQTT API ... [API Info](./server/interfaces/zigbee/README.md)
 
 ## Screenshots
 
@@ -46,7 +46,7 @@ Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 
 ## Data structure
 
-* [Description of data and configuration files](data/README.md)
+* [Description of data and configuration files](./docs/DATA-STRUCTURE.md)
 
 ## Main features
 
@@ -221,7 +221,7 @@ In order to use jc://remote/ as it is, the following software must be installed:
 ## Integration of additional APIs and devices
 
 Additional APIs can be added with a little effort if an API source written in Python is available. 
-Find here additional information [how to integrate APIs](server/interfaces/README.md).
+Find here additional information [how to integrate APIs](./docs/INTERFACES.md).
 
 ## Disclaimer
 

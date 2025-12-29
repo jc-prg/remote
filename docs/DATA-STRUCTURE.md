@@ -185,4 +185,6 @@ Macros have to defined in the file \_ACTIVE-MACROS.json:
 * use just a number (integer) to wait some seconds
 
 
+--------
 
+_[Back to jc://remote/ documentation.](../README.md)_

@@ -66,3 +66,6 @@ src="./desktop/remote_browser_edit_01.png" width="48%"> <img
 src="./desktop/remote_browser_edit_02.png" width="48%"> 
 
 
+--------
+
+_[Back to jc://remote/ documentation.](../README.md)_
