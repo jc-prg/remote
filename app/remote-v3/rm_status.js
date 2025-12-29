@@ -385,8 +385,8 @@ function statusCheck_apiConnection(data) {
 // check status edit mode, intelligent mode & CO
 function statusCheck_modes() {
 
-    const status_sliders = ["toggle__edit_input", "toggle__intelligent_input", "toggle__button_input", "toggle__hint_input", "toggle__easy_input"];
-    const status_values = [rm3remotes.edit_mode, !deactivateButton, showButton, remoteHints, easyEdit];
+    const status_sliders = ["toggle__edit_input", "toggle__intelligent_input", "toggle__button_input", "toggle__hint_input", "toggle__easy_input", "toggle__json_input"];
+    const status_values = [rm3remotes.edit_mode, !deactivateButton, showButton, remoteHints, easyEdit, jsonHighlighting];
 
     for (let key in status_sliders) {
         if (document.getElementById(status_sliders[key])) {

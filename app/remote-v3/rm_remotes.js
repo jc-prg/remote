@@ -631,7 +631,7 @@ class RemoteMain {
 
         const myBox = new RemoteElementSheetBox("remote-edit-main", "380px", true, false, false);
         myBox.addSheet(lang("REMOTE"), edit_main);
-        myBox.addSheet(lang("API_SETTINGS"), edit_info);
+        myBox.addSheet(lang("API_SETTINGS"), edit_info, false);
         myBox.addSheet(lang("API_COMMANDS"), edit_cmd);
         myBox.addSheet(lang("API_TEST"), edit_test);
 
@@ -862,9 +862,9 @@ class RemoteMain {
         this.dialog_device.update(this.data, preview_remote, preview_display, preview_display_size);
 
         const myBoxJson = new RemoteElementSheetBox("remote-edit-json", "350px", true);
-        myBoxJson.addSheet(lang("REMOTE"), "<h4>" + lang("JSON_REMOTE") + "</h4>" + "<div id='container_remote_json_buttons'></div><br/>" + lang("MANUAL_REMOTE"));
-        myBoxJson.addSheet(lang("DISPLAY"), "<h4>" + lang("JSON_DISPLAY") + "</h4>" + "<div id='container_remote_json_display'></div><br/>" + lang("MANUAL_DISPLAY"));
-        myBoxJson.addSheet(lang("MACROS"), "<h4>" + lang("JSON_REMOTE_MACROS") + "</h4>" + macro_edit);
+        myBoxJson.addSheet(lang("REMOTE"), "<h4>" + lang("JSON_REMOTE") + "</h4>" + "<div id='container_remote_json_buttons'></div><br/>" + lang("MANUAL_REMOTE"), false);
+        myBoxJson.addSheet(lang("DISPLAY"), "<h4>" + lang("JSON_DISPLAY") + "</h4>" + "<div id='container_remote_json_display'></div><br/>" + lang("MANUAL_DISPLAY"), false);
+        myBoxJson.addSheet(lang("MACROS"), "<h4>" + lang("JSON_REMOTE_MACROS") + "</h4>" + macro_edit, false);
 
         const myJson = new RemoteJsonEditing("myJson", "default", "width:100%;height:200px");
         myJson.create("container_remote_json_buttons", "remote_json_buttons", remote_definition, "rmc");
@@ -873,7 +873,7 @@ class RemoteMain {
         const myBox = new RemoteElementSheetBox("remote-edit-add", "280px", true);
         myBox.addSheet(lang("INFO"), lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") + this.dialog_device.edit_fields("template", id, device));
         myBox.addSheet(lang("BUTTONS"), this.dialog_device.edit_fields("button_line", id, device, preview_remote));
-        myBox.addSheet(lang("DISPLAY"), this.dialog_device.edit_fields("display", id, device));
+        myBox.addSheet(lang("DISPLAY"), this.dialog_device.edit_fields("display", id, device), false);
         myBox.addSheet(lang("TOGGLE"), this.dialog_device.edit_fields("toggle", id, device));
         if (this.edit.device_has_ranges(device))  myBox.addSheet(lang("SLIDER"), this.dialog_device.edit_fields("slider", id, device));
         if (this.edit.device_has_colors(device))  myBox.addSheet(lang("COLOR_PICKER"), this.dialog_device.edit_fields( "color_picker", id, device));
@@ -1392,11 +1392,11 @@ class RemoteMain {
 
         // create sheet box JSON
         const myBox2 = new RemoteElementSheetBox("scene-edit-json", "400px", true);
-        myBox2.addSheet(lang("DEVICES"), edit_json_required);
-        myBox2.addSheet(lang("REMOTE"), edit_json_remote);
-        myBox2.addSheet(lang("DISPLAY"), edit_json_display);
-        myBox2.addSheet(lang("CHANNEL"), edit_json_channel);
-        myBox2.addSheet(lang("MACROS"), edit_json_macros);
+        myBox2.addSheet(lang("DEVICES"), edit_json_required, false);
+        myBox2.addSheet(lang("REMOTE"), edit_json_remote, false);
+        myBox2.addSheet(lang("DISPLAY"), edit_json_display, false);
+        myBox2.addSheet(lang("CHANNEL"), edit_json_channel, false);
+        myBox2.addSheet(lang("MACROS"), edit_json_macros, false);
 
         // create JSON edit fields
         const myJson = new RemoteJsonEditing(id = "scene-edit-json", "default", "width:100%;height:150px;");
@@ -1416,7 +1416,7 @@ class RemoteMain {
         myBox1.addSheet(lang("INFO"), lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") + this.dialog_scene.edit_fields("template", id, scene));
         myBox1.addSheet(lang("BUTTONS"), this.dialog_scene.edit_fields("default", id, scene));
         myBox1.addSheet(lang("HEADER"), this.dialog_scene.edit_fields("header", id, scene));
-        myBox1.addSheet(lang("DISPLAY"), this.dialog_scene.edit_fields("display", id, scene));
+        myBox1.addSheet(lang("DISPLAY"), this.dialog_scene.edit_fields("display", id, scene), false);
         myBox1.addSheet(lang("TOGGLE"), this.dialog_scene.edit_fields("toggle", id, scene));
         myBox1.addSheet(lang("SLIDER"), this.dialog_scene.edit_fields("slider", id, scene));
         myBox1.addSheet(lang("COLOR_PICKER"), this.dialog_scene.edit_fields("color_picker", id, scene));
@@ -1824,15 +1824,15 @@ class RemoteMainEditDialogs {
             );
             edit += this.tab.row(
                 "Value:",
-                "<div id='toggle_device_value'></div>"
+                "<div id='toggle_device_value'><i>"+lang("SELECT_DEV_FIRST")+"</i></div>"
             );
             edit += this.tab.row(
                 "Button ON:",
-                "<div id='toggle_device_on'></div>"
+                "<div id='toggle_device_on'><i>"+lang("SELECT_DEV_FIRST")+"</i></div>"
             );
             edit += this.tab.row(
                 "Button OFF:",
-                "<div id='toggle_device_off'></div>"
+                "<div id='toggle_device_off'><i>"+lang("SELECT_DEV_FIRST")+"</i></div>"
             );
             edit += this.tab.line();
             edit += this.tab.row(
@@ -1852,11 +1852,11 @@ class RemoteMainEditDialogs {
             );
             edit += this.tab.row(
                 "Send command:",
-                "<div id='color_picker_device_cmd'></div>"
+                "<div id='color_picker_device_cmd'><i>"+lang("SELECT_DEV_FIRST")+"</i></div>"
             );
             edit += this.tab.row(
                 "Color model:",
-                "<div id='color_picker_model'></div>"
+                "<div id='color_picker_model'><i>"+lang("SELECT_DEV_FIRST")+"</i></div>"
             );
             edit += this.tab.row(
                 "Description:",
@@ -1883,15 +1883,15 @@ class RemoteMainEditDialogs {
             );
             edit += this.tab.row(
                 "Send command:",
-                "<div id='slider_device_cmd'></div>"
+                "<div id='slider_device_cmd'><i>"+lang("SELECT_DEV_FIRST")+"</i></div>"
             );
             edit += this.tab.row(
                 "Parameter:",
-                "<div id='slider_device_param'></div>"
+                "<div id='slider_device_param'><i>"+lang("SELECT_DEV_FIRST")+"</i></div>"
             );
             edit += this.tab.row(
                 "Min and max values:",
-                "<div id='slider_device_min-max'></div>"
+                "<div id='slider_device_min-max'><i>"+lang("SELECT_DEV_FIRST")+"</i></div>"
             );
             edit += this.tab.row(
                 "Description:",
@@ -2085,7 +2085,7 @@ class RemoteMainEditDialogs {
             add_header_img_d = "<i>no header image yet</i>";
         }
 
-        if (header_toggle_device !== "") {
+        if (header_toggle_device !== "" && this.data["CONFIG"]["devices"][header_toggle_device]) {
             let device_config = this.data["CONFIG"]["devices"][header_toggle_device];
             let device_name = this.data["CONFIG"]["devices"][header_toggle_device]["settings"]["description"];
             let global_macros = this.data["CONFIG"]["macros"]["global"];
@@ -2111,7 +2111,8 @@ class RemoteMainEditDialogs {
             header_toggle_description = "Toggle " + device_name + " (" + header_toggle_device + ")";
 
             setTextById("header_toggle_descr", header_toggle_description);
-
+        } else if (!this.data["CONFIG"]["devices"][header_toggle_device] && header_toggle_device !== undefined) {
+            appMsg.alert(lang("TOGGLE_DEVICE_DOESNT_EXIST", [header_toggle_device]));
         }
 
         setTextById("header_button_img", add_header_img);

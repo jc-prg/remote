@@ -13,6 +13,19 @@
     --json-line-height: 2;
 }
 
+.json-editor-container textarea.json-textarea-lazy {
+    background: white !important;
+    color: black !important;
+    font-family: monospace;
+    caret-color: black; /* Cursorfarbe */
+}
+
+.json-textarea-active {
+    background: var(--json-color-background);
+    color: var(--json-color-text);
+    font-family: monospace;
+}
+
 .json-editor-container {
   position: relative;
   width: 600px;

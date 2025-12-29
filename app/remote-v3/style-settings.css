@@ -20,10 +20,9 @@ nav-title {
 	z-index       : 90; 
 	background    : white; 
 	border        : 2px solid #cccccc; 
-	border-radius : 10px; 
-    font-family   : Helvetica;
+	border-radius : 10px;
+    font-family   : Helvetica, serif;
     text-align    : center;
-    align         : center;
     overflow      : auto;
 	} 
 
@@ -32,7 +31,6 @@ nav-title {
     }
 
 #error_log {
-    font-size  : 12px;
     text-align : left;
     overflow   : auto;
 
@@ -42,14 +40,12 @@ nav-title {
     margin     : 2px;
     padding    : 2px;
 
-    font-face	: sanserif;
+    font-family : sanserif, serif;
     font-size	: 10px;
     color		: black;
 
-    border          : red;
     border-radius   : 5px;
-    border-style    : solid;
-    border-width    : 1px;
+    border          : 1px solid red;
     background-color: khaki;
     opacity         : 0.9;
     z-index         : 80;
@@ -92,7 +88,6 @@ nav-title {
     padding                 : 5px;
     color                   : #000044;
     background-color        : #eeeeaa;
-    border-color            : blue;
     border-radius           : 5px;
     border                  : 1px solid gray;
     overflow                : auto;
@@ -104,18 +99,17 @@ nav-title {
 .mode_setting_container {
   width         : 95%;
   float         : left;
-  padding       : 5px;
-  padding-left  : 10px;
+  padding: 5px 5px 5px 10px;
 }
 .mode_setting_label {
   padding       : 5px;
   width         : calc(95% - 70px);
-  height        : 30px;
+  height        : 25px;
   float         : left;
 }
 .mode_setting_toggle {
   width         : 65px;
-  height        : 30px;
+  height        : 25px;
   float         : right;
 }
 

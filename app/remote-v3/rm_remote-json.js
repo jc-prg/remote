@@ -141,12 +141,13 @@ class RemoteJsonHandling {
 */
 class RemoteJsonEditing {
 
-    constructor(name, format_style = "default", style = "width: 95%; height: 160px;") {
+    constructor(name, format_style = "default", style = "width: 95%; height: 160px;", highlighting=undefined) {
         this.app_name = name;
         this.default_size = style;
         this.format_style = format_style;   // other options: default, leafs, row4
         this.main_instance = "rm3json_edit";
         this.logging = new jcLogging(this.app_name);
+        this.highlighting = highlighting || jsonHighlighting;
 
         this.start = this.start.bind(this);
         this.create = this.create.bind(this);
@@ -158,7 +159,8 @@ class RemoteJsonEditing {
         if (document.getElementById(container_id)) {
             const container = document.getElementById(container_id);
             container.innerHTML = editor;
-            this.start(id);
+
+            if (this.highlighting) { this.start(id); }
         }
         else {
             this.logging.error("create: container for json editor '" + container_id + "' not found." );
@@ -174,9 +176,12 @@ class RemoteJsonEditing {
 
         if (style === "") { style = this.default_size; }
 
+        const highlightHTML = this.highlighting ? `<pre id="`+id_highlight+`">`+this.syntaxHighlight(jsonText)+`</pre>` : "";
+        const textareaClass = !this.highlighting ? "json-textarea-lazy" : "json-textarea-active";
+
         this.editor     = `<div id="`+id_container+`" class="json-editor-container" style="`+style+`">
-            <pre id="`+id_highlight+`">`+this.syntaxHighlight(jsonText)+`</pre>
-            <textarea id="`+id_textarea+`" spellcheck="false">`+jsonText+`</textarea>
+            ${highlightHTML}
+            <textarea id="`+id_textarea+`" class="`+textareaClass+`" spellcheck="false">`+jsonText+`</textarea>
             <div id="`+id_type+`">`+format_style+`</div>
             </div>`;
 

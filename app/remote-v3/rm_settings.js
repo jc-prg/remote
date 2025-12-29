@@ -1324,7 +1324,7 @@ class RemoteSettingsGeneral {
         this.update_data();
 
         // Reload & Updates
-        let set_temp= "<br/><i>"+this.edit_modes(true, true, true, true, true)+"</i>";
+        let set_temp= "<br/><i>"+this.edit_modes(true, true, true, true, true, true)+"</i>";
         let settings_index = set_temp;
 
         set_temp  = this.tab.start();
@@ -1410,7 +1410,7 @@ class RemoteSettingsGeneral {
     }
 
     // edit different modes: edit mode, easy edit mode, show hints, intelligent mode, show button modes
-    edit_modes(edit=true, intelligent=false, button_code=false, easy_edit=false, remote_hints=false) {
+    edit_modes(edit=true, intelligent=false, button_code=false, easy_edit=false, remote_hints=false, json_highlight=false) {
 
         this.create_toggle = function(id, label, command_on, command_off, init=0){
 
@@ -1435,6 +1435,9 @@ class RemoteSettingsGeneral {
         }
         if (easy_edit) {
             html += this.create_toggle("mode_easy", lang("MODE_EASY_EDIT"), "remoteToggleEasyEdit(true);", "remoteToggleEasyEdit(false);", easyEdit);
+        }
+        if (json_highlight) {
+            html += this.create_toggle("mode_json", lang("MODE_JSON_HIGHLIGHT"), "remoteToggleJsonHighlighting(true);", "remoteToggleJsonHighlighting(false);", jsonHighlighting);
         }
         if (remote_hints) {
             html += this.create_toggle("mode_hint", lang("MODE_HINT"), "remoteToggleRemoteHints(true);", "remoteToggleRemoteHints(false);", remoteHints);
@@ -1695,10 +1698,10 @@ class RemoteSettingsMacro {
     load() {
         const myBox2 = new RemoteElementSheetBox("macros-edit-json", "400px", true);
         myBox2.addSheet("Info",         lang("MANUAL_MACROS"));
-        myBox2.addSheet("Groups",       "<h4>Edit JSON for device groups:</h4>" +     "<div id='json-edit-groups'></div>");
-        myBox2.addSheet("Macros",       "<h4>Edit JSON for global macros:</h4>" +     "<div id='json-edit-macro'></div>");
-        myBox2.addSheet("Device ON",    "<h4>Edit JSON for device ON macros:</h4>" +  "<div id='json-edit-dev-on'></div>");
-        myBox2.addSheet("Device OFF",   "<h4>Edit JSON for device OFF macros:</h4>" + "<div id='json-edit-dev-off'></div>");
+        myBox2.addSheet("Groups",       "<h4>Edit JSON for device groups:</h4>" +     "<div id='json-edit-groups'></div>", false);
+        myBox2.addSheet("Macros",       "<h4>Edit JSON for global macros:</h4>" +     "<div id='json-edit-macro'></div>", false);
+        myBox2.addSheet("Device ON",    "<h4>Edit JSON for device ON macros:</h4>" +  "<div id='json-edit-dev-on'></div>", false);
+        myBox2.addSheet("Device OFF",   "<h4>Edit JSON for device OFF macros:</h4>" + "<div id='json-edit-dev-off'></div>", false);
 
         const jsonEdit = new RemoteJsonEditing("edit-macros", "compact", "width:100%;height:270px;");
         jsonEdit.create("json-edit-groups", "groups",  this.settings.data["CONFIG"]["macros"]["groups"]);

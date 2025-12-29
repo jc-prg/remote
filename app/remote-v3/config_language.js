@@ -339,6 +339,7 @@ let language_app = {
         "MODE_INTELLIGENT"      : "Intelligent mode",
         "MODE_MANUAL"           : "Manual mode",
         "MODE_EASY_EDIT"        : "Easy edit",
+        "MODE_JSON_HIGHLIGHT"   : "JSON highlighting",
         "MODE_HINT"             : "Show hints for remote controls (not only errors)",
 
         "MSG_ONLY_ONE_COLOR_PICKER"    : "This color picker already exists in the remote control, only one is possible.",
@@ -446,6 +447,7 @@ let language_app = {
         "TOGGLE_SELECT_VALUE"          : "Select a value field for the toggle.",
         "TOGGLE_SELECT_ON"             : "Select a switch ON command for the toggle.",
         "TOGGLE_SELECT_OFF"            : "Select a switch OFF command for the toggle.",
+        "TOGGLE_DEVICE_DOESNT_EXIST"   : "ERROR: The power toggle in the header is defined for the device '{0}'. This device is not defined (anymore). Remove the toggle or change the power device for the toggle.",
 
         "VERSION_AND_STATUS"           : "Version and Status Information",
 
