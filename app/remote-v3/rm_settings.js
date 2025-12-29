@@ -152,9 +152,11 @@ class RemoteSettings {
             this.settings_ext_reset();
             this.settings_ext_append(0,"", this.index(true, "WRAPPER"), "", true);
             this.settings_ext_append(1,lang("EDIT_MACROS"), this.module_macros.create());
+            this.settings_ext_append(1,lang("EDIT_MACROS"), macro_container);
             this.index_buttons_html = this.index(true, "SETTINGS_MACROS");
             this.create_show_ext();
             this.module_macros.load();
+            init_macro_editor();
         }
         else {
             setNavTitle(lang('INFORMATION'));
@@ -937,7 +939,6 @@ class RemoteSettingsApi {
 
             let api_dev = api_name.toLowerCase() + "_" + device.toLowerCase();
             let link_reconnect = "apiReconnectInterface_exec( \""+api_name+"_"+device+"\");"
-            let link_on_off = "apiApiDeviceOnOff_button(\""+api_name+"\", \""+device+"\", this);";
             let link_delete = "apiDeleteApiDevice(\""+api_name+"\",\""+device+"\");";
 
             // create edit dialog
@@ -947,7 +948,7 @@ class RemoteSettingsApi {
 
             let power_device = interfaces[api_name]["API-Devices"][device]["PowerDevice"] || "N/A";
             let toggle = this.toggle.toggleHTML("active_"+api_name+"-"+device, "", "", command_on, command_off, init);
-            toggle = `<div class='mode_setting_toggle' style='float:left;margin-left:-3px;'>${toggle}</div>`;
+            toggle = `<div class='mode_setting_toggle' style='float:left;margin-left:-3px;margin-bottom:6px;'>${toggle}</div>`;
 
             temp    += this.tab.start("100%", "110px:*");
             temp    += this.tab.row("ID: ", `<div style="padding-bottom:6px;font-weight:bold">${api_name}_${device}</div>`);

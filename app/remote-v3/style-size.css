@@ -147,6 +147,11 @@
     width: calc(100% - 182px);
     left : 180px;
   }
+
+  .macro-edit-container {
+    grid-template-columns:1fr 2fr;
+  }
+
 }
 
 

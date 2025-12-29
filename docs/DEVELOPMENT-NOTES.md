@@ -4,12 +4,11 @@
 
 ## KNOWN BUGS -------------------------------------------------------------------
 
-* when devices or APIs are disabled, the message shows an error (API_ERROR_DEVICE) instead of a message with inactive 
+### known but not that urgent
+
 * when API has an error / isn't available anymore, the connect device still reports online
   * EISCP-ONKYO -> was connected during startup, plugged of -> still green with old values
   * ERROR: Device not connected (EISCP-ONKYO/ONKYP-TXNR686). ... PING 192.168.1.80
-
-### known but not that urgent
 
 * error deleting API devices
   * when just started and create new configs from sample ...
@@ -22,16 +21,6 @@
       Check whether the remote control actually sent a signal and is pointing close enough to the BROADLINK device.
 
 ## UNDER DEVELOPMENT -------------------------------------------------------------
-
-* APP PERFORMANCE in edit mode
-  * Interaction to next paint (INP) -> to be improved;
-
-* NEXT APP:
-  * introduce a cache for calculating the device status, so this is calculated only once per statusCheck()
-    * function statusCheck_devicePowerStatus
-    * function statusCheck_scenePowerStatus
-    * maybe more refactoring -> move to class; enable more specific requests (such as for a single device, with or without message details)
-    * maybe also move other device settings to this (such as lists of buttons and macros?)
 
 * create a clean data set
   * OK: renamed cfg-files incl. references in README.md's 
@@ -68,6 +57,9 @@
 
 ### NEW 12-2025
 
+* APP PERFORMANCE in edit mode - Interaction to next paint (INP) -> to be improved;
+  * further ideas, e.g., loading when required and async functions
+  
 * front end improvements
   display text format errors
     * font-sizes for display text
@@ -191,6 +183,14 @@
     
 # DONE --------------------------------------------------------------------------
 
+* APP PERFORMANCE in edit mode - Interaction to next paint (INP) -> to be improved;
+  * OK: toggle for JSON highlighting
+  * OK: load sheets in SheetBoxes when selected (for those, where possible)
+  * OK: load SVG Text Images asynchronously
+* OK: introduce a cache for calculating the device status, so this is calculated only once per statusCheck()
+  * function statusCheck_devicePowerStatus, function statusCheck_scenePowerStatus
+  * refactoring -> move to class; enable more specific requests (such as for a single device, with or without message details)
+* SOLVED: when devices or APIs are disabled, the message shows an error (API_ERROR_DEVICE) instead of a message with inactive
 * scene macros doesn't work or just not defined?!
 * when updating without config files for a new device, such as DENON, it shows a messages and starts without that API
   * OK: attention sign / no content in API settings -> give at least recommendations, what to do and show an error for the API (may already open with message)!
