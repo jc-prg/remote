@@ -614,13 +614,16 @@ function apiMacroDecompose(macro) {
 // separate macro into single commands and send commands
 function apiMacroSend( macro, device="", content="" ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
     console.debug("apiMacroSend: " + macro);
+    if (macro === "") {
+        appMsg.info(lang("MACRO_EMPTY", [device]), "error");
+    }
     if (!macro.includes("::")) {
         [macro_string, macro_wait] = apiMacroDecompose(macro);
         macro = macro_string;
         eval(macro_wait);
         }
-	dc = [ "macro", macro ];
-	appFW.requestAPI( "GET", dc, "", apiMacroSend_return );
+	let command = [ "macro", macro ];
+	appFW.requestAPI( "GET", command, "", apiMacroSend_return );
 	device_media_info[device] = content;
 
 	if (showButton) {

@@ -797,8 +797,8 @@ class RemoteSettingsApi {
         let sheet_box = new RemoteElementSheetBox("api_settings_sheetbox", "350px", true, false, false);
         sheet_box.addSheet("Overview", this.show_overview());
         sheet_box.addSheet("Device details", this.show_device_details());
-        sheet_box.addSheet("Logging QUERY", this.show_logs("query"));
-        sheet_box.addSheet("Logging SEND", this.show_logs("send"));
+        sheet_box.addSheet("Logging QUERY", this.show_logs("query"), false);
+        sheet_box.addSheet("Logging SEND", this.show_logs("send"), false);
     }
 
     // load edit_ap_config()
@@ -1187,7 +1187,7 @@ class RemoteSettingsApi {
 
                 sheet_boxes[key+"_"+dev] = new RemoteElementSheetBox("api-setting-"+key+"_"+dev, sheet_box_height, true, false, false);
                 sheet_boxes[key + "_" + dev].addSheet(lang("API_INFORMATION"), this.list_api_device_information(key, dev, false));
-                sheet_boxes[key + "_" + dev].addSheet(lang("API_DEFINITION"), this.list_api_device_settings(key, dev, false));
+                sheet_boxes[key + "_" + dev].addSheet(lang("API_DEFINITION"), this.list_api_device_settings(key, dev, false), false);
                 if (buttons !== "") { sheet_boxes[key + "_" + dev].addSheet(lang("API_ADMIN"), buttons); }
                 if (config_device !== "") { sheet_boxes[key + "_" + dev].addSheet(lang("API_CREATE_DEV_CONFIG"), config_device); }
                 sheet_boxes[key + "_" + dev].addSheet(lang("CONNECTED"), this.list_connected_devices(key, dev, data)[1]);

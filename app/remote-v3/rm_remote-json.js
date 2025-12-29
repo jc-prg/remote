@@ -231,8 +231,11 @@ class RemoteJsonEditing {
         const textarea  = document.getElementById(id);
 
         textarea.disabled = disabled;
-        if (disabled)   { highlight.style.background = "var(--json-color-background-disabled)"; }
-        else            { highlight.style.background = "var(--json-color-background)"; }
+        if (disabled && highlight)   {
+            highlight.style.background = "var(--json-color-background-disabled)";
+        } else if (highlight) {
+            highlight.style.background = "var(--json-color-background)";
+        }
     }
 
     customJSONStringify(obj, indent = 2, format_style = "") {

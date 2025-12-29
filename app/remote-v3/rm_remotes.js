@@ -1344,17 +1344,17 @@ class RemoteMain {
         if (json_edit_values["display-size"] === undefined) {
             json_edit_values["display-size"] = "middle";
         }
-        if (json_edit_values["macro-scene-on"] === undefined) {
-            json_edit_values["macro-scene-on"] = [];
-        }
-        if (json_edit_values["macro-scene-off"] === undefined) {
-            json_edit_values["macro-scene-off"] = [];
-        }
         if (json_edit_values["macro-channel"] === undefined) {
             json_edit_values["macro-channel"] = {};
         }
+        if (json_edit_values["macro-scene-on"] === undefined) {
+            json_edit_values["macro-scene-on"] = scene_remote["macro-scene-on"];
+        }
+        if (json_edit_values["macro-scene-off"] === undefined) {
+            json_edit_values["macro-scene-off"] = scene_remote["macro-scene-off"];
+        }
         if (json_edit_values["macro-scene"] === undefined) {
-            json_edit_values["macro-scene"] = {};
+            json_edit_values["macro-scene"] = scene_remote["macro-scene"];
         }
 
         // frame

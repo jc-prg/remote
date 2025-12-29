@@ -258,6 +258,7 @@ let language_app = {
         "MACROS"                : "macros",
         "MACRO_PLEASE_WAIT"     : "Executing commands, please wait a few seconds!",
         "MACRO_DEVICE_EDIT"     : "<p>Just for information; edit macros in the <u style='cursor:pointer;' onclick='rm3settings.create(\"edit_scenes\");'>scene settings</u> ...<br/></p>",
+        "MACRO_EMPTY"           : "ERROR: This button of the &quot;{0}&quot; contains an empty macro.",
 
         "MAIN"                  : "main",
         "MAIN_SETTINGS"         : "Main settings",
