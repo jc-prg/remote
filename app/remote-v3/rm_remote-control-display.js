@@ -21,12 +21,14 @@ class RemoteControlDisplay {
             let status;
 
             if (rm_type === "scenes") {
-                let [scene_status, status_log] = statusCheck_scenePowerStatus(dataAll);
-                status = scene_status[device];
+                //let [scene_status, status_log] = statusCheck_scenePowerStatus(dataAll);
+                //status = scene_status[device];
+                status = statusCheck_devices.status_scene(device);
             }
             else {
-                let [device_status, device_status_log] = statusCheck_devicePowerStatus(dataAll);
-                status = device_status[device];
+                //let [device_status, device_status_log] = statusCheck_devicePowerStatus(dataAll);
+                //status = device_status[device];
+                status = statusCheck_devices.status_device(device);
             }
 
             if (status === undefined) {

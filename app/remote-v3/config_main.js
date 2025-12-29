@@ -89,7 +89,7 @@ function app_theme_changed(theme) {
 
 //--------------------------------
 
-let app_connection_error = true;
+var app_connection_error = true;
 
 function app_connection_lost(error=false) {
     if (app_connection_error !== error) {

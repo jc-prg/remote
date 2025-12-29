@@ -10,6 +10,7 @@ const remote_js = [
     "rm_functions-api.js",
     "rm_status.js",
     "rm_status-audio.js",
+    "rm_status-devices.js",
     "rm_settings.js",
     "rm_menu.js",
     "rm_start.js",

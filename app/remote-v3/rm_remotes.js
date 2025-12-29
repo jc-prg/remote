@@ -1134,9 +1134,9 @@ class RemoteMain {
                     next_button = this.advanced.toggle(this.data, id, button_def, "devices", button_def.split("||"), false);
                 }
             } else if (button_def.indexOf("COLOR-P") === 0) {
-                next_button = this.button.device(scene + i, "color-picker scene N/A", scene - label, "", "", "disabled");
+                next_button = this.button.device(scene + i, "color-picker scene N/A", scene_label, "", "", "disabled");
             } else if (button_def.indexOf("SLIDER") === 0) {
-                next_button = this.button.device(scene + i, "slider scene N/A", scene - label, "", "", "disabled");
+                next_button = this.button.device(scene + i, "slider scene N/A", scene_label, "", "", "disabled");
             } else {
                 next_button = this.button.device(cmd, button[1], scene_label, "", cmd, "");
                 this.active_buttons.push(cmd);

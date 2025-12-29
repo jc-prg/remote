@@ -35,9 +35,12 @@ let language_app = {
         "STATUS_SCENE_STARTING"         : "Mindestens eine für die Szene <b>{0}</b> nötige API startet gerade, bitte warten.",
         "STATUS_SCENE_POWER_OFF"        : "Der Strom über für Szene <b>{0}</b> ist ausgeschaltet. Nutze <b>{1}</b> zum einschalten.",
         "STATUS_SCENE_PARTLY"           : "Für die Szene <b>{0}</b> sind noch nicht alle nötigen Geräte eingeschaltet: <i>{1}</i>. &quot;ON&quot; dr&uuml;cken, um fehlende zu starten.",
-        "STATUS_SCENE_DISABLED"         : "Mindestens eine für die Szene <b>{0}</b> erforderliche API ist deaktiviert.",
+        "STATUS_SCENE_DISABLED"         : "Mindestens ein für die Szene <b>{0}</b> erforderliche device ist deaktiviert: <i>{1}</i>",
         "STATUS_SCENE_ERROR"            : "Für mindestens eines der für die Szene <b>{0}</b> benötigten Geräte ist ein Fehler aufgetreten: <i>{1}</i>.",
         "STATUS_SCENE_EMPTY"            : "Für die Szene <b>{0}</b> wurde bislang noch keine Fernbedienung definiert.",
+
+        "STATUS_SCENE_API_DISABLED"     : "Mindestens eine für die Szene <b>{0}</b> erforderliche API ist deaktiviert: <i>{1}</i>",
+        "STATUS_SCENE_NO_DEVICES"       : "Es sind keiner erforderlichen Geräte für die Szene <b>{0}</b> definiert.",
 
         "STATUS_NO_SERVER_CONNECT"      : "Aktuell besteht keine Verbindung zum Server.",
         },
@@ -433,6 +436,9 @@ let language_app = {
         "STATUS_SCENE_DISABLED"        : "At least one for the scene <b>{0}</b> required API  is disabled.",
         "STATUS_SCENE_ERROR"           : "For at least one of the required devices for the scene <b>{0}</b> an error occurred: <i>{1}</i>.",
         "STATUS_SCENE_EMPTY"           : "For this scene <b>{0}</b> no remote control layout is defined yet.",
+
+        "STATUS_SCENE_API_DISABLED"    : "At least one for the scene <b>{0}</b> required API  is disabled: <i>{1}</i>",
+        "STATUS_SCENE_NO_DEVICES"      : "There a no required devices defined for this scene <b>{0}</b>.",
 
         "STATUS_NO_SERVER_CONNECT"      : "At the moment there is no connection to the server.",
 

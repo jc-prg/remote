@@ -616,9 +616,10 @@ function apiMacroSend( macro, device="", content="" ) {  // SEND -> FEHLER? obwo
     console.debug("apiMacroSend: " + macro);
     if (macro === "") {
         appMsg.info(lang("MACRO_EMPTY", [device]), "error");
+        return;
     }
     if (!macro.includes("::")) {
-        [macro_string, macro_wait] = apiMacroDecompose(macro);
+        let [macro_string, macro_wait] = apiMacroDecompose(macro);
         macro = macro_string;
         eval(macro_wait);
         }
