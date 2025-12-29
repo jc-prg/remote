@@ -250,64 +250,6 @@ class RemoteElementSheetBox {
         }
     }
 
-    addSheet_org(title, content) {
-        if (!this.created) { console.error("RemoteElementSheetBox: Could not add sheet '"+title+"'."); return; }
-        const index = this.sheets.length;
-
-        // Tab erstellen
-        const tab = document.createElement("div");
-        tab.className = "tab";
-        tab.textContent = title;
-        tab.addEventListener("click", () => this.setActiveSheet(index));
-
-        // Sheet-Container erstellen
-        const sheetDiv = document.createElement("div");
-        sheetDiv.className = "sheet-panel";
-        sheetDiv.innerHTML = content;
-        sheetDiv.style.display = "none"; // inaktiv = unsichtbar
-        sheetDiv.style.position = "absolute";
-        sheetDiv.style.top = "0";
-        sheetDiv.style.left = "0";
-        sheetDiv.style.right = "0";
-        sheetDiv.style.bottom = "0";
-
-        // Scrollbar nur für das Sheet selbst
-        if (this.scroll) {
-            sheetDiv.style.overflowY = "auto";
-            }
-
-        // Immer im DOM, auch inaktiv
-        this.contentArea.appendChild(sheetDiv);
-
-        this.sheets.push({ title, tab, sheetDiv });
-        this.tabBar.appendChild(tab);
-
-        // Erstes Sheet aktivieren
-        if (this.keep_open)     { this.activateLast(); }
-        else if (index === 0)   { this.setActiveSheet(0); }
-
-        this.updateArrowVisibility();
-        }
-
-    setActiveSheet_org(index) {
-        this.updateArrowVisibility();
-
-        this.sheets.forEach((sheet, i) => {
-            const active = i === index;
-            sheet.tab.classList.toggle("active", active);
-            sheet.sheetDiv.style.display = active ? "block" : "none"; // inaktiv = display:none
-
-            if (this.keep_open && active) {
-                rmSheetBox_open[this.id] = index;
-                }
-
-            if (active && this.scroll_into_view) {
-                sheet.tab.scrollIntoView({ behavior: "smooth", inline: "center" });
-                }
-            });
-        }
-
-
     addSheet(title, content, lazy = true) {
         if (!this.created) { console.error("RemoteElementSheetBox: Could not add sheet '"+title+"'."); return; }
         const index = this.sheets.length;
@@ -382,8 +324,6 @@ class RemoteElementSheetBox {
             }
         });
     }
-
-
 
     activateLast() {
         if (this.keep_open && rmSheetBox_open[this.id]) { this.setActiveSheet(rmSheetBox_open[this.id]); }

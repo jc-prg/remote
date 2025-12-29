@@ -16,7 +16,7 @@ class RemoteSvgTextImage {
         this.image_cache_layout = {};
     }
 
-    // --- split text into lines ---
+    /* split text into lines */
     splitIntoLines(words, lineCount) {
         const lines = Array.from({ length: lineCount }, () => []);
         const wordsPerLine = Math.ceil(Number(words.length / lineCount));
@@ -30,7 +30,7 @@ class RemoteSvgTextImage {
         return lines.map(l => l.join(" "));
     }
 
-    // --- Helper: measure text ---
+    /* Helper: measure text */
     measure(lines) {
         const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         const g = document.createElementNS(tempSvg.namespaceURI, "g");
@@ -55,7 +55,7 @@ class RemoteSvgTextImage {
         return box;
     }
 
-    // --- Try different line breaks ---
+    /* Try different line breaks */
     bestLayout(text) {
         let words;
         if (text.length > 8) {
@@ -87,9 +87,8 @@ class RemoteSvgTextImage {
         return best;
     }
 
-
-    // --- Build final SVG ---
-    create(container, text="") {
+    /* Build final SVG */
+    create_now(container, text="") {
 
         if (!this.image_cache[text]) {
 
@@ -131,6 +130,16 @@ class RemoteSvgTextImage {
             svg.setAttribute("viewBox", `${-padding} ${-padding} ${layout.box.width + padding * 2} ${layout.box.height + padding * 2}`);
             svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
             svg.innerHTML = this.image_cache[text];
+        }
+    }
+
+    /* async call of create_now() */
+    create(container, text="") {
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => this.create_now(container, text));
+        } else {
+            // fallback
+            setTimeout(() => this.create_now(container, text), 0);
         }
     }
 
