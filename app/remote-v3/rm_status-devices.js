@@ -187,7 +187,9 @@ class RemoteDevicesStatus {
             // identify device status
             if (api_status === "DISABLED" || api_device_status === "DISABLED") { status = "API_DISABLED"; }
             else if (api_status === "UNKNOWN" || api_device_status === "UNKNOWN") { status = "API_UNKNOWN"; }
-            else if (api_status.indexOf("ERROR") > -1 || api_device_status.indexOf("ERROR") > -1) { status = "API_ERROR"; }
+            else if (api_status.indexOf("ERROR") > -1 || api_device_status.indexOf("ERROR") > -1) { status = "API_ERROR";
+                console.error("!!! " + device + " --- " + api_status + " + " + api_device_status);
+            }
             else if (api_device_status === "API_STARTING") { status = "API_STARTING"; }
             else if (api_device_status === "POWER_OFF") { status = "POWER_OFF"; }
             else if (power_status.indexOf("ERROR") > -1) { status = "ERROR"; }
