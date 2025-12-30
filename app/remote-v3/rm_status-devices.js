@@ -3,7 +3,7 @@
 //--------------------------------
 
 let statusCheck_devices;
-let statusCheck_devices_logging = false;
+let statusCheck_devices_logging = true;
 
 
 // class that offers all types of status information for apis, api-devices, media devices, and scenes
@@ -141,7 +141,9 @@ class RemoteDevicesStatus {
             let status = "OK";
 
             let label_power = "";
-            if (this.config_devices[power_device]) { label_power = this.config_devices[power_device]["settings"]["label"]; }
+            if (this.config_devices[power_device]) {
+                label_power = this.config_devices[power_device]["settings"]["label"] || power_device;
+            }
             let label_device = "N/A";
             if (this.config_devices[device] && this.config_devices[device]["settings"]["label"]) {
                 label_device = this.config_devices[device]["settings"]["label"];
