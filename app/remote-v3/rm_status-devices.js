@@ -154,6 +154,7 @@ class RemoteDevicesStatus {
             let label_power = "";
             if (this.config_devices[this.power_devices[power_device]]) {
                 label_power = this.config_devices[this.power_devices[power_device]]["settings"]["label"];
+                label_power = this.message_device_link(this.power_devices[power_device], label_power);
             }
             let label_device = "N/A";
             if (this.config_devices[device] && this.config_devices[device]["settings"]["label"]) {
@@ -361,6 +362,11 @@ class RemoteDevicesStatus {
             else                                             { status_msg = lang("STATUS_SCENE_ERROR", [values["label"], values["list_errors"]]); }
         }
         return status_msg;
+    }
+
+    /* create a 'link' to a device for messages*/
+    message_device_link(device_id, device_label) {
+        return `<span onclick="rm3remotes.create('device','${device_id}');rm3settings.hide();" style="cursor:pointer;">${device_label}</span>`;
     }
 
     /* get status for all device types, includes checks if available*/
