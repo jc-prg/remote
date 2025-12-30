@@ -128,7 +128,7 @@ function statusCheck_offline(data) {
 
 
 // change slider color
-function statusShow_sliderActive(id, id_button, active, toggle=false) {
+function statusShow_sliderActive(id, id_button, active) {
 	if (document.getElementById(id)) {
 	    let slider = document.getElementById(id);
 	    let slider_button = document.getElementById(id_button);

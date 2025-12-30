@@ -317,7 +317,7 @@ class RemoteDevicesStatus {
             this.status_data["scene"][scene] = {
                 "devices": dev_required,
                 "status": status,
-                //"status-devices": dev_list,
+                "status-devices": dev_list,
                 "power": power_device,
                 "message": message,
                 "message-extended": messages_extended.join("; ")
