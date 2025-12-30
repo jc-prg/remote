@@ -152,7 +152,7 @@ class RemoteDevicesStatus {
             else { power_status = "ERROR"; }
 
             let label_power = "";
-            if (this.config_devices[power_device]) {
+            if (this.config_devices[this.power_devices[power_device]]) {
                 label_power = this.config_devices[this.power_devices[power_device]]["settings"]["label"];
             }
             let label_device = "N/A";
