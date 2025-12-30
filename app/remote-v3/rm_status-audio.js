@@ -54,7 +54,7 @@ class RemoteVisualizeMainAudioStatus {
     }
 
     // read main audio device status
-    main_audio_status(data) {
+    main_audio_status() {
         if (this.audio_active) {
 
             this.audio_status_details = this.status.status_device(this.audio_device, true);
@@ -89,7 +89,7 @@ class RemoteVisualizeMainAudioStatus {
             this.audio_status = "ERROR: device_api not found ("+device_api+")";
         }
         
-        this.main_audio_status(this.data);
+        this.main_audio_status();
         if (this.audio_status.indexOf("ERROR") < 0) {
             if (device_definition && device_definition["vol"] && device_definition["vol"]["values"] && device_definition["vol"]["values"]["max"]) { this.audio_level["max"] = device_definition["vol"]["values"]["max"]; }
             if (device_definition && device_definition["vol"] && device_definition["vol"]["values"] && device_definition["vol"]["values"]["max"]) { this.audio_level["min"] = device_definition["vol"]["values"]["min"]; }

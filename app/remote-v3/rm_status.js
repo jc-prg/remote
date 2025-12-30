@@ -248,9 +248,6 @@ function statusShow_powerButton(id, status) {
 	}
 
 
-
-
-
 // check status edit mode, intelligent mode & CO
 function statusCheck_modes() {
 
@@ -997,6 +994,7 @@ class RemoteVisualizePowerStatus {
 
             this.visualize_api_slider(`toggle__${key}_input`, status["active"]);
             if (status["active"]) {
+                // TBC: what, if not active -> remove value, "empty visualization"?
                 this.visualize_api_summary(`api_status_icon_${key}`, status["api-device-summary"]);
             }
         }
