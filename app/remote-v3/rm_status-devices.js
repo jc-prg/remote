@@ -28,6 +28,13 @@ class RemoteDevicesStatus {
         this.config_apis = {};
         this.config_devices = {};
         this.power_devices = {}
+        this.device_keys = {
+            "api" : [],
+            "api-device": [],
+            "device": [],
+            "scene": [],
+            "group": []
+        }
 
         this.warning = {}
         this.starting = {}
@@ -55,6 +62,14 @@ class RemoteDevicesStatus {
         this.config_apis_structure = this.data["CONFIG"]["apis"]["structure"];
         this.config_devices = this.data["CONFIG"]["devices"];
         this.config_scenes = this.data["CONFIG"]["scenes"];
+
+        this.all_keys = {
+            "api" : Object.keys(this.config_apis_structure),
+            "api-device": this.data["CONFIG"]["apis"]["list_devices"],
+            "device": Object.keys(this.config_devices),
+            "scene": Object.keys(this.config_scenes),
+            "group": []
+        }
 
         if (this.load_async) {
             // trigger structure update asynchronously (as a short delay might be OK)
@@ -93,7 +108,10 @@ class RemoteDevicesStatus {
 
     /* collecting status for all API devices */
     create_data_api_devices() {
+        let api_summary = {}
         for (let api in this.status_api_devices_all) {
+            let api_summary = [];
+
             for (let api_device in this.status_api_devices_all[api]["api_devices"]) {
                 let key = api + "_" + api_device;
                 let status = "OK";
@@ -118,7 +136,12 @@ class RemoteDevicesStatus {
                     "message": this.status_api_devices_all[api]["api_devices"][api_device]["connect"],
                     "status": status,
                     "power": this.status_api_devices_all[api]["api_devices"][api_device]["power_device"],
+                    "power-status": this.status_api_devices_all[api]["api_devices"][api_device]["power"]
                 }
+                if (!api_summary.includes(status)) { api_summary.push(status);}
+            }
+            if (this.status_data["api"][api]) {
+                this.status_data["api"][api]["api-device-summary"] = api_summary;
             }
         }
         for (let device in this.power_devices) {
@@ -370,22 +393,40 @@ class RemoteDevicesStatus {
     }
 
     /* get status for all device types, includes checks if available*/
-    get_status (device_type, id, details=false) {
+    get_status (device_type, device_id, details=false) {
         if (this.status_data[device_type]) {
-            if (this.status_data[device_type][id]) {
+            if (this.status_data[device_type][device_id]) {
                 if (details) {
-                    return this.status_data[device_type][id];
+                    return this.status_data[device_type][device_id];
                 } else {
-                    return this.status_data[device_type][id]["status"];
+                    return this.status_data[device_type][device_id]["status"];
                 }
             }
             else {
-                console.error("RemoteDevicesStatus.get_status(): no status information for '" + device_type + "/" + id + "' available.")
+                console.error("RemoteDevicesStatus.get_status(): no status information for '" + device_type + "/" + device_id + "' available.")
             }
         }
         else {
             console.error("RemoteDevicesStatus.get_status(): device-type '" + device_type + "' not available.");
         }
+    }
+
+    /* return all available device keys */
+    get_keys (device_type) {
+        if (device_type === "all") {
+            return this.all_keys;
+        }
+        else if (this.all_keys[device_type]) {
+            return this.all_keys[device_type];
+        }
+        else {
+            console.error("RemoteDevicesStatus.get_keys(): Device type '"+device_type+"' not available.");
+        }
+    }
+
+    /* status is available */
+    is_available(device_type, device_id) {
+        return !!(this.status_data[device_type] && this.status_data[device_type][device_id]);
     }
 
     /* get status for APIs */

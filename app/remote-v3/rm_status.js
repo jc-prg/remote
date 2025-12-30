@@ -6,6 +6,7 @@ let device_media_info = {};
 let status_duration = [];
 let status_duration_load = [];
 let status_load_first = true;
+let statusCheck_power;
 
 
 // load the devices status -> visualization via function statusCheck();
@@ -31,11 +32,13 @@ function statusCheck(data={}) {
     if (status_load_first) {
         statusCheck_devices = new RemoteDevicesStatus("statusCheck_devices");
         statusCheck_devices.update(data);
-        statusCheck_audio = new RemoteMainAudio("statusCheck_audio");
+        statusCheck_power = new RemoteVisualizePowerStatus("statusCheck_power", statusCheck_devices);
+        statusCheck_audio = new RemoteVisualizeMainAudioStatus("statusCheck_audio", statusCheck_devices);
         status_load_first = false;
     }
 
     statusCheck_devices.update(data);
+    statusCheck_power.show_status(data, rm3remotes.edit_mode);
     statusCheck_audio.show_status(data);
 
     statusCheck_modes();
@@ -55,7 +58,6 @@ function statusCheck(data={}) {
         const html = "<img src='/icon/edit_stop.png' onclick='" + stop + "' style='cursor:pointer;width:100%' name='stop editing' alt=''>";
         setTextById("edit1", html);
     }
-	statusCheck_apiConnection(data);
 	statusCheck_deviceIdle(data);
     statusCheck_health(data);
     statusCheck_error(data);
@@ -246,156 +248,7 @@ function statusShow_powerButton(id, status) {
 	}
 
 
-// check if api is connected
-function statusCheck_apiConnection(data) {
-	let status;
-    let key;
-    let api_summary = {};
-    const config_errors = data["STATUS"]["config_errors"]["devices"];
-    const config_devices = data["STATUS"]["devices"];
 
-    let success_no     = {};
-    let start_no     = {};
-	let error_no       = {};
-	let off_no         = {};
-
-    this.slider_status = function(slider, status) {
-        if (slider) {
-            if (status === true) {
-                slider.value = 1;
-                slider.className = "rm-slider device_active";
-                slider.disabled = false;
-            }
-            else if (status === false) {
-                slider.value = 0;
-                slider.className = "rm-slider device_disabled";
-                slider.disabled = false;
-            }
-            else {
-                slider.className = "rm-slider device_undef";
-                slider.disabled = true;
-            }
-        }
-    }
-
-	for (let api in data["CONFIG"]["apis"]["structure"]) {
-        // set toggle values for apis
-	    const slider = document.getElementById("toggle__" + api + "_input");
-        status = data["STATUS"]["connections"][api]["active"];
-        this.slider_status(slider, status);
-
-	    for (let api_device in data["STATUS"]["connections"][api]["api_devices"]) {
-
-            // power status API-Device details in API settings - depending power device
-            key = api + "_" + api_device;
-            const slider = document.getElementById(`toggle__${api}-${api_device}_input`);
-            status = data["STATUS"]["connections"][api]["api_devices"][api_device]["active"];
-            this.slider_status(slider, status);
-
-            const element = document.getElementById("power_status_" + key);
-            if (element && data["STATUS"]["connections"][api]["api_devices"][api_device]["power"] !== "") {
-                console.debug("Set power status: " + api + "_" + api_device + " - " + data["STATUS"]["connections"][api]["api_devices"][api_device]["power_device"]);
-                status = data["STATUS"]["connections"][api]["api_devices"][api_device]["power"];
-                setTextById("power_status_"+key, "&nbsp;(" + status + ")");
-	            }
-	        }
-	    }
-
-    // summarize connection status for API based on API Devices
-	for (key in data["STATUS"]["interfaces"]["connect"]) {
-		let [api, dev] = key.split("_");
-        const status_api = data["STATUS"]["interfaces"]["active"][api];
-        const status_dev = data["STATUS"]["interfaces"]["connect"][key];
-
-        if (!api_summary[api])   { api_summary[api] = ""; }
-        if (!error_no[api])      { error_no[api] = 0; }
-        if (!success_no[api])    { success_no[api] = 0; }
-        if (!start_no[api])      { start_no[api] = 0; }
-        if (!off_no[api])        { off_no[api] = 0; }
-
-		if (status_dev === "Connected") { success_no[api] += 1; }
-		else if (status_dev.indexOf("Start") > -1) { start_no[api] += 1; }
-		else if (status_dev.indexOf("OFF") > -1) { off_no[api] += 1; }
-		else if (status_dev.indexOf("DISABLED") > -1) { off_no[api] += 1; }
-		else { error_no[api] += 1; }
-
-        if (status_api === false)                             { api_summary[api] = "OFF"; }
-        else if (start_no[api] > 0)                           { api_summary[api] = "START"; }
-        else if (error_no[api] > 0 && success_no[api] === 0)  { api_summary[api] = "ERROR"; }
-        else if (error_no[api] > 0 && success_no[api] > 0)    { api_summary[api] = "OK + ERROR"; }
-        else                                                  { api_summary[api] = "OK"; }
-
-		for (let key2 in config_devices) {
-			if (config_errors && config_errors[key2] && config_errors[key2] !== {} && config_devices[key2]["api"] === key)	{ api_summary[api] = "ERROR"; }
-			}
-		}
-
-    // check if there is an API with config file
-    for (let key in dataAll["CONFIG"]["apis"]["structure"]) {
-        if (dataAll["CONFIG"]["apis"]["list_api_configs"]["list"][key] === undefined) { api_summary[key] = "ERROR"; }
-    }
-
-    // update API status in settings
-	for (key in api_summary) {
-	    if (document.getElementById("api_status_icon_" + key)) {
-            let message = "<span style='font-size:18px;color:";
-            if (api_summary[key] === "OK")         { message += color_api_connect +      "'>" + sign_ok; }
-            else if (api_summary[key] === "START") { message += color_api_warning +      "'>" + sign_start; }
-            else if (api_summary[key] === "ERROR") { message += color_api_error +        "'>" + sign_error; }
-            else if (api_summary[key] === "OFF")   { message += color_api_no_connect +   "'>" + ""; }
-            else                                   { message += color_api_warning +      "'>" + sign_ok + " " + sign_error; }
-
-            setTextById("api_status_icon_" + key, "</span> " + message);
-            }
-		}
-
-    // update API status in settings
-	for (key in data["STATUS"]["interfaces"]["connect"]) {
-	    if (document.getElementById("api_status_" + key)) {
-            let status = data["STATUS"]["interfaces"]["connect"][key];
-            if (status === "Connected")                { setTextById("api_status_" + key, "<span style='color:" + color_api_connect + "'>" + status + "</span>"); }
-            else if (status === "Start")               { setTextById("api_status_" + key, "<span style='color:" + color_api_warning + "'>" + status + "</span>"); }
-            else if (status.indexOf("OFF") > -1)      { setTextById("api_status_" + key, "<span style='color:" + color_api_no_connect + "'>" + status + "</span>"); }
-            else if (status.indexOf("DISABLED") > -1) { setTextById("api_status_" + key, "<span style='color:" + color_api_no_connect + "'>DISABLED</span>"); }
-            else                                      { setTextById("api_status_" + key, "<span style='color:" + color_api_error + "'>" + status + "</span>"); }
-
-            if (status === "Connected")                { setTextById("api_status_short_" + key, "<span style='color:" + color_api_connect + "'>OK</span>"); }
-            else if (status === "Start")               { setTextById("api_status_short_" + key, "<span style='color:" + color_api_warning + "'>START</span>"); }
-            else if (status.indexOf("OFF") > -1)      { setTextById("api_status_short_" + key, "<span style='color:" + color_api_no_connect + "'>OFF</span>"); }
-            else if (status.indexOf("DISABLED") > -1) { setTextById("api_status_short_" + key, "<span style='color:" + color_api_no_connect + "'>DISABLED</span>"); }
-            else                                      { setTextById("api_status_short_" + key, "<span style='color:" + color_api_error + "'>ERROR</span>"); }
-
-            if (status === "Connected")                { setTextById("api_status_icon_" + key, "<span style='color:" + color_api_connect +    "'>" + sign_ok + "</span>"); }
-            else if (status === "Start")               { setTextById("api_status_icon_" + key, "<span style='color:" + color_api_warning +    "'>" + sign_start + "</span>"); }
-            else if (status.indexOf("OFF") > -1)      { setTextById("api_status_icon_" + key, "<span style='color:" + color_api_no_connect + "'>" + sign_off + "</span>"); }
-            else if (status.indexOf("DISABLED") > -1) { setTextById("api_status_icon_" + key, "<span style='color:" + color_api_no_connect + "'>" + sign_disabled + "</span>"); }
-            else                                      { setTextById("api_status_icon_" + key, "<span style='color:" + color_api_error +      "'>" + sign_error + "</span>"); }
-        }
-
-        if (document.getElementById("reconnect_"+key.toLowerCase())) {
-
-            let button2 = document.getElementById("reconnect_"+key.toLowerCase());
-            let [api, dev] = key.split("_");
-
-            let connected_devices = 0;
-            let connect_status_api      = data["STATUS"]["interfaces"]["active"][api];
-            let connect_status          = data["STATUS"]["interfaces"]["connect"][key];
-            let devices_per_interface   = data["CONFIG"]["apis"]["structure"];
-            if (devices_per_interface[api][dev]) { connected_devices = devices_per_interface[api][dev].length; }
-            let value = "";
-
-            if (connect_status_api === false)                 { value = "N/A"; }
-            else if (connect_status.indexOf("OFF") > -1)      { value = "OFF"; }
-            else if (connect_status.indexOf("DISABLED") > -1) { value = "DISABLED"; }
-            else if (connect_status.indexOf("ERROR") > -1)    { value = "ERROR"; }
-            else                                              { value = "ON"; }
-
-            if (value === "N/A" || value === "DISABLED") {
-                button2.disabled = true;
-            }
-        }
-    }
-}
 
 
 // check status edit mode, intelligent mode & CO
@@ -1088,3 +941,210 @@ function statusCheck_bigMessage(id) {
     appMsg.confirm(message, "", 280);
 }
 
+// -----------------------------
+// refactored already ...
+
+/* class to visualize the power status of apis, api devices, devices and scenes */
+class RemoteVisualizePowerStatus {
+    constructor(name, status) {
+        this.app_name = name;
+        this.data = undefined;
+        this.edit_mode = undefined;
+        this.status = status;
+
+        this.colors = {
+            "api-status": {
+                "CONNECT": "lightgreen",
+                "NO_CONNECT": "white",
+                "WARNING": "yellow",
+                "ERROR": "#FF6666",
+                "OTHER": "#DDDDDD"
+            }
+        }
+        this.signs = {
+            "OK": "&#10003;",       // &#9745;
+            "ERROR": "&#10008;",       // &#9746;
+            "OFF": "&nbsp;<small>OFF</small>", // "&#9744;";
+            "DISABLED": "&nbsp;<small>DISABLED</small>", // "&#9744;";
+            "START": "&#10138;",
+        }
+        this.signs_size = "18px";
+    }
+
+    /* update class data */
+    update(data, edit_mode) {
+        this.data = data;
+        this.edit_mode = edit_mode;
+
+    }
+
+    /* coordinate status visualization for all device types */
+    show_status(data, edit_mode) {
+        this.update(data, edit_mode);
+
+        this.show_status_apis();
+        this.show_status_api_devices();
+        this.show_status_devices();
+        this.show_status_scenes();
+    }
+
+    /* visualize status for APIs: active -> toggles */
+    show_status_apis () {
+        let all_keys = this.status.get_keys("api");
+        for (let i in all_keys) {
+            let key = all_keys[i];
+            let status = this.status.status_api(key, true);
+
+            this.visualize_api_slider(`toggle__${key}_input`, status["active"]);
+            if (status["active"]) {
+                this.visualize_api_summary(`api_status_icon_${key}`, status["api-device-summary"]);
+            }
+        }
+    }
+
+    /* visualize status for APIs: active -> toggles */
+    show_status_api_devices () {
+        let all_keys = this.status.get_keys("api-device");
+        for (let i in all_keys) {
+            let key = all_keys[i];
+            let [api, api_device] = key.split("_");
+            let status = this.status.status_api_device(key, true);
+
+            this.visualize_api_slider(`toggle__${api}-${api_device}_input`, status["active"]);
+            this.visualize_status_text("power_status_"+key, "&nbsp;(" + status["power-status"] + ")", (status["power"] !== ""));
+            this.visualize_status_text("api_status_"+key, status["message"], true, "api-status");
+            this.visualize_status_text("api_status_short_"+key, status["status"], true, "api-status");
+            this.visualize_api_device_summary(`api_status_icon_${key}`, status["status"]);
+            this.disable_buttons("reconnect_"+key.toLowerCase(), (status["status"].indexOf("ERROR") > -1 || status["status"].indexOf("DISABLE") > - 1));
+        }
+
+    }
+
+    // not implemented yet
+    show_status_devices () {
+        let all_keys = this.status.get_keys("device");
+
+    }
+
+    // not implemented yet
+    show_status_scenes () {
+        let all_keys = this.status.get_keys("scene");
+
+    }
+
+    /* disable buttons if condition ... */
+    disable_buttons(div_id, condition=false) {
+        if (document.getElementById(div_id) && condition) {
+            document.getElementById(div_id).disabled = true;
+        } else if (document.getElementById(div_id)) {
+            document.getElementById(div_id).disabled = false;
+        }
+    }
+
+    /* visualize api device summary with signs */
+    visualize_api_summary(div_id, status_summary) {
+        if (!document.getElementById(div_id)) { return; }
+
+        let sign = "";
+        let color = "";
+
+        if (status_summary.length === 1 && status_summary[0] === "OK")  {
+            sign = this.signs["OK"];
+            color = this.colors["api-status"]["CONNECT"];
+        }
+        else if (status_summary.length === 1 && status_summary[0].includes("ERROR"))  {
+            sign = this.signs["ERROR"];
+            color = this.colors["api-status"]["ERROR"];
+        }
+        else if (status_summary.includes("STARTING"))  {
+            sign = this.signs["START"];
+            color = this.colors["api-status"]["WARNING"];
+        }
+        else if ((status_summary.includes("ERROR") || status_summary.includes("POWER_ERROR")) && status_summary.includes("OK"))  {
+            sign = this.signs["OK"] + " " + this.signs["ERROR"];
+            color = this.colors["api-status"]["WARNING"];
+        }
+        else if (status_summary.includes("DISABLED") && status_summary.includes("OK"))  {
+            sign = this.signs["OK"];
+            color = this.colors["api-status"]["CONNECT"];
+        }
+
+        let message = `<span style='color:${color};font-size:${this.signs_size}'>${sign}</span>`;
+        setTextById(div_id, message);
+    }
+
+    /* visualize api device summary with signs */
+    visualize_api_device_summary(div_id, status_summary) {
+        if (!document.getElementById(div_id)) { return; }
+
+        let sign = "";
+        let color = "";
+
+        if (status_summary === "OK")  {
+            sign = this.signs["OK"];
+            color = this.colors["api-status"]["CONNECT"];
+        }
+        else if (status_summary.indexOf("ERROR") > -1)  {
+            sign = this.signs["ERROR"];
+            color = this.colors["api-status"]["ERROR"];
+        }
+        else if (status_summary === "DISABLED")  {
+            sign = this.signs["DISABLED"];
+            color = this.colors["api-status"]["NO_CONNECT"];
+        }
+        else if (status_summary.indexOf("STARTING") > -1)  {
+            sign = this.signs["START"];
+            color = this.colors["api-status"]["WARNING"];
+        }
+        else if (status_summary.indexOf("OFF") > -1)  {
+            sign = this.signs["OK"];
+            color = this.colors["api-status"]["NO_CONNECT"];
+        }
+
+        let message = `<span style='color:${color};'>${sign}</span>`;
+        setTextById(div_id, message);
+    }
+
+    /* visualize colored status */
+    visualize_status_text(div_id, status_text, condition=true, colors="") {
+        if (!condition || !document.getElementById(div_id)) { return; }
+
+        let status_color = "";
+        if (colors === "api-status") {
+            if (status_text.indexOf("ERROR") > -1) { status_color = this.colors["api-status"]["ERROR"]; }
+            else if (status_text.indexOf("STARTING") > -1) { status_color = this.colors["api-status"]["WARNING"]; }
+            else if (status_text.indexOf("Start") > -1) { status_color = this.colors["api-status"]["WARNING"]; }
+            else if (status_text.indexOf("DISABLED") > -1) { status_color = this.colors["api-status"]["NO_CONNECT"]; }
+            else if (status_text.indexOf("OK") > -1) { status_color = this.colors["api-status"]["CONNECT"]; }
+            else if (status_text.indexOf("Connected") > -1) { status_color = this.colors["api-status"]["CONNECT"]; }
+            else { status_color = this.colors["api-status"]["OTHER"]; }
+        }
+
+        if (colors !== "") {
+            status_text = `<span style='color:${status_color};'>${status_text}</span>`;
+        }
+
+        setTextById(div_id, status_text);
+    }
+
+    /* visualize status on a slider: apis, api-devices */
+    visualize_api_slider(slider_id, status) {
+        const slider = document.getElementById(slider_id);
+        if (slider) {
+            if (status === true) {
+                slider.value = 1;
+                slider.className = "rm-slider device_active";
+                slider.disabled = false;
+            }
+            else if (status === false) {
+                slider.value = 0;
+                slider.className = "rm-slider device_disabled";
+                slider.disabled = false;
+            }
+            else {
+                slider.className = "rm-slider device_undef";
+                slider.disabled = true;
+            }
+        }
+    }
+}

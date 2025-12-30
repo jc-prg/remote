@@ -6,10 +6,11 @@ let statusCheck_audio;
 
 
 // class for audio functionality (used in rm_status.js > statusCheck())
-class RemoteMainAudio {
-    constructor(name) {
+class RemoteVisualizeMainAudioStatus {
+    constructor(name, status) {
         this.app_name = name;
         this.data = dataAll;
+        this.status = status;
 
         this.audio_device = undefined;
         this.audio_device_label = "";
@@ -56,9 +57,7 @@ class RemoteMainAudio {
     main_audio_status(data) {
         if (this.audio_active) {
 
-            //const [device_status, device_status_info] = statusCheck_devicePowerStatus(data);
-            //this.audio_status = device_status[this.audio_device];
-            this.audio_status_details = statusCheck_devices.status_device(this.audio_device, true);
+            this.audio_status_details = this.status.status_device(this.audio_device, true);
             this.audio_status = this.audio_status_details["status"];
             if (this.audio_status.indexOf("ERROR") >= 0) { this.audio_status += " (" + this.audio_status_details["message"] + ")"; }
         }

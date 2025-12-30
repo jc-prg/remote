@@ -4,6 +4,14 @@
 
 ## KNOWN BUGS -------------------------------------------------------------------
 
+* reload of all configs doesn't work
+
+* error on jc-server with latest version, while local installation works
+  * Für mindestens eines der für die Szene Media Center benötigten Geräte ist ein Fehler aufgetreten: 
+    -> Connected; Connected; Connected; Connected.
+  * Bei der API default für das angeschlossene Gerät TV/Radio ist ein Fehler aufgetreten.
+  * Bei der API DENON-AVR-X2800H für das angeschlossene Gerät AV Receiver ist ein Fehler aufgetreten.
+
 ### known but not that urgent
 
 * when API has an error / isn't available anymore, the connect device still reports online
@@ -21,6 +29,14 @@
       Check whether the remote control actually sent a signal and is pointing close enough to the BROADLINK device.
 
 ## UNDER DEVELOPMENT -------------------------------------------------------------
+
+* continue status refactoring: 
+  * statusCheck_apiConnection() in rm-status.js -> use statusCheck_devices()
+
+* macro editing in the app
+  * OK: first testing in Macro Settings with fixed data
+
+### paused a bit
 
 * create a clean data set
   * OK: renamed cfg-files incl. references in README.md's 

@@ -854,7 +854,7 @@ class RemoteSettingsApi {
             }
             return html;
         }
-        this.list_connected_devices = function (api, device, data) {
+        this.api_device_connected_devices = function (api, device, data) {
             let text  = "";
             let count = 0;
             let devices_per_api = this.data["CONFIG"]["apis"]["structure"];
@@ -930,7 +930,7 @@ class RemoteSettingsApi {
             details += "<br/>";
             return [count, details];
         }
-        this.list_api_device_information = function (api_name, device, show_buttons=undefined) {
+        this.api_device_overview = function (api_name, device, show_buttons=undefined) {
 
             let temp = "";
             let information = "<div id='api_status_data_"+api_name+"_"+device+"'></div>";
@@ -984,7 +984,7 @@ class RemoteSettingsApi {
 
             return temp;
         }
-        this.list_api_device_settings = function (api_name, device, show_buttons=undefined) {
+        this.api_device_edit_configuration = function (api_name, device, show_buttons=undefined) {
 
             let temp = "";
             let information = "<div id='api_status_data_"+api_name+"_"+device+"'></div>";
@@ -994,8 +994,7 @@ class RemoteSettingsApi {
             let api_dev = api_name.toLowerCase() + "_" + device.toLowerCase();
             let link_save = "apiSetConfig_InterfaceData( \""+api_name+"_"+device+"\", \"api_status_edit_"+api_name+"_"+device+"\" );" + "rm3json_edit.disable(\"api_status_edit_"+api_name+"_"+device+"\");";
             let link_edit = "rm3json_edit.disable(\"api_status_edit_"+api_name+"_"+device+"\",false);" +
-                "this.className=\"rm-button hidden\";" +
-                "document.getElementById(\"save_"+api_dev+"\").className=\"rm-button settings\";";
+                "this.className=\"rm-button hidden\";" + "document.getElementById(\"save_"+api_dev+"\").className=\"rm-button settings\";";
 
             let buttons = "";
             let buttons_plus = "";
@@ -1046,15 +1045,17 @@ class RemoteSettingsApi {
                 temp    += this.tab.row(information, false);
                 temp    += this.tab.row("<div style='width:100%;text-align:center;'>" + buttons + "</div>", false);
                 temp    += this.tab.end();
-            } else if (buttons_plus !== "") {
+            } 
+            else if (buttons_plus !== "") {
                 temp    += this.tab.start();
                 if (buttons_plus !== "")  { temp += this.tab.row("Admin actions:", buttons_plus ); }
                 if (buttons_admin !== "") { temp += this.tab.row("Admin tool:", buttons_admin ); }
                 temp    += this.tab.end();
             }
+            
             return temp;
         }
-        this.create_device_configuration = function (api_name, device) {
+        this.api_device_create_device_configuration = function (api_name, device) {
             if (!"device-configuration" in interfaces[api_name]["API-Config"]["commands"]) { return ""; }
 
             let temp = "";
@@ -1106,7 +1107,7 @@ class RemoteSettingsApi {
 
             return temp;
         }
-        this.create_api_add_dialog = function (api_name, data) {
+        this.create_api_device = function (api_name, data) {
 
             //return this.elements.select(id,"device",list,onchange);
             let onchange = "setValueById('add_api_ip_"+api_name+"', this.value);";
@@ -1178,23 +1179,23 @@ class RemoteSettingsApi {
 
             // create sheet boxes for all devices of this interface
             for (let dev in api_config["API-Devices"]) {
-                let buttons = this.list_api_device_settings(key, dev, true);
-                let config_device = this.create_device_configuration(key, dev);
+                let buttons = this.api_device_edit_configuration(key, dev, true);
+                let config_device = this.api_device_create_device_configuration(key, dev);
                 let sheet_box_height = "380px";
                 if (config_device !== "") { sheet_box_height = "420px"; }
 
                 sheet_boxes[key+"_"+dev] = new RemoteElementSheetBox("api-setting-"+key+"_"+dev, sheet_box_height, true, false, false);
-                sheet_boxes[key + "_" + dev].addSheet(lang("API_INFORMATION"), this.list_api_device_information(key, dev, false));
-                sheet_boxes[key + "_" + dev].addSheet(lang("API_DEFINITION"), this.list_api_device_settings(key, dev, false), false);
+                sheet_boxes[key + "_" + dev].addSheet(lang("API_INFORMATION"), this.api_device_overview(key, dev, false));
+                sheet_boxes[key + "_" + dev].addSheet(lang("API_DEFINITION"), this.api_device_edit_configuration(key, dev, false), false);
                 if (buttons !== "") { sheet_boxes[key + "_" + dev].addSheet(lang("API_ADMIN"), buttons); }
                 if (config_device !== "") { sheet_boxes[key + "_" + dev].addSheet(lang("API_CREATE_DEV_CONFIG"), config_device); }
-                sheet_boxes[key + "_" + dev].addSheet(lang("CONNECTED"), this.list_connected_devices(key, dev, data)[1]);
+                sheet_boxes[key + "_" + dev].addSheet(lang("CONNECTED"), this.api_device_connected_devices(key, dev, data)[1]);
             }
 
             // add device sheet box
             let config_api = this.create_api_configuration(key);
             sheet_boxes[key+"_add-api-device"] = new RemoteElementSheetBox("api-settings-add-"+key, "380px", true, false, false);
-            sheet_boxes[key+"_add-api-device"].addSheet("Add API-Device", this.create_api_add_dialog(key, data));
+            sheet_boxes[key+"_add-api-device"].addSheet("Add API-Device", this.create_api_device(key, data));
             if (config_api !== "") { sheet_boxes[key+"_add-api-device"].addSheet("Create API config", config_api); }
 
             // fill JSON edit field
