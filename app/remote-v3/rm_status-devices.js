@@ -27,6 +27,7 @@ class RemoteDevicesStatus {
         this.status_devices = {};
         this.config_apis = {};
         this.config_devices = {};
+        this.power_devices = {}
 
         this.warning = {}
         this.starting = {}
@@ -51,6 +52,7 @@ class RemoteDevicesStatus {
         this.status_devices = this.data["STATUS"]["devices"];
 
         this.config_apis = this.data["CONFIG"]["apis"]["list_api_configs"]["list"];
+        this.config_apis_structure = this.data["CONFIG"]["apis"]["structure"];
         this.config_devices = this.data["CONFIG"]["devices"];
         this.config_scenes = this.data["CONFIG"]["scenes"];
 
@@ -95,7 +97,9 @@ class RemoteDevicesStatus {
             for (let api_device in this.status_api_devices_all[api]["api_devices"]) {
                 let key = api + "_" + api_device;
                 let status = "OK";
+
                 let power = (this.status_api_devices_all[api]["api_devices"][api_device]["power_device"] && this.status_api_devices_all[api]["api_devices"][api_device]["power_device"] !== "");
+                if (power) { this.power_devices[this.status_api_devices_all[api]["api_devices"][api_device]["power_device"]] = ""; }
 
                 if (!this.status_api_devices_all[api]["api_devices"][api_device]["active"]) { status = "DISABLED"; }
                 else if (power && this.status_api_devices_all[api]["api_devices"][api_device]["power"] === "OFF") { status = "POWER_OFF"; }
@@ -117,6 +121,16 @@ class RemoteDevicesStatus {
                 }
             }
         }
+        for (let device in this.power_devices) {
+            let [api, api_device] = device.split("_");
+            this.power_devices[device] = this.config_apis_structure[api][api_device][0];
+            if (this.config_apis_structure[api][api_device].length > 1) {
+                let message = "There are several devices defined as power device. A power device usually consists of an API device with just one connected device!" +
+                              "(" + device + ": " + this.config_apis_structure[api][api_device] + ")";
+                if (!this.warning[message]) { console.warn(message); }
+                this.warning[message] = true;
+            }
+        }
     }
 
     /* collecting status for all devices */
@@ -130,19 +144,16 @@ class RemoteDevicesStatus {
             let api_status  = this.status_data["api"][api]["status"];
             let api_device_status = this.status_data["api-device"][api_key]["status"];
             let active = (this.config_devices[device]["settings"]["visible"] === "yes");
+
+            let status = "OK";
             let power_device = this.status_data["api-device"][api_key]["power"];
             let power_status;
-
-            if (this.status_devices[device]["power"]) {
-                power_status = this.status_devices[device]["power"].toUpperCase();
-            } else {
-                power_status = "ERROR";
-            }
-            let status = "OK";
+            if (this.status_devices[device]["power"]) { power_status = this.status_devices[device]["power"].toUpperCase(); }
+            else { power_status = "ERROR"; }
 
             let label_power = "";
             if (this.config_devices[power_device]) {
-                label_power = this.config_devices[power_device]["settings"]["label"] || power_device;
+                label_power = this.config_devices[this.power_devices[power_device]]["settings"]["label"];
             }
             let label_device = "N/A";
             if (this.config_devices[device] && this.config_devices[device]["settings"]["label"]) {
