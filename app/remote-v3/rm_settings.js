@@ -1055,11 +1055,10 @@ class RemoteSettingsApi {
             return temp;
         }
         this.create_device_configuration = function (api_name, device) {
+            if (!"device-configuration" in interfaces[api_name]["API-Config"]["commands"]) { return ""; }
+
             let temp = "";
             let select = "";
-            let key2 = "";
-
-            let config_create = ("device-configuration" in interfaces[api_name]["API-Config"]["commands"]);
             let detect_devices = (api_name + "_" + device in dataAll["CONFIG"]["apis"]["list_detect"]);
             let activate_copy_button = "document.getElementById('copy_button_"+api_name+"_"+device+"').disabled=false;document.getElementById('copy_button_"+api_name+"_"+device+"').style.backgroundColor='';";
             let activate_create_button = "document.getElementById('create_button_"+api_name+"_"+device+"').disabled=false;document.getElementById('create_button_"+api_name+"_"+device+"').style.backgroundColor='';";
@@ -1075,40 +1074,37 @@ class RemoteSettingsApi {
                 select = this.basic.select("api_device-"+api_name+"_"+device, "detected device", detected_select, activate_create_button, "");
             }
 
-            if (config_create) {
-                this.button.width = "80px;";
-                temp += lang("API_CREATE_DEV_CONFIG_INFO", [api_name]);
-                temp += "<br/>&nbsp;";
-                temp += this.tab.start();
-                temp += this.tab.row("Detected:","<div id='api_device-"+api_name+"_"+device+"_container'>"+select+"</div>");
-                temp += this.tab.row("API Call:<br/>","<div id='api_command-"+api_name+"_"+device+"'>get=device-configuration</div><br/>");
-                temp += this.tab.row("<div class='remote-edit-cmd' id='api_response_"+api_name+"_"+device+"'></div><br/>",false);
-                temp += this.tab.end();
-                temp += this.button.edit("apiSendToDeviceApi(getValueById('api_device-"+api_name+"_"+device+"')+'||"+api_name+"_"+device+"', getTextById('api_command-"+api_name+"_"+device+"'), true);"+activate_copy_button, lang("CREATE"), "disabled", "create_button_"+api_name+"_"+device) + "&nbsp;";
-                temp += this.button.edit("copyTextById('JSON_copy',appMsg,'"+lang("COPIED_TO_CLIPBOARD")+"');"+activate_copy_button, lang("COPY"), "disabled", "copy_button_"+api_name+"_"+device);
-            }
+            this.button.width = "80px;";
+            temp += lang("API_CREATE_DEV_CONFIG_INFO", [api_name]);
+            temp += "<br/>&nbsp;";
+            temp += this.tab.start();
+            temp += this.tab.row("Detected:","<div id='api_device-"+api_name+"_"+device+"_container'>"+select+"</div>");
+            temp += this.tab.row("API Call:<br/>","<div id='api_command-"+api_name+"_"+device+"'>get=device-configuration</div><br/>");
+            temp += this.tab.row("<div class='remote-edit-cmd' id='api_response_"+api_name+"_"+device+"'></div><br/>",false);
+            temp += this.tab.end();
+            temp += this.button.edit("apiSendToDeviceApi(getValueById('api_device-"+api_name+"_"+device+"')+'||"+api_name+"_"+device+"', getTextById('api_command-"+api_name+"_"+device+"'), true);"+activate_copy_button, lang("CREATE"), "disabled", "create_button_"+api_name+"_"+device) + "&nbsp;";
+            temp += this.button.edit("copyTextById('JSON_copy',appMsg,'"+lang("COPIED_TO_CLIPBOARD")+"');"+activate_copy_button, lang("COPY"), "disabled", "copy_button_"+api_name+"_"+device);
+
             return temp;
         }
         this.create_api_configuration = function (api_name, device="default") {
 
-            let config_create = ("api-discovery" in interfaces[api_name]["API-Config"]["commands"]);
+            if  (!"api-discovery" in interfaces[api_name]["API-Config"]["commands"]) { return ""; }
+
             let activate_copy_button = "document.getElementById('copy_button_"+api_name+"_"+device+"').disabled=false;document.getElementById('copy_button_"+api_name+"_"+device+"').style.backgroundColor='';";
             let activate_create_button = "document.getElementById('create_button_"+api_name+"_"+device+"').disabled=false;document.getElementById('create_button_"+api_name+"_"+device+"').style.backgroundColor='';";
 
-            if (config_create) {
-                this.button.width = "80px;";
-                let temp = lang("API_CREATE_CONFIG_INFO", [api_name]);
-                temp += "<br/>&nbsp;";
-                temp += this.tab.start();
-                temp += this.tab.row("API Call:<br/>","<div id='api_command-"+api_name+"_"+device+"'>api-discovery</div><br/>");
-                temp += this.tab.row("<div class='remote-edit-cmd' id='api_response_"+api_name+"_"+device+"'></div><br/>", false);
-                temp += this.tab.end();
-                temp += this.button.edit("apiSendToDeviceApi( '"+api_name+"_"+device+"||xx||"+api_name+"_"+device+"', getTextById('api_command-"+api_name+"_"+device+"'), true);"+activate_copy_button, lang("CREATE"), "", "create_button_"+api_name+"_"+device) + "&nbsp;";
-                temp += this.button.edit("copyTextById('JSON_copy',appMsg,'"+lang("COPIED_TO_CLIPBOARD")+"');"+activate_copy_button, lang("COPY"), "disabled", "copy_button_"+api_name+"_"+device);
+            this.button.width = "80px;";
+            let temp = "";
+            temp += this.tab.start();
+            temp += this.tab.row(lang("API_CREATE_CONFIG_INFO", [api_name])+"<br/>&nbsp;<br/>", false);
+            temp += this.tab.row("API Call:<br/>","<div id='api_command-"+api_name+"_"+device+"'>api-discovery</div><br/>");
+            temp += this.tab.row("<div class='remote-edit-cmd' id='api_response_"+api_name+"_"+device+"'></div><br/>", false);
+            temp += this.tab.end();
+            temp += this.button.edit("apiSendToDeviceApi( '"+api_name+"_"+device+"||xx||"+api_name+"_"+device+"', getTextById('api_command-"+api_name+"_"+device+"'), true);"+activate_copy_button, lang("CREATE"), "", "create_button_"+api_name+"_"+device) + "&nbsp;";
+            temp += this.button.edit("copyTextById('JSON_copy',appMsg,'"+lang("COPIED_TO_CLIPBOARD")+"');"+activate_copy_button, lang("COPY"), "disabled", "copy_button_"+api_name+"_"+device);
 
-                return temp;
-            }
-            return "";
+            return temp;
         }
         this.create_api_add_dialog = function (api_name, data) {
 
@@ -1134,6 +1130,7 @@ class RemoteSettingsApi {
             list["aaa.bbb.ccc.ddd"] = "OTHER";
 
             let temp = "<div style='padding:3px;'>";
+            this.elements.input_width = "150px";
             temp += this.tab.start("");
             temp += this.tab.row(lang("MANUAL_ADD_API-DEVICE")+"<br/>&nbsp;", false);
             temp += this.tab.row("API:", api_name);

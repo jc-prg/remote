@@ -26,7 +26,7 @@ let language_app = {
         "STATUS_DEV_ERROR"              : "Beim Gerät <b>{0}</b> ist ein Fehler aufgetreten. {1}",
         "STATUS_DEV_API_DISABLED"       : "Die API <b>{0}</b> für das Gerät <b>{1}</b> wurde deaktiviert.",
         "STATUS_DEV_API_STARTING"       : "Die API <b>{0}</b> für das Gerät <b>{1}</b> wird gerade gestartet, bitte warten.",
-        "STATUS_DEV_API_ERROR"          : "Bei der API <b>{0}</b> für das angeschlossene Gerät <b>{1}</b> ist ein Fehler aufgetreten. {2}",
+        "STATUS_DEV_API_ERROR"          : "Bei der API <b>{0}</b> für das angeschlossene Gerät <b>{1}</b> ist ein Fehler aufgetreten: <i>{2}</i>",
         "STATUS_DEV_OTHER_ERROR"        : "Es ist ein unbekannter Fehler beim Gerät <b>{0}</b> aufgetreten.",
         "STATUS_DEV_EMPTY"              : "Für dieses Gerät <b>{0}</b> wurde bislang noch keine Fernbedienung definiert.",
 
@@ -424,7 +424,7 @@ let language_app = {
         "STATUS_DEV_ERROR"             : "An error occurred for device <b>{0}</b>. {1}",
         "STATUS_DEV_API_DISABLED"      : "The API <b>{0}</b> for the device <b>{1}</b> has been disabled.",
         "STATUS_DEV_API_STARTING"      : "The API <b>{0}</b> for the device <b>{1}</b> is starting, please wait.",
-        "STATUS_DEV_API_ERROR"         : "An API error occurred for <b>{0}</b> and the connected device <b>{1}</b>. {2}",
+        "STATUS_DEV_API_ERROR"         : "An API error occurred for <b>{0}</b> and the connected device <b>{1}</b>: <i>{2}</i>",
         "STATUS_DEV_OTHER_ERROR"       : "Unknown error occurred for the device <b>{0}</b>.",
         "STATUS_DEV_EMPTY"             : "For this device <b>{0}</b> no remote control layout is defined yet.",
 

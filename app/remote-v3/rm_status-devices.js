@@ -57,21 +57,18 @@ class RemoteDevicesStatus {
         if (this.load_async) {
             // trigger structure update asynchronously (as a short delay might be OK)
             if ('requestIdleCallback' in window) {
-                requestIdleCallback(() => this.update_data_structure());
+                requestIdleCallback(() => this.create_data());
             } else {
-                setTimeout(() => this.update_data_structure(), 0);
+                setTimeout(() => this.create_data(), 0);
             }
         } else {
             // start directly
-            this.update_data_structure();
+            this.create_data();
         }
     }
 
-    /* create a structure of status data */
-    update_data_structure () {
-        let start_time = new Date().getTime() / 1000;
-
-        // collecting status for all APIs
+    /* collecting status for all APIs */
+    create_data_apis() {
         for (let i=0;i<this.all_apis.length;i++) {
             let api = this.all_apis[i];
             let status_message = "";
@@ -90,8 +87,10 @@ class RemoteDevicesStatus {
                 "status": status_value
             }
         }
+    }
 
-        // collecting status for all API devices
+    /* collecting status for all API devices */
+    create_data_api_devices() {
         for (let api in this.status_api_devices_all) {
             for (let api_device in this.status_api_devices_all[api]["api_devices"]) {
                 let key = api + "_" + api_device;
@@ -100,6 +99,8 @@ class RemoteDevicesStatus {
 
                 if (!this.status_api_devices_all[api]["api_devices"][api_device]["active"]) { status = "DISABLED"; }
                 else if (power && this.status_api_devices_all[api]["api_devices"][api_device]["power"] === "OFF") { status = "POWER_OFF"; }
+                else if (power && this.status_api_devices_all[api]["api_devices"][api_device]["connect"].indexOf("OFF") > -1) { status = "POWER_OFF"; }
+                else if (power && this.status_api_devices_all[api]["api_devices"][api_device]["connect"].indexOf("ERROR") > -1) { status = "POWER_ERROR"; }
                 else if (power && this.status_api_devices_all[api]["api_devices"][api_device]["power"] !== "ON") { status = "POWER_ERROR"; }
                 else if (this.status_api_devices_all[api]["api_devices"][api_device]["connect"] === "Connected") { status = "OK"; }
                 else if (this.status_api_devices_all[api]["api_devices"][api_device]["connect"].indexOf("ERROR") > -1) { status = "ERROR"; }
@@ -116,8 +117,10 @@ class RemoteDevicesStatus {
                 }
             }
         }
+    }
 
-        // collecting status for all devices
+    /* collecting status for all devices */
+    create_data_devices() {
         for (let device in this.status_devices) {
             if (device === "default") { continue; }
 
@@ -129,6 +132,7 @@ class RemoteDevicesStatus {
             let active = (this.config_devices[device]["settings"]["visible"] === "yes");
             let power_device = this.status_data["api-device"][api_key]["power"];
             let power_status;
+
             if (this.status_devices[device]["power"]) {
                 power_status = this.status_devices[device]["power"].toUpperCase();
             } else {
@@ -165,6 +169,7 @@ class RemoteDevicesStatus {
             let message = this.select_message("device", status, {
                 "api": api,
                 "api_device": api_device,
+                "api_device_msg": this.status_data["api-device"][api_key]["message"],
                 "device": device,
                 "label": label_device,
                 "label_pwr": label_power,
@@ -186,8 +191,10 @@ class RemoteDevicesStatus {
                 "message": message
             }
         }
+    }
 
-        // collection status data for all scenes
+    /* collection status data for all scenes */
+    create_data_scenes() {
         for (let scene in this.config_scenes) {
             let status = "";
             let label = this.config_scenes[scene]["settings"]["label"];
@@ -236,7 +243,7 @@ class RemoteDevicesStatus {
                     else if (device_status === "OFF") {
                         dev_list_off_label.push(this.config_devices[device]["settings"]["label"]);
                     }
-                    else if (device_status === "POWER_OFF" && this.status_data["device"][device_id]["power"]) {
+                    else if (device_status === "POWER_OFF" && this.status_data["device"][device_id] && this.status_data["device"][device_id]["power"]) {
                         power_off_list[this.status_data["device"][device_id]["power"]] = true;
                         if (this.status_data["device"][this.status_data["device"][device_id]["power"]]) {
                             let pwr_label = this.config_devices[this.status_data["device"][device_id]["power"]]["settings"]["label"];
@@ -279,8 +286,22 @@ class RemoteDevicesStatus {
             };
 
         }
+    }
 
-        // collect group related information -> not implemented yet
+    /* collecting status data for all groups */
+    create_data_groups() {
+        // not implemented yet
+    }
+
+    /* create a structure of status data */
+    create_data () {
+        let start_time = new Date().getTime() / 1000;
+
+        this.create_data_apis();
+        this.create_data_api_devices();
+        this.create_data_devices();
+        this.create_data_scenes();
+        this.create_data_groups(); // not implemented yet
 
         if (statusCheck_devices_logging) {
             console.warn(this.status_data);
@@ -302,7 +323,7 @@ class RemoteDevicesStatus {
             else if (status_id === "API_STARTING")          { status_msg = lang("STATUS_DEV_API_STARTING", [values["api_device"], values["label"]]); }
             else if (status_id === "API_DISABLED")          { status_msg = lang("STATUS_DEV_API_DISABLED", [values["api_device"], values["label"]]); }
             else if (status_id === "API_PWR_DISABLED")      { status_msg = lang("STATUS_DEV_API_DISABLED", [values["device_pwr"], values["label"]]); }
-            else if (status_id === "API_ERROR")             { status_msg = lang("STATUS_DEV_API_ERROR", [values["api_device"], values["label"], error_msg]); }
+            else if (status_id === "API_ERROR")             { status_msg = lang("STATUS_DEV_API_ERROR", [values["api_device"], values["label"], values["api_device_msg"]]); }
             //else if (status_id === "API_PWR_ERROR")         { status_msg = lang("STATUS_DEV_API_ERROR", [values["device_pwr"], values["label"], error_msg]); }
             //else if (status_id === "API_ERROR_DEVICE")      { status_msg = lang("STATUS_DEV_API_ERROR", [values["api_device"], values["label"]]); }
             else if (status_id === "ERROR_N/A")             { status_msg = lang("STATUS_DEV_OTHER_ERROR", [values["label"]]); }
