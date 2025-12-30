@@ -162,9 +162,9 @@ class RemoteDevicesStatus {
 
                 if (!this.status_api_devices_all[api]["api_devices"][api_device]["active"]) { status = "DISABLED"; }
                 else if (power && this.status_api_devices_all[api]["api_devices"][api_device]["power"] === "OFF") { status = "POWER_OFF"; }
-                else if (power && power_status.indexOf("OFF") > -1) { status = "POWER_OFF"; }
-                else if (power && power_status.indexOf("ERROR") > -1) { status = "POWER_ERROR"; }
-                else if (power && power_status !== "ON") { status = "POWER_ERROR"; }
+                else if (power && power_status && power_status.indexOf("OFF") > -1) { status = "POWER_OFF"; }
+                else if (power && power_status && power_status.indexOf("ERROR") > -1) { status = "POWER_ERROR"; }
+                else if (power && power_status && power_status !== "ON") { status = "POWER_ERROR"; }
                 else if (this.status_api_devices_all[api]["api_devices"][api_device]["connect"] === "Connected") { status = "OK"; }
                 else if (this.status_api_devices_all[api]["api_devices"][api_device]["connect"].indexOf("ERROR") > -1) { status = "ERROR"; }
                 else if (this.status_api_devices_all[api]["api_devices"][api_device]["connect"].indexOf("Start") > -1) { status = "STARTING"; }
