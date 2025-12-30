@@ -448,46 +448,4 @@ class RemoteDevicesStatus {
     status_scene (id, details=false) {
         return this.get_status("scene", id, details);
     }
-
-    /* OLD statusCheck_devicePowerStatus */
-    old_status_device_power() {
-        let status = {};
-        let messages = {};
-        for (let key in this.status_data["device"]) {
-            status[key] = this.status_data["device"][key]["status"];
-            messages[key] = this.status_data["device"][key]["message"];
-        }
-
-        let stack = new Error().stack;
-        stack = stack.split("\n");
-        stack = stack[3].split("at ")[1];
-        stack = stack.replace("http://localhost:81/remote-v3/","");
-        if (!this.warning[stack]) {
-            console.warn("Still using OLD statusCheck_devicePowerStatus():\n -> " + stack);
-            this.warning[stack] = true;
-        }
-
-        return [status, messages];
-    }
-
-    /* OLD statusCheck_scenePowerStatus */
-    old_status_scene_power() {
-        let status = {};
-        let messages = {};
-        for (let key in this.status_data["scene"]) {
-            status[key] = this.status_data["scene"][key]["status"];
-            messages[key] = this.status_data["scene"][key]["message"];
-        }
-
-        let stack = new Error().stack;
-        stack = stack.split("\n");
-        stack = stack[3].split("at ")[1];
-        stack = stack.replace("http://localhost:81/remote-v3/","");
-        if (!this.warning[stack]) {
-            console.warn("Still using OLD statusCheck_deviceSceneStatus():\n -> " + stack);
-            this.warning[stack] = true;
-        }
-
-        return [status, messages];
-    }
 }
