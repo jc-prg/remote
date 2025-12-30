@@ -28,6 +28,7 @@ class RemoteDevicesStatus {
         this.config_apis = {};
         this.config_devices = {};
         this.power_devices = {}
+        this.power_devices_status = {}
         this.device_keys = {
             "api" : [],
             "api-device": [],
@@ -84,6 +85,45 @@ class RemoteDevicesStatus {
         }
     }
 
+    /* create a structure of status data */
+    create_data () {
+        let start_time = new Date().getTime() / 1000;
+
+        this.create_data_apis();
+        this.create_data_power_devices();
+        this.create_data_api_devices();
+        this.create_data_devices();
+        this.create_data_scenes();
+        this.create_data_groups(); // not implemented yet
+
+        if (statusCheck_devices_logging) {
+            console.warn(this.status_data);
+            let duration = Math.round(((new Date().getTime()) / 1000 - start_time) * 1000) / 1000;
+            console.warn("Duration data preparation: " + duration + "s");
+        }
+    }
+
+    /* create power devices information */
+    create_data_power_devices() {
+        let list_power_devices = this.data["CONFIG"]["apis"]["list_power_devices"];
+        let power_devices = [];
+        for (let device in list_power_devices) {
+            this.power_devices[device] = "";
+            this.power_devices_status[device] = "N/A";
+        }
+        for (let device in this.power_devices) {
+            let [api, api_device] = device.split("_");
+            this.power_devices[device] = this.config_apis_structure[api][api_device][0];
+            this.power_devices_status[device] = this.status_devices[this.power_devices[device]]["power"].toUpperCase();
+            if (this.config_apis_structure[api][api_device].length > 1) {
+                let message = "There are several devices defined as power device. A power device usually consists of an API device with just one connected device!" +
+                    "(" + device + ": " + this.config_apis_structure[api][api_device] + ")";
+                if (!this.warning[message]) { console.warn(message); }
+                this.warning[message] = true;
+            }
+        }
+    }
+
     /* collecting status for all APIs */
     create_data_apis() {
         for (let i=0;i<this.all_apis.length;i++) {
@@ -116,14 +156,15 @@ class RemoteDevicesStatus {
                 let key = api + "_" + api_device;
                 let status = "OK";
 
+                let power_status = "";
                 let power = (this.status_api_devices_all[api]["api_devices"][api_device]["power_device"] && this.status_api_devices_all[api]["api_devices"][api_device]["power_device"] !== "");
-                if (power) { this.power_devices[this.status_api_devices_all[api]["api_devices"][api_device]["power_device"]] = ""; }
+                if (power) { power_status = this.power_devices_status[power]; }
 
                 if (!this.status_api_devices_all[api]["api_devices"][api_device]["active"]) { status = "DISABLED"; }
                 else if (power && this.status_api_devices_all[api]["api_devices"][api_device]["power"] === "OFF") { status = "POWER_OFF"; }
-                else if (power && this.status_api_devices_all[api]["api_devices"][api_device]["connect"].indexOf("OFF") > -1) { status = "POWER_OFF"; }
-                else if (power && this.status_api_devices_all[api]["api_devices"][api_device]["connect"].indexOf("ERROR") > -1) { status = "POWER_ERROR"; }
-                else if (power && this.status_api_devices_all[api]["api_devices"][api_device]["power"] !== "ON") { status = "POWER_ERROR"; }
+                else if (power && power_status.indexOf("OFF") > -1) { status = "POWER_OFF"; }
+                else if (power && power_status.indexOf("ERROR") > -1) { status = "POWER_ERROR"; }
+                else if (power && power_status !== "ON") { status = "POWER_ERROR"; }
                 else if (this.status_api_devices_all[api]["api_devices"][api_device]["connect"] === "Connected") { status = "OK"; }
                 else if (this.status_api_devices_all[api]["api_devices"][api_device]["connect"].indexOf("ERROR") > -1) { status = "ERROR"; }
                 else if (this.status_api_devices_all[api]["api_devices"][api_device]["connect"].indexOf("Start") > -1) { status = "STARTING"; }
@@ -136,22 +177,12 @@ class RemoteDevicesStatus {
                     "message": this.status_api_devices_all[api]["api_devices"][api_device]["connect"],
                     "status": status,
                     "power": this.status_api_devices_all[api]["api_devices"][api_device]["power_device"],
-                    "power-status": this.status_api_devices_all[api]["api_devices"][api_device]["power"]
+                    "power-status": power_status
                 }
                 if (!api_summary.includes(status)) { api_summary.push(status);}
             }
             if (this.status_data["api"][api]) {
                 this.status_data["api"][api]["api-device-summary"] = api_summary;
-            }
-        }
-        for (let device in this.power_devices) {
-            let [api, api_device] = device.split("_");
-            this.power_devices[device] = this.config_apis_structure[api][api_device][0];
-            if (this.config_apis_structure[api][api_device].length > 1) {
-                let message = "There are several devices defined as power device. A power device usually consists of an API device with just one connected device!" +
-                              "(" + device + ": " + this.config_apis_structure[api][api_device] + ")";
-                if (!this.warning[message]) { console.warn(message); }
-                this.warning[message] = true;
             }
         }
     }
@@ -331,23 +362,6 @@ class RemoteDevicesStatus {
     /* collecting status data for all groups */
     create_data_groups() {
         // not implemented yet
-    }
-
-    /* create a structure of status data */
-    create_data () {
-        let start_time = new Date().getTime() / 1000;
-
-        this.create_data_apis();
-        this.create_data_api_devices();
-        this.create_data_devices();
-        this.create_data_scenes();
-        this.create_data_groups(); // not implemented yet
-
-        if (statusCheck_devices_logging) {
-            console.warn(this.status_data);
-            let duration = Math.round(((new Date().getTime()) / 1000 - start_time) * 1000) / 1000;
-            console.warn("Duration data preparation: " + duration + "s");
-        }
     }
 
     /* select status message */
