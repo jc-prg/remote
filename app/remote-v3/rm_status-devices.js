@@ -190,6 +190,7 @@ class RemoteDevicesStatus {
                 "active": active,
                 "status": status,
                 "power": power_device,
+                "power2": label_power,
                 "message": message
             }
         }
