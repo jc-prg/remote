@@ -34,7 +34,13 @@
   * statusCheck_apiConnection() in rm-status.js -> use statusCheck_devices()
 
 * macro editing in the app
+  * OPEN: improve layout (best use the available space on different screen sizes)
+  * OPEN: save from this GUI
+  * OPEN: add macros and groups
+  * IN PROGRESS: Drag'n'Drop for browser and touch (at the moment touch only)
   * OK: first testing in Macro Settings with fixed data
+  * OK: improved layout
+  * OK: load data set
 
 ### paused a bit
 

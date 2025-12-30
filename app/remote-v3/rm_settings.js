@@ -152,11 +152,9 @@ class RemoteSettings {
             this.settings_ext_reset();
             this.settings_ext_append(0,"", this.index(true, "WRAPPER"), "", true);
             this.settings_ext_append(1,lang("EDIT_MACROS"), this.module_macros.create());
-            this.settings_ext_append(1,lang("EDIT_MACROS"), macro_container);
             this.index_buttons_html = this.index(true, "SETTINGS_MACROS");
             this.create_show_ext();
             this.module_macros.load();
-            init_macro_editor();
         }
         else {
             setNavTitle(lang('INFORMATION'));
@@ -265,7 +263,7 @@ class RemoteSettings {
         let frame_content = getTextById("setting_ext_frames");
 
         if (label !== "") {
-            text = "<font class='remote_edit_headline'><center><b>" + label + "</b></center></font>"  + this.basic.edit_line() + text + "<br/>";
+            text = "<span class='remote_edit_headline' style='text-align: center'><b>" + label + "</b></span>"  + this.basic.edit_line() + text + "<br/>";
         }
 
         if (top) {
@@ -328,7 +326,7 @@ class RemoteSettings {
         let content;
 
         if (label !== "") {
-            content 	= "<font class='remote_edit_headline'><center><b>" + label + "</b></center></font>"
+            content 	= "<span class='remote_edit_headline' style='text-align: center'><b>" + label + "</b></span>"
                             + this.basic.edit_line()
                             + text
                             + "<br/>";
@@ -359,7 +357,7 @@ class RemoteSettingsRemotes {
         this.update_data();
 
         let setting = "";
-        let set_temp = "";
+        let set_temp;
         this.button.width  = "120px";
         this.button.height = "30px";
 
@@ -372,9 +370,9 @@ class RemoteSettingsRemotes {
         set_temp += this.tab.row( "ID:",            this.elements.input("add_scene_id", "", "apiSceneAddCheckID(this);") );
         set_temp += this.tab.row( "Label:",         this.elements.input("add_scene_label") );
         set_temp += this.tab.row( "Description:",   this.elements.input("add_scene_descr") );
-        set_temp += this.tab.row( "<center>" +
+        set_temp += this.tab.row( "<span style='text-align: center;'>" +
             this.button.sized("add_scene",lang("ADD_SCENE"),"settings","apiSceneAdd([#add_scene_id#,#add_scene_label#,#add_scene_descr#]);") +
-            "</center>", false);
+            "</span>", false);
         set_temp += this.tab.end();
         setting  += this.basic.container("setting_add_scene",lang("ADD_SCENE"),set_temp,open_add_scene);
 
@@ -393,7 +391,6 @@ class RemoteSettingsRemotes {
         if (order.length > 0) {
             for (let key in order) {
                 let scene = order[key];
-                let visible = "";
                 let style = "";
                 if (scenes[scene]["settings"]["visible"] === "no") {
                     style = " hidden";
@@ -401,7 +398,7 @@ class RemoteSettingsRemotes {
 
                 html += "<li id='" + scene + "'>";
                 html += "<div class='slist_li_content" + style + "'>" + scenes[scene]["settings"]["label"] + "<br/>";
-                html += "<font style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>" + scene + "</rm-id></font></div>";
+                html += "<span style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>" + scene + "</rm-id></span></div>";
                 html += "<div class='slist_li_edit'>" + this.remote_edit("scene", scene, scenes[scene]["settings"]["visible"]) + "</div>";
                 html += "</li>";
             }
@@ -601,9 +598,9 @@ class RemoteSettingsRemotes {
 
         this.input_width = width;
 
-        set_temp += "<center>";
+        set_temp += "<span style='text-align: center;'>";
         set_temp += this.button.sized("add_dev","Add Device","settings",add_command);
-        set_temp += "</center>";
+        set_temp += "</span>";
         return set_temp;
     }
 
@@ -1687,7 +1684,7 @@ class RemoteSettingsMacro {
         this.button.width = "100px";
         let setting   = "";
         setting  += "<br/><center><div id='macros-edit-json'></div></center>";
-        setting  += "<center><div style='width:100%;align:center;'><br/>";
+        setting  += "<center><div style='width:100%;text-align:center;'><br/>";
         setting  += this.button.sized("add_scene",lang("BUTTON_T_SAVE"),"settings","apiMacroChange([#groups#,#macro#,#dev-on#,#dev-off#]);","");
         setting  += "<br/></div></center>";
         return setting;
@@ -1695,10 +1692,11 @@ class RemoteSettingsMacro {
 
     // load data for macro settings
     load() {
-        const myBox2 = new RemoteElementSheetBox("macros-edit-json", "400px", true);
+        const myBox2 = new RemoteElementSheetBox("macros-edit-json", "500px", true);
         myBox2.addSheet("Info",         lang("MANUAL_MACROS"));
         myBox2.addSheet("Groups",       "<h4>Edit JSON for device groups:</h4>" +     "<div id='json-edit-groups'></div>", false);
         myBox2.addSheet("Macros",       "<h4>Edit JSON for global macros:</h4>" +     "<div id='json-edit-macro'></div>", false);
+        myBox2.addSheet("Macros NEW",   "<h4>Edit JSON for global macros:</h4>" +     "<div id='json-edit-macro-gui'></div>", false);
         myBox2.addSheet("Device ON",    "<h4>Edit JSON for device ON macros:</h4>" +  "<div id='json-edit-dev-on'></div>", false);
         myBox2.addSheet("Device OFF",   "<h4>Edit JSON for device OFF macros:</h4>" + "<div id='json-edit-dev-off'></div>", false);
 
@@ -1707,6 +1705,29 @@ class RemoteSettingsMacro {
         jsonEdit.create("json-edit-macro",  "macro",   this.settings.data["CONFIG"]["macros"]["global"]);
         jsonEdit.create("json-edit-dev-on", "dev-on",  this.settings.data["CONFIG"]["macros"]["device-on"]);
         jsonEdit.create("json-edit-dev-off","dev-off", this.settings.data["CONFIG"]["macros"]["device-off"]);
+
+        const macroEdit = new RemoteMacroEditor("json-edit-macro-gui", macro_sample_data_set);
+
+        setTimeout(() => {
+
+            let macro_data = dataAll["CONFIG"]["macros"]["global"];
+            let devices = dataAll["CONFIG"]["devices"];
+            let macro_devices = {};
+            let initial = {
+                "aa": ["audio_addons", "audio_addon-Mediathek" ]
+            };
+            initial = macro_data;
+            for (let device in devices) {
+                macro_devices[device] = { color: "devices", commands: devices[device]["buttons"] };
+            }
+
+            let config = {
+                categories: macro_devices,
+                initial: initial,
+                devices: Object.keys(macro_data),
+            }
+            macroEdit.load_data(config);
+        }, 5000);
     }
 
 }

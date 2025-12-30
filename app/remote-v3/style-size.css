@@ -135,23 +135,41 @@
 /* format settings frame when menu is visible */
 
 @media (min-width: 705px) {
-  #device_frame0 {
-    width : 100%;
-  }
-  #setting_ext_top_frame  {
-    width: calc(100% - 212px);
-    left : 180px;
-    top  : 45px;
-  }
-  #setting_ext_frames     {
-    width: calc(100% - 182px);
-    left : 180px;
+    #device_frame0 {
+        width: 100%;
+    }
+
+    #setting_ext_top_frame {
+        width: calc(100% - 212px);
+        left: 180px;
+        top: 45px;
+    }
+
+    #setting_ext_frames {
+        width: calc(100% - 182px);
+        left: 180px;
+    }
+}
+
+@media (max-width: 705px) {
+
+  #macros-edit-json .sheet-box{
+    height:650px;
   }
 
-  .macro-edit-container {
-    grid-template-columns:1fr 2fr;
+  .macro-edit-palette {
+      width: 90%;
+      height: 180px;
+      max-height: 180px;
   }
-
+  .macro-edit-area {
+      width: 90%;
+      height: 380px;
+      max-height: 380px;
+  }
+  .macro-output {
+      display: none;
+  }
 }
 
 
