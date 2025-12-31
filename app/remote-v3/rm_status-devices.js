@@ -164,7 +164,7 @@ class RemoteDevicesStatus {
 
                 let power_status = "";
                 let power = (this.status_api_devices_all[api]["api_devices"][api_device]["power_device"] && this.status_api_devices_all[api]["api_devices"][api_device]["power_device"] !== "");
-                if (power) { power_status = this.power_devices_status[power]; }
+                if (power) { power_status = this.power_devices[power]; }
 
                 if (!this.status_api_devices_all[api]["api_devices"][api_device]["active"]) { status = "DISABLED"; }
                 else if (power && this.status_api_devices_all[api]["api_devices"][api_device]["power"] === "OFF") { status = "POWER_OFF"; }
@@ -211,8 +211,6 @@ class RemoteDevicesStatus {
             if (this.status_devices[device]["power"]) { power_status = this.status_devices[device]["power"].toUpperCase(); }
             else { power_status = "ERROR"; }
 
-            console.error(power_device);
-            console.error(this.power_devices[power_device]);
             let label_power = "";
             if (this.config_devices[this.power_devices[power_device]]) {
                 label_power = this.config_devices[this.power_devices[power_device]]["settings"]["label"];
