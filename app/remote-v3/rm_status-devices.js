@@ -45,12 +45,17 @@ class RemoteDevicesStatus {
     /* set app connection error if detected */
     set_connection_error(error) {
         this.app_connection_error = error;
+        this.update();
     }
 
     /* update main variables and trigger update data structure */
-    update (data) {
+    update (data={}) {
 
-        this.data = data;
+        if (data !== {}) {
+            this.data = data;
+        } else {
+            this.set_connection_error(false);
+        }
 
         this.all_apis = this.data["CONFIG"]["apis"]["list"];
         this.active_apis = this.data["STATUS"]["interfaces"]["active"];
