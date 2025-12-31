@@ -3,7 +3,7 @@
 //--------------------------------
 
 let statusCheck_devices;
-let statusCheck_devices_logging = false;
+let statusCheck_devices_logging = true;
 
 
 // class that offers all types of status information for apis, api-devices, media devices, and scenes
@@ -49,11 +49,10 @@ class RemoteDevicesStatus {
     }
 
     /* update main variables and trigger update data structure */
-    update (data={}) {
+    update (data = undefined) {
 
-        if (data !== {}) {
+        if (data) {
             this.data = data;
-        } else {
             this.set_connection_error(false);
         }
 
@@ -110,13 +109,15 @@ class RemoteDevicesStatus {
 
     /* create power devices information */
     create_data_power_devices() {
-        let list_power_devices = this.data["CONFIG"]["apis"]["list_power_devices"];
+        let list_power_devices = this.data["CONFIG"]["apis"]["list_api_power_device"];
         let power_devices = [];
         for (let device in list_power_devices) {
-            this.power_devices[device] = "";
-            this.power_devices_status[device] = "N/A";
+            let power_device = list_power_devices[device]
+            this.power_devices[power_device] = "";
+            this.power_devices_status[power_device] = "N/A";
         }
         for (let device in this.power_devices) {
+            if (!device) { continue; }
             let [api, api_device] = device.split("_");
             this.power_devices[device] = this.config_apis_structure[api][api_device][0];
             this.power_devices_status[device] = this.status_devices[this.power_devices[device]]["power"].toUpperCase();
@@ -210,6 +211,8 @@ class RemoteDevicesStatus {
             if (this.status_devices[device]["power"]) { power_status = this.status_devices[device]["power"].toUpperCase(); }
             else { power_status = "ERROR"; }
 
+            console.error(power_device);
+            console.error(this.power_devices[power_device]);
             let label_power = "";
             if (this.config_devices[this.power_devices[power_device]]) {
                 label_power = this.config_devices[this.power_devices[power_device]]["settings"]["label"];
@@ -245,7 +248,7 @@ class RemoteDevicesStatus {
                 "api_device_msg": this.status_data["api-device"][api_key]["message"],
                 "device": device,
                 "label": label_device,
-                "label_pwr": label_power,
+                "label_pwr": label_power || power_device,
             });
 
             // if disabled, status is still OK (but message shows details)
