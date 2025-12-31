@@ -1716,7 +1716,7 @@ class RemoteSettingsMacro {
                 initial: macro_data,
                 devices: Object.keys(macro_data),
             }
-            macroEdit.load_data(config);
+            macroEdit.loadData(config);
         }, 500);
     }
 

@@ -124,7 +124,7 @@ class RemoteMacroEditor {
         this.default_wait = { color: this.colors.waiting[0], commands: ["WAIT-10","WAIT-15","WAIT-20","WAIT-30","WAIT-40","WAIT-50","WAIT-60","WAIT-90","WAIT-120"] };
 
         this.init();
-        this.load_data(this.config);
+        this.loadData(this.config);
     }
 
     /* ---------- Init ---------- */
@@ -160,7 +160,7 @@ class RemoteMacroEditor {
     }
 
     /* (re)load data into the macro editing */
-    load_data(config) {
+    loadData(config) {
         this.config = config;
         this.init();
 
@@ -207,7 +207,8 @@ class RemoteMacroEditor {
                 else if (entry.indexOf("_") < 0) {
                     return {
                         category: "Unknown",
-                        command: "? " + entry,
+                        command: entry,
+                        label:  "<i>? " + entry + "</i>",
                         color: "#999"
                     }
                 }
@@ -215,13 +216,23 @@ class RemoteMacroEditor {
                 // strings
                 if (typeof entry === "string") {
                     const [category, ...rest] = entry.split("_");
-                    const command = rest.join("_");
+                    let command = rest.join("_");
 
-                    return {
-                        category,
-                        command,
-                        color: this.categories[category]?.color || "#999"
-                    };
+                    if (!this.categories[category]) {
+                        return {
+                            category,
+                            command,
+                            color: this.categories[category]?.color || "#999",
+                            label:  "<i>? " + entry + "</i>"
+                        }
+                    }
+                    else {
+                        return {
+                            category,
+                            command,
+                            color: this.categories[category]?.color || "#999"
+                        }
+                    }
                 }
 
                 return null;
@@ -348,7 +359,12 @@ class RemoteMacroEditor {
 
             const tag = document.createElement("div");
             tag.className = "macro-tag";
-            tag.textContent = item.command;
+            if (!item.label) {
+                tag.textContent = item.command;
+            }
+            else {
+                tag.innerHTML = item.label;
+            }
             tag.style.background = item.color;
             tag.style.background = this.category_color[item.category] || "gray";
             tag.draggable = true;
@@ -373,6 +389,18 @@ class RemoteMacroEditor {
 
         this.attachDropzoneHandlers();
         this.updateOutput();
+    }
+
+    /* ---------- Output ---------- */
+    updateOutput() {
+        const result = {};
+        this.devices.forEach(d => {
+            result[d] = this.macros[d].map(m =>
+                (m.category === "Timing" || m.category === "Waiting") ? m.command : `${m.category}_${m.command}`
+            );
+        });
+        this.outputEl.value = JSON.stringify(result, null, 2);
+        this.outputDetailEl.innerHTML = `${this.activeDevice}: `+JSON.stringify(result[this.activeDevice], null, 2);
     }
 
     /* ---------- Macro Drop ---------- */
@@ -419,36 +447,6 @@ class RemoteMacroEditor {
             };
         });
         this.updateDeviceNavVisibility();
-    }
-
-    /* ---------- Macro Drop - calculate index ---------- */
-    calculateDropIndex(e) {
-    const items = [...this.dropzoneEl.children];
-    let idx = items.length;
-
-    items.forEach((el, i) => {
-        const r = el.getBoundingClientRect();
-        const withinX = Math.abs(e.clientX - (r.left + r.width / 2)) < r.width / 2;
-        const withinY = Math.abs(e.clientY - (r.top + r.height / 2)) < r.height / 2;
-        if (withinX && withinY) idx = Math.min(idx, i);
-    });
-
-    return idx;
-}
-
-    /* NEW */
-    calculateDropIndexFromPoint(x, y) {
-        const items = [...this.dropzoneEl.children];
-        let idx = items.length;
-
-        items.forEach((el, i) => {
-            const r = el.getBoundingClientRect();
-            const withinX = Math.abs(x - (r.left + r.width / 2)) < r.width / 2;
-            const withinY = Math.abs(y - (r.top + r.height / 2)) < r.height / 2;
-            if (withinX && withinY) idx = Math.min(idx, i);
-        });
-
-        return idx;
     }
 
     /* ---------- Drag-out Delete ---------- */
@@ -568,6 +566,36 @@ class RemoteMacroEditor {
         }, { passive: false });
     }
 
+    /* ---------- Macro Drop - calculate index ---------- */
+    calculateDropIndex(e) {
+        const items = [...this.dropzoneEl.children];
+        let idx = items.length;
+
+        items.forEach((el, i) => {
+            const r = el.getBoundingClientRect();
+            const withinX = Math.abs(e.clientX - (r.left + r.width / 2)) < r.width / 2;
+            const withinY = Math.abs(e.clientY - (r.top + r.height / 2)) < r.height / 2;
+            if (withinX && withinY) idx = Math.min(idx, i);
+        });
+
+        return idx;
+    }
+
+    /* NEW */
+    calculateDropIndexFromPoint(x, y) {
+        const items = [...this.dropzoneEl.children];
+        let idx = items.length;
+
+        items.forEach((el, i) => {
+            const r = el.getBoundingClientRect();
+            const withinX = Math.abs(x - (r.left + r.width / 2)) < r.width / 2;
+            const withinY = Math.abs(y - (r.top + r.height / 2)) < r.height / 2;
+            if (withinX && withinY) idx = Math.min(idx, i);
+        });
+
+        return idx;
+    }
+
     /* NEW */
     handleDrop() {
         const macro = this.macros[this.activeDevice];
@@ -589,18 +617,6 @@ class RemoteMacroEditor {
         }
 
         this.renderMacro();
-    }
-
-    /* ---------- Output ---------- */
-    updateOutput() {
-        const result = {};
-        this.devices.forEach(d => {
-            result[d] = this.macros[d].map(m =>
-            (m.category === "Timing" || m.category === "Waiting") ? m.command : `${m.category}_${m.command}`
-            );
-        });
-        this.outputEl.value = JSON.stringify(result, null, 2);
-        this.outputDetailEl.innerHTML = `${this.activeDevice}: `+JSON.stringify(result[this.activeDevice], null, 2);
     }
 
     /* hide navigation if not required */
