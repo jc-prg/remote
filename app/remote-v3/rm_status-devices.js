@@ -3,7 +3,7 @@
 //--------------------------------
 
 let statusCheck_devices;
-let statusCheck_devices_logging = true;
+let statusCheck_devices_logging = false;
 
 
 // class that offers all types of status information for apis, api-devices, media devices, and scenes
