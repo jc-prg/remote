@@ -162,9 +162,13 @@ class RemoteDevicesStatus {
                 let key = api + "_" + api_device;
                 let status = "OK";
 
+                let power_device = "";
                 let power_status = "";
                 let power = (this.status_api_devices_all[api]["api_devices"][api_device]["power_device"] && this.status_api_devices_all[api]["api_devices"][api_device]["power_device"] !== "");
-                if (power) { power_status = this.power_devices[this.status_api_devices_all[api]["api_devices"][api_device]["power_device"]]; }
+                if (power) {
+                    power_device = this.power_devices[this.status_api_devices_all[api]["api_devices"][api_device]["power_device"]];
+                    power_status = this.status_devices[power_device]["power"];
+                }
 
                 if (!this.status_api_devices_all[api]["api_devices"][api_device]["active"]) { status = "DISABLED"; }
                 else if (power && this.status_api_devices_all[api]["api_devices"][api_device]["power"] === "OFF") { status = "POWER_OFF"; }
