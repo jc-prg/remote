@@ -20,7 +20,7 @@ let macro_container = `
       <div class="macro-edit-area">
       
         <div class="macro-device">
-            <div class="macro-device-header">Devices</div>
+            <div class="macro-device-header">Macros</div>
             <div class="macro-device-content open" id="device-content">
                 <div class="nav-arrow left" data-dir="-1" id="macro-nav-left">◀</div>
                 <div class="devices" id="deviceBar"></div>
@@ -118,8 +118,10 @@ class RemoteMacroEditor {
             ],
         };
         this.category_color = {}
-        this.isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
         this.openFirstCategory = this.config.openFirstCategory ?? false;
+        this.isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+        this.touchPos = null;
 
         this.default_timing = { color: "darkblue", commands: [1,2,3,5,7,10,15,20] };
         this.default_wait = { color: "blue", commands: ["WAIT-10","WAIT-15","WAIT-20","WAIT-30","WAIT-40","WAIT-50","WAIT-60","WAIT-90","WAIT-120"] };
@@ -156,8 +158,10 @@ class RemoteMacroEditor {
         this.dragged = null;
         this.dropIndex = null;
         this.firstOpen = true;
+        this.dropSucceeded = false;
     }
 
+    /* (re)load data into the macro editing */
     load_data(config) {
         this.config = config;
         this.init();
@@ -169,6 +173,11 @@ class RemoteMacroEditor {
         this.attachDeviceNavigation();
         this.renderMacro();
         this.attachGlobalDragEnd();
+
+        if (this.isTouch) {
+            this.attachTouchDelete();
+            this.attachTouchMove();
+        }
 
         this.deviceBarEl.addEventListener("scroll", () => this.updateDeviceNavVisibility());
         this.updateDeviceNavVisibility();
@@ -258,19 +267,18 @@ class RemoteMacroEditor {
                 tag.className = "tag";
                 tag.textContent = cmd;
                 tag.style.background = this.category_color[category];
-                /*
                 tag.draggable = true;
                 tag.ondragstart = () => {
                     this.dragged = { source: "palette", category, index };
                 };
-
-                 */
-                //if (!this.isTouch) {
-                    tag.draggable = true;
-                    tag.ondragstart = () => {
-                        this.dragged = { source: "palette", category, index };
-                    };
+                tag.ondragstart = () => {
+                    this.dragged = { source: "palette", category, index };
+                    this.dropSucceeded = false;
+                };
                 if (this.isTouch) {
+                    tag.addEventListener("touchstart", e => {
+                        this.dragged = { source: "macro", index };
+                    });
                     this.attachTouchDrag(tag, { source: "palette", category, index });
                 }
 
@@ -326,6 +334,8 @@ class RemoteMacroEditor {
 
         this.dropzoneEl.ondrop = e => {
             e.preventDefault();
+
+            this.dropSucceeded = true;
             const macro = this.macros[this.activeDevice];
 
             if (!this.dragged) return;
@@ -408,6 +418,41 @@ class RemoteMacroEditor {
         });
     }
 
+    /* handle touch delete by moving element out off the dropzone */
+    attachTouchDelete() {
+        if (!this.isTouch) return;
+
+        document.addEventListener("touchend", e => {
+            if (!this.dragged || this.dragged.source !== "macro") return;
+
+            const { x, y } = this.touchPos;
+            const r = this.dropzoneEl.getBoundingClientRect();
+
+            const inside =
+                x >= r.left && x <= r.right &&
+                y >= r.top && y <= r.bottom;
+
+            if (inside) {
+                // 🔹 TOUCH SORT
+                const macro = this.macros[this.activeDevice];
+                const idx = this.calculateDropIndex({
+                    clientX: x,
+                    clientY: y
+                });
+
+                const [moved] = macro.splice(this.dragged.index, 1);
+                macro.splice(idx, 0, moved);
+            } else {
+                // 🔹 TOUCH DELETE
+                this.macros[this.activeDevice].splice(this.dragged.index, 1);
+            }
+
+            this.dragged = null;
+            this.touchPos = null;
+            this.renderMacro();
+        });
+    }
+
     /* NEW: enable touch */
     attachTouchDrag(el, dragInfo) {
         let ghost = null;
@@ -462,6 +507,17 @@ class RemoteMacroEditor {
         });
     }
 
+    /* handle sorting per touch within the dropzone */
+    attachTouchMove() {
+        if (!this.isTouch) return;
+
+        document.addEventListener("touchmove", e => {
+            if (!this.dragged) return;
+            const touch = e.touches[0];
+            this.touchPos = { x: touch.clientX, y: touch.clientY };
+        }, { passive: false });
+    }
+
     /* NEW */
     handleDrop() {
         const macro = this.macros[this.activeDevice];
@@ -485,7 +541,6 @@ class RemoteMacroEditor {
         this.renderMacro();
     }
 
-
     /* ---------- Render Macro ---------- */
     renderMacro() {
         this.dropzoneEl.innerHTML = "";
@@ -493,31 +548,28 @@ class RemoteMacroEditor {
 
         macro.forEach((item, index) => {
 
-    console.warn(item);
             const tag = document.createElement("div");
             tag.className = "macro-tag";
             tag.textContent = item.command;
             tag.style.background = item.color;
             tag.style.background = this.category_color[item.category] || "gray";
-            /*
             tag.draggable = true;
             tag.ondragstart = () => {
                 this.dragged = { source: "macro", index };
             };
-
-             */
-
-            //if (!this.isTouch) {
-                tag.draggable = true;
-                tag.ondragstart = () => {
-                    this.dragged = { source: "macro", index };
-                };
+            tag.ondragstart = () => {
+                this.dragged = { source: "macro", index };
+                this.dropSucceeded = false;
+            };
             if (this.isTouch) {
+                tag.addEventListener("touchstart", e => {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    this.dragged = { source: "macro", index };
+                    this.touchPos = { x: touch.clientX, y: touch.clientY };
+                });
                 this.attachTouchDrag(tag, { source: "macro", index });
             }
-
-
-
             this.dropzoneEl.appendChild(tag);
         });
 
