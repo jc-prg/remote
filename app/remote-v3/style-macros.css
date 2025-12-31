@@ -30,7 +30,8 @@
     display: block;
     float: left;
     width: calc(70% - 40px);
-    max-height: 370px;
+    height: 370px;
+    max-height: unset;
     position: relative;  /* needed for absolute arrows inside */
 }
 
@@ -55,8 +56,37 @@
     overflow:hidden;
 }
 
+.macro-device-content {
+    width: 100%;       /* fill the grid column */
+    max-width: 100%;   /* prevent shrinking */
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+}
+
+.macro-device-content.open {
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.macro-edit-detail {
+    background:#f1f3f5;
+    width: 100%;       /* fill the grid column */
+    max-width: 100%;   /* prevent shrinking */
+    min-height: 20px;
+    height: auto;
+    max-height: unset;
+    align-items: center;
+    position: relative;
+    display: block;
+    padding: 10px;
+}
+
 .macro-output {
-    //display: none;
+    display: none;
 }
 
 .category-header, .macro-device-header  {
@@ -65,6 +95,10 @@
     background:#f1f3f5;
     color: black;
     cursor:pointer;
+
+    user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none;     /* ältere Edge/IE */
 }
 
 .macro-device-header {
@@ -157,22 +191,8 @@ textarea {
     font-family:monospace;
 }
 
-/* ------------------------ TEST -----------------------------*/
-
-.macro-device-content {
-    width: 100%;       /* fill the grid column */
-    max-width: 100%;   /* prevent shrinking */
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-}
-
-.macro-device-content.open {
-    display: flex;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
+.macro-dropzone.drag-active {
+    background: rgba(0,123,255,0.05);
 }
 
 .devices {
@@ -184,6 +204,10 @@ textarea {
     white-space: nowrap;
     scroll-behavior: smooth;
     padding-right: 20px;
+
+    user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none;     /* ältere Edge/IE */
 }
 
 .devices::-webkit-scrollbar {
@@ -213,6 +237,7 @@ textarea {
 
 #macro-nav-right {
     padding: 20px 5px 5px;
+    right: -17px;
 
     user-select: none;
     -webkit-user-select: none; /* Safari */
@@ -228,6 +253,34 @@ textarea {
     -ms-user-select: none;     /* ältere Edge/IE */
 }
 
-.macro-dropzone.drag-active {
-    background: rgba(0,123,255,0.05);
+@media (max-width: 705px) {
+    #macros-edit-json .sheet-box{
+        height:650px;
+    }
+
+    .macro-edit-palette {
+        width: 90%;
+        height: 130px;
+        max-height: 130px;
+        min-height: unset;
+    }
+    .macro-edit-area {
+        width: 90%;
+        height: auto;
+        max-height: unset;
+        min-height: 350px;
+    }
+    .macro-output {
+        display: none;
+    }
+
+    .category-header span {
+        float: right;
+    }
 }
+@media (min-width: 1250px) {
+    .category-header span {
+        float: right;
+    }
+}
+

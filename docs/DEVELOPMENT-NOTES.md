@@ -6,6 +6,8 @@
 
 * reload of all configs doesn't work
 
+* 
+
 * error on jc-server with latest version, while local installation works
   * Für mindestens eines der für die Szene Media Center benötigten Geräte ist ein Fehler aufgetreten: 
     -> Connected; Connected; Connected; Connected.
@@ -35,9 +37,12 @@
 
 * macro editing in the app
   * OPEN: improve layout (best use the available space on different screen sizes)
-  * OPEN: save from this GUI
-  * OPEN: add macros and groups
-  * IN PROGRESS: Drag'n'Drop for browser and touch (at the moment touch only)
+  * OPEN: save from this GUI / realize for all types of macros (and groups?)
+  * OPEN: sort in some order (alphabetically or in the order of the menu)
+  * OK: hide (unhide) invisible devices in the sources
+  * OK: add macros and groups
+  * OK: close sources ()
+  * OK: Drag'n'Drop for browser and touch (at the moment touch only)
   * OK: first testing in Macro Settings with fixed data
   * OK: improved layout
   * OK: load data set

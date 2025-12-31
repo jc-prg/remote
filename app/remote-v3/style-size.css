@@ -151,29 +151,6 @@
     }
 }
 
-@media (max-width: 705px) {
-
-  #macros-edit-json .sheet-box{
-    height:650px;
-  }
-
-  .macro-edit-palette {
-      width: 90%;
-      height: 130px;
-      max-height: 130px;
-      min-height: unset;
-  }
-  .macro-edit-area {
-      width: 90%;
-      height: 350px;
-      max-height: 350px;
-      min-height: unset;
-  }
-  .macro-output {
-      display: none;
-  }
-}
-
 
 /* setting button size depending on screen size */
 

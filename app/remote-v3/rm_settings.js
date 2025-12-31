@@ -1708,28 +1708,80 @@ class RemoteSettingsMacro {
 
         const macroEdit = new RemoteMacroEditor("json-edit-macro-gui", macro_sample_data_set);
 
+        // initial test of macro editing
         setTimeout(() => {
-
             let macro_data = dataAll["CONFIG"]["macros"]["global"];
-            let devices = dataAll["CONFIG"]["devices"];
-            let macro_devices = {};
-            let initial = {
-                "aa": ["audio_addons", "audio_addon-Mediathek" ]
-            };
-            initial = macro_data;
-            for (let device in devices) {
-                macro_devices[device] = { color: "devices", commands: devices[device]["buttons"] };
-            }
-
             let config = {
-                categories: macro_devices,
-                initial: initial,
+                categories: this.prepare_macro_edit_source_data(true, false, false, true, true),
+                initial: macro_data,
                 devices: Object.keys(macro_data),
             }
             macroEdit.load_data(config);
-        }, 5000);
+        }, 500);
     }
 
+    /* prepare data as source for macro editing */
+    prepare_macro_edit_source_data (devices=true, devices_show_invisible=false, macro_global=false, macro_device=false, groups=false) {
+
+        let device_data = dataAll["CONFIG"]["devices"];
+        let macro_data =  dataAll["CONFIG"]["macros"];
+        let macro_devices = {};
+
+        // add device buttons as source
+        if (devices) {
+            for (let device in device_data) {
+                if (!devices_show_invisible && device_data[device]["settings"]["visible"] === "no") { continue; }
+                macro_devices[device] = {
+                    color: "devices",
+                    commands: device_data[device]["buttons"],
+                    label: device_data[device]["settings"]["label"]
+                };
+            }
+        }
+
+        // add global macros as source
+        if (macro_global) {
+            macro_devices["macro"] = {color: "macros", commands: Object.keys(macro_data["global"]), label: "Gobal"};
+        }
+
+        // add dev-on / dev-off macros as source
+        if (macro_device) {
+            macro_devices["dev-on"] = {
+                color: "macros",
+                commands: Object.keys(macro_data["device-on"]),
+                label: "Device-On"
+            };
+            macro_devices["dev-off"] = {
+                color: "macros",
+                commands: Object.keys(macro_data["device-off"]),
+                label: "Device-Off"
+            };
+        }
+
+        // add group buttons as source
+        if (groups) {
+            for (let group in macro_data["groups"]) {
+                let common_buttons = ["test"];
+                let common_buttons_temp = {};
+                for (let device in macro_data["groups"][group]["devices"]) {
+                    device = macro_data["groups"][group]["devices"][device];
+                    common_buttons_temp[device] = device_data[device]["buttons"];
+                }
+                common_buttons_temp = Object.values(common_buttons_temp);
+                common_buttons = common_buttons_temp.reduce((common, arr) =>
+                    common.filter(item => arr.includes(item))
+                );
+                // calculating common buttons open
+                macro_devices["group_" + group] = {
+                    color: "groups",
+                    commands: common_buttons,
+                    label: macro_data["groups"][group]["description"]
+                };
+            }
+        }
+
+        return macro_devices;
+    }
 }
 
 
