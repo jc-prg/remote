@@ -159,13 +159,15 @@
 
   .macro-edit-palette {
       width: 90%;
-      height: 180px;
-      max-height: 180px;
+      height: 130px;
+      max-height: 130px;
+      min-height: unset;
   }
   .macro-edit-area {
       width: 90%;
-      height: 380px;
-      max-height: 380px;
+      height: 350px;
+      max-height: 350px;
+      min-height: unset;
   }
   .macro-output {
       display: none;

@@ -1050,6 +1050,10 @@ class RemoteVisualizePowerStatus {
             sign = this.signs["OK"];
             color = this.colors["api-status"]["CONNECT"];
         }
+        else if (status_summary.length === 1 && status_summary[0] === "POWER_OFF")  {
+            sign = this.signs["OK"];
+            color = this.colors["api-status"]["CONNECT"];
+        }
         else if (status_summary.length === 1 && status_summary[0].includes("ERROR"))  {
             sign = this.signs["ERROR"];
             color = this.colors["api-status"]["ERROR"];
@@ -1058,7 +1062,8 @@ class RemoteVisualizePowerStatus {
             sign = this.signs["START"];
             color = this.colors["api-status"]["WARNING"];
         }
-        else if ((status_summary.includes("ERROR") || status_summary.includes("POWER_ERROR")) && status_summary.includes("OK"))  {
+        else if ((status_summary.includes("ERROR") || status_summary.includes("POWER_ERROR"))
+                && (status_summary.includes("OK") || status_summary.includes("POWER_OFF") || status_summary.includes("DISABLED")))  {
             sign = this.signs["OK"] + " " + this.signs["ERROR"];
             color = this.colors["api-status"]["WARNING"];
         }

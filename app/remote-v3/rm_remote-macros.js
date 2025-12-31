@@ -119,6 +119,7 @@ class RemoteMacroEditor {
         };
         this.category_color = {}
         this.isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+        this.openFirstCategory = this.config.openFirstCategory ?? false;
 
         this.default_timing = { color: "darkblue", commands: [1,2,3,5,7,10,15,20] };
         this.default_wait = { color: "blue", commands: ["WAIT-10","WAIT-15","WAIT-20","WAIT-30","WAIT-40","WAIT-50","WAIT-60","WAIT-90","WAIT-120"] };
@@ -233,7 +234,7 @@ class RemoteMacroEditor {
 
             const content = document.createElement("div");
             content.className = "category-content";
-            if (this.firstOpen) {
+            if (this.firstOpen && this.openFirstCategory) {
                 content.classList.add("open");
                 this.firstOpen = false;
             }
@@ -264,12 +265,12 @@ class RemoteMacroEditor {
                 };
 
                  */
-                if (!this.isTouch) {
+                //if (!this.isTouch) {
                     tag.draggable = true;
                     tag.ondragstart = () => {
                         this.dragged = { source: "palette", category, index };
                     };
-                } else {
+                if (this.isTouch) {
                     this.attachTouchDrag(tag, { source: "palette", category, index });
                 }
 
@@ -277,10 +278,18 @@ class RemoteMacroEditor {
             });
 
             header.onclick = () => {
+                const isOpen = content.classList.contains("open");
+
+                // close all categories first
                 const all = this.paletteEl.querySelectorAll(".category-content");
                 all.forEach(c => c.classList.remove("open"));
-                content.classList.add("open");
+
+                // only reopen if it was previously closed
+                if (!isOpen) {
+                    content.classList.add("open");
+                }
             };
+
 
             content.appendChild(tags);
             box.append(header, content);
@@ -498,12 +507,12 @@ class RemoteMacroEditor {
 
              */
 
-            if (!this.isTouch) {
+            //if (!this.isTouch) {
                 tag.draggable = true;
                 tag.ondragstart = () => {
                     this.dragged = { source: "macro", index };
                 };
-            } else {
+            if (this.isTouch) {
                 this.attachTouchDrag(tag, { source: "macro", index });
             }
 
