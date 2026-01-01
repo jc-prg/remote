@@ -250,9 +250,10 @@ class RemoteElementSheetBox {
         }
     }
 
-    addSheet(title, content, lazy = true) {
+    addSheet(title, content, load_on_open = true, on_load_command=undefined) {
         if (!this.created) { console.error("RemoteElementSheetBox: Could not add sheet '"+title+"'."); return; }
         const index = this.sheets.length;
+        const lazy = load_on_open;
 
         // Tab erstellen
         const tab = document.createElement("div");
@@ -276,21 +277,20 @@ class RemoteElementSheetBox {
             sheetDiv.style.overflowY = "auto";
         }
 
-        // Inhalte sofort laden nur wenn:
-        // - first sheet (index === 0)
-        // - lazy === false
         if (index === 0 || !lazy) {
             sheetDiv.innerHTML = content;
             sheetDiv.dataset.loaded = "true";
+            sheetDiv.dataset.on_load = "false";
         } else {
             // Inhalte bleiben für später gespeichert
             sheetDiv.dataset.content = content;
+            sheetDiv.dataset.on_load = "false";
         }
 
         // Immer im DOM, auch inaktiv
         this.contentArea.appendChild(sheetDiv);
 
-        this.sheets.push({ title, tab, sheetDiv });
+        this.sheets.push({ title, tab, sheetDiv, on_load_command });
         this.tabBar.appendChild(tab);
 
         // Erstes Sheet aktivieren
@@ -314,6 +314,15 @@ class RemoteElementSheetBox {
                 sheet.sheetDiv.dataset.loaded = "true";
                 delete sheet.sheetDiv.dataset.content;
             }
+            if (active && sheet.on_load_command && sheet.sheetDiv.dataset.on_load === "false") {
+                setTimeout(()=>{
+                    eval(sheet.on_load_command);
+                    //try { eval(sheet.on_load_command); }
+                    //catch (e) { console.error("RemoteElementSheetBox.addSheet(): Could not execute command '"+sheet.on_load_command+"' on load :" + e); }
+                },100);
+                sheet.sheetDiv.dataset.on_load ="true";
+            }
+
 
             if (this.keep_open && active) {
                 rmSheetBox_open[this.id] = index;

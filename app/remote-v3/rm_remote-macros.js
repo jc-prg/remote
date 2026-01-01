@@ -16,29 +16,29 @@ let macro_sample_data_set = {
 }
 let macro_container = `
     <div class="macro-edit-container">
-      <div class="macro-edit-palette" id="palette"></div>
+      <div class="macro-edit-palette" id="{editor_id}palette"></div>
       <div class="macro-edit-area">
       
         <div class="macro-device">
-            <div class="macro-device-header">Macros</div>
-            <div class="macro-device-content open" id="device-content">
+            <div class="macro-device-header">{editor_title}</div>
+            <div class="macro-device-content open" id="{editor_id}device-content">
                 <div class="nav-arrow left" data-dir="-1" id="macro-nav-left">❮</div>
-                <div class="devices" id="deviceBar"></div>
+                <div class="devices" id="{editor_id}deviceBar"></div>
                 <div class="nav-arrow right" data-dir="1" id="macro-nav-right">❯</div>
             </div>
         </div>
       
         <div class="macro-device">
-            <div class="macro-device-header">Edit Macro</div>
+            <div class="macro-device-header">Edit macro</div>
             <div class="macro-edit-content open">
-                <div class="macro-dropzone" id="macroDropzone"></div>
+                <div class="macro-dropzone" id="{editor_id}macroDropzone"></div>
             </div>
-            <div class="macro-edit-detail open" id="macroOutputDetail">
+            <div class="macro-edit-detail open" id="{editor_id}macroOutputDetail">
         </div>
 
         <div class="macro-output">
             <h3>Macro Output</h3>
-            <textarea id="macroOutput" readonly>
+            <textarea id="{editor_id}macroOutput" readonly>
         </div>
       </div>
     </div>
@@ -46,9 +46,9 @@ let macro_container = `
 
 /* class to create a GUI macro editor */
 class RemoteMacroEditor {
-    constructor(container, config) {
-        this.config = config;
-        this.container_name = container;
+    constructor(container_id, config=undefined, editor_id=undefined, editor_title=undefined, output_id=undefined) {
+        this.config = config || macro_sample_data_set;
+        this.container_name = container_id;
         this.colors = {
             timing: ["#0000CC"],
             waiting: ["#000088"],
@@ -116,6 +116,10 @@ class RemoteMacroEditor {
         };
         this.category_color = {}
 
+        this.editorId = editor_id || "";
+        this.editorTitle = editor_title || "Select macro";
+        this.outputId = output_id || this.editorId+"macroOutput";
+
         this.openFirstCategory = this.config.openFirstCategory ?? false;
         this.isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
         this.touchPos = null;
@@ -133,12 +137,12 @@ class RemoteMacroEditor {
         if (!this.container) {
             console.error("RemoteMacroEdit.init(): container elemente '"+this.container_name+"' doesn't exist.")
         } else {
-            this.container.innerHTML = macro_container;
-            this.paletteEl = document.getElementById("palette"),
-            this.deviceBarEl = document.getElementById("deviceBar"),
-            this.dropzoneEl = document.getElementById("macroDropzone"),
-            this.outputEl = document.getElementById("macroOutput")
-            this.outputDetailEl = document.getElementById("macroOutputDetail")
+            this.container.innerHTML = macro_container.replaceAll("{editor_id}", this.editorId).replaceAll("{editor_title}", this.editorTitle);
+            this.paletteEl = document.getElementById(this.editorId+"palette");
+            this.deviceBarEl = document.getElementById(this.editorId+"deviceBar");
+            this.dropzoneEl = document.getElementById(this.editorId+"macroDropzone");
+            this.outputEl = document.getElementById(this.outputId);
+            this.outputDetailEl = document.getElementById(this.editorId+"macroOutputDetail");
         }
 
         this.categories = this.config.categories;
@@ -215,8 +219,13 @@ class RemoteMacroEditor {
 
                 // strings
                 if (typeof entry === "string") {
-                    const [category, ...rest] = entry.split("_");
+                    let [category, ...rest] = entry.split("_");
                     let command = rest.join("_");
+
+                    if (category === "group") {
+                        category = category + "_" + rest[0];
+                        command = rest[1];
+                    }
 
                     if (!this.categories[category]) {
                         return {
@@ -262,8 +271,8 @@ class RemoteMacroEditor {
             let category_header = category;
             if (data.label) { category_header = data.label + " <span style='font-weight: normal;'>[" + category_header + "]</span>"; }
             if (data.color === "devices") { category_header = "Device: " + category_header; }
-            else if (data.color === "macros") { category_header = "Macros: " + category_header; }
-            else if (data.color === "groups") { category_header = "Groups: " + category_header; }
+            else if (data.color === "macros") { category_header = "Macro: " + category_header; }
+            else if (data.color === "groups") { category_header = "Group: " + category_header; }
             header.innerHTML = category_header;
 
             const content = document.createElement("div");
@@ -333,7 +342,11 @@ class RemoteMacroEditor {
     /* add devices to bar */
     renderMacroList(keep_scroll) {
         let scroll = 0;
-        if (keep_scroll) { scroll = this.deviceBarEl.scrollLeft; }
+        let count = 0;
+        let element_load = undefined;
+        if (keep_scroll) {
+            scroll = this.deviceBarEl.scrollLeft;
+        }
 
         this.deviceBarEl.innerHTML = "";
         this.devices.forEach(device => {
@@ -347,7 +360,9 @@ class RemoteMacroEditor {
             };
             this.deviceBarEl.appendChild(el);
         });
-        if (keep_scroll) { this.deviceBarEl.scrollLeft = scroll; }
+        if (keep_scroll) {
+            this.deviceBarEl.scrollLeft = scroll;
+        }
     }
 
     /* ---------- Render Macro ---------- */
@@ -359,14 +374,12 @@ class RemoteMacroEditor {
 
             const tag = document.createElement("div");
             tag.className = "macro-tag";
-            if (!item.label) {
-                tag.textContent = item.command;
-            }
-            else {
-                tag.innerHTML = item.label;
-            }
+            if (!item.label) { tag.textContent = item.command; }
+            else { tag.innerHTML = item.label; }
+
             tag.style.background = item.color;
             tag.style.background = this.category_color[item.category] || "gray";
+
             tag.draggable = true;
             tag.ondragstart = () => {
                 this.dragged = { source: "macro", index };
@@ -399,6 +412,7 @@ class RemoteMacroEditor {
                 (m.category === "Timing" || m.category === "Waiting") ? m.command : `${m.category}_${m.command}`
             );
         });
+
         this.outputEl.value = JSON.stringify(result, null, 2);
         this.outputDetailEl.innerHTML = `${this.activeDevice}: `+JSON.stringify(result[this.activeDevice], null, 2);
     }
@@ -624,7 +638,7 @@ class RemoteMacroEditor {
         const content = this.deviceBarEl;
         const left = this.container.querySelector(".nav-arrow.left");
         const right = this.container.querySelector(".nav-arrow.right");
-        const container = document.getElementById("device-content");
+        const container = document.getElementById(this.editorId+"device-content");
 
         const maxScroll = content.scrollWidth - container.offsetWidth;
         left.style.display = content.scrollLeft > 0 ? "block" : "none";

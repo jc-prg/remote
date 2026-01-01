@@ -29,7 +29,7 @@ class RemoteSettings {
         this.elements = new RemoteSettingsElements(this.app_name+".elements", this);
 
         this.module_timer = new RemoteSettingsTimer(this.app_name+".module_timer", this);
-        this.module_macros = new RemoteSettingsMacro(this.app_name+".module_macro", this);
+        this.module_macros = new RemoteSettingsMacro(this.app_name+".module_macros", this);
         this.module_info = new RemoteSettingsInfo(this.app_name+".module_info", this);
         this.module_general = new RemoteSettingsGeneral(this.app_name+".module_general", this);
         this.module_api = new RemoteSettingsApi(this.app_name+".module_api", this);
@@ -1692,13 +1692,24 @@ class RemoteSettingsMacro {
 
     // load data for macro settings
     load() {
+        let macro_json_edit = `
+            <h4>Edit JSON for global macros:</h4>
+            <div id='json-edit-macro'></div>
+            <h4>Edit JSON for device ON macros:</h4>
+            <div id='json-edit-dev-on'></div>
+            <h4>Edit JSON for device OFF macros:</h4>
+            <div id='json-edit-dev-off'></div>
+        `;
         const myBox2 = new RemoteElementSheetBox("macros-edit-json", "500px", true);
-        myBox2.addSheet("Info",         lang("MANUAL_MACROS"));
-        myBox2.addSheet("Groups",       "<h4>Edit JSON for device groups:</h4>" +     "<div id='json-edit-groups'></div>", false);
-        myBox2.addSheet("Macros",       "<h4>Edit JSON for global macros:</h4>" +     "<div id='json-edit-macro'></div>", false);
-        myBox2.addSheet("Macros NEW",   "<h4>Edit JSON for global macros:</h4>" +     "<div id='json-edit-macro-gui'></div>", false);
-        myBox2.addSheet("Device ON",    "<h4>Edit JSON for device ON macros:</h4>" +  "<div id='json-edit-dev-on'></div>", false);
-        myBox2.addSheet("Device OFF",   "<h4>Edit JSON for device OFF macros:</h4>" + "<div id='json-edit-dev-off'></div>", false);
+        //myBox2.addSheet("Macros",       "<h4>Edit JSON for global macros:</h4>" +     "<div id='json-edit-macro'></div>", false);
+        //myBox2.addSheet("Device ON",    "<h4>Edit JSON for device ON macros:</h4>" +  "<div id='json-edit-dev-on'></div>", false);
+        //myBox2.addSheet("Device OFF",   "<h4>Edit JSON for device OFF macros:</h4>" + "<div id='json-edit-dev-off'></div>", false);
+        myBox2.addSheet("Macros",    "<h4>Edit JSON for global macros:</h4>" + "<div id='json-edit-macro-1'></div>", true, this.app_name +".load_macro_edit('json-edit-macro-1','global','macro');");
+        myBox2.addSheet("Device ON", "<h4>Edit JSON for global macros:</h4>" + "<div id='json-edit-macro-2'></div>", true, this.app_name +".load_macro_edit('json-edit-macro-2','device-on','dev-on');");
+        myBox2.addSheet("Device OFF","<h4>Edit JSON for global macros:</h4>" + "<div id='json-edit-macro-3'></div>", true, this.app_name +".load_macro_edit('json-edit-macro-3','device-off','dev-off');");
+        myBox2.addSheet("Raw Groups","<h4>Edit JSON for device groups:</h4>" + "<div id='json-edit-groups'></div>", false);
+        myBox2.addSheet("Raw Macros",   macro_json_edit, false);
+        myBox2.addSheet("Raw Help",         lang("MANUAL_MACROS"));
 
         const jsonEdit = new RemoteJsonEditing("edit-macros", "compact", "width:100%;height:270px;");
         jsonEdit.create("json-edit-groups", "groups",  this.settings.data["CONFIG"]["macros"]["groups"]);
@@ -1706,87 +1717,17 @@ class RemoteSettingsMacro {
         jsonEdit.create("json-edit-dev-on", "dev-on",  this.settings.data["CONFIG"]["macros"]["device-on"]);
         jsonEdit.create("json-edit-dev-off","dev-off", this.settings.data["CONFIG"]["macros"]["device-off"]);
 
-        const macroEdit = new RemoteMacroEditor("json-edit-macro-gui", macro_sample_data_set);
-
-        // initial test of macro editing
-        setTimeout(() => {
-            let macro_data = dataAll["CONFIG"]["macros"]["global"];
-            let config = {
-                categories: this.prepare_macro_edit_source_data(true, false, false, true, true),
-                initial: macro_data,
-                devices: Object.keys(macro_data),
-            }
-            macroEdit.loadData(config);
-        }, 500);
     }
 
-    /* prepare data as source for macro editing */
-    prepare_macro_edit_source_data (devices=true, devices_show_invisible=false, macro_global=false, macro_device=false, groups=false) {
+    load_macro_edit(container_id, macro_type, output_id=undefined ) {
 
-        let device_data = dataAll["CONFIG"]["devices"];
-        let macro_data =  dataAll["CONFIG"]["macros"];
-        let macro_devices = {};
-
-        // add device buttons as source
-        if (devices) {
-            for (let device in device_data) {
-                if (!devices_show_invisible && device_data[device]["settings"]["visible"] === "no") { continue; }
-                macro_devices[device] = {
-                    color: "devices",
-                    commands: device_data[device]["buttons"],
-                    label: device_data[device]["settings"]["label"]
-                };
-            }
-        }
-
-        // add global macros as source
-        if (macro_global) {
-            macro_devices["macro"] = {color: "macros", commands: Object.keys(macro_data["global"]), label: "Gobal"};
-        }
-
-        // add dev-on / dev-off macros as source
-        if (macro_device) {
-            macro_devices["dev-on"] = {
-                color: "macros",
-                commands: Object.keys(macro_data["device-on"]),
-                label: "Device-On"
-            };
-            macro_devices["dev-off"] = {
-                color: "macros",
-                commands: Object.keys(macro_data["device-off"]),
-                label: "Device-Off"
-            };
-        }
-
-        // add group buttons as source
-        if (groups) {
-            for (let group in macro_data["groups"]) {
-                let common_buttons = ["test"];
-                let common_buttons_temp = {};
-
-                if (macro_data["groups"][group]["devices"].length > 1) {
-                    for (let device in macro_data["groups"][group]["devices"]) {
-                        device = macro_data["groups"][group]["devices"][device];
-                        common_buttons_temp[device] = device_data[device]["buttons"];
-                    }
-                    // identify common buttons
-                    common_buttons_temp = Object.values(common_buttons_temp);
-                    common_buttons = common_buttons_temp?.reduce((common, arr) =>
-                        common.filter(item => arr.includes(item))
-                    );
-                } else {
-                    common_buttons = [];
-                }
-                macro_devices["group_" + group] = {
-                    color: "groups",
-                    commands: common_buttons,
-                    label: macro_data["groups"][group]["description"]
-                };
-            }
-        }
-
-        return macro_devices;
+        const macroEdit = new RemoteMacroEditor(container_id, {
+            categories: remoteData.macros.prepare_edit_sources(true, true, false, true, true),
+            initial: remoteData.macros.data(macro_type),
+            devices: remoteData.macros.list(macro_type),
+        }, "editor-"+macro_type, `Select ${macro_type.toUpperCase()} macro`, output_id);
     }
+
 }
 
 

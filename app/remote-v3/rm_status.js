@@ -30,14 +30,19 @@ function statusCheck(data={}) {
 
     // first load: create classes for audio and device status
     if (status_load_first) {
-        statusCheck_devices = new RemoteDevicesStatus("statusCheck_devices");
-        statusCheck_devices.update(data);
-        statusCheck_power = new RemoteVisualizePowerStatus("statusCheck_power", statusCheck_devices);
-        statusCheck_audio = new RemoteVisualizeMainAudioStatus("statusCheck_audio", statusCheck_devices);
+        remoteData = new RemotePrepareData("remoteData", data);
+        remoteStatus = new RemoteDevicesStatus("remoteStatus", data);
+
+        statusCheck_power = new RemoteVisualizePowerStatus("statusCheck_power", remoteStatus);
+        statusCheck_audio = new RemoteVisualizeMainAudioStatus("statusCheck_audio", remoteStatus);
+
+
         status_load_first = false;
     }
 
-    statusCheck_devices.update(data);
+    remoteData.update(data)
+    remoteStatus.update(data);
+
     statusCheck_power.show_status(data, rm3remotes.edit_mode);
     statusCheck_audio.show_status(data);
 
@@ -123,7 +128,7 @@ function statusCheck_offline(data) {
     statusCheck_deviceActive(data, true);
     statusCheck_devicePowerButtonDisplay(data, true);
     statusCheck_scenePowerButtonDisplay(data, true);
-    statusCheck_devices.set_connection_error(true);
+    remoteStatus.set_connection_error(true);
 }
 
 
@@ -275,7 +280,7 @@ function statusCheck_sliderToggleColorPicker(data) {
 	    let device_api_power   = data["STATUS"]["devices"][device]["power"];
 	    let device_api_status  = data["STATUS"]["interfaces"]["connect"][device_api];
 	    let device_commands    = data["CONFIG"]["devices"][device]["commands"]["set"];
-        let device_status      = statusCheck_devices.status_device(device);
+        let device_status      = remoteStatus.status_device(device);
 
         for (let key in devices[device]) {
             // device toggle
@@ -368,7 +373,7 @@ function statusCheck_groupPowerButton(data) {
             for (let key2 in devices) {
 
                 console.debug(key  + "_" + devices[key2] + " = " + data["STATUS"]["devices"][devices[key2]]["power"] + "/" + data["STATUS"]["devices"][devices[key2]]["api-status"]);
-                let status_device = statusCheck_devices.status_device(devices[key2]);
+                let status_device = remoteStatus.status_device(devices[key2]);
                 if (status_device.toUpperCase() === "ON") { count_on += 1; }
                 else if (status_device.toUpperCase() === "OFF") { count_off += 1; }
                 else if (status_device.toUpperCase() === "N/A") { count_na += 1; }
@@ -426,8 +431,8 @@ function statusCheck_scenePowerButtonDisplay(data, app_connection_error=false) {
 
 	for (let key in config_scenes) {
 
-        let scene_status = statusCheck_devices.status_scene(key);
-        let scene_status_log = statusCheck_devices.status_scene(key, true)["message"];
+        let scene_status = remoteStatus.status_scene(key);
+        let scene_status_log = remoteStatus.status_scene(key, true)["message"];
 
 	    if (!document.getElementById("scene_on_"+key) && !document.getElementById("scene_off_"+key)) { continue; }
         console.debug("statusCheck_powerButtonScene: SCENE_"+key+"="+scene_status+" ... "+scene_status_log);
@@ -489,8 +494,8 @@ function statusCheck_deviceActive(data, app_connection_error=false) {
 
     // check scene status: inactive macro_buttons, deactivate all buttons from list starting with "macro", power message
     if (rm3remotes.active_type === "scene" && scene) {
-        let scene_status = statusCheck_devices.status_scene(scene);
-        let status_log = statusCheck_devices.status_scene(scene, true)["message"];
+        let scene_status = remoteStatus.status_scene(scene);
+        let status_log = remoteStatus.status_scene(scene, true)["message"];
 
         console.debug("---> " + scene + " " + scene_status + " - " + status_log);
 
@@ -545,9 +550,9 @@ function statusCheck_deviceActive(data, app_connection_error=false) {
 
 		if (devices_config[device] && devices_config[device]["buttons"] && devices_status[device] && devices_status[device]["power"]) {
 
-		    let status = statusCheck_devices.status_device(device);
+		    let status = remoteStatus.status_device(device);
             let info_sign = "<div class='remote-power-information-image'  onclick='statusCheck_bigMessage(\"remote-power-information-" + device + "\");'></div>";
-		    let message = info_sign + statusCheck_devices.status_device(device, true)["message"]; //device_status_log[device];
+		    let message = info_sign + remoteStatus.status_device(device, true)["message"]; //device_status_log[device];
             let power_on = (status === "ON" || status === "N/A");
 
 			// show device status
@@ -650,8 +655,8 @@ function statusCheck_devicePowerButtonDisplay(data={}, app_connection_error=fals
 		if (!devices_config[device])     { console.warn("Device not defined correctly: '" + device + "' has no configuration."); continue; }
 	    if (!devices[device]["power"])   { continue; }
 
-        let power_status  = statusCheck_devices.status_device(device);
-        let power_message = statusCheck_devices.status_device(device, true)["message"];
+        let power_status  = remoteStatus.status_device(device);
+        let power_message = remoteStatus.status_device(device, true)["message"];
 
         if (power_status === undefined) {
             console.error("statusCheck_devicePowerButtonDisplay: No API status available for " + device);
@@ -760,7 +765,7 @@ function statusCheck_displayValues(data={}) {
 		    }
 
 	    // device status
-        const status = statusCheck_devices.status_device(key);
+        const status = remoteStatus.status_device(key);
         const dev_status = data["STATUS"]["devices"][key];
         const dev_config = data["CONFIG"]["devices"][key];
 
@@ -796,7 +801,7 @@ function statusCheck_displayValues(data={}) {
 
             const additional_keys = ["api","api-status","api-last-query","api-last-record", "api-last-send","api-auto-off"];
             const display_keys = dev_config["commands"]["get"];
-            const connected= statusCheck_devices.status_device(key) + ": " + statusCheck_devices.status_device(key, true)["message"];
+            const connected= remoteStatus.status_device(key) + ": " + remoteStatus.status_device(key, true)["message"];
 
             for (let i=0; i<additional_keys.length; i++) {
                 if (!display_keys[additional_keys[i]] && dev_status[additional_keys[i]]) { display_keys.push([additional_keys[i]]); }
