@@ -1763,15 +1763,20 @@ class RemoteSettingsMacro {
             for (let group in macro_data["groups"]) {
                 let common_buttons = ["test"];
                 let common_buttons_temp = {};
-                for (let device in macro_data["groups"][group]["devices"]) {
-                    device = macro_data["groups"][group]["devices"][device];
-                    common_buttons_temp[device] = device_data[device]["buttons"];
+
+                if (macro_data["groups"][group]["devices"].length > 1) {
+                    for (let device in macro_data["groups"][group]["devices"]) {
+                        device = macro_data["groups"][group]["devices"][device];
+                        common_buttons_temp[device] = device_data[device]["buttons"];
+                    }
+                    // identify common buttons
+                    common_buttons_temp = Object.values(common_buttons_temp);
+                    common_buttons = common_buttons_temp?.reduce((common, arr) =>
+                        common.filter(item => arr.includes(item))
+                    );
+                } else {
+                    common_buttons = [];
                 }
-                // identify common buttons
-                common_buttons_temp = Object.values(common_buttons_temp);
-                common_buttons = common_buttons_temp.reduce((common, arr) =>
-                    common.filter(item => arr.includes(item))
-                ) || [];
                 macro_devices["group_" + group] = {
                     color: "groups",
                     commands: common_buttons,
