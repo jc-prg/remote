@@ -1763,7 +1763,7 @@ class RemoteSettingsMacro {
             for (let group in macro_data["groups"]) {
                 let common_buttons = ["test"];
                 let common_buttons_temp = {};
-                if (macro_data["groups"][group]["devices"]) {
+                if (macro_data["groups"][group]["devices"] !== []) {
                     for (let device in macro_data["groups"][group]["devices"]) {
                         device = macro_data["groups"][group]["devices"][device];
                         common_buttons_temp[device] = device_data[device]["buttons"];
