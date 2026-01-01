@@ -19,6 +19,7 @@ const remote_js = [
     "rm_remote-control-color-picker.js",
     "rm_remote-control-display.js",
     "rm_remote-control-keyboard.js",
+    "rm_remote-data.js",
     "rm_remote-element.js",
     "rm_remote-element-slider.js",
     "rm_remote-json.js",
