@@ -1723,9 +1723,11 @@ class RemoteSettingsMacro {
 
         const macroEdit = new RemoteMacroEditor(container_id, {
             categories: remoteData.macros.prepare_edit_sources(true, true, false, true, true),
-            initial: remoteData.macros.data(macro_type),
             devices: remoteData.macros.list(macro_type),
-        }, "editor-"+macro_type, `Select ${macro_type.toUpperCase()} macro`, output_id);
+            devices_edit: true,
+            initial: remoteData.macros.data(macro_type),
+            title: `Select ${macro_type.toUpperCase()} macro`,
+        }, "editor-"+macro_type,  output_id);
     }
 
 }

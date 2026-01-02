@@ -8,11 +8,13 @@ let macro_sample_data_set = {
         Actions: {color: "#dc3545", commands: ["JUMP", "SHOOT", "RELOAD"]},
         Timing: {color: "#007bff", commands: [100, 250, 500], label: "Waiting time"}
     },
+    devices: ["device1", "device2"],
+    devices_edit: true,
     initial: {
         "device1": ["Movement_UP","Timing_100","Movement_DOWN"],
         "device2": ["Actions_JUMP","Timing_100","Actions_SHOOT"],
     },
-    devices: ["device1", "device2"],
+    title: "Select macro"
 }
 let macro_container = `
     <div class="macro-edit-container">
@@ -20,11 +22,18 @@ let macro_container = `
       <div class="macro-edit-area">
       
         <div class="macro-device">
-            <div class="macro-device-header">{editor_title}</div>
+            <div class="macro-device-header">{editor_title}<span class='macro-edit-add-open' id="{editor_id}-edit-button-open" style="display:none;"><img src='icon/edit.png' alt=''></span></div>
             <div class="macro-device-content open" id="{editor_id}device-content">
                 <div class="nav-arrow left" data-dir="-1" id="macro-nav-left">❮</div>
                 <div class="devices" id="{editor_id}deviceBar"></div>
                 <div class="nav-arrow right" data-dir="1" id="macro-nav-right">❯</div>
+            </div>
+            <div class="macro-edit-add" id="{editor_id}macroAddDelete">
+                <div class="macro-edit-add-div">
+                    <input id="{editor_id}-add-id" class="macro-edit-input"> <button class="macro-edit-button" id="{editor_id}-edit-button-add">add</button> &nbsp;&nbsp; 
+                    <input id="{editor_id}-delete-id" class="macro-edit-input" disabled"> <button class="macro-edit-button" id="{editor_id}-edit-button-delete">delete</button>
+                </div>
+            
             </div>
         </div>
       
@@ -46,7 +55,7 @@ let macro_container = `
 
 /* class to create a GUI macro editor */
 class RemoteMacroEditor {
-    constructor(container_id, config=undefined, editor_id=undefined, editor_title=undefined, output_id=undefined) {
+    constructor(container_id, config=undefined, editor_id=undefined, output_id=undefined) {
         this.config = config || macro_sample_data_set;
         this.container_name = container_id;
         this.colors = {
@@ -117,7 +126,6 @@ class RemoteMacroEditor {
         this.category_color = {}
 
         this.editorId = editor_id || "";
-        this.editorTitle = editor_title || "Select macro";
         this.outputId = output_id || this.editorId+"macroOutput";
 
         this.openFirstCategory = this.config.openFirstCategory ?? false;
@@ -137,12 +145,19 @@ class RemoteMacroEditor {
         if (!this.container) {
             console.error("RemoteMacroEdit.init(): container elemente '"+this.container_name+"' doesn't exist.")
         } else {
-            this.container.innerHTML = macro_container.replaceAll("{editor_id}", this.editorId).replaceAll("{editor_title}", this.editorTitle);
+            this.container.innerHTML = macro_container
+                .replaceAll("{editor_id}", this.editorId)
+                .replaceAll("{editor_title}", this.config.title || "Select macro");
             this.paletteEl = document.getElementById(this.editorId+"palette");
             this.deviceBarEl = document.getElementById(this.editorId+"deviceBar");
             this.dropzoneEl = document.getElementById(this.editorId+"macroDropzone");
             this.outputEl = document.getElementById(this.outputId);
             this.outputDetailEl = document.getElementById(this.editorId+"macroOutputDetail");
+            this.addDeleteEl = document.getElementById(this.editorId+"macroAddDelete");
+            this.editButtonAdd = document.getElementById(this.editorId+"-edit-button-add");
+            this.editButtonDel = document.getElementById(this.editorId+"-edit-button-delete");
+            this.editButtonOpen = document.getElementById(this.editorId+"-edit-button-open");
+
         }
 
         this.categories = this.config.categories;
@@ -175,6 +190,7 @@ class RemoteMacroEditor {
         this.attachDeviceNavigation();
         this.renderMacro();
         this.attachGlobalDragEnd();
+        this.attachOpenEditDevices();
 
         if (this.isTouch) {
             this.attachTouchDelete();
@@ -415,6 +431,7 @@ class RemoteMacroEditor {
 
         this.outputEl.value = JSON.stringify(result, null, 2);
         this.outputDetailEl.innerHTML = `${this.activeDevice}: `+JSON.stringify(result[this.activeDevice], null, 2);
+        document.getElementById(`${this.editorId}-delete-id`).value = this.activeDevice;
     }
 
     /* ---------- Macro Drop ---------- */
@@ -580,6 +597,58 @@ class RemoteMacroEditor {
         }, { passive: false });
     }
 
+    /* enable possibility to add or delete keys from the macros */
+    attachOpenEditDevices() {
+        if (this.config.devices_edit === true) {
+
+            this.editButtonOpen.style = "block";
+
+            // show or hide devices edit area
+            this.editButtonOpen.onclick = () => {
+                if (this.addDeleteEl.style.display === "block") {
+                    this.addDeleteEl.style.display = "none";
+                } else {
+                    this.addDeleteEl.style.display = "block";
+                }
+            };
+
+            // add a new device to the devices area and to the macro data
+            this.editButtonAdd.onclick = () => {
+                let new_key = getValueById(this.editorId+"-add-id");
+                if (new_key !== "" && !this.devices.includes(new_key)) {
+                    this.devices.push(new_key);
+                    this.macros[new_key] = [];
+                    this.activeDevice = new_key;
+                }
+                else if (this.devices.includes(new_key)) {
+                    appMsg.alert("Macro '"+new_key+"' already exists.");
+                }
+                else if (new_key === "") {
+                    appMsg.alert("Please add a macro key first.");
+                }
+                this.renderMacroList();
+                this.renderMacro();
+                this.updateDeviceNavVisibility();
+            };
+
+            // delete the selected device from the macro
+            this.editButtonDel.onclick = () => {
+                let del_key = getValueById(this.editorId+"-delete-id");
+                let index = this.devices.indexOf(del_key);
+                if (index >= 0) {
+                    this.devices.splice(index, 1);
+                    delete this.macros[del_key];
+
+                    this.activeDevice = this.devices[0];
+                    this.renderMacroList();
+                    this.renderMacro();
+                    this.updateDeviceNavVisibility();
+                    appMsg.alert("The macro '"+del_key+"' has been deleted. If this was a mistake, just don't save your edits.");
+                    }
+            };
+        }
+    }
+
     /* ---------- Macro Drop - calculate index ---------- */
     calculateDropIndex(e) {
         const items = [...this.dropzoneEl.children];
@@ -644,5 +713,6 @@ class RemoteMacroEditor {
         left.style.display = content.scrollLeft > 0 ? "block" : "none";
         right.style.display = content.scrollLeft < maxScroll ? "block" : "none";
     }
+
 }
 

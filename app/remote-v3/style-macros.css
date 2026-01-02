@@ -66,7 +66,7 @@
 }
 
 .macro-device-content.open {
-    display: flex;
+    display: block;
     align-items: center;
     position: relative;
     overflow: hidden;
@@ -118,6 +118,49 @@
     padding:0;
 }
 
+.macro-edit-add  {
+    overflow:hidden;
+    transition:max-height .25s ease;
+    background:#f1f3f5;
+    border:1px solid #ddd;
+    padding:0;
+    display: none;
+}
+
+.macro-edit-add-div {
+    padding:5px;
+    padding-top:10px;
+    padding-bottom:10px;
+    text-align: center;
+}
+
+.macro-edit-add-open {
+    float:right;
+    padding:3px;
+    padding-bottom:0;
+    margin-top:-4px;
+    border-radius:4px;
+    background:#007bff;
+    cursor:pointer;
+}
+
+.macro-edit-add-open img {
+    width:15px;
+    height:15px;
+}
+
+.macro-edit-button {
+    height:20px;
+    margin: 3px;
+}
+
+.macro-edit-add-input {
+    width:25%;
+    border:1px solid #ddd;
+    border-radius:4px;
+    background:white;
+}
+
 .category-content.open, .macro-device-content.open {
     max-height:140px;
     overflow-y:auto;
@@ -161,13 +204,12 @@
 
 /* Dropzone */
 .macro-dropzone {
-    min-height:150px;
-    //border:2px dashed #bbb;
+    min-height:65px;
     border:none;
     border-radius:6px;
     padding:10px;
     display:flex;
-    flex-wrap:wrap;
+    flex-wrap: wrap;
     gap:8px;
 }
 

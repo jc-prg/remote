@@ -2,13 +2,13 @@
 // jc://remote/
 //--------------------------------
 
-let statusCheck_devices;
-let statusCheck_devices_logging = false;
+let remoteStatus;
+let remoteStatus_logging = false;
 
 
 // class that offers all types of status information for apis, api-devices, media devices, and scenes
 class RemoteDevicesStatus {
-    constructor(name, load_async=false) {
+    constructor(name, data, load_async=false) {
         this.app_name = name;
         this.load_async = load_async;
         this.data = undefined;
@@ -40,6 +40,8 @@ class RemoteDevicesStatus {
         this.warning = {}
         this.starting = {}
         this.starting_offset = 10;
+
+        this.update(data);
     }
 
     /* set app connection error if detected */
@@ -100,7 +102,7 @@ class RemoteDevicesStatus {
         this.create_data_scenes();
         this.create_data_groups(); // not implemented yet
 
-        if (statusCheck_devices_logging) {
+        if (remoteStatus_logging) {
             console.warn(this.status_data);
             let duration = Math.round(((new Date().getTime()) / 1000 - start_time) * 1000) / 1000;
             console.warn("Duration data preparation: " + duration + "s");
