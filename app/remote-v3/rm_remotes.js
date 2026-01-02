@@ -1528,9 +1528,8 @@ class RemoteMainEditDialogs {
                     devices_color_picker["group_"+key] = label_long;
                 }
             }
-            for (let i in remoteData.macros.list_all()) {
-                let key = remoteData.macros.list_all()[i];
-                if (key !== "groups") {
+            for (let key in remoteData.macros.list_all()) {
+                if (key !== "scene-on" && key !== "scene-of") {
                     device_macro["macro_" + key] = "Macro: " + key;
                 }
             }

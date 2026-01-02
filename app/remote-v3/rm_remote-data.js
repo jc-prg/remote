@@ -73,7 +73,9 @@ class RemotePrepareDataMacros {
 
         if (category === "") {
             let result = {};
-            for (let c in this.categories) { this.list_all(c); }
+            for (let c in this.categories) {
+                result[this.categories[c]] = this.list_all(this.categories[c]);
+            }
             return result;
         }
         else if (this.categories_global.includes(category)) {
@@ -124,7 +126,7 @@ class RemotePrepareDataMacros {
                 result = result[macro_id];
             } else {
                 result = expected_type;
-                this.logging.warn(`data(): macro '${category}:${macro_id}' does not exist.`);
+                this.logging.info(`data(): macro '${category}:${macro_id}' does not exist.`);
             }
         }
         else {
