@@ -4,7 +4,7 @@
 
 ## KNOWN BUGS -------------------------------------------------------------------
 
-* execute scene macros doesn't work
+* ...
 
 ### known but not that urgent
 
