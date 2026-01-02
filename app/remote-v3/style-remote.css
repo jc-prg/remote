@@ -451,5 +451,6 @@ ul.help ul li {
 
 .center {
     width: 100%;
+    display: block;
     text-align: center;
 }
