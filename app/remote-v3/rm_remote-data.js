@@ -383,7 +383,7 @@ class RemotePrepareDataDevices {
         this.config_devices = this._data["CONFIG"]["devices"];
     }
 
-    // return a list of all available commands (get, set)
+    // return a complete data for a device
     data(device_id) {
         if (this.list_all().includes(device_id)) {
             return this.config_devices[device_id];
@@ -407,7 +407,7 @@ class RemotePrepareDataDevices {
     display(device_id) {
         if (this.config_devices[device_id] && this.config_devices[device_id]["settings"]["display"]) { return this.config_devices[device_id]["settings"]["display"]; }
         else {
-            this.logging.error(`label(): no display for device_id "${device_id}" available.`)
+            this.logging.info(`label(): no display for device_id "${device_id}" available.`)
             return {};
         }
     }
@@ -416,7 +416,7 @@ class RemotePrepareDataDevices {
     display_size(device_id) {
         if (this.config_devices[device_id] && this.config_devices[device_id]["settings"]["display-size"]) { return this.config_devices[device_id]["settings"]["display-size"]; }
         else {
-            this.logging.error(`label(): no display-size for device_id "${device_id}" available.`)
+            this.logging.info(`label(): no display-size for device_id "${device_id}" available.`)
             return {};
         }
     }
@@ -580,11 +580,22 @@ class RemotePrepareDataScenes {
         this.config_scenes = this._data["CONFIG"]["scenes"];
     }
 
+    // return a complete data for a scene
+    data(scene_id) {
+        if (this.exists(scene_id)) {
+            return this.config_scenes[scene_id];
+        }
+        else {
+            this.logging.error(`data(): device_id "${scene_id}" does not exist.`);
+            return [];
+        }
+    }
+
     // return display of a scene
     display(scene_id) {
         if (this.config_scenes[scene_id] && this.config_scenes[scene_id]["settings"]["display"]) { return this.config_scenes[scene_id]["settings"]["display"]; }
         else {
-            this.logging.error(`label(): no display for device_id "${scene_id}" available.`)
+            this.logging.info(`label(): no display for device_id "${scene_id}" available.`)
             return {};
         }
     }
@@ -593,7 +604,7 @@ class RemotePrepareDataScenes {
     display_size(scene_id) {
         if (this.config_scenes[scene_id] && this.config_scenes[scene_id]["settings"]["display-size"]) { return this.config_scenes[scene_id]["settings"]["display-size"]; }
         else {
-            this.logging.error(`label(): no display-size for device_id "${scene_id}" available.`)
+            this.logging.info(`label(): no display-size for device_id "${scene_id}" available.`)
             return {};
         }
     }
