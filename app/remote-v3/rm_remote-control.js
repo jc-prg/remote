@@ -150,11 +150,11 @@ class RemoteSvgTextImage {
 class RemoteControlBasic {
     constructor(name) {
 
-        this.app_name       = name;
+        this.name       = name;
         this.data           = {};
         this.edit_mode      = false;
 
-        this.logging        = new jcLogging(this.app_name);
+        this.logging        = new jcLogging(this.name);
         this.keyboard       = new RemoteControlKeyboard(name+".keyboard");	// rm_remotes-keyboard.js
         this.svg_image      = new RemoteSvgTextImage();
 
@@ -357,16 +357,16 @@ class RemoteControlAdvanced {
 
         // set main data
         this.data = {};
-        this.app_name = name;
+        this.name = name;
         this.remote = remote;
         this.active_name = this.remote.active_name;
         this.active_type = this.remote.active_type;
-        this.logging = new jcLogging(this.app_name);
-        this.logging.debug("Create RemoteControlAdvanced (" + this.app_name + "/" + this.active_name + "/" + this.active_type + ")");
+        this.logging = new jcLogging(this.name);
+        this.logging.debug("Create RemoteControlAdvanced (" + this.name + "/" + this.active_name + "/" + this.active_type + ")");
 
         // connect pure elements
-        this.e_color_picker = new RemoteElementColorPicker(this.app_name + ".e_color_picker");
-        this.e_slider = new RemoteElementSlider(this.app_name + ".e_slider");
+        this.e_color_picker = new RemoteElementColorPicker(this.name + ".e_color_picker");
+        this.e_slider = new RemoteElementSlider(this.name + ".e_slider");
         this.color_picker_models = ["Brightness", "Color RGB", "Color CIE_1931", "Color RGB (small)", "Color CIE_1931 (small)", "Color temperature"];
     }
 
@@ -380,7 +380,7 @@ class RemoteControlAdvanced {
     /* create color picker */
     colorPicker(api_data, id, device, type = "devices", data) {
 
-        this.logging.debug(this.app_name + ".colorPicker: " + id + "/" + device + "/" + type + "/" + data);
+        this.logging.debug(this.name + ".colorPicker: " + id + "/" + device + "/" + type + "/" + data);
         this.update(api_data);
 
         /*
@@ -424,7 +424,7 @@ class RemoteControlAdvanced {
     /* create slider */
     slider(api_data, id, device, type = "devices", data) {
 
-        this.logging.debug(this.app_name + ".slider: " + id + "/" + device + "/" + type + "/" + data);
+        this.logging.debug(this.name + ".slider: " + id + "/" + device + "/" + type + "/" + data);
         this.update(api_data);
 
         let init;
@@ -437,7 +437,7 @@ class RemoteControlAdvanced {
             let group_name = device.split("_")[1];
             let group_devices = this.data["CONFIG"]["macros"]["groups"][group_name];
             if (!group_devices || !group_devices["devices"] || group_devices["devices"].length === 0) {
-                this.logging.error(this.app_name + ".slider_element: Group " + group_name + " not defined correctly.");
+                this.logging.error(this.name + ".slider_element: Group " + group_name + " not defined correctly.");
                 return "";
             }
             let check_device = group_devices["devices"][0];
@@ -445,7 +445,7 @@ class RemoteControlAdvanced {
             device_api = this.data["STATUS"]["devices"][check_device]["api"];
             device_api_status = this.data["STATUS"]["interfaces"]["connect"][device_api];
         } else if (!this.data["CONFIG"][type][device]) {
-            this.logging.error(this.app_name + ".slider_element: Could not create slider element: " + type + " '" + device + "' does not exist.");
+            this.logging.error(this.name + ".slider_element: Could not create slider element: " + type + " '" + device + "' does not exist.");
             return "";
         } else {
             status_data = this.data["STATUS"]["devices"][device];
@@ -460,7 +460,7 @@ class RemoteControlAdvanced {
         }
 
         if (!this.data["CONFIG"][type]) {
-            this.logging.error(this.app_name + ".slider() - type not supported (" + type + ")");
+            this.logging.error(this.name + ".slider() - type not supported (" + type + ")");
             return;
         }
 
@@ -488,7 +488,7 @@ class RemoteControlAdvanced {
     /* create toggle element (ON | OFF) - "TOGGLE||<status-field>||<description/label>||<TOGGLE_CMD_ON>||<TOGGLE_CMD_OFF>" */
     toggle(api_data, id, device, type = "device", data, short = false) {
 
-        this.logging.debug(this.app_name + ".toggle: " + id + "/" + device + "/" + type + "/" + data);
+        this.logging.debug(this.name + ".toggle: " + id + "/" + device + "/" + type + "/" + data);
         this.update(api_data);
 
         let init, key, status_data;

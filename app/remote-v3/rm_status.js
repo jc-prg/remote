@@ -556,7 +556,7 @@ function statusCheck_bigMessage(id) {
 /* class to visualize the power status of apis, api devices, devices and scenes */
 class RemoteVisualizePowerStatus {
     constructor(name, status) {
-        this.app_name = name;
+        this.name = name;
         this.data = undefined;
         this.edit_mode = undefined;
         this.status = status;
@@ -587,7 +587,7 @@ class RemoteVisualizePowerStatus {
         }
         this.signs_size = "18px";
 
-        this.logging = new jcLogging(this.class_name + ".logging");
+        this.logging = new jcLogging(this.name + ".logging");
         this.app_connection_error = false;
     }
 

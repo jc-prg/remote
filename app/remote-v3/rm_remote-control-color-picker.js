@@ -8,8 +8,8 @@ class RemoteElementColorPicker {
     constructor(name) {
 
         this.hh         = 0;
-        this.class_name = name;
-        this.logging    = new jcLogging(this.class_name);
+        this.name = name;
+        this.logging    = new jcLogging(this.name);
 
     }
 
@@ -86,15 +86,15 @@ class RemoteElementColorPicker {
                 const value = Math.round(x / canvas.width * 1000) / 10;
 
                 // Display RGB values
-                eval(this.class_name).logging.debug("PIXEL DATA: " + pixelData);
-                eval(this.class_name).logging.debug(`PIXEL DATA: X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue} | value: ${value}`);
+                eval(this.name).logging.debug("PIXEL DATA: " + pixelData);
+                eval(this.name).logging.debug(`PIXEL DATA: X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue} | value: ${value}`);
                 color_demo.style.backgroundColor = "rgb("+red+","+green+","+blue+")";
 
                 let input = `${red}:${green}:${blue}`;
-                if (color_model.indexOf("CIE_1931") > -1)          { eval(this.class_name).sendColorCode_CIE1931(color_send_command, input, device); }
-                else if (color_model.indexOf("temperature") > -1)  { eval(this.class_name).sendColorCode_temperature(color_send_command, value, device); }
-                else if (color_model.indexOf("Brightness") > -1)   { eval(this.class_name).sendColorCode_brightness(color_send_command, value, device); }
-                else                                                          { eval(this.class_name).sendColorCode(color_send_command, input, device); }
+                if (color_model.indexOf("CIE_1931") > -1)          { eval(this.name).sendColorCode_CIE1931(color_send_command, input, device); }
+                else if (color_model.indexOf("temperature") > -1)  { eval(this.name).sendColorCode_temperature(color_send_command, value, device); }
+                else if (color_model.indexOf("Brightness") > -1)   { eval(this.name).sendColorCode_brightness(color_send_command, value, device); }
+                else                                                          { eval(this.name).sendColorCode(color_send_command, input, device); }
             });
 
         }
@@ -106,7 +106,7 @@ class RemoteElementColorPicker {
             let xy_color  = this.RGB_to_XY(rgb_color);
             input     = xy_color[0] + ":" + xy_color[1];
 
-            this.logging.log("Send CIE 1931 XY color coordinates: " + input + " / " + this.class_name + " / " + device);
+            this.logging.log("Send CIE 1931 XY color coordinates: " + input + " / " + this.name + " / " + device);
             appFW.requestAPI('GET',[ 'send-data', device, send_command, '"'+input+'"' ], '','');
         }
 
@@ -171,7 +171,7 @@ class RemoteElementColorPicker {
     // send commands depending on color model
     sendColorCode(send_command, input, device) {
 
-            this.logging.log("Send default color code: " + input + " / " + this.class_name + " / " + device);
+            this.logging.log("Send default color code: " + input + " / " + this.name + " / " + device);
             appFW.requestAPI('GET',[ 'send-data', device, send_command, '"'+input+'"'	 ], '','');
             }
 

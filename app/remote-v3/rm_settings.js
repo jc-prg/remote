@@ -8,7 +8,7 @@ class RemoteSettings {
         // preset vars
         this.data          = {};
         this.active        = false;
-        this.app_name      = name;
+        this.name      = name;
         this.e_settings    = ["setting1","setting2","setting3","setting4","setting5","setting6"];
         this.e_remotes     = ["frame3","frame4","frame5","frame1","frame2"];
         this.input_width   = "140px";
@@ -19,21 +19,21 @@ class RemoteSettings {
         this.index_buttons = undefined;
         this.line          = "<div style=\"border:1px solid;height:1px;margin: 10px 5px 5px;padding:0;\"></div>";
 
-        this.logging = new jcLogging(this.app_name+".logging");
+        this.logging = new jcLogging(this.name+".logging");
 
-        this.json = new RemoteJsonHandling(this.app_name+".json");
-        this.button = new RemoteControlBasic(this.app_name+".button");
-        this.basic = new RemoteElementsEdit(this.app_name+".basic");
-        this.tab = new RemoteElementTable(this.app_name+".tab");
-        this.toggle = new RemoteElementSlider(this.app_name+".toggle");
-        this.elements = new RemoteSettingsElements(this.app_name+".elements", this);
+        this.json = new RemoteJsonHandling(this.name+".json");
+        this.button = new RemoteControlBasic(this.name+".button");
+        this.basic = new RemoteElementsEdit(this.name+".basic");
+        this.tab = new RemoteElementTable(this.name+".tab");
+        this.toggle = new RemoteElementSlider(this.name+".toggle");
+        this.elements = new RemoteSettingsElements(this.name+".elements", this);
 
-        this.module_timer = new RemoteSettingsTimer(this.app_name+".module_timer", this);
-        this.module_macros = new RemoteSettingsMacro(this.app_name+".module_macros", this);
-        this.module_info = new RemoteSettingsInfo(this.app_name+".module_info", this);
-        this.module_general = new RemoteSettingsGeneral(this.app_name+".module_general", this);
-        this.module_api = new RemoteSettingsApi(this.app_name+".module_api", this);
-        this.module_remotes = new RemoteSettingsRemotes(this.app_name+".module_remotes", this);
+        this.module_timer = new RemoteSettingsTimer(this.name+".module_timer", this);
+        this.module_macros = new RemoteSettingsMacro(this.name+".module_macros", this);
+        this.module_info = new RemoteSettingsInfo(this.name+".module_info", this);
+        this.module_general = new RemoteSettingsGeneral(this.name+".module_general", this);
+        this.module_api = new RemoteSettingsApi(this.name+".module_api", this);
+        this.module_remotes = new RemoteSettingsRemotes(this.name+".module_remotes", this);
 
     }
 
@@ -177,7 +177,7 @@ class RemoteSettings {
         }
 
         //scrollBoxRegister("indexScrollBox");
-        statusCheck_modes();
+        statusCheck_power.show_status_app_modes();
         scrollTop();
     }
 
@@ -342,7 +342,7 @@ class RemoteSettings {
 /* module to add, sort and jump to remote controls (devices and scenes) in edit mode */
 class RemoteSettingsRemotes {
     constructor(name, parent) {
-        this.app_name = name;
+        this.name = name;
         this.settings = parent;
 
         this.data = this.settings.data;
@@ -476,7 +476,7 @@ class RemoteSettingsRemotes {
         let img_edit = rm_image(images["edit"]);
         let img_delete = rm_image(images["trash"]);
 
-        let onclick_reload = "setTimeout(function() { "+this.settings.app_name+".create(\"edit_"+type+"s\"); }, 2000);";
+        let onclick_reload = "setTimeout(function() { "+this.settings.name+".create(\"edit_"+type+"s\"); }, 2000);";
 
         if (visible === "no")  { img_visible = rm_image(images["visible"]); }
         if (type === "device") { delete_cmd  = "apiDeviceDelete"; }
@@ -495,9 +495,9 @@ class RemoteSettingsRemotes {
         this.update_data();
 
         let set_temp = "";
-        let onchange2 = this.app_name + ".edit_filenames";
-        let onchange = this.app_name + ".on_change_api(this.value);";
-        let onchange3 = this.app_name + ".on_change_dev_type(this.value);";
+        let onchange2 = this.name + ".edit_filenames";
+        let onchange = this.name + ".on_change_api(this.value);";
+        let onchange3 = this.name + ".on_change_dev_type(this.value);";
         let add_command = "apiDeviceAdd([#add_device_id#,#add_device_descr#,#add_device_label#,#add_device_api#,#add_device#,#add_device_device#,#add_device_remote#,#add_device_id_external#,#edit_image#],"+onchange2+");";
         add_command += "remoteToggleEditMode(true);";
         let width = this.input_width;
@@ -519,9 +519,9 @@ class RemoteSettingsRemotes {
                 elementHidden("txt_add_device_remote_2");
             }
             else {
-                let  on_change_1 = "if (this.value == 'other') { " + this.app_name + ".edit_filenames(1); } ";
+                let  on_change_1 = "if (this.value == 'other') { " + this.name + ".edit_filenames(1); } ";
                 on_change_1 += "else { setValueById('add_device_device', this.value); }";
-                let  on_change_2 = "if (this.value == 'other') { " + this.app_name + ".edit_filenames(2); } ";
+                let  on_change_2 = "if (this.value == 'other') { " + this.name + ".edit_filenames(2); } ";
                 on_change_2 += "else { setValueById('add_device_remote', this.value); }";
 
                 api_config[api]["other"] = "__new file__";
@@ -638,9 +638,9 @@ class RemoteSettingsRemotes {
 /* module to edit API-Device settings */
 class RemoteSettingsApi {
     constructor(name, parent) {
-        this.app_name = name;
+        this.name = name;
         this.settings = parent;
-        this.logging = new jcLogging(this.app_name);
+        this.logging = new jcLogging(this.name);
 
         this.basic = this.settings.basic;
         this.button = this.settings.button;
@@ -664,7 +664,7 @@ class RemoteSettingsApi {
         let set_temp  = this.tab.start();
         set_temp += this.tab.row("API-Speed:&nbsp;&nbsp;", this.exec_time_list() );
         set_temp += this.tab.row("");
-        set_temp += this.tab.row("API-Details:&nbsp;&nbsp;", this.device_list("select_dev_status", this.app_name+".device_list_status('select_dev_status','dev_status');"));
+        set_temp += this.tab.row("API-Details:&nbsp;&nbsp;", this.device_list("select_dev_status", this.name+".device_list_status('select_dev_status','dev_status');"));
         set_temp += this.tab.row("<span id='dev_status'>&nbsp;</span>", false);
         set_temp += this.tab.end();
 
@@ -1291,7 +1291,7 @@ class RemoteSettingsApi {
 /* module to change and show some general app and server settings: edit modes, edit icons, show API calls, server side settings */
 class RemoteSettingsGeneral {
     constructor(name, parent) {
-        this.app_name = name;
+        this.name = name;
         this.settings = parent;
 
         this.data = this.settings.data;
@@ -1360,7 +1360,7 @@ class RemoteSettingsGeneral {
             let on_select = "";
 
             if (url) {
-                if (onclick)  { onclick_img = this.app_name+".set_favicon(\""+url+"\",\""+icon_type+"\");"; onclick_style = "cursor:pointer;"; }
+                if (onclick)  { onclick_img = this.name+".set_favicon(\""+url+"\",\""+icon_type+"\");"; onclick_style = "cursor:pointer;"; }
                 if (selected) { on_select   = " selected"; }
 
                 icon = "<img src='"+url+"' alt='"+url+"' class='favicon"+on_select+"' onclick='"+onclick_img+"' style='"+onclick_style+"'>";
@@ -1439,10 +1439,10 @@ class RemoteSettingsGeneral {
             html += this.create_toggle("mode_hint", lang("MODE_HINT"), "remoteToggleRemoteHints(true);", "remoteToggleRemoteHints(false);", remoteHints);
         }
         if (intelligent) {
-            html += this.create_toggle("mode_intelligent", lang("MODE_INTELLIGENT"), this.app_name+".button_manual_mode(true);", this.app_name+".button_manual_mode(false);", this.manual_mode);
+            html += this.create_toggle("mode_intelligent", lang("MODE_INTELLIGENT"), this.name+".button_manual_mode(true);", this.name+".button_manual_mode(false);", this.manual_mode);
         }
         if (button_code) {
-            html += this.create_toggle("mode_button_show", lang("MODE_SHOW_BUTTON"), this.app_name+".button_show(true);", this.app_name+this.app_name+".button_show(false);", showButton);
+            html += this.create_toggle("mode_button_show", lang("MODE_SHOW_BUTTON"), this.name+".button_show(true);", this.name+this.name+".button_show(false);", showButton);
         }
         return html;
     }
@@ -1493,13 +1493,13 @@ class RemoteSettingsGeneral {
 /* module to show different app and server settings */
 class RemoteSettingsInfo {
     constructor(name, parent) {
-        this.app_name = name;
+        this.name = name;
         this.settings = parent;
 
         this.data = this.settings.data;
         this.basic = this.settings.basic;
         this.tab = this.settings.tab;
-        this.logging = new jcLogging(this.app_name);
+        this.logging = new jcLogging(this.name);
 
         this.buttons = this.buttons.bind(this);
         this.load = this.load.bind(this);
@@ -1674,7 +1674,7 @@ class RemoteSettingsInfo {
 /* module to edit groups and macros */
 class RemoteSettingsMacro {
     constructor(name, parent) {
-        this.app_name = name;
+        this.name = name;
         this.settings = parent;
         this.button = this.settings.button;
     }
@@ -1704,9 +1704,9 @@ class RemoteSettingsMacro {
         //myBox2.addSheet("Macros",       "<h4>Edit JSON for global macros:</h4>" +     "<div id='json-edit-macro'></div>", false);
         //myBox2.addSheet("Device ON",    "<h4>Edit JSON for device ON macros:</h4>" +  "<div id='json-edit-dev-on'></div>", false);
         //myBox2.addSheet("Device OFF",   "<h4>Edit JSON for device OFF macros:</h4>" + "<div id='json-edit-dev-off'></div>", false);
-        myBox2.addSheet("Macros",    "<h4>Edit JSON for global macros:</h4>" + "<div id='json-edit-macro-1'></div>", true, this.app_name +".load_macro_edit('json-edit-macro-1','global','macro');");
-        myBox2.addSheet("Device ON", "<h4>Edit JSON for global macros:</h4>" + "<div id='json-edit-macro-2'></div>", true, this.app_name +".load_macro_edit('json-edit-macro-2','device-on','dev-on');");
-        myBox2.addSheet("Device OFF","<h4>Edit JSON for global macros:</h4>" + "<div id='json-edit-macro-3'></div>", true, this.app_name +".load_macro_edit('json-edit-macro-3','device-off','dev-off');");
+        myBox2.addSheet("Macros",    "<h4>Edit JSON for global macros:</h4>" + "<div id='json-edit-macro-1'></div>", true, this.name +".load_macro_edit('json-edit-macro-1','global','macro');");
+        myBox2.addSheet("Device ON", "<h4>Edit JSON for global macros:</h4>" + "<div id='json-edit-macro-2'></div>", true, this.name +".load_macro_edit('json-edit-macro-2','device-on','dev-on');");
+        myBox2.addSheet("Device OFF","<h4>Edit JSON for global macros:</h4>" + "<div id='json-edit-macro-3'></div>", true, this.name +".load_macro_edit('json-edit-macro-3','device-off','dev-off');");
         myBox2.addSheet("Raw Groups","<h4>Edit JSON for device groups:</h4>" + "<div id='json-edit-groups'></div>", false);
         myBox2.addSheet("Raw Macros",   macro_json_edit, false);
         myBox2.addSheet("Raw Help",         lang("MANUAL_MACROS"));
@@ -1736,9 +1736,9 @@ class RemoteSettingsMacro {
 /* module to edit the timer settings */
 class RemoteSettingsTimer {
     constructor(name, parent) {
-        this.app_name = name;
+        this.name = name;
         this.settings = parent;
-        this.logging = new jcLogging(this.app_name+".logging");
+        this.logging = new jcLogging(this.name+".logging");
 
         this.create = this.create.bind(this);
         this.info = this.info.bind(this);
@@ -1890,7 +1890,7 @@ class RemoteSettingsTimer {
 
         this.input = function (input_type, timer_type, key, value) {
             let options;
-            let onchange = this.app_name+".change(\"" + timer_type + "\", \""+key+"\");";
+            let onchange = this.name+".change(\"" + timer_type + "\", \""+key+"\");";
             let html = "<select id='timer_select_" + input_type + "_" + key +"' style='width:40px;' onchange='"+onchange+"' class='timer_select'>";
 
             if (input_type === "month")             { options = {"**": -1}; for (let i=1;i<=12;i++) { options[i.toString().padStart(2, '0')] = i.toString().padStart(2, '0'); } }
@@ -1914,7 +1914,7 @@ class RemoteSettingsTimer {
         let html = "";
         if (type === "regular") {
             let checked = "";
-            let onchange = this.app_name+".change(\"" + type + "\", \""+key+"\");";
+            let onchange = this.name+".change(\"" + type + "\", \""+key+"\");";
             if (data["active"]) { checked = "checked"; }
             html += "<input id='timer_"+type+"_active_"+key+"' type='checkbox' value='active' "+checked+" onchange='"+onchange+"'>:&nbsp;";
             html += "<input id='timer_"+type+"_YY_"+key+"' type='input' style='width:30px;' value='****' disabled class='timer_select'>-";
@@ -1946,7 +1946,7 @@ class RemoteSettingsTimer {
 /* class to create simple select and input element for setting dialogs */
 class RemoteSettingsElements {
     constructor(app_name, parent) {
-        this.app_name = app_name;
+        this.name = app_name;
         this.settings = parent;
 
         this.input = this.input.bind(this);

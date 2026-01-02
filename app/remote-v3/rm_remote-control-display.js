@@ -8,10 +8,10 @@ class RemoteControlDisplay {
 
     constructor(name) {
 
-        this.app_name       = name;
+        this.name       = name;
         this.data           = {};
         this.edit_mode      = false;
-        this.logging        = new jcLogging(this.app_name);
+        this.logging        = new jcLogging(this.name);
     }
 
     /* create a set of displays for each type, one visible and the others hidden */
@@ -38,7 +38,7 @@ class RemoteControlDisplay {
 
             // create link for details (for scenes not defined yet)
             let onclick;
-            if (rm_type === "devices") { onclick = "onclick=\"" + this.app_name + ".alert('"+id+"','"+device+"','"+rm_type+"','##STYLE##');\""; }
+            if (rm_type === "devices") { onclick = "onclick=\"" + this.name + ".alert('"+id+"','"+device+"','"+rm_type+"','##STYLE##');\""; }
             else { onclick = "disabled"; }
 
             // create display
@@ -159,7 +159,7 @@ class RemoteControlDisplay {
 
                 if (!this.data["CONFIG"][type][device]["remote"]["display-detail"]) {
 
-                    this.logging.warn(this.app_name+".display_alert() not implemented for this type and device ("+type+"/"+device+")");
+                    this.logging.warn(this.name+".display_alert() not implemented for this type and device ("+type+"/"+device+")");
                     this.logging.warn(this.data["CONFIG"][type][device]);
                     return;
                 }

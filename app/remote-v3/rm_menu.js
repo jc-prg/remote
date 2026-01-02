@@ -10,11 +10,11 @@ class rmMenu {
     constructor(name, menu) {
 
         this.menuItems     = menu;
-        this.app_name      = name;
+        this.name      = name;
         this.data          = {};
         this.edit_mode     = false;
         this.initial_load  = true;
-        this.logging       = new jcLogging(this.app_name);
+        this.logging       = new jcLogging(this.name);
         this.hide_settings = "rm3settings.hide_settings();";
 
     }
@@ -170,19 +170,19 @@ class rmMenu {
     // create menu entry for a device
     entry_device(device, label) {
 
-            return "<li><a onclick=\"rm3remotes.create('device','" + device + "');rm3settings.hide();"+this.app_name+".click_menu();\" >" + label.replace(/#/g,"'") + "</a></li>";
+            return "<li><a onclick=\"rm3remotes.create('device','" + device + "');rm3settings.hide();"+this.name+".click_menu();\" >" + label.replace(/#/g,"'") + "</a></li>";
             }
 
     // create menu entry for a scene
     entry_scene(scene, label) {
 
-        return "<li><a onclick=\"rm3remotes.create('scene','" + scene + "');rm3settings.hide();"+this.app_name+".click_menu();\" >" + label.replace(/#/g,"'") + "</a></li>";
+        return "<li><a onclick=\"rm3remotes.create('scene','" + scene + "');rm3settings.hide();"+this.name+".click_menu();\" >" + label.replace(/#/g,"'") + "</a></li>";
     }
 
     // create menu entry with javascript
     entry_script(script, label) {
 
-        return "<li><a onClick=\"" + script + ";"+this.app_name+".click_menu();\">"+label+"</a></li>";
+        return "<li><a onClick=\"" + script + ";"+this.name+".click_menu();\">"+label+"</a></li>";
     }
 
     // create menu entry with link

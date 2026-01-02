@@ -4,16 +4,12 @@
 
 ## KNOWN BUGS -------------------------------------------------------------------
 
-* reload of all configs doesn't work
-
-* error on jc-server with latest version, while local installation works
-  * Für mindestens eines der für die Szene Media Center benötigten Geräte ist ein Fehler aufgetreten: 
-    -> Connected; Connected; Connected; Connected.
-  * Bei der API default für das angeschlossene Gerät TV/Radio ist ein Fehler aufgetreten.
-  * Bei der API DENON-AVR-X2800H für das angeschlossene Gerät AV Receiver ist ein Fehler aufgetreten.
+* execute scene macros doesn't work
 
 ### known but not that urgent
 
+* reload of all configs doesn't work
+* 
 * when API has an error / isn't available anymore, the connect device still reports online
   * EISCP-ONKYO -> was connected during startup, plugged of -> still green with old values
   * ERROR: Device not connected (EISCP-ONKYO/ONKYP-TXNR686). ... PING 192.168.1.80
@@ -30,28 +26,29 @@
 
 ## UNDER DEVELOPMENT -------------------------------------------------------------
 
+* continue status refactoring:
+  * OPEN: toggles, sliders
+  * OPEN: groups
+
 * macro editing in the app
   * OPEN: sort in some order (alphabetically or in the order of the menu)
-  * OPEN: scene macros
+  * OPEN: edit groups with the same option (different data structure)
+  * OPEN: scene macros (additional place, partly collecting data from different places ... requires server adaption)
 
 * move data processing to -> class remoteData {}
   * NEXT: rm_settings.js
+  * OK: rm_remote-control-color-picker.js
   * OK: rm_remotes.js
   * OK: relevant data for macro editing
-
-* continue status refactoring: 
-  * OPEN: Power Buttons scenes
-  * OPEN: Power Buttons devices
-  * OPEN: deactivate all other buttons, if device / scene error or off
 
 ### paused a bit
 
 * create a clean data set
   * OK: renamed cfg-files incl. references in README.md's 
   * OK: _ACTIVE-APIS.json -> clean version, one default API device per API
+  * OPEN: templates -> check, what to move to template also; check description inside
   * OPEN: remotes -> rename device remotes to rmc-*.json; check description inside
   * OPEN: remotes -> check own remotes, what to move into sample set
-  * OPEN: templates -> check, what to move to template also; check description inside
   * OPEN: _ACTIVE-DEVICES.json -> integrate at least one device per API (hidden, not status data)
 
 * check if data exist, if not create some from sample data (or create fresh data)
@@ -83,6 +80,7 @@
 
 * APP PERFORMANCE in edit mode - Interaction to next paint (INP) -> to be improved;
   * further ideas, e.g., loading when required and async functions
+  * IDEA: separate view to edit all no remote related settings (for a better performance)
   
 * front end improvements
   display text format errors
@@ -97,12 +95,8 @@
     * prg+ / prg- ?? ffw / fbw ??
     * internet-radio / usb / eco / hdmi-output / 1..4 / ffw / fbw (next / previous)
 
-* API Device only can be disabled, if it is available (app side bug) - maybe solve with a toggle also
-  * add a toggle to API Device edit dialog to enable / disable
+* Improve API Device settings
   * add possibility to select PowerDevice from a menu
-  * activating an API device takes time, looks like it jumps back to old status?!
-  * maybe: move API definition to separate sheet, keep initial sheet for information, enable/disable, and reconnect
-  * OK: move add API device to sheet box and move "create device config" there if exists 
 
 * device deletion (srv & app): when deleting a device, check if the remote is used somewhere else:
   * if yes -> do not delete
@@ -131,7 +125,6 @@
 ### NEW 11-2025
 
 * SERVER
-  * Löschen von Szenen löscht nicht die entsprechende *.json REMOTE-Datei
   * INTERFACES / API
     * ensure, reload / reconnect reloads 00_interfaces.js, 00_default.json + all <device>.json
     * if device defines commands with "get" and query is not defined, query all (at least in a wider rhythm)
@@ -139,7 +132,6 @@
 
 * SETTINGS
   * GROUPS: GUI to add, edit and delete groups (same for macros)
-  * GUI to add, edit, and delete macros
  
 * ZIGBEE Integration
   * OPEN: disconnect / reconfiguration of a device
@@ -185,28 +177,16 @@
       * IN PROGRESS: api_zigbee.py
       * OPEN: app
   
-* Improve Interface integration: check possibility of full status request and caching
-  * handle combined requests in the queue (maybe split into different commands there); 
-    ask for all relevant parameter at once or with a minimum amount of requests <-> maybe this first and the request second;
-    keep data in cache and update not to often
-    
-    * OK: ZIGBEE
-    * N/A: BROADLINK
-    * TAPO
-    * SONY
-    * ONKYO
-    * MAGICHOME
-
 * "not used in this remote control" -> nicht vom API device sondern nur vom device nutzen (wird serverseitig gemergt)
-* handle failures config files better
-  * e.g. defined remote control file doesn't exist -> disable device
-  * special case: first starting of server
-    * error when _ACTIVE-APIS.json not yet created
-    * error with ZIGBEE2MQTT configuration files
   
     
 # DONE --------------------------------------------------------------------------
 
+* Improve API Device settings
+  * OK: add a toggle to API Device edit dialog to enable / disable
+  * OK: activating an API device takes time, looks like it jumps back to old status?!
+  * OK: move API definition to separate sheet, keep initial sheet for information, enable/disable, and reconnect
+  * OK: move add API device to sheet box and move "create device config" there if exists
 * macro editing in the app
   * OPEN: sort in some order (alphabetically or in the order of the menu)
   * OK: add / delete macro keys
@@ -220,6 +200,10 @@
   * OK: improved layout
   * OK: load data set
 * statusCheck_apiConnection() in rm-status.js -> use remoteStatus()
+  * OK: all show status elements plus different other functions
+  * OK: Power Buttons scenes
+  * OK: Power Buttons devices
+  * OK: deactivate all other buttons, if device / scene error or off
 * APP PERFORMANCE in edit mode - Interaction to next paint (INP) -> to be improved;
   * OK: toggle for JSON highlighting
   * OK: load sheets in SheetBoxes when selected (for those, where possible)
@@ -541,7 +525,7 @@
   * OK: Button mit API Command verbunden inkl. Auswertung des Wertes
   * OK: rm_status -> Update value im button, wenn nötig
   * OK: rm_status -> Farbcodierung für ON/OFF button abhängig vom Wert
-  * OK: Connection status vom API-Device ausnwerten
+  * OK: Connection status vom API-Device auswerten
     * API-Requests im Status OFF einstellen
     * "STATUS"|"interface"|"connect"|<interface>_<api_device> entsprechend setzen
   * OK: Button inaktiv setzen, wenn INTERFACE im Status OFF

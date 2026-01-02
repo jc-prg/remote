@@ -7,18 +7,18 @@
 class RemoteControlKeyboard {
     constructor(name) {
     
-        this.app_name = name;
-        this.logging  = new jcLogging(this.app_name);
+        this.name = name;
+        this.logging  = new jcLogging(this.name);
 
     }
 
     /* create text input field to activate device keyboard */
     input() {
-        let cmd_update = this.app_name + ".update();";
-        let cmd_send = this.app_name + ".send();";
+        let cmd_update = this.name + ".update();";
+        let cmd_send = this.name + ".send();";
         let cmd_enter = "if (event.keyCode==13) {"+cmd_send+"}";
-        let remote = "<span class='center'><div id='"+this.app_name+"_keyboard' class='remote-keyboard'><br/>";
-        remote += "<input id='"+this.app_name+"_keyboard_input' onkeypress='"+cmd_enter+"' oninput='"+cmd_update+"' type='text' style='width:80%;font-size:18px;'>&nbsp;";
+        let remote = "<span class='center'><div id='"+this.name+"_keyboard' class='remote-keyboard'><br/>";
+        remote += "<input id='"+this.name+"_keyboard_input' onkeypress='"+cmd_enter+"' oninput='"+cmd_update+"' type='text' style='width:80%;font-size:18px;'>&nbsp;";
         remote += "<button onclick=\""+cmd_send+"\">&nbsp;&gt;&nbsp;</button></div></span>";
         return remote;
     }
@@ -35,27 +35,27 @@ class RemoteControlKeyboard {
 
         if (this.kupdate) { return; }
         this.kupdate = true;
-        let input = document.getElementById(this.app_name+"_keyboard_input").value;
+        let input = document.getElementById(this.name+"_keyboard_input").value;
         appFW.requestAPI('GET',[ 'send-data', this.active_name, 'send-text', input ], '','');
         this.kupdate = false;
         }
 
     /* send input to API */
     send() {
-        let input = document.getElementById(this.app_name+"_keyboard_input").value;
+        let input = document.getElementById(this.name+"_keyboard_input").value;
         appFW.requestAPI('GET',[ 'send-data', this.active_name, 'send-text-enter', input ], '','');
     }
 
     /* command to toggle between visible and hidden */
     toggle_cmd() {
-        return this.app_name+'.input_toggle();';
+        return this.name+'.input_toggle();';
         }
 
     /* toggle between visible and hidden, indirectly used - cmd created by toggle_cmd() */
     input_toggle() {
-        console.error(this.app_name+"_keyboard");
-        const input = document.getElementById(this.app_name+"_keyboard");
-        const input_text = document.getElementById(this.app_name+"_keyboard_input");
+        console.error(this.name+"_keyboard");
+        const input = document.getElementById(this.name+"_keyboard");
+        const input_text = document.getElementById(this.name+"_keyboard_input");
         if (input.style.display === "block") {
             input.style.display = "none";  input_text.blur(); input_text.value = "";
         }

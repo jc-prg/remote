@@ -8,10 +8,10 @@ class RemoteStart {
 
     constructor(name) {
         this.data         = {}
-        this.app_name     = name;
+        this.name    = name;
         this.edit_mode    = false;
         this.initial_load = true;
-        this.logging      = new jcLogging(this.app_name);
+        this.logging      = new jcLogging(this.name);
     }
 
     /* load configuration data */

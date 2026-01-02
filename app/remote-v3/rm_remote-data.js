@@ -9,17 +9,17 @@ let remoteData = undefined;
 /* coordinate data preparation based on data type */
 class RemotePrepareData {
     constructor (name, data) {
-        this.class_name = name;
+        this.name = name;
         this._data = undefined;
 
-        this.devices = new RemotePrepareDataDevices(this.class_name + ".devices");
-        this.device_groups = new RemotePrepareDataGroups(this.class_name + ".device_groups");
-        this.elements = new RemotePrepareDataElements(this.class_name + ".elements");
-        this.macros = new RemotePrepareDataMacros(this.class_name + ".macros");
-        this.scenes = new RemotePrepareDataScenes(this.class_name + ".scenes")
-        this.templates = new RemotePrepareDataTemplates(this.class_name + ".templates")
+        this.devices = new RemotePrepareDataDevices(this.name + ".devices");
+        this.device_groups = new RemotePrepareDataGroups(this.name + ".device_groups");
+        this.elements = new RemotePrepareDataElements(this.name + ".elements");
+        this.macros = new RemotePrepareDataMacros(this.name + ".macros");
+        this.scenes = new RemotePrepareDataScenes(this.name + ".scenes")
+        this.templates = new RemotePrepareDataTemplates(this.name + ".templates")
 
-        this.logging = new jcLogging(this.class_name + ".logging");
+        this.logging = new jcLogging(this.name + ".logging");
         this.update(data);
     }
 
@@ -44,16 +44,16 @@ class RemotePrepareData {
 /* prepare macro data */
 class RemotePrepareDataMacros {
     constructor(name) {
-        this.class_name = name;
+        this.name = name;
         this._data = undefined;
 
         this.categories_global = ["device-on", "device-off", "global"];
         this.categories_scenes = ["scene", "scene-on", "scene-off", "channel"];
         this.categories = ["device-on", "device-off", "global", "scene-on", "scene-off"];
 
-        this.device_groups = new RemotePrepareDataGroups(this.class_name + ".device_groups");
-        this.devices = new RemotePrepareDataDevices(this.class_name + ".devices");
-        this.logging = new jcLogging(this.class_name + ".logging");
+        this.device_groups = new RemotePrepareDataGroups(this.name + ".device_groups");
+        this.devices = new RemotePrepareDataDevices(this.name + ".devices");
+        this.logging = new jcLogging(this.name + ".logging");
     }
 
     // update class data with fresh data from server
@@ -115,12 +115,16 @@ class RemotePrepareDataMacros {
         }
         else if (this.categories_scenes.includes(category) && macro_id === "") {
             for (let scene in this.config_scenes) {
-                if (this.config_scenes[scene]["macro-"+category]) { result[scene] = this.config_scenes[scene]["remote"]["macro-"+category]; }
+                if (this.config_scenes[scene]["remote"]["macro-"+category]) {
+                    result[scene] = this.config_scenes[scene]["remote"]["macro-"+category];
+                }
             }
         }
         else if (this.categories_scenes.includes(category)) {
             for (let scene in this.config_scenes) {
-                if (this.config_scenes[scene]["macro-"+category]) { result[scene] = this.config_scenes[scene]["remote"]["macro-"+category]; }
+                if (this.config_scenes[scene]["remote"]["macro-"+category]) {
+                    result[scene] = this.config_scenes[scene]["remote"]["macro-"+category];
+                }
             }
             if (result[macro_id]) {
                 result = result[macro_id];
@@ -217,11 +221,11 @@ class RemotePrepareDataMacros {
 /* prepare group data */
 class RemotePrepareDataGroups {
     constructor(name) {
-        this.class_name = name;
+        this.name = name;
         this._data = undefined;
 
-        this.devices = new RemotePrepareDataDevices(this.class_name+".devices");
-        this.logging = new jcLogging(this.class_name + ".logging");
+        this.devices = new RemotePrepareDataDevices(this.name+".devices");
+        this.logging = new jcLogging(this.name + ".logging");
     }
 
     // update class data with fresh data from server
@@ -372,10 +376,10 @@ class RemotePrepareDataGroups {
 /* prepare device data */
 class RemotePrepareDataDevices {
     constructor(name) {
-        this.class_name = name;
+        this.name = name;
         this._data = undefined;
 
-        this.logging = new jcLogging(this.class_name + ".logging");
+        this.logging = new jcLogging(this.name + ".logging");
     }
 
     // update class data with fresh data from server
@@ -569,10 +573,10 @@ class RemotePrepareDataDevices {
 /* prepare scene data */
 class RemotePrepareDataScenes {
     constructor(name) {
-        this.class_name = name;
+        this.name = name;
         this._data = undefined;
 
-        this.logging = new jcLogging(this.class_name + ".logging");
+        this.logging = new jcLogging(this.name + ".logging");
     }
 
     // update class data with fresh data from server
@@ -700,10 +704,10 @@ class RemotePrepareDataScenes {
 /* prepare scene data */
 class RemotePrepareDataTemplates {
     constructor(name) {
-        this.class_name = name;
+        this.name = name;
         this._data = undefined;
 
-        this.logging = new jcLogging(this.class_name + ".logging");
+        this.logging = new jcLogging(this.name + ".logging");
     }
 
     // update class data with fresh data from server
@@ -770,10 +774,10 @@ class RemotePrepareDataTemplates {
 /* prepare other elements data */
 class RemotePrepareDataElements {
     constructor(name) {
-        this.class_name = name;
+        this.name = name;
         this._data = undefined;
 
-        this.logging = new jcLogging(this.class_name + ".logging");
+        this.logging = new jcLogging(this.name + ".logging");
     }
 
     // update class data with fresh data from server

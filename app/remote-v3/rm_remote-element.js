@@ -10,13 +10,13 @@ let rmSheetBox_open = {};
 class RemoteElementsEdit {
     constructor(name) {
 
-        this.app_name       = name;
+        this.name       = name;
         this.data           = {};
         this.edit_mode      = false;
         this.input_width    = "100px";
         this.container_open = {};
 
-        this.logging        = new jcLogging(this.app_name);
+        this.logging        = new jcLogging(this.name);
     }
 
     // create a basic container element that can be opened or closed dynamically
@@ -28,7 +28,7 @@ class RemoteElementsEdit {
             this.container_open[id] = open;
         }
 
-        let onclick  = ' onclick="'+this.app_name+'.container_showHide(\''+id+'\')"; '
+        let onclick  = ' onclick="'+this.name+'.container_showHide(\''+id+'\')"; '
         let display  = "";
         let link     = "&minus;";
         let ct       = "";
@@ -131,7 +131,7 @@ class RemoteElementsEdit {
 class RemoteElementTable {
     constructor(name) {
 
-        this.app_name = name;
+        this.name = name;
         this.row_ratio = "auto";
     }
 

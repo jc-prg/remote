@@ -9,10 +9,10 @@
 class RemoteJsonHandling {
 
     constructor(name) {
-        this.app_name       = name;
+        this.name       = name;
         this.data           = {};
-        this.logging        = new jcLogging(this.app_name);
-        this.json_highlight = new RemoteJsonEditing(this.app_name+".json_highlight");
+        this.logging        = new jcLogging(this.name);
+        this.json_highlight = new RemoteJsonEditing(this.name+".json_highlight");
     }
 
     /* get JSON value (and check if correct) */
@@ -21,21 +21,21 @@ class RemoteJsonHandling {
             if (typeof id === "object") {
                 let stack = new Error().stack;
                 let called_by = stack.split("\n")[2].replace("at ", "(call by: ") + ")";
-                this.logging.error(this.app_name + ".get_value: id is not type 'string' but '" + (typeof id) + "' (" + JSON.stringify(id) + "). " + called_by);
+                this.logging.error(this.name + ".get_value: id is not type 'string' but '" + (typeof id) + "' (" + JSON.stringify(id) + "). " + called_by);
                 return;
             }
             else if (typeof id !== "string") {
                 let stack = new Error().stack;
                 let called_by = stack.split("\n")[2].replace("at ", "(call by: ") + ")";
-                this.logging.error(this.app_name+".get_value: id is not type 'string' but '"+(typeof id)+"'.");
+                this.logging.error(this.name+".get_value: id is not type 'string' but '"+(typeof id)+"'.");
                 return;
             }
 
             const element = document.getElementById(id);
-            this.logging.debug(this.app_name+".get_value: "+id);
+            this.logging.debug(this.name+".get_value: "+id);
 
             if (!element)	{
-                this.logging.error(this.app_name+".get_value: element not found "+id);
+                this.logging.error(this.name+".get_value: element not found "+id);
                 return default_data;
             }
 
@@ -142,11 +142,11 @@ class RemoteJsonHandling {
 class RemoteJsonEditing {
 
     constructor(name, format_style = "default", style = "width: 95%; height: 160px;", highlighting=undefined) {
-        this.app_name = name;
+        this.name = name;
         this.default_size = style;
         this.format_style = format_style;   // other options: default, leafs, row4
         this.main_instance = "rm3json_edit";
-        this.logging = new jcLogging(this.app_name);
+        this.logging = new jcLogging(this.name);
         this.highlighting = highlighting || jsonHighlighting;
 
         this.start = this.start.bind(this);
@@ -351,12 +351,12 @@ class RemoteJsonElements {
     constructor(name, remote_type, remote) {
 
         this.data = {};
-        this.app_name = name;
+        this.name = name;
         this.remote = remote;
         this.remote_type = remote_type;
 
         this.json = new RemoteJsonHandling(name + ".json");		// rm_remotes-elements.js
-        this.logging = new jcLogging(this.app_name);
+        this.logging = new jcLogging(this.name);
         this.logging.debug("Create RemoteJsonElements (" + name + "/" + remote_type + "/" + this.json_field_id + ")");
 
         if (this.remote_type === "scene") {

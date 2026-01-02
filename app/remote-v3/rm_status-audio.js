@@ -8,7 +8,7 @@ let statusCheck_audio;
 // class for audio functionality (used in rm_status.js > statusCheck())
 class RemoteVisualizeMainAudioStatus {
     constructor(name, status) {
-        this.class_name = name;
+        this.name = name;
         this.data = dataAll;
         this.status = status;
 
@@ -35,7 +35,7 @@ class RemoteVisualizeMainAudioStatus {
         this.temp_audio_offset = 10;
 
         // bind volume slider
-        this.slider = new jcSlider(this.class_name+".slider", "audio_slider");
+        this.slider = new jcSlider(this.name+".slider", "audio_slider");
         this.slider.init(0, 100, "loading");
         this.slider.setPosition("45px",false,false,"10px");
         this.slider.setOnChange(this.change_volume);

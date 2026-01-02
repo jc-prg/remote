@@ -9,7 +9,7 @@ let remoteStatus_logging = false;
 // class that offers all types of status information for apis, api-devices, media devices, and scenes
 class RemoteDevicesStatus {
     constructor(name, data, load_async=false) {
-        this.app_name = name;
+        this.name = name;
         this.load_async = load_async;
         this.data = undefined;
         this.app_connection_error = undefined;
