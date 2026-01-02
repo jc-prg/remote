@@ -6,8 +6,6 @@
 
 * reload of all configs doesn't work
 
-* 
-
 * error on jc-server with latest version, while local installation works
   * Für mindestens eines der für die Szene Media Center benötigten Geräte ist ein Fehler aufgetreten: 
     -> Connected; Connected; Connected; Connected.
@@ -32,20 +30,16 @@
 
 ## UNDER DEVELOPMENT -------------------------------------------------------------
 
-* continue status refactoring: 
-  * statusCheck_apiConnection() in rm-status.js -> use statusCheck_devices()
-
 * macro editing in the app
-  * OPEN: improve layout (best use the available space on different screen sizes)
-  * OPEN: save from this GUI / realize for all types of macros (and groups?)
   * OPEN: sort in some order (alphabetically or in the order of the menu)
-  * OK: hide (unhide) invisible devices in the sources
-  * OK: add macros and groups
-  * OK: close sources ()
-  * OK: Drag'n'Drop for browser and touch (at the moment touch only)
-  * OK: first testing in Macro Settings with fixed data
-  * OK: improved layout
-  * OK: load data set
+
+* move data processing to -> class remoteData {}
+  * OK: relevant data for macro edting
+
+* continue status refactoring: 
+  * OPEN: Power Buttons scenes
+  * OPEN: Power Buttons devices
+  * OPEN: deactivate all other buttons, if device / scene error or off
 
 ### paused a bit
 
@@ -210,6 +204,19 @@
     
 # DONE --------------------------------------------------------------------------
 
+* macro editing in the app
+  * OPEN: sort in some order (alphabetically or in the order of the menu)
+  * OK: add / delete macro keys
+  * OK: save from this GUI / realize for all types of macros (and groups?)
+  * OK: improve layout (best use the available space on different screen sizes)
+  * OK: hide (unhide) invisible devices in the sources
+  * OK: add macros and groups
+  * OK: close sources ()
+  * OK: Drag'n'Drop for browser and touch (at the moment touch only)
+  * OK: first testing in Macro Settings with fixed data
+  * OK: improved layout
+  * OK: load data set
+* statusCheck_apiConnection() in rm-status.js -> use remoteStatus()
 * APP PERFORMANCE in edit mode - Interaction to next paint (INP) -> to be improved;
   * OK: toggle for JSON highlighting
   * OK: load sheets in SheetBoxes when selected (for those, where possible)

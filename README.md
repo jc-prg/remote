@@ -53,6 +53,7 @@ Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 ### v3.1 (in progress)
 
 * integration of Denon API incl. discovery
+* macro editing via app (instead of JSON editing) 
 
 ### v3.0
 
