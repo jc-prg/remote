@@ -117,15 +117,16 @@ class RemoteElementColorPicker {
 
         if (device.indexOf("group") >= 0) {
             let group_id = device.split("_")[1];
-            let devices = dataAll["CONFIG"]["macros"]["groups"][group_id]["devices"];
+            let devices = remoteData.device_groups.list_devices(group_id);
             check_device = devices[0];
         }
 
-        let min_max  = dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]["values"];
-        let type     = dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]["type"];
+        let commands_def = remoteData.devices.list_commands(check_device, "definition");
+        let min_max  = commands_def[pure_cmd]["values"];
+        let type     = commands_def[pure_cmd]["type"];
         if (min_max === undefined || min_max["min"] === undefined || min_max["max"] === undefined) {
             appMsg.info("Could not set brightness: no min-max values for " + check_device + " / " + pure_cmd + ".  Check remote configuration!","error");
-            this.logging.error(dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]);
+            this.logging.error(commands_def[pure_cmd]);
             this.logging.error(min_max["min"]);
         }
         else {
@@ -145,15 +146,17 @@ class RemoteElementColorPicker {
 
             if (device.indexOf("group") >= 0) {
                 let group_id = device.split("_")[1];
-                let devices = dataAll["CONFIG"]["macros"]["groups"][group_id]["devices"];
+                let devices = remoteData.device_groups.list_devices(group_id);
+
                 check_device = devices[0];
             }
 
-            let min_max  = dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]["values"];
-            let type     = dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]["type"];
+            let commands_def = remoteData.devices.list_commands(check_device, "definition");
+            let min_max  = commands_def[pure_cmd]["values"];
+            let type     = commands_def[pure_cmd]["type"];
             if (min_max === undefined || min_max["min"] === undefined || min_max["max"] === undefined) {
                 appMsg.info("Could not set color temperature: no min-max values for " + device + " / " + pure_cmd + ". Check remote configuration!","error");
-                this.logging.error(dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]);
+                this.logging.error(commands_def[pure_cmd]);
                 }
             else {
                 let range = min_max["max"] - min_max["min"];

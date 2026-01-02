@@ -9,7 +9,7 @@
 class RemoteMain {
     constructor(name) {
         this.data = {};
-        this.app_name = name;
+        this.class_name = name;
         this.active_name = "";
         this.active_type = "";
         this.active_buttons = [];
@@ -22,23 +22,23 @@ class RemoteMain {
         this.frames_remote = ["frame3", "frame4", "frame5"];
         this.frames_notouch = false;
 
-        this.basic = new RemoteElementsEdit(this.app_name + ".basic");
-        this.advanced = new RemoteControlAdvanced(this.app_name + ".advanced", this);
-        this.button = new RemoteControlBasic(this.app_name + ".button");
-        this.display = new RemoteControlDisplay(this.app_name + ".display");
+        this.basic = new RemoteElementsEdit(this.class_name + ".basic");
+        this.advanced = new RemoteControlAdvanced(this.class_name + ".advanced", this);
+        this.button = new RemoteControlBasic(this.class_name + ".button");
+        this.display = new RemoteControlDisplay(this.class_name + ".display");
 
-        this.json = new RemoteJsonHandling(this.app_name + ".json");
-        this.tab = new RemoteElementTable(this.app_name + ".tab");
-        this.keyboard = new RemoteControlKeyboard(this.app_name + ".keyboard");
+        this.json = new RemoteJsonHandling(this.class_name + ".json");
+        this.tab = new RemoteElementTable(this.class_name + ".tab");
+        this.keyboard = new RemoteControlKeyboard(this.class_name + ".keyboard");
 
-        this.logging = new jcLogging(this.app_name + ".logging");
-        this.tooltip = new JcTooltip2(this.app_name + ".tooltip");
+        this.logging = new jcLogging(this.class_name + ".logging");
+        this.tooltip = new JcTooltip2(this.class_name + ".tooltip");
 
-        this.edit = new RemoteMainEditElements(this.app_name + ".edit", this);
-        this.rm_scene = new RemoteJsonElements(this.app_name + ".rm_scene", "scene", this);
-        this.rm_device = new RemoteJsonElements(this.app_name + ".rm_device", "device", this);
-        this.dialog_scene = new RemoteMainEditDialogs(this.app_name + ".dialog_scene", "scene", this);
-        this.dialog_device = new RemoteMainEditDialogs(this.app_name + ".dialog_device", "device", this);
+        this.edit = new RemoteMainEditElements(this.class_name + ".edit", this);
+        this.rm_scene = new RemoteJsonElements(this.class_name + ".rm_scene", "scene", this);
+        this.rm_device = new RemoteJsonElements(this.class_name + ".rm_device", "device", this);
+        this.dialog_scene = new RemoteMainEditDialogs(this.class_name + ".dialog_scene", "scene", this);
+        this.dialog_device = new RemoteMainEditDialogs(this.class_name + ".dialog_device", "device", this);
     }
 
     /* load data with devices (deviceConfig["devices"]) */
@@ -309,12 +309,12 @@ class RemoteMain {
                     button_name = button_name_test[0];
                 }
 
-                let link_preview = this.app_name + ".preview('device','" + device + "');";
-                let link_delete = this.app_name + ".rm_device.delete_button('" + device + "','" + i + "');";
-                let link_move_left = this.app_name + ".rm_device.move_button('" + device + "'," + i + ",'left');";
-                let link_move_right = this.app_name + ".rm_device.move_button('" + device + "'," + i + ",'right');";
-                let link_button_left = this.app_name + ".rm_device.add_button('" + device + "','add_button_" + i + "','" + i + "');";
-                let link_button_right = this.app_name + ".rm_device.add_button('" + device + "','add_button_" + i + "','" + (i + 1) + "');";
+                let link_preview = this.class_name + ".preview('device','" + device + "');";
+                let link_delete = this.class_name + ".rm_device.delete_button('" + device + "','" + i + "');";
+                let link_move_left = this.class_name + ".rm_device.move_button('" + device + "'," + i + ",'left');";
+                let link_move_right = this.class_name + ".rm_device.move_button('" + device + "'," + i + ",'right');";
+                let link_button_left = this.class_name + ".rm_device.add_button('" + device + "','add_button_" + i + "','" + i + "');";
+                let link_button_right = this.class_name + ".rm_device.add_button('" + device + "','add_button_" + i + "','" + (i + 1) + "');";
 
                 context_menu = "[" + i + "] <b>" + button_name + "</b><br/><br/>";
 
@@ -416,7 +416,7 @@ class RemoteMain {
         let next_button = "";
         this.button.width = "120px";
 
-        let link_preview = this.app_name + ".preview('device','" + device + "');";
+        let link_preview = this.class_name + ".preview('device','" + device + "');";
         let device_buttons = device_config["buttons"];
 
         if (preview_remote === "") {
@@ -450,7 +450,7 @@ class RemoteMain {
 
         // show / hide buttons that are not used
         if (not_used.length > 0) {
-            let onclick = this.app_name + ".device_not_used_show_hide();";
+            let onclick = this.class_name + ".device_not_used_show_hide();";
             remote += "<div id='show_hide_not_used' onclick='" + onclick + "'>" + sign + "</div>";
         }
 
@@ -465,7 +465,7 @@ class RemoteMain {
             next_button = this.button.device("not_used" + i, button, device, "", cmd, "");
 
             if (this.edit_mode) {
-                let link_add = this.app_name + ".rm_device.add_button(##" + device + "##, ##not_used_" + i + "##);" + link_preview.replaceAll("'", "##");
+                let link_add = this.class_name + ".rm_device.add_button(##" + device + "##, ##not_used_" + i + "##);" + link_preview.replaceAll("'", "##");
                 let input_add = "<input id='not_used_" + i + "' name='not_used_" + i + "' value='" + button + "' style='display:none;' />";
                 let context_menu = input_add + "[" + i + "] " + cmd + "<br/><br/>" + this.button.edit(link_add, lang("BUTTON_T_MOVE2REMOTE"), "");
                 context_menu = context_menu.replaceAll("\"", "'");
@@ -586,8 +586,8 @@ class RemoteMain {
         edit += "<span id='edit_dev_rm_method'>"+device_config["interface"]["method"]+"</span>";
 
         edit += "<hr/><span class='center'>";
-        edit += this.button.edit(this.app_name+".device_edit_api_update('',true);", lang("BUTTON_T_RESET")) + "&nbsp;";
-        edit += this.button.edit(this.app_name+".device_edit_api_confirm('"+device+"')", lang("BUTTON_T_SAVE"));
+        edit += this.button.edit(this.class_name+".device_edit_api_update('',true);", lang("BUTTON_T_RESET")) + "&nbsp;";
+        edit += this.button.edit(this.class_name+".device_edit_api_confirm('"+device+"')", lang("BUTTON_T_SAVE"));
         edit += "</span>";
         let edit_info = edit;
 
@@ -679,7 +679,7 @@ class RemoteMain {
             api_key = selected["api"].split("_")[0];
         }
 
-        let on_change1 = "setTextById('edit_dev_api_field', this.value);" + this.app_name + ".device_edit_api_update();"; // + change int
+        let on_change1 = "setTextById('edit_dev_api_field', this.value);" + this.class_name + ".device_edit_api_update();"; // + change int
         let on_change2 = "setTextById('edit_dev_config_field', 'devices/' + document.getElementById('edit_dev_api').value.split('_')[0] + '/<u>' + this.value + '.json</u>');";
         let on_change3 = "setTextById('edit_dev_rm_field', 'remotes/<u>' + this.value + '.json</u>');";
 
@@ -726,7 +726,7 @@ class RemoteMain {
         let api_name = data["DATA"][device]["interface"]["api_key"];
         let on_change = "setValueById('api_command', getValueById('api_cmd_select'));";
 
-        const basic = new RemoteElementsEdit("rm3remotes.basic");		// !!! should use this.app_name, but doesn't work
+        const basic = new RemoteElementsEdit("rm3remotes.basic");		// !!! should use this.class_name, but doesn't work
         basic.input_width = "90%";
 
         let select = basic.select("api_cmd_select", lang("API_SELECT_CMD"), commands, on_change, '', false, true);
@@ -823,12 +823,12 @@ class RemoteMain {
         remote += "<br/>";
         remote += this.basic.edit_line();
         remote += "<br/><span class='center'>" +
-            this.button.edit(this.app_name + ".device_edit_json('" + id + "','" + device + "');" +
-                this.app_name + ".device_remote('" + this.frames_remote[0] + "','" + device + "','remote_json_buttons','remote_json_channel');" +
-                this.app_name + ".device_not_used('" + this.frames_remote[2] + "','" + device + "','remote_json_buttons');", lang("BUTTON_T_RESET")) + "&nbsp;" +
+            this.button.edit(this.class_name + ".device_edit_json('" + id + "','" + device + "');" +
+                this.class_name + ".device_remote('" + this.frames_remote[0] + "','" + device + "','remote_json_buttons','remote_json_channel');" +
+                this.class_name + ".device_not_used('" + this.frames_remote[2] + "','" + device + "','remote_json_buttons');", lang("BUTTON_T_RESET")) + "&nbsp;" +
             this.button.edit("apiDeviceJsonEdit('" + device + "','remote_json_buttons','remote_json_display','remote_display_size');", lang("BUTTON_T_SAVE")) + "&nbsp;" +
-            this.button.edit(this.app_name + ".preview('device','" + device + "');", lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
-            this.button.edit("remoteToggleEditMode(false);" + this.app_name + ".create('" + this.active_type + "','" + device + "');", "stop edit") +
+            this.button.edit(this.class_name + ".preview('device','" + device + "');", lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
+            this.button.edit("remoteToggleEditMode(false);" + this.class_name + ".create('" + this.active_type + "','" + device + "');", "stop edit") +
             "</span><br/>";
 
 
@@ -1016,14 +1016,14 @@ console.error(remoteData.scenes.data(scene));
                 let button_name_test = button_name.split("_");
                 if (button_name_test[1] === "undefined") { button_name = button_name_test[0]; }
 
-                let link_preview = this.app_name + ".preview('scene','" + scene + "');";
+                let link_preview = this.class_name + ".preview('scene','" + scene + "');";
 
-                let link_delete = this.app_name + ".rm_scene.delete_button('" + scene + "','" + i + "');";
-                let link_move_left = this.app_name + ".rm_scene.move_button('" + scene + "'," + i + ",'left');";
-                let link_move_right = this.app_name + ".rm_scene.move_button('" + scene + "'," + i + ",'right');";
+                let link_delete = this.class_name + ".rm_scene.delete_button('" + scene + "','" + i + "');";
+                let link_move_left = this.class_name + ".rm_scene.move_button('" + scene + "'," + i + ",'left');";
+                let link_move_right = this.class_name + ".rm_scene.move_button('" + scene + "'," + i + ",'right');";
 
-                let link_button_left = this.app_name + ".rm_scene.add_button('" + scene + "','add_button_" + i + "','" + i + "');";
-                let link_button_right = this.app_name + ".rm_scene.add_button('" + scene + "','add_button_" + i + "','" + (i + 1) + "');";
+                let link_button_left = this.class_name + ".rm_scene.add_button('" + scene + "','add_button_" + i + "','" + i + "');";
+                let link_button_right = this.class_name + ".rm_scene.add_button('" + scene + "','add_button_" + i + "','" + (i + 1) + "');";
 
                 if (button_name.indexOf("TOGGLE") >= 0) { button_name = cmd.split("||")[1].split("_")[0] + "_" + button_name; }
                 context_menu = "[" + i + "] <b>" + button_name + "</b><br/><br/>";
@@ -1330,16 +1330,16 @@ console.error(remoteData.scenes.data(scene));
         remote += this.basic.edit_line();
         this.button.width = "23%";
         remote += "<br/><span class='center'>" +
-            this.button.edit(this.app_name + ".scene_edit_json('" + id + "','" + scene + "');" +
-                this.app_name + ".scene_remote(  '" + this.frames_remote[0] + "','" + scene + "','json::remote','json::display');" +
-                this.app_name + ".scene_channels('" + this.frames_remote[2] + "','" + scene + "','json::macro-channel');",
+            this.button.edit(this.class_name + ".scene_edit_json('" + id + "','" + scene + "');" +
+                this.class_name + ".scene_remote(  '" + this.frames_remote[0] + "','" + scene + "','json::remote','json::display');" +
+                this.class_name + ".scene_channels('" + this.frames_remote[2] + "','" + scene + "','json::macro-channel');",
                 lang("BUTTON_T_RESET")) + "&nbsp;" +
             this.button.edit("apiSceneJsonEdit('" + scene + "','json::remote,json::devices,json::display,json::macro-channel,json::macro-scene-on,json::macro-scene-off,json::macro-scene,json::display-size');",
                 lang("BUTTON_T_SAVE"), "") + "&nbsp;" +
-            this.button.edit(this.app_name + ".scene_remote(  '" + this.frames_remote[0] + "','" + scene + "','json::remote','json::display','json::display-size');" +
-                this.app_name + ".scene_channels('" + this.frames_remote[2] + "','" + scene + "','json::macro-channel');",
+            this.button.edit(this.class_name + ".scene_remote(  '" + this.frames_remote[0] + "','" + scene + "','json::remote','json::display','json::display-size');" +
+                this.class_name + ".scene_channels('" + this.frames_remote[2] + "','" + scene + "','json::macro-channel');",
                 lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
-            this.button.edit("remoteToggleEditMode(false);" + this.app_name + ".create('" + this.active_type + "','" + scene + "');", lang("BUTTON_T_STOP_EDIT")) +
+            this.button.edit("remoteToggleEditMode(false);" + this.class_name + ".create('" + this.active_type + "','" + scene + "');", lang("BUTTON_T_STOP_EDIT")) +
             "</span><br/>";
 
         setTextById(id, remote);
@@ -1407,7 +1407,7 @@ console.error(remoteData.scenes.data(scene));
 class RemoteMainEditDialogs {
     constructor (name, remote_type, remote) {
         this.data = {};
-        this.app_name = name;
+        this.class_name = name;
         this.remote = remote;
         this.remote_type = remote_type;
 
@@ -1422,11 +1422,11 @@ class RemoteMainEditDialogs {
         this.tab = new RemoteElementTable(name + ".tab");
         this.advanced = new RemoteControlAdvanced(name + ".advanced", this);
 
-        this.edit = new RemoteMainEditElements(this.app_name + ".edit", this.remote);
-        this.rm_scene = new RemoteJsonElements(this.app_name + ".rm_scene", "scene", this.remote);
-        this.rm_device = new RemoteJsonElements(this.app_name + ".rm_device", "device", this.remote);
+        this.edit = new RemoteMainEditElements(this.class_name + ".edit", this.remote);
+        this.rm_scene = new RemoteJsonElements(this.class_name + ".rm_scene", "scene", this.remote);
+        this.rm_device = new RemoteJsonElements(this.class_name + ".rm_device", "device", this.remote);
 
-        this.logging = new jcLogging(this.app_name);
+        this.logging = new jcLogging(this.class_name);
         this.logging.debug("Create RemoteJsonElements (" + name + "/" + remote_type + "/" + this.json_field_id + ")");
     }
 
@@ -1484,7 +1484,7 @@ class RemoteMainEditDialogs {
             device_config = remoteData.devices.data(device);
             device_buttons = remoteData.devices.list_buttons(device);
             display_sizes = this.display.sizes();
-            link_template = this.app_name + ".rm_device.import_templates('" + device + "','add_template');";
+            link_template = this.class_name + ".rm_device.import_templates('" + device + "','add_template');";
             remote_definition = remoteData.devices.remote(device);
             remote_display = remoteData.devices.display(device);
             remote_display_size = remoteData.devices.display_size(device);
@@ -1578,7 +1578,7 @@ class RemoteMainEditDialogs {
             );
             edit += this.tab.line();
             edit += this.tab.row(
-                this.button.edit(this.app_name + ".rm_device.add_toggle('" + device + "', '" + device + "','add_toggle_description','add_toggle_value','add_toggle_on','add_toggle_off');", lang("BUTTON_T_ADD"), "")
+                this.button.edit(this.class_name + ".rm_device.add_toggle('" + device + "', '" + device + "','add_toggle_description','add_toggle_value','add_toggle_on','add_toggle_off');", lang("BUTTON_T_ADD"), "")
             );
             edit += this.tab.end();
         }
@@ -1610,7 +1610,7 @@ class RemoteMainEditDialogs {
                 );
                 edit += this.tab.line();
                 edit += this.tab.row(
-                    this.button.edit(this.app_name + ".rm_device.add_color_picker('" + device + "','add_color_picker_cmd','add_color_picker_model','');", lang("BUTTON_T_ADD"), "")
+                    this.button.edit(this.class_name + ".rm_device.add_color_picker('" + device + "','add_color_picker_cmd','add_color_picker_model','');", lang("BUTTON_T_ADD"), "")
                 );
             } else {
                 edit += this.tab.row(
@@ -1625,7 +1625,7 @@ class RemoteMainEditDialogs {
             edit += this.tab.start();
             if (remoteData.devices.has_ranges(device)) {
                 let param = remoteData.devices.has_ranges(device, true);
-                let onchange_slider_param = this.app_name + ".rm_device.prepare_slider('" + device + "','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax');";
+                let onchange_slider_param = this.class_name + ".rm_device.prepare_slider('" + device + "','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax');";
 
                 edit += this.tab.row(
                     "Send command:",
@@ -1645,7 +1645,7 @@ class RemoteMainEditDialogs {
                 );
                 edit += this.tab.line();
                 edit += this.tab.row(
-                    this.button.edit(this.app_name + ".rm_device.add_slider('" + device + "','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax');", lang("BUTTON_T_ADD"), "")
+                    this.button.edit(this.class_name + ".rm_device.add_slider('" + device + "','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax');", lang("BUTTON_T_ADD"), "")
                 );
             } else {
                 edit += this.tab.row(
@@ -1666,7 +1666,7 @@ class RemoteMainEditDialogs {
             edit = this.tab.start();
             edit += this.tab.row(
                 this.basic.select_array("add_button_select", "defined button", device_buttons, onchange_default, ""),
-                this.button.edit(this.app_name + ".rm_device.add_button_select_image('" + device + "','add_button_select', 'button-image-select','add_button_image');", lang("BUTTON_T"), "")
+                this.button.edit(this.class_name + ".rm_device.add_button_select_image('" + device + "','add_button_select', 'button-image-select','add_button_image');", lang("BUTTON_T"), "")
             );
             let button_select = this.tab.start("");
             button_select += this.tab.row(icon_default, "&nbsp;" + chose_default + lang("BUTTON_IMAGE_DEFAULT"));
@@ -1677,21 +1677,21 @@ class RemoteMainEditDialogs {
             edit += this.tab.line();
             edit += this.tab.row(
                 this.basic.input("add_button"),
-                this.button.edit(this.app_name + ".rm_device.add_button('" + device + "','add_button');", lang("BUTTON_T_OTHER"), "")
+                this.button.edit(this.class_name + ".rm_device.add_button('" + device + "','add_button');", lang("BUTTON_T_OTHER"), "")
             );
             edit += this.tab.line();
             edit += this.tab.row(
                 lang("ADD_LINE"),
-                this.button.edit(this.app_name + ".rm_device.add_button('" + device + "','LINE');", lang("BUTTON_T_LINE"), "")
+                this.button.edit(this.class_name + ".rm_device.add_button('" + device + "','LINE');", lang("BUTTON_T_LINE"), "")
             );
             edit += this.tab.row(
                 this.basic.input("add_line_text"),
-                this.button.edit(this.app_name + ".rm_device.add_line('" + device + "','add_line_text');", lang("BUTTON_T_LINE_TEXT"), "")
+                this.button.edit(this.class_name + ".rm_device.add_line('" + device + "','add_line_text');", lang("BUTTON_T_LINE_TEXT"), "")
             );
             edit += this.tab.line();
             edit += this.tab.row(
                 lang("ADD_EMPTY"),
-                this.button.edit(this.app_name + ".rm_device.add_button('" + device + "','.');", lang("BUTTON_T_EMPTY"), "")
+                this.button.edit(this.class_name + ".rm_device.add_button('" + device + "','.');", lang("BUTTON_T_EMPTY"), "")
             );
             edit += this.tab.end();
         }
@@ -1700,9 +1700,9 @@ class RemoteMainEditDialogs {
             this.button.width = "90px";
             edit = this.tab.start();
             edit += this.tab.row("<span class='center'>" +
-                this.button.edit(this.app_name + ".rm_device.add_button( '" + device + "','.');", lang("BUTTON_T_EMPTY"), "") + "&nbsp; " +
-                this.button.edit(this.app_name + ".rm_device.add_button( '" + device + "','LINE');", lang("BUTTON_T_LINE"), "") + "&nbsp; " +
-                this.button.edit(this.app_name + ".rm_device.add_display('" + device + "');", lang("BUTTON_T_DISPLAY"), "") + "&nbsp; " +
+                this.button.edit(this.class_name + ".rm_device.add_button( '" + device + "','.');", lang("BUTTON_T_EMPTY"), "") + "&nbsp; " +
+                this.button.edit(this.class_name + ".rm_device.add_button( '" + device + "','LINE');", lang("BUTTON_T_LINE"), "") + "&nbsp; " +
+                this.button.edit(this.class_name + ".rm_device.add_display('" + device + "');", lang("BUTTON_T_DISPLAY"), "") + "&nbsp; " +
                 "</span>",
                 false
             );
@@ -1711,14 +1711,14 @@ class RemoteMainEditDialogs {
         else if (this.remote_type === "device" && element === "display") {
 
             let check_display = JSON.stringify(remote_definition);
-            let display_add_cmd = this.app_name + ".rm_device.add_display_value('" + device + "','add_display_device','remote_display_value','remote_display_label')";
-            let display_del_cmd = this.app_name + ".rm_device.delete_display_value('" + device + "','remote_display_delete')";
+            let display_add_cmd = this.class_name + ".rm_device.add_display_value('" + device + "','add_display_device','remote_display_value','remote_display_label')";
+            let display_del_cmd = this.class_name + ".rm_device.delete_display_value('" + device + "','remote_display_delete')";
 
             edit = this.tab.start();
             if (check_display.indexOf("DISPLAY") < 0) {
                 edit += this.tab.row(
                     lang("DISPLAY_NOT_ADDED"),
-                    this.button.edit(this.app_name + ".rm_device.add_display('" + device + "');", lang("BUTTON_T_DISPLAY"), "")
+                    this.button.edit(this.class_name + ".rm_device.add_display('" + device + "');", lang("BUTTON_T_DISPLAY"), "")
                 );
             } else {
                 edit += this.tab.row(
@@ -1760,7 +1760,7 @@ class RemoteMainEditDialogs {
             edit += this.tab.start();
             edit += this.tab.row(
                 this.edit.button_select("del_button", device, remote_definition),
-                this.button.edit(this.app_name + ".rm_device.delete_button('" + device + "','del_button');", lang("BUTTON_T_DELETE"), "")
+                this.button.edit(this.class_name + ".rm_device.delete_button('" + device + "','del_button');", lang("BUTTON_T_DELETE"), "")
             );
             edit += this.tab.end();
         }
@@ -1795,7 +1795,7 @@ class RemoteMainEditDialogs {
             );
             edit += this.tab.line();
             edit += this.tab.row(
-                this.button.edit(this.app_name + ".rm_scene.add_toggle('" + scene + "','add_toggle_device','add_toggle_description','add_toggle_value','add_toggle_on','add_toggle_off');", lang("BUTTON_T_ADD"), "")
+                this.button.edit(this.class_name + ".rm_scene.add_toggle('" + scene + "','add_toggle_device','add_toggle_description','add_toggle_value','add_toggle_on','add_toggle_off');", lang("BUTTON_T_ADD"), "")
             );
             edit += this.tab.end();
 
@@ -1825,7 +1825,7 @@ class RemoteMainEditDialogs {
             );
             edit += this.tab.line();
             edit += this.tab.row(
-                this.button.edit(this.app_name + ".rm_scene.add_color_picker('add_color_picker_device','add_color_picker_cmd','add_color_picker_model','add_color_picker_description','"+scene+"');", lang("BUTTON_T_ADD"), "")
+                this.button.edit(this.class_name + ".rm_scene.add_color_picker('add_color_picker_device','add_color_picker_cmd','add_color_picker_model','add_color_picker_description','"+scene+"');", lang("BUTTON_T_ADD"), "")
             );
             edit += this.tab.end();
 
@@ -1860,7 +1860,7 @@ class RemoteMainEditDialogs {
             );
             edit += this.tab.line();
             edit += this.tab.row(
-                this.button.edit(this.app_name + ".rm_scene.add_slider('" + scene + "','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax','add_slider_device');", lang("BUTTON_T_ADD"), "")
+                this.button.edit(this.class_name + ".rm_scene.add_slider('" + scene + "','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax','add_slider_device');", lang("BUTTON_T_ADD"), "")
             );
             edit += this.tab.end();
 
@@ -1884,8 +1884,8 @@ class RemoteMainEditDialogs {
             edit += this.tab.row(
                 "<input id='add_button_value' style='display:none;'/>" +
                 "<div id='add_button_device_input'><i><small>-&gt; " + lang("SELECT_DEV_MACRO") + "</small></i></div>",
-                //this.button.edit(this.app_name + ".rm_scene.add_button('" + scene + "','add_button_value');", lang("BUTTON_T"), "")
-                this.button.edit(this.app_name + ".rm_scene.add_button_select_image('" + scene + "','add_button_value', 'button-image-select','add_button_image');", lang("BUTTON_T"), "")
+                //this.button.edit(this.class_name + ".rm_scene.add_button('" + scene + "','add_button_value');", lang("BUTTON_T"), "")
+                this.button.edit(this.class_name + ".rm_scene.add_button_select_image('" + scene + "','add_button_value', 'button-image-select','add_button_image');", lang("BUTTON_T"), "")
             );
             let button_select = this.tab.start("");
             button_select += this.tab.row(icon_default, "&nbsp;" + chose_default + lang("BUTTON_IMAGE_DEFAULT"));
@@ -1896,30 +1896,30 @@ class RemoteMainEditDialogs {
             edit += this.tab.line();
             edit += this.tab.row(
                 this.basic.input("add_line_text"),
-                this.button.edit(this.app_name + ".rm_scene.add_line('" + scene + "','add_line_text');", lang("BUTTON_T_LINE_TEXT"), "")
+                this.button.edit(this.class_name + ".rm_scene.add_line('" + scene + "','add_line_text');", lang("BUTTON_T_LINE_TEXT"), "")
             );
             edit += this.tab.row(
                 "Add simple line:",
-                this.button.edit(this.app_name + ".rm_scene.add_button('" + scene + "','LINE');", lang("BUTTON_T_LINE"), "")
+                this.button.edit(this.class_name + ".rm_scene.add_button('" + scene + "','LINE');", lang("BUTTON_T_LINE"), "")
             );
             edit += this.tab.line();
             edit += this.tab.row(
                 "Add empty field:",
-                this.button.edit(this.app_name + ".rm_scene.add_button('" + scene + "','.');", lang("BUTTON_T_EMPTY"), "")
+                this.button.edit(this.class_name + ".rm_scene.add_button('" + scene + "','.');", lang("BUTTON_T_EMPTY"), "")
             );
             edit += this.tab.end();
         }
         else if (this.remote_type === "scene" && element === "display") {
 
             let check_display = JSON.stringify(json_edit_values["remote"]);
-            let display_add_cmd = this.app_name + ".rm_scene.add_display_value('" + scene + "','add_display_device','scene_display_value','scene_display_label')";
-            let display_del_cmd = this.app_name + ".rm_scene.delete_display_value('" + scene + "','scene_display_delete')";
+            let display_add_cmd = this.class_name + ".rm_scene.add_display_value('" + scene + "','add_display_device','scene_display_value','scene_display_label')";
+            let display_del_cmd = this.class_name + ".rm_scene.delete_display_value('" + scene + "','scene_display_delete')";
 
             edit = this.tab.start();
             if (check_display.indexOf("DISPLAY") < 0) {
                 edit += this.tab.row(
                     lang("DISPLAY_NOT_ADDED"),
-                    this.button.edit(this.app_name + ".rm_scene.add_display('" + scene + "');", lang("BUTTON_T_DISPLAY"), "")
+                    this.button.edit(this.class_name + ".rm_scene.add_display('" + scene + "');", lang("BUTTON_T_DISPLAY"), "")
                 );
             } else {
                 edit += this.tab.row(
@@ -1967,13 +1967,13 @@ class RemoteMainEditDialogs {
             edit += this.tab.start();
             edit += this.tab.row(
                 this.edit.button_select("del_button", scene, json_edit_values["remote"]),
-                this.button.edit(this.app_name + ".rm_scene.delete_button('" + scene + "','del_button');", lang("BUTTON_T_DEL"), "")
+                this.button.edit(this.class_name + ".rm_scene.delete_button('" + scene + "','del_button');", lang("BUTTON_T_DEL"), "")
             );
             edit += this.tab.end();
         }
         else if (this.remote_type === "scene" && element === "header") {
 
-            let header_on_change = this.app_name + ".update_fields('" + scene + "');";
+            let header_on_change = this.class_name + ".update_fields('" + scene + "');";
 
             let add_header_img = "<div id='header_button_img'></div>";
             let add_header_img_t = "<div id='header_button_img_t'></div>";
@@ -2021,7 +2021,7 @@ class RemoteMainEditDialogs {
         let header_exists = (check_header.indexOf("HEADER-IMAGE") >= 0);
         let header_with_toggle = (check_header.indexOf("HEADER-IMAGE||toggle") >= 0);
         let header_toggle_device = getValueById("header_toggle_device");
-        let header_on_change = this.app_name + ".update_fields('" + scene + "');";
+        let header_on_change = this.class_name + ".update_fields('" + scene + "');";
 
         let add_header_img = this.button.edit(this.remote.app_name + ".rm_scene.add_header('" + scene + "','HEADER-IMAGE');" + header_on_change, lang("BUTTON_T_ADD"), "");
         let add_header_img_t = this.button.edit(this.remote.app_name + ".rm_scene.add_header('" + scene + "','HEADER-IMAGE||toggle');" + header_on_change, lang("BUTTON_T_ADD"), "");
@@ -2086,20 +2086,20 @@ class RemoteMainEditDialogs {
 class RemoteMainEditElements {
     constructor(name, remote) {
         this.remote = remote;
-        this.app_name = name;
+        this.class_name = name;
         this.data = this.remote.data;
         this.edit_mode = this.remote.edit_mode;
 
-        this.basic = new RemoteElementsEdit(this.app_name + ".basic");
-        this.advanced = new RemoteControlAdvanced(this.app_name + ".advanced", this);
-        this.button = new RemoteControlBasic(this.app_name + ".button");
-        this.display = new RemoteControlDisplay(this.app_name + ".display");
+        this.basic = new RemoteElementsEdit(this.class_name + ".basic");
+        this.advanced = new RemoteControlAdvanced(this.class_name + ".advanced", this);
+        this.button = new RemoteControlBasic(this.class_name + ".button");
+        this.display = new RemoteControlDisplay(this.class_name + ".display");
 
-        this.json = new RemoteJsonHandling(this.app_name + ".json");
-        this.tab = new RemoteElementTable(this.app_name + ".tab");
-        this.keyboard = new RemoteControlKeyboard(this.app_name + ".keyboard");
+        this.json = new RemoteJsonHandling(this.class_name + ".json");
+        this.tab = new RemoteElementTable(this.class_name + ".tab");
+        this.keyboard = new RemoteControlKeyboard(this.class_name + ".keyboard");
 
-        this.logging = new jcLogging(this.app_name + ".logging");
+        this.logging = new jcLogging(this.class_name + ".logging");
     }
 
     /* get latest data from remote main class */
@@ -2117,7 +2117,7 @@ class RemoteMainEditElements {
             list[key] = key;
         }
         if (width !== "") { this.basic.input_width = width; }
-        return this.basic.select(source_id, "button-image", list, this.app_name + ".button_image_preview('" + source_id + "', '"+target_id+"');", selected);
+        return this.basic.select(source_id, "button-image", list, this.class_name + ".button_image_preview('" + source_id + "', '"+target_id+"');", selected);
     }
 
     /* header-image preview */
@@ -2271,7 +2271,7 @@ class RemoteMainEditElements {
             list[key] = key;
         }
 
-        return this.basic.select(id, "header-image", list, this.app_name + ".image_preview();", selected);
+        return this.basic.select(id, "header-image", list, this.class_name + ".image_preview();", selected);
     }
 
     /* header-image preview */
@@ -2356,7 +2356,7 @@ class RemoteMainEditElements {
             }
         }
 
-        let on_change = "document.getElementById('" + id + "').value = this.value; "+this.app_name+".button_image_preview('add_button_device_"+device+"','add_button_image_default');";
+        let on_change = "document.getElementById('" + id + "').value = this.value; "+this.class_name+".button_image_preview('add_button_device_"+device+"','add_button_image_default');";
         let device_macro_select = this.basic.select_array("add_button_device_" + device, "button (" + device + ")", available_buttons, on_change, '');
 
         setTextById(div_id, device_macro_select);
