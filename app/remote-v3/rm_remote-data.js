@@ -591,6 +591,15 @@ class RemotePrepareDataScenes {
         }
     }
 
+    // return description of a device
+    description(scene_id) {
+        if (this.config_scenes[scene_id] && this.config_scenes[scene_id]["settings"]["description"]) { return this.config_scenes[scene_id]["settings"]["description"]; }
+        else {
+            this.logging.error(`description(): device_id "${scene_id} does not exist."`)
+            return scene_id;
+        }
+    }
+
     // return display of a scene
     display(scene_id) {
         if (this.config_scenes[scene_id] && this.config_scenes[scene_id]["settings"]["display"]) { return this.config_scenes[scene_id]["settings"]["display"]; }
