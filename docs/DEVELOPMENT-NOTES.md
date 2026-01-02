@@ -32,9 +32,12 @@
 
 * macro editing in the app
   * OPEN: sort in some order (alphabetically or in the order of the menu)
+  * OPEN: scene macros
 
 * move data processing to -> class remoteData {}
-  * OK: relevant data for macro edting
+  * NEXT: rm_settings.js
+  * OK: rm_remotes.js
+  * OK: relevant data for macro editing
 
 * continue status refactoring: 
   * OPEN: Power Buttons scenes
@@ -540,6 +543,6 @@
   * OK: rm_status -> Farbcodierung für ON/OFF button abhängig vom Wert
   * OK: Connection status vom API-Device ausnwerten
     * API-Requests im Status OFF einstellen
-    * ["STATUS"]["interface"]["connect"][<interface>_<api_device>] entsprechend setzen
+    * "STATUS"|"interface"|"connect"|<interface>_<api_device> entsprechend setzen
   * OK: Button inaktiv setzen, wenn INTERFACE im Status OFF
 

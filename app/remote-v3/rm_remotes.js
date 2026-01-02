@@ -9,7 +9,6 @@
 class RemoteMain {
     constructor(name) {
         this.data = {};
-        this.templates = {};
         this.app_name = name;
         this.active_name = "";
         this.active_type = "";
@@ -49,8 +48,6 @@ class RemoteMain {
             this.data = data;
             this.button.data = data;
             this.display.data = data;
-
-            this.templates = data["CONFIG"]["templates"]["list"];
         } else {
             return;
         }
@@ -81,7 +78,7 @@ class RemoteMain {
             this.logging.warn("Data not loaded yet.");
             return;
         }
-        if (rm_id !== "" && this.data["CONFIG"]["devices"][rm_id] === undefined && this.data["CONFIG"]["scenes"][rm_id] === undefined) {
+        if (rm_id !== "" && !remoteData.devices.exists(rm_id) && !remoteData.scenes.exists(rm_id)) {
             this.logging.warn("Remote ID " + rm_id + " not found.");
             appCookie.set("remote", ""); //device::"+device+"::"+remote_label);
             return;
@@ -130,7 +127,7 @@ class RemoteMain {
 
         if (type === "device") {
 
-            setNavTitle(this.data["CONFIG"]["devices"][rm_id]["settings"]["label"] + edit_mode);
+            setNavTitle(remoteData.devices.label(rm_id) + edit_mode);
 
             // set vars
             this.logging.default("Write Device Remote Control: " + rm_id);
@@ -149,7 +146,7 @@ class RemoteMain {
             scrollTop();
         } else if (type === "scene") {
 
-            setNavTitle(this.data["CONFIG"]["scenes"][rm_id]["settings"]["label"] + edit_mode);
+            setNavTitle(remoteData.scenes.label(rm_id) + edit_mode);
 
             // set vars
             this.logging.default("Write Scene Remote Control: " + rm_id);
@@ -203,7 +200,7 @@ class RemoteMain {
 
         let preview = false;
         let remote = "";
-        let device_config = this.data["CONFIG"]["devices"][device];
+        let device_config = remoteData.devices.data(device);
 
         let remote_label = "";
         let remote_buttons = [];
@@ -214,9 +211,9 @@ class RemoteMain {
         this.button.default_size();
 
         if (device_config && device_config["remote"]) {
-            remote_display_size = device_config["remote"]["display-size"];
-            remote_label = device_config["settings"]["label"];
-            remote_buttons = device_config["buttons"];
+            remote_display_size = remoteData.devices.display_size(device);
+            remote_label = remoteData.devices.label(device);
+            remote_buttons = remoteData.devices.list_buttons(device);
             this.active_label = remote_label;
         } else {
             if (this.data["STATUS"]["config_errors"]["devices"][device]) {
@@ -335,7 +332,7 @@ class RemoteMain {
                     context_menu += this.tt_button(link_button_left + link_preview, "&lt; +");
                     context_menu += this.tt_button(link_button_right + link_preview, "+ &gt;");
                 }
-                context_menu = "<center>" + context_menu + "</center>";
+                context_menu = "<span style='text-align: center;'>" + context_menu + "</span>";
             }
 
             // create element for definition
@@ -385,18 +382,18 @@ class RemoteMain {
 
     /* write description for device remote */
     device_description(id, device) {
-        let device_data = this.data["CONFIG"]["devices"][device]["settings"];
-        let label = device_data["label"];
-        let descr = device_data["description"];
-        let url = device_data["url"];
+        let device_data = remoteData.devices.data(device);
+        let label = remoteData.devices.label(device);
+        let description = remoteData.devices.description(device);
+        let url = device_data["settings"]["url"];
         if (url) {
-            descr = "<a href=\"" + url + "\" target='_blank'>" + descr + "</a>";
+            description = "<a href=\"" + url + "\" target='_blank'>" + description + "</a>";
         }
 
         let str = "";
         str += "<div class='rm-info'>";
         str += "<media-info id='media_info'></media-info>";
-        str += "<center>" + label + ": " + descr + "</center>";
+        str += "<span style='text-align: center;'>" + label + ": " + description + "</span>";
         str += "</div>";
 
         setTextById(id, str);
@@ -405,13 +402,12 @@ class RemoteMain {
     /* create list of buttons not used in RM definition (for devices) */
     device_not_used(id, device, preview_remote = "") {
 
-        let device_config = this.data["CONFIG"]["devices"][device];
-
-        if (!device_config || !device_config["remote"] || !device_config["buttons"]) {
+        if (!remoteData.devices.exists(device, true)) {
             setTextById(id, "");
             return;
         }
 
+        let device_config = remoteData.devices.data(device);
         let remote = "";
         let not_used = [];
         let sign;
@@ -507,14 +503,12 @@ class RemoteMain {
             elementHidden(id, "device_edit");
             return;
         }
-
-        let device_config = this.data["CONFIG"]["devices"][device];
-
-        if (this.data["STATUS"]["config_errors"]["devices"][device] || !device_config || !device_config["remote"]) {
+        if (this.data["STATUS"]["config_errors"]["devices"][device] || !remoteData.devices.exists(device)) {
             setTextById(id, "");
             return;
         }
 
+        let device_config = remoteData.devices.data(device);
         let remote_visible = device_config["settings"]["visible"];
         let device_method = device_config["interface"]["method"];
         let device_buttons = [];
@@ -531,28 +525,28 @@ class RemoteMain {
         this.button.width = "90px";
 
         let remote = "";
-        remote += "<center class='remote_edit_headline'><b>" + lang("EDIT_REMOTE") + " &quot;" + device_config["settings"]["label"] + "&quot;</b> [" + device + "]</center>";
+        remote += "<span style='text-align:center;' class='remote_edit_headline'><b>" + lang("EDIT_REMOTE") + " &quot;" + remoteData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
         remote += this.basic.edit_line();
 
         // Main Settings
         let edit = "";
-        let images = this.data["CONFIG"]["elements"]["button_images"];
-        let icon = "<img src='icon/" + images[device_config["settings"]["image"]] + "' class='rm-button_image_start' alt='' style='height:40px;width:60px;'>";
+        let images = remoteData.elements.data("button_images");
+        let icon = "<img src='icon/" + images[remoteData.devices.image(device)] + "' class='rm-button_image_start' alt='' style='height:40px;width:60px;'>";
         icon = "<button class='button device_off small' style='height:40px;'><div id='device_edit_button_image'>" + icon + "</div></button>";
         edit += this.tab.start();
         edit += this.tab.row(lang("ID"), "<b>" + device + "</b>");
-        edit += this.tab.row(lang("LABEL") + ":", this.basic.input("edit_label", device_config["settings"]["label"]));
+        edit += this.tab.row(lang("LABEL") + ":", this.basic.input("edit_label", remoteData.devices.label(device)));
         edit += this.tab.line();
-        edit += this.tab.row(icon, this.edit.button_image_select("edit_image", 'device_edit_button_image', device_config["settings"]["image"]));
+        edit += this.tab.row(icon, this.edit.button_image_select("edit_image", 'device_edit_button_image', remoteData.devices.image(device)));
         edit += this.tab.row(lang("EXTERNAL_ID") + ":", this.basic.input("edit_device_id", device_config["settings"]["device_id"]));
-        edit += this.tab.row(lang("DESCRIPTION") + ":&nbsp;", this.basic.input("edit_description", device_config["settings"]["description"]));
+        edit += this.tab.row(lang("DESCRIPTION") + ":&nbsp;", this.basic.input("edit_description", remoteData.devices.description(device)));
 
         edit += this.tab.line();
-        edit += this.tab.row("<center>" +
+        edit += this.tab.row("<span style='text-align: center'>" +
             "<input id='remote_visibility' value='" + remote_visible + "' style='display:none;'>" +
             this.button.edit("apiRemoteChangeVisibility('device','" + device + "','remote_visibility');", lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
             this.button.edit("apiDeviceEdit('" + device + "','edit','description,label,interface,method,device_id,image');", lang("BUTTON_T_SAVE")) + "&nbsp;" +
-            this.button.edit("apiDeviceDelete('" + device + "');", "delete") + "</center>",
+            this.button.edit("apiDeviceDelete('" + device + "');", "delete") + "</span>",
             false
         );
         edit += this.tab.line();
@@ -560,9 +554,11 @@ class RemoteMain {
 
         this.button.width = "120px";
         edit += this.tab.start();
-        if (device !== this.data["CONFIG"]["main-audio"] && device_config["commands"]["definition"]["vol"] && device_config["commands"]["definition"]["vol"] !== undefined) {
-            edit += this.tab.row(lang("AUDIO_SET_AS_MAIN", [this.data["CONFIG"]["main-audio"]]), this.button.edit("setMainAudio('" + device + "');", "set main device", ""));
-        } else if (device === this.data["CONFIG"]["main-audio"]) {
+        let commands_def = remoteData.devices.list_commands(device,"definition");
+        let main_audio = statusCheck_audio.audio_device;
+        if (device !== main_audio && commands_def["vol"] && commands_def["vol"] !== undefined) {
+            edit += this.tab.row(lang("AUDIO_SET_AS_MAIN", [main_audio]), this.button.edit("setMainAudio('" + device + "');", "set main device", ""));
+        } else if (device === main_audio) {
             edit += this.tab.row(lang("AUDIO_IS_MAIN"), false);
         } else {
             edit += this.tab.row(lang("AUDIO_N/A_AS_MAIN"), false);
@@ -589,10 +585,10 @@ class RemoteMain {
         edit += "<p><b>" + lang("METHOD") + ":</b><br/>";
         edit += "<span id='edit_dev_rm_method'>"+device_config["interface"]["method"]+"</span>";
 
-        edit += "<hr/><center>";
+        edit += "<hr/><span style='text-align: center;'>";
         edit += this.button.edit(this.app_name+".device_edit_api_update('',true);", lang("BUTTON_T_RESET")) + "&nbsp;";
         edit += this.button.edit(this.app_name+".device_edit_api_confirm('"+device+"')", lang("BUTTON_T_SAVE"));
-        edit += "</center>";
+        edit += "</span>";
         let edit_info = edit;
 
         // API details
@@ -633,7 +629,7 @@ class RemoteMain {
         myBox.addSheet(lang("REMOTE"), edit_main);
         myBox.addSheet(lang("API_SETTINGS"), edit_info, false);
         myBox.addSheet(lang("API_COMMANDS"), edit_cmd);
-        myBox.addSheet(lang("API_TEST"), edit_test);
+        myBox.addSheet(lang("API_TEST"), edit_test, false);
 
         this.device_edit_api_update(device);
         apiGetConfig_createDropDown(device, this.device_edit_api_commands);
@@ -662,7 +658,7 @@ class RemoteMain {
         let api_key;
 
         if (device !== "") {
-            let device_config = this.data["CONFIG"]["devices"][device];
+            let device_config = remoteData.devices.data(device);
             selected = {
                 "api": device_config["interface"]["api"],
                 "config": device_config["interface"]["device"],
@@ -687,9 +683,9 @@ class RemoteMain {
         let on_change2 = "setTextById('edit_dev_config_field', 'devices/' + document.getElementById('edit_dev_api').value.split('_')[0] + '/<u>' + this.value + '.json</u>');";
         let on_change3 = "setTextById('edit_dev_rm_field', 'remotes/<u>' + this.value + '.json</u>');";
 
-        let api_interface = select("edit_dev_api", "interface", this.data["CONFIG"]["apis"]["list_description"], on_change1, selected["api"], this.input_width);
-        let dev_config = select("edit_dev_config", "device config", this.data["CONFIG"]["apis"]["list_api_configs"]["list"][api_key], on_change2, selected["config"], this.input_width);
-        let rm_definition = select("edit_dev_rm", "remote definition", this.data["CONFIG"]["remotes"]["list"], on_change3, selected["rm"], this.input_width);
+        let api_interface = select("edit_dev_api", "interface", remoteData.elements.data("apis")["list_description"], on_change1, selected["api"], this.input_width);
+        let dev_config = select("edit_dev_config", "device config", remoteData.elements.data("apis")["list_api_configs"]["list"][api_key], on_change2, selected["config"], this.input_width);
+        let rm_definition = select("edit_dev_rm", "remote definition", remoteData.elements.data("remotes")["list"], on_change3, selected["rm"], this.input_width);
 
         setTextById("edit_dev_api_select", api_interface);
         setTextById("edit_dev_config_select", dev_config);
@@ -724,7 +720,6 @@ class RemoteMain {
             return;
         }
 
-        let id = "api_command_select";
         let device = data["DATA"]["device"];
         let commands = data["DATA"][device]["api_commands"];
         let api_url = data["DATA"][device]["interface_details"]["API-Info"];
@@ -753,45 +748,40 @@ class RemoteMain {
             return;
         }
 
-        let device_config = this.data["CONFIG"]["devices"][device];
-        let device_macros = this.data["CONFIG"]["macros"];
-        if (this.data["STATUS"]["config_errors"]["devices"][device] || !device_config || !device_config["remote"]) {
+        let device_config = remoteData.devices.data(device);
+        if (this.data["STATUS"]["config_errors"]["devices"][device] || !remoteData.devices.exists(device, true)) {
             setTextById(id, "");
             return;
         }
 
         this.button.width = "100px";
-        let device_info = device_config["settings"];
 
         // check data for preview
         let remote_definition;
         let remote_display_size;
         let remote_display;
         if (preview_remote === "") {
-            remote_definition = device_config["remote"]["remote"];
+            remote_definition = remoteData.devices.remote(device);
         } else {
-            remote_definition = this.json.get_value(preview_remote, device_config["remote"]["remote"]);
+            remote_definition = this.json.get_value(preview_remote, remoteData.devices.remote(device));
         }
         if (preview_display === "") {
-            remote_display = device_config["remote"]["display"];
+            remote_display = remoteData.devices.display(device);
         } else {
-            remote_display = this.json.get_value(preview_display, device_config["remote"]["display"]);
+            remote_display = this.json.get_value(preview_display, remoteData.devices.remote(device));
         }
         if (remote_display === undefined) {
             remote_display = {};
         }
         if (preview_display_size === "") {
-            remote_display_size = device_config["remote"]["display-size"];
+            remote_display_size = remoteData.devices.display_size(device);
         } else {
-            remote_display_size = this.json.get_value(preview_display_size, device_config["remote"]["display-size"]);
-        }
-        if (remote_display_size === undefined) {
-            remote_display_size = "middle";
+            remote_display_size = this.json.get_value(preview_display_size, remoteData.devices.display_size(device));
         }
 
         // Start remote control edit section
         let remote = "";
-        remote += "<center class='remote_edit_headline'><b>" + lang("EDIT_REMOTE") + " &quot;" + device_info["label"] + "&quot;</b> [" + device + "]</center>";
+        remote += "<span style='text-align:center;' class='remote_edit_headline'><b>" + lang("EDIT_REMOTE") + " &quot;" + remoteData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
         remote += this.basic.edit_line();
 
         // Add GUI to add JSON elements
@@ -820,17 +810,8 @@ class RemoteMain {
         // JSON Edit
         remote += this.basic.container("remote_edit_json", lang("JSON_EDIT"), "<div id='remote-edit-json'></div>", false);
 
-        let macro_on, macro_off = "";
-        if (device in device_macros["device-on"]) {
-            macro_on = JSON.stringify(device_macros["device-on"][device]);
-        } else {
-            macro_on = "[]";
-        }
-        if (device in device_macros["device-off"]) {
-            macro_off = JSON.stringify(device_macros["device-off"][device]);
-        } else {
-            macro_off = "[]";
-        }
+        let macro_on = JSON.stringify(remoteData.macros.data("device-on", device, []));
+        let macro_off = JSON.stringify(remoteData.macros.data("device-off", device, []));
         let macro_edit = lang("MACRO_DEVICE_EDIT");
         macro_edit += this.tab.start();
         macro_edit += this.tab.row(lang("MACRO") + " ON:<br/>", this.basic.input("remote_macro_on", macro_on));
@@ -841,14 +822,14 @@ class RemoteMain {
         this.button.width = "23%";
         remote += "<br/>";
         remote += this.basic.edit_line();
-        remote += "<br/><center>" +
+        remote += "<br/><span style='text-align: center;'>" +
             this.button.edit(this.app_name + ".device_edit_json('" + id + "','" + device + "');" +
                 this.app_name + ".device_remote('" + this.frames_remote[0] + "','" + device + "','remote_json_buttons','remote_json_channel');" +
                 this.app_name + ".device_not_used('" + this.frames_remote[2] + "','" + device + "','remote_json_buttons');", lang("BUTTON_T_RESET")) + "&nbsp;" +
             this.button.edit("apiDeviceJsonEdit('" + device + "','remote_json_buttons','remote_json_display','remote_display_size');", lang("BUTTON_T_SAVE")) + "&nbsp;" +
             this.button.edit(this.app_name + ".preview('device','" + device + "');", lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
             this.button.edit("remoteToggleEditMode(false);" + this.app_name + ".create('" + this.active_type + "','" + device + "');", "stop edit") +
-            "</center><br/>";
+            "</span><br/>";
 
 
         // set framework to edit remote elements
@@ -883,7 +864,7 @@ class RemoteMain {
     /* reload JSON fields for remote and device definition as part of preview */
     device_reload_json(device) {
 
-        let device_config = this.data["CONFIG"]["devices"][device];
+        let device_config = remoteData.devices.data(device);
         let remote_definition = this.json.get_value("remote_json_buttons", device_config["remote"]["remote"])
         let remote_display = this.json.get_value("remote_json_display", device_config["remote"]["display"])
 
@@ -901,16 +882,15 @@ class RemoteMain {
         let preview = false;
         let remote = "";
         let remote_definition = [];
-        let scene_definition = this.data["CONFIG"]["scenes"][scene];
-        let scene_label = scene_definition["settings"]["label"];
+        let scene_definition = remoteData.scenes.data(scene);
+        let scene_label = remoteData.scenes.label(scene);
         this.active_label = scene_label;
         this.display.edit_mode = this.edit_mode;
 
         appCookie.set("remote", "scene::" + scene + "::" + scene_label + "::" + this.edit_mode + "::" + easyEdit + "::" + remoteHints);
         this.logging.info("Set cookie: " + "scene::" + scene + "::" + scene_label + "::" + this.edit_mode + "::" + easyEdit + "::" + remoteHints);
 
-        if (this.data["CONFIG"]["scenes"][scene] && this.data["CONFIG"]["scenes"][scene]["remote"] && this.data["CONFIG"]["scenes"][scene]["remote"]["remote"]) {
-        } else {
+        if (!remoteData.scenes.exists(scene, true)) {
             if (this.data["STATUS"]["config_errors"]["scenes"][scene]) {
                 let errors = this.data["STATUS"]["config_errors"]["scenes"][scene];
                 remote += "<b class='entry_error'>" + lang("REMOTE_CONFIG_ERROR", [scene]) + "</b>";
@@ -924,33 +904,22 @@ class RemoteMain {
             }
             remote += "</div>";
             setTextById(id, remote);
-            appMsg.alert(lang("MISSING_DATA_SCENE", [scene, this.data["CONFIG"]["scenes"][scene]["config"]["remote"] + ".json"]));
+            appMsg.alert(lang("MISSING_DATA_SCENE", [scene, remoteData.scenes.data(scene)["config"]["remote"] + ".json"]));
             this.logging.warn(lang("MISSING_DATA_SCENE"));
-            this.logging.warn(this.data["CONFIG"]["scenes"][scene]);
+            this.logging.warn(remoteData.scenes.data(scene));
             return;
         }
 
         // prepare macros
         let scene_macros = {}
-        let groups = this.data["CONFIG"]["macros"]["groups"];
-        let macros = this.data["CONFIG"]["macros"]["global"];
-        let macros_deviceOn = this.data["CONFIG"]["macros"]["device-on"];
-        let macros_deviceOff = this.data["CONFIG"]["macros"]["device-off"];
+        let macros = remoteData.macros.data("global");
+        let macros_deviceOn = remoteData.macros.data("device-on");
+        let macros_deviceOff = remoteData.macros.data("device-off");
 
-        for (let key in scene_definition["remote"]["macro-scene"]) {
-            macros[key] = scene_definition["remote"]["macro-scene"][key];
-        }
-        if (scene_definition["remote"]["macro-scene"] !== undefined) {
-            scene_macros["scene-on"] = scene_definition["remote"]["macro-scene-on"];
-            scene_macros["scene-off"] = scene_definition["remote"]["macro-scene-off"];
-        }
-
-        if (scene_macros["scene-on"] === undefined || scene_macros["scene-on"] === []) {
-            scene_macros["scene-on"] = {};
-        }
-        if (scene_macros["scene-off"] === undefined || scene_macros["scene-off"] === []) {
-            scene_macros["scene-off"] = {};
-        }
+        scene_macros["scene"] = remoteData.macros.data("scene", scene);
+        scene_macros["scene-on"] = remoteData.macros.data("scene-on", scene, []);
+        scene_macros["scene-off"] = remoteData.macros.data("scene-off", scene, []);
+        for (let key in scene_macros["scene"]) { macros[key] = scene_macros["scene"][key]; }
 
         // check if preview
         if (preview_remote === "") {
@@ -960,7 +929,6 @@ class RemoteMain {
             preview = true;
         }
 
-        let context_menu = "";
         let remote_display;
         let remote_display_size;
 
@@ -985,7 +953,7 @@ class RemoteMain {
         // include edit button
         let edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"scene\",\"" + scene + "\");";
         if (!this.edit_mode && easyEdit) {
-            remote += "<div class='remote-edit-button' onclick='" + edit_cmd + "'><img src='icon/edit.png' style='height:20px;width:20px;'></div>";
+            remote += "<div class='remote-edit-button' onclick='" + edit_cmd + "'><img src='icon/edit.png' style='height:20px;width:20px;' alt=''></div>";
         }
 
         // create remote
@@ -1073,7 +1041,7 @@ class RemoteMain {
                     context_menu += this.tt_button(link_button_left + link_preview, "&lt; +");
                     context_menu += this.tt_button(link_button_right + link_preview, "+ &gt;");
                 }
-                context_menu = "<center>" + context_menu + "</center>";
+                context_menu = "<span style='text-align: center;'>" + context_menu + "</span>";
             }
 
             // create element per definition
@@ -1165,15 +1133,14 @@ class RemoteMain {
     scene_channels(id, scene, preview_channel = "") {
 
         let remote = "";
-        let scene_data = this.data["CONFIG"]["scenes"][scene];
-        if (!scene_data || !scene_data["remote"] || !scene_data["remote"]["remote"]) {
+        let scene_data = remoteData.scenes.data(scene);
+        if (!remoteData.scenes.exists(scene, true)) {
             setTextById(id, "");
             return;
         }
-        let scene_name = scene_data["settings"]["label"];
+        let scene_name = remoteData.scenes.label(scene);
 
         let macros;
-        let preview;
 
         if (preview_channel === "") {
             macros = scene_data["remote"]["macro-channel"];
@@ -1191,7 +1158,7 @@ class RemoteMain {
             let cmd = "channel_" + i; //channels[i];
             let next_button = this.button.channel(cmd, channels[i], scene_name, macros[channels[i]], "", "");
             let context_menu = "[" + i + "] <b>" + cmd + "</b><br/><br/><i>" + lang("CHANNEL_USE_JSON") + "</i><br/>&nbsp;";
-            context_menu = "<center>" + context_menu + "</center>";
+            context_menu = "<span style='text-align: center;'>" + context_menu + "</span>";
             this.active_channels.push(cmd);
 
             if (this.edit_mode) {
@@ -1206,15 +1173,15 @@ class RemoteMain {
 
     /* write description for device remote */
     scene_description(id, scene) {
-        let scene_info = this.data["CONFIG"]["scenes"][scene]["settings"];
-        let label = scene_info["label"];
-        let descr = scene_info["description"];
+        let scene_info = remoteData.scenes.data(scene)["settings"];
+        let label = remoteData.scenes.label(scene);
+        let description = remoteData.scenes.description(scene);
         let url = scene_info["url"];
         if (url) {
-            descr = "<a href=\"" + url + "\" target='_blank'>" + descr + "</a>";
+            description = "<a href=\"" + url + "\" target='_blank'>" + description + "</a>";
         }
         let str = "<div class='rm-info'>";
-        str += "<center>" + label + ": " + descr + "</center>";
+        str += "<span style='text-align: center'>" + label + ": " + description + "</span>";
         str += "</div>";
         setTextById(id, str);
     }
@@ -1229,7 +1196,7 @@ class RemoteMain {
             return;
         }
 
-        if (this.data["STATUS"]["config_errors"]["scenes"][scene] || !this.data["CONFIG"]["scenes"][scene]["settings"]) {
+        if (this.data["STATUS"]["config_errors"]["scenes"][scene] || !remoteData.scenes.exists(scene, true)) {
             setTextById(id, "");
             return;
         }
@@ -1237,8 +1204,7 @@ class RemoteMain {
         this.button.width = "90px";
         this.basic.input_width = "180px";
 
-        let scene_info = this.data["CONFIG"]["scenes"][scene]["settings"];
-        let remote_info = this.data["CONFIG"]["devices"];
+        let scene_info = remoteData.scenes.data(scene)["settings"];
         let remote = "";
 
         this.dialog_edit_main = function () {
@@ -1250,13 +1216,13 @@ class RemoteMain {
             edit += this.tab.row(lang("DESCRIPTION") + ":&nbsp;", this.basic.input("edit_description", scene_info["description"]));
             edit += this.tab.row(lang("SCENE_IMAGE") + ":&nbsp;", this.edit.image_select("edit_image", scene_info["image"]));
             edit += this.tab.line();
-            edit += this.tab.row("<div id='scene_edit_header_image' style='align:center;'></div>", false);
+            edit += this.tab.row("<div id='scene_edit_header_image' style='text-align:center;'></div>", false);
             edit += this.tab.line();
-            edit += this.tab.row("<center>" +
+            edit += this.tab.row("<span style='text-align: center;'>" +
                 "<input id='scene_visibility' value='" + scene_info["visible"] + "' style='display:none;'>" +
                 this.button.edit("apiRemoteChangeVisibility('scene','" + scene + "','scene_visibility');", lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
                 this.button.edit("apiSceneEdit('" + scene + "','edit','description,label,image');", lang("BUTTON_T_SAVE"), "") + "&nbsp;" +
-                this.button.edit("apiSceneDelete('" + scene + "');", lang("BUTTON_T_DELETE"), "") + "</center>",
+                this.button.edit("apiSceneDelete('" + scene + "');", lang("BUTTON_T_DELETE"), "") + "</span>",
                 false
             );
             edit += this.tab.end();
@@ -1268,7 +1234,6 @@ class RemoteMain {
             edit += this.tab.row("Remote:&nbsp;&nbsp;", this.data["CONFIG"]["scenes"][scene]["config"]["remote"] + ".json");
             edit += this.tab.row("Devices:", JSON.stringify(this.data["CONFIG"]["scenes"][scene]["remote"]["devices"]).replace(/,/g, ", "));
             edit += this.tab.end();
-            let edit_info = edit;
             return edit;
         }
 
@@ -1280,7 +1245,7 @@ class RemoteMain {
         }
 
         // create frame
-        remote += "<center class='remote_edit_headline'><b>" + lang("EDIT_SCENE") + " &quot;" + scene_info["label"] + "&quot;</b> [" + scene + "]</center>";
+        remote += "<span style='text-align:center;' class='remote_edit_headline'><b>" + lang("EDIT_SCENE") + " &quot;" + remoteData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
         remote += this.basic.edit_line();
         remote += this.basic.container("scene_main", lang("SETTINGS_SCENES"), "<div id='scene-edit-main'></div>", true);
         setTextById(id, remote);
@@ -1303,15 +1268,13 @@ class RemoteMain {
             return;
         }
 
-        if (this.data["STATUS"]["config_errors"]["scenes"][scene] || !this.data["CONFIG"]["scenes"][scene]["settings"]) {
+        if (this.data["STATUS"]["config_errors"]["scenes"][scene] || !remoteData.scenes.exists(scene, true)) {
             setTextById(id, "");
             return;
         }
 
         let preview = false;
-        let scene_remote = this.data["CONFIG"]["scenes"][scene]["remote"];
-        let scene_info = this.data["CONFIG"]["scenes"][scene]["settings"];
-        let remote_info = this.data["CONFIG"]["devices"];
+        let scene_remote = remoteData.scenes.data(scene)["remote"];
 
         // prepare field values (not sure, if macro-scene* required)
         let json_edit_fields = ["remote", "devices", "display", "display-size", "macro-channel", "macro-scene-on", "macro-scene-off", "macro-scene"];
@@ -1359,13 +1322,13 @@ class RemoteMain {
 
         // frame
         let remote = "";
-        remote += "<center class='remote_edit_headline'><b>" + lang("EDIT_SCENE") + " &quot;" + scene_info["label"] + "&quot;</b> [" + scene + "]</center>";
+        remote += "<span style='text-align:center;' class='remote_edit_headline'><b>" + lang("EDIT_SCENE") + " &quot;" + remoteData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
         remote += this.basic.edit_line();
         remote += this.basic.container("edit_elements", lang("EDIT_ELEMENTS"), "<div id='scene-edit-elements'></div>", false);
         remote += this.basic.container("edit_json_all", lang("EDIT_JSON"), "<div id='scene-edit-json'></div>", false);
         remote += this.basic.edit_line();
         this.button.width = "23%";
-        remote += "<br/><center>" +
+        remote += "<br/><span style='text-align: center;'>" +
             this.button.edit(this.app_name + ".scene_edit_json('" + id + "','" + scene + "');" +
                 this.app_name + ".scene_remote(  '" + this.frames_remote[0] + "','" + scene + "','json::remote','json::display');" +
                 this.app_name + ".scene_channels('" + this.frames_remote[2] + "','" + scene + "','json::macro-channel');",
@@ -1376,7 +1339,7 @@ class RemoteMain {
                 this.app_name + ".scene_channels('" + this.frames_remote[2] + "','" + scene + "','json::macro-channel');",
                 lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
             this.button.edit("remoteToggleEditMode(false);" + this.app_name + ".create('" + this.active_type + "','" + scene + "');", lang("BUTTON_T_STOP_EDIT")) +
-            "</center><br/>";
+            "</span><br/>";
 
         setTextById(id, remote);
 
@@ -1424,11 +1387,10 @@ class RemoteMain {
     }
 
     /* reload JSON fields for remote and device definition as part of preview */
-    scene_reload_json(scenes) {
+    scene_reload_json(scene) {
 
-        let scene_config = this.data["CONFIG"]["scenes"][scenes];
-        let remote_definition = this.json.get_value("json::remote", scene_config["remote"]["remote"])
-        let remote_display = this.json.get_value("json::display", scene_config["remote"]["display"])
+        let remote_definition = this.json.get_value("json::remote", remoteData.scenes.remote(scene))
+        let remote_display = this.json.get_value("json::display", remoteData.scenes.display(scene))
 
         const myJson = new RemoteJsonEditing("scene-edit-json", "default", "width:100%;height:150px;");
         myJson.create("scene-edit-display", "json::display", remote_display);
@@ -1447,7 +1409,6 @@ class RemoteMainEditDialogs {
         this.app_name = name;
         this.remote = remote;
         this.remote_type = remote_type;
-        this.templates = {};
 
         this.preview_remote = "";
         this.preview_display = "";
@@ -1471,7 +1432,6 @@ class RemoteMainEditDialogs {
     /* Update data from parent */
     update(data, preview_remote, preview_display, preview_display_size, preview_channel) {
         this.data = data;
-        this.templates = this.data["CONFIG"]["templates"]["list"];
         this.preview_remote = preview_remote;
         this.preview_display = preview_display;
         this.preview_display_size = preview_display_size;
@@ -1497,13 +1457,13 @@ class RemoteMainEditDialogs {
         let color_models = this.advanced.color_picker_models;
 
         let display_sizes = undefined;
-        let json_preview_values ={};
         let json_edit_values = {};
 
         let devices = {};
         let device_config = {};
         let devices_color_picker = {};
         let device_display = {};
+        let device_buttons = [];
         let devices_groups = {};
         let device_macro = {};
         let devices_slider = {};
@@ -1520,56 +1480,55 @@ class RemoteMainEditDialogs {
         let remote_display_size = "";
 
         if (this.remote_type === "device") {
-            //let device_macros = this.data["CONFIG"]["macros"];
-            //let device_info = device_config["settings"];
-            //let link_preview = this.app_name + ".rm_device.preview('" + device + "');"
-            device_config = this.data["CONFIG"]["devices"][device];
+            device_config = remoteData.devices.data(device);
+            device_buttons = remoteData.devices.list_buttons(device);
             display_sizes = this.display.sizes();
             link_template = this.app_name + ".rm_device.import_templates('" + device + "','add_template');";
-            remote_definition = device_config["remote"]["remote"];
-            remote_display = device_config["remote"]["display"];
-            remote_display_size = device_config["remote"]["display-size"];
+            remote_definition = remoteData.devices.remote(device);
+            remote_display = remoteData.devices.display(device);
+            remote_display_size = remoteData.devices.display_size(device);
 
         }
         else if (this.remote_type === "scene") {
-            //let scene_info = this.data["CONFIG"]["scenes"][scene]["settings"];
-            //let link_preview = this.app_name + ".rm_scene.preview('" + scene + "');";
             scene = device;
-            scene_remote = this.data["CONFIG"]["scenes"][scene]["remote"];
+            scene_remote = remoteData.scenes.data(scene)["remote"];
             display_sizes = this.display.sizes();
 
             for (let key in remote_info) {
-                devices[key] = "Device: " + remote_info[key]["settings"]["label"];
-                devices_groups[key] = "Device: " + remote_info[key]["settings"]["label"];
-                device_macro["device_" + key] = "Device: " + remote_info[key]["settings"]["label"];
-                device_display[key] = remote_info[key]["settings"]["label"];
+                let label = remoteData.devices.label(key);
+                devices[key] = "Device: " + label;
+                devices_groups[key] = "Device: " + label;
+                device_macro["device_" + key] = "Device: " + label;
+                device_display[key] = label;
 
-                if (this.edit.device_has_ranges(key)) {
-                    devices_slider[key] = "Device: " + remote_info[key]["settings"]["label"];
+                if (remoteData.devices.has_ranges(key)) {
+                    devices_slider[key] = "Device: " + label;
                 }
-                if (this.edit.device_has_colors(key)) {
-                    devices_color_picker[key] = "Device: " + remote_info[key]["settings"]["label"];
+                if (remoteData.devices.has_colors(key)) {
+                    devices_color_picker[key] = "Device: " + label;
                 }
             }
 
-            for (let key in this.data["CONFIG"]["macros"]["groups"]) {
-                let label_long = "Group: " + this.data["CONFIG"]["macros"]["groups"][key]["description"] + " (" + key + ")"
+            for (let i in remoteData.device_groups.list_all()) {
+                let key = remoteData.device_groups.list_all()[i];
+                let label_long = "Group: " + remoteData.device_groups.description(key) + " (" + key + ")"
                 let label_short = "Group: " + key;
-                if (this.data["CONFIG"]["macros"]["groups"][key]["description"]) {
+                if (remoteData.device_groups.description(key)) {
                     device_macro["group_" + key] = label_long;
                     devices_groups["group_" + key] = label_short;
                 } else {
                     device_macro["group_" + key] = label_short;
                     devices_groups["group_" + key] = label_short;
                 }
-                if (this.edit.group_has_ranges(key)) {
+                if (remoteData.device_groups.has_ranges(key)) {
                     devices_slider["group_"+key] = label_long;
                 }
-                if (this.edit.group_has_colors(key)) {
+                if (remoteData.device_groups.has_colors(key)) {
                     devices_color_picker["group_"+key] = label_long;
                 }
             }
-            for (let key in this.data["CONFIG"]["macros"]) {
+            for (let i in remoteData.macros.list_all()) {
+                let key = remoteData.macros.list_all()[i];
                 if (key !== "groups") {
                     device_macro["macro_" + key] = "Macro: " + key;
                 }
@@ -1603,7 +1562,7 @@ class RemoteMainEditDialogs {
             edit += this.tab.start();
             edit += this.tab.row(
                 "Description:",
-                this.basic.input("add_toggle_descr", "")
+                this.basic.input("add_toggle_description", "")
             );
             edit += this.tab.row(
                 "Value:",
@@ -1619,19 +1578,21 @@ class RemoteMainEditDialogs {
             );
             edit += this.tab.line();
             edit += this.tab.row(
-                this.button.edit(this.app_name + ".rm_device.add_toggle('" + device + "', '" + device + "','add_toggle_descr','add_toggle_value','add_toggle_on','add_toggle_off');", lang("BUTTON_T_ADD"), "")
+                this.button.edit(this.app_name + ".rm_device.add_toggle('" + device + "', '" + device + "','add_toggle_description','add_toggle_value','add_toggle_on','add_toggle_off');", lang("BUTTON_T_ADD"), "")
             );
             edit += this.tab.end();
         }
         else if (this.remote_type === "device" && element === "color_picker") {
 
             let select_color_values = [];
-            for (let i = 0; i < device_config["commands"]["set"].length; i++) {
-                let key = device_config["commands"]["set"][i];
-                if (device_config["commands"]["definition"][key] !== undefined && device_config["commands"]["definition"][key]["values"] !== undefined &&
-                    device_config["commands"]["definition"][key]["values"]["min"] !== undefined && device_config["commands"]["definition"][key]["values"]["max"] !== undefined) {
+            let commands_set = remoteData.devices.list_commands(device, "set");
+            let commands_def = remoteData.devices.list_commands(device, "definition");
+            for (let i = 0; i < commands_set.length; i++) {
+                let key = commands_set[i];
+                if (commands_def[key] !== undefined && commands_def[key]["values"] !== undefined &&
+                    commands_def[key]["values"]["min"] !== undefined && commands_def[key]["values"]["max"] !== undefined) {
                     select_color_values.push(key);
-                } else if (device_config["commands"]["definition"][key] !== undefined && device_config["commands"]["definition"][key]["type"] === "list") {
+                } else if (commands_def[key] !== undefined && commands_def[key]["type"] === "list") {
                     select_color_values.push(key);
                 }
             }
@@ -1661,10 +1622,9 @@ class RemoteMainEditDialogs {
         }
         else if (this.remote_type === "device" && element === "slider") {
 
-
-            let param = this.edit.device_has_ranges(device, true);
             edit += this.tab.start();
-            if (this.edit.device_has_ranges(device)) {
+            if (remoteData.devices.has_ranges(device)) {
+                let param = remoteData.devices.has_ranges(device, true);
                 let onchange_slider_param = this.app_name + ".rm_device.prepare_slider('" + device + "','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax');";
 
                 edit += this.tab.row(
@@ -1705,7 +1665,7 @@ class RemoteMainEditDialogs {
 
             edit = this.tab.start();
             edit += this.tab.row(
-                this.basic.select_array("add_button_select", "defined button", device_config["buttons"], onchange_default, ""),
+                this.basic.select_array("add_button_select", "defined button", device_buttons, onchange_default, ""),
                 this.button.edit(this.app_name + ".rm_device.add_button_select_image('" + device + "','add_button_select', 'button-image-select','add_button_image');", lang("BUTTON_T"), "")
             );
             let button_select = this.tab.start("");
@@ -1739,11 +1699,11 @@ class RemoteMainEditDialogs {
 
             this.button.width = "90px";
             edit = this.tab.start();
-            edit += this.tab.row("<center>" +
+            edit += this.tab.row("<span style='text-align:center;'>" +
                 this.button.edit(this.app_name + ".rm_device.add_button( '" + device + "','.');", lang("BUTTON_T_EMPTY"), "") + "&nbsp; " +
                 this.button.edit(this.app_name + ".rm_device.add_button( '" + device + "','LINE');", lang("BUTTON_T_LINE"), "") + "&nbsp; " +
                 this.button.edit(this.app_name + ".rm_device.add_display('" + device + "');", lang("BUTTON_T_DISPLAY"), "") + "&nbsp; " +
-                "</center>",
+                "</span>",
                 false
             );
             edit += this.tab.end();
@@ -1788,10 +1748,9 @@ class RemoteMainEditDialogs {
             edit += this.tab.end();
         }
         else if (this.remote_type === "device" && element === "template") {
-            let templates = this.edit.template_list("device");
             edit = this.tab.start();
             edit += this.tab.row(
-                this.edit.template_select("add_template", lang("BUTTON_T_TEMPLATE"), templates),
+                this.edit.template_select("add_template", lang("BUTTON_T_TEMPLATE"), this.edit.template_list("device")),
                 this.button.edit(link_template, lang("BUTTON_T_CLONE"), "")
             );
             edit += this.tab.end();
@@ -1819,7 +1778,7 @@ class RemoteMainEditDialogs {
             edit += this.tab.row(
                 "Description:",
                 "<div id='toggle_device_descr'>" +
-                this.basic.input("add_toggle_descr", "") +
+                this.basic.input("add_toggle_description", "") +
                 "</div>"
             );
             edit += this.tab.row(
@@ -1836,7 +1795,7 @@ class RemoteMainEditDialogs {
             );
             edit += this.tab.line();
             edit += this.tab.row(
-                this.button.edit(this.app_name + ".rm_scene.add_toggle('" + scene + "','add_toggle_device','add_toggle_descr','add_toggle_value','add_toggle_on','add_toggle_off');", lang("BUTTON_T_ADD"), "")
+                this.button.edit(this.app_name + ".rm_scene.add_toggle('" + scene + "','add_toggle_device','add_toggle_description','add_toggle_value','add_toggle_on','add_toggle_off');", lang("BUTTON_T_ADD"), "")
             );
             edit += this.tab.end();
 
@@ -1998,11 +1957,10 @@ class RemoteMainEditDialogs {
             this.button.width = "100px";
             edit = this.tab.start();
             edit += this.tab.row(
-                this.edit.template_select("add_template", lang("BUTTON_T_TEMPLATE"), this.templates),
+                this.edit.template_select("add_template", lang("BUTTON_T_TEMPLATE"), this.edit.template_list()),
                 this.button.edit(link_template, lang("BUTTON_T_CLONE"), "")
             );
             edit += this.tab.end();
-            let edit_template = edit;
         }
         else if (this.remote_type === "scene" && element === "delete") {
             edit = "&nbsp;";
@@ -2015,9 +1973,6 @@ class RemoteMainEditDialogs {
         }
         else if (this.remote_type === "scene" && element === "header") {
 
-            let check_header = JSON.stringify(json_edit_values["remote"]);
-            //let header_exists = (check_header.indexOf("HEADER-IMAGE") >= 0);
-            //let header_with_toggle = (check_header.indexOf("HEADER-IMAGE||toggle") >= 0);
             let header_on_change = this.app_name + ".update_fields('" + scene + "');";
 
             let add_header_img = "<div id='header_button_img'></div>";
@@ -2075,7 +2030,7 @@ class RemoteMainEditDialogs {
         let header_toggle_value = "<i>" + lang("SELECT_DEV_FIRST") + "</id>";
         let header_toggle_on = "<i>" + lang("SELECT_DEV_FIRST") + "</id>";
         let header_toggle_off = "<i>" + lang("SELECT_DEV_FIRST") + "</id>";
-        let header_toggle_description = getValueById("add_toggle_descr");
+        let header_toggle_description = getValueById("add_toggle_description");
 
         if (header_with_toggle) {
             add_header_img_t = "<i>active</i>";
@@ -2085,10 +2040,10 @@ class RemoteMainEditDialogs {
             add_header_img_d = "<i>no header image yet</i>";
         }
 
-        if (header_toggle_device !== "" && this.data["CONFIG"]["devices"][header_toggle_device]) {
-            let device_config = this.data["CONFIG"]["devices"][header_toggle_device];
-            let device_name = this.data["CONFIG"]["devices"][header_toggle_device]["settings"]["description"];
-            let global_macros = this.data["CONFIG"]["macros"]["global"];
+        if (header_toggle_device !== "" && remoteData.devices.exists(header_toggle_device)) {
+            let device_config = remoteData.devices.data(header_toggle_device);
+            let device_name = remoteData.devices.description(header_toggle_device);
+            let global_macros = remoteData.macros.data("global");
             let device_on_off = {};
             let device_values = {};
 
@@ -2111,14 +2066,14 @@ class RemoteMainEditDialogs {
             header_toggle_description = "Toggle " + device_name + " (" + header_toggle_device + ")";
 
             setTextById("header_toggle_descr", header_toggle_description);
-        } else if (!this.data["CONFIG"]["devices"][header_toggle_device] && header_toggle_device !== undefined) {
+        } else if (!remoteData.devices.exists && header_toggle_device !== undefined) {
             appMsg.alert(lang("TOGGLE_DEVICE_DOESNT_EXIST", [header_toggle_device]));
         }
 
         setTextById("header_button_img", add_header_img);
         setTextById("header_button_img_t", add_header_img_t);
         setTextById("header_button_img_d", add_header_img_d);
-        setValueById("add_toggle_descr", header_toggle_description);
+        setValueById("add_toggle_description", header_toggle_description);
         setTextById("header_toggle_value", header_toggle_value);
         setTextById("header_toggle_on", header_toggle_on);
         setTextById("header_toggle_off", header_toggle_off);
@@ -2133,6 +2088,7 @@ class RemoteMainEditElements {
         this.remote = remote;
         this.app_name = name;
         this.data = this.remote.data;
+        this.edit_mode = this.remote.edit_mode;
 
         this.basic = new RemoteElementsEdit(this.app_name + ".basic");
         this.advanced = new RemoteControlAdvanced(this.app_name + ".advanced", this);
@@ -2149,14 +2105,13 @@ class RemoteMainEditElements {
     /* get latest data from remote main class */
     update() {
         this.data = this.remote.data;
+        this.edit_mode = this.remote.edit_mode;
     }
 
     /* return drop-down with scene images */
     button_image_select(source_id, target_id, selected = "", width = "") {
-        this.update();
-
         let list = {};
-        let images = this.data["CONFIG"]["elements"]["button_images"];
+        let images = remoteData.elements.data("button_images");
 
         for (let key in images) {
             list[key] = key;
@@ -2167,12 +2122,8 @@ class RemoteMainEditElements {
 
     /* header-image preview */
     button_image_preview(source_id, target_id) {
-        this.update();
-
-        let images = this.data["CONFIG"]["elements"]["button_images"];
+        let images = remoteData.elements.data("button_images");
         let selected = getValueById(source_id);
-
-        console.error(selected);
 
         if (selected && selected.indexOf("_") >= 0) { selected = selected.split("_")[1]; }
 
@@ -2187,11 +2138,10 @@ class RemoteMainEditElements {
 
     /* return drop-down with buttons */
     button_select(id, device = "", remote_definition = {}) {
-        this.update();
 
         let list = {};
-
-        if (device !== "" && device in this.data["CONFIG"]["devices"]) {
+        remote_definition = remote_definition["remote"];
+        if (device !== "" && device in remoteData.devices.list_all()) {
             let a;
             let count1 = 0;
 
@@ -2206,7 +2156,7 @@ class RemoteMainEditElements {
             }
         }
 
-        if (device !== "" && device in this.data["CONFIG"]["scenes"]) {
+        if (device !== "" && device in remoteData.scenes.list_all()) {
             let a = "";
             let button_list = remote_definition;
             for (let i = 0; i < button_list.length; i++) {
@@ -2223,12 +2173,10 @@ class RemoteMainEditElements {
 
     /* return drop-down with available commands */
     command_select(id, device = "") {
-        this.update();
-
         let list = {};
         let button_list;
-        if (device !== "" && device in this.data["CONFIG"]["devices"]) {
-            button_list = this.device_list_buttons(device);
+        if (device !== "" && remoteData.devices.list_all()) {
+            button_list = remoteData.devices.list_buttons(device);
             for (let i = 0; i < button_list.length; i++) {
                 list[device + "_" + button_list[i]] = button_list[i];
             }
@@ -2238,14 +2186,12 @@ class RemoteMainEditElements {
 
     /* return drop-down with commands to be recorded */
     command_select_record(id, device = "") {
-        this.update();
-
         let list = {};
-        let device_buttons = [];
-        if (device !== "" && device in this.data["CONFIG"]["devices"]) {
+        if (device !== "" && device in remoteData.devices.list_all()) {
             let button_list = [];
-            for (let i = 0; i < this.data["CONFIG"]["devices"][device]["remote"].length; i++) {
-                button_list.push(this.data["CONFIG"]["devices"][device]["remote"][i]);
+            let remote_definition = remoteData.devices.remote();
+            for (let i = 0; i < remote_definition.length; i++) {
+                button_list.push(remote_definition[i]);
             }
             button_list.sort();
 
@@ -2260,11 +2206,10 @@ class RemoteMainEditElements {
 
     /* return drop-down with display values */
     device_display_select(device, id) {
-        this.update();
-
-        let device_info = this.data["CONFIG"]["devices"][device]["commands"]["get"];
-        if (this.data["CONFIG"]["devices"][device]["commands"]["definition"] && this.data["CONFIG"]["devices"][device]["commands"]["definition"]["power"]) {
-            let power = this.data["CONFIG"]["devices"][device]["commands"]["definition"]["power"];
+        let device_data = remoteData.devices.data(device);
+        let device_info = remoteData.devices.list_commands(device,"get");
+        if (device_data["commands"]["definition"] && device_data["commands"]["definition"]["power"]) {
+            let power = device_data["commands"]["definition"]["power"];
             if (power["auto_off"] && power["auto_off"] > 0) {
                 if (device_info.indexOf("auto-power-off") === -1) {
                     device_info.push("auto-power-off");
@@ -2277,169 +2222,61 @@ class RemoteMainEditElements {
 
     /* check if device has ranges - for slider option */
     device_has_ranges(device, commands = false) {
-        this.update();
-
-        let has_ranges = false;
-        let range_cmd = [];
-        let cmd_definition = this.data["CONFIG"]["devices"][device]["commands"]["definition"];
-        let cmd_send = this.data["CONFIG"]["devices"][device]["commands"]["set"]
-        Object.keys(cmd_definition).forEach(key => {
-            let param = cmd_definition[key];
-            let send = (cmd_send.indexOf(key) >= 0);
-            if (send && param["values"] !== undefined && param["values"]["max"] !== undefined && param["values"]["min"] !== undefined) {
-                has_ranges = true;
-                range_cmd.push(key);
-            }
-        });
-
-        if (!commands) {
-            return has_ranges;
-        } else {
-            return range_cmd;
-        }
-    }
+        return remoteData.devices.has_ranges(device, commands);
+    } // to be replaced: remoteData.devices.has_ranges(group, commands)
 
     /* check if device has color settings - for color picker options */
     device_has_colors(device, commands = false) {
-        this.update();
-
-        let has_colors = false;
-        let color_cmd = [];
-        let cmd_definition = this.data["CONFIG"]["devices"][device]["commands"]["definition"];
-        Object.keys(cmd_definition).forEach(key => {
-            if (key.toLowerCase().indexOf("color") >= 0) { has_colors = true; color_cmd.push(key); }
-            if (key.toLowerCase().indexOf("brightness") >= 0) { has_colors = true; color_cmd.push(key); }
-        });
-        if (!commands) {
-            return has_colors;
-        } else {
-            return color_cmd;
-        }
-    }
+        return remoteData.devices.has_colors(device, commands);
+    } // to be replaced: remoteData.devices.has_colors(group, commands)
 
     /* return list of buttons for a device */
     device_list_buttons(device) {
-        this.update();
-
-        if (this.data["CONFIG"]["devices"][device]) {
-            return this.data["CONFIG"]["devices"]["buttons"];
-        } else {
-            return ["error:" + device];
-        }
-    }
+        return remoteData.devices.list_buttons(device);
+    } // to be replaced: remoteData.device_groups.list_buttons(device)
 
     /* return list of devices of a group */
-    group_list_devices(group, description=false) {
-        this.update();
-
-        if (!this.data["CONFIG"]["macros"]["groups"][group]) {
-            this.logging.error("Group '"+group+"' doesn't exist.");
-            return [];
-        }
-        if (description) {
-            let list = {};
-            let devices = this.data["CONFIG"]["macros"]["groups"][group]["devices"];
-            for (let key in devices) {
-                let label = this.data["CONFIG"]["devices"][devices[key]]["settings"]["label"];
-            }
-        }
-        else {
-            return this.data["CONFIG"]["macros"]["groups"][group]["devices"];
-        }
-    }
+    group_list_devices(group) {
+        return remoteData.device_groups.list_devices(group);
+    } // to be replaced: remoteData.device_groups.list_devices(group)
 
     /* create a list of the buttons all group devices hav in common */
     group_list_buttons(group) {
-        this.update();
-
-        const group_data = this.data["CONFIG"]["macros"]["groups"][group];
-        if (group_data) {
-            let devices = group_data["devices"];
-            let buttonArrays = devices.map(device => this.data["CONFIG"]["devices"][device]["buttons"]);
-            return buttonArrays.reduce((acc, arr) => acc.filter(btn => arr.includes(btn)));
-        } else {
-            return ["error:" + group];
-        }
-    }
+        return remoteData.device_groups.list_buttons(group);
+    } // to be replaced: remoteData.device_groups.list_buttons(group)
 
     /* create a list of the commands all group devices hav in common */
     group_list_commands(group, get_set) {
-        this.update();
-
-        const group_data = this.data["CONFIG"]["macros"]["groups"][group];
-        if (group_data && (get_set === "get" || get_set === "set")) {
-            let devices = group_data["devices"];
-            let buttonArrays = devices.map(device => this.data["CONFIG"]["devices"][device]["commands"][get_set]);
-            return buttonArrays.reduce((acc, arr) => acc.filter(btn => arr.includes(btn)));
-        } else {
-            return ["error:" + group + "|" + get_set];
-        }
-    }
+        remoteData.device_groups.list_commands(group, get_set);
+    } // to be replaced: remoteData.device_groups.list_commands(group, get_set)
 
     /* check if device has ranges - for slider option */
     group_has_ranges(group, commands) {
-        this.update();
+        return remoteData.device_groups.has_ranges(group, commands);
+    } // to be replaced: remoteData.device_groups.has_ranges(group, commands)
 
-        let has_ranges_count = 0;
-        let has_ranges_cmd = [];
-
-        if (!this.data["CONFIG"]["macros"]["groups"][group]) {
-            this.logging.error("Group '"+group+"' doesn't exist.");
-            return false;
-        }
-        let devices = this.data["CONFIG"]["macros"]["groups"][group]["devices"];
-        for (let key in devices) {
-            if (!commands && this.device_has_ranges(devices[key])) { has_ranges_count += 1; }
-            else { has_ranges_cmd.push(this.device_has_ranges(devices[key], true)); }
-        }
-        if (!commands) {
-            return (devices.length === has_ranges_count);
-        } else {
-            return has_ranges_cmd.reduce((acc, arr) => acc.filter(btn => arr.includes(btn)));
-        }
-    }
-
-    group_has_colors(group, commands) {
-        this.update();
-
-        let has_colors_count = 0;
-        let has_colors_cmd = [];
-        if (!this.data["CONFIG"]["macros"]["groups"][group]) {
-            this.logging.error("Group '"+group+"' doesn't exist.");
-            return false;
-        }
-        let devices = this.data["CONFIG"]["macros"]["groups"][group]["devices"];
-        for (let key in devices) {
-            if (!commands && this.device_has_colors(devices[key])) { has_colors_count += 1; }
-            else { has_colors_cmd.push(this.device_has_colors(devices[key], true)); }
-        }
-        if (!commands) {
-            return (devices.length === has_colors_count);
-        } else {
-            return has_colors_cmd.reduce((acc, arr) => acc.filter(btn => arr.includes(btn)));
-        }
-    }
     /* check if devices of the group hav color settings - for color picker options */
+    group_has_colors(group, commands) {
+        return remoteData.device_groups.has_colors(group, commands);
+    } // to be replaced: remoteData.device_groups.has_colors(group, commands)
 
     /* return drop-down with scene images */
     image_select(id, selected = "") {
         this.update();
 
         let list = {};
-        let images = this.data["CONFIG"]["elements"]["scene_images"];
+        let images = remoteData.elements.data("scene_images");
 
         for (let key in images) {
             list[key] = key;
         }
 
-        return this.basic.select(id, "header-image", list, this.app_name + ".image_preview('" + id + "');", selected);
+        return this.basic.select(id, "header-image", list, this.app_name + ".image_preview();", selected);
     }
 
     /* header-image preview */
-    image_preview(id) {
-        this.update();
-
-        let images = this.data["CONFIG"]["elements"]["scene_images"];
+    image_preview() {
+        let images = remoteData.elements.data("scene_images");
         let selected = getValueById("edit_image");
         if (images[selected]) {
             //let image_html = this.scene_header_image(id, scene, selected);
@@ -2453,11 +2290,10 @@ class RemoteMainEditElements {
     scene_header_image(id, scene, toggle_html, selected = "") {
         this.update();
 
-        let scene_info = this.data["CONFIG"]["scenes"][scene]["settings"];
-        let scene_remote = this.data["CONFIG"]["scenes"][scene]["remote"]["remote"];
-        let scene_images = this.data["CONFIG"]["elements"]["scene_images"];
-        let label = scene_info["label"];
-        let image = scene_info["image"];
+        let scene_images = remoteData.elements.data("scene_images");
+        let scene_remote = remoteData.scenes.remote(scene);
+        let label = remoteData.scenes.label(scene);
+        let image = remoteData.scenes.image(scene);
 
         if (selected === "" && scene_images[image]) {
             image = scene_images[image][0];
@@ -2484,11 +2320,9 @@ class RemoteMainEditElements {
 
     /* return drop-down with display values */
     scene_display_select(div_id, id, device) {
-        this.update();
-
         device = check_if_element_or_value(device, false);
         let device_display_values = "";
-        let device_info = this.data["CONFIG"]["devices"][device]["commands"]["get"];
+        let device_info = remoteData.devices.list_commands(device, "get");
         let on_change = "document.getElementById('" + id + "').value = this.value;";
 
         device_display_values = this.basic.select_array("scene_display_value", "value (" + device + ")", device_info, on_change);
@@ -2498,39 +2332,27 @@ class RemoteMainEditElements {
 
     /* return drop-down with scene buttons */
     scene_button_select(div_id, id, device, scene) {
-        this.update();
-
         device = check_if_element_or_value(device, false);
-        let macros_scene = dictCopy(this.data["CONFIG"]["scenes"][scene]["remote"]["macro-scene"]);
         let available_buttons = [];
         let type = "";
         [type, device] = device.split("_");
 
         if (type === "macro") {
-            let temp = Object.keys(this.data["CONFIG"]["macros"][device]);
+            let temp = remoteData.macros.list_all(device);
             for (let i = 0; i < temp.length; i++) {
                 available_buttons.push(device + "_" + temp[i]);
             }
         }
         if (type === "device") {
-            let temp = this.data["CONFIG"]["devices"][device]["buttons"];
+            let temp = remoteData.devices.list_buttons(device);
             for (let i = 0; i < temp.length; i++) {
                 available_buttons.push(device + "_" + temp[i]);
             }
         }
         if (type === "group") {
-            let temp = this.data["CONFIG"]["macros"]["groups"][device]["devices"];
-            let temp_buttons = {};
-            for (let i = 0; i < temp.length; i++) {
-                let dev_i = temp[i];
-                if (this.data["CONFIG"]["devices"][dev_i]) {
-                    temp_buttons[dev_i] = this.data["CONFIG"]["devices"][dev_i]["buttons"];
-                }
-            }
-            let arrays = Object.values(temp_buttons);
-            let available_buttons_temp = arrays.reduce((acc, arr) => acc.filter(x => arr.includes(x)));
-            for (let i = 0; i < available_buttons_temp.length; i++) {
-                available_buttons.push("group_" + device + "_" + available_buttons_temp[i]);
+            let buttons = remoteData.device_groups.list_buttons(device);
+            for (let i = 0; i < buttons.length; i++) {
+                available_buttons.push("group_" + device + "_" + buttons[i]);
             }
         }
 
@@ -2542,35 +2364,34 @@ class RemoteMainEditElements {
 
     /* create drop-downs for scene toggle buttons */
     scene_toggle_select(div_id, id, device, scene) {
-        this.update();
-
         device = check_if_element_or_value(device, false);
         let select = "<i>" + lang("SELECT_DEV_FIRST") + "</i>";
         let select_value;
         let select_on;
         let select_off;
 
-        if (device !== "" && !device.startsWith("group_") && this.data["CONFIG"]["devices"][device]) {
-            let device_config = this.data["CONFIG"]["devices"][device];
-            let device_name = this.data["CONFIG"]["devices"][device]["settings"]["label"];
+        if (device !== "" && !device.startsWith("group_") && remoteData.devices.exists(device)) {
+            let device_name = remoteData.devices.label(device);
+            let device_buttons = remoteData.devices.list_buttons(device);
+            let device_commands = remoteData.devices.list_commands(device, "get");
 
-            select_value = this.basic.select_array("add_toggle_value", "value (boolean)", device_config["commands"]["get"], "", "power");
-            select_on = this.basic.select_array("add_toggle_on", "button ON", device_config["buttons"], "", "on");
-            select_off = this.basic.select_array("add_toggle_off", "button OFF", device_config["buttons"], "", "off");
+            select_value = this.basic.select_array("add_toggle_value", "value (boolean)", device_commands, "", "power");
+            select_on = this.basic.select_array("add_toggle_on", "button ON", device_buttons, "", "on");
+            select_off = this.basic.select_array("add_toggle_off", "button OFF", device_buttons, "", "off");
 
-            setValueById("add_toggle_descr", "Toggle " + device_name + " (" + device + ")")
+            setValueById("add_toggle_description", "Toggle " + device_name + " (" + device + ")")
         }
-        else if (device !== "" && device.startsWith("group_") && this.data["CONFIG"]["macros"]["groups"][device.split("_")[1]]) {
+        else if (device !== "" && device.startsWith("group_") && remoteData.device_groups.exists(device.split("_")[1])) {
             let group = device.split("_")[1];
-            let group_name = this.data["CONFIG"]["macros"]["groups"][group]["description"];
-            let group_cmd = this.group_list_commands(group, "get");
-            let group_buttons = this.group_list_buttons(group);
+            let group_name = remoteData.device_groups.description(group);
+            let group_cmd = remoteData.device_groups.list_commands(group, "get");
+            let group_buttons = remoteData.device_groups.list_buttons(group);
 
             select_value = this.basic.select_array("add_toggle_value", "value (boolean)", group_cmd, "", "power");
             select_on = this.basic.select_array("add_toggle_on", "button ON", group_buttons, "", "on");
             select_off = this.basic.select_array("add_toggle_off", "button OFF", group_buttons, "", "off");
 
-            setValueById("add_toggle_descr", "Toggle " + group_name + " (" + device + ")")
+            setValueById("add_toggle_description", "Toggle " + group_name + " (" + device + ")")
 
         } else {
             select_value = select;
@@ -2585,14 +2406,12 @@ class RemoteMainEditElements {
 
     /* create drop-downs for scene slider buttons */
     scene_slider_select(div_id, id, device, scene) {
-        this.update();
-
         device = check_if_element_or_value(device, false);
         let select = "<i>" + lang("SELECT_DEV_FIRST") + "</i>";
         let select_cmd, select_param, select_min_max = "";
 
-        if (device !== "" && !device.startsWith("group_") && this.data["CONFIG"]["devices"][device]) {
-            let device_name = this.data["CONFIG"]["devices"][device]["settings"]["label"];
+        if (device !== "" && !device.startsWith("group_") && remoteData.devices.exists(device)) {
+            let device_name = remoteData.devices.label(device);
             let device_cmd = this.device_has_ranges(device, true);
             let onchange_slider_param = this.remote.app_name + ".rm_scene.prepare_slider('" + device + "','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax');";
 
@@ -2602,9 +2421,9 @@ class RemoteMainEditElements {
 
             setValueById("add_slider_descr", "Slider " + device_name + " (" + device + ")")
         }
-        else if (device !== "" && device.startsWith("group_") && this.data["CONFIG"]["macros"]["groups"][device.split("_")[1]]) {
+        else if (device !== "" && device.startsWith("group_") && remoteData.device_groups.exists(device.split("_")[1])) {
             let group = device.split("_")[1];
-            let group_name = this.data["CONFIG"]["macros"]["groups"][group]["description"];
+            let group_name = remoteData.device_groups.description(group);
             let group_cmd = this.group_has_ranges(group, true);
             let onchange_slider_param = this.remote.app_name + ".rm_scene.prepare_slider('" + device + "','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax');";
 
@@ -2634,8 +2453,8 @@ class RemoteMainEditElements {
         let select_model = "";
         let color_models = this.advanced.color_picker_models;
 
-        if (device !== "" && !device.startsWith("group_") && this.data["CONFIG"]["devices"][device]) {
-            let device_name = this.data["CONFIG"]["devices"][device]["settings"]["label"];
+        if (device !== "" && !device.startsWith("group_") && remoteData.devices.exists(device)) {
+            let device_name = remoteData.devices.label(device);
             let device_cmd = this.device_has_colors(device, true);
 
             select_cmd = this.basic.select_array("add_color_picker_cmd", lang("BUTTON_T_SEND"), device_cmd, "", "")
@@ -2643,9 +2462,9 @@ class RemoteMainEditElements {
 
             setValueById("add_color_picker_description", "CP " + device_name + " (" + device + ")")
         }
-        else if (device !== "" && device.startsWith("group_") && this.data["CONFIG"]["macros"]["groups"][device.split("_")[1]]) {
+        else if (device !== "" && device.startsWith("group_") && remoteData.device_groups.exists(device.split("_")[1])) {
             let group = device.split("_")[1];
-            let group_name = this.data["CONFIG"]["macros"]["groups"][group]["description"];
+            let group_name = remoteData.device_groups.description(group);
             let group_cmd = this.group_has_colors(group, true);
 
             select_cmd = this.basic.select_array("add_color_picker_cmd", lang("BUTTON_T_SEND"), group_cmd, "", "")
@@ -2663,23 +2482,12 @@ class RemoteMainEditElements {
 
     /* return list of templates */
     template_list(type = "") {
-        this.update();
+        return remoteData.templates.select(type);
 
-        let templates = {};
-        for (let key in this.data["CONFIG"]["templates"]["definition"]) {
-            if (type === "") {
-                templates[key] = this.data["CONFIG"]["templates"]["definition"][key]["description"];
-            } else if (this.data["CONFIG"]["templates"]["definition"][key]["type"] === type) {
-                templates[key] = this.data["CONFIG"]["templates"]["definition"][key]["description"];
-            }
-        }
-        return templates;
-    }
+    } // to be replaced: remoteData.templates.select(type)
 
     /* return drop-down with templates */
     template_select(id, title, data, onchange = "") {
-        this.update();
-
         let item = "<select style=\"width:" + this.basic.input_width + ";margin:1px;\" id=\"" + id + "\" onChange=\"" + onchange + "\">";
         item += "<option value='' disabled='disabled' selected>" + lang("SELECT") + " " + title + "</option>";
         for (let key in data) {

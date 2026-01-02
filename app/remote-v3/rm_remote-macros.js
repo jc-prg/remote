@@ -38,7 +38,7 @@ let macro_container = `
         </div>
       
         <div class="macro-device">
-            <div class="macro-device-header">Edit macro</div>
+            <div class="macro-device-header">Edit macro <span id="{editor_id}macroDeviceSelect"  style='font-weight: normal;'></span></div>
             <div class="macro-edit-content open">
                 <div class="macro-dropzone" id="{editor_id}macroDropzone"></div>
             </div>
@@ -124,6 +124,7 @@ class RemoteMacroEditor {
             ],
         };
         this.category_color = {}
+        this.json = new RemoteJsonHandling("RemoteMacroEditor.json");
 
         this.editorId = editor_id || "";
         this.outputId = output_id || this.editorId+"macroOutput";
@@ -150,6 +151,7 @@ class RemoteMacroEditor {
                 .replaceAll("{editor_title}", this.config.title || "Select macro");
             this.paletteEl = document.getElementById(this.editorId+"palette");
             this.deviceBarEl = document.getElementById(this.editorId+"deviceBar");
+            this.deviceSelectEl = document.getElementById(this.editorId+"macroDeviceSelect");
             this.dropzoneEl = document.getElementById(this.editorId+"macroDropzone");
             this.outputEl = document.getElementById(this.outputId);
             this.outputDetailEl = document.getElementById(this.editorId+"macroOutputDetail");
@@ -157,6 +159,8 @@ class RemoteMacroEditor {
             this.editButtonAdd = document.getElementById(this.editorId+"-edit-button-add");
             this.editButtonDel = document.getElementById(this.editorId+"-edit-button-delete");
             this.editButtonOpen = document.getElementById(this.editorId+"-edit-button-open");
+            this.editInputAdd = document.getElementById(this.editorId+"-add-id");
+            this.editInputDel = document.getElementById(this.editorId+"-delete-id");
 
         }
 
@@ -429,9 +433,11 @@ class RemoteMacroEditor {
             );
         });
 
-        this.outputEl.value = JSON.stringify(result, null, 2);
-        this.outputDetailEl.innerHTML = `${this.activeDevice}: `+JSON.stringify(result[this.activeDevice], null, 2);
-        document.getElementById(`${this.editorId}-delete-id`).value = this.activeDevice;
+        //this.outputEl.value = JSON.stringify(result, null, 2);
+        this.outputEl.value = this.json.json2text("", result, "macros");
+        this.outputDetailEl.innerHTML = JSON.stringify(result[this.activeDevice], null, 2);
+        this.deviceSelectEl.innerHTML = `[${this.activeDevice}]`;
+        this.editInputDel.value = this.activeDevice;
     }
 
     /* ---------- Macro Drop ---------- */
