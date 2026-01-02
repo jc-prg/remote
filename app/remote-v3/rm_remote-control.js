@@ -404,12 +404,12 @@ class RemoteControlAdvanced {
                 let remote_data = this.data["CONFIG"][type][device]["remote"];
                 let status_data = this.data["STATUS"]["devices"][device];
         */
-        let display_start = "<button id=\"color-picker_" + sub_id + "_button\" class=\"color-picker\"><center>";
+        let display_start = "<button id=\"color-picker_" + sub_id + "_button\" class=\"color-picker\"><span class='center'>";
         display_start += "<canvas id=\"color-picker_" + sub_id + "\">";
 
         let display_end = "</canvas>";
-        display_end += "<canvas id=\"color-picker_demo_" + sub_id + "\" class=\"color-picker-demo\">" + label + "</canvas></center>";
-        display_end += "</center></button>";
+        display_end += "<canvas id=\"color-picker_demo_" + sub_id + "\" class=\"color-picker-demo\">" + label + "</canvas></span>";
+        display_end += "</span></button>";
 
         let text = display_start;
         //text += this.color_picker.colorPickerHTML_v1(send_command);

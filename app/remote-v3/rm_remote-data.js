@@ -621,7 +621,7 @@ class RemotePrepareDataScenes {
     // return true, if id exists
     exists(scene_id, check_format=false) {
         if (!check_format) { return this.config_scenes[scene_id]; }
-        else { return (this.config_scenes[scene_id] && this.config_scenes[scene_id]["remote"] && this.config_scenes[scene_id]["buttons"] && this.config_scenes[scene_id]["settings"]); }
+        else { return (this.config_scenes[scene_id] && this.config_scenes[scene_id]["remote"] && this.config_scenes[scene_id]["settings"]); }
     }
 
     // return label of a scene
@@ -668,7 +668,7 @@ class RemotePrepareDataScenes {
             return result;
         }
         else if (this.list_all().includes(scene_id)) {
-            return this.config_scenes[scene_id]["buttons"];
+            return Object.keys(this.config_scenes[scene_id]["remote"]["remote"]).sort();
         }
         else {
             this.logging.error(`list_buttons(): device_id "${scene_id} does not exist."`);

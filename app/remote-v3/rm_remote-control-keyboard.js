@@ -17,9 +17,9 @@ class RemoteControlKeyboard {
         let cmd_update = this.app_name + ".update();";
         let cmd_send = this.app_name + ".send();";
         let cmd_enter = "if (event.keyCode==13) {"+cmd_send+"}";
-        let remote = "<center><div id='"+this.app_name+"_keyboard' class='remote-keyboard'><br/>";
+        let remote = "<span class='center'><div id='"+this.app_name+"_keyboard' class='remote-keyboard'><br/>";
         remote += "<input id='"+this.app_name+"_keyboard_input' onkeypress='"+cmd_enter+"' oninput='"+cmd_update+"' type='text' style='width:80%;font-size:18px;'>&nbsp;";
-        remote += "<button onclick=\""+cmd_send+"\">&nbsp;&gt;&nbsp;</button></div></center>";
+        remote += "<button onclick=\""+cmd_send+"\">&nbsp;&gt;&nbsp;</button></div></span>";
         return remote;
     }
 

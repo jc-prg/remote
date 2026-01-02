@@ -71,17 +71,17 @@ class RemoteControlDisplay {
 
                 if (status.indexOf("ERROR") >= 0) {
                     text  = text.replace( /##DISPLAY##/g, "block" );
-                    text += "<center><b>"+lang("CONNECTION_ERROR")+"</b></center>"; //<br/>";
+                    text += "<span class='center'><b>"+lang("CONNECTION_ERROR")+"</b></span>"; //<br/>";
                 }
                 else if (status.indexOf("DISABLED") >= 0) {
                     text  = text.replace( /##DISPLAY##/g, "block" );
-                    text += "<center><b>"+lang("CONNECTION_DISABLED")+"</b></center>"; //<br/>";
+                    text += "<span class='center'><b>"+lang("CONNECTION_DISABLED")+"</b></span>"; //<br/>";
                 }
                 else {
-                    text += "<center><b>"+lang("CONNECTION_ERROR")+"</b></center>"; //<br/>";
+                    text += "<span class='center'><b>"+lang("CONNECTION_ERROR")+"</b></span>"; //<br/>";
                     text  = text.replace( /##DISPLAY##/g, "none" );
                 }
-                text += "<center><i><text id='display_ERROR_info_"+device+"'></text></i></center>";
+                text += "<span class='center'><i><text id='display_ERROR_info_"+device+"'></text></i></span>";
                 text += display_end;
 
                 // display if ON
@@ -107,7 +107,7 @@ class RemoteControlDisplay {
                 text  = text.replace( /##STYLE##/g, style + " display_manual" );
                 if (rm3settings.manual_mode || status === "N/A")    { text  = text.replace( /##DISPLAY##/g, "block" ); }
                 else                                               { text  = text.replace( /##DISPLAY##/g, "none" ); }
-                text += "<center>"+lang("CONNECTION_MANUAL")+"<br/><text id='display_MANUAL_info_"+device+"'></text></center>";
+                text += "<span class='center'>"+lang("CONNECTION_MANUAL")+"<br/><text id='display_MANUAL_info_"+device+"'></text></span>";
                 text += display_end;
 
                 // display if OFF
@@ -116,7 +116,7 @@ class RemoteControlDisplay {
                 text  = text.replace( /##STYLE##/g, style + " display_off" );
                 if (status === "OFF")    { text  = text.replace( /##DISPLAY##/g, "block" ); }
                 else                    { text  = text.replace( /##DISPLAY##/g, "none" ); }
-                text += "<center><b>"+lang("CONNECTION_DEVICE_OFF")+"</b><br/><i><text id='display_OFF_info_"+device+"'></text></i></center>";
+                text += "<span class='center'><b>"+lang("CONNECTION_DEVICE_OFF")+"</b><br/><i><text id='display_OFF_info_"+device+"'></text></i></span>";
                 text += display_end;
 
                 // display if POWER_OFF
@@ -125,7 +125,7 @@ class RemoteControlDisplay {
                 text  = text.replace( /##STYLE##/g, style + " display_off" );
                 if (status === "POWER_OFF")    { text  = text.replace( /##DISPLAY##/g, "block" ); }
                 else                          { text  = text.replace( /##DISPLAY##/g, "none" ); }
-                text += "<center><b>"+lang("CONNECTION_POWER_OFF")+"</b><br/><i><text id='display_POWER_OFF_info_"+device+"'></text></i></center>";
+                text += "<span class='center'><b>"+lang("CONNECTION_POWER_OFF")+"</b><br/><i><text id='display_POWER_OFF_info_"+device+"'></text></i></span>";
                 text += display_end;
             }
 
@@ -181,7 +181,7 @@ class RemoteControlDisplay {
                 this.logging.debug(queries,"debug");
                 this.logging.debug(display_data,"debug");
 
-                text  += "<center id='display_full_"+device+"_power'>"+power["api-status"]+": "+power["power"] + "</center><hr/>";
+                text  += "<center id='display_full_"+device+"_power'>"+power["api-status"]+": "+power["power"] + "</span><hr/>";
             }
 
             text  += this.tab_row("start","100%");
@@ -212,7 +212,7 @@ class RemoteControlDisplay {
     json(id, json, format="" ) {
 
         let text = "";
-        text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:95%;height:160px;\">";
+        text += "<span class='center'><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:95%;height:160px;\">";
         if (format === "buttons") {
             let x=0;
             text += "[\n";
@@ -244,7 +244,7 @@ class RemoteControlDisplay {
             json = json.replaceAll( "}", "\n}" );
             text += json;
         }
-        text += "</textarea></center>";
+        text += "</textarea></span>";
         return text;
     }
 

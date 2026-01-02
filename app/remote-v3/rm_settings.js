@@ -370,7 +370,7 @@ class RemoteSettingsRemotes {
         set_temp += this.tab.row( "ID:",            this.elements.input("add_scene_id", "", "apiSceneAddCheckID(this);") );
         set_temp += this.tab.row( "Label:",         this.elements.input("add_scene_label") );
         set_temp += this.tab.row( "Description:",   this.elements.input("add_scene_descr") );
-        set_temp += this.tab.row( "<span style='text-align: center;'>" +
+        set_temp += this.tab.row( "<span class='center'>" +
             this.button.sized("add_scene",lang("ADD_SCENE"),"settings","apiSceneAdd([#add_scene_id#,#add_scene_label#,#add_scene_descr#]);") +
             "</span>", false);
         set_temp += this.tab.end();
@@ -598,7 +598,7 @@ class RemoteSettingsRemotes {
 
         this.input_width = width;
 
-        set_temp += "<span style='text-align: center;'>";
+        set_temp += "<span class='center'>";
         set_temp += this.button.sized("add_dev","Add Device","settings",add_command);
         set_temp += "</span>";
         return set_temp;
@@ -1305,7 +1305,7 @@ class RemoteSettingsGeneral {
     // create container for general settings
     create() {
 
-        return "<center>&nbsp;<br/><div id='module_general_settings'></div></center>";
+        return "<span class='center'>&nbsp;<br/><div id='module_general_settings'></div></span>";
     }
 
     // load data for general settings
@@ -1627,7 +1627,7 @@ class RemoteSettingsInfo {
         buttons += "<button class='rm-button sample small_edit' style='"+button_style+"'>edit mode: invisible</button>";
 
         let set_temp  = this.tab.start();
-        set_temp += this.tab.row( "<center>" + buttons + "</center>" );
+        set_temp += this.tab.row( "<span class='center'>" + buttons + "</span>" );
         set_temp += this.tab.end();
         setting  += this.basic.container("setting_color_codes","Button color codes",set_temp,false);
 
@@ -1683,10 +1683,10 @@ class RemoteSettingsMacro {
     create() {
         this.button.width = "100px";
         let setting   = "";
-        setting  += "<br/><center><div id='macros-edit-json'></div></center>";
-        setting  += "<center><div style='width:100%;text-align:center;'><br/>";
+        setting  += "<br/><span class='center'><div id='macros-edit-json'></div></span>";
+        setting  += "<span class='center'><div style='width:100%;text-align:center;'><br/>";
         setting  += this.button.sized("add_scene",lang("BUTTON_T_SAVE"),"settings","apiMacroChange([#groups#,#macro#,#dev-on#,#dev-off#]);","");
-        setting  += "<br/></div></center>";
+        setting  += "<br/></div></span>";
         return setting;
     }
 
@@ -1882,7 +1882,7 @@ class RemoteSettingsTimer {
         let entry_title = "<i>Create new timer ...</i>";
 
         html += this.settings.basic.container("timer_edit_add_new", entry_title, entry_html, false);
-        html += "<center>&nbsp;<hr style='border:1px solid;height:1px;margin: 10px 5px 5px;padding:0;'/><small><i>Server time: <text id='current_server_time'></text></i></small></center>";
+        html += "<span class='center'>&nbsp;<hr style='border:1px solid;height:1px;margin: 10px 5px 5px;padding:0;'/><small><i>Server time: <text id='current_server_time'></text></i></small></span>";
         setTextById('module_timer_info', html);
     }
 

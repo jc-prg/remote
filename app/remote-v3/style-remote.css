@@ -449,3 +449,7 @@ ul.help ul li {
     color: #666666;
 }
 
+.center {
+    width: 100%;
+    text-align: center;
+}

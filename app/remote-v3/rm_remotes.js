@@ -332,7 +332,7 @@ class RemoteMain {
                     context_menu += this.tt_button(link_button_left + link_preview, "&lt; +");
                     context_menu += this.tt_button(link_button_right + link_preview, "+ &gt;");
                 }
-                context_menu = "<span style='text-align: center;'>" + context_menu + "</span>";
+                context_menu = "<span class='center'>" + context_menu + "</span>";
             }
 
             // create element for definition
@@ -393,7 +393,7 @@ class RemoteMain {
         let str = "";
         str += "<div class='rm-info'>";
         str += "<media-info id='media_info'></media-info>";
-        str += "<span style='text-align: center;'>" + label + ": " + description + "</span>";
+        str += "<span class='center'>" + label + ": " + description + "</span>";
         str += "</div>";
 
         setTextById(id, str);
@@ -525,7 +525,7 @@ class RemoteMain {
         this.button.width = "90px";
 
         let remote = "";
-        remote += "<span style='text-align:center;' class='remote_edit_headline'><b>" + lang("EDIT_REMOTE") + " &quot;" + remoteData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
+        remote += "<span class='center 'remote_edit_headline'><b>" + lang("EDIT_REMOTE") + " &quot;" + remoteData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
         remote += this.basic.edit_line();
 
         // Main Settings
@@ -542,7 +542,7 @@ class RemoteMain {
         edit += this.tab.row(lang("DESCRIPTION") + ":&nbsp;", this.basic.input("edit_description", remoteData.devices.description(device)));
 
         edit += this.tab.line();
-        edit += this.tab.row("<span style='text-align: center'>" +
+        edit += this.tab.row("<span class='center'>" +
             "<input id='remote_visibility' value='" + remote_visible + "' style='display:none;'>" +
             this.button.edit("apiRemoteChangeVisibility('device','" + device + "','remote_visibility');", lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
             this.button.edit("apiDeviceEdit('" + device + "','edit','description,label,interface,method,device_id,image');", lang("BUTTON_T_SAVE")) + "&nbsp;" +
@@ -585,7 +585,7 @@ class RemoteMain {
         edit += "<p><b>" + lang("METHOD") + ":</b><br/>";
         edit += "<span id='edit_dev_rm_method'>"+device_config["interface"]["method"]+"</span>";
 
-        edit += "<hr/><span style='text-align: center;'>";
+        edit += "<hr/><span class='center'>";
         edit += this.button.edit(this.app_name+".device_edit_api_update('',true);", lang("BUTTON_T_RESET")) + "&nbsp;";
         edit += this.button.edit(this.app_name+".device_edit_api_confirm('"+device+"')", lang("BUTTON_T_SAVE"));
         edit += "</span>";
@@ -781,7 +781,7 @@ class RemoteMain {
 
         // Start remote control edit section
         let remote = "";
-        remote += "<span style='text-align:center;' class='remote_edit_headline'><b>" + lang("EDIT_REMOTE") + " &quot;" + remoteData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
+        remote += "<span class='center 'remote_edit_headline'><b>" + lang("EDIT_REMOTE") + " &quot;" + remoteData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
         remote += this.basic.edit_line();
 
         // Add GUI to add JSON elements
@@ -822,7 +822,7 @@ class RemoteMain {
         this.button.width = "23%";
         remote += "<br/>";
         remote += this.basic.edit_line();
-        remote += "<br/><span style='text-align: center;'>" +
+        remote += "<br/><span class='center'>" +
             this.button.edit(this.app_name + ".device_edit_json('" + id + "','" + device + "');" +
                 this.app_name + ".device_remote('" + this.frames_remote[0] + "','" + device + "','remote_json_buttons','remote_json_channel');" +
                 this.app_name + ".device_not_used('" + this.frames_remote[2] + "','" + device + "','remote_json_buttons');", lang("BUTTON_T_RESET")) + "&nbsp;" +
@@ -891,6 +891,7 @@ class RemoteMain {
         this.logging.info("Set cookie: " + "scene::" + scene + "::" + scene_label + "::" + this.edit_mode + "::" + easyEdit + "::" + remoteHints);
 
         if (!remoteData.scenes.exists(scene, true)) {
+console.error(remoteData.scenes.data(scene));
             if (this.data["STATUS"]["config_errors"]["scenes"][scene]) {
                 let errors = this.data["STATUS"]["config_errors"]["scenes"][scene];
                 remote += "<b class='entry_error'>" + lang("REMOTE_CONFIG_ERROR", [scene]) + "</b>";
@@ -1041,7 +1042,7 @@ class RemoteMain {
                     context_menu += this.tt_button(link_button_left + link_preview, "&lt; +");
                     context_menu += this.tt_button(link_button_right + link_preview, "+ &gt;");
                 }
-                context_menu = "<span style='text-align: center;'>" + context_menu + "</span>";
+                context_menu = "<span class='center'>" + context_menu + "</span>";
             }
 
             // create element per definition
@@ -1158,7 +1159,7 @@ class RemoteMain {
             let cmd = "channel_" + i; //channels[i];
             let next_button = this.button.channel(cmd, channels[i], scene_name, macros[channels[i]], "", "");
             let context_menu = "[" + i + "] <b>" + cmd + "</b><br/><br/><i>" + lang("CHANNEL_USE_JSON") + "</i><br/>&nbsp;";
-            context_menu = "<span style='text-align: center;'>" + context_menu + "</span>";
+            context_menu = "<span class='center'>" + context_menu + "</span>";
             this.active_channels.push(cmd);
 
             if (this.edit_mode) {
@@ -1181,7 +1182,7 @@ class RemoteMain {
             description = "<a href=\"" + url + "\" target='_blank'>" + description + "</a>";
         }
         let str = "<div class='rm-info'>";
-        str += "<span style='text-align: center'>" + label + ": " + description + "</span>";
+        str += "<span class='center'>" + label + ": " + description + "</span>";
         str += "</div>";
         setTextById(id, str);
     }
@@ -1218,7 +1219,7 @@ class RemoteMain {
             edit += this.tab.line();
             edit += this.tab.row("<div id='scene_edit_header_image' style='text-align:center;'></div>", false);
             edit += this.tab.line();
-            edit += this.tab.row("<span style='text-align: center;'>" +
+            edit += this.tab.row("<span class='center'>" +
                 "<input id='scene_visibility' value='" + scene_info["visible"] + "' style='display:none;'>" +
                 this.button.edit("apiRemoteChangeVisibility('scene','" + scene + "','scene_visibility');", lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
                 this.button.edit("apiSceneEdit('" + scene + "','edit','description,label,image');", lang("BUTTON_T_SAVE"), "") + "&nbsp;" +
@@ -1245,7 +1246,7 @@ class RemoteMain {
         }
 
         // create frame
-        remote += "<span style='text-align:center;' class='remote_edit_headline'><b>" + lang("EDIT_SCENE") + " &quot;" + remoteData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
+        remote += "<span class='center 'remote_edit_headline'><b>" + lang("EDIT_SCENE") + " &quot;" + remoteData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
         remote += this.basic.edit_line();
         remote += this.basic.container("scene_main", lang("SETTINGS_SCENES"), "<div id='scene-edit-main'></div>", true);
         setTextById(id, remote);
@@ -1322,13 +1323,13 @@ class RemoteMain {
 
         // frame
         let remote = "";
-        remote += "<span style='text-align:center;' class='remote_edit_headline'><b>" + lang("EDIT_SCENE") + " &quot;" + remoteData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
+        remote += "<span class='center 'remote_edit_headline'><b>" + lang("EDIT_SCENE") + " &quot;" + remoteData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
         remote += this.basic.edit_line();
         remote += this.basic.container("edit_elements", lang("EDIT_ELEMENTS"), "<div id='scene-edit-elements'></div>", false);
         remote += this.basic.container("edit_json_all", lang("EDIT_JSON"), "<div id='scene-edit-json'></div>", false);
         remote += this.basic.edit_line();
         this.button.width = "23%";
-        remote += "<br/><span style='text-align: center;'>" +
+        remote += "<br/><span class='center'>" +
             this.button.edit(this.app_name + ".scene_edit_json('" + id + "','" + scene + "');" +
                 this.app_name + ".scene_remote(  '" + this.frames_remote[0] + "','" + scene + "','json::remote','json::display');" +
                 this.app_name + ".scene_channels('" + this.frames_remote[2] + "','" + scene + "','json::macro-channel');",
@@ -1699,7 +1700,7 @@ class RemoteMainEditDialogs {
 
             this.button.width = "90px";
             edit = this.tab.start();
-            edit += this.tab.row("<span style='text-align:center;'>" +
+            edit += this.tab.row("<span class='center'>" +
                 this.button.edit(this.app_name + ".rm_device.add_button( '" + device + "','.');", lang("BUTTON_T_EMPTY"), "") + "&nbsp; " +
                 this.button.edit(this.app_name + ".rm_device.add_button( '" + device + "','LINE');", lang("BUTTON_T_LINE"), "") + "&nbsp; " +
                 this.button.edit(this.app_name + ".rm_device.add_display('" + device + "');", lang("BUTTON_T_DISPLAY"), "") + "&nbsp; " +

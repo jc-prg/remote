@@ -81,10 +81,10 @@ class RemoteJsonHandling {
     /* create textarea to edit JSON */
     textarea(id, json, format="" ) {
             let text = "";
-            text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:95%;height:160px;\">";
+            text += "<span class='center'><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:95%;height:160px;\">";
             text += this.json2text( id, json, format );
             text.replaceAll('"', '<b>"</b>');
-            text += "</textarea></center>";
+            text += "</textarea></span>";
             return text;
         }
 
