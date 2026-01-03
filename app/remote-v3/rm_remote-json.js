@@ -12,7 +12,6 @@ class RemoteJsonHandling extends RemoteDefaultClass {
         super(name);
 
         this.data = {};
-        this.json_highlight = new RemoteJsonEditing(this.name+".json_highlight");
     }
 
     /* get JSON value (and check if correct) */
