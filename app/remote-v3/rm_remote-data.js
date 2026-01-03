@@ -238,6 +238,17 @@ class RemotePrepareDataGroups {
         this.devices.update(data);
     }
 
+    // return a complete data for a group
+    data(group_id) {
+        if (this.list_all().includes(group_id)) {
+            return this.config_groups[group_id];
+        }
+        else {
+            this.logging.error(`data(): group_id "${group_id}" does not exist.`);
+            return [];
+        }
+    }
+
     // return description of a group
     description(group_id) {
         if (this.config_groups[group_id] && this.config_groups[group_id]["description"]) {
@@ -387,6 +398,13 @@ class RemotePrepareDataDevices {
         this._data = data;
 
         this.config_devices = this._data["CONFIG"]["devices"];
+    }
+
+    // returns api method
+    api_method(device_id) {
+        if (this.exists(device_id)) {
+            return this.data(device_id)["interface"]["method"];
+        }
     }
 
     // return a complete data for a device

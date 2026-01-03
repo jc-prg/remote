@@ -4,12 +4,9 @@
 
 
 /* class to create a text field in the remote for sending text data, e.g., to be used for a content search */
-class RemoteControlKeyboard {
+class RemoteControlKeyboard extends RemoteDefaultClass{
     constructor(name) {
-    
-        this.name = name;
-        this.logging  = new jcLogging(this.name);
-
+        super(name);
     }
 
     /* create text input field to activate device keyboard */
@@ -53,7 +50,6 @@ class RemoteControlKeyboard {
 
     /* toggle between visible and hidden, indirectly used - cmd created by toggle_cmd() */
     input_toggle() {
-        console.error(this.name+"_keyboard");
         const input = document.getElementById(this.name+"_keyboard");
         const input_text = document.getElementById(this.name+"_keyboard_input");
         if (input.style.display === "block") {

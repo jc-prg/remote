@@ -6,10 +6,11 @@
 /*
 * class to create and edit remote controls (scene and device)
 */
-class RemoteMain {
+class RemoteMain extends RemoteDefaultClass {
     constructor(name) {
+        super(name);
+
         this.data = {};
-        this.name = name;
         this.active_name = "";
         this.active_type = "";
         this.active_buttons = [];
@@ -30,8 +31,6 @@ class RemoteMain {
         this.json = new RemoteJsonHandling(this.name + ".json");
         this.tab = new RemoteElementTable(this.name + ".tab");
         this.keyboard = new RemoteControlKeyboard(this.name + ".keyboard");
-
-        this.logging = new jcLogging(this.name + ".logging");
         this.tooltip = new JcTooltip2(this.name + ".tooltip");
 
         this.edit = new RemoteMainEditElements(this.name + ".edit", this);
@@ -891,7 +890,7 @@ class RemoteMain {
         this.logging.info("Set cookie: " + "scene::" + scene + "::" + scene_label + "::" + this.edit_mode + "::" + easyEdit + "::" + remoteHints);
 
         if (!remoteData.scenes.exists(scene, true)) {
-console.error(remoteData.scenes.data(scene));
+
             if (this.data["STATUS"]["config_errors"]["scenes"][scene]) {
                 let errors = this.data["STATUS"]["config_errors"]["scenes"][scene];
                 remote += "<b class='entry_error'>" + lang("REMOTE_CONFIG_ERROR", [scene]) + "</b>";
@@ -1405,10 +1404,10 @@ console.error(remoteData.scenes.data(scene));
 /*
 * class to create GUI dialogs to add, edit or delete elements of the remote definition, when edit mode is set true
 */
-class RemoteMainEditDialogs {
+class RemoteMainEditDialogs extends RemoteDefaultClass{
     constructor (name, remote_type, remote) {
-        this.data = {};
-        this.name = name;
+        super(name);
+
         this.remote = remote;
         this.remote_type = remote_type;
 
@@ -1427,7 +1426,6 @@ class RemoteMainEditDialogs {
         this.rm_scene = new RemoteJsonElements(this.name + ".rm_scene", "scene", this.remote);
         this.rm_device = new RemoteJsonElements(this.name + ".rm_device", "device", this.remote);
 
-        this.logging = new jcLogging(this.name);
         this.logging.debug("Create RemoteJsonElements (" + name + "/" + remote_type + "/" + this.json_field_id + ")");
     }
 
@@ -2083,10 +2081,11 @@ class RemoteMainEditDialogs {
 
 
 /* class with elements mainly used from edit dialogs */
-class RemoteMainEditElements {
+class RemoteMainEditElements extends RemoteDefaultClass {
     constructor(name, remote) {
+        super(name);
+
         this.remote = remote;
-        this.name = name;
         this.data = this.remote.data;
         this.edit_mode = this.remote.edit_mode;
 
@@ -2098,8 +2097,6 @@ class RemoteMainEditElements {
         this.json = new RemoteJsonHandling(this.name + ".json");
         this.tab = new RemoteElementTable(this.name + ".tab");
         this.keyboard = new RemoteControlKeyboard(this.name + ".keyboard");
-
-        this.logging = new jcLogging(this.name + ".logging");
     }
 
     /* get latest data from remote main class */

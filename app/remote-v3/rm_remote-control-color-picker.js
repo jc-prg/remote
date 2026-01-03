@@ -4,13 +4,10 @@
 // uses parts from source: https://www.w3docs.com/tools/color-picker
 
 /* create a color-picker, to be embedded into a button -> RemoteControlAdvanced.colorPicker() */
-class RemoteElementColorPicker {
+class RemoteElementColorPicker extends RemoteDefaultClass {
     constructor(name) {
-
-        this.hh         = 0;
-        this.name = name;
-        this.logging    = new jcLogging(this.name);
-
+        super(name);
+        this.hh = 0;
     }
 
     set_device(name) {
@@ -68,7 +65,7 @@ class RemoteElementColorPicker {
                 canvas.height = image.height;
                 canvas.style.borderRadius = "5px";
                 ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-                console.debug("Color picker canvas size: " + canvas.width + "x" + canvas.height);
+                this.logging.debug("Color picker canvas size: " + canvas.width + "x" + canvas.height);
             };
 
             // Event listener for click on the canvas
@@ -86,8 +83,8 @@ class RemoteElementColorPicker {
                 const value = Math.round(x / canvas.width * 1000) / 10;
 
                 // Display RGB values
-                eval(this.name).logging.debug("PIXEL DATA: " + pixelData);
-                eval(this.name).logging.debug(`PIXEL DATA: X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue} | value: ${value}`);
+                this.logging.debug("PIXEL DATA: " + pixelData);
+                this.logging.debug(`PIXEL DATA: X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue} | value: ${value}`);
                 color_demo.style.backgroundColor = "rgb("+red+","+green+","+blue+")";
 
                 let input = `${red}:${green}:${blue}`;

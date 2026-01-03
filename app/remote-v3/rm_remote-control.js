@@ -4,8 +4,10 @@
 
 
 /* class to generate from text for buttons SVG images that can be scaled automatically with the button size */
-class RemoteSvgTextImage {
-    constructor() {
+class RemoteSvgTextImage extends RemoteDefaultClass {
+    constructor(name) {
+        super(name);
+
         this.text = "Even much longer button text ...";
         this.fontSize = 40;
         this.fontFamily = "Arial";
@@ -97,7 +99,7 @@ class RemoteSvgTextImage {
 
             let svg = document.getElementById(container);
 
-            if (!svg) { console.error("RemoteSvgTextImage.create(): container '"+container+"' not found.")}
+            if (!svg) { this.logging.error("create(): container '"+container+"' not found.")}
 
             svg.innerHTML = "";
             svg.setAttribute("viewBox", `${-padding} ${-padding} ${layout.box.width + padding * 2} ${layout.box.height + padding * 2}`);
@@ -147,16 +149,14 @@ class RemoteSvgTextImage {
 
 
 /* class to create some basic elements for remote controls*/
-class RemoteControlBasic {
+class RemoteControlBasic extends RemoteDefaultClass {
     constructor(name) {
+        super(name);
 
-        this.name       = name;
         this.data           = {};
         this.edit_mode      = false;
-
-        this.logging        = new jcLogging(this.name);
         this.keyboard       = new RemoteControlKeyboard(name+".keyboard");	// rm_remotes-keyboard.js
-        this.svg_image      = new RemoteSvgTextImage();
+        this.svg_image      = new RemoteSvgTextImage(this.name + ".svg_image");
 
         this.default_size();
     }
@@ -186,7 +186,7 @@ class RemoteControlBasic {
 
         let onContext  = "";
         let onClick    = "";
-        let button_color = dataAll["CONFIG"]["elements"]["button_colors"];  // definition of button color
+        let button_color = remoteData.elements.data("button_colors");  // definition of button color
 
         if (Array.isArray(script_apiCommandSend)) {
             onClick    = "onmousedown_left_right(event,\"" + script_apiCommandSend[0].replaceAll("\"","#") + "\",\"" + script_apiCommandSend[1].replaceAll("\"","#") + "\");";
@@ -277,8 +277,8 @@ class RemoteControlBasic {
     image(label, style) {
 
         // set vars
-        let button_color = this.data["CONFIG"]["elements"]["button_colors"];  // definition of button color
-        let button_img2  = this.data["CONFIG"]["elements"]["button_images"];  // definition of images for buttons (without path and ".png")
+        let button_color = remoteData.elements.data("button_colors");  // definition of button color
+        let button_img2  = remoteData.elements.data("button_images");  // definition of images for buttons (without path and ".png")
 
         // if image available set image
         let button_img   = [];
@@ -348,26 +348,24 @@ class RemoteControlBasic {
 }
 
 
-/*
-* class to create advanced elements such as color picker, slider, and toggle for the remote control
-*/
-class RemoteControlAdvanced {
+/*  class to create advanced elements such as color picker, slider, and toggle for the remote control */
+class RemoteControlAdvanced extends RemoteDefaultClass{
 
     constructor(name, remote) {
+        super(name);
 
         // set main data
         this.data = {};
-        this.name = name;
         this.remote = remote;
         this.active_name = this.remote.active_name;
         this.active_type = this.remote.active_type;
-        this.logging = new jcLogging(this.name);
-        this.logging.debug("Create RemoteControlAdvanced (" + this.name + "/" + this.active_name + "/" + this.active_type + ")");
 
         // connect pure elements
         this.e_color_picker = new RemoteElementColorPicker(this.name + ".e_color_picker");
         this.e_slider = new RemoteElementSlider(this.name + ".e_slider");
         this.color_picker_models = ["Brightness", "Color RGB", "Color CIE_1931", "Color RGB (small)", "Color CIE_1931 (small)", "Color temperature"];
+
+        this.logging.debug("Create RemoteControlAdvanced (" + this.name + "/" + this.active_name + "/" + this.active_type + ")");
     }
 
     /* update API data */
@@ -400,10 +398,7 @@ class RemoteControlAdvanced {
         if (data.length > 3) {
             label = data[3];
         }
-        /*
-                let remote_data = this.data["CONFIG"][type][device]["remote"];
-                let status_data = this.data["STATUS"]["devices"][device];
-        */
+
         let display_start = "<button id=\"color-picker_" + sub_id + "_button\" class=\"color-picker\"><span class='center'>";
         display_start += "<canvas id=\"color-picker_" + sub_id + "\">";
 
@@ -433,35 +428,39 @@ class RemoteControlAdvanced {
         let device_api = "";
         let device_api_status = "";
 
+        if ((type === "devices" && !remoteData.devices.exists(device)) || (type === "scenes" && !remoteData.scenes.exists(device))) {
+            this.logging.error(this.name + ".slider_element: Could not create slider element: " + type + " '" + device + "' does not exist.");
+            return "";
+        }
+
         if (device.indexOf("group_") >= 0) {
             let group_name = device.split("_")[1];
-            let group_devices = this.data["CONFIG"]["macros"]["groups"][group_name];
-            if (!group_devices || !group_devices["devices"] || group_devices["devices"].length === 0) {
+            let group_devices = remoteData.device_groups.list_devices(group_name);
+
+            if (remoteData.device_groups.exists(group_name) || group_devices.length === 0) {
                 this.logging.error(this.name + ".slider_element: Group " + group_name + " not defined correctly.");
                 return "";
             }
-            let check_device = group_devices["devices"][0];
-            status_data = this.data["STATUS"]["devices"][check_device];
-            device_api = this.data["STATUS"]["devices"][check_device]["api"];
-            device_api_status = this.data["STATUS"]["interfaces"]["connect"][device_api];
-        } else if (!this.data["CONFIG"][type][device]) {
-            this.logging.error(this.name + ".slider_element: Could not create slider element: " + type + " '" + device + "' does not exist.");
-            return "";
-        } else {
-            status_data = this.data["STATUS"]["devices"][device];
-            device_api = this.data["STATUS"]["devices"][device]["api"];
-            device_api_status = this.data["STATUS"]["interfaces"]["connect"][device_api];
+
+            let check_device = group_devices[0];
+            let status_check_device = remoteStatus.status_device(check_device, true);
+
+            status_data = status_check_device["status"];
+            device_api = `${status_check_device["api"]}_${status_check_device["api-device"]}`;
+            device_api_status = status_check_device["api-device-message"];
+
+        }
+        else {
+            let status_check_device = remoteStatus.status_device(device, true);
+            status_data = status_check_device["status"];
+            device_api = `${status_check_device["api"]}_${status_check_device["api-device"]}`;
+            device_api_status = status_check_device["api-device-message"];
         }
 
         if (!device_api_status) {
             this.logging.error("API Device not defined correctly for " + device + ": " + device_api + " doesn't exist.")
         } else if (device_api_status.toLowerCase() !== "connected") {
             disabled = true;
-        }
-
-        if (!this.data["CONFIG"][type]) {
-            this.logging.error(this.name + ".slider() - type not supported (" + type + ")");
-            return;
         }
 
         if (data[4] && status_data[data[4]]) {
@@ -509,10 +508,11 @@ class RemoteControlAdvanced {
             device_id = device;
         }
 
-        if (this.data["CONFIG"]["devices"][device_id] && this.data["CONFIG"]["devices"][device_id]["interface"]["method"] !== "query") {
+        if (remoteData.devices.exists(device_id) && remoteData.devices.api_method(device_id) !== "query") {
             reset_value = "<span style='color:gray'>[<status onclick=\"appFW.requestAPI('GET',['set','" + device_id + "','power','OFF'], '', '', '' );\" style='cursor:pointer;'>OFF</status> | ";
             reset_value += "<status onclick=\"appFW.requestAPI('GET',['set','" + device_id + "','power','ON'], '', '', '' );\" style='cursor:pointer;'>ON</status>]</span>";
         }
+
         let toggle_start = "";
         let toggle_end = "";
         if (!short) {
@@ -541,6 +541,7 @@ class RemoteControlAdvanced {
             device_api = this.data["STATUS"]["devices"][device]["api"];
             device_api_status = this.data["STATUS"]["interfaces"][device_api];
         }
+
         if (!group && status_data[key] && device_api_status === "Connected") {
             if (status_data[key].toUpperCase() === "TRUE") {
                 init = "1";

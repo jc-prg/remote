@@ -4,14 +4,13 @@
 
 
 /* create displays for scene and device remote controls, format defined in style-display.css */
-class RemoteControlDisplay {
+class RemoteControlDisplay extends RemoteDefaultClass {
 
     constructor(name) {
+        super(name);
 
-        this.name       = name;
         this.data           = {};
         this.edit_mode      = false;
-        this.logging        = new jcLogging(this.name);
     }
 
     /* create a set of displays for each type, one visible and the others hidden */
@@ -32,7 +31,7 @@ class RemoteControlDisplay {
             }
 
             if (status === undefined) {
-                console.error("RemoteControlDisplay.default(): No status available for "+device);
+                this.logging.error("default(): No status available for "+device);
                 return
             }
 
@@ -155,33 +154,31 @@ class RemoteControlDisplay {
             let text  = "Device Information: "+device +"<hr/>";
             text  += "<div style='width:100%;height:400px;overflow-y:scroll;'>";
 
-            if (type !== "devices") {
-
-                if (!this.data["CONFIG"][type][device]["remote"]["display-detail"]) {
-
+            if (type === "scenes") {
+                if (!remoteData.scenes.data(device)["remote"]["display-detail"]) {
                     this.logging.warn(this.name+".display_alert() not implemented for this type and device ("+type+"/"+device+")");
-                    this.logging.warn(this.data["CONFIG"][type][device]);
+                    this.logging.warn(remoteData.scenes.data(device));
                     return;
                 }
                 else {
-                    display_data = Object.keys(this.data["CONFIG"][type][device]["remote"]["display-detail"]);
+                    display_data = Object.keys(remoteData.scenes.data(device)["remote"]["display-detail"]);
                     this.logging.warn(display_data);
                 }
             }
-
-            else {
+            else if (type === "devices") {
                 let power = this.data["STATUS"][type][device];
+
                 if (type !== "devices") { power = {}; }
-                let queries = this.data["CONFIG"]["devices"][device]["commands"]["definition"];
-                if (this.data["CONFIG"]["devices"][device] && queries)	{ display_data = Object.keys(queries); }
-                else								{ display_data = ["ERROR","No display defined"]; }
+                let queries = remoteData.devices.list_commands(device, "definition");
+                if (remoteData.devices.exists(device) && queries) { display_data = Object.keys(queries); }
+                else { display_data = ["ERROR","No display defined"]; }
 
                 this.logging.debug(device,"debug");
                 this.logging.debug(power,"debug");
                 this.logging.debug(queries,"debug");
                 this.logging.debug(display_data,"debug");
 
-                text  += "<center id='display_full_"+device+"_power'>"+power["api-status"]+": "+power["power"] + "</span><hr/>";
+                text  += "<span class='center' id='display_full_"+device+"_power'>"+power["api-status"]+": "+power["power"] + "</span><hr/>";
             }
 
             text  += this.tab_row("start","100%");

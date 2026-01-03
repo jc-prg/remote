@@ -3,7 +3,7 @@
 //--------------------------------
 
 let remoteStatus;
-let remoteStatus_logging = false;
+let remoteStatus_logging = true;
 
 
 // class that offers all types of status information for apis, api-devices, media devices, and scenes
@@ -19,7 +19,8 @@ class RemoteDevicesStatus {
             },
             "api-device": {},
             "device": {},
-            "scene": {}
+            "scene": {},
+            "group": {}
         };
         this.active_apis = {};
         this.active_api_devices = {};
@@ -69,6 +70,7 @@ class RemoteDevicesStatus {
         this.config_apis_structure = this.data["CONFIG"]["apis"]["structure"];
         this.config_devices = this.data["CONFIG"]["devices"];
         this.config_scenes = this.data["CONFIG"]["scenes"];
+        this.config_groups = this.data["CONFIG"]["macros"]["groups"];
 
         this.all_keys = {
             "api" : Object.keys(this.config_apis_structure),
@@ -371,7 +373,66 @@ class RemoteDevicesStatus {
 
     /* collecting status data for all groups */
     create_data_groups() {
-        // not implemented yet
+        for (let group_id in this.config_groups) {
+            let status_check = [];
+            let status_device = {};
+            let status_apis = [];
+            let status_group = "";
+            let group = this.config_groups[group_id];
+            let message = "";
+
+            for (let i in group["devices"]) {
+                let device_status;
+                let device_id = group["devices"][i];
+
+                if (!this.config_devices[device_id]) {
+                    device_status = {"status": "ERROR"};
+                    message = `The group '${group_id}' contains the device ${device_id} that is not defined.`;
+                    console.error(message);
+                } else {
+                    device_status = this.status_device(device_id, true);
+                }
+                let api_device = device_status["api"] + "_" + device_status["api-device"];
+                if (!status_check.includes(device_status["status"])) { status_check.push(device_status["status"]); }
+                if (!status_apis.includes(api_device)) { status_apis.push(api_device); }
+                status_device[device_id] = device_status["status"];
+            }
+
+            if (status_check.length === 0) {
+                status_group = "EMPTY";
+            }
+            else if (status_check.length === 1) {
+                status_group = status_check[0];
+            }
+            else if (status_check.length > 1 && status_check.includes("API_STARTING")) {
+                status_group = "API_STARTING";
+            }
+            else if (status_check.length > 1 && (status_check.includes("ERROR") || status_check.includes("API_ERROR") || status_check.includes("UNKNOWN"))) {
+                status_group = "ERROR";
+            }
+            else if (status_check.length === 2 && status_check.includes("ON") && status_check.includes("OFF")) {
+                status_group = "PARTLY";
+            }
+            else if (status_check.length > 2 && (status_check.includes("ON") || status_check.includes("OFF")) && (status_check.includes("DISABLED") || status_check.includes("API_DISABLED"))) {
+                status_group = "PARTLY_DISABLED";
+            }
+
+            if (message === "") {
+                // not implemented yet
+                message = this.select_message("group", status_group, {
+                    "label": group["description"],
+                    "devices": group["devices"],
+                })
+            }
+
+            this.status_data["group"][group_id] = {
+                "api-devices": status_apis,
+                "devices": group["devices"],
+                "message": message,
+                "status": status_group,
+                "status-devices": status_device,
+            }
+        }
     }
 
     /* select status message */
@@ -410,6 +471,9 @@ class RemoteDevicesStatus {
             else if (status_id === "ERROR")                  { status_msg = lang("STATUS_SCENE_ERROR", [values["label"], values["list_errors"]]); }
             else                                             { status_msg = lang("STATUS_SCENE_ERROR", [values["label"], values["list_errors"]]); }
         }
+        else if (device_type === "group") {
+console.warn("select_message() not implemented for groups yet!")
+        } // not implemented yet
         return status_msg;
     }
 
