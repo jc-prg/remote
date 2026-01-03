@@ -2,13 +2,13 @@
 // jc://remote/settings/
 //--------------------------------
 
-class RemoteSettings {
+class RemoteSettings extends RemoteDefaultClass {
     constructor(name) {	// IN PROGRESS
+        super(name);
 
         // preset vars
         this.data          = {};
         this.active        = false;
-        this.name      = name;
         this.e_settings    = ["setting1","setting2","setting3","setting4","setting5","setting6"];
         this.e_remotes     = ["frame3","frame4","frame5","frame1","frame2"];
         this.input_width   = "140px";
@@ -18,8 +18,6 @@ class RemoteSettings {
         this.mode          = "";
         this.index_buttons = undefined;
         this.line          = "<div style=\"border:1px solid;height:1px;margin: 10px 5px 5px;padding:0;\"></div>";
-
-        this.logging = new jcLogging(this.name+".logging");
 
         this.json = new RemoteJsonHandling(this.name+".json");
         this.button = new RemoteControlBasic(this.name+".button");
@@ -34,16 +32,13 @@ class RemoteSettings {
         this.module_general = new RemoteSettingsGeneral(this.name+".module_general", this);
         this.module_api = new RemoteSettingsApi(this.name+".module_api", this);
         this.module_remotes = new RemoteSettingsRemotes(this.name+".module_remotes", this);
-
     }
 
     // initialize settings
     init(data) {
-            // set data
             this.data = data;
 
-            // status
-            if (data)	{this.app_stat = data["STATUS"]["system"]["message"]; this.app_last = data["REQUEST"]["Button"];}
+            if (data)	{this.app_stat = remoteStatus.status_system("system")["message"]; this.app_last = data["REQUEST"]["Button"];}
             else		{this.app_stat = "ERROR: no connection to server!";}
 
             if (this.initial_load) {
@@ -225,7 +220,7 @@ class RemoteSettings {
         let html  = "";
         if (!small) { html += "&nbsp;<br/>"; }
 
-        let button_img  = this.data["CONFIG"]["elements"]["button_images"];
+        let button_img  = remoteData.elements.data("button_images");
         let setting_modules_back = {
             "SETTINGS":         ["link_back",   "rm3settings.create('index');"],
         }
@@ -340,11 +335,11 @@ class RemoteSettings {
 
 
 /* module to add, sort and jump to remote controls (devices and scenes) in edit mode */
-class RemoteSettingsRemotes {
+class RemoteSettingsRemotes extends RemoteDefaultClass {
     constructor(name, parent) {
-        this.name = name;
-        this.settings = parent;
+        super(name);
 
+        this.settings = parent;
         this.data = this.settings.data;
         this.basic = this.settings.basic;
         this.button = this.settings.button;
@@ -363,8 +358,7 @@ class RemoteSettingsRemotes {
 
         let open_add_scene = false;
         if (direct_cmd === "add_scene") { open_add_scene = true; }
-        if (!this.data["CONFIG"]["scenes"] || Object.keys(this.data["CONFIG"]["scenes"]).length === 0) { open_add_scene = true; }
-        console.error(this.data["CONFIG"]["scenes"]);
+        if (remoteData.scenes.not_available()) { open_add_scene = true; }
 
         set_temp  = this.tab.start();
         set_temp += this.tab.row( "ID:",            this.elements.input("add_scene_id", "", "apiSceneAddCheckID(this);") );
@@ -383,10 +377,12 @@ class RemoteSettingsRemotes {
     list_scenes() {
         this.update_data();
 
-        let scenes = this.data["CONFIG"]["scenes"];
+        let scenes = remoteData.scenes.config_scenes;
         let html = "&nbsp;<br/><ul id='sort_scenes'>";
 
-        for (let key in scenes) { scenes[key]["position"] = scenes[key]["settings"]["position"]; }
+        for (let key in scenes) {
+            scenes[key]["position"] = remoteData.scenes.remote_position(key);
+        }
         let order  = sortDict(scenes, "position");
         if (order.length > 0) {
             for (let key in order) {
@@ -397,9 +393,9 @@ class RemoteSettingsRemotes {
                 }
 
                 html += "<li id='" + scene + "'>";
-                html += "<div class='slist_li_content" + style + "'>" + scenes[scene]["settings"]["label"] + "<br/>";
+                html += "<div class='slist_li_content" + style + "'>" + remoteData.scenes.label(scene) + "<br/>";
                 html += "<span style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>" + scene + "</rm-id></span></div>";
-                html += "<div class='slist_li_edit'>" + this.remote_edit("scene", scene, scenes[scene]["settings"]["visible"]) + "</div>";
+                html += "<div class='slist_li_edit'>" + this.remote_edit("scene", scene, remoteData.scenes.data(scene)["settings"]["visible"]) + "</div>";
                 html += "</li>";
             }
         }
@@ -424,7 +420,7 @@ class RemoteSettingsRemotes {
         let open_add_device = false;
         if (direct_cmd === "add_device" && direct_data !== "") { set_temp = this.add_remote_dialog(direct_data); open_add_device = true; }
         else                                                   { set_temp = this.add_remote_dialog(); }
-        if (Object.keys(this.data["CONFIG"]["devices"]).length === 0) { open_add_device = true; }
+        if (remoteData.devices.not_available()) { open_add_device = true; }
 
 
         setting += this.basic.container("setting_add_device",lang("ADD_DEVICE"),set_temp,open_add_device);
@@ -435,28 +431,27 @@ class RemoteSettingsRemotes {
     list_devices() {
         this.update_data();
 
-        let devices = this.data["CONFIG"]["devices"];
+        let devices = remoteData.devices.config_devices;
         let html   = "&nbsp;<br/><ul id='sort_devices'>";
 
         for (let key in devices) {
-            devices[key]["position"] = devices[key]["settings"]["position"];
+            devices[key]["position"] = remoteData.devices.remote_position(key);
         }
         let order  = sortDict(devices, "position");
         if (order.length > 0) {
             for (let key in order) {
                 let device = order[key];
-                let api = devices[device]["interface"]["api"].replace("_", "/");
+                let api = remoteData.devices.data(device)["interface"]["api"].replace("_", "/");
                 api = api.replace("/default", "");
-                let visible = "";
                 let style = "";
-                if (devices[device]["settings"]["visible"] === "no") {
+                if (remoteData.devices.data(device)["settings"]["visible"] === "no") {
                     style = " hidden";
                 }
 
                 html += "<li id='" + device + "'>";
-                html += "<div class='slist_li_content" + style + "'>" + devices[device]["settings"]["label"] + "<br/>";
+                html += "<div class='slist_li_content" + style + "'>" + remoteData.devices.label(device) + "<br/>";
                 html += "<div style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>" + device + "</rm-id> (" + api + ")</div></div>";
-                html += "<div class='slist_li_edit'>" + this.remote_edit("device", device, devices[device]["settings"]["visible"]) + "</div>";
+                html += "<div class='slist_li_edit'>" + this.remote_edit("device", device, remoteData.devices.data(device)["settings"]["visible"]) + "</div>";
                 html += "</li>";
             }
         }
@@ -471,7 +466,7 @@ class RemoteSettingsRemotes {
     remote_edit(type, id, visible) {
 
         let delete_cmd;
-        let images = this.data["CONFIG"]["elements"]["button_images"];
+        let images = remoteData.elements.data("button_images");
         let img_visible = rm_image(images["hidden"]);
         let img_edit = rm_image(images["edit"]);
         let img_delete = rm_image(images["trash"]);
@@ -502,12 +497,12 @@ class RemoteSettingsRemotes {
         add_command += "remoteToggleEditMode(true);";
         let width = this.input_width;
         let icon_container = "<button class='button device_off' style='width:50px;height:40px;'><div id='device_edit_button_image'></div></button>";
-        let device_types = this.data["CONFIG"]["device_types"];
+        let device_types = remoteData.elements.data("device_types");
 
         this.on_change_api = function(value) {
 
             let  api = value.split("_")[0];
-            let  api_config = this.data["CONFIG"]["apis"]["list_api_configs"]["list"];
+            let  api_config = remoteData.apis.data("list_api_configs")["list"];
             let  remote_config = this.data["CONFIG"]["remotes"]["list"];
 
             if (value === "") {
@@ -581,7 +576,7 @@ class RemoteSettingsRemotes {
         set_temp  = this.tab.start();
         set_temp += this.tab.row( "Device type:"+asterix, this.elements.select("add_device", "device type", device_types, onchange3, "") );
         this.input_width = "180px";
-        set_temp += this.tab.row( "Interface:"+asterix, this.elements.select("add_device_api","interface", this.data["CONFIG"]["apis"]["list_description"], onchange, device_data["api_device"]) );
+        set_temp += this.tab.row( "Interface:"+asterix, this.elements.select("add_device_api","interface", remoteData.apis.data("list_description"), onchange, device_data["api_device"]) );
         set_temp += this.tab.row( "ID:"+asterix, "<span id='text_add_device_id'>" + lang("SELECT_DEV_TYPE_FIRST") + "</span>" +
             "<span style='display:none;'>" + this.elements.input("add_device_id", onchange, onchange + "apiDeviceAddCheckID(this);", device_data["id"]) +"</span>");
         set_temp += this.tab.line();
@@ -636,12 +631,11 @@ class RemoteSettingsRemotes {
 
 
 /* module to edit API-Device settings */
-class RemoteSettingsApi {
+class RemoteSettingsApi extends RemoteDefaultClass {
     constructor(name, parent) {
-        this.name = name;
-        this.settings = parent;
-        this.logging = new jcLogging(this.name);
+        super(name);
 
+        this.settings = parent;
         this.basic = this.settings.basic;
         this.button = this.settings.button;
         this.data = this.settings.data;
@@ -708,20 +702,20 @@ class RemoteSettingsApi {
     show_overview() {
         let text = "<br/>";
 
-        const all_apis = Object.entries(this.data["CONFIG"]["apis"]["list"]).length;
-        const all_apis_active = Object.values(this.data["STATUS"]["interfaces"]["active"]).filter(value => value === true).length;
-        const all_api_devices = Object.keys(this.data["CONFIG"]["apis"]["list_description"]).length;
-        const all_api_devices_active = Object.values(this.data["STATUS"]["connections"]).reduce((count, api) => { if (api.active === true) { return count + Object.values(api["api_devices"]).filter(device => device.active === true).length; } return count; }, 0);
-        const all_devices = Object.keys(this.data["CONFIG"]["devices"]).length;
-        const all_devices_active = Object.values(this.data["CONFIG"]["devices"]).filter(device => device["settings"]?.visible === "yes").length;
+        const all_apis = Object.entries(remoteData.apis.data("list")).length;
+        const all_apis_active = Object.values(remoteStatus.status_system("interfaces")["active"]).filter(value => value === true).length;
+        const all_api_devices = Object.keys(remoteData.apis.data("list_description")).length;
+        const all_api_devices_active = Object.values(remoteStatus.status_system("connections")).reduce((count, api) => { if (api.active === true) { return count + Object.values(api["api_devices"]).filter(device => device.active === true).length; } return count; }, 0);
+        const all_devices = remoteData.devices.list_all().length;
+        const all_devices_active = Object.values(remoteData.devices.config_devices).filter(device => device["settings"]?.visible === "yes").length;
 
         text += this.tab.start("100%", "140px:*");
         text += this.tab.row("Active APIs:",        `<b>${String(all_apis_active).padStart(2,'0')}</b> / ${String(all_apis).padStart(2,'0')}`);
         text += this.tab.row("Active API-devices:", `<b>${String(all_api_devices_active).padStart(2,'0')}</b> / ${String(all_api_devices).padStart(2,'0')}`);
         text += this.tab.row("Active devices:",     `<b>${String(all_devices_active).padStart(2,'0')}</b> / ${String(all_devices).padStart(2,'0')}`);
         text += this.tab.line()
-        text += this.tab.row("Last (re)connect:", `${this.data["STATUS"]["interfaces"]["last_reconnect"]} (${this.data["STATUS"]["interfaces"]["last_reconnect_device"]})`);
-        text += this.tab.row("Last discovery:",   `${this.data["STATUS"]["interfaces"]["last_discovery"]}`);
+        text += this.tab.row("Last (re)connect:", `${remoteStatus.status_system("interfaces")["last_reconnect"]} (${remoteStatus.status_system("interfaces")["last_reconnect_device"]})`);
+        text += this.tab.row("Last discovery:",   `${remoteStatus.status_system("interfaces")["last_discovery"]}`);
         text += this.tab.end();
         text += "<br/>&nbsp;<br/>";
 
@@ -765,8 +759,8 @@ class RemoteSettingsApi {
         this.update_data();
 
         let count = 1;
-        let devices_per_interface = this.data["CONFIG"]["apis"]["structure"];
-        let interface_status = dataAll["STATUS"]["connections"];
+        let devices_per_interface = remoteData.apis.data("structure");
+        let interface_status = remoteStatus.status_system("connections");
 
         for (let key in devices_per_interface) {
             if (key !== "") {
@@ -798,6 +792,7 @@ class RemoteSettingsApi {
         sheet_box.addSheet("Device details", this.show_device_details());
         sheet_box.addSheet("Logging QUERY", this.show_logs("query"), false);
         sheet_box.addSheet("Logging SEND", this.show_logs("send"), false);
+        sheet_box.addSheet("API Summary", remoteStatus.status_summary(), false);
     }
 
     // load edit_ap_config()
@@ -817,11 +812,11 @@ class RemoteSettingsApi {
 
         this.button_add_device = function(api, api_device, external_id) {
 
-            if (!this.data["CONFIG"]["apis"]["list_detect"][api+"_"+api_device]) {
+            if (!remoteData.apis.data("list_detect")[api+"_"+api_device]) {
                 this.logging.warn("No detected devices found for "+api+"_"+api_device+".");
                 return "";
             }
-            const devices_detect = this.data["CONFIG"]["apis"]["list_detect"][api+"_"+api_device];
+            const devices_detect = remoteData.apis.data("list_detect")[api+"_"+api_device];
             let html = "";
 
             if (api === "ZIGBEE2MQTT") {
@@ -854,13 +849,13 @@ class RemoteSettingsApi {
         this.api_device_connected_devices = function (api, device, data) {
             let text  = "";
             let count = 0;
-            let devices_per_api = this.data["CONFIG"]["apis"]["structure"];
-            let detected_devices = this.data["CONFIG"]["apis"]["list_detect"];
+            let devices_per_api = remoteData.apis.data("structure");
+            let detected_devices = remoteData.apis.data("list_detect");
             let connected_vs_detected = {};
             let details = "<div style='width:100%;height:9px;'></div>";
 
             for (let api_device in devices_per_api[api]) {
-                let connect  = dataAll["STATUS"]["interfaces"]["connect"][api + "_" + api_device];
+                let connect  = remoteStatus.status_system("interfaces")["connect"][api + "_" + api_device];
                 if (device === "" || api_device !== device) { continue; }
                 if (device === "") { details += "<i>API Device: " + api_device + "</i>&nbsp;&nbsp;"; }
                 else { details += "<i>"+lang("CONNECTED_RMC")+":</i><hr/>&nbsp;&nbsp;"; }
@@ -869,10 +864,10 @@ class RemoteSettingsApi {
                 for (let i=0;i<devices_per_api[api][api_device].length;i++) {
                     count += 1;
                     let connected_device = devices_per_api[api][api_device][i];
-                    let device_settings = this.data["CONFIG"]["devices"][connected_device];
-                    let method = this.data["CONFIG"]["devices"][connected_device]["interface"]["method"];
-                    let power_status = dataAll["STATUS"]["devices"][connected_device]["power"];
-                    let label = device_settings["settings"]["label"];
+                    let device_settings = remoteData.devices.data(connected_device);
+                    let method = remoteData.devices.api_method(connected_device);
+                    let power_status = remoteStatus.status_device_raw(connected_device)["power"];
+                    let label = remoteData.devices.label(connected_device);
                     let visibility = device_settings["settings"]["visible"];
                     let hidden = "";
                     let idle = "<small id=\"device_auto_off_"+connected_device+"\"></small>";
@@ -931,7 +926,7 @@ class RemoteSettingsApi {
 
             let temp = "";
             let information = "<div id='api_status_data_"+api_name+"_"+device+"'></div>";
-            let devices_per_interface = this.data["CONFIG"]["apis"]["structure"];
+            let devices_per_interface = remoteData.apis.data("structure");
             let connected_devices = devices_per_interface[api_name][device].length;
 
             let api_dev = api_name.toLowerCase() + "_" + device.toLowerCase();
@@ -941,7 +936,7 @@ class RemoteSettingsApi {
             // create edit dialog
             let command_on = `apiApiDeviceOnOff('${api_name}', '${device}', 'True');`;
             let command_off = `apiApiDeviceOnOff('${api_name}', '${device}', 'False');`;
-            let init = this.data["STATUS"]["connections"][api_name]["api_devices"][device]["active"];
+            let init = remoteStatus.status_system("connections")[api_name]["api_devices"][device]["active"];
 
             let power_device = interfaces[api_name]["API-Devices"][device]["PowerDevice"] || "N/A";
             let toggle = this.toggle.toggleHTML("active_"+api_name+"-"+device, "", "", command_on, command_off, init);
@@ -985,7 +980,7 @@ class RemoteSettingsApi {
 
             let temp = "";
             let information = "<div id='api_status_data_"+api_name+"_"+device+"'></div>";
-            let devices_per_interface = this.data["CONFIG"]["apis"]["structure"];
+            let devices_per_interface = remoteData.apis.data("structure");
             let connected_devices = devices_per_interface[api_name][device].length;
 
             let api_dev = api_name.toLowerCase() + "_" + device.toLowerCase();
@@ -998,8 +993,8 @@ class RemoteSettingsApi {
             let buttons_admin = "";
 
             this.logging.log("module_interface_edit_list: " + api_name + "_" + device)
-            let connect_status_api = dataAll["STATUS"]["interfaces"]["active"][api_name];
-            let connect_status     = dataAll["STATUS"]["interfaces"]["connect"][api_name+"_"+device];
+            let connect_status_api = remoteStatus.status_system("interfaces")["active"][api_name];
+            let connect_status     = remoteStatus.status_system("interfaces")["connect"][api_name+"_"+device];
 
             if (!connect_status) { connect_status = "NO DEVICE connected yet."; }
 
@@ -1014,10 +1009,10 @@ class RemoteSettingsApi {
             buttons      += this.button.sized("edit_"+api_dev,       lang("EDIT"),     "settings",  link_edit)
             buttons      += this.button.sized("save_"+api_dev,       lang("SAVE"),     "hidden",    link_save);
 
-            if (this.data["CONFIG"]["apis"]["list_api_commands"][api_name+"_"+device] && dataAll["CONFIG"]["apis"]["list_api_commands"][api_name+"_"+device].length > 0) {
+            if (remoteData.apis.data("list_api_commands")[api_name+"_"+device] && remoteData.apis.data("list_api_commands")[api_name+"_"+device].length > 0) {
                 if (show_buttons === undefined) { buttons_plus += "<hr style='width:100%;float:left;'/>"; }
-                for (let i=0;i<this.data["CONFIG"]["apis"]["list_api_commands"][api_name+"_"+device].length > 0;i++) {
-                    let command = this.data["CONFIG"]["apis"]["list_api_commands"][api_name+"_"+device][i];
+                for (let i=0;i<remoteData.apis.data("list_api_commands")[api_name+"_"+device].length > 0;i++) {
+                    let command = remoteData.apis.data("list_api_commands")[api_name+"_"+device][i];
                     let command_link = "apiSendToApi(\"" + api_name + "_" + device + "::" +command + "\", \""+api_name+"\");appMsg.info(\"Command send: " + api_name + "_" + device + "::" + command + "\");";
                     buttons_plus += this.button.sized("api_cmd_"+api_name+"_"+device, command, "settings", command_link);
                 }
@@ -1062,7 +1057,7 @@ class RemoteSettingsApi {
             let activate_create_button = "document.getElementById('create_button_"+api_name+"_"+device+"').disabled=false;document.getElementById('create_button_"+api_name+"_"+device+"').style.backgroundColor='';";
 
             if (detect_devices) {
-                const detected = this.data["CONFIG"]["apis"]["list_detect"][api_name + "_" + device];
+                const detected = remoteData.apis.data("list_detect")[api_name + "_" + device];
                 let detected_select = {}
                 Object.keys(detected).forEach(key => {
                     let api_string = api_name + "_" + device + "||";
@@ -1208,9 +1203,9 @@ class RemoteSettingsApi {
         this.update_data();
 
         let text = "<div id='setting_exec_time_list'>";
-        if (dataAll["STATUS"] && dataAll["STATUS"]["request_time"]) {
-            for (let key in dataAll["STATUS"]["request_time"]) {
-                text += key + ": " + use_color((Math.round(dataAll["STATUS"]["request_time"][key] * 1000) / 1000) + "s<br/>", "VALUE", true);
+        if (remoteStatus.status_system("request_time")) {
+            for (let key in remoteStatus.status_system("request_time")) {
+                text += key + ": " + use_color((Math.round(remoteStatus.status_system("request_time")[key] * 1000) / 1000) + "s<br/>", "VALUE", true);
             }
         }
         text += "</div>";
@@ -1225,10 +1220,7 @@ class RemoteSettingsApi {
 
     // create drop down with list of devices from config data (key => label)
     device_list(id,onchange="") {
-        let list = {};
-        for (let key in this.data["CONFIG"]["devices"]){
-            list[key] = this.data["CONFIG"]["devices"][key]["settings"]["label"];
-        }
+        let list = remoteData.devices.select();
         return this.elements.select(id,"device",list,onchange);
     }
 
@@ -1237,8 +1229,8 @@ class RemoteSettingsApi {
         let status = "<br/>";
         let filter_list = document.getElementById(id_filter);
         let filter = filter_list.options[filter_list.selectedIndex].value;
-        let device_status = dataAll["STATUS"]["devices"][filter];
-        let device_values = this.data["CONFIG"]["devices"][filter]["commands"]["get"];
+        let device_status = remoteStatus.status_device_raw(filter);
+        let device_values = remoteData.devices.list_commands(filter, "get");
         let dont_use = ["api", "api-last-query", "api-last-query-tc", "api-last-send", "api-last-send-tc", "api-status","presets"];
         let color = "VALUE";
         if (device_status["api-status"].indexOf("ERROR") > -1)          { color = "ERROR"; }
@@ -1289,11 +1281,11 @@ class RemoteSettingsApi {
 
 
 /* module to change and show some general app and server settings: edit modes, edit icons, show API calls, server side settings */
-class RemoteSettingsGeneral {
+class RemoteSettingsGeneral extends RemoteDefaultClass {
     constructor(name, parent) {
-        this.name = name;
-        this.settings = parent;
+        super(name);
 
+        this.settings = parent;
         this.data = this.settings.data;
         this.tab = this.settings.tab;
         this.button = this.settings.button;
@@ -1383,8 +1375,8 @@ class RemoteSettingsGeneral {
         appleTouchIcon  = "";
         favicon         = "";
 
-        for (let icon in this.data["CONFIG"]["icons"]) {
-            let currentUrl = "remote-v3/icon/"+this.data["CONFIG"]["icons"][icon];
+        for (let icon in remoteData.elements.data("icons")) {
+            let currentUrl = "remote-v3/icon/" + remoteData.elements.data("icons")[icon];
             if (appleTouchIconUrl.indexOf(currentUrl) >= 0) { appleTouchIcon += this.icon_img(currentUrl, false, false, true, "appleicon"); }
             else                                            { appleTouchIcon += this.icon_img(currentUrl, false, true, false, "appleicon"); }
             if (faviconUrl.indexOf(currentUrl) >= 0)        { favicon += this.icon_img(currentUrl, false, false, true, "favicon"); }
@@ -1491,15 +1483,14 @@ class RemoteSettingsGeneral {
 
 
 /* module to show different app and server settings */
-class RemoteSettingsInfo {
+class RemoteSettingsInfo extends RemoteDefaultClass {
     constructor(name, parent) {
-        this.name = name;
-        this.settings = parent;
+        super(name);
 
+        this.settings = parent;
         this.data = this.settings.data;
         this.basic = this.settings.basic;
         this.tab = this.settings.tab;
-        this.logging = new jcLogging(this.name);
 
         this.buttons = this.buttons.bind(this);
         this.load = this.load.bind(this);
@@ -1522,27 +1513,24 @@ class RemoteSettingsInfo {
         } else {
             cookie = "N/A";
         }
-        let main_audio = this.data["CONFIG"]["main-audio"];  // get main audio device from file
-        let main_device_config = this.data["CONFIG"]["devices"][main_audio];
-        let main_device = dataAll["STATUS"]["devices"][main_audio];
-        let system_health = dataAll["STATUS"]["system_health"];
+        let main_audio = statusCheck_audio.audio_device;  // get main audio device from file
+        let main_device_config = remoteData.devices.data(main_audio);
+        let main_device_commands = remoteData.devices.list_commands(main_audio, "definition");
+        let main_device = remoteStatus.status_device_raw(main_audio);
+        let system_health = remoteStatus.status_system("health");
         let audio_max = 100;
         let audio1, audio2;
 
         if (main_device && main_device_config) {
-            if (main_device_config["commands"]["definition"]
-                && main_device_config["commands"]["definition"]["vol"]
-                && main_device_config["commands"]["definition"]["vol"]["values"]
-                && main_device_config["commands"]["definition"]["vol"]["values"]["max"]
-            ) {
-                audio_max  = main_device_config["commands"]["definition"]["vol"]["values"]["max"];
+            if (main_device_commands && main_device_commands["vol"] && main_device_commands["vol"]["values"] && main_device_commands["vol"]["values"]["max"]) {
+                audio_max  = main_device_commands["vol"]["values"]["max"];
             }
             else {
                 audio_max  = 100;
                 this.logging.error("Max values not defined, set 100!");
             }
             audio1 = "Power: "  + main_device["power"] + " / " + "Volume: " + main_device["vol"] + " (" + audio_max + ")";
-            audio2 = main_device_config["settings"]["label"] + " (" + main_audio + ")";
+            audio2 = remoteData.devices.label(main_audio) + " (" + main_audio + ")";
         }
 
         // version information
@@ -1614,7 +1602,6 @@ class RemoteSettingsInfo {
 
         this.update_data();
         let setting = "";
-        let main_audio = this.data["CONFIG"]["main-audio"];  // get main audio device from file
 
         // button color codes
         let buttons = "";
@@ -1633,7 +1620,7 @@ class RemoteSettingsInfo {
 
         // button images
         set_temp = "";
-        let images = this.data["CONFIG"]["elements"]["button_images"];
+        let images = remoteData.elements.data("button_images");
         for (let key in images) {
             let onclick = "appMsg.info(\"Copied button key ["+key+"] to clipboard.\");";
             onclick    += "navigator.clipboard.writeText(\""+key+"\");";
@@ -1647,7 +1634,7 @@ class RemoteSettingsInfo {
         setting  += this.basic.container("setting_button_images","Images buttons",set_temp,false);
 
         set_temp  = "";
-        let colors    = this.data["CONFIG"]["elements"]["button_colors"];
+        let colors    = remoteData.elements.data("button_colors");
         for (let key in colors) {
             let onclick = "appMsg.info(\"Copied button key ["+key+"] to clipboard.\");";
             onclick    += "navigator.clipboard.writeText(\""+key+"\");";
@@ -1672,9 +1659,10 @@ class RemoteSettingsInfo {
 
 
 /* module to edit groups and macros */
-class RemoteSettingsMacro {
+class RemoteSettingsMacro extends RemoteDefaultClass {
     constructor(name, parent) {
-        this.name = name;
+        super(name);
+
         this.settings = parent;
         this.button = this.settings.button;
     }
@@ -1712,11 +1700,10 @@ class RemoteSettingsMacro {
         myBox2.addSheet("Raw Help",         lang("MANUAL_MACROS"));
 
         const jsonEdit = new RemoteJsonEditing("edit-macros", "compact", "width:100%;height:270px;");
-        jsonEdit.create("json-edit-groups", "groups",  this.settings.data["CONFIG"]["macros"]["groups"]);
-        jsonEdit.create("json-edit-macro",  "macro",   this.settings.data["CONFIG"]["macros"]["global"]);
-        jsonEdit.create("json-edit-dev-on", "dev-on",  this.settings.data["CONFIG"]["macros"]["device-on"]);
-        jsonEdit.create("json-edit-dev-off","dev-off", this.settings.data["CONFIG"]["macros"]["device-off"]);
-
+        jsonEdit.create("json-edit-groups", "groups",  remoteData.device_groups.config_groups);
+        jsonEdit.create("json-edit-macro",  "macro",   remoteData.macros.config_macros["global"]);
+        jsonEdit.create("json-edit-dev-on", "dev-on",  remoteData.macros.config_macros["device-on"]);
+        jsonEdit.create("json-edit-dev-off","dev-off", remoteData.macros.config_macros["device-off"]);
     }
 
     load_macro_edit(container_id, macro_type, output_id=undefined ) {
@@ -1729,17 +1716,15 @@ class RemoteSettingsMacro {
             title: `Select ${macro_type.toUpperCase()} macro`,
         }, "editor-"+macro_type,  output_id);
     }
-
 }
 
 
 /* module to edit the timer settings */
-class RemoteSettingsTimer {
+class RemoteSettingsTimer extends RemoteDefaultClass {
     constructor(name, parent) {
-        this.name = name;
-        this.settings = parent;
-        this.logging = new jcLogging(this.name+".logging");
+        super(name);
 
+        this.settings = parent;
         this.create = this.create.bind(this);
         this.info = this.info.bind(this);
     }
@@ -1758,16 +1743,14 @@ class RemoteSettingsTimer {
 
         if (value.indexOf("macro_group") > -1)   {
             value = value.split("_")[2];
-            let devices = dataAll["CONFIG"]["macros"]["groups"][value]["devices"];
-            const buttonArrays = devices.map(device => dataAll["CONFIG"]["devices"][device]["buttons"]);
-            data = buttonArrays.reduce((acc, arr) => acc.filter(btn => arr.includes(btn)));
+            data = remoteData.device_groups.list_buttons(value);
         }
         else if (value.indexOf("macro_") > -1)   {
             value = value.split("_")[1];
-            data = Object.keys(dataAll["CONFIG"]["macros"][value]);
+            data = remoteData.macros.list_all(value);
         }
         else {
-            data = dataAll["CONFIG"]["devices"][value]["buttons"];
+            data = remoteData.devices.list_buttons(value);
         }
         this.settings.basic.input_width = "200px;";
         let onchange = "document.getElementById('add_button_"+key+"').removeAttribute('disabled');";
@@ -1844,9 +1827,9 @@ class RemoteSettingsTimer {
             onclick += "setValueById(\"timer_commands_"+key+"\", JSON.stringify(value));";
 
             let device_macro = {};
-            for (let key2 in dataAll["CONFIG"]["devices"]) { device_macro[key2] = "Device: " + dataAll["CONFIG"]["devices"][key2]["settings"]["label"]; }
-            for (let key2 in dataAll["CONFIG"]["macros"])  { if (key2 !== "description" && key2 !== "groups") { device_macro["macro_"+key2] = "Macro: " + key2; } }
-            for (let key2 in dataAll["CONFIG"]["macros"]["groups"])  { device_macro["macro_groups_"+key2] = "Group: " + key2; }
+            for (let key2 in remoteData.devices.config_devices) { device_macro[key2] = "Device: " + remoteData.devices.label(key2); }
+            for (let key2 in remoteData.macros.config_macros)  { if (key2 !== "description" && key2 !== "groups") { device_macro["macro_"+key2] = "Macro: " + key2; } }
+            for (let key2 in remoteData.device_groups.config_groups)  { device_macro["macro_groups_"+key2] = "Group: " + key2; }
 
             entry_html += tab.row("Add Command:");
             entry_html += tab.row(
@@ -1898,7 +1881,7 @@ class RemoteSettingsTimer {
             else if (input_type === "hour")         { options = {"**": -1}; for (let i=0;i<24;i++) { options[i.toString().padStart(2, '0')] = i.toString().padStart(2, '0'); } }
             else if (input_type === "minute")       { options = {"**": -1}; for (let i=0;i<60;i++) { options[i.toString().padStart(2, '0')] = i.toString().padStart(2, '0'); } }
             else if (input_type === "day_of_week")  { options = {"*": -1}; for (let i=0;i<=6;i++)  { options[i.toString().padStart(1, '0')] = i.toString().padStart(1, '0'); } }
-            else                                    { options = {}; console.error("input type unknown: " + input_type); }
+            else                                    { options = {}; this.logging.error("input type unknown: " + input_type); }
 
             let option_keys = Object.keys(options).sort();
             for (let i=0;i<option_keys.length;i++) {
@@ -1944,11 +1927,11 @@ class RemoteSettingsTimer {
 
 
 /* class to create simple select and input element for setting dialogs */
-class RemoteSettingsElements {
-    constructor(app_name, parent) {
-        this.name = app_name;
-        this.settings = parent;
+class RemoteSettingsElements extends RemoteDefaultClass {
+    constructor(name, parent) {
+        super(name);
 
+        this.settings = parent;
         this.input = this.input.bind(this);
         this.select = this.select.bind(this);
     }

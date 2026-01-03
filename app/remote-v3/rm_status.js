@@ -409,8 +409,8 @@ function statusCheck_displayValues(data={}) {
             const remote = devices[key]["remote"]["remote"];
             const display = devices[key]["remote"]["display"];
 
-            if (!remote.includes("DISPLAY"))         { continue; }
-			if (display === {} || display === undefined)  { continue; }
+            if (!remote || !remote.includes("DISPLAY")) { continue; }
+			if (display === {} || display === undefined)     { continue; }
 
             // set display values
 			for (const display_key in display) {
@@ -554,9 +554,10 @@ function statusCheck_bigMessage(id) {
 // refactored already ...
 
 /* class to visualize the power status of apis, api devices, devices and scenes */
-class RemoteVisualizePowerStatus {
+class RemoteVisualizePowerStatus extends RemoteDefaultClass {
     constructor(name, status) {
-        this.name = name;
+        super(name);
+
         this.data = undefined;
         this.edit_mode = undefined;
         this.status = status;
@@ -586,8 +587,6 @@ class RemoteVisualizePowerStatus {
             "START": "&#10138;",
         }
         this.signs_size = "18px";
-
-        this.logging = new jcLogging(this.name + ".logging");
         this.app_connection_error = false;
     }
 

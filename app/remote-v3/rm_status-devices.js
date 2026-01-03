@@ -3,13 +3,14 @@
 //--------------------------------
 
 let remoteStatus;
-let remoteStatus_logging = true;
+let remoteStatus_logging = false;
 
 
 // class that offers all types of status information for apis, api-devices, media devices, and scenes
-class RemoteDevicesStatus {
+class RemoteDevicesStatus extends RemoteDefaultClass {
     constructor(name, data, load_async=false) {
-        this.name = name;
+        super(name);
+
         this.load_async = load_async;
         this.data = undefined;
         this.app_connection_error = undefined;
@@ -41,6 +42,7 @@ class RemoteDevicesStatus {
         this.warning = {}
         this.starting = {}
         this.starting_offset = 10;
+        this.tab = new RemoteElementTable(this.name + ".tab");
 
         this.update(data);
     }
@@ -65,6 +67,15 @@ class RemoteDevicesStatus {
         this.status_api_devices = this.data["STATUS"]["interfaces"]["connect"];
         this.status_api_devices_all = this.data["STATUS"]["connections"];
         this.status_devices = this.data["STATUS"]["devices"];
+
+        this.status_elements = {
+            "config_errors": this.data["STATUS"]["config_errors"],
+            "connections": this.data["STATUS"]["connections"],
+            "health": this.data["STATUS"]["system_health"],
+            "interfaces": this.data["STATUS"]["interfaces"],
+            "request_time": this.data["STATUS"]["request_time"],
+            "system": this.data["STATUS"]["system"],
+        }
 
         this.config_apis = this.data["CONFIG"]["apis"]["list_api_configs"]["list"];
         this.config_apis_structure = this.data["CONFIG"]["apis"]["structure"];
@@ -105,9 +116,9 @@ class RemoteDevicesStatus {
         this.create_data_groups(); // not implemented yet
 
         if (remoteStatus_logging) {
-            console.warn(this.status_data);
+            this.logging.warn(this.status_data);
             let duration = Math.round(((new Date().getTime()) / 1000 - start_time) * 1000) / 1000;
-            console.warn("Duration data preparation: " + duration + "s");
+            this.logging.warn("Duration data preparation: " + duration + "s");
         }
     }
 
@@ -128,7 +139,7 @@ class RemoteDevicesStatus {
             if (this.config_apis_structure[api][api_device].length > 1) {
                 let message = "There are several devices defined as power device. A power device usually consists of an API device with just one connected device!" +
                     "(" + device + ": " + this.config_apis_structure[api][api_device] + ")";
-                if (!this.warning[message]) { console.warn(message); }
+                if (!this.warning[message]) { this.logging.warn(message); }
                 this.warning[message] = true;
             }
         }
@@ -238,8 +249,8 @@ class RemoteDevicesStatus {
             else if (power_status.indexOf("ERROR") > -1) { status = "ERROR"; }
             else if (power_status.indexOf("ON") > -1 || power_status.indexOf("OFF") > -1 || power_status.indexOf("N/A") > -1) { status = power_status; }
             else {
-                console.error("UNKNOWN:" + device);
-                console.error(power_status);
+                this.logging.error("UNKNOWN:" + device);
+                this.logging.error(power_status);
                 status = "UNKNOWN";
             }
 
@@ -308,7 +319,7 @@ class RemoteDevicesStatus {
                     let device_label = this.config_devices[device]["settings"]["label"];
 
                     if (!device_status || !device_label) {
-                        console.error("RemoteDeviceStatus.update_data_structure(): No device settings available for " + device);
+                        this.logging.error("update_data_structure(): No device settings available for " + device);
                         continue;
                     }
                     if (!dev_status[device_status]) {
@@ -359,6 +370,8 @@ class RemoteDevicesStatus {
                 "list_disabled": dev_list["DISABLED"].join("; "),
             });
 
+            if (status.indexOf("DISABLED") === 0) { status = "DISABLED"; }
+
             this.status_data["scene"][scene] = {
                 "devices": dev_required,
                 "status": status,
@@ -380,6 +393,9 @@ class RemoteDevicesStatus {
             let status_group = "";
             let group = this.config_groups[group_id];
             let message = "";
+            let devices_power_off = [];
+            let devices_disabled = [];
+            let devices_error = [];
 
             for (let i in group["devices"]) {
                 let device_status;
@@ -388,7 +404,7 @@ class RemoteDevicesStatus {
                 if (!this.config_devices[device_id]) {
                     device_status = {"status": "ERROR"};
                     message = `The group '${group_id}' contains the device ${device_id} that is not defined.`;
-                    console.error(message);
+                    this.logging.error(message);
                 } else {
                     device_status = this.status_device(device_id, true);
                 }
@@ -396,6 +412,10 @@ class RemoteDevicesStatus {
                 if (!status_check.includes(device_status["status"])) { status_check.push(device_status["status"]); }
                 if (!status_apis.includes(api_device)) { status_apis.push(api_device); }
                 status_device[device_id] = device_status["status"];
+
+                if (device_status["status"].indexOf("ERROR")) { devices_error.push(device_status["message"]); }
+                if (device_status["status"].indexOf("DISABLED")) { devices_disabled.push(device_id); }
+                if (device_status["status"].indexOf("POWER_OFF")) { devices_power_off.push(device_id); }
             }
 
             if (status_check.length === 0) {
@@ -422,6 +442,9 @@ class RemoteDevicesStatus {
                 message = this.select_message("group", status_group, {
                     "label": group["description"],
                     "devices": group["devices"],
+                    "device-errors": devices_error.join(", "),
+                    "devices-off": devices_power_off.join(", "),
+                    "devices-disabled": devices_disabled.join(", "),
                 })
             }
 
@@ -472,8 +495,17 @@ class RemoteDevicesStatus {
             else                                             { status_msg = lang("STATUS_SCENE_ERROR", [values["label"], values["list_errors"]]); }
         }
         else if (device_type === "group") {
-console.warn("select_message() not implemented for groups yet!")
-        } // not implemented yet
+            if (this.app_connection_error)                      { status_msg = lang("STATUS_NO_SERVER_CONNECT"); }
+            else if (status_id === "ON" || status_id === "OFF") { status_msg = lang("STATUS_GROUP_OK", [values["label"]]); }
+            else if (status_id === "ERROR")                     { status_msg = lang("STATUS_GROUP_ERROR", [values["label"], values["device-errors"]]); }
+            else if (status_id === "API_STARTING")              { status_msg = lang("STATUS_GROUP_API_STARTING", [values["label"]]); }
+            else if (status_id === "POWER_OFF")                 { status_msg = lang("STATUS_GROUP_POWER_OFF", [values["label"], values["devices-off"]]); }
+            else if (status_id === "PARTLY_DISABLED")           { status_msg = lang("STATUS_GROUP_DISABLED", [values["label"], values["devices-disabled"]]); }
+            else if (status_id === "PARTLY")                    { status_msg = lang("STATUS_GROUP_OK", [values["label"]]); }
+            else if (status_id === "N/A")                       { status_msg = lang("STATUS_GROUP_N/A", [values["label"]]); }
+            else if (status_id === "EMPTY")                     { status_msg = lang("STATUS_GROUP_EMPTY", [values["label"]]); }
+            else                                                { status_msg = lang("STATUS_GROUP_OTHER_ERROR", [values["label"]]); }
+        }
         return status_msg;
     }
 
@@ -493,11 +525,11 @@ console.warn("select_message() not implemented for groups yet!")
                 }
             }
             else {
-                console.error("RemoteDevicesStatus.get_status(): no status information for '" + device_type + "/" + device_id + "' available.")
+                this.logging.error("get_status(): no status information for '" + device_type + "/" + device_id + "' available.")
             }
         }
         else {
-            console.error("RemoteDevicesStatus.get_status(): device-type '" + device_type + "' not available.");
+            this.logging.error("get_status(): device-type '" + device_type + "' not available.");
         }
     }
 
@@ -510,7 +542,7 @@ console.warn("select_message() not implemented for groups yet!")
             return this.all_keys[device_type];
         }
         else {
-            console.error("RemoteDevicesStatus.get_keys(): Device type '"+device_type+"' not available.");
+            this.logging.error("get_keys(): Device type '"+device_type+"' not available.");
         }
     }
 
@@ -534,8 +566,82 @@ console.warn("select_message() not implemented for groups yet!")
         return this.get_status("device", id, details);
     }
 
+    /* get raw status for devices */
+    status_device_raw (id) {
+        if (this.status_devices[id]) {
+            return this.status_devices[id];
+        } else  {
+            this.logging.error(`No status for device '${id}' available.`);
+        }
+    }
+
     /* get status for scenes */
     status_scene (id, details=false) {
         return this.get_status("scene", id, details);
+    }
+
+    /* get status for groups */
+    status_group (id, details=false) {
+        return this.get_status("group", id, details);
+    }
+
+    /* return several raw data from status ... potential for more */
+    status_system (id) {
+        if (this.status_elements[id]) {
+            return this.status_elements[id];
+        } else {
+            this.logging.error(`status_system(): No data available for id '${id}'.`)
+            return {};
+        }
+    }
+
+    /* create a summary of all status information */
+    status_summary () {
+        let result = "";
+        result += this.tab.start();
+
+        for (let api in this.config_apis) {
+            let api_status = this.status_api(api, true);
+            result += this.tab.line();
+            result += this.tab.row("<b>API:</b><br/>", false);
+            result += this.tab.row("-&nbsp;"+api, "<b>"+api_status["status"] + "</b> / " + api_status["message"]);
+
+            for (let api_device in this.config_apis_structure[api]) {
+                let api_device_status = this.status_api_device(api+"_"+api_device, true);
+                result += this.tab.row("&nbsp;<br/><b>API-Device:</b>", false);
+                result += this.tab.row("-&nbsp;"+api_device, "<b>"+api_device_status["status"] + "</b> / " + api_device_status["message"]);
+
+                let count = 0;
+                for (let device in this.config_devices) {
+                    let device_status = this.status_device(device, true);
+                    if (device_status["api"] === api && device_status["api-device"] === api_device) {
+                        if (count === 0) {
+                            result += this.tab.row("&nbsp;<br/><b>Devices:</b>");
+                        }
+                        result += this.tab.row("-&nbsp;"+device, "<b>"+device_status["status"] + "</b> / " + device_status["message"]);
+                        count += 1;
+                    }
+
+                }
+            }
+        }
+
+        result += this.tab.line();
+        result += this.tab.row("<b>Scenes:</b>", false);
+        for (let scene in this.config_scenes) {
+            let scene_status = this.status_scene(scene, true);
+            result += this.tab.row("-&nbsp;"+scene, "<b>"+scene_status["status"] + "</b> / " + scene_status["message"]);
+        }
+
+        result += this.tab.line();
+        result += this.tab.row("<b>Groups:</b>", false);
+        for (let group in this.config_groups) {
+            let group_status = this.status_group(group, true);
+            result += this.tab.row("-&nbsp;"+group, "<b>"+group_status["status"] + "</b> / " + group_status["message"]);
+        }
+
+        result += this.tab.end();
+
+        return result;
     }
 }

@@ -7,11 +7,13 @@ let remoteData = undefined;
 
 
 /* coordinate data preparation based on data type */
-class RemotePrepareData {
+class RemotePrepareData extends RemoteDefaultClass {
     constructor (name, data) {
-        this.name = name;
+        super(name);
+
         this._data = undefined;
 
+        this.apis = new RemotePrepareDataApis(this.name + ".apis");
         this.devices = new RemotePrepareDataDevices(this.name + ".devices");
         this.device_groups = new RemotePrepareDataGroups(this.name + ".device_groups");
         this.elements = new RemotePrepareDataElements(this.name + ".elements");
@@ -19,7 +21,6 @@ class RemotePrepareData {
         this.scenes = new RemotePrepareDataScenes(this.name + ".scenes")
         this.templates = new RemotePrepareDataTemplates(this.name + ".templates")
 
-        this.logging = new jcLogging(this.name + ".logging");
         this.update(data);
     }
 
@@ -37,14 +38,16 @@ class RemotePrepareData {
         this.macros.update( data );
         this.scenes.update( data );
         this.templates.update( data );
+        this.apis.update( data );
     }
 }
 
 
 /* prepare macro data */
-class RemotePrepareDataMacros {
+class RemotePrepareDataMacros extends RemoteDefaultClass {
     constructor(name) {
-        this.name = name;
+        super(name);
+
         this._data = undefined;
 
         this.categories_global = ["device-on", "device-off", "global"];
@@ -53,7 +56,6 @@ class RemotePrepareDataMacros {
 
         this.device_groups = new RemotePrepareDataGroups(this.name + ".device_groups");
         this.devices = new RemotePrepareDataDevices(this.name + ".devices");
-        this.logging = new jcLogging(this.name + ".logging");
     }
 
     // update class data with fresh data from server
@@ -66,32 +68,6 @@ class RemotePrepareDataMacros {
 
         this.device_groups.update( data );
         this.devices.update( data );
-    }
-
-    // list all macros as dict of arrays or all macros of a category as an array
-    list_all(category="") {
-
-        if (category === "") {
-            let result = {};
-            for (let c in this.categories) {
-                result[this.categories[c]] = this.list_all(this.categories[c]);
-            }
-            return result;
-        }
-        else if (this.categories_global.includes(category)) {
-            return Object.keys(this.config_macros[category]);
-        }
-        else if (this.categories_scenes.includes(category)) {
-            let result = {};
-            for (let scene in this.config_scenes) {
-                if (this.config_scenes[scene]["macro-"+category]) { result[scene] = Object.keys(this.config_scenes[scene]["macro-"+category]); }
-            }
-            return result;
-        }
-        else {
-            this.logging.error(`list_all(): category "${category} does not exist."`);
-            return [];
-        }
     }
 
     // return complete macro data
@@ -137,6 +113,32 @@ class RemotePrepareDataMacros {
             this.logging.error(`data(): category '${category}' does not exist.`);
         }
         return result;
+    }
+
+    // list all macros as dict of arrays or all macros of a category as an array
+    list_all(category="") {
+
+        if (category === "") {
+            let result = {};
+            for (let c in this.categories) {
+                result[this.categories[c]] = this.list_all(this.categories[c]);
+            }
+            return result;
+        }
+        else if (this.categories_global.includes(category)) {
+            return Object.keys(this.config_macros[category]);
+        }
+        else if (this.categories_scenes.includes(category)) {
+            let result = {};
+            for (let scene in this.config_scenes) {
+                if (this.config_scenes[scene]["macro-"+category]) { result[scene] = Object.keys(this.config_scenes[scene]["macro-"+category]); }
+            }
+            return result;
+        }
+        else {
+            this.logging.error(`list_all(): category "${category} does not exist."`);
+            return [];
+        }
     }
 
     // list all macro categories as an array
@@ -219,13 +221,12 @@ class RemotePrepareDataMacros {
 
 
 /* prepare group data */
-class RemotePrepareDataGroups {
+class RemotePrepareDataGroups extends RemoteDefaultClass {
     constructor(name) {
-        this.name = name;
-        this._data = undefined;
+        super(name);
 
+        this._data = undefined;
         this.devices = new RemotePrepareDataDevices(this.name+".devices");
-        this.logging = new jcLogging(this.name + ".logging");
     }
 
     // update class data with fresh data from server
@@ -385,12 +386,10 @@ class RemotePrepareDataGroups {
 
 
 /* prepare device data */
-class RemotePrepareDataDevices {
+class RemotePrepareDataDevices extends RemoteDefaultClass {
     constructor(name) {
-        this.name = name;
+        super(name);
         this._data = undefined;
-
-        this.logging = new jcLogging(this.name + ".logging");
     }
 
     // update class data with fresh data from server
@@ -572,6 +571,15 @@ class RemotePrepareDataDevices {
         }
     }
 
+    // return description of a device
+    remote_position(device_id) {
+        if (this.config_devices[device_id] && this.config_devices[device_id]["settings"]["position"]) { return this.config_devices[device_id]["settings"]["position"]; }
+        else {
+            this.logging.error(`position(): scene_id "${device_id} does not exist."`)
+            return 1000;
+        }
+    }
+
     // create a dict to be used in a <select> element
     select(prefix="", prefix_key="", short=false, initial={}) {
         let result = initial;
@@ -585,16 +593,20 @@ class RemotePrepareDataDevices {
         }
         return result;
     }
+
+    // no scenes yet
+    not_available() {
+        return (!this.config_devices || this.list_all().length === 0);
+    }
+
 }
 
 
 /* prepare scene data */
-class RemotePrepareDataScenes {
+class RemotePrepareDataScenes extends RemoteDefaultClass {
     constructor(name) {
-        this.name = name;
+        super(name);
         this._data = undefined;
-
-        this.logging = new jcLogging(this.name + ".logging");
     }
 
     // update class data with fresh data from server
@@ -619,7 +631,7 @@ class RemotePrepareDataScenes {
     description(scene_id) {
         if (this.config_scenes[scene_id] && this.config_scenes[scene_id]["settings"]["description"]) { return this.config_scenes[scene_id]["settings"]["description"]; }
         else {
-            this.logging.error(`description(): device_id "${scene_id} does not exist."`)
+            this.logging.error(`description(): scene_id "${scene_id} does not exist."`)
             return scene_id;
         }
     }
@@ -715,17 +727,27 @@ class RemotePrepareDataScenes {
         }
     }
 
+    // return description of a device
+    remote_position(scene_id) {
+        if (this.config_scenes[scene_id] && this.config_scenes[scene_id]["settings"]["position"]) { return this.config_scenes[scene_id]["settings"]["position"]; }
+        else {
+            this.logging.error(`postion(): scene_id "${scene_id} does not exist."`)
+            return 1000;
+        }
+    }
 
+    // no scenes yet
+    not_available() {
+        return (!this.config_scenes || this.list_all().length === 0);
+    }
 }
 
 
 /* prepare scene data */
-class RemotePrepareDataTemplates {
+class RemotePrepareDataTemplates extends RemoteDefaultClass {
     constructor(name) {
-        this.name = name;
+        super(name);
         this._data = undefined;
-
-        this.logging = new jcLogging(this.name + ".logging");
     }
 
     // update class data with fresh data from server
@@ -801,21 +823,21 @@ class RemotePrepareDataTemplates {
 
 
 /* prepare other elements data */
-class RemotePrepareDataElements {
+class RemotePrepareDataElements extends RemoteDefaultClass {
     constructor(name) {
-        this.name = name;
+        super(name);
         this._data = undefined;
-
-        this.logging = new jcLogging(this.name + ".logging");
     }
 
     // update class data with fresh data from server
     update(data) {
         this._data = data;
 
-        this.config_elements = this._data["CONFIG"]["elements"];
         this.config_apis = this._data["CONFIG"]["apis"];
+        this.config_elements = this._data["CONFIG"]["elements"];
+        this.config_device_types = this._data["CONFIG"]["device_types"];
         this.config_remotes = this._data["CONFIG"]["remotes"];
+        this.config_icons = this._data["CONFIG"]["icons"];
     }
 
     // return description of a template
@@ -825,6 +847,12 @@ class RemotePrepareDataElements {
         }
         else if (element_id === "remotes") {
             return this.config_remotes;
+        }
+        else if (element_id === "icons") {
+            return this.config_icons;
+        }
+        else if (element_id === "device_types") {
+            return this.config_device_types;
         }
         else if (this.config_elements[element_id]) {
             return this.config_elements[element_id];
@@ -844,3 +872,26 @@ class RemotePrepareDataElements {
     }
 }
 
+
+/* prepare data for APIs and API-Device; initial step just offer raw data ... later more logic possible */ // in progress
+class RemotePrepareDataApis extends RemoteDefaultClass {
+    constructor(name) {
+        super(name);
+        this._data = undefined;
+    }
+
+    // update class data with fresh data from server
+    update(data) {
+        this._data = data;
+        this.config_apis = this._data["CONFIG"]["apis"];
+    }
+
+    data(element_id) {
+        if (this.config_apis[element_id]) {
+            return this.config_apis[element_id];
+        } else {
+            this.logging.error(`data(): No element with the id ${element_id} available.`)
+        }
+    }
+
+}

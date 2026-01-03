@@ -65,7 +65,7 @@ class RemoteElementColorPicker extends RemoteDefaultClass {
                 canvas.height = image.height;
                 canvas.style.borderRadius = "5px";
                 ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-                this.logging.debug("Color picker canvas size: " + canvas.width + "x" + canvas.height);
+                console.debug("Color picker canvas size: " + canvas.width + "x" + canvas.height);
             };
 
             // Event listener for click on the canvas
