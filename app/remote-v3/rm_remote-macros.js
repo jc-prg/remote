@@ -54,8 +54,10 @@ let macro_container = `
     `;
 
 /* class to create a GUI macro editor */
-class RemoteMacroEditor {
+class RemoteMacroEditor extends RemoteDefaultClass {
     constructor(container_id, config=undefined, editor_id=undefined, output_id=undefined) {
+        super("RemoteMacroEditor");
+
         this.config = config || macro_sample_data_set;
         this.container_name = container_id;
         this.colors = {
@@ -144,7 +146,7 @@ class RemoteMacroEditor {
     init() {
         this.container = document.getElementById(this.container_name);
         if (!this.container) {
-            console.error("RemoteMacroEdit.init(): container elemente '"+this.container_name+"' doesn't exist.")
+            this.logging.error("init(): container elemente '"+this.container_name+"' doesn't exist.")
         } else {
             this.container.innerHTML = macro_container
                 .replaceAll("{editor_id}", this.editorId)
@@ -205,7 +207,6 @@ class RemoteMacroEditor {
         this.updateDeviceNavVisibility();
     }
 
-    /* load initial data set if given */
     loadInitialData() {
         if (!this.inital) return;
 
@@ -268,6 +269,7 @@ class RemoteMacroEditor {
             }).filter(Boolean);
         }
     }
+    /* load initial data set if given */
 
     /* ---------- Palette ---------- */
     renderPalette() {

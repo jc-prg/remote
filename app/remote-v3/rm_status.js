@@ -34,7 +34,7 @@ function statusCheck(data={}) {
         remoteStatus = new RemoteDevicesStatus("remoteStatus", data);
 
         statusCheck_power = new RemoteVisualizePowerStatus("statusCheck_power", remoteStatus);
-        statusCheck_audio = new RemoteVisualizeMainAudioStatus("statusCheck_audio", remoteStatus);
+        statusCheck_audio = new RemoteVisualizeMainAudioStatus("statusCheck_audio", remoteStatus, data);
 
         status_load_first = false;
     }

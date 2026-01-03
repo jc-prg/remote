@@ -4,26 +4,20 @@
 // class for drop down menu
 //--------------------------------
 
-let rmMenu_visibleWidth = 875;
 
-class rmMenu {
+class rmMenu extends RemoteDefaultClass {
     constructor(name, menu) {
+        super(name);
 
         this.menuItems     = menu;
-        this.name      = name;
         this.data          = {};
         this.edit_mode     = false;
         this.initial_load  = true;
-        this.logging       = new jcLogging(this.name);
-        this.hide_settings = "rm3settings.hide_settings();";
-
     }
 
     // load data with devices (deviceConfig["devices"])
     init(data) {
-
-        if (data["CONFIG"]) { this.data = data; }
-        else                { return; }
+        this.data = data
 
         if (this.initial_load) {
             this.logging.default("Initialized new class 'rmMenu'.");
@@ -76,9 +70,7 @@ class rmMenu {
         if (data) {} else { return; }
 
         let menu = this.readMenu();
-        let error;
-        if (this.data["STATUS"])    { error = this.data["STATUS"]["config_errors"]["scenes"]; }
-        else                        { error = {}; }
+        let error = remoteStatus.status_system("config_errors")["scenes"];
 
         for (let key in data) { data[key]["position"] = data[key]["settings"]["position"]; }
         let order  = sortDict(data,"position");
@@ -118,11 +110,8 @@ class rmMenu {
         if (!data) { return; }
 
         // set vars
-        let error  = {};
-        let menu   = this.readMenu();
-        if (this.data["STATUS"] && this.data["STATUS"]["config_errors"] && this.data["STATUS"]["config_errors"]["devices"])   {
-            error  = this.data["STATUS"]["config_errors"]["devices"];
-        }
+        let error = remoteStatus.status_system("config_errors")["devices"];
+        let menu = this.readMenu();
 
         for (let key in data) {
             if (data[key]["settings"]["position"]) {

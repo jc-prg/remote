@@ -73,6 +73,6 @@ class RemoteDefaultClass {
     constructor(name) {
         this.name = name;
         this.logging = new RemoteLogging(name);
-        this.logging.error("Initializing ...");
+        this.logging.info("Initializing ...");
     }
 }

@@ -7,16 +7,14 @@ let rmSheetBox_open = {};
 
 
 /* create elements for remote control editing */
-class RemoteElementsEdit {
+class RemoteElementsEdit extends RemoteDefaultClass {
     constructor(name) {
+        super(name);
 
-        this.name       = name;
         this.data           = {};
         this.edit_mode      = false;
         this.input_width    = "100px";
         this.container_open = {};
-
-        this.logging        = new jcLogging(this.name);
     }
 
     // create a basic container element that can be opened or closed dynamically
@@ -128,10 +126,10 @@ class RemoteElementsEdit {
 
 
 /* class to draw a table */
-class RemoteElementTable {
+class RemoteElementTable extends RemoteDefaultClass {
     constructor(name) {
+        super(name);
 
-        this.name = name;
         this.row_ratio = "auto";
     }
 
@@ -181,14 +179,15 @@ class RemoteElementTable {
 /*
 * class to create a box, where content can be added into several sheets and the sheets can be selected by tabs
 */
-class RemoteElementSheetBox {
-
+class RemoteElementSheetBox extends RemoteDefaultClass {
     constructor(containerId, height = "300px", scroll_bar = false, scroll_view = false, keep_open = true) {
+        super("RemoteElementSheetBox");
+
         this.id = containerId;
         this.created = false;
         this.container = document.getElementById(containerId);
         if (!this.container) {
-            console.error("RemoteElementSheetBox: Could not create the sheet box, container '"+containerId+"' not found.");
+            this.logging.error("Could not create the sheet box, container '"+containerId+"' not found.");
         } else {
             this.created = true;
             this.container.innerHTML = "";
@@ -250,8 +249,9 @@ class RemoteElementSheetBox {
         }
     }
 
+    /* add a new sheet as tab to the box */
     addSheet(title, content, load_on_open = true, on_load_command=undefined) {
-        if (!this.created) { console.error("RemoteElementSheetBox: Could not add sheet '"+title+"'."); return; }
+        if (!this.created) { this.logging.error("addSheet(): Could not add sheet '"+title+"'."); return; }
         const index = this.sheets.length;
         const lazy = load_on_open;
 
@@ -300,6 +300,7 @@ class RemoteElementSheetBox {
         this.updateArrowVisibility();
     }
 
+    /* set a sheet active, e.g., when clicking on the tab */
     setActiveSheet(index) {
         this.updateArrowVisibility();
 
@@ -318,7 +319,7 @@ class RemoteElementSheetBox {
                 setTimeout(()=>{
                     eval(sheet.on_load_command);
                     //try { eval(sheet.on_load_command); }
-                    //catch (e) { console.error("RemoteElementSheetBox.addSheet(): Could not execute command '"+sheet.on_load_command+"' on load :" + e); }
+                    //catch (e) { this.logging.error("addSheet(): Could not execute command '"+sheet.on_load_command+"' on load :" + e); }
                 },100);
                 sheet.sheetDiv.dataset.on_load ="true";
             }
@@ -334,16 +335,19 @@ class RemoteElementSheetBox {
         });
     }
 
+    /* activate the last active sheet */
     activateLast() {
         if (this.keep_open && rmSheetBox_open[this.id]) { this.setActiveSheet(rmSheetBox_open[this.id]); }
         else                                            { this.setActiveSheet(0); }
         }
 
+    /* scroll the tabs if not all visible */
     scrollTabs(offset) {
         this.tabBar.scrollBy({ left: offset, behavior: "smooth" });
         setTimeout(() => this.updateArrowVisibility(), 200);
         }
 
+    /* show or hide the arrows to scroll the tabs */
     updateArrowVisibility() {
         function isVisible(el) {
           if (!el) return false;
@@ -372,6 +376,7 @@ class RemoteElementSheetBox {
             }
         }
 
+    /* get content from a specific tab */
     getSheetContent(index) {
         // Zugriff auf die Inhalte auch wenn sie gerade unsichtbar sind
         return this.sheets[index]?.sheetDiv || null;
@@ -382,9 +387,9 @@ class RemoteElementSheetBox {
 /*
 * class to create a wide box for content, that can be scrolled left and right if it's wider than the box
 */
-class RemoteElementScrollBox {
-
+class RemoteElementScrollBox extends RemoteDefaultClass {
     constructor(container="scrollBox", html="") {
+        super("RemoteElementScrollBox");
 
         this.update = this.update.bind(this);
 
@@ -422,7 +427,7 @@ class RemoteElementScrollBox {
             this.update();
 	        }
 	    else {
-	        console.error("RemoteElementScrollBox: Container '" + container + "' not found.");
+	        this.logging.error("Container '" + container + "' not found.");
 	        }
         }
 
@@ -435,7 +440,7 @@ class RemoteElementScrollBox {
             this.rightArrow.style.display = scrollLeft < maxScroll - 1 ? 'block' : 'none';
             }
 	    else {
-	        console.error("RemoteElementScrollBox.update: Container '" + this.id_container + "' not found.");
+	        this.logging.error("update(): Container '" + this.id_container + "' not found.");
 	        }
         }
     }

@@ -225,7 +225,7 @@ function remoteLastFromCookie() {
 	if (cookie && cookie !== "") {
 		const remote = cookie.split("::");
 		console.log("Load Cookie: " + cookie);
-		console.log(remote);
+		console.debug(remote);
 
         if (remote.length > 2) { remoteToggleEditMode(remote[3]); }
         if (remote.length > 3) { remoteToggleEasyEdit(remote[4]); }

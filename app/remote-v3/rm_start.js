@@ -4,21 +4,19 @@
 
 
 /* class to create the start menu */
-class RemoteStart {
+class RemoteStart extends RemoteDefaultClass {
 
     constructor(name) {
+        super(name);
+
         this.data         = {}
-        this.name    = name;
         this.edit_mode    = false;
         this.initial_load = true;
-        this.logging      = new jcLogging(this.name);
     }
 
     /* load configuration data */
     init(data) {
-
-        if (data["CONFIG"])  { this.data = data; }
-        else                 { return; }
+        this.data = data;
 
         if (this.initial_load) {
             this.logging.default("Initialized new class 'RemoteStart'.");
@@ -140,16 +138,16 @@ class RemoteStart {
     button(id, label, style, script_apiCommandSend, disabled, image="" ) {
         let background_image = "";
         if (image !== "") {
-            let scene_images  = this.data["CONFIG"]["elements"]["scene_images"];
+            let scene_images  = remoteData.elements.data("scene_images");
             if (scene_images[image]) {
                 image = scene_images[image][0];
             }
 
             background_image = "style='background-image:url("+rm3scene_dir+image+");'"
-            return "<button id='" + id + "' class='rm-button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + " " + background_image + "></button>";
+            return "<button id='" + id + "' class='rm-button " + style + "' onclick='" + script_apiCommandSend + "' " + disabled + " " + background_image + "></button>";
         }
         else {
-            return "<button id='" + id + "' class='rm-button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + " >" + label + "</button>";
+            return "<button id='" + id + "' class='rm-button " + style + "' onclick='" + script_apiCommandSend + "' " + disabled + " >" + label + "</button>";
         }
     }
 
@@ -163,8 +161,8 @@ class RemoteStart {
     button_image(label, style) {
 
         // set vars
-        let button_color = this.data["CONFIG"]["elements"]["button_colors"];  // definition of button color
-        let button_img2  = this.data["CONFIG"]["elements"]["button_images"];  // definition of images for buttons (without path and ".png")
+        let button_color = remoteData.elements.data("button_colors");  // definition of button color
+        let button_img2  = remoteData.elements.data("button_images");  // definition of images for buttons (without path and ".png")
         let button_img   = [];
         for (let key in button_img2) { button_img[key] = this.image(button_img2[key]); }
 

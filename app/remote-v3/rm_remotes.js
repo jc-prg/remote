@@ -215,8 +215,8 @@ class RemoteMain extends RemoteDefaultClass {
             remote_buttons = remoteData.devices.list_buttons(device);
             this.active_label = remote_label;
         } else {
-            if (this.data["STATUS"]["config_errors"]["devices"][device]) {
-                let errors = this.data["STATUS"]["config_errors"]["devices"][device];
+            if (remoteStatus.status_system("config_errors")["devices"][device]) {
+                let errors = remoteStatus.status_system("config_errors")["devices"][device];
                 remote += "<b class='entry_error'>" + lang("REMOTE_CONFIG_ERROR", [device]) + "</b>";
                 remote += "<hr/><ul>";
                 for (let key in errors) {
@@ -502,7 +502,7 @@ class RemoteMain extends RemoteDefaultClass {
             elementHidden(id, "device_edit");
             return;
         }
-        if (this.data["STATUS"]["config_errors"]["devices"][device] || !remoteData.devices.exists(device)) {
+        if (remoteStatus.status_system("config_errors")["devices"][device] || !remoteData.devices.exists(device)) {
             setTextById(id, "");
             return;
         }
@@ -524,7 +524,7 @@ class RemoteMain extends RemoteDefaultClass {
         this.button.width = "90px";
 
         let remote = "";
-        remote += "<span class='center 'remote_edit_headline'><b>" + lang("EDIT_REMOTE") + " &quot;" + remoteData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
+        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_REMOTE") + " &quot;" + remoteData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
         remote += this.basic.edit_line();
 
         // Main Settings
@@ -748,7 +748,7 @@ class RemoteMain extends RemoteDefaultClass {
         }
 
         let device_config = remoteData.devices.data(device);
-        if (this.data["STATUS"]["config_errors"]["devices"][device] || !remoteData.devices.exists(device, true)) {
+        if (remoteStatus.status_system("config_errors")["devices"][device] || !remoteData.devices.exists(device, true)) {
             setTextById(id, "");
             return;
         }
@@ -780,7 +780,7 @@ class RemoteMain extends RemoteDefaultClass {
 
         // Start remote control edit section
         let remote = "";
-        remote += "<span class='center 'remote_edit_headline'><b>" + lang("EDIT_REMOTE") + " &quot;" + remoteData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
+        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_REMOTE") + " &quot;" + remoteData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
         remote += this.basic.edit_line();
 
         // Add GUI to add JSON elements
@@ -891,8 +891,8 @@ class RemoteMain extends RemoteDefaultClass {
 
         if (!remoteData.scenes.exists(scene, true)) {
 
-            if (this.data["STATUS"]["config_errors"]["scenes"][scene]) {
-                let errors = this.data["STATUS"]["config_errors"]["scenes"][scene];
+            if (remoteStatus.status_system("config_errors")["scenes"][scene]) {
+                let errors = remoteStatus.status_system("config_errors")["scenes"][scene];
                 remote += "<b class='entry_error'>" + lang("REMOTE_CONFIG_ERROR", [scene]) + "</b>";
                 remote += "<hr/><ul>";
                 for (let key in errors) {
@@ -1197,7 +1197,7 @@ class RemoteMain extends RemoteDefaultClass {
             return;
         }
 
-        if (this.data["STATUS"]["config_errors"]["scenes"][scene] || !remoteData.scenes.exists(scene, true)) {
+        if (remoteStatus.status_system("config_errors")["scenes"][scene] || !remoteData.scenes.exists(scene, true)) {
             setTextById(id, "");
             return;
         }
@@ -1246,7 +1246,7 @@ class RemoteMain extends RemoteDefaultClass {
         }
 
         // create frame
-        remote += "<span class='center 'remote_edit_headline'><b>" + lang("EDIT_SCENE") + " &quot;" + remoteData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
+        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_SCENE") + " &quot;" + remoteData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
         remote += this.basic.edit_line();
         remote += this.basic.container("scene_main", lang("SETTINGS_SCENES"), "<div id='scene-edit-main'></div>", true);
         setTextById(id, remote);
@@ -1269,7 +1269,7 @@ class RemoteMain extends RemoteDefaultClass {
             return;
         }
 
-        if (this.data["STATUS"]["config_errors"]["scenes"][scene] || !remoteData.scenes.exists(scene, true)) {
+        if (remoteStatus.status_system("config_errors")["scenes"][scene] || !remoteData.scenes.exists(scene, true)) {
             setTextById(id, "");
             return;
         }
@@ -1323,7 +1323,7 @@ class RemoteMain extends RemoteDefaultClass {
 
         // frame
         let remote = "";
-        remote += "<span class='center 'remote_edit_headline'><b>" + lang("EDIT_SCENE") + " &quot;" + remoteData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
+        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_SCENE") + " &quot;" + remoteData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
         remote += this.basic.edit_line();
         remote += this.basic.container("edit_elements", lang("EDIT_ELEMENTS"), "<div id='scene-edit-elements'></div>", false);
         remote += this.basic.container("edit_json_all", lang("EDIT_JSON"), "<div id='scene-edit-json'></div>", false);
