@@ -736,6 +736,17 @@ class RemotePrepareDataTemplates {
         this.list_templates = this._data["CONFIG"]["templates"]["list"];
     }
 
+    // return data for a template
+    data(template_id) {
+        if (this.list_all().includes(template_id)) {
+            return this.config_templates[template_id];
+        }
+        else {
+            this.logging.error(`data(): template_id "${template_id}" does not exist.`);
+            return [];
+        }
+    }
+
     // return description of a template
     description(template_id) {
         if (this.config_templates[template_id] && this.config_templates[template_id]["description"]) {

@@ -6,12 +6,12 @@
 /*
 * class to convert JSON data and edit it in <textarea> fields
 */
-class RemoteJsonHandling {
+class RemoteJsonHandling extends RemoteDefaultClass {
 
     constructor(name) {
-        this.name       = name;
-        this.data           = {};
-        this.logging        = new jcLogging(this.name);
+        super(name);
+
+        this.data = {};
         this.json_highlight = new RemoteJsonEditing(this.name+".json_highlight");
     }
 
@@ -139,14 +139,14 @@ class RemoteJsonHandling {
 /*
 * class to edit JSON texts in a pre-formated and color coded style
 */
-class RemoteJsonEditing {
+class RemoteJsonEditing extends RemoteDefaultClass {
 
     constructor(name, format_style = "default", style = "width: 95%; height: 160px;", highlighting=undefined) {
-        this.name = name;
+        super(name);
+
         this.default_size = style;
         this.format_style = format_style;   // other options: default, leafs, row4
         this.main_instance = "rm3json_edit";
-        this.logging = new jcLogging(this.name);
         this.highlighting = highlighting || jsonHighlighting;
 
         this.start = this.start.bind(this);
@@ -222,7 +222,7 @@ class RemoteJsonEditing {
             resizeObserver.observe(textarea);
         }
         else {
-            console.error("RemoteJsonEditing.start: json editor '" + id + "' not found." );
+            this.logging.error("start(): json editor '" + id + "' not found." );
         }
     }
 
@@ -346,17 +346,16 @@ class RemoteJsonEditing {
 /*
 * class to add elements to the JSON remote definition
 */
-class RemoteJsonElements {
+class RemoteJsonElements extends RemoteDefaultClass {
 
     constructor(name, remote_type, remote) {
+        super(name);
 
         this.data = {};
-        this.name = name;
         this.remote = remote;
         this.remote_type = remote_type;
 
         this.json = new RemoteJsonHandling(name + ".json");		// rm_remotes-elements.js
-        this.logging = new jcLogging(this.name);
         this.logging.debug("Create RemoteJsonElements (" + name + "/" + remote_type + "/" + this.json_field_id + ")");
 
         if (this.remote_type === "scene") {
@@ -739,7 +738,7 @@ class RemoteJsonElements {
             return;
         }
 
-        template = this.data["CONFIG"]["templates"]["definition"][value];
+        template = remoteData.templates.data(value);
         let value_new = template["remote"];
         if (template["display"]) {
             let display_new = template["display"];
@@ -791,13 +790,12 @@ class RemoteJsonElements {
 
     /* get slider configuration */
     prepare_slider(device, slider_cmd, slider_param, slider_description, slider_minmax, position = "") {
-
         let s_param = getValueById(slider_param);
         let s_description = "description";
 
         if (device.startsWith("group_")) {
             let group = device.split("_")[1];
-            let group_devices = this.data["CONFIG"]["macros"]["groups"][group]["devices"];
+            let group_devices = remoteData.device_groups.list_devices(group);
             if (group_devices.length > 0) {
                 device = group_devices[0];
             } else {
@@ -806,7 +804,7 @@ class RemoteJsonElements {
             }
         }
 
-        let s_device = this.data["CONFIG"]["devices"][device]["settings"]["label"];
+        let s_device = remoteData.devices.label(device);
         if (s_param === "" || s_param === undefined) {
             appMsg.alert(lang("SLIDER_SELECT_PARAM"));
             return;
@@ -819,7 +817,7 @@ class RemoteJsonElements {
         }
         setValueById(slider_description, s_description);
 
-        let cmd_definition = this.data["CONFIG"]["devices"][device]["commands"]["definition"];
+        let cmd_definition = remoteData.devices.list_commands(device, "definition");
 
         this.logging.info(JSON.stringify(cmd_definition[s_param]));
 
