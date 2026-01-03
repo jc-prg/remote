@@ -590,7 +590,7 @@ function apiMacroDecompose(macro) {
             if (macro_data[macro_cmd[1]]) {
                 for (var i=0; i<macro_data[macro_cmd[1]].length; i++) {
                     var command = macro_data[macro_cmd[1]][i];
-                    if (command.startsWith && command.startsWith("WAIT")) {
+                    if (command.startsWith && (command.startsWith("WAIT") || command.startsWith("MSG"))) {
                         var wait = command.split("-");
                         macro_wait = 'appMsg.wait_time("'+lang("MACRO_PLEASE_WAIT")+'", '+wait[1]+');';
                         full_decompose.push("wait=" + wait[1]+"s");

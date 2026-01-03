@@ -1259,7 +1259,9 @@ class RemoteAPI(RemoteDefaultClass):
                     commands_exist.append(command)
             elif not command_str.isnumeric() and "WAIT-" not in command_str:
                 commands_dont_exist.append(command)
-            elif "WAIT-" in command_str:
+            elif not command_str.isnumeric() and "MSG-" not in command_str:
+                commands_dont_exist.append(command)
+            elif "WAIT-" in command_str or "MSG-" in command_str:
                 pass
             else:
                 commands_exist.append(command)

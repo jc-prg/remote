@@ -1708,8 +1708,16 @@ class RemoteSettingsMacro extends RemoteDefaultClass {
 
     load_macro_edit(container_id, macro_type, output_id=undefined ) {
 
+        let source_data;
+        if (macro_type === "global") {
+            source_data = remoteData.macros.prepare_edit_sources(true, true, false, true, true);
+        }
+        else if (macro_type.indexOf("device-") === 0) {
+            source_data = remoteData.macros.prepare_edit_sources(true, true, false, false, false);
+        }
+
         const macroEdit = new RemoteMacroEditor(container_id, {
-            categories: remoteData.macros.prepare_edit_sources(true, true, false, true, true),
+            categories: source_data,
             devices: remoteData.macros.list_all(macro_type),
             devices_edit: true,
             initial: remoteData.macros.data(macro_type),

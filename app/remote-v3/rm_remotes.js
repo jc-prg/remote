@@ -1528,11 +1528,11 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
                 }
             }
             for (let key in remoteData.macros.list_all()) {
-                if (key !== "scene-on" && key !== "scene-of") {
+                if (key !== "scene-on" && key !== "scene-off") {
                     device_macro["macro_" + key] = "Macro: " + key;
                 }
             }
-            device_macro["scene"] = "Macro: " + scene;
+            device_macro["macro_scene"] = "Macro: " + scene;
 
             link_template = this.remote.name + ".rm_scene.import_templates('" + scene + "','add_template');";
             onchange_toggle = this.edit.name + ".scene_toggle_select('add_button_device_input','add_button_value','add_toggle_device','" + scene + "');";
@@ -1764,7 +1764,7 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
             edit += this.tab.end();
         }
 
-        // create editing elements for scenes - OK
+        // create editing elements for scenes
         else if (this.remote_type === "scene" && element === "toggle") {
 
             edit += "&nbsp;";
@@ -2137,8 +2137,7 @@ class RemoteMainEditElements extends RemoteDefaultClass {
     button_select(id, device = "", remote_definition = {}) {
 
         let list = {};
-        remote_definition = remote_definition["remote"];
-        if (device !== "" && device in remoteData.devices.list_all()) {
+        if (device !== "" && remoteData.devices.list_all().includes(device)) {
             let a;
             let count1 = 0;
 
@@ -2153,7 +2152,7 @@ class RemoteMainEditElements extends RemoteDefaultClass {
             }
         }
 
-        if (device !== "" && device in remoteData.scenes.list_all()) {
+        if (device !== "" && remoteData.scenes.list_all().includes(device)) {
             let a = "";
             let button_list = remote_definition;
             for (let i = 0; i < button_list.length; i++) {
@@ -2165,6 +2164,7 @@ class RemoteMainEditElements extends RemoteDefaultClass {
                 list[i] = "[" + a + i + "]  " + button_list[i];
             }
         }
+
         return this.basic.select(id, "element", list);
     }
 
@@ -2334,19 +2334,29 @@ class RemoteMainEditElements extends RemoteDefaultClass {
         let type = "";
         [type, device] = device.split("_");
 
-        if (type === "macro") {
+        if (type === "macro" && device !== "scene") {
             let temp = remoteData.macros.list_all(device);
             for (let i = 0; i < temp.length; i++) {
                 available_buttons.push(device + "_" + temp[i]);
             }
         }
-        if (type === "device") {
+        else if (type === "macro" && device === "scene") {
+            let temp = remoteData.macros.list_all(device, scene);
+
+            if (remoteData.macros.list_all("scene-on", scene)) { temp.push("scene-on");}
+            if (remoteData.macros.list_all("scene-off", scene)) { temp.push("scene-off");}
+
+            for (let i = 0; i < temp.length; i++) {
+                available_buttons.push(device + "_" + temp[i]);
+            }
+        }
+        else if (type === "device") {
             let temp = remoteData.devices.list_buttons(device);
             for (let i = 0; i < temp.length; i++) {
                 available_buttons.push(device + "_" + temp[i]);
             }
         }
-        if (type === "group") {
+        else if (type === "group") {
             let buttons = remoteData.device_groups.list_buttons(device);
             for (let i = 0; i < buttons.length; i++) {
                 available_buttons.push("group_" + device + "_" + buttons[i]);

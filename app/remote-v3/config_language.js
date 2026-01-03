@@ -263,6 +263,9 @@ let language_app = {
         "MACRO_DEVICE_EDIT"     : "<p>Just for information; edit macros in the <u style='cursor:pointer;' onclick='rm3settings.create(\"edit_scenes\");'>scene settings</u> ...<br/></p>",
         "MACRO_EMPTY"           : "ERROR: This button of the &quot;{0}&quot; contains an empty macro.",
 
+        "MACRO_EDIT_TIMING"     : "Wait [s]",
+        "MACRO_EDIT_WAITING"    : "Wait message [s]",
+
         "MAIN"                  : "main",
         "MAIN_SETTINGS"         : "Main settings",
         "MANUAL"                : "manual",
@@ -318,7 +321,7 @@ let language_app = {
                                   "<br/><i>-&gt; Format:</i> \"&lt;macro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;||&lt;value&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
 
                                   "<li>Macros can be used in all scenes (not in devices): 'macro_&lt;macro&gt;', 'dev-on_&lt;device&gt;', 'dev-off_&lt;device&gt;'. Note: if in the scene a macro with the same name is defined, the scene macro is used.</li>" +
-                                  "<li>Start with &quot;WAIT-xx&quot; in a macro to show a message that it's necessary to wait for xx seconds</li>" +
+                                  "<li>Start with &quot;MSG-xx&quot; in a macro to show a message that it's necessary to wait for xx seconds</li>" +
                                   "<li>For devices without API (method=record) use e.g. \"&lt;button&gt;||set-&lt;value&gt;\" to set a value without sending the command. This can be useful if you work with wifi controlled outlets and a device always start in mode \"ON\".</li>" +
                                   "</ul>",
         "MANUAL_MACROS_SCENE"   : "<i>Edit Macros for this scene:</i><br/><br/><ul class='help'>" +
@@ -329,7 +332,7 @@ let language_app = {
                                   "<br/><i>-&gt; Format:</i> [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
                                   "<li><u>Other scene macros</u>: add here all buttons / commands to create another macro for this scene."+
                                   "<br/><i>-&gt; Format:</i> {\"&lt;macro_name&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"]}</li>" +
-                                  "<li>Use the command &quot;WAIT-xx&quot; in a macro to show a message that it's necessary to wait for xx seconds</li>" +
+                                  "<li>Use the command &quot;MSG-xx&quot; in a macro to show a message that it's necessary to wait for xx seconds</li>" +
                                   "<li>For devices without API (method=record) use e.g. \"&lt;button&gt;||set-&lt;value&gt;\" to set a value without sending the command. This can be useful if you work with wifi controlled sockets and a device always start in mode \"ON\".</li>" +
                                   "</ul>",
 

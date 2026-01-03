@@ -31,7 +31,7 @@
             "dev-off_bd"
         ],
         "macro-scene-on": [
-            "WAIT-45",
+            "MSG-45",
             "dev-on_lw",
             "dev-on_beam",
             "dev-on_rec2",

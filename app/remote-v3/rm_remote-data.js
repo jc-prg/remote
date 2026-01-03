@@ -51,7 +51,7 @@ class RemotePrepareDataMacros extends RemoteDefaultClass {
         this._data = undefined;
 
         this.categories_global = ["device-on", "device-off", "global"];
-        this.categories_scenes = ["scene", "scene-on", "scene-off", "channel"];
+        this.categories_scenes = ["scene","scene-on","scene-off","channel"];
         this.categories = ["device-on", "device-off", "global", "scene-on", "scene-off"];
 
         this.device_groups = new RemotePrepareDataGroups(this.name + ".device_groups");
@@ -63,6 +63,7 @@ class RemotePrepareDataMacros extends RemoteDefaultClass {
         this._data = data;
 
         this.config_macros = this._data["CONFIG"]["macros"];
+        this.config_scene_macros = this.update_scene_macros();
         this.config_scenes = this._data["CONFIG"]["scenes"];
         this.config_devices = this._data["CONFIG"]["devices"];
 
@@ -70,12 +71,32 @@ class RemotePrepareDataMacros extends RemoteDefaultClass {
         this.devices.update( data );
     }
 
+    // collect macros from scene definitions
+    update_scene_macros () {
+        let result = {};
+        for (let key in this.config_scenes) {
+            let macro_channel = this.config_scenes[key]["remote"]["macro-channel"];
+            let macro_scene = this.config_scenes[key]["remote"]["macro-scene"];
+
+            //if (this.config_scenes[key]["remote"]["macro-scene-on"]) { macro_scene["scene-on"] = this.config_scenes[key]["remote"]["macro-scene-on"]; }
+            //if (this.config_scenes[key]["remote"]["macro-scene-off"]) { macro_scene["scene-off"] = this.config_scenes[key]["remote"]["macro-scene-off"]; }
+
+            result[key] = {
+                "channel": macro_channel,
+                "scene": macro_scene,
+                "scene-on": this.config_scenes[key]["remote"]["macro-scene-on"],
+                "scene-off": this.config_scenes[key]["remote"]["macro-scene-off"],
+            }
+        }
+        return result;
+    }
+
     // return complete macro data
     data(category="", macro_id="", expected_type={}) {
 
         let result = expected_type;
         if (category === "") {
-            for (let c in this.categories) { this.list_all(c); }
+            for (let c in this.categories_global) { this.list_all(c); }
         }
         else if (this.categories_global.includes(category) && macro_id === "") {
             result = this.config_macros[category];
@@ -89,39 +110,22 @@ class RemotePrepareDataMacros extends RemoteDefaultClass {
                 this.logging.warn(`data(): macro '${category}:${macro_id}' does not exist.`);
             }
         }
-        else if (this.categories_scenes.includes(category) && macro_id === "") {
-            for (let scene in this.config_scenes) {
-                if (this.config_scenes[scene]["remote"]["macro-"+category]) {
-                    result[scene] = this.config_scenes[scene]["remote"]["macro-"+category];
-                }
-            }
+        else if (this.categories_scenes.includes(category) && macro_id !== "") {
+            return this.config_scenes[macro_id][category];
         }
-        else if (this.categories_scenes.includes(category)) {
-            for (let scene in this.config_scenes) {
-                if (this.config_scenes[scene]["remote"]["macro-"+category]) {
-                    result[scene] = this.config_scenes[scene]["remote"]["macro-"+category];
-                }
-            }
-            if (result[macro_id]) {
-                result = result[macro_id];
-            } else {
-                result = expected_type;
-                this.logging.info(`data(): macro '${category}:${macro_id}' does not exist.`);
-            }
-        }
-        else {
-            this.logging.error(`data(): category '${category}' does not exist.`);
+    else {
+            this.logging.error(`data(): category '${category}|${macro_id}' does not exist.`);
         }
         return result;
     }
 
     // list all macros as dict of arrays or all macros of a category as an array
-    list_all(category="") {
+    list_all(category="", scene_id="", incl_on_off=false) {
 
         if (category === "") {
             let result = {};
-            for (let c in this.categories) {
-                result[this.categories[c]] = this.list_all(this.categories[c]);
+            for (let c in this.categories_global) {
+                result[this.categories_global[c]] = this.list_all(this.categories_global[c]);
             }
             return result;
         }
@@ -129,14 +133,10 @@ class RemotePrepareDataMacros extends RemoteDefaultClass {
             return Object.keys(this.config_macros[category]);
         }
         else if (this.categories_scenes.includes(category)) {
-            let result = {};
-            for (let scene in this.config_scenes) {
-                if (this.config_scenes[scene]["macro-"+category]) { result[scene] = Object.keys(this.config_scenes[scene]["macro-"+category]); }
-            }
-            return result;
+            return Object.keys(this.config_scene_macros[scene_id][category]);
         }
         else {
-            this.logging.error(`list_all(): category "${category} does not exist."`);
+            this.logging.error(`list_all(): category "${category}|${scene_id}" does not exist.`);
             return [];
         }
     }

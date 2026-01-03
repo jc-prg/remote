@@ -53,11 +53,11 @@
             "beam_on||ON"
         ],
         "lw": [
-            "WAIT-45",
+            "MSG-45",
             "lw_on||ON"
         ],
         "plug03": [
-            "WAIT-60",
+            "MSG-60",
             "plug03_on",
             60,
             "tv2_on-off"
@@ -91,7 +91,7 @@
             "tv2_mute||OFF"
         ],
         "tv3": [
-            "WAIT-15",
+            "MSG-15",
             "tv2_on-off||ON",
             13,
             "tv2_radiotv||TV",
@@ -109,7 +109,7 @@
   },
     "macro": {
         "aa": [
-            "WAIT-66",
+            "MSG-66",
             "bb",
             15,
             "c",
@@ -186,13 +186,13 @@
             "rec_pc"
         ],
         "plug02-off": [
-            "WAIT-20",
+            "MSG-20",
             "lw_off",
             "tv2_on-off||OFF",
             "plug02_off"
         ],
         "plug02-on": [
-            "WAIT-60",
+            "MSG-60",
             "plug02_on",
             "tv2_on-off||set-ON"
         ],

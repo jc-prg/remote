@@ -136,7 +136,7 @@ class RemoteMacroEditor extends RemoteDefaultClass {
         this.touchPos = null;
 
         this.default_timing = { color: this.colors.timing[0], commands: [1,2,3,5,7,10,15,20] };
-        this.default_wait = { color: this.colors.waiting[0], commands: ["WAIT-10","WAIT-15","WAIT-20","WAIT-30","WAIT-40","WAIT-50","WAIT-60","WAIT-90","WAIT-120"] };
+        this.default_wait = { color: this.colors.waiting[0], commands: ["MSG-10","MSG-15","MSG-20","MSG-30","MSG-40","MSG-50","MSG-60","MSG-90","MSG-120"] };
 
         this.init();
         this.loadData(this.config);
@@ -207,6 +207,7 @@ class RemoteMacroEditor extends RemoteDefaultClass {
         this.updateDeviceNavVisibility();
     }
 
+    /* load initial data set if given */
     loadInitialData() {
         if (!this.inital) return;
 
@@ -219,13 +220,16 @@ class RemoteMacroEditor extends RemoteDefaultClass {
                     return {
                         category: "Timing",
                         command: entry,
+                        label: entry+"s",
                         color: this.categories["Timing"]?.color || "#999"
                     }
                 }
-                else if (entry.indexOf("WAIT-") === 0) {
+                else if (entry.indexOf("WAIT-") === 0 || entry.indexOf("MSG-") === 0) {
+                    let entry_wait = `Msg ${entry.split("-")[1]}s`;
                     return {
                         category: "Waiting",
                         command: entry,
+                        label: entry_wait,
                         color: this.categories["Waiting"]?.color || "#999"
                     }
                 }
@@ -269,7 +273,6 @@ class RemoteMacroEditor extends RemoteDefaultClass {
             }).filter(Boolean);
         }
     }
-    /* load initial data set if given */
 
     /* ---------- Palette ---------- */
     renderPalette() {
@@ -295,6 +298,8 @@ class RemoteMacroEditor extends RemoteDefaultClass {
             if (data.color === "devices") { category_header = "Device: " + category_header; }
             else if (data.color === "macros") { category_header = "Macro: " + category_header; }
             else if (data.color === "groups") { category_header = "Group: " + category_header; }
+            else if (category === "Timing") { category_header = lang("MACRO_EDIT_TIMING"); }
+            else if (category === "Waiting") { category_header = lang("MACRO_EDIT_WAITING"); }
             header.innerHTML = category_header;
 
             const content = document.createElement("div");
@@ -320,8 +325,13 @@ class RemoteMacroEditor extends RemoteDefaultClass {
 
             data.commands.forEach((cmd, index) => {
                 const tag = document.createElement("div");
+                let cmd_label = cmd;
+                if (typeof cmd === "number") {cmd_label = cmd + "s"; }
+                else if (cmd.indexOf("WAIT-") === 0) { cmd_label = "Msg " + cmd.split("-")[1] + "s"; }
+                else if (cmd.indexOf("MSG-") === 0) { cmd_label = "Msg " + cmd.split("-")[1] + "s"; }
+
                 tag.className = "tag";
-                tag.textContent = cmd;
+                tag.textContent = String(cmd_label);
                 tag.style.background = this.category_color[category];
                 tag.draggable = true;
                 tag.ondragstart = () => {
@@ -396,7 +406,14 @@ class RemoteMacroEditor extends RemoteDefaultClass {
 
             const tag = document.createElement("div");
             tag.className = "macro-tag";
-            if (!item.label) { tag.textContent = item.command; }
+            if (!item.label) {
+                let cmd_label = item.command;
+                if (typeof item.command === "number") { cmd_label = item.command + "s"; }
+                else if (item.command.indexOf("WAIT-") === 0) { cmd_label = "Msg " + item.command.split("-")[1] + "s"; }
+                else if (item.command.indexOf("MSG-") === 0) { cmd_label = "Msg " + item.command.split("-")[1] + "s"; }
+
+                tag.textContent = cmd_label;
+            }
             else { tag.innerHTML = item.label; }
 
             tag.style.background = item.color;
