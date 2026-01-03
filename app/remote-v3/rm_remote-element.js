@@ -176,9 +176,7 @@ class RemoteElementTable extends RemoteDefaultClass {
 }
 
 
-/*
-* class to create a box, where content can be added into several sheets and the sheets can be selected by tabs
-*/
+/* class to create a box, where content can be added into several sheets and the sheets can be selected by tabs */
 class RemoteElementSheetBox extends RemoteDefaultClass {
     constructor(containerId, height = "300px", scroll_bar = false, scroll_view = false, keep_open = true) {
         super("RemoteElementSheetBox");
@@ -384,9 +382,7 @@ class RemoteElementSheetBox extends RemoteDefaultClass {
     }
 
 
-/*
-* class to create a wide box for content, that can be scrolled left and right if it's wider than the box
-*/
+/* class to create a wide box for content, that can be scrolled left and right if it's wider than the box */
 class RemoteElementScrollBox extends RemoteDefaultClass {
     constructor(container="scrollBox", html="") {
         super("RemoteElementScrollBox");
