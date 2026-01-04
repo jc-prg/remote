@@ -90,85 +90,6 @@ function statusCheck_offline(data) {
 // -----------------------
 
 
-// check status for all sliders and toggles -> show via color // IN PROGRESS
-function statusCheck_sliderToggleColorPicker(data) {
-
-	let devices    = data["STATUS"]["devices"];
-
-	for (let device in devices) {
-	    if (!data["CONFIG"]["devices"][device]) { continue; }
-	    let device_api         = data["STATUS"]["devices"][device]["api"];
-	    let device_api_power   = data["STATUS"]["devices"][device]["power"];
-	    let device_api_status  = data["STATUS"]["interfaces"]["connect"][device_api];
-	    let device_commands    = data["CONFIG"]["devices"][device]["commands"]["set"];
-        let device_status      = rmStatus.status_device(device);
-
-        for (let key in devices[device]) {
-            // device toggle
-            if (document.getElementById("toggle_"+device+"_"+key+"_input")) {
-                console.debug("statusCheck_sliderToggle: "+device+"_"+key+" - "+device_status);
-
-                let value = data["STATUS"]["devices"][device][key].toUpperCase();
-                if (device_status !== "ON" && device_status !== "OFF" && device_status !== "N/A") { value = "ERROR"; }
-
-                if (device_status === "N/A") {
-                    statusShow_toggle(device, "toggle_" + device + "_" + key + "_input", "toggle_" + device + "_" + key + "_last_value", "slider_" + device + "_" + key, device_status, "middle");
-                }
-                else if (value === "ON") {
-                    statusShow_toggle(device,"toggle_"+device+"_"+key+"_input","toggle_"+device+"_"+key+"_last_value", "slider_"+device+"_"+key, value, "on");
-                }
-                else if (value.includes("OFF") >= 0) {
-                    statusShow_toggle(device, "toggle_" + device + "_" + key + "_input", "toggle_" + device + "_" + key + "_last_value", "slider_" + device + "_" + key, value, "off");
-                }
-                else {
-                    statusShow_toggle(device,"toggle_"+device+"_"+key+"_input","toggle_"+device+"_"+key+"_last_value", value, "error");
-                }
-            }
-
-            // device slider
-            if (document.getElementById("slider_"+device+"_send-"+key+"_input")) {
-                let value  = getTextById("send-" + key + "_value");
-                if (device_api_status.toLowerCase() === "connected" && value.toLowerCase() !== "error")   {
-                    console.debug("statusCheck_sliderToggle: "+device+"_"+key+"="+value+" - "+device_api_status)
-                    if (device_api_power.toUpperCase() === "ON") { statusShow_sliderActive("slider_"+device+"_send-"+key+"_input", "slider_"+device+"_send-"+key, "on"); }
-                    else                                         { statusShow_sliderActive("slider_"+device+"_send-"+key+"_input", "slider_"+device+"_send-"+key, "off"); }
-                    }
-                else {
-                    value = "Error";
-                    console.debug("statusCheck_sliderToggle: "+device+"_send-"+key+"="+value+" - "+device_api_status)
-                    statusShow_sliderActive("slider_"+device+"_send-"+key+"_input", "slider_"+device+"_send-"+key, "error");
-                    }
-                }
-
-            // device color picker
-            if (document.getElementById("color-picker_"+device)) {
-                let color_picker = document.getElementById("color-picker_"+device);
-                if (device_api_status.toLowerCase() === "connected" && device_api_power && device_api_power.toUpperCase().indexOf("ON") > -1)   {
-                    color_picker.style.opacity = "100%";
-                    }
-                else {
-                    color_picker.style.opacity = "40%";
-                    }
-                }
-
-            for (let i=0;i<device_commands.length;i++) {
-                let command = device_commands[i];
-
-                if (document.getElementById("color-picker_"+device+"_send-"+command)) {
-                    const color_picker = document.getElementById("color-picker_"+device+"_send-"+command);
-                    if (device_api_status.toLowerCase() === "connected" && device_api_power && device_api_power.toUpperCase().indexOf("ON") > -1)   {
-                        color_picker.style.opacity = "100%";
-                        }
-                    else {
-                        color_picker.style.opacity = "40%";
-                        }
-                    }
-                }
-            }
-	    }
-    }
-
-
 // check if scene and/or device status is off - format buttons; show status message
 function statusCheck_deviceActive(data, app_connection_error=false) {
 
@@ -310,16 +231,6 @@ function statusShow_powerButton(id, status) {
     rmStatusShow.visualize_element_button(id, status);
 } // to be replaced -> rmStatusShow.visualize_element_button()
 
-// change slider color
-function statusShow_sliderActive(id, id_button, active) {
-    rmStatusShow.visualize_element_slider(id, id_button, active);
-} // to be replaced -> rmStatusShow.visualize_element_slider()
-
-// change toggle status color
-function statusShow_toggle(device, id_slider, id_value, id_button, status, active) {
-    rmStatusShow.visualize_element_toggle(device, id_slider, id_value, id_button, status, active);
-} // to be replaced -> rmStatusShow.visualize_element_toggle()
-
 // open as big message
 function statusCheck_bigMessage(id) {
     rmStatusShow.visualizes_element_big_message(id);
@@ -454,6 +365,10 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
                 this.visualize_power_button_device(key, power_status);
                 this.visualize_display_type_device(key, power_status, power_message);
                 this.visualize_display_values_device(key);
+
+                this.visualize_toggle_device(key);
+                this.visualize_send_slider_device(key);
+                this.visualize_color_picker_device(key);
             }
             this.visualize_device_idle_time(key);
         }
@@ -487,6 +402,10 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             if (!this.edit_mode) {
                 this.visualize_power_button_group(key);
                 this.visualize_power_toggle_group(key);
+
+                this.visualize_toggle_device("group_"+key);
+                this.visualize_send_slider_device("group_"+key);
+                this.visualize_color_picker_device("group_"+key);
             }
         }
     }
@@ -1135,6 +1054,121 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             }
             else {
                 setTextById("device_auto_off_"+device, "°");
+            }
+        }
+    }
+
+    /* visualize power-status for toggles */
+    visualize_toggle_device(device_id) {
+
+        let device_status, device_status_raw;
+        if (device_id.indexOf("group_") < 0) {
+            device_status = rmStatus.status_device(device_id);
+            device_status_raw = rmStatus.status_device_raw(device_id);
+
+        } else if (device_id.indexOf("group_") > -1) {
+            let group_id = device_id.split("_")[1];
+            if (rmData.device_groups.list_devices(group_id).length === 0) { return; }
+            let first_device = rmData.device_groups.list_devices(group_id)[0];
+            device_status = rmStatus.status_group(group_id);
+            device_status_raw = rmStatus.status_device_raw(first_device);
+        }
+
+        for (let key in device_status_raw) {
+            if (document.getElementById("toggle_"+device_id+"_"+key+"_input")) {
+
+                let value = device_status_raw[key].toUpperCase();
+
+                if (device_status === "N/A") {
+                    this.visualize_element_toggle(device_id, "toggle_"+device_id+"_"+key+"_input", "toggle_"+device_id+"_"+key+"_last_value", "slider_"+device_id+"_"+key, device_status, "middle");
+                } else if (value === "ON") {
+                    this.visualize_element_toggle(device_id, "toggle_"+device_id+"_"+key+"_input", "toggle_"+device_id+"_"+key+"_last_value", "slider_"+device_id+"_"+key, value, "on");
+                } else if (value.includes("OFF") > -1) {
+                    this.visualize_element_toggle(device_id, "toggle_"+device_id+"_"+key+"_input", "toggle_"+device_id+"_"+key+"_last_value", "slider_"+device_id+"_"+key, value, "off");
+                } else {
+                    this.visualize_element_toggle(device_id, "toggle_"+device_id+"_"+key+"_input", "toggle_"+device_id+"_"+key+"_last_value", value, "error");
+                }
+            this.logging.debug("visualize_toggle_device(): "+device_id+"_"+key+" - "+device_status);
+            }
+        }
+    }
+
+    /* visualize power-status for send-sliders */
+    visualize_send_slider_device(device_id) {
+
+        let device_status, device_status_raw;
+        if (device_id.indexOf("group_") < 0) {
+            device_status = rmStatus.status_device(device_id);
+            device_status_raw = rmStatus.status_device_raw(device_id);
+
+        } else if (device_id.indexOf("group_") > -1) {
+            let group_id = device_id.split("_")[1];
+            if (rmData.device_groups.list_devices(group_id).length === 0) { return; }
+            let first_device = rmData.device_groups.list_devices(group_id)[0];
+            device_status = rmStatus.status_group(group_id);
+            device_status_raw = rmStatus.status_device_raw(first_device);
+        }
+
+        for (let key in device_status_raw) {
+
+            if (document.getElementById("slider_" + device_id + "_send-" + key + "_input")) {
+                let value = getTextById("send-" + key + "_value");
+
+                let input1 = document.getElementById("slider_" + device_id + "_send-" + key + "_input");
+                let input2 = document.getElementById("send-" + key + "_value");
+                input1.value = device_status_raw[key];
+                input2.innerHTML = device_status_raw[key];
+
+                if (device_status === "ON" || device_status === "N/A") {
+                    this.visualize_element_slider("slider_" + device_id + "_send-" + key + "_input", "slider_" + device_id + "_send-" + key, "on");
+                } else if (device_status.indexOf("OFF") > -1) {
+                    this.visualize_element_slider("slider_" + device_id + "_send-" + key + "_input", "slider_" + device_id + "_send-" + key, "off");
+                } else {
+                    this.visualize_element_slider("slider_" + device_id + "_send-" + key + "_input", "slider_" + device_id + "_send-" + key, "error");
+                }
+                this.logging.debug("visualize_send_slider_device_id(): " + device_id + "_send-" + key + "=" + value + " - " + device_status)
+            }
+        }
+    }
+
+    /* visualize power-status for color pickers */
+    visualize_color_picker_device(device_id) {
+
+        let device_status, device_commands;
+        if (device_id.indexOf("group_") < 0) {
+            device_status = rmStatus.status_device(device_id);
+            device_commands = rmData.devices.list_commands(device_id, "set");
+
+        } else if (device_id.indexOf("group_") > -1) {
+            let group_id = device_id.split("_")[1];
+            if (rmData.device_groups.list_devices(group_id).length === 0) { return; }
+            device_status = rmStatus.status_group(group_id);
+            device_commands = rmData.device_groups.list_commands(group_id, "set");
+        }
+
+        if (document.getElementById("color-picker_"+device_id)) {
+            console.error(device_id, device_status, device_commands);
+
+
+            let color_picker = document.getElementById("color-picker_"+device_id);
+            if (device_status === "ON" || device_status === "N/A") {
+                color_picker.style.opacity = "100%";
+            } else {
+                color_picker.style.opacity = "40%";
+            }
+        }
+
+        for (let i=0;i<device_commands.length;i++) {
+            let command = device_commands[i];
+
+            if (document.getElementById("color-picker_"+device_id+"_send-"+command)) {
+
+                const color_picker = document.getElementById("color-picker_"+device_id+"_send-"+command);
+                if (device_status === "ON" || device_status === "N/A")   {
+                    color_picker.style.opacity = "100%";
+                } else {
+                    color_picker.style.opacity = "40%";
+                }
             }
         }
     }
