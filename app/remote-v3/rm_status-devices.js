@@ -226,10 +226,19 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
 
             let status = "OK";
             let power_device = this.status_data["api-device"][api_key]["power"];
+
+            // identify power status devices
             let power_status;
             if (this.status_devices[device]["power"]) { power_status = this.status_devices[device]["power"].toUpperCase(); }
             else { power_status = "ERROR"; }
 
+            // check, if other status available (Zigbee) ... others might have to follow
+            if (power_status === "N/A") {
+                let power_details = this.status_device_raw(device);
+                if (power_details["availability"] && power_details["availability"].toUpperCase().indexOf("ONLINE") > -1) { power_status = "ON"; }
+            }
+
+            // identify labels
             let label_power = "";
             if (this.config_devices[this.power_devices[power_device]]) {
                 label_power = this.config_devices[this.power_devices[power_device]]["settings"]["label"];
