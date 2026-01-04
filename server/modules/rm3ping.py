@@ -26,16 +26,26 @@ def ping(host: str) -> bool:
         return False
 
     # Send ping
-    response_list = pythonping.ping(host, size=40, count=1)
-    first_line = str(response_list).split("\n")[0]
-    ping_logger.debug(f"PING {host}: {first_line}")
+    try:
+        response_list = pythonping.ping(host, size=40, count=1)
+        first_line = str(response_list).split("\n")[0]
+        ping_logger.debug(f"PING {host}: {first_line}")
+
+    except Exception as e:
+        ping_logger.error(f"PING {host} failed: {e}")
+        response_list = ""
 
     # Check for successful reply
     if f"Reply from {host}" in str(response_list):
         return True
 
     # Optionally retry once more
-    response_list = pythonping.ping(host, size=40, count=1)
+    try:
+        response_list = pythonping.ping(host, size=40, count=1)
+    except Exception as e:
+        ping_logger.error(f"PING {host} failed (retry): {e}")
+        return False
+
     first_line = str(response_list).split("\n")[0]
     ping_logger.debug(f"PING {host} (retry): {first_line}")
 
