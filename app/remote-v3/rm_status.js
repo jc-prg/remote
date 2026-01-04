@@ -63,6 +63,7 @@ function statusCheck(data={}) {
     statusCheck_measure(data, start);
 }
 
+
 // measure Status Check durations
 function statusCheck_measure(data, start) {
 

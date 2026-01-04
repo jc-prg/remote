@@ -111,7 +111,11 @@ class RemotePrepareDataMacros extends RemoteDefaultClass {
             }
         }
         else if (this.categories_scenes.includes(category) && macro_id !== "") {
-            return this.config_scenes[macro_id][category];
+            if (this.config_scene_macros[macro_id] && this.config_scene_macros[macro_id][category]) {
+                return this.config_scene_macros[macro_id][category];
+            } else {
+                this.logging.error(`data(): ${macro_id}|${category} not found`);
+            }
         }
     else {
             this.logging.error(`data(): category '${category}|${macro_id}' does not exist.`);

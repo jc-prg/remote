@@ -920,6 +920,8 @@ class RemoteMain extends RemoteDefaultClass {
         scene_macros["scene-on"] = remoteData.macros.data("scene-on", scene, []);
         scene_macros["scene-off"] = remoteData.macros.data("scene-off", scene, []);
 
+    console.warn(scene_macros);
+
         for (let key in scene_macros["scene"]) { macros[key] = scene_macros["scene"][key]; }
 
         // check if preview
@@ -1052,7 +1054,7 @@ class RemoteMain extends RemoteDefaultClass {
                 next_button = this.button.line(button[0].split("||")[1]);
             } else if (button[0] === ".") {
                 next_button = this.button.device(scene + i, ".", scene_label, "empty", "", "disabled");
-            } else if (button[0] === "macro" || button[0] === "global") {
+            } else if (button[0] === "macro" || button[0] === "global" || button[0] === "scene") {
                 let pure_macro = button[1];
                 if (pure_macro.indexOf("||") > 0) { pure_macro = pure_macro.split("||")[0]; }
                 next_button = this.button.macro(cmd, button[1], scene_label, "", macros[pure_macro], "");
