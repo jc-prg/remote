@@ -1035,6 +1035,27 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     /* visualize display values for devices and scenes (device values) */
     visualize_display_values_device (device_id) {
 
+        this.visualize_as_bar = function (device_id, key, value) {
+            let result = ".";
+            let commands = rmData.devices.list_commands(device_id, "definition");
+
+            if (commands[key]["get"] && commands[key]["values"] && commands[key]["values"]["max"]) {
+                let min = commands[key]["values"]["min"] || 0;
+                let max = commands[key]["values"]["max"];
+                let value_calc;
+
+                if (String(value) !== String(value).replace(/[^0-9.]/g, "")) {
+                    value_calc = Number(value.replace(/[^0-9.]/g, ""));
+                } else {
+                    value_calc = value;
+                }
+
+                result = rmStatusAudio.volume_draw(value_calc, min, max, 16);
+                result += "&nbsp;&nbsp;<small>"+value.replace(" ","&nbsp;")+"</small>";
+            }
+            return result;
+        }
+
         let key_status;
 
         // check if values of this device are relevant for a display
@@ -1047,6 +1068,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         const status = rmStatus.status_device(device_id);
         const dev_status = rmStatus.status_device_raw(device_id);
         let display_keys = rmData.devices.list_commands(device_id, "get");
+        let commands = rmData.devices.list_commands(device_id, "definition");
         let additional_keys = ["api","api-status","api-last-query","api-last-record", "api-last-send","api-auto-off"];
         display_keys = display_keys.concat(additional_keys);
 
@@ -1066,6 +1088,9 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
                     else if (value.toUpperCase().indexOf("N/A") >= 0)  { value = use_color("<b>Power Status N/A<b/>","hint"); }
                     else                                               { value = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+key_status; }
                 }
+                if (key === "vol" || key === "volume" || (commands[key] && commands[key]["display"] && commands[key]["display"] === "bar")) {
+                    value = this.visualize_as_bar(device_id, key, value);
+                }
 
                 if (typeof(value) === "string") {
                     value = value
@@ -1082,7 +1107,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
                 }
 
                 if (element_norm) { element_norm.innerHTML = value; }
-                if (element_full) { element_full.innerHTML = value.replace(/,/g,"; "); }
+                if (element_full) { element_full.innerHTML = String(value).replace(/,/g,"; "); }
             }
 
         }

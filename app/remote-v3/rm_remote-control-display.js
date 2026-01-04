@@ -11,6 +11,7 @@ class RemoteControlDisplay extends RemoteDefaultClass {
 
         this.data           = {};
         this.edit_mode      = false;
+        this.tab = new RemoteElementTable(this.name + ".tab");
     }
 
     /* create a set of displays for each type, one visible and the others hidden */
@@ -54,11 +55,23 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                 text  = text.replace( /##STYLE##/g, style + " display_on edit" );
                 if (this.edit_mode) { text  = text.replace( /##DISPLAY##/g, "block" ); }
                 else                { text  = text.replace( /##DISPLAY##/g, "none" ); }
+
+                /*
                 for (let key in display_data) {
                     let label = "<span class='display-label'>"+key+":</span>";
                     let input = "<span class='display-input-shorten' id='display_"+device+"_"+display_data[key]+"_edit'>{"+display_data[key]+"}</span>";
                     text += "<div class='display-element "+style+"'>"+label+input+"</div>";
                 }
+                 */
+
+                text += "<div class='display-table "+style+"'>";
+                text += this.tab.start("100%");
+                for (let key in display_data) {
+                    text += this.tab.row(key+":&nbsp;", "<span id='display_"+device+"_"+display_data[key]+"_edit'>{" + display_data[key] + "}</span>");
+                }
+                text += this.tab.end();
+                text += "</div>";
+
                 text += display_end;
             }
 
@@ -90,6 +103,7 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                 if (status === "ON" || status === "PARTLY")	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
                 else                                        { text  = text.replace( /##DISPLAY##/g, "none" ); }
 
+                /*
                 for (let key in display_data) {
                     let input_id = "";
                     if (display_data[key].indexOf("_") >= 0) { input_id = 'display_' + display_data[key]; }
@@ -98,6 +112,20 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                     let input    = "<span class='display-input' id='"+input_id+"'>no data</span>";
                     text += "<div class='display-element "+style+"'>"+label+input+"</div>";
                 }
+                */
+                text += "<div class='display-table "+style+"'>";
+                text += this.tab.start("100%");
+                for (let key in display_data) {
+                    let input_id = "";
+                    if (display_data[key].indexOf("_") >= 0) { input_id = 'display_' + display_data[key]; }
+                    else                                                { input_id = 'display_' + device + '_' + display_data[key]; }
+                    text += this.tab.row(key+":&nbsp;", "<span id='"+input_id+"'>no data</span>");
+                }
+                text += this.tab.end();
+                text += "</div>";
+
+
+
                 text += display_end;
 
                 // display if MANUAL_MODE

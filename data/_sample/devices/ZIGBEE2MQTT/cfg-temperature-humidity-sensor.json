@@ -8,6 +8,7 @@
                 ],
                 "description": "Remaining battery in %",
                 "get": "get=battery",
+                "display": "bar",
                 "type": "numeric",
                 "unit": "%",
                 "values": {

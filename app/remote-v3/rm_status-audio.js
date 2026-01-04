@@ -123,12 +123,12 @@ class RemoteVisualizeMainAudioStatus extends RemoteDefaultClass {
         return volume;
     }
 
-    // display volume level
-    volume(volume_level=undefined) {
+    // draw volume level
+    volume_draw(volume_level, volume_min, volume_max, bar_length) {
         let volume_bar = "";
-
         if (volume_level !== undefined) {
-            let volume = Math.round((volume_level - this.audio_level["min"]) * this.volume_bar_length / this.audio_level["max"]);
+
+            let volume = Math.round((volume_level - volume_min) * bar_length / volume_max);
             volume_bar = "<span style='color:" + this.color_volume + "'>";
             for (let i = 0; i < volume; i++) {
                 volume_bar += this.volume_bar_element;
@@ -136,11 +136,17 @@ class RemoteVisualizeMainAudioStatus extends RemoteDefaultClass {
             volume_bar += "</span>";
 
             volume_bar += "<span style='color:" + this.color_no_volume + "'>";
-            for (let i = 0; i < this.volume_bar_length - volume; i++) {
+            for (let i = 0; i < bar_length - volume; i++) {
                 volume_bar += this.volume_bar_element;
             }
             volume_bar += "</span>";
         }
+        return volume_bar;
+    }
+
+    // display volume level
+    volume(volume_level=undefined) {
+        let volume_bar = this.volume_draw(volume_level, this.audio_level["min"], this.audio_level["max"], this.volume_bar_length);
         setTextById(this.audio_info["volume"], volume_bar);
     }
 
@@ -181,7 +187,7 @@ class RemoteVisualizeMainAudioStatus extends RemoteDefaultClass {
 
     // send API call to set volume
     change_volume(volume) {
-        this.logging.debug("change_volume(): " + rmStatusAudio.audio_device+" -> "+volume);
+        console.debug("change_volume(): " + rmStatusAudio.audio_device+" -> "+volume);
         appFW.requestAPI( "GET",  ["set",rmStatusAudio.audio_device,"send-vol",volume], "", remoteReload_load );
     }
 }

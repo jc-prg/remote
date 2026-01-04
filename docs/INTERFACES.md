@@ -122,7 +122,18 @@ The following interfaces are integrated at the moment.
         "type": "datatype (integer,boolean,...)",
         "param": [],
         "values": []
+      },
+      "volume": {
+        "get": "api_command",
+        "type": "number",
+        "display": "bar",
+        "param": [],
+        "values": {
+          "min": 0,
+          "max": 100
+        }
       }
+
     },
     "query" : {
       "load_interval": { "5": ["cmd-name-3", "cmd-name-4"] }, 
@@ -138,6 +149,7 @@ The following interfaces are integrated at the moment.
 **Hints:** 
 * key values never should use "_", use "-" instead.
 * to use the volume functionality in the app, use "volume" and "mute" as keys for the related commands
+* to show a value as bar in the displays, set the parameter "display": "bar" (volume is displayed as bar per default)
 * to connect buttons directly to an icon, name them as shown in the "Settings > Information > Image buttons" or defined 
   in the related [config file](../data/buttons/default/index.json).
 * In the **query** section you can set the following:

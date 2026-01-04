@@ -73,6 +73,37 @@
 .display-element.h3w2    { width : 98%; }
 .display-element.h4w2    { width : 98%; }
 
+.display-table {
+    text-align  : left;
+    width       : 95%;
+    max-height  : 95%;
+    color       : white;
+    overflow-y  : auto;
+    overflow-x  : hidden;
+
+    scrollbar-width: thin;                 /* auto | thin | none */
+    scrollbar-color: #6b7280 transparent;
+}
+
+.display-table::-webkit-scrollbar {
+    width: 10px;
+    /* height: 10px; */
+}
+
+.display-table::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.display-table::-webkit-scrollbar-thumb {
+    background-color: rgba(107, 114, 128, 0.6); /* color + opacity */
+    border-radius: 6px;
+}
+
+.display-table::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(107, 114, 128, 0.85);
+}
+
+
 .display-label {
    width        : 35%;
    max-width    : 35%;
