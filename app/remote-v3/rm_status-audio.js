@@ -2,7 +2,7 @@
 // jc://remote/
 //--------------------------------
 
-let statusCheck_audio;
+let rmStatusAudio;
 
 
 // class for audio functionality (used in rm_status.js > statusCheck())
@@ -174,14 +174,14 @@ class RemoteVisualizeMainAudioStatus extends RemoteDefaultClass {
 
     // show audio status after slider change
     show_status_slider(data) {
-        statusCheck_audio.temp_audio_level = data;
-        statusCheck_audio.temp_audio_time = Math.floor(Date.now() / 1000);
-        statusCheck_audio.show_status();
+        rmStatusAudio.temp_audio_level = data;
+        rmStatusAudio.temp_audio_time = Math.floor(Date.now() / 1000);
+        rmStatusAudio.show_status();
     }
 
     // send API call to set volume
     change_volume(volume) {
-        this.logging.debug("change_volume(): " + statusCheck_audio.audio_device+" -> "+volume);
-        appFW.requestAPI( "GET",  ["set",statusCheck_audio.audio_device,"send-vol",volume], "", remoteReload_load );
+        this.logging.debug("change_volume(): " + rmStatusAudio.audio_device+" -> "+volume);
+        appFW.requestAPI( "GET",  ["set",rmStatusAudio.audio_device,"send-vol",volume], "", remoteReload_load );
     }
 }

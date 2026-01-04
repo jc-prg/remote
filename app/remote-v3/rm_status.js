@@ -22,7 +22,7 @@ function statusCheck(data={}) {
 
 	// if not data includes -> error
 	if (!data["CONFIG"] || !data["STATUS"]) {
-		console.error("statusCheck: data not loaded.");
+		console.error("statusCheck: no data or wrong data format loaded.", data);
 		return;
     } else {
         dataAll = data;
@@ -34,7 +34,7 @@ function statusCheck(data={}) {
         rmStatus = new RemoteDevicesStatus("rmStatus", data);
 
         rmStatusShow = new RemoteVisualizeStatus("rmStatusShow", rmStatus);
-        statusCheck_audio = new RemoteVisualizeMainAudioStatus("statusCheck_audio", rmStatus, data);
+        rmStatusAudio = new RemoteVisualizeMainAudioStatus("rmStatusAudio", rmStatus, data);
 
         status_load_first = false;
     }
@@ -45,18 +45,12 @@ function statusCheck(data={}) {
 
     // show power status and audio status
     rmStatusShow.show_status(data, rmRemote.edit_mode);
-    statusCheck_audio.show_status(data);
+    rmStatusAudio.show_status(data);
 
     if (!rmRemote.edit_mode) {
         statusCheck_deviceActive(data);
         statusCheck_sliderToggleColorPicker(data);
-        setTextById("edit1", "");
         }
-    else {
-        const stop = "remoteToggleEditMode(false);remoteSetCookie();remoteFirstLoad_load();";
-        const html = "<img src='/icon/edit_stop.png' onclick='" + stop + "' style='cursor:pointer;width:100%' name='stop editing' alt=''>";
-        setTextById("edit1", html);
-    }
 
     statusCheck_measure(data, start);
 }
@@ -92,6 +86,8 @@ function statusCheck_offline(data) {
     rmStatus.set_connection_error(true);
     rmStatusShow.set_connection_error(true);
 }
+
+// -----------------------
 
 
 // check status for all sliders and toggles -> show via color // IN PROGRESS
@@ -386,6 +382,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
 
     }
 
+
     /* coordinate status visualization for all device types */
     show_status(data, edit_mode) {
         this.update(data, edit_mode);
@@ -400,6 +397,15 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         this.show_status_system_health();
         this.show_status_app_modes();
         this.show_status_errors();
+
+        if (edit_mode) {
+            const stop = "remoteToggleEditMode(false);remoteSetCookie();remoteFirstLoad_load();";
+            const html = "<img src='/icon/edit_stop.png' onclick='" + stop + "' style='cursor:pointer;width:100%' alt='stop editing'>";
+            setTextById("edit1", html);
+        } else {
+            setTextById("edit1", "");
+        }
+
     }
 
     /* visualize status for APIs: active -> toggles */

@@ -554,7 +554,7 @@ class RemoteMain extends RemoteDefaultClass {
         this.button.width = "120px";
         edit += this.tab.start();
         let commands_def = rmData.devices.list_commands(device,"definition");
-        let main_audio = statusCheck_audio.audio_device;
+        let main_audio = rmStatusAudio.audio_device;
         if (device !== main_audio && commands_def["vol"] && commands_def["vol"] !== undefined) {
             edit += this.tab.row(lang("AUDIO_SET_AS_MAIN", [main_audio]), this.button.edit("setMainAudio('" + device + "');", "set main device", ""));
         } else if (device === main_audio) {

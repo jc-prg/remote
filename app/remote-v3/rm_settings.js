@@ -1513,7 +1513,7 @@ class RemoteSettingsInfo extends RemoteDefaultClass {
         } else {
             cookie = "N/A";
         }
-        let main_audio = statusCheck_audio.audio_device;  // get main audio device from file
+        let main_audio = rmStatusAudio.audio_device;  // get main audio device from file
         let main_device_config = rmData.devices.data(main_audio);
         let main_device_commands = rmData.devices.list_commands(main_audio, "definition");
         let main_device = rmStatus.status_device_raw(main_audio);
@@ -1544,7 +1544,7 @@ class RemoteSettingsInfo extends RemoteDefaultClass {
             " / jcModules " + modules_version +
             " / jcCookies " + appCookie.appVersion +
             " / jcFunction "+ jc_functions_version +
-            " / jcSlider "  + statusCheck_audio.slider.appVersion );
+            " / jcSlider "  + rmStatusAudio.slider.appVersion );
         set_temp += this.tab.row( "Sources:",  "<a href='https://github.com/jc-prg/remote/tree/"+git_branch+"/' target='_blank'>https://github.com/jc-prg/remote/tree/"+git_branch+"/</a>");
         set_temp += this.tab.row( "REST API:", "<a href='"+ RESTurl + "api/list/' target='_blank'>" + RESTurl + "api/list/</a>");
         set_temp += this.tab.end();
