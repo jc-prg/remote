@@ -759,24 +759,17 @@ class RemoteMain extends RemoteDefaultClass {
         let remote_definition;
         let remote_display_size;
         let remote_display;
-        if (preview_remote === "") {
-            remote_definition = rmData.devices.remote(device);
-        } else {
-            remote_definition = this.json.get_value(preview_remote, rmData.devices.remote(device));
-        }
-        if (preview_display === "") {
-            remote_display = rmData.devices.display(device);
-        } else {
-            remote_display = this.json.get_value(preview_display, rmData.devices.remote(device));
-        }
-        if (remote_display === undefined) {
-            remote_display = {};
-        }
-        if (preview_display_size === "") {
-            remote_display_size = rmData.devices.display_size(device);
-        } else {
-            remote_display_size = this.json.get_value(preview_display_size, rmData.devices.display_size(device));
-        }
+
+        if (preview_remote === "") { remote_definition = rmData.devices.remote(device); }
+        else { remote_definition = this.json.get_value(preview_remote, rmData.devices.remote(device)); }
+
+        if (preview_display === "") { remote_display = rmData.devices.display(device); }
+        else { remote_display = this.json.get_value(preview_display, rmData.devices.display(device)); }
+
+        if (remote_display === undefined) { remote_display = {}; }
+
+        if (preview_display_size === "") { remote_display_size = rmData.devices.display_size(device); }
+        else { remote_display_size = this.json.get_value(preview_display_size, rmData.devices.display_size(device)); }
 
         // Start remote control edit section
         let remote = "";

@@ -172,7 +172,7 @@ class RemoteSettings extends RemoteDefaultClass {
         }
 
         //scrollBoxRegister("indexScrollBox");
-        statusCheck_power.show_status_app_modes();
+        rmStatusShow.show_status_app_modes();
         scrollTop();
     }
 
@@ -1555,7 +1555,7 @@ class RemoteSettingsInfo extends RemoteDefaultClass {
         for (const [key, value] of Object.entries(system_health)) {
             if (value === "registered")      { modules.push(key); }
         }
-        setTimeout(() => { statusCheck_power.show_status_system_health(); }, 500 );
+        setTimeout(() => { rmStatusShow.show_status_system_health(); }, 500 );
 
         set_temp  = this.tab.start();
         set_temp += this.tab.row( 	"Threads:&nbsp;", "<div id='system_health'></div>" );

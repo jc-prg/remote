@@ -6,7 +6,7 @@ let device_media_info = {};
 let status_duration = [];
 let status_duration_load = [];
 let status_load_first = true;
-let statusCheck_power;
+let rmStatusShow;
 
 
 // load the devices status -> visualization via function statusCheck();
@@ -33,7 +33,7 @@ function statusCheck(data={}) {
         rmData = new RemotePrepareData("rmData", data);
         rmStatus = new RemoteDevicesStatus("rmStatus", data);
 
-        statusCheck_power = new RemoteVisualizeStatus("statusCheck_power", rmStatus);
+        rmStatusShow = new RemoteVisualizeStatus("rmStatusShow", rmStatus);
         statusCheck_audio = new RemoteVisualizeMainAudioStatus("statusCheck_audio", rmStatus, data);
 
         status_load_first = false;
@@ -44,13 +44,11 @@ function statusCheck(data={}) {
     rmStatus.update(data);
 
     // show power status and audio status
-    statusCheck_power.show_status(data, rmRemote.edit_mode);
+    rmStatusShow.show_status(data, rmRemote.edit_mode);
     statusCheck_audio.show_status(data);
 
     if (!rmRemote.edit_mode) {
-        statusCheck_displayValues(data);
         statusCheck_deviceActive(data);
-        statusCheck_groupPowerButton(data);
         statusCheck_sliderToggleColorPicker(data);
         setTextById("edit1", "");
         }
@@ -92,7 +90,7 @@ function statusCheck_offline(data) {
     console.error("Lost connection to the server.");
     statusCheck_deviceActive(data, true);
     rmStatus.set_connection_error(true);
-    statusCheck_power.set_connection_error(true);
+    rmStatusShow.set_connection_error(true);
 }
 
 
@@ -173,81 +171,6 @@ function statusCheck_sliderToggleColorPicker(data) {
             }
 	    }
     }
-
-
-// show power status for group power status
-function statusCheck_groupPowerButton(data) {
-
-    if (rmRemote.active_type === "device") { return; }
-
-    const groups = data["CONFIG"]["macros"]["groups"];
-    for (let key in groups) {
-
-        let exists = false;
-        let options = ["on", "off", "on-off", "ON", "OFF", "ON-OFF"];
-        for (let key2 in options) {
-            if (document.getElementById("group_" + key + "_" + options[key2])) { exists = true; }
-            if (document.getElementById("toggle_group_" + key + "_input")) { exists = true; }
-        }
-        if (exists) {
-
-            let devices = groups[key]["devices"];
-            let count = devices.length;
-            let count_on = 0;
-            let count_off = 0;
-            let count_error = 0;
-            let count_na = 0;
-            for (let key2 in devices) {
-
-                console.debug(key  + "_" + devices[key2] + " = " + data["STATUS"]["devices"][devices[key2]]["power"] + "/" + data["STATUS"]["devices"][devices[key2]]["api-status"]);
-                let status_device = rmStatus.status_device(devices[key2]);
-                if (status_device.toUpperCase() === "ON") { count_on += 1; }
-                else if (status_device.toUpperCase() === "OFF") { count_off += 1; }
-                else if (status_device.toUpperCase() === "N/A") { count_na += 1; }
-                else { count_error += 1; }
-            }
-
-            console.debug(count + " = on:" + count_on + " / off:" + count_off + " / error:" + count_error);
-            if (count === count_on) {
-                statusShow_powerButton( "group_"+key+"_on", "ON");
-                statusShow_powerButton( "group_"+key+"_off", "");
-                statusShow_powerButton( "group_"+key+"_on-off", "ON");
-                statusShow_toggle("","toggle_group_"+key+"_input","toggle_group_"+key+"_last_value", "slider_group_"+key, "ON", "on");
-                console.debug("group_" + key + " - ON");
-
-            }
-            else if (count === count_off) {
-                statusShow_powerButton( "group_"+key+"_on", "");
-                statusShow_powerButton( "group_"+key+"_off", "OFF");
-                statusShow_powerButton( "group_"+key+"_on-off", "OFF");
-                statusShow_toggle("","toggle_group_"+key+"_input","toggle_group_"+key+"_last_value", "slider_group_"+key, "OFF", "off");
-                console.debug("group_" + key + " - OFF");
-            }
-            else if (count === count_off + count_on) {
-                // might not be useful for on-off or toggle
-                statusShow_powerButton( "group_"+key+"_on", "PARTLY");
-                statusShow_powerButton( "group_"+key+"_off", "");
-                statusShow_powerButton( "group_"+key+"_on-off", "PARTLY");
-                statusShow_toggle("","toggle_group_"+key+"_input","toggle_group_"+key+"_last_value", "slider_group_"+key, "PARTLY", "middle");
-                console.debug("group_" + key + " - PARTLY");
-            }
-            else if (count_na > 0) {
-                statusShow_powerButton( "group_"+key+"_on", "");
-                statusShow_powerButton( "group_"+key+"_off", "");
-                statusShow_powerButton( "group_"+key+"_on-off", "");
-                statusShow_toggle("","toggle_group_"+key+"_input","toggle_group_"+key+"_last_value", "slider_group_"+key, "N/A", "");
-                console.debug("group_" + key + " - N/A");
-            }
-            else {
-                statusShow_powerButton( "group_"+key+"_on", "ERROR");
-                statusShow_powerButton( "group_"+key+"_off", "ERROR");
-                statusShow_powerButton( "group_"+key+"_on-off", "ERROR");
-                statusShow_toggle("","toggle_group_"+key+"_input","toggle_group_"+key+"_last_value", "slider_group_"+key, "ERROR", "error");
-                console.debug("group_" + key + " - ERROR");
-            }
-        }
-    }
-}
 
 
 // check if scene and/or device status is off - format buttons; show status message
@@ -378,177 +301,33 @@ function statusCheck_deviceActive(data, app_connection_error=false) {
 	}
 
 
-// check status information of device -> insert into display
-function statusCheck_displayValues(data={}) {
-
-	let key_status;
-    let element2;
-    let value_key;
-    let key;
-
-    // check status for displays
-    const devices = data["CONFIG"]["devices"];
-    const scenes = data["CONFIG"]["scenes"];
-
-    // fill in values for all device displays
-	for (key in devices) {
-
-	    if (key === "default") { continue; }
-		if (!data["CONFIG"]["devices"][key]) {
-		    console.warn("Device not defined correctly: '" + key + "' has no configuration.");
-		    continue;
-		    }
-
-	    // device status
-        const status = rmStatus.status_device(key);
-        const dev_status = data["STATUS"]["devices"][key];
-        const dev_config = data["CONFIG"]["devices"][key];
-
-        // set values if device is active or scene is active (which can contain several devices)
-        if (status === "ON" && (rmRemote.active_type === "scene" || rmRemote.active_name === key)) {
-
-            const remote = devices[key]["remote"]["remote"];
-            const display = devices[key]["remote"]["display"];
-
-            if (!remote || !remote.includes("DISPLAY")) { continue; }
-			if (display === {} || display === undefined)     { continue; }
-
-            // set display values
-			for (const display_key in display) {
-                value_key = display[display_key];
-                const element = document.getElementById("display_" + key + "_" + value_key);
-                element2 = document.getElementById("display_full_" + key + "_" + value_key);
-                key_status = dev_status[value_key];
-				if (key_status && value_key === "power") {
-			        if (key_status.toUpperCase().indexOf("ON") >= 0)        { key_status = use_color("<b>Power On<b/>","on"); }
-					else if (key_status.toUpperCase().indexOf("OFF") >= 0)  { key_status = use_color("<b>Power Off<b/>","hint"); }
-					else if (key_status.toUpperCase().indexOf("N/A") >= 0)  { key_status = use_color("<b>Power Status N/A<b/>","hint"); }
-                    else                                                    { key_status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+key_status; }
-					}
-
-				if (element)  { element.innerHTML  = key_status; }
-				if (element2) { element2.innerHTML = key_status.replace(/,/g,"; "); }
-				}
-            }
-
-        // set display detail popup values (for devices only)
-        if (rmRemote.active_type === "device" && dev_status && dev_config && dev_config["commands"]["get"]) {
-
-            const additional_keys = ["api","api-status","api-last-query","api-last-record", "api-last-send","api-auto-off"];
-            const display_keys = dev_config["commands"]["get"];
-            const connected= rmStatus.status_device(key) + ": " + rmStatus.status_device(key, true)["message"];
-
-            for (let i=0; i<additional_keys.length; i++) {
-                if (!display_keys[additional_keys[i]] && dev_status[additional_keys[i]]) { display_keys.push([additional_keys[i]]); }
-                }
-
-            for (let i=0; i<display_keys.length; i++) {
-                value_key = display_keys[i];
-                key_status = dev_status[value_key];
-                element2 = document.getElementById("display_full_" + key + "_" + value_key);
-
-                if (typeof(key_status) == "string") {
-                    key_status          = key_status.replaceAll("'", "\"");
-                    key_status          = key_status.replaceAll("True", "true");
-                    key_status          = key_status.replaceAll("False", "false");
-                    }
-                key_status      = syntaxHighlightJSON(key_status);
-
-                if (value_key === "power") {
-                    if (connected.indexOf("ERROR") >= 0)                    { key_status = use_color("<b>"+lang("CONNECTION_ERROR")+":</b><br/>","error")+connected; }
-                    else if (typeof(key_status) != "string")                { key_status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+key_status; }
-                    else if (key_status.toUpperCase().indexOf("ON") >= 0)   { key_status = use_color("<b>"+lang("CONNECTED")+"<b/>","on"); }
-                    else if (key_status.toUpperCase().indexOf("OFF") >= 0)  { key_status = use_color("<b>"+lang("CONNECTED")+": Power Off<b/>","hint"); }
-                    else 									                { key_status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+key_status; }
-                    }
-
-                if (key_status && key_status.replace) { key_status = key_status.replace(/,/g,", "); }
-                if (key_status && element2)           { element2.innerHTML = key_status; }
-                }
-            }
-        }
-
-	// fill in values for all scene displays
-	for (key in scenes) {
-
-		if (scenes[key]["remote"] && scenes[key]["remote"]["display-detail"]) {
-			// .......
-			for (const vkey in scenes[key]["remote"]["display-detail"]) {
-				let value           = scenes[key]["remote"]["display-detail"][vkey];
-                element2 = document.getElementById("display_full_" + key + "_" + vkey);
-                let values1         = value.split("_");
-				let values2         = values1[1].split("||");
-				let replace_tag     = values2[0]; // tag/parameter from device to be displayed
-				let replace_value = "";         // value for this tag
-				let replace_value_org = "";         // value for this tag
-				let replace_device  = values1[0]; // device id for displays in scenes
-				let replace_index   = values2[1]; // grab index, if value is a dict -> e.g. ['plot']
-
-				let replace_device_status = data["STATUS"]["devices"][replace_device];
-				
-				if (devices[replace_device] && replace_device_status && replace_device_status[replace_tag]) {
-					replace_value = replace_device_status[replace_tag];
-					replace_value_org = replace_value;
-					if (replace_index && replace_index !== "") {
-					
-						// workaround, check why not in the correct format (KODI?!)
-						if (replace_value !== "no media" && replace_value !== "Error") {
-							//console.warn(replace_value);
-							replace_value       = replace_value.replaceAll(": \"", "##!##");
-							replace_value       = replace_value.replaceAll("\",", "',");
-							replace_value       = replace_value.replaceAll("' ", "&#39; ");
-							replace_value       = replace_value.replaceAll("##!##", ": '");
-							//console.warn(replace_value);
-							replace_value       = replace_value.replaceAll("\"", '&quot;');
-							replace_value       = replace_value.replaceAll("'", '"');
-							console.debug("--------------------");
-							//console.debug(replace_value_org);
-							console.debug(replace_value);
-
-							try {
-                                replace_content = JSON.parse(replace_value)
-                            } catch (e) {
-                                replace_content = replace_value;
-                            }
-							replace_value = replace_content + replace_index
-							}
-						}
-					}
-				
-				if (element2) { element2.innerHTML = replace_value; }
-				}
-			}
-		}
-	}
-
-
 // -----------------------
 
 
 // change button color
 function statusShow_buttonActive(id, active) {
-    statusCheck_power.visualize_element_disabled(id, active);
-} // to be replaced -> statusCheck_power.disable_element()
+    rmStatusShow.visualize_element_disabled(id, active);
+} // to be replaced -> rmStatusShow.disable_element()
 
 // show buttons in different colors (depending if devices are ON or OFF)
 function statusShow_powerButton(id, status) {
-    statusCheck_power.visualize_element_button(id, status);
-} // to be replaced -> statusCheck_power.visualize_element_button()
+    rmStatusShow.visualize_element_button(id, status);
+} // to be replaced -> rmStatusShow.visualize_element_button()
 
 // change slider color
 function statusShow_sliderActive(id, id_button, active) {
-    statusCheck_power.visualize_element_slider(id, id_button, active);
-} // to be replaced -> statusCheck_power.visualize_element_slider()
+    rmStatusShow.visualize_element_slider(id, id_button, active);
+} // to be replaced -> rmStatusShow.visualize_element_slider()
 
 // change toggle status color
 function statusShow_toggle(device, id_slider, id_value, id_button, status, active) {
-    statusCheck_power.visualize_element_toggle(device, id_slider, id_value, id_button, status, active);
-} // to be replaced -> statusCheck_power.visualize_element_toggle()
+    rmStatusShow.visualize_element_toggle(device, id_slider, id_value, id_button, status, active);
+} // to be replaced -> rmStatusShow.visualize_element_toggle()
 
 // open as big message
 function statusCheck_bigMessage(id) {
-    statusCheck_power.visualizes_element_big_message(id);
-} // to be replaced -> statusCheck_power.visualizes_element_big_message()
+    rmStatusShow.visualizes_element_big_message(id);
+} // to be replaced -> rmStatusShow.visualizes_element_big_message()
 
 
 // -----------------------------
@@ -656,7 +435,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         }
     }
 
-    /* visualizes status for devices */ // in progress
+    /* visualizes status for devices */
     show_status_devices () {
         let all_keys = this.status.get_keys("device");
         for (let i in all_keys) {
@@ -669,13 +448,14 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             if (!this.edit_mode) {
                 this.visualize_power_button_device(key, power_status);
                 this.visualize_power_display_device(key, power_status, power_message);
+                this.visualize_display_device(key);
             }
             this.visualize_device_idle_time(key);
         }
 
     }
 
-    /* visualizes status for scenes */ // in progress
+    /* visualizes status for scenes */
     show_status_scenes () {
         let all_keys = this.status.get_keys("scene");
         for (let i in all_keys) {
@@ -692,9 +472,18 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         }
     }
 
-    // not implemented yet
+    /* visualizes status for groups */
     show_status_groups() {
+        let all_keys = this.status.get_keys("group");
+        for (let i in all_keys) {
+            let key = all_keys[i];
+            if (key === "default") { continue; }
 
+            if (!this.edit_mode) {
+                this.visualize_power_button_group(key);
+                this.visualize_power_toggle_group(key);
+            }
+        }
     }
 
     /* check if server sends asynchronous messages and open in alert, if exists */
@@ -1061,99 +850,63 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         appMsg.confirm(message, "", 280);
     }
 
-    // visualize device display
+    /* visualize display values for devices and scenes (device values) */
     visualize_display_device (device_id) {
 
         let key_status;
         let element2;
         let value_key;
-        let key;
 
-        // check status for displays
-        const devices = data["CONFIG"]["devices"];
-        const devices_list = rmData.devices.list_all();
+        // check if values of this device are relevant for a display
+        if (!rmData.devices.exists(device_id) || device_id === "default") { return; }
+        else if (rmRemote.active_type !== "device" && rmRemote.active_type !== "scene") { return; }
+        else if (rmRemote.active_type === "device" && rmRemote.active_name !== device_id) { return; }
+        else if (rmRemote.active_type === "device" && rmRemote.active_name === device_id && !rmData.devices.display_exists(device_id)) { return; }
 
-        // fill in values for all device displays
-        for (let i in devices_list) {
-            let key = devices_list[i];
+        // device status
+        const status = rmStatus.status_device(device_id);
+        const dev_status = rmStatus.status_device_raw(device_id);
+        let display_keys = rmData.devices.list_commands(device_id, "get");
+        let additional_keys = ["api","api-status","api-last-query","api-last-record", "api-last-send","api-auto-off"];
+        display_keys = display_keys.concat(additional_keys);
 
-            // check if display is relevant for the device
-            if (!rmData.devices.exists(key) || key === "default") { continue; }
-            else if (rmRemote.active_type === "device" && rmRemote.active_name !== key) { continue; }
+        // set values if device is active or scene is active (which can contain several devices)
+        if (status === "ON" || status === "OFF" || status === "OK") {
 
-            // device status
-            const status = rmStatus.status_device(key);
-            const dev_status = rmStatus.status_device_raw(key);
-            const dev_config = rmData.devices.data(key);
+            for (let i in display_keys) {
+                let key = display_keys[i];
 
-            // set values if device is active or scene is active (which can contain several devices)
-            if (status === "OK") {
+                const element_norm = document.getElementById("display_" + device_id + "_" + key);
+                const element_full = document.getElementById("display_full_" + device_id + "_" + key);
 
-                const remote = devices[key]["remote"]["remote"];
-                const display = devices[key]["remote"]["display"];
-
-                if (!remote || !remote.includes("DISPLAY")) { continue; }
-                if (display === {} || display === undefined)     { continue; }
-
-                // set display values
-                for (const display_key in display) {
-                    value_key = display[display_key];
-                    const element = document.getElementById("display_" + key + "_" + value_key);
-                    element2 = document.getElementById("display_full_" + key + "_" + value_key);
-                    key_status = dev_status[value_key];
-                    if (key_status && value_key === "power") {
-                        if (key_status.toUpperCase().indexOf("ON") >= 0)        { key_status = use_color("<b>Power On<b/>","on"); }
-                        else if (key_status.toUpperCase().indexOf("OFF") >= 0)  { key_status = use_color("<b>Power Off<b/>","hint"); }
-                        else if (key_status.toUpperCase().indexOf("N/A") >= 0)  { key_status = use_color("<b>Power Status N/A<b/>","hint"); }
-                        else                                                    { key_status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+key_status; }
-                    }
-
-                    if (element)  { element.innerHTML  = key_status; }
-                    if (element2) { element2.innerHTML = key_status.replace(/,/g,"; "); }
+                let value = dev_status[key];
+                if (value && (key === "power" || key === "state")) {
+                    if (value.toUpperCase().indexOf("ON") >= 0)        { value = use_color("<b>Power On<b/>","on"); }
+                    else if (value.toUpperCase().indexOf("OFF") >= 0)  { value = use_color("<b>Power Off<b/>","hint"); }
+                    else if (value.toUpperCase().indexOf("N/A") >= 0)  { value = use_color("<b>Power Status N/A<b/>","hint"); }
+                    else                                               { value = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+key_status; }
                 }
+
+                if (typeof(value) === "string") {
+                    value = value
+                        .replaceAll("'", "\"")
+                        .replaceAll("True", "true")
+                        .replaceAll("False", "false");
+
+                    if (value.indexOf('{') > -1 || value.indexOf('[') > -1) {
+                        try { value = JSON.parse(value);} catch (e) { }
+                    }
+                }
+                if (typeof(value) !== "string") {
+                    value = syntaxHighlightJSON(value);
+                }
+
+                if (element_norm) { element_norm.innerHTML = value; }
+                if (element_full) { element_full.innerHTML = value.replace(/,/g,"; "); }
             }
 
-            // set display detail popup values (for devices only)
-            if (rmRemote.active_type === "device" && dev_status && dev_config && dev_config["commands"]["get"]) {
-
-                const additional_keys = ["api","api-status","api-last-query","api-last-record", "api-last-send","api-auto-off"];
-                const display_keys = dev_config["commands"]["get"];
-                const connected= rmStatus.status_device(key) + ": " + rmStatus.status_device(key, true)["message"];
-
-                for (let i=0; i<additional_keys.length; i++) {
-                    if (!display_keys[additional_keys[i]] && dev_status[additional_keys[i]]) { display_keys.push([additional_keys[i]]); }
-                }
-
-                for (let i=0; i<display_keys.length; i++) {
-                    value_key = display_keys[i];
-                    key_status = dev_status[value_key];
-                    element2 = document.getElementById("display_full_" + key + "_" + value_key);
-
-                    if (typeof(key_status) == "string") {
-                        key_status          = key_status.replaceAll("'", "\"");
-                        key_status          = key_status.replaceAll("True", "true");
-                        key_status          = key_status.replaceAll("False", "false");
-                    }
-                    key_status      = syntaxHighlightJSON(key_status);
-
-                    if (value_key === "power") {
-                        if (connected.indexOf("ERROR") >= 0)                    { key_status = use_color("<b>"+lang("CONNECTION_ERROR")+":</b><br/>","error")+connected; }
-                        else if (typeof(key_status) != "string")                { key_status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+key_status; }
-                        else if (key_status.toUpperCase().indexOf("ON") >= 0)   { key_status = use_color("<b>"+lang("CONNECTED")+"<b/>","on"); }
-                        else if (key_status.toUpperCase().indexOf("OFF") >= 0)  { key_status = use_color("<b>"+lang("CONNECTED")+": Power Off<b/>","hint"); }
-                        else 									                { key_status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+key_status; }
-                    }
-
-                    if (key_status && key_status.replace) { key_status = key_status.replace(/,/g,", "); }
-                    if (key_status && element2)           { element2.innerHTML = key_status; }
-                }
-            }
         }
-
     }
-
-    // visualize scene display
-    visualize_display_scene (scene_id) {}
 
     /* visualize status for devices by setting color of power buttons */
     visualize_power_button_device (device_id, power_status) {
@@ -1210,6 +963,72 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
                 this.visualize_element_button( "scene_off_"+key,  scene_status );
                 this.visualize_element_button( "scene_on_"+key, "" );
             }
+        }
+    }
+
+    /* visualize status for group power buttons */
+    visualize_power_button_group(group_id) {
+
+        if (rmRemote.active_type === "device") { return; }
+
+        let exists = false;
+        let group_status = rmStatus.status_group(group_id);
+        let options = ["on", "off", "on-off", "ON", "OFF", "ON-OFF"];
+
+        for (let key in options) { if (document.getElementById("group_" + group_id + "_" + options[key])) { exists = true; } }
+        if (document.getElementById("toggle_group_" + group_id + "_input")) { exists = true; }
+        if (!exists) { return; }
+
+        if (this.app_connection_error) { group_status = "ERROR"; }
+
+        if (group_status === "ON") {
+            this.visualize_element_button("group_" + group_id + "_on", "ON");
+            this.visualize_element_button("group_" + group_id + "_off", "");
+            this.visualize_element_button("group_" + group_id + "_on-off", "ON");
+        } else if (group_status === "OFF") {
+            this.visualize_element_button("group_" + group_id + "_on", "");
+            this.visualize_element_button("group_" + group_id + "_off", "OFF");
+            this.visualize_element_button("group_" + group_id + "_on-off", "OFF");
+        } else if (group_status === "PARTLY") {
+            this.visualize_element_button("group_" + group_id + "_on", "PARTLY");
+            this.visualize_element_button("group_" + group_id + "_off", "");
+            this.visualize_element_button("group_" + group_id + "_on-off", "PARTLY");
+        } else if (group_status === "N/A") {
+            this.visualize_element_button("group_" + group_id + "_on", "");
+            this.visualize_element_button("group_" + group_id + "_off", "");
+            this.visualize_element_button("group_" + group_id + "_on-off", "");
+        } else {
+            this.visualize_element_button("group_" + group_id + "_on", "ERROR");
+            this.visualize_element_button("group_" + group_id + "_off", "ERROR");
+            this.visualize_element_button("group_" + group_id + "_on-off", "ERROR");
+        }
+    }
+
+    /* visualize status for group power toggles */
+    visualize_power_toggle_group(group_id) {
+
+        if (rmRemote.active_type === "device") { return; }
+
+        let exists = false;
+        let group_status = rmStatus.status_group(group_id);
+        let options = ["on", "off", "on-off", "ON", "OFF", "ON-OFF"];
+
+        for (let key in options) {  if (document.getElementById("group_" + group_id + "_" + options[key])) { exists = true; } }
+        if (document.getElementById("toggle_group_" + group_id + "_input")) { exists = true; }
+        if (!exists) { return; }
+
+        if (this.app_connection_error) { group_status = "ERROR"; }
+
+        if (group_status === "ON") {
+            this.visualize_element_toggle("","toggle_group_"+group_id+"_input","toggle_group_"+group_id+"_last_value", "slider_group_"+group_id, "ON", "on");
+        } else if (group_status === "OFF") {
+            this.visualize_element_toggle("","toggle_group_"+group_id+"_input","toggle_group_"+group_id+"_last_value", "slider_group_"+group_id, "OFF", "off");
+        } else if (group_status === "PARTLY") {
+            this.visualize_element_toggle("","toggle_group_"+group_id+"_input","toggle_group_"+group_id+"_last_value", "slider_group_"+group_id, "PARTLY", "middle");
+        } else if (group_status === "N/A") {
+            this.visualize_element_toggle("","toggle_group_"+group_id+"_input","toggle_group_"+group_id+"_last_value", "slider_group_"+group_id, "N/A", "");
+        } else {
+            this.visualize_element_toggle("","toggle_group_"+group_id+"_input","toggle_group_"+group_id+"_last_value", "slider_group_"+group_id, "ERROR", "error");
         }
     }
 

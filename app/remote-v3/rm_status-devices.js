@@ -88,7 +88,7 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
             "api-device": this.data["CONFIG"]["apis"]["list_devices"],
             "device": Object.keys(this.config_devices),
             "scene": Object.keys(this.config_scenes),
-            "group": []
+            "group": Object.keys(this.config_groups),
         }
 
         if (this.load_async) {

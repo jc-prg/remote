@@ -432,10 +432,24 @@ class RemotePrepareDataDevices extends RemoteDefaultClass {
 
     // return display of a scene
     display(device_id) {
-        if (this.config_devices[device_id] && this.config_devices[device_id]["settings"]["display"]) { return this.config_devices[device_id]["settings"]["display"]; }
+        if (this.config_devices[device_id] && this.config_devices[device_id]["remote"]["display"]) {
+            return this.config_devices[device_id]["remote"]["display"];
+        }
         else {
             this.logging.info(`label(): no display for device_id "${device_id}" available.`)
             return {};
+        }
+    }
+
+    // return if display exists in the remote control
+    display_exists(device_id) {
+        if (this.exists(device_id)) {
+            let def_remote = this.remote(device_id)
+            let def_display = this.display(device_id);
+
+            return !!(def_remote.includes("DISPLAY") && def_display && def_display !== {});
+        } else {
+            this.logging.error(`display_exists(): device ${device_id} not found.`);
         }
     }
 
