@@ -49,7 +49,7 @@ function statusCheck(data={}) {
 
     if (!rmRemote.edit_mode) {
         statusCheck_deviceActive(data);
-        statusCheck_sliderToggleColorPicker(data);
+        //statusCheck_sliderToggleColorPicker(data);
         }
 
     statusCheck_measure(data, start);
