@@ -752,7 +752,7 @@ class RemoteVisualizePowerStatus extends RemoteDefaultClass {
                 else if (value >= 10) {
                     threads.push("<span style='color:var(--rm-color-signal-power-off)'>" + message + "</span>");
                 }
-                else                        {
+                else {
                     threads.push("<span style='color:var(--rm-color-signal-power-on)'>" + message + "</span>");
                 }
             }

@@ -220,7 +220,7 @@ let language_app = {
 
         "EXTERNAL_ID"            : "External ID",
         "ERROR_UNKNOWN"          : "Unknown error",
-        "ERROR_THREAD_TOO_LONG"  : "The thread <b>{0}</b> hasn't responded for <b>{1}s</b>.",
+        "ERROR_THREAD_TOO_LONG"  : "The thread <b>{0}</b> did not respond for <b>{1}s</b>.",
 
         "FORMAT_INCORRECT"       : "format is not correct",
         "FAVICON_INFO"           : "Select a different favicon or apple-icon. <i>Note:</i> this selection at the moment is temporary only - " +
