@@ -588,6 +588,9 @@ class RemoteVisualizePowerStatus extends RemoteDefaultClass {
         }
         this.signs_size = "18px";
         this.app_connection_error = false;
+        this.attention_config = false;
+        this.attention_threads = false;
+        this.attention_errors = {};
     }
 
     /* update class data */
@@ -614,9 +617,9 @@ class RemoteVisualizePowerStatus extends RemoteDefaultClass {
         this.show_status_groups();
 
         this.show_status_return_messages();
-        this.show_status_config_errors();
         this.show_status_system_health();
         this.show_status_app_modes();
+        this.show_status_errors();
     }
 
 
@@ -717,36 +720,14 @@ class RemoteVisualizePowerStatus extends RemoteDefaultClass {
     }
 
     /* check if some fatal configuration error occurred */
-    show_status_config_errors() {
-        let html = "";
-        let alert = "";
+    show_status_errors() {
+
         let count = 0;
         const errors = this.data["STATUS"]["config_errors"];
+        Object.keys(errors).forEach(error_key => { count += Object.keys(errors[error_key]).length; });
+        this.attention_config = (count > 0);
 
-        Object.keys(errors).forEach(error_key => {
-            Object.keys(errors[error_key]).forEach(key => {
-                if (errors[error_key][key] !== {}) {
-                    count += 1;
-                    let msg = "<b>" + error_key.toUpperCase() + " - " + key + "</b>:<br>" + JSON.stringify(errors[error_key][key]) + "<br/>&nbsp;<br/>";
-                    alert += msg;
-                }
-            });
-        });
-
-        if (count > 0) {
-            alert = "<div style='color:var(--rm-color-font-warning);'><b>" + count + " Configuration Error(s):</b></div><div id='attention-alert' style='text-align:left;'>" + alert + "</div>";
-            alert = alert.replaceAll('"','');
-            alert = alert.replaceAll('\'','');
-            alert = "appMsg.confirm(\""+alert+"\", \"\", 300);";
-
-            html = "<img src='icon/attention.png' onclick='"+alert+"' style='cursor:pointer;width:100%;height:auto;' alt=''>";
-            setTextById("attention", html);
-            elementVisible("attention");
-        }
-        else {
-            setTextById("attention", "");
-        }
-
+        this.visualize_attentions();
     }
 
     /* check and visualize system health */
@@ -754,6 +735,8 @@ class RemoteVisualizePowerStatus extends RemoteDefaultClass {
 
         const system_health = this.data["STATUS"]["system_health"];
         let threads = [];
+        this.attention_errors["thread"] = {};
+        this.attention_threads = false;
 
         for (const [key, value] of Object.entries(system_health)) {
 
@@ -761,9 +744,17 @@ class RemoteVisualizePowerStatus extends RemoteDefaultClass {
             else if (value === "stopped") { threads.push(key + " (stopped)"); }
             else {
                 let message = key + " (" + value + "s)";
-                if (value >= 20)            { threads.push("<span style='color:var(--rm-color-signal-power-error)'>" + message + "</span>"); }
-                else if (value >= 10)       { threads.push("<span style='color:var(--rm-color-signal-power-off)'>" + message + "</span>"); }
-                else                        { threads.push("<span style='color:var(--rm-color-signal-power-on)'>" + message + "</span>"); }
+                if (value >= 20) {
+                    threads.push("<span style='color:var(--rm-color-signal-power-error)'>" + message + "</span>");
+                    this.attention_errors["thread"][key] = value;
+                    this.attention_threads = true;
+                }
+                else if (value >= 10) {
+                    threads.push("<span style='color:var(--rm-color-signal-power-off)'>" + message + "</span>");
+                }
+                else                        {
+                    threads.push("<span style='color:var(--rm-color-signal-power-on)'>" + message + "</span>");
+                }
             }
         }
         let health_msg = threads.join(", ");
@@ -796,6 +787,61 @@ class RemoteVisualizePowerStatus extends RemoteDefaultClass {
             document.getElementById(div_id).disabled = true;
         } else if (document.getElementById(div_id)) {
             document.getElementById(div_id).disabled = false;
+        }
+    }
+
+    /* */
+    visualize_attentions() {
+
+        this.prepare_config_errors = function () {
+            const errors = this.data["STATUS"]["config_errors"];
+            let count = 0;
+            let alert = "";
+            Object.keys(errors).forEach(error_key => {
+                Object.keys(errors[error_key]).forEach(key => {
+                    if (errors[error_key][key] !== {}) {
+                        count += 1;
+                        let msg = "<b>" + error_key.toUpperCase() + " - " + key + "</b>:<br>" + JSON.stringify(errors[error_key][key]) + "<br/>&nbsp;<br/>";
+                        alert += msg;
+                    }
+                });
+            });
+            return [alert, count];
+        }
+        this.prepare_thread_errors = function () {
+            let count = 0;
+            let alert = "";
+            for (let key in this.attention_errors["thread"]) {
+                alert += `${lang("ERROR_THREAD_TOO_LONG", [key, this.attention_errors["thread"][key]])}<br/>`;
+                count += 1;
+            }
+            return [alert, count];
+        }
+
+        let types = ["thread", "configuration"];
+        let html = "";
+        let alert = "";
+        if (this.attention_config || this.attention_threads) {
+            for (let i in types) {
+                let key = types[i];
+                let message, count;
+
+                if (this.attention_config && key === "configuration") { [message, count] = this.prepare_config_errors(); }
+                else if (this.attention_threads && key === "thread")  { [message, count] = this.prepare_thread_errors(); }
+                if (count > 0) {
+                    alert += "<div style='color:var(--rm-color-font-warning);'><b>" + count + " " + key + " error(s):</b></div><div id='attention-alert' style='text-align:left;'>" + message + "</div>";
+                }
+            }
+            alert = alert.replaceAll('"','');
+            alert = alert.replaceAll('\'','');
+            alert = "appMsg.confirm(\""+alert+"\", \"\", 300);";
+            html = "<img src='icon/attention.png' onclick='"+alert+"' style='cursor:pointer;width:100%;height:auto;' alt=''>";
+
+            setTextById("attention", html);
+            elementVisible("attention");
+        }
+        else {
+            setTextById("attention", "");
         }
     }
 
@@ -1120,7 +1166,7 @@ class RemoteVisualizePowerStatus extends RemoteDefaultClass {
 
     }
 
-    // check how long device was idle (relevant for auto power off)
+    /* check how long device was idle (relevant for auto power off) */
     visualize_device_idle_time(device) {
 
         const device_status = this.data["STATUS"]["devices"][device];
@@ -1145,7 +1191,6 @@ class RemoteVisualizePowerStatus extends RemoteDefaultClass {
             }
         }
     }
-
 
     /* visualize colored status */
     visualize_status_text(div_id, status_text, condition=true, colors="") {
