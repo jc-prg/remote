@@ -3,10 +3,10 @@
     --rm-color-hr: #aaaaaa;
 
     --rm-color-font-default: black;
-    --rm-color-font-error: red;
-    --rm-color-font-ok: green;
-    --rm-color-font-data: cyan;
-    --rm-color-font-warning: yellow;
+    --rm-color-font-error: darkred;
+    --rm-color-font-ok: darkgreen;
+    --rm-color-font-data: darkcyan;
+    --rm-color-font-warning: darkorange;
 
     --rm-color-button-default: #000044;
     --rm-color-button-default-text: white;
@@ -210,10 +210,10 @@
         --rm-color-hr: #444444;
 
         --rm-color-font-default: black;
-        --rm-color-font-error: darkred;
-        --rm-color-font-ok: darkgreen;
-        --rm-color-font-data: darkcyan;
-        --rm-color-font-warning: darkorange;
+        --rm-color-font-error: red;
+        --rm-color-font-ok: green;
+        --rm-color-font-data: cyan;
+        --rm-color-font-warning: yellow;
 
         --rm-color-button-default: #333333;
         --rm-color-button-default-text: #DDDDDD;
