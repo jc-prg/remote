@@ -42,7 +42,7 @@
           },
           "load_after": ["l1-on","l1-off","l1-toggle","l2-on","l2-off","l2-toggle"]
         },
-        "description": "zigbee-switch"
+        "description": "2 gang switch with scene and backlight (_TZ3002_zjuvw9zf / TS0726)"
     },
     "info": "jc://remote/ - In this file the commands and buttons are defined."
 }

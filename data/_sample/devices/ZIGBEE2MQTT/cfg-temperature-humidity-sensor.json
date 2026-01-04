@@ -1,0 +1,103 @@
+{
+    "data": {
+        "buttons": {},
+        "commands": {
+            "battery": {
+                "cmd": [
+                    "get"
+                ],
+                "description": "Remaining battery in %",
+                "get": "get=battery",
+                "type": "numeric",
+                "unit": "%",
+                "values": {
+                    "max": 100,
+                    "min": 0
+                }
+            },
+            "humidity": {
+                "cmd": [
+                    "get"
+                ],
+                "description": "Measured relative humidity",
+                "get": "get=humidity",
+                "type": "numeric",
+                "unit": "%"
+            },
+            "humidity-calibration": {
+                "cmd": [
+                    "get",
+                    "set"
+                ],
+                "description": "Offset to add/subtract to the reported relative humidity",
+                "get": "get=humidity_calibration",
+                "set": "set={'humidity_calibration': '{DATA}'}",
+                "type": "numeric",
+                "unit": "%",
+                "values": {
+                    "max": 50,
+                    "min": -50
+                }
+            },
+            "linkquality": {
+                "cmd": [
+                    "get"
+                ],
+                "description": "Link quality (signal strength)",
+                "get": "get=linkquality",
+                "type": "numeric",
+                "unit": "lqi",
+                "values": {
+                    "max": 255,
+                    "min": 0
+                }
+            },
+            "temperature": {
+                "cmd": [
+                    "get"
+                ],
+                "description": "Measured temperature value",
+                "get": "get=temperature",
+                "type": "numeric",
+                "unit": "°C"
+            },
+            "temperature-calibration": {
+                "cmd": [
+                    "get",
+                    "set"
+                ],
+                "description": "Offset to add/subtract to the reported temperature",
+                "get": "get=temperature_calibration",
+                "set": "set={'temperature_calibration': '{DATA}'}",
+                "type": "numeric",
+                "unit": "°C",
+                "values": {
+                    "max": 50,
+                    "min": -50
+                }
+            }
+        },
+        "description": "Temperature and humidity sensor (eWeLink / SNZB-02P)",
+        "details": {
+            "description": "Temperature and humidity sensor",
+            "friendly_name": "0x385cfbfffec998bd",
+            "ieee_address": "0x385cfbfffec998bd",
+            "manufacturer": "eWeLink",
+            "model_id": "SNZB-02P",
+            "type": "EndDevice"
+        },
+        "query": {
+            "load_after": [],
+            "load_after_values": [],
+            "load_default": 60,
+            "load_intervals": {
+                "10": [
+                    "linkquality"
+                ]
+            },
+            "load_never": [],
+            "load_only": []
+        }
+    },
+    "info": "Temperature and humidity sensor (eWeLink / SNZB-02P)"
+}

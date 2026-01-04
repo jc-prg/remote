@@ -37,7 +37,7 @@
                 "get": "get=voltage"
             }
         },
-        "description": "ZigBee Plug",
+        "description": "Smart plug (with power monitoring by polling) (_TZ3000_okaz9tjs / TS011F)",
         "method": "query"
     },
     "info": "jc://remote/ - In this files the device-specific commands and buttons are defined."

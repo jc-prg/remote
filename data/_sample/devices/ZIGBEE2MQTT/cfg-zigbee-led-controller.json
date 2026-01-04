@@ -84,7 +84,7 @@
           ]
         }
       },
-      "description": "Zigbee RGB+CCT light (_TZ3210_b1uip70g / TS0505B)",
+      "description": "Zigbee USB Mini LED Controller RGB+CCT (pro) (GLEDOPTO / GL-MC-001P)",
       "method": "query"
   },
   "info": "jc://remote/ - In this files the device-specific commands and buttons are defined."

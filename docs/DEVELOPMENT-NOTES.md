@@ -4,12 +4,12 @@
 
 ## KNOWN BUGS -------------------------------------------------------------------
 
-* ...
+* Q-query / api ... threads seemed to crash
 
 ### known but not that urgent
 
 * reload of all configs doesn't work
-* 
+
 * when API has an error / isn't available anymore, the connect device still reports online
   * EISCP-ONKYO -> was connected during startup, plugged of -> still green with old values
   * ERROR: Device not connected (EISCP-ONKYO/ONKYP-TXNR686). ... PING 192.168.1.80
@@ -26,20 +26,22 @@
 
 ## UNDER DEVELOPMENT -------------------------------------------------------------
 
-* continue status refactoring:
-  * OPEN: toggles, sliders
-  * OPEN: groups
+* ZigBee temperature / humidity sensor
+  * integrate status of "always on devices", e.g., via availability: { "state": "online" }
+  * display -> not in state "Manual Mode"
+  * idea for later: record and visualize data 
 
+* continue status refactoring:
+  * IN PROGRESS: groups | rm_status-devices.js + rm_status.js
+    * OK: group status
+    * OK: group messages
+    * OPEN: visualize group status
+  * OPEN: toggles, sliders
+  
 * macro editing in the app
   * OPEN: sort in some order (alphabetically or in the order of the menu)
   * OPEN: edit groups with the same option (different data structure)
   * OPEN: scene macros (additional place, partly collecting data from different places ... requires server adaption)
-
-* move data processing to -> class remoteData {}
-  * NEXT: rm_settings.js
-  * OK: rm_remote-control-color-picker.js
-  * OK: rm_remotes.js
-  * OK: relevant data for macro editing
 
 ### paused a bit
 
@@ -76,11 +78,29 @@
 
 ## NEW / IDEAS --------------------------------------------------------------------
 
+### NEW 01-2025
+
+* other refactoring
+  * rm_main.js; rethink / maybe create a class and restructure stuff
+  * improve start-up behavior in status messages
+    * DENON: POWER_OFF; 1st no ping; then "NetworkError: All connection attempts failed"
+
+* move data processing to -> class remoteData {} and remoteStatus {}
+  * IDEA: move other configs to data("CONFIG")("elements"), such as "icons", "device-types", "methods"
+  * check if still required: data("CONFIG")("templates")("list")
+  * check which other parts are still required or can be removed
+  * check if elements remoteStatus.status_system can be further improved
+
 ### NEW 12-2025
 
 * APP PERFORMANCE in edit mode - Interaction to next paint (INP) -> to be improved;
   * further ideas, e.g., loading when required and async functions
   * IDEA: separate view to edit all no remote related settings (for a better performance)
+  * IDEA: http://localhost:5001/api/list/
+    * http://localhost:5001/api/list-update/ <-> transmit "CONFIG" only if updates are done (compare dicts)
+    * ??? introduce an unique app instance ID?
+  * IDEA: Check which CONFIG data are not used (anymore), when refactoring is done
+    * and optimize structure
   
 * front end improvements
   display text format errors
@@ -182,6 +202,12 @@
     
 # DONE --------------------------------------------------------------------------
 
+* bugs due to refactoring
+  * SOLVED: select with options
+  * SOLVED: buttons for scene macros doesn't work - scene_test; scene_scene-on; scene_scene-off
+* visualize queues that hang for more than 120s (show attention sign)
+* create relevant classes out of RemoteDefaultClass (incl. unified logging)
+* move main parts of the data processing to -> class remoteData {} and class remoteStatus {}
 * Improve API Device settings
   * OK: add a toggle to API Device edit dialog to enable / disable
   * OK: activating an API device takes time, looks like it jumps back to old status?!
