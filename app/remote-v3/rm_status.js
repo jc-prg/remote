@@ -744,10 +744,12 @@ class RemoteVisualizePowerStatus extends RemoteDefaultClass {
             else if (value === "stopped") { threads.push(key + " (stopped)"); }
             else {
                 let message = key + " (" + value + "s)";
-                if (value >= 20) {
-                    threads.push("<span style='color:var(--rm-color-signal-power-error)'>" + message + "</span>");
+                if (value >= 120) {
                     this.attention_errors["thread"][key] = value;
                     this.attention_threads = true;
+                }
+                if (value >= 20) {
+                    threads.push("<span style='color:var(--rm-color-signal-power-error)'>" + message + "</span>");
                 }
                 else if (value >= 10) {
                     threads.push("<span style='color:var(--rm-color-signal-power-off)'>" + message + "</span>");
