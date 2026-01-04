@@ -145,7 +145,7 @@ class RemoteJsonEditing extends RemoteDefaultClass {
 
         this.default_size = style;
         this.format_style = format_style;   // other options: default, leafs, row4
-        this.main_instance = "rm3json_edit";
+        this.main_instance = "rmJson";
         this.highlighting = highlighting || jsonHighlighting;
 
         this.start = this.start.bind(this);
@@ -203,7 +203,7 @@ class RemoteJsonEditing extends RemoteDefaultClass {
         if (textarea) {
             // overlay highlighted text
             textarea.addEventListener("input", function () {
-                highlight.innerHTML = rm3json_edit.syntaxHighlight(textarea.value);
+                highlight.innerHTML = rmJson.syntaxHighlight(textarea.value);
             });
             textarea.dispatchEvent(new Event("input"));
 
@@ -737,7 +737,7 @@ class RemoteJsonElements extends RemoteDefaultClass {
             return;
         }
 
-        template = remoteData.templates.data(value);
+        template = rmData.templates.data(value);
         let value_new = template["remote"];
         if (template["display"]) {
             let display_new = template["display"];
@@ -794,7 +794,7 @@ class RemoteJsonElements extends RemoteDefaultClass {
 
         if (device.startsWith("group_")) {
             let group = device.split("_")[1];
-            let group_devices = remoteData.device_groups.list_devices(group);
+            let group_devices = rmData.device_groups.list_devices(group);
             if (group_devices.length > 0) {
                 device = group_devices[0];
             } else {
@@ -803,7 +803,7 @@ class RemoteJsonElements extends RemoteDefaultClass {
             }
         }
 
-        let s_device = remoteData.devices.label(device);
+        let s_device = rmData.devices.label(device);
         if (s_param === "" || s_param === undefined) {
             appMsg.alert(lang("SLIDER_SELECT_PARAM"));
             return;
@@ -816,7 +816,7 @@ class RemoteJsonElements extends RemoteDefaultClass {
         }
         setValueById(slider_description, s_description);
 
-        let cmd_definition = remoteData.devices.list_commands(device, "definition");
+        let cmd_definition = rmData.devices.list_commands(device, "definition");
 
         this.logging.info(JSON.stringify(cmd_definition[s_param]));
 

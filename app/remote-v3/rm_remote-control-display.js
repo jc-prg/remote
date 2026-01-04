@@ -22,12 +22,12 @@ class RemoteControlDisplay extends RemoteDefaultClass {
             if (rm_type === "scenes") {
                 //let [scene_status, status_log] = statusCheck_scenePowerStatus(dataAll);
                 //status = scene_status[device];
-                status = remoteStatus.status_scene(device);
+                status = rmStatus.status_scene(device);
             }
             else {
                 //let [device_status, device_status_log] = statusCheck_devicePowerStatus(dataAll);
                 //status = device_status[device];
-                status = remoteStatus.status_device(device);
+                status = rmStatus.status_device(device);
             }
 
             if (status === undefined) {
@@ -104,7 +104,7 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                 text += display_start;
                 text  = text.replace( /##STATUS##/g, "MANUAL" );
                 text  = text.replace( /##STYLE##/g, style + " display_manual" );
-                if (rm3settings.manual_mode || status === "N/A")    { text  = text.replace( /##DISPLAY##/g, "block" ); }
+                if (rmSettings.manual_mode || status === "N/A")    { text  = text.replace( /##DISPLAY##/g, "block" ); }
                 else                                               { text  = text.replace( /##DISPLAY##/g, "none" ); }
                 text += "<span class='center'>"+lang("CONNECTION_MANUAL")+"<br/><text id='display_MANUAL_info_"+device+"'></text></span>";
                 text += display_end;
@@ -155,13 +155,13 @@ class RemoteControlDisplay extends RemoteDefaultClass {
             text  += "<div style='width:100%;height:400px;overflow-y:scroll;'>";
 
             if (type === "scenes") {
-                if (!remoteData.scenes.data(device)["remote"]["display-detail"]) {
+                if (!rmData.scenes.data(device)["remote"]["display-detail"]) {
                     this.logging.warn(this.name+".display_alert() not implemented for this type and device ("+type+"/"+device+")");
-                    this.logging.warn(remoteData.scenes.data(device));
+                    this.logging.warn(rmData.scenes.data(device));
                     return;
                 }
                 else {
-                    display_data = Object.keys(remoteData.scenes.data(device)["remote"]["display-detail"]);
+                    display_data = Object.keys(rmData.scenes.data(device)["remote"]["display-detail"]);
                     this.logging.warn(display_data);
                 }
             }
@@ -169,8 +169,8 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                 let power = this.data["STATUS"][type][device];
 
                 if (type !== "devices") { power = {}; }
-                let queries = remoteData.devices.list_commands(device, "definition");
-                if (remoteData.devices.exists(device) && queries) { display_data = Object.keys(queries); }
+                let queries = rmData.devices.list_commands(device, "definition");
+                if (rmData.devices.exists(device) && queries) { display_data = Object.keys(queries); }
                 else { display_data = ["ERROR","No display defined"]; }
 
                 this.logging.debug(device,"debug");

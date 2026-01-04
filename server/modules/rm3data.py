@@ -508,7 +508,7 @@ class RemotesData(RemoteThreadingClass):
         if data == {}:
             self.logging.error("ERROR: ...!")
         else:
-            self.config.write_status(data, "remoteData.devices_write()")
+            self.config.write_status(data, "rmData.devices_write()")
 
     def devices_get_status(self, data, read_api):
         """

@@ -30,24 +30,24 @@ function statusCheck(data={}) {
 
     // first load: create classes for audio and device status
     if (status_load_first) {
-        remoteData = new RemotePrepareData("remoteData", data);
-        remoteStatus = new RemoteDevicesStatus("remoteStatus", data);
+        rmData = new RemotePrepareData("rmData", data);
+        rmStatus = new RemoteDevicesStatus("rmStatus", data);
 
-        statusCheck_power = new RemoteVisualizePowerStatus("statusCheck_power", remoteStatus);
-        statusCheck_audio = new RemoteVisualizeMainAudioStatus("statusCheck_audio", remoteStatus, data);
+        statusCheck_power = new RemoteVisualizeStatus("statusCheck_power", rmStatus);
+        statusCheck_audio = new RemoteVisualizeMainAudioStatus("statusCheck_audio", rmStatus, data);
 
         status_load_first = false;
     }
 
     // update data and status processing
-    remoteData.update(data)
-    remoteStatus.update(data);
+    rmData.update(data)
+    rmStatus.update(data);
 
     // show power status and audio status
-    statusCheck_power.show_status(data, rm3remotes.edit_mode);
+    statusCheck_power.show_status(data, rmRemote.edit_mode);
     statusCheck_audio.show_status(data);
 
-    if (!rm3remotes.edit_mode) {
+    if (!rmRemote.edit_mode) {
         statusCheck_displayValues(data);
         statusCheck_deviceActive(data);
         statusCheck_groupPowerButton(data);
@@ -91,7 +91,7 @@ function statusCheck_measure(data, start) {
 function statusCheck_offline(data) {
     console.error("Lost connection to the server.");
     statusCheck_deviceActive(data, true);
-    remoteStatus.set_connection_error(true);
+    rmStatus.set_connection_error(true);
     statusCheck_power.set_connection_error(true);
 }
 
@@ -107,7 +107,7 @@ function statusCheck_sliderToggleColorPicker(data) {
 	    let device_api_power   = data["STATUS"]["devices"][device]["power"];
 	    let device_api_status  = data["STATUS"]["interfaces"]["connect"][device_api];
 	    let device_commands    = data["CONFIG"]["devices"][device]["commands"]["set"];
-        let device_status      = remoteStatus.status_device(device);
+        let device_status      = rmStatus.status_device(device);
 
         for (let key in devices[device]) {
             // device toggle
@@ -178,7 +178,7 @@ function statusCheck_sliderToggleColorPicker(data) {
 // show power status for group power status
 function statusCheck_groupPowerButton(data) {
 
-    if (rm3remotes.active_type === "device") { return; }
+    if (rmRemote.active_type === "device") { return; }
 
     const groups = data["CONFIG"]["macros"]["groups"];
     for (let key in groups) {
@@ -200,7 +200,7 @@ function statusCheck_groupPowerButton(data) {
             for (let key2 in devices) {
 
                 console.debug(key  + "_" + devices[key2] + " = " + data["STATUS"]["devices"][devices[key2]]["power"] + "/" + data["STATUS"]["devices"][devices[key2]]["api-status"]);
-                let status_device = remoteStatus.status_device(devices[key2]);
+                let status_device = rmStatus.status_device(devices[key2]);
                 if (status_device.toUpperCase() === "ON") { count_on += 1; }
                 else if (status_device.toUpperCase() === "OFF") { count_off += 1; }
                 else if (status_device.toUpperCase() === "N/A") { count_na += 1; }
@@ -261,24 +261,24 @@ function statusCheck_deviceActive(data, app_connection_error=false) {
 
 	let devices_status = data["STATUS"]["devices"];
 	let devices_config = data["CONFIG"]["devices"];
-	let scene = rm3remotes.active_name;
+	let scene = rmRemote.active_name;
 
     // check scene status: inactive macro_buttons, deactivate all buttons from list starting with "macro", power message
-    if (rm3remotes.active_type === "scene" && scene) {
-        let scene_status = remoteStatus.status_scene(scene);
-        let status_log = remoteStatus.status_scene(scene, true)["message"];
+    if (rmRemote.active_type === "scene" && scene) {
+        let scene_status = rmStatus.status_scene(scene);
+        let status_log = rmStatus.status_scene(scene, true)["message"];
 
         console.debug("---> " + scene + " " + scene_status + " - " + status_log);
 
         let message = "<div class='remote-power-information-image'  onclick='statusCheck_bigMessage(\"scene-power-information-" + scene + "\");'></div>";
 
         if (scene_status === "POWER_OFF") {
-            for (let i=0; i<rm3remotes.active_buttons.length; i++) {
-                let button = rm3remotes.active_buttons[i];
+            for (let i=0; i<rmRemote.active_buttons.length; i++) {
+                let button = rmRemote.active_buttons[i];
                 statusShow_buttonActive(button,false);
                 }
-            for (let i=0; i<rm3remotes.active_channels.length; i++) {
-                let button = rm3remotes.active_channels[i];
+            for (let i=0; i<rmRemote.active_channels.length; i++) {
+                let button = rmRemote.active_channels[i];
                 statusShow_buttonActive(button,false);
                 }
             if (remoteHints) {
@@ -291,8 +291,8 @@ function statusCheck_deviceActive(data, app_connection_error=false) {
                 }
             }
         else if (scene_status !== "ON" && scene_status !== "OFF"  && scene_status !== "N/A") {
-            for (let i=0; i<rm3remotes.active_buttons.length; i++) {
-                let button1 = rm3remotes.active_buttons[i].split("_");
+            for (let i=0; i<rmRemote.active_buttons.length; i++) {
+                let button1 = rmRemote.active_buttons[i].split("_");
                 if (button1[0] === "macro") { statusShow_buttonActive(button1[0]+"_"+button1[1],false); }
                 }
             if (remoteHints || scene_status && (scene_status.indexOf("ERROR") >= 0 || scene_status.indexOf("DISABLED") >= 0)) {
@@ -305,8 +305,8 @@ function statusCheck_deviceActive(data, app_connection_error=false) {
                 }
             }
         else {
-            for (let i=0; i<rm3remotes.active_buttons.length; i++) {
-                let button1 = rm3remotes.active_buttons[i].split("_");
+            for (let i=0; i<rmRemote.active_buttons.length; i++) {
+                let button1 = rmRemote.active_buttons[i].split("_");
                 if (button1[0] === "macro") { statusShow_buttonActive(button1[0]+"_"+button1[1],true); }
                 }
             setTextById("scene-power-information-"+scene, "");
@@ -321,9 +321,9 @@ function statusCheck_deviceActive(data, app_connection_error=false) {
 
 		if (devices_config[device] && devices_config[device]["buttons"] && devices_status[device] && devices_status[device]["power"]) {
 
-		    let status = remoteStatus.status_device(device);
+		    let status = rmStatus.status_device(device);
             let info_sign = "<div class='remote-power-information-image'  onclick='statusCheck_bigMessage(\"remote-power-information-" + device + "\");'></div>";
-		    let message = info_sign + remoteStatus.status_device(device, true)["message"]; //device_status_log[device];
+		    let message = info_sign + rmStatus.status_device(device, true)["message"]; //device_status_log[device];
             let power_on = (status === "ON" || status === "N/A");
 
 			// show device status
@@ -400,12 +400,12 @@ function statusCheck_displayValues(data={}) {
 		    }
 
 	    // device status
-        const status = remoteStatus.status_device(key);
+        const status = rmStatus.status_device(key);
         const dev_status = data["STATUS"]["devices"][key];
         const dev_config = data["CONFIG"]["devices"][key];
 
         // set values if device is active or scene is active (which can contain several devices)
-        if (status === "ON" && (rm3remotes.active_type === "scene" || rm3remotes.active_name === key)) {
+        if (status === "ON" && (rmRemote.active_type === "scene" || rmRemote.active_name === key)) {
 
             const remote = devices[key]["remote"]["remote"];
             const display = devices[key]["remote"]["display"];
@@ -432,11 +432,11 @@ function statusCheck_displayValues(data={}) {
             }
 
         // set display detail popup values (for devices only)
-        if (rm3remotes.active_type === "device" && dev_status && dev_config && dev_config["commands"]["get"]) {
+        if (rmRemote.active_type === "device" && dev_status && dev_config && dev_config["commands"]["get"]) {
 
             const additional_keys = ["api","api-status","api-last-query","api-last-record", "api-last-send","api-auto-off"];
             const display_keys = dev_config["commands"]["get"];
-            const connected= remoteStatus.status_device(key) + ": " + remoteStatus.status_device(key, true)["message"];
+            const connected= rmStatus.status_device(key) + ": " + rmStatus.status_device(key, true)["message"];
 
             for (let i=0; i<additional_keys.length; i++) {
                 if (!display_keys[additional_keys[i]] && dev_status[additional_keys[i]]) { display_keys.push([additional_keys[i]]); }
@@ -555,7 +555,7 @@ function statusCheck_bigMessage(id) {
 // refactored already ...
 
 /* class to visualize the power status of apis, api devices, devices and scenes */
-class RemoteVisualizePowerStatus extends RemoteDefaultClass {
+class RemoteVisualizeStatus extends RemoteDefaultClass {
     constructor(name, status) {
         super(name);
 
@@ -663,8 +663,8 @@ class RemoteVisualizePowerStatus extends RemoteDefaultClass {
             let key = all_keys[i];
             if (key === "default")        { continue; }
 
-            let power_status  = remoteStatus.status_device(key);
-            let power_message = remoteStatus.status_device(key, true)["message"];
+            let power_status  = rmStatus.status_device(key);
+            let power_message = rmStatus.status_device(key, true)["message"];
 
             if (!this.edit_mode) {
                 this.visualize_power_button_device(key, power_status);
@@ -682,8 +682,8 @@ class RemoteVisualizePowerStatus extends RemoteDefaultClass {
             let key = all_keys[i];
             if (key === "default") { continue; }
 
-            let power_status  = remoteStatus.status_scene(key);
-            let power_message = remoteStatus.status_scene(key, true)["message"];
+            let power_status  = rmStatus.status_scene(key);
+            let power_message = rmStatus.status_scene(key, true)["message"];
 
             if (!this.edit_mode) {
                 this.visualize_power_button_scene(key, power_status, power_message);
@@ -772,7 +772,7 @@ class RemoteVisualizePowerStatus extends RemoteDefaultClass {
     /* check & visualize status edit mode, intelligent mode & CO */
     show_status_app_modes() {
         const status_sliders = ["toggle__edit_input", "toggle__intelligent_input", "toggle__button_input", "toggle__hint_input", "toggle__easy_input", "toggle__json_input"];
-        const status_values = [rm3remotes.edit_mode, !deactivateButton, showButton, remoteHints, easyEdit, jsonHighlighting];
+        const status_values = [rmRemote.edit_mode, !deactivateButton, showButton, remoteHints, easyEdit, jsonHighlighting];
 
         for (let key in status_sliders) {
             if (document.getElementById(status_sliders[key])) {
@@ -1061,6 +1061,100 @@ class RemoteVisualizePowerStatus extends RemoteDefaultClass {
         appMsg.confirm(message, "", 280);
     }
 
+    // visualize device display
+    visualize_display_device (device_id) {
+
+        let key_status;
+        let element2;
+        let value_key;
+        let key;
+
+        // check status for displays
+        const devices = data["CONFIG"]["devices"];
+        const devices_list = rmData.devices.list_all();
+
+        // fill in values for all device displays
+        for (let i in devices_list) {
+            let key = devices_list[i];
+
+            // check if display is relevant for the device
+            if (!rmData.devices.exists(key) || key === "default") { continue; }
+            else if (rmRemote.active_type === "device" && rmRemote.active_name !== key) { continue; }
+
+            // device status
+            const status = rmStatus.status_device(key);
+            const dev_status = rmStatus.status_device_raw(key);
+            const dev_config = rmData.devices.data(key);
+
+            // set values if device is active or scene is active (which can contain several devices)
+            if (status === "OK") {
+
+                const remote = devices[key]["remote"]["remote"];
+                const display = devices[key]["remote"]["display"];
+
+                if (!remote || !remote.includes("DISPLAY")) { continue; }
+                if (display === {} || display === undefined)     { continue; }
+
+                // set display values
+                for (const display_key in display) {
+                    value_key = display[display_key];
+                    const element = document.getElementById("display_" + key + "_" + value_key);
+                    element2 = document.getElementById("display_full_" + key + "_" + value_key);
+                    key_status = dev_status[value_key];
+                    if (key_status && value_key === "power") {
+                        if (key_status.toUpperCase().indexOf("ON") >= 0)        { key_status = use_color("<b>Power On<b/>","on"); }
+                        else if (key_status.toUpperCase().indexOf("OFF") >= 0)  { key_status = use_color("<b>Power Off<b/>","hint"); }
+                        else if (key_status.toUpperCase().indexOf("N/A") >= 0)  { key_status = use_color("<b>Power Status N/A<b/>","hint"); }
+                        else                                                    { key_status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+key_status; }
+                    }
+
+                    if (element)  { element.innerHTML  = key_status; }
+                    if (element2) { element2.innerHTML = key_status.replace(/,/g,"; "); }
+                }
+            }
+
+            // set display detail popup values (for devices only)
+            if (rmRemote.active_type === "device" && dev_status && dev_config && dev_config["commands"]["get"]) {
+
+                const additional_keys = ["api","api-status","api-last-query","api-last-record", "api-last-send","api-auto-off"];
+                const display_keys = dev_config["commands"]["get"];
+                const connected= rmStatus.status_device(key) + ": " + rmStatus.status_device(key, true)["message"];
+
+                for (let i=0; i<additional_keys.length; i++) {
+                    if (!display_keys[additional_keys[i]] && dev_status[additional_keys[i]]) { display_keys.push([additional_keys[i]]); }
+                }
+
+                for (let i=0; i<display_keys.length; i++) {
+                    value_key = display_keys[i];
+                    key_status = dev_status[value_key];
+                    element2 = document.getElementById("display_full_" + key + "_" + value_key);
+
+                    if (typeof(key_status) == "string") {
+                        key_status          = key_status.replaceAll("'", "\"");
+                        key_status          = key_status.replaceAll("True", "true");
+                        key_status          = key_status.replaceAll("False", "false");
+                    }
+                    key_status      = syntaxHighlightJSON(key_status);
+
+                    if (value_key === "power") {
+                        if (connected.indexOf("ERROR") >= 0)                    { key_status = use_color("<b>"+lang("CONNECTION_ERROR")+":</b><br/>","error")+connected; }
+                        else if (typeof(key_status) != "string")                { key_status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+key_status; }
+                        else if (key_status.toUpperCase().indexOf("ON") >= 0)   { key_status = use_color("<b>"+lang("CONNECTED")+"<b/>","on"); }
+                        else if (key_status.toUpperCase().indexOf("OFF") >= 0)  { key_status = use_color("<b>"+lang("CONNECTED")+": Power Off<b/>","hint"); }
+                        else 									                { key_status = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+key_status; }
+                    }
+
+                    if (key_status && key_status.replace) { key_status = key_status.replace(/,/g,", "); }
+                    if (key_status && element2)           { element2.innerHTML = key_status; }
+                }
+            }
+        }
+
+    }
+
+    // visualize scene display
+    visualize_display_scene (scene_id) {}
+
     /* visualize status for devices by setting color of power buttons */
     visualize_power_button_device (device_id, power_status) {
 
@@ -1127,7 +1221,7 @@ class RemoteVisualizePowerStatus extends RemoteDefaultClass {
             if (remoteHints) { setTextById("display_ERROR_info_"+device_id,""); }
             else { setTextById("display_ERROR_info_" + device_id, lang("STATUS_NO_SERVER_CONNECT")); }
         }
-        else if (rm3remotes.edit_mode)                       { this.visualize_element_display(device_id, "EDIT_MODE"); }
+        else if (rmRemote.edit_mode)                       { this.visualize_element_display(device_id, "EDIT_MODE"); }
         else if (deactivateButton || power_status === "N/A") { this.visualize_element_display(device_id, "MANUAL"); }
         else if (power_status === "ON")                      { this.visualize_element_display(device_id, "ON"); }
         else if (power_status === "OFF")                     { this.visualize_element_display(device_id, "OFF"); }
@@ -1163,7 +1257,7 @@ class RemoteVisualizePowerStatus extends RemoteDefaultClass {
         if (deactivateButton) {
             this.visualize_element_display(key, "MANUAL");
         }
-        if (rm3remotes.edit_mode) {
+        if (rmRemote.edit_mode) {
             this.visualize_element_display(key, "EDIT_MODE");
         }
 

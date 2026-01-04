@@ -52,10 +52,10 @@ class RemoteMain extends RemoteDefaultClass {
         }
 
         if (this.initial_load) {
-            this.logging.default("Initialized new class 'rmRemotes'.");
+            this.logging.default("Initialized new class 'RemoteMain'.");
             this.initial_load = false;
         } else {
-            this.logging.default("Reload data 'rmRemotes'.");
+            this.logging.default("Reload data 'RemoteMain'.");
         }
     }
 
@@ -77,7 +77,7 @@ class RemoteMain extends RemoteDefaultClass {
             this.logging.warn("Data not loaded yet.");
             return;
         }
-        if (rm_id !== "" && !remoteData.devices.exists(rm_id) && !remoteData.scenes.exists(rm_id)) {
+        if (rm_id !== "" && !rmData.devices.exists(rm_id) && !rmData.scenes.exists(rm_id)) {
             this.logging.warn("Remote ID " + rm_id + " not found.");
             appCookie.set("remote", ""); //device::"+device+"::"+remote_label);
             return;
@@ -107,7 +107,7 @@ class RemoteMain extends RemoteDefaultClass {
         this.button.data = this.data;
         this.display.data = this.data;
 
-        rm3start.active = "start";
+        rmStart.active = "start";
         startActive = false;
 
         let edit_mode = "";
@@ -118,7 +118,7 @@ class RemoteMain extends RemoteDefaultClass {
             elementHidden("setting_ext_top_frame");
             elementHidden("setting_ext_frames");
         } else {
-            rm3settings.settings_ext_reset();
+            rmSettings.settings_ext_reset();
             elementHidden(this.frames_edit[0]);
             elementHidden(this.frames_edit[1]);
             document.getElementById(this.frames_edit[0]).style.display = "none";
@@ -126,7 +126,7 @@ class RemoteMain extends RemoteDefaultClass {
 
         if (type === "device") {
 
-            setNavTitle(remoteData.devices.label(rm_id) + edit_mode);
+            setNavTitle(rmData.devices.label(rm_id) + edit_mode);
 
             // set vars
             this.logging.default("Write Device Remote Control: " + rm_id);
@@ -145,7 +145,7 @@ class RemoteMain extends RemoteDefaultClass {
             scrollTop();
         } else if (type === "scene") {
 
-            setNavTitle(remoteData.scenes.label(rm_id) + edit_mode);
+            setNavTitle(rmData.scenes.label(rm_id) + edit_mode);
 
             // set vars
             this.logging.default("Write Scene Remote Control: " + rm_id);
@@ -166,7 +166,7 @@ class RemoteMain extends RemoteDefaultClass {
             startActive = true;
         }
 
-        rm3menu.menu_height();
+        rmMenu.menu_height();
     }
 
     /* create preview from unsaved data */
@@ -189,7 +189,7 @@ class RemoteMain extends RemoteDefaultClass {
 
         statusCheck_load();			// ... check if part of class ...
         showRemoteInBackground(0);			// ... check if part of this class ...
-        rm3settings.hide();				// ... check if part of another class ...
+        rmSettings.hide();				// ... check if part of another class ...
     }
 
     // DEVICE REMOTES - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -199,7 +199,7 @@ class RemoteMain extends RemoteDefaultClass {
 
         let preview = false;
         let remote = "";
-        let device_config = remoteData.devices.data(device);
+        let device_config = rmData.devices.data(device);
 
         let remote_label = "";
         let remote_buttons = [];
@@ -210,13 +210,13 @@ class RemoteMain extends RemoteDefaultClass {
         this.button.default_size();
 
         if (device_config && device_config["remote"]) {
-            remote_display_size = remoteData.devices.display_size(device);
-            remote_label = remoteData.devices.label(device);
-            remote_buttons = remoteData.devices.list_buttons(device);
+            remote_display_size = rmData.devices.display_size(device);
+            remote_label = rmData.devices.label(device);
+            remote_buttons = rmData.devices.list_buttons(device);
             this.active_label = remote_label;
         } else {
-            if (remoteStatus.status_system("config_errors")["devices"][device]) {
-                let errors = remoteStatus.status_system("config_errors")["devices"][device];
+            if (rmStatus.status_system("config_errors")["devices"][device]) {
+                let errors = rmStatus.status_system("config_errors")["devices"][device];
                 remote += "<b class='entry_error'>" + lang("REMOTE_CONFIG_ERROR", [device]) + "</b>";
                 remote += "<hr/><ul>";
                 for (let key in errors) {
@@ -261,7 +261,7 @@ class RemoteMain extends RemoteDefaultClass {
         this.logging.info("Set cookie: " + "device::" + device + "::" + remote_label + "::" + this.edit_mode + "::" + easyEdit + "::" + remoteHints);
 
         // add edit button
-        let edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"device\",\"" + device + "\");";
+        let edit_cmd = "remoteToggleEditMode(true);rmRemote.create(\"device\",\"" + device + "\");";
         if (!this.edit_mode && easyEdit) {
             remote += "<div class='remote-edit-button' onclick='" + edit_cmd + "'><img src='icon/edit.png' alt='' style='height:20px;width:20px;'></div>";
         }
@@ -381,9 +381,9 @@ class RemoteMain extends RemoteDefaultClass {
 
     /* write description for device remote */
     device_description(id, device) {
-        let device_data = remoteData.devices.data(device);
-        let label = remoteData.devices.label(device);
-        let description = remoteData.devices.description(device);
+        let device_data = rmData.devices.data(device);
+        let label = rmData.devices.label(device);
+        let description = rmData.devices.description(device);
         let url = device_data["settings"]["url"];
         if (url) {
             description = "<a href=\"" + url + "\" target='_blank'>" + description + "</a>";
@@ -401,12 +401,12 @@ class RemoteMain extends RemoteDefaultClass {
     /* create list of buttons not used in RM definition (for devices) */
     device_not_used(id, device, preview_remote = "") {
 
-        if (!remoteData.devices.exists(device, true)) {
+        if (!rmData.devices.exists(device, true)) {
             setTextById(id, "");
             return;
         }
 
-        let device_config = remoteData.devices.data(device);
+        let device_config = rmData.devices.data(device);
         let remote = "";
         let not_used = [];
         let sign;
@@ -502,12 +502,12 @@ class RemoteMain extends RemoteDefaultClass {
             elementHidden(id, "device_edit");
             return;
         }
-        if (remoteStatus.status_system("config_errors")["devices"][device] || !remoteData.devices.exists(device)) {
+        if (rmStatus.status_system("config_errors")["devices"][device] || !rmData.devices.exists(device)) {
             setTextById(id, "");
             return;
         }
 
-        let device_config = remoteData.devices.data(device);
+        let device_config = rmData.devices.data(device);
         let remote_visible = device_config["settings"]["visible"];
         let device_method = device_config["interface"]["method"];
         let device_buttons = [];
@@ -524,21 +524,21 @@ class RemoteMain extends RemoteDefaultClass {
         this.button.width = "90px";
 
         let remote = "";
-        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_REMOTE") + " &quot;" + remoteData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
+        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_REMOTE") + " &quot;" + rmData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
         remote += this.basic.edit_line();
 
         // Main Settings
         let edit = "";
-        let images = remoteData.elements.data("button_images");
-        let icon = "<img src='icon/" + images[remoteData.devices.image(device)] + "' class='rm-button_image_start' alt='' style='height:40px;width:60px;'>";
+        let images = rmData.elements.data("button_images");
+        let icon = "<img src='icon/" + images[rmData.devices.image(device)] + "' class='rm-button_image_start' alt='' style='height:40px;width:60px;'>";
         icon = "<button class='button device_off small' style='height:40px;'><div id='device_edit_button_image'>" + icon + "</div></button>";
         edit += this.tab.start();
         edit += this.tab.row(lang("ID"), "<b>" + device + "</b>");
-        edit += this.tab.row(lang("LABEL") + ":", this.basic.input("edit_label", remoteData.devices.label(device)));
+        edit += this.tab.row(lang("LABEL") + ":", this.basic.input("edit_label", rmData.devices.label(device)));
         edit += this.tab.line();
-        edit += this.tab.row(icon, this.edit.button_image_select("edit_image", 'device_edit_button_image', remoteData.devices.image(device)));
+        edit += this.tab.row(icon, this.edit.button_image_select("edit_image", 'device_edit_button_image', rmData.devices.image(device)));
         edit += this.tab.row(lang("EXTERNAL_ID") + ":", this.basic.input("edit_device_id", device_config["settings"]["device_id"]));
-        edit += this.tab.row(lang("DESCRIPTION") + ":&nbsp;", this.basic.input("edit_description", remoteData.devices.description(device)));
+        edit += this.tab.row(lang("DESCRIPTION") + ":&nbsp;", this.basic.input("edit_description", rmData.devices.description(device)));
 
         edit += this.tab.line();
         edit += this.tab.row("<span class='center'>" +
@@ -553,7 +553,7 @@ class RemoteMain extends RemoteDefaultClass {
 
         this.button.width = "120px";
         edit += this.tab.start();
-        let commands_def = remoteData.devices.list_commands(device,"definition");
+        let commands_def = rmData.devices.list_commands(device,"definition");
         let main_audio = statusCheck_audio.audio_device;
         if (device !== main_audio && commands_def["vol"] && commands_def["vol"] !== undefined) {
             edit += this.tab.row(lang("AUDIO_SET_AS_MAIN", [main_audio]), this.button.edit("setMainAudio('" + device + "');", "set main device", ""));
@@ -657,7 +657,7 @@ class RemoteMain extends RemoteDefaultClass {
         let api_key;
 
         if (device !== "") {
-            let device_config = remoteData.devices.data(device);
+            let device_config = rmData.devices.data(device);
             selected = {
                 "api": device_config["interface"]["api"],
                 "config": device_config["interface"]["device"],
@@ -682,9 +682,9 @@ class RemoteMain extends RemoteDefaultClass {
         let on_change2 = "setTextById('edit_dev_config_field', 'devices/' + document.getElementById('edit_dev_api').value.split('_')[0] + '/<u>' + this.value + '.json</u>');";
         let on_change3 = "setTextById('edit_dev_rm_field', 'remotes/<u>' + this.value + '.json</u>');";
 
-        let api_interface = select("edit_dev_api", "interface", remoteData.elements.data("apis")["list_description"], on_change1, selected["api"], this.input_width);
-        let dev_config = select("edit_dev_config", "device config", remoteData.elements.data("apis")["list_api_configs"]["list"][api_key], on_change2, selected["config"], this.input_width);
-        let rm_definition = select("edit_dev_rm", "remote definition", remoteData.elements.data("remotes")["list"], on_change3, selected["rm"], this.input_width);
+        let api_interface = select("edit_dev_api", "interface", rmData.elements.data("apis")["list_description"], on_change1, selected["api"], this.input_width);
+        let dev_config = select("edit_dev_config", "device config", rmData.elements.data("apis")["list_api_configs"]["list"][api_key], on_change2, selected["config"], this.input_width);
+        let rm_definition = select("edit_dev_rm", "remote definition", rmData.elements.data("remotes")["list"], on_change3, selected["rm"], this.input_width);
 
         setTextById("edit_dev_api_select", api_interface);
         setTextById("edit_dev_config_select", dev_config);
@@ -725,7 +725,7 @@ class RemoteMain extends RemoteDefaultClass {
         let api_name = data["DATA"][device]["interface"]["api_key"];
         let on_change = "setValueById('api_command', getValueById('api_cmd_select'));";
 
-        const basic = new RemoteElementsEdit("rm3remotes.basic");		// !!! should use this.name, but doesn't work
+        const basic = new RemoteElementsEdit("rmRemote.basic");		// !!! should use this.name, but doesn't work
         basic.input_width = "90%";
 
         let select = basic.select("api_cmd_select", lang("API_SELECT_CMD"), commands, on_change, '', false, true);
@@ -747,8 +747,8 @@ class RemoteMain extends RemoteDefaultClass {
             return;
         }
 
-        let device_config = remoteData.devices.data(device);
-        if (remoteStatus.status_system("config_errors")["devices"][device] || !remoteData.devices.exists(device, true)) {
+        let device_config = rmData.devices.data(device);
+        if (rmStatus.status_system("config_errors")["devices"][device] || !rmData.devices.exists(device, true)) {
             setTextById(id, "");
             return;
         }
@@ -760,27 +760,27 @@ class RemoteMain extends RemoteDefaultClass {
         let remote_display_size;
         let remote_display;
         if (preview_remote === "") {
-            remote_definition = remoteData.devices.remote(device);
+            remote_definition = rmData.devices.remote(device);
         } else {
-            remote_definition = this.json.get_value(preview_remote, remoteData.devices.remote(device));
+            remote_definition = this.json.get_value(preview_remote, rmData.devices.remote(device));
         }
         if (preview_display === "") {
-            remote_display = remoteData.devices.display(device);
+            remote_display = rmData.devices.display(device);
         } else {
-            remote_display = this.json.get_value(preview_display, remoteData.devices.remote(device));
+            remote_display = this.json.get_value(preview_display, rmData.devices.remote(device));
         }
         if (remote_display === undefined) {
             remote_display = {};
         }
         if (preview_display_size === "") {
-            remote_display_size = remoteData.devices.display_size(device);
+            remote_display_size = rmData.devices.display_size(device);
         } else {
-            remote_display_size = this.json.get_value(preview_display_size, remoteData.devices.display_size(device));
+            remote_display_size = this.json.get_value(preview_display_size, rmData.devices.display_size(device));
         }
 
         // Start remote control edit section
         let remote = "";
-        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_REMOTE") + " &quot;" + remoteData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
+        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_REMOTE") + " &quot;" + rmData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
         remote += this.basic.edit_line();
 
         // Add GUI to add JSON elements
@@ -809,8 +809,8 @@ class RemoteMain extends RemoteDefaultClass {
         // JSON Edit
         remote += this.basic.container("remote_edit_json", lang("JSON_EDIT"), "<div id='remote-edit-json'></div>", false);
 
-        let macro_on = JSON.stringify(remoteData.macros.data("device-on", device, []));
-        let macro_off = JSON.stringify(remoteData.macros.data("device-off", device, []));
+        let macro_on = JSON.stringify(rmData.macros.data("device-on", device, []));
+        let macro_off = JSON.stringify(rmData.macros.data("device-off", device, []));
         let macro_edit = lang("MACRO_DEVICE_EDIT");
         macro_edit += this.tab.start();
         macro_edit += this.tab.row(lang("MACRO") + " ON:<br/>", this.basic.input("remote_macro_on", macro_on));
@@ -863,7 +863,7 @@ class RemoteMain extends RemoteDefaultClass {
     /* reload JSON fields for remote and device definition as part of preview */
     device_reload_json(device) {
 
-        let device_config = remoteData.devices.data(device);
+        let device_config = rmData.devices.data(device);
         let remote_definition = this.json.get_value("remote_json_buttons", device_config["remote"]["remote"])
         let remote_display = this.json.get_value("remote_json_display", device_config["remote"]["display"])
 
@@ -881,18 +881,18 @@ class RemoteMain extends RemoteDefaultClass {
         let preview = false;
         let remote = "";
         let remote_definition = [];
-        let scene_definition = remoteData.scenes.data(scene);
-        let scene_label = remoteData.scenes.label(scene);
+        let scene_definition = rmData.scenes.data(scene);
+        let scene_label = rmData.scenes.label(scene);
         this.active_label = scene_label;
         this.display.edit_mode = this.edit_mode;
 
         appCookie.set("remote", "scene::" + scene + "::" + scene_label + "::" + this.edit_mode + "::" + easyEdit + "::" + remoteHints);
         this.logging.info("Set cookie: " + "scene::" + scene + "::" + scene_label + "::" + this.edit_mode + "::" + easyEdit + "::" + remoteHints);
 
-        if (!remoteData.scenes.exists(scene, true)) {
+        if (!rmData.scenes.exists(scene, true)) {
 
-            if (remoteStatus.status_system("config_errors")["scenes"][scene]) {
-                let errors = remoteStatus.status_system("config_errors")["scenes"][scene];
+            if (rmStatus.status_system("config_errors")["scenes"][scene]) {
+                let errors = rmStatus.status_system("config_errors")["scenes"][scene];
                 remote += "<b class='entry_error'>" + lang("REMOTE_CONFIG_ERROR", [scene]) + "</b>";
                 remote += "<hr/><ul>";
                 for (let key in errors) {
@@ -904,21 +904,21 @@ class RemoteMain extends RemoteDefaultClass {
             }
             remote += "</div>";
             setTextById(id, remote);
-            appMsg.alert(lang("MISSING_DATA_SCENE", [scene, remoteData.scenes.data(scene)["config"]["remote"] + ".json"]));
+            appMsg.alert(lang("MISSING_DATA_SCENE", [scene, rmData.scenes.data(scene)["config"]["remote"] + ".json"]));
             this.logging.warn(lang("MISSING_DATA_SCENE"));
-            this.logging.warn(remoteData.scenes.data(scene));
+            this.logging.warn(rmData.scenes.data(scene));
             return;
         }
 
         // prepare macros
         let scene_macros = {}
-        let macros = remoteData.macros.data("global");
-        let macros_deviceOn = remoteData.macros.data("device-on");
-        let macros_deviceOff = remoteData.macros.data("device-off");
+        let macros = rmData.macros.data("global");
+        let macros_deviceOn = rmData.macros.data("device-on");
+        let macros_deviceOff = rmData.macros.data("device-off");
 
-        scene_macros["scene"] = remoteData.macros.data("scene", scene);
-        scene_macros["scene-on"] = remoteData.macros.data("scene-on", scene, []);
-        scene_macros["scene-off"] = remoteData.macros.data("scene-off", scene, []);
+        scene_macros["scene"] = rmData.macros.data("scene", scene);
+        scene_macros["scene-on"] = rmData.macros.data("scene-on", scene, []);
+        scene_macros["scene-off"] = rmData.macros.data("scene-off", scene, []);
 
         for (let key in scene_macros["scene"]) { macros[key] = scene_macros["scene"][key]; }
 
@@ -952,7 +952,7 @@ class RemoteMain extends RemoteDefaultClass {
         }
 
         // include edit button
-        let edit_cmd = "remoteToggleEditMode(true);rm3remotes.create(\"scene\",\"" + scene + "\");";
+        let edit_cmd = "remoteToggleEditMode(true);rmRemote.create(\"scene\",\"" + scene + "\");";
         if (!this.edit_mode && easyEdit) {
             remote += "<div class='remote-edit-button' onclick='" + edit_cmd + "'><img src='icon/edit.png' style='height:20px;width:20px;' alt=''></div>";
         }
@@ -1134,12 +1134,12 @@ class RemoteMain extends RemoteDefaultClass {
     scene_channels(id, scene, preview_channel = "") {
 
         let remote = "";
-        let scene_data = remoteData.scenes.data(scene);
-        if (!remoteData.scenes.exists(scene, true)) {
+        let scene_data = rmData.scenes.data(scene);
+        if (!rmData.scenes.exists(scene, true)) {
             setTextById(id, "");
             return;
         }
-        let scene_name = remoteData.scenes.label(scene);
+        let scene_name = rmData.scenes.label(scene);
 
         let macros;
 
@@ -1174,9 +1174,9 @@ class RemoteMain extends RemoteDefaultClass {
 
     /* write description for device remote */
     scene_description(id, scene) {
-        let scene_info = remoteData.scenes.data(scene)["settings"];
-        let label = remoteData.scenes.label(scene);
-        let description = remoteData.scenes.description(scene);
+        let scene_info = rmData.scenes.data(scene)["settings"];
+        let label = rmData.scenes.label(scene);
+        let description = rmData.scenes.description(scene);
         let url = scene_info["url"];
         if (url) {
             description = "<a href=\"" + url + "\" target='_blank'>" + description + "</a>";
@@ -1197,7 +1197,7 @@ class RemoteMain extends RemoteDefaultClass {
             return;
         }
 
-        if (remoteStatus.status_system("config_errors")["scenes"][scene] || !remoteData.scenes.exists(scene, true)) {
+        if (rmStatus.status_system("config_errors")["scenes"][scene] || !rmData.scenes.exists(scene, true)) {
             setTextById(id, "");
             return;
         }
@@ -1205,7 +1205,7 @@ class RemoteMain extends RemoteDefaultClass {
         this.button.width = "90px";
         this.basic.input_width = "180px";
 
-        let scene_info = remoteData.scenes.data(scene)["settings"];
+        let scene_info = rmData.scenes.data(scene)["settings"];
         let remote = "";
 
         this.dialog_edit_main = function () {
@@ -1246,7 +1246,7 @@ class RemoteMain extends RemoteDefaultClass {
         }
 
         // create frame
-        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_SCENE") + " &quot;" + remoteData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
+        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_SCENE") + " &quot;" + rmData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
         remote += this.basic.edit_line();
         remote += this.basic.container("scene_main", lang("SETTINGS_SCENES"), "<div id='scene-edit-main'></div>", true);
         setTextById(id, remote);
@@ -1269,13 +1269,13 @@ class RemoteMain extends RemoteDefaultClass {
             return;
         }
 
-        if (remoteStatus.status_system("config_errors")["scenes"][scene] || !remoteData.scenes.exists(scene, true)) {
+        if (rmStatus.status_system("config_errors")["scenes"][scene] || !rmData.scenes.exists(scene, true)) {
             setTextById(id, "");
             return;
         }
 
         let preview = false;
-        let scene_remote = remoteData.scenes.data(scene)["remote"];
+        let scene_remote = rmData.scenes.data(scene)["remote"];
 
         // prepare field values (not sure, if macro-scene* required)
         let json_edit_fields = ["remote", "devices", "display", "display-size", "macro-channel", "macro-scene-on", "macro-scene-off", "macro-scene"];
@@ -1323,7 +1323,7 @@ class RemoteMain extends RemoteDefaultClass {
 
         // frame
         let remote = "";
-        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_SCENE") + " &quot;" + remoteData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
+        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_SCENE") + " &quot;" + rmData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
         remote += this.basic.edit_line();
         remote += this.basic.container("edit_elements", lang("EDIT_ELEMENTS"), "<div id='scene-edit-elements'></div>", false);
         remote += this.basic.container("edit_json_all", lang("EDIT_JSON"), "<div id='scene-edit-json'></div>", false);
@@ -1390,8 +1390,8 @@ class RemoteMain extends RemoteDefaultClass {
     /* reload JSON fields for remote and device definition as part of preview */
     scene_reload_json(scene) {
 
-        let remote_definition = this.json.get_value("json::remote", remoteData.scenes.remote(scene))
-        let remote_display = this.json.get_value("json::display", remoteData.scenes.display(scene))
+        let remote_definition = this.json.get_value("json::remote", rmData.scenes.remote(scene))
+        let remote_display = this.json.get_value("json::display", rmData.scenes.display(scene))
 
         const myJson = new RemoteJsonEditing("scene-edit-json", "default", "width:100%;height:150px;");
         myJson.create("scene-edit-display", "json::display", remote_display);
@@ -1480,54 +1480,54 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
         let remote_display_size = "";
 
         if (this.remote_type === "device") {
-            device_config = remoteData.devices.data(device);
-            device_buttons = remoteData.devices.list_buttons(device);
+            device_config = rmData.devices.data(device);
+            device_buttons = rmData.devices.list_buttons(device);
             display_sizes = this.display.sizes();
             link_template = this.name + ".rm_device.import_templates('" + device + "','add_template');";
-            remote_definition = remoteData.devices.remote(device);
-            remote_display = remoteData.devices.display(device);
-            remote_display_size = remoteData.devices.display_size(device);
+            remote_definition = rmData.devices.remote(device);
+            remote_display = rmData.devices.display(device);
+            remote_display_size = rmData.devices.display_size(device);
 
         }
         else if (this.remote_type === "scene") {
             scene = device;
-            scene_remote = remoteData.scenes.data(scene)["remote"];
+            scene_remote = rmData.scenes.data(scene)["remote"];
             display_sizes = this.display.sizes();
 
             for (let key in remote_info) {
-                let label = remoteData.devices.label(key);
+                let label = rmData.devices.label(key);
                 devices[key] = "Device: " + label;
                 devices_groups[key] = "Device: " + label;
                 device_macro["device_" + key] = "Device: " + label;
                 device_display[key] = label;
 
-                if (remoteData.devices.has_ranges(key)) {
+                if (rmData.devices.has_ranges(key)) {
                     devices_slider[key] = "Device: " + label;
                 }
-                if (remoteData.devices.has_colors(key)) {
+                if (rmData.devices.has_colors(key)) {
                     devices_color_picker[key] = "Device: " + label;
                 }
             }
 
-            for (let i in remoteData.device_groups.list_all()) {
-                let key = remoteData.device_groups.list_all()[i];
-                let label_long = "Group: " + remoteData.device_groups.description(key) + " (" + key + ")"
+            for (let i in rmData.device_groups.list_all()) {
+                let key = rmData.device_groups.list_all()[i];
+                let label_long = "Group: " + rmData.device_groups.description(key) + " (" + key + ")"
                 let label_short = "Group: " + key;
-                if (remoteData.device_groups.description(key)) {
+                if (rmData.device_groups.description(key)) {
                     device_macro["group_" + key] = label_long;
                     devices_groups["group_" + key] = label_short;
                 } else {
                     device_macro["group_" + key] = label_short;
                     devices_groups["group_" + key] = label_short;
                 }
-                if (remoteData.device_groups.has_ranges(key)) {
+                if (rmData.device_groups.has_ranges(key)) {
                     devices_slider["group_"+key] = label_long;
                 }
-                if (remoteData.device_groups.has_colors(key)) {
+                if (rmData.device_groups.has_colors(key)) {
                     devices_color_picker["group_"+key] = label_long;
                 }
             }
-            for (let key in remoteData.macros.list_all()) {
+            for (let key in rmData.macros.list_all()) {
                 if (key !== "scene-on" && key !== "scene-off") {
                     device_macro["macro_" + key] = "Macro: " + key;
                 }
@@ -1584,8 +1584,8 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
         else if (this.remote_type === "device" && element === "color_picker") {
 
             let select_color_values = [];
-            let commands_set = remoteData.devices.list_commands(device, "set");
-            let commands_def = remoteData.devices.list_commands(device, "definition");
+            let commands_set = rmData.devices.list_commands(device, "set");
+            let commands_def = rmData.devices.list_commands(device, "definition");
             for (let i = 0; i < commands_set.length; i++) {
                 let key = commands_set[i];
                 if (commands_def[key] !== undefined && commands_def[key]["values"] !== undefined &&
@@ -1622,8 +1622,8 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
         else if (this.remote_type === "device" && element === "slider") {
 
             edit += this.tab.start();
-            if (remoteData.devices.has_ranges(device)) {
-                let param = remoteData.devices.has_ranges(device, true);
+            if (rmData.devices.has_ranges(device)) {
+                let param = rmData.devices.has_ranges(device, true);
                 let onchange_slider_param = this.name + ".rm_device.prepare_slider('" + device + "','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax');";
 
                 edit += this.tab.row(
@@ -2038,10 +2038,10 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
             add_header_img_d = "<i>no header image yet</i>";
         }
 
-        if (header_toggle_device !== "" && remoteData.devices.exists(header_toggle_device)) {
-            let device_config = remoteData.devices.data(header_toggle_device);
-            let device_name = remoteData.devices.description(header_toggle_device);
-            let global_macros = remoteData.macros.data("global");
+        if (header_toggle_device !== "" && rmData.devices.exists(header_toggle_device)) {
+            let device_config = rmData.devices.data(header_toggle_device);
+            let device_name = rmData.devices.description(header_toggle_device);
+            let global_macros = rmData.macros.data("global");
             let device_on_off = {};
             let device_values = {};
 
@@ -2064,7 +2064,7 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
             header_toggle_description = "Toggle " + device_name + " (" + header_toggle_device + ")";
 
             setTextById("header_toggle_descr", header_toggle_description);
-        } else if (!remoteData.devices.exists && header_toggle_device !== undefined) {
+        } else if (!rmData.devices.exists && header_toggle_device !== undefined) {
             appMsg.alert(lang("TOGGLE_DEVICE_DOESNT_EXIST", [header_toggle_device]));
         }
 
@@ -2108,7 +2108,7 @@ class RemoteMainEditElements extends RemoteDefaultClass {
     /* return drop-down with scene images */
     button_image_select(source_id, target_id, selected = "", width = "") {
         let list = {};
-        let images = remoteData.elements.data("button_images");
+        let images = rmData.elements.data("button_images");
 
         for (let key in images) {
             list[key] = key;
@@ -2119,7 +2119,7 @@ class RemoteMainEditElements extends RemoteDefaultClass {
 
     /* header-image preview */
     button_image_preview(source_id, target_id) {
-        let images = remoteData.elements.data("button_images");
+        let images = rmData.elements.data("button_images");
         let selected = getValueById(source_id);
 
         if (selected && selected.indexOf("_") >= 0) { selected = selected.split("_")[1]; }
@@ -2137,7 +2137,7 @@ class RemoteMainEditElements extends RemoteDefaultClass {
     button_select(id, device = "", remote_definition = {}) {
 
         let list = {};
-        if (device !== "" && remoteData.devices.list_all().includes(device)) {
+        if (device !== "" && rmData.devices.list_all().includes(device)) {
             let a;
             let count1 = 0;
 
@@ -2152,7 +2152,7 @@ class RemoteMainEditElements extends RemoteDefaultClass {
             }
         }
 
-        if (device !== "" && remoteData.scenes.list_all().includes(device)) {
+        if (device !== "" && rmData.scenes.list_all().includes(device)) {
             let a = "";
             let button_list = remote_definition;
             for (let i = 0; i < button_list.length; i++) {
@@ -2172,8 +2172,8 @@ class RemoteMainEditElements extends RemoteDefaultClass {
     command_select(id, device = "") {
         let list = {};
         let button_list;
-        if (device !== "" && remoteData.devices.list_all()) {
-            button_list = remoteData.devices.list_buttons(device);
+        if (device !== "" && rmData.devices.list_all()) {
+            button_list = rmData.devices.list_buttons(device);
             for (let i = 0; i < button_list.length; i++) {
                 list[device + "_" + button_list[i]] = button_list[i];
             }
@@ -2184,9 +2184,9 @@ class RemoteMainEditElements extends RemoteDefaultClass {
     /* return drop-down with commands to be recorded */
     command_select_record(id, device = "") {
         let list = {};
-        if (device !== "" && device in remoteData.devices.list_all()) {
+        if (device !== "" && device in rmData.devices.list_all()) {
             let button_list = [];
-            let remote_definition = remoteData.devices.remote();
+            let remote_definition = rmData.devices.remote();
             for (let i = 0; i < remote_definition.length; i++) {
                 button_list.push(remote_definition[i]);
             }
@@ -2203,8 +2203,8 @@ class RemoteMainEditElements extends RemoteDefaultClass {
 
     /* return drop-down with display values */
     device_display_select(device, id) {
-        let device_data = remoteData.devices.data(device);
-        let device_info = remoteData.devices.list_commands(device,"get");
+        let device_data = rmData.devices.data(device);
+        let device_info = rmData.devices.list_commands(device,"get");
         if (device_data["commands"]["definition"] && device_data["commands"]["definition"]["power"]) {
             let power = device_data["commands"]["definition"]["power"];
             if (power["auto_off"] && power["auto_off"] > 0) {
@@ -2219,50 +2219,50 @@ class RemoteMainEditElements extends RemoteDefaultClass {
 
     /* check if device has ranges - for slider option */
     device_has_ranges(device, commands = false) {
-        return remoteData.devices.has_ranges(device, commands);
-    } // to be replaced: remoteData.devices.has_ranges(group, commands)
+        return rmData.devices.has_ranges(device, commands);
+    } // to be replaced: rmData.devices.has_ranges(group, commands)
 
     /* check if device has color settings - for color picker options */
     device_has_colors(device, commands = false) {
-        return remoteData.devices.has_colors(device, commands);
-    } // to be replaced: remoteData.devices.has_colors(group, commands)
+        return rmData.devices.has_colors(device, commands);
+    } // to be replaced: rmData.devices.has_colors(group, commands)
 
     /* return list of buttons for a device */
     device_list_buttons(device) {
-        return remoteData.devices.list_buttons(device);
-    } // to be replaced: remoteData.device_groups.list_buttons(device)
+        return rmData.devices.list_buttons(device);
+    } // to be replaced: rmData.device_groups.list_buttons(device)
 
     /* return list of devices of a group */
     group_list_devices(group) {
-        return remoteData.device_groups.list_devices(group);
-    } // to be replaced: remoteData.device_groups.list_devices(group)
+        return rmData.device_groups.list_devices(group);
+    } // to be replaced: rmData.device_groups.list_devices(group)
 
     /* create a list of the buttons all group devices hav in common */
     group_list_buttons(group) {
-        return remoteData.device_groups.list_buttons(group);
-    } // to be replaced: remoteData.device_groups.list_buttons(group)
+        return rmData.device_groups.list_buttons(group);
+    } // to be replaced: rmData.device_groups.list_buttons(group)
 
     /* create a list of the commands all group devices hav in common */
     group_list_commands(group, get_set) {
-        remoteData.device_groups.list_commands(group, get_set);
-    } // to be replaced: remoteData.device_groups.list_commands(group, get_set)
+        rmData.device_groups.list_commands(group, get_set);
+    } // to be replaced: rmData.device_groups.list_commands(group, get_set)
 
     /* check if device has ranges - for slider option */
     group_has_ranges(group, commands) {
-        return remoteData.device_groups.has_ranges(group, commands);
-    } // to be replaced: remoteData.device_groups.has_ranges(group, commands)
+        return rmData.device_groups.has_ranges(group, commands);
+    } // to be replaced: rmData.device_groups.has_ranges(group, commands)
 
     /* check if devices of the group hav color settings - for color picker options */
     group_has_colors(group, commands) {
-        return remoteData.device_groups.has_colors(group, commands);
-    } // to be replaced: remoteData.device_groups.has_colors(group, commands)
+        return rmData.device_groups.has_colors(group, commands);
+    } // to be replaced: rmData.device_groups.has_colors(group, commands)
 
     /* return drop-down with scene images */
     image_select(id, selected = "") {
         this.update();
 
         let list = {};
-        let images = remoteData.elements.data("scene_images");
+        let images = rmData.elements.data("scene_images");
 
         for (let key in images) {
             list[key] = key;
@@ -2273,7 +2273,7 @@ class RemoteMainEditElements extends RemoteDefaultClass {
 
     /* header-image preview */
     image_preview() {
-        let images = remoteData.elements.data("scene_images");
+        let images = rmData.elements.data("scene_images");
         let selected = getValueById("edit_image");
         if (images[selected]) {
             //let image_html = this.scene_header_image(id, scene, selected);
@@ -2287,10 +2287,10 @@ class RemoteMainEditElements extends RemoteDefaultClass {
     scene_header_image(id, scene, toggle_html, selected = "") {
         this.update();
 
-        let scene_images = remoteData.elements.data("scene_images");
-        let scene_remote = remoteData.scenes.remote(scene);
-        let label = remoteData.scenes.label(scene);
-        let image = remoteData.scenes.image(scene);
+        let scene_images = rmData.elements.data("scene_images");
+        let scene_remote = rmData.scenes.remote(scene);
+        let label = rmData.scenes.label(scene);
+        let image = rmData.scenes.image(scene);
 
         if (selected === "" && scene_images[image]) {
             image = scene_images[image][0];
@@ -2319,7 +2319,7 @@ class RemoteMainEditElements extends RemoteDefaultClass {
     scene_display_select(div_id, id, device) {
         device = check_if_element_or_value(device, false);
         let device_display_values = "";
-        let device_info = remoteData.devices.list_commands(device, "get");
+        let device_info = rmData.devices.list_commands(device, "get");
         let on_change = "document.getElementById('" + id + "').value = this.value;";
 
         device_display_values = this.basic.select_array("scene_display_value", "value (" + device + ")", device_info, on_change);
@@ -2335,29 +2335,29 @@ class RemoteMainEditElements extends RemoteDefaultClass {
         [type, device] = device.split("_");
 
         if (type === "macro" && device !== "scene") {
-            let temp = remoteData.macros.list_all(device);
+            let temp = rmData.macros.list_all(device);
             for (let i = 0; i < temp.length; i++) {
                 available_buttons.push(device + "_" + temp[i]);
             }
         }
         else if (type === "macro" && device === "scene") {
-            let temp = remoteData.macros.list_all(device, scene);
+            let temp = rmData.macros.list_all(device, scene);
 
-            if (remoteData.macros.list_all("scene-on", scene)) { temp.push("scene-on");}
-            if (remoteData.macros.list_all("scene-off", scene)) { temp.push("scene-off");}
+            if (rmData.macros.list_all("scene-on", scene)) { temp.push("scene-on");}
+            if (rmData.macros.list_all("scene-off", scene)) { temp.push("scene-off");}
 
             for (let i = 0; i < temp.length; i++) {
                 available_buttons.push(device + "_" + temp[i]);
             }
         }
         else if (type === "device") {
-            let temp = remoteData.devices.list_buttons(device);
+            let temp = rmData.devices.list_buttons(device);
             for (let i = 0; i < temp.length; i++) {
                 available_buttons.push(device + "_" + temp[i]);
             }
         }
         else if (type === "group") {
-            let buttons = remoteData.device_groups.list_buttons(device);
+            let buttons = rmData.device_groups.list_buttons(device);
             for (let i = 0; i < buttons.length; i++) {
                 available_buttons.push("group_" + device + "_" + buttons[i]);
             }
@@ -2377,10 +2377,10 @@ class RemoteMainEditElements extends RemoteDefaultClass {
         let select_on;
         let select_off;
 
-        if (device !== "" && !device.startsWith("group_") && remoteData.devices.exists(device)) {
-            let device_name = remoteData.devices.label(device);
-            let device_buttons = remoteData.devices.list_buttons(device);
-            let device_commands = remoteData.devices.list_commands(device, "get");
+        if (device !== "" && !device.startsWith("group_") && rmData.devices.exists(device)) {
+            let device_name = rmData.devices.label(device);
+            let device_buttons = rmData.devices.list_buttons(device);
+            let device_commands = rmData.devices.list_commands(device, "get");
 
             select_value = this.basic.select_array("add_toggle_value", "value (boolean)", device_commands, "", "power");
             select_on = this.basic.select_array("add_toggle_on", "button ON", device_buttons, "", "on");
@@ -2388,11 +2388,11 @@ class RemoteMainEditElements extends RemoteDefaultClass {
 
             setValueById("add_toggle_description", "Toggle " + device_name + " (" + device + ")")
         }
-        else if (device !== "" && device.startsWith("group_") && remoteData.device_groups.exists(device.split("_")[1])) {
+        else if (device !== "" && device.startsWith("group_") && rmData.device_groups.exists(device.split("_")[1])) {
             let group = device.split("_")[1];
-            let group_name = remoteData.device_groups.description(group);
-            let group_cmd = remoteData.device_groups.list_commands(group, "get");
-            let group_buttons = remoteData.device_groups.list_buttons(group);
+            let group_name = rmData.device_groups.description(group);
+            let group_cmd = rmData.device_groups.list_commands(group, "get");
+            let group_buttons = rmData.device_groups.list_buttons(group);
 
             select_value = this.basic.select_array("add_toggle_value", "value (boolean)", group_cmd, "", "power");
             select_on = this.basic.select_array("add_toggle_on", "button ON", group_buttons, "", "on");
@@ -2417,8 +2417,8 @@ class RemoteMainEditElements extends RemoteDefaultClass {
         let select = "<i>" + lang("SELECT_DEV_FIRST") + "</i>";
         let select_cmd, select_param, select_min_max = "";
 
-        if (device !== "" && !device.startsWith("group_") && remoteData.devices.exists(device)) {
-            let device_name = remoteData.devices.label(device);
+        if (device !== "" && !device.startsWith("group_") && rmData.devices.exists(device)) {
+            let device_name = rmData.devices.label(device);
             let device_cmd = this.device_has_ranges(device, true);
             let onchange_slider_param = this.remote.name + ".rm_scene.prepare_slider('" + device + "','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax');";
 
@@ -2428,9 +2428,9 @@ class RemoteMainEditElements extends RemoteDefaultClass {
 
             setValueById("add_slider_descr", "Slider " + device_name + " (" + device + ")")
         }
-        else if (device !== "" && device.startsWith("group_") && remoteData.device_groups.exists(device.split("_")[1])) {
+        else if (device !== "" && device.startsWith("group_") && rmData.device_groups.exists(device.split("_")[1])) {
             let group = device.split("_")[1];
-            let group_name = remoteData.device_groups.description(group);
+            let group_name = rmData.device_groups.description(group);
             let group_cmd = this.group_has_ranges(group, true);
             let onchange_slider_param = this.remote.name + ".rm_scene.prepare_slider('" + device + "','add_slider_cmd','add_slider_param','add_slider_descr','add_slider_minmax');";
 
@@ -2460,8 +2460,8 @@ class RemoteMainEditElements extends RemoteDefaultClass {
         let select_model = "";
         let color_models = this.advanced.color_picker_models;
 
-        if (device !== "" && !device.startsWith("group_") && remoteData.devices.exists(device)) {
-            let device_name = remoteData.devices.label(device);
+        if (device !== "" && !device.startsWith("group_") && rmData.devices.exists(device)) {
+            let device_name = rmData.devices.label(device);
             let device_cmd = this.device_has_colors(device, true);
 
             select_cmd = this.basic.select_array("add_color_picker_cmd", lang("BUTTON_T_SEND"), device_cmd, "", "")
@@ -2469,9 +2469,9 @@ class RemoteMainEditElements extends RemoteDefaultClass {
 
             setValueById("add_color_picker_description", "CP " + device_name + " (" + device + ")")
         }
-        else if (device !== "" && device.startsWith("group_") && remoteData.device_groups.exists(device.split("_")[1])) {
+        else if (device !== "" && device.startsWith("group_") && rmData.device_groups.exists(device.split("_")[1])) {
             let group = device.split("_")[1];
-            let group_name = remoteData.device_groups.description(group);
+            let group_name = rmData.device_groups.description(group);
             let group_cmd = this.group_has_colors(group, true);
 
             select_cmd = this.basic.select_array("add_color_picker_cmd", lang("BUTTON_T_SEND"), group_cmd, "", "")
@@ -2489,9 +2489,9 @@ class RemoteMainEditElements extends RemoteDefaultClass {
 
     /* return list of templates */
     template_list(type = "") {
-        return remoteData.templates.select(type);
+        return rmData.templates.select(type);
 
-    } // to be replaced: remoteData.templates.select(type)
+    } // to be replaced: rmData.templates.select(type)
 
     /* return drop-down with templates */
     template_select(id, title, data, onchange = "") {

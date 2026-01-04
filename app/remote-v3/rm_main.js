@@ -13,19 +13,19 @@ var easyEdit = false;
 var remoteHints = true;
 var jsonHighlighting= false;
 
-var rm3menu        = undefined;
-var rm3start       = undefined;
-var rm3remotes     = undefined;
-var rm3settings    = undefined;
-var rm3json_edit   = undefined;
+var rmMenu     = undefined;
+var rmStart    = undefined;
+var rmRemote   = undefined;
+var rmSettings = undefined;
+var rmJson     = undefined;
 
 function startRemote() {
 
-    rm3menu      = new rmMenu(     "rm3menu", ["menuItems","menuItems2"] );
-    rm3start     = new RemoteStart(    "rm3start");
-    rm3remotes   = new RemoteMain(   "rm3remotes");
-    rm3settings  = new RemoteSettings( "rm3settings");
-    rm3json_edit = new RemoteJsonEditing( "rm3json_edit");
+    rmMenu      = new RemoteMenu( "rmMenu", ["menuItems","menuItems2"] );
+    rmStart     = new RemoteStart( "rmStart");
+    rmRemote    = new RemoteMain( "rmRemote");
+    rmSettings  = new RemoteSettings( "rmSettings");
+    rmJson      = new RemoteJsonEditing( "rmJson");
 
     appMsg.info_message_init(appMsg);
     remoteInit(true);
@@ -37,7 +37,7 @@ function startRemote() {
 
 function remoteMainMenu (cookie_erase=true) {
 
-	rm3settings.hide();
+	rmSettings.hide();
 	setNavTitle(appTitle);
 	showRemoteInBackground(1);
 	if (cookie_erase) {
@@ -52,7 +52,7 @@ function remoteMainMenu (cookie_erase=true) {
 	setTextById("frame4","");
 	setTextById("frame5","");
 
-	rm3remotes.active_name = "";
+	rmRemote.active_name = "";
 	remoteFirstLoad_load();
 	}
 
@@ -84,13 +84,13 @@ function remoteInitData(data) {
 	    dataAll = data;
 
 		// init and reload data 
-		rm3remotes.init(  data );
-		rm3settings.init( data );
-		rm3menu.init(     data );
-		rm3start.init(    data );
+		rmRemote.init(  data );
+		rmSettings.init( data );
+		rmMenu.init(     data );
+		rmStart.init(    data );
 
-		if (rm3settings.active)                                          { rm3settings.create(); }
-		else if (rm3remotes.active_name !== "" && !rm3remotes.edit_mode)  { rm3remotes.create(); }
+		if (rmSettings.active)                                          { rmSettings.create(); }
+		else if (rmRemote.active_name !== "" && !rmRemote.edit_mode)  { rmRemote.create(); }
 		}
 	else {
 		console.error("remoteInitData: no data loaded!");
@@ -134,10 +134,10 @@ function remoteDropDown(data) {
 		}
 
 	// load drop down menu
-	rm3menu.init(        data );	// load data to class
-	rm3menu.add_scenes(  data["CONFIG"]["scenes"] );
-	rm3menu.add_devices( data["CONFIG"]["devices"] );
-	rm3menu.add_script( "rm3settings.create('index');", lang("SETTINGS"));
+	rmMenu.init(        data );	// load data to class
+	rmMenu.add_scenes(  data["CONFIG"]["scenes"] );
+	rmMenu.add_devices( data["CONFIG"]["devices"] );
+	rmMenu.add_script( "rmSettings.create('index');", lang("SETTINGS"));
 	}
 
 
@@ -146,14 +146,14 @@ function remoteDropDown(data) {
 function remoteToggleEditMode(settings="") {
     console.info("remoteToggleEditMode('"+settings+"');");
 
-    if (typeof settings === "boolean")  { rm3remotes.edit_mode = settings; }
-    else if (settings === "true")       { rm3remotes.edit_mode = true; }
-    else if (settings === "false")      { rm3remotes.edit_mode = false; }
-    else if (settings === "") 			{ rm3remotes.edit_mode = !rm3remotes.edit_mode; }
+    if (typeof settings === "boolean")  { rmRemote.edit_mode = settings; }
+    else if (settings === "true")       { rmRemote.edit_mode = true; }
+    else if (settings === "false")      { rmRemote.edit_mode = false; }
+    else if (settings === "") 			{ rmRemote.edit_mode = !rmRemote.edit_mode; }
 
-    rm3settings.edit_mode = rm3remotes.edit_mode;
-    rm3start.edit_mode    = rm3remotes.edit_mode;
-    rm3menu.edit_mode     = rm3remotes.edit_mode;
+    rmSettings.edit_mode = rmRemote.edit_mode;
+    rmStart.edit_mode    = rmRemote.edit_mode;
+    rmMenu.edit_mode     = rmRemote.edit_mode;
 
     remoteDropDown_load();
 	}
@@ -204,10 +204,10 @@ function remoteStartMenu(data) {
     elementHidden("frame2");
 
 	// load buttons on start page
-	rm3start.init(        data);	// load data to class
-	rm3start.set_edit_mode();
-	rm3start.add_scenes(  data["CONFIG"]["scenes"],  "frame3" );
-	rm3start.add_devices( data["CONFIG"]["devices"], "frame4" );
+	rmStart.init(        data);	// load data to class
+	rmStart.set_edit_mode();
+	rmStart.add_scenes(  data["CONFIG"]["scenes"],  "frame3" );
+	rmStart.add_devices( data["CONFIG"]["devices"], "frame4" );
 	
 	// check status and change button color
 	statusCheck(data);
@@ -233,14 +233,14 @@ function remoteLastFromCookie() {
 
 		// start remote if cookie is set (reopen with last remote control)
 		if (remote[0] === "scene") 	{
-			rm3remotes.create('scene',remote[1]);
-			rm3settings.hide();
+			rmRemote.create('scene',remote[1]);
+			rmSettings.hide();
 			setNavTitle(remote[2]);
 			//clickMenu();
 			}
 		else if (remote[0] === "device") {
-			rm3remotes.create('device',remote[1]);
-			rm3settings.hide();
+			rmRemote.create('device',remote[1]);
+			rmSettings.hide();
 			setNavTitle(remote[2]);
 			//clickMenu();
 			}
@@ -250,6 +250,6 @@ function remoteLastFromCookie() {
 
 
 function remoteSetCookie() {
-    appCookie.set("remote",rm3remotes.active_type+"::"+rm3remotes.active_name+"::"+rm3remotes.active_label+"::"+rm3remotes.edit_mode+"::"+easyEdit+"::"+remoteHints);
-	console.info("Set cookie: "+rm3remotes.active_type+"::"+rm3remotes.active_name+"::"+rm3remotes.active_type_label+"::"+rm3remotes.edit_mode+"::"+easyEdit+"::"+remoteHints);
+    appCookie.set("remote",rmRemote.active_type+"::"+rmRemote.active_name+"::"+rmRemote.active_label+"::"+rmRemote.edit_mode+"::"+easyEdit+"::"+remoteHints);
+	console.info("Set cookie: "+rmRemote.active_type+"::"+rmRemote.active_name+"::"+rmRemote.active_type_label+"::"+rmRemote.edit_mode+"::"+easyEdit+"::"+remoteHints);
 }

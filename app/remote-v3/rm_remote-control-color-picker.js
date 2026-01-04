@@ -114,11 +114,11 @@ class RemoteElementColorPicker extends RemoteDefaultClass {
 
         if (device.indexOf("group") >= 0) {
             let group_id = device.split("_")[1];
-            let devices = remoteData.device_groups.list_devices(group_id);
+            let devices = rmData.device_groups.list_devices(group_id);
             check_device = devices[0];
         }
 
-        let commands_def = remoteData.devices.list_commands(check_device, "definition");
+        let commands_def = rmData.devices.list_commands(check_device, "definition");
         let min_max  = commands_def[pure_cmd]["values"];
         let type     = commands_def[pure_cmd]["type"];
         if (min_max === undefined || min_max["min"] === undefined || min_max["max"] === undefined) {
@@ -143,12 +143,12 @@ class RemoteElementColorPicker extends RemoteDefaultClass {
 
             if (device.indexOf("group") >= 0) {
                 let group_id = device.split("_")[1];
-                let devices = remoteData.device_groups.list_devices(group_id);
+                let devices = rmData.device_groups.list_devices(group_id);
 
                 check_device = devices[0];
             }
 
-            let commands_def = remoteData.devices.list_commands(check_device, "definition");
+            let commands_def = rmData.devices.list_commands(check_device, "definition");
             let min_max  = commands_def[pure_cmd]["values"];
             let type     = commands_def[pure_cmd]["type"];
             if (min_max === undefined || min_max["min"] === undefined || min_max["max"] === undefined) {

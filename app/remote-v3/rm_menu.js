@@ -5,7 +5,7 @@
 //--------------------------------
 
 
-class rmMenu extends RemoteDefaultClass {
+class RemoteMenu extends RemoteDefaultClass {
     constructor(name, menu) {
         super(name);
 
@@ -35,7 +35,7 @@ class rmMenu extends RemoteDefaultClass {
             let width  = window.innerWidth;
             document.getElementById("menuItems").style.maxHeight  = height + "px";
             document.getElementById("menuItems2").style.maxHeight = height + "px";
-            rm3menu.menu_height();
+            rmMenu.menu_height();
 
             if (document.getElementById("remote_nav").style.display !== "block") {
                 document.getElementById("menuItems").style.visibility = "hidden";
@@ -70,7 +70,7 @@ class rmMenu extends RemoteDefaultClass {
         if (data) {} else { return; }
 
         let menu = this.readMenu();
-        let error = remoteStatus.status_system("config_errors")["scenes"];
+        let error = rmStatus.status_system("config_errors")["scenes"];
 
         for (let key in data) { data[key]["position"] = data[key]["settings"]["position"]; }
         let order  = sortDict(data,"position");
@@ -98,7 +98,7 @@ class rmMenu extends RemoteDefaultClass {
             }
         }
         else {
-            menu += this.entry_script("rm3settings.create('edit_scenes');", lang("ADD_SCENE") + " ...")
+            menu += this.entry_script("rmSettings.create('edit_scenes');", lang("ADD_SCENE") + " ...")
         }
         this.writeMenu(menu + "<li><hr/></li>");
     }
@@ -110,7 +110,7 @@ class rmMenu extends RemoteDefaultClass {
         if (!data) { return; }
 
         // set vars
-        let error = remoteStatus.status_system("config_errors")["devices"];
+        let error = rmStatus.status_system("config_errors")["devices"];
         let menu = this.readMenu();
 
         for (let key in data) {
@@ -143,7 +143,7 @@ class rmMenu extends RemoteDefaultClass {
             }
         }
         else {
-            menu += this.entry_script("rm3settings.create('edit_devices');", lang("ADD_DEVICE") + " ...")
+            menu += this.entry_script("rmSettings.create('edit_devices');", lang("ADD_DEVICE") + " ...")
         }
 
         this.writeMenu(menu + "<li><hr/></li>");
@@ -159,13 +159,13 @@ class rmMenu extends RemoteDefaultClass {
     // create menu entry for a device
     entry_device(device, label) {
 
-            return "<li><a onclick=\"rm3remotes.create('device','" + device + "');rm3settings.hide();"+this.name+".click_menu();\" >" + label.replace(/#/g,"'") + "</a></li>";
+            return "<li><a onclick=\"rmRemote.create('device','" + device + "');rmSettings.hide();"+this.name+".click_menu();\" >" + label.replace(/#/g,"'") + "</a></li>";
             }
 
     // create menu entry for a scene
     entry_scene(scene, label) {
 
-        return "<li><a onclick=\"rm3remotes.create('scene','" + scene + "');rm3settings.hide();"+this.name+".click_menu();\" >" + label.replace(/#/g,"'") + "</a></li>";
+        return "<li><a onclick=\"rmRemote.create('scene','" + scene + "');rmSettings.hide();"+this.name+".click_menu();\" >" + label.replace(/#/g,"'") + "</a></li>";
     }
 
     // create menu entry with javascript

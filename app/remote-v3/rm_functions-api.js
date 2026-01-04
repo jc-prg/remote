@@ -26,21 +26,21 @@ function apiCheckUpdates_msg( data ) {
 function apiAlertReturn(data) {
 
     setTimeout(function() {
-        if (data["REQUEST"]["Command"] === "DeleteDevice") 	{ appCookie.erase("remote"); rm3remotes.active_name = ""; }
-        if (data["REQUEST"]["Command"] === "DeleteScene") 	{ appCookie.erase("remote"); rm3remotes.active_name = ""; }
+        if (data["REQUEST"]["Command"] === "DeleteDevice") 	{ appCookie.erase("remote"); rmRemote.active_name = ""; }
+        if (data["REQUEST"]["Command"] === "DeleteScene") 	{ appCookie.erase("remote"); rmRemote.active_name = ""; }
         remoteReload_load();
         }, 1000);
 
     setTimeout(function() {
-        if (data["REQUEST"]["Command"] === "AddTemplate") { rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
-        else if (data["REQUEST"]["Command"] === "AddDevice") { rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
-        else if (data["REQUEST"]["Command"] === "EditDevice") { rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
-        else if (data["REQUEST"]["Command"] === "EditDeviceApiSettings") { rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
-        else if (data["REQUEST"]["Command"] === "AddScene") { rm3remotes.create( "scene",  data["REQUEST"]["Scene"] ); }
-        else if (data["REQUEST"]["Command"] === "EditScene") { rm3remotes.create( "scene",  data["REQUEST"]["Scene"] ); }
+        if (data["REQUEST"]["Command"] === "AddTemplate") { rmRemote.create( "device", data["REQUEST"]["Device"] ); }
+        else if (data["REQUEST"]["Command"] === "AddDevice") { rmRemote.create( "device", data["REQUEST"]["Device"] ); }
+        else if (data["REQUEST"]["Command"] === "EditDevice") { rmRemote.create( "device", data["REQUEST"]["Device"] ); }
+        else if (data["REQUEST"]["Command"] === "EditDeviceApiSettings") { rmRemote.create( "device", data["REQUEST"]["Device"] ); }
+        else if (data["REQUEST"]["Command"] === "AddScene") { rmRemote.create( "scene",  data["REQUEST"]["Scene"] ); }
+        else if (data["REQUEST"]["Command"] === "EditScene") { rmRemote.create( "scene",  data["REQUEST"]["Scene"] ); }
         else if (data["REQUEST"]["Command"] === "ChangeVisibility" ) {
-            if (data["REQUEST"]["Device"] === "device") { rm3remotes.create( "device", data["REQUEST"]["Device"] ); }
-            if (data["REQUEST"]["Device"] === "scene") { rm3remotes.create( "scene", data["REQUEST"]["Device"] ); }
+            if (data["REQUEST"]["Device"] === "device") { rmRemote.create( "device", data["REQUEST"]["Device"] ); }
+            if (data["REQUEST"]["Device"] === "scene") { rmRemote.create( "scene", data["REQUEST"]["Device"] ); }
             }
         else if (data["REQUEST"]["Command"] === "DeleteDevice") { remoteMainMenu(); }
         else if (data["REQUEST"]["Command"] === "DeleteScene") { remoteMainMenu(); }
@@ -201,7 +201,7 @@ function apiSceneJsonEdit(device,field_names) {
 // delete scene
 function apiSceneDelete_exe(device) {
     appFW.requestAPI("DELETE",["scene",device], "", apiAlertReturn);
-    rm3remotes.active_name = "";
+    rmRemote.active_name = "";
     appCookie.erase("remote");
     }
 
@@ -312,8 +312,8 @@ function apiDeviceMovePosition_get(data) {
     }
 
 function apiDeviceMovePosition(data) {
-	rm3settings.data = data;
-	rm3settings.create();
+	rmSettings.data = data;
+	rmSettings.create();
 	remoteReload(data);
 	}
 
@@ -379,7 +379,7 @@ function apiDeviceChangeConfigs(remote_id) {
 // delete device
 function apiDeviceDelete_exe(device) {
     appFW.requestAPI("DELETE",["device",device], "", apiAlertReturn);
-    rm3remotes.active_name = "";
+    rmRemote.active_name = "";
     appCookie.erase("remote");
     remoteInit(); // check if required !!!!!!!!!!!!!!!
     }
@@ -585,7 +585,7 @@ function apiMacroDecompose(macro) {
             var macro_string = "";
             var macro_wait = "";
             var macro_translate = translate[types[a]];
-            var macro_data = rm3remotes.data["CONFIG"]["macros"][macro_translate];
+            var macro_data = rmRemote.data["CONFIG"]["macros"][macro_translate];
 
             if (macro_data[macro_cmd[1]]) {
                 for (var i=0; i<macro_data[macro_cmd[1]].length; i++) {

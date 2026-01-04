@@ -38,7 +38,7 @@ class RemoteSettings extends RemoteDefaultClass {
     init(data) {
             this.data = data;
 
-            if (data)	{this.app_stat = remoteStatus.status_system("system")["message"]; this.app_last = data["REQUEST"]["Button"];}
+            if (data)	{this.app_stat = rmStatus.status_system("system")["message"]; this.app_last = data["REQUEST"]["Button"];}
             else		{this.app_stat = "ERROR: no connection to server!";}
 
             if (this.initial_load) {
@@ -220,18 +220,18 @@ class RemoteSettings extends RemoteDefaultClass {
         let html  = "";
         if (!small) { html += "&nbsp;<br/>"; }
 
-        let button_img  = remoteData.elements.data("button_images");
+        let button_img  = rmData.elements.data("button_images");
         let setting_modules_back = {
-            "SETTINGS":         ["link_back",   "rm3settings.create('index');"],
+            "SETTINGS":         ["link_back",   "rmSettings.create('index');"],
         }
         let setting_modules = {
-            "SETTINGS_DEVICES": ["remote",      "rm3settings.create('edit_devices');"],
-            "SETTINGS_SCENES":  ["cinema",      "rm3settings.create('edit_scenes');"],
-            "SETTINGS_TIMER":   ["timer",       "rm3settings.create('edit_timer');"],
-            "SETTINGS_MACROS":  ["macros",       "rm3settings.create('edit_macros');"],
-            "INFORMATION":      ["info2",       "rm3settings.create('info');"],
-            "SETTINGS_API":     ["plug2",       "rm3settings.create('edit_interfaces');"],
-            "SETTINGS_GENERAL": ["settings2",   "rm3settings.create('general');"],
+            "SETTINGS_DEVICES": ["remote",      "rmSettings.create('edit_devices');"],
+            "SETTINGS_SCENES":  ["cinema",      "rmSettings.create('edit_scenes');"],
+            "SETTINGS_TIMER":   ["timer",       "rmSettings.create('edit_timer');"],
+            "SETTINGS_MACROS":  ["macros",       "rmSettings.create('edit_macros');"],
+            "INFORMATION":      ["info2",       "rmSettings.create('info');"],
+            "SETTINGS_API":     ["plug2",       "rmSettings.create('edit_interfaces');"],
+            "SETTINGS_GENERAL": ["settings2",   "rmSettings.create('general');"],
         }
         if (small) {
             let img_small = rm_image(button_img[setting_modules_back["SETTINGS"][0]], false);
@@ -358,7 +358,7 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
 
         let open_add_scene = false;
         if (direct_cmd === "add_scene") { open_add_scene = true; }
-        if (remoteData.scenes.not_available()) { open_add_scene = true; }
+        if (rmData.scenes.not_available()) { open_add_scene = true; }
 
         set_temp  = this.tab.start();
         set_temp += this.tab.row( "ID:",            this.elements.input("add_scene_id", "", "apiSceneAddCheckID(this);") );
@@ -377,11 +377,11 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
     list_scenes() {
         this.update_data();
 
-        let scenes = remoteData.scenes.config_scenes;
+        let scenes = rmData.scenes.config_scenes;
         let html = "&nbsp;<br/><ul id='sort_scenes'>";
 
         for (let key in scenes) {
-            scenes[key]["position"] = remoteData.scenes.remote_position(key);
+            scenes[key]["position"] = rmData.scenes.remote_position(key);
         }
         let order  = sortDict(scenes, "position");
         if (order.length > 0) {
@@ -393,9 +393,9 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
                 }
 
                 html += "<li id='" + scene + "'>";
-                html += "<div class='slist_li_content" + style + "'>" + remoteData.scenes.label(scene) + "<br/>";
+                html += "<div class='slist_li_content" + style + "'>" + rmData.scenes.label(scene) + "<br/>";
                 html += "<span style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>" + scene + "</rm-id></span></div>";
-                html += "<div class='slist_li_edit'>" + this.remote_edit("scene", scene, remoteData.scenes.data(scene)["settings"]["visible"]) + "</div>";
+                html += "<div class='slist_li_edit'>" + this.remote_edit("scene", scene, rmData.scenes.data(scene)["settings"]["visible"]) + "</div>";
                 html += "</li>";
             }
         }
@@ -420,7 +420,7 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
         let open_add_device = false;
         if (direct_cmd === "add_device" && direct_data !== "") { set_temp = this.add_remote_dialog(direct_data); open_add_device = true; }
         else                                                   { set_temp = this.add_remote_dialog(); }
-        if (remoteData.devices.not_available()) { open_add_device = true; }
+        if (rmData.devices.not_available()) { open_add_device = true; }
 
 
         setting += this.basic.container("setting_add_device",lang("ADD_DEVICE"),set_temp,open_add_device);
@@ -431,27 +431,27 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
     list_devices() {
         this.update_data();
 
-        let devices = remoteData.devices.config_devices;
+        let devices = rmData.devices.config_devices;
         let html   = "&nbsp;<br/><ul id='sort_devices'>";
 
         for (let key in devices) {
-            devices[key]["position"] = remoteData.devices.remote_position(key);
+            devices[key]["position"] = rmData.devices.remote_position(key);
         }
         let order  = sortDict(devices, "position");
         if (order.length > 0) {
             for (let key in order) {
                 let device = order[key];
-                let api = remoteData.devices.data(device)["interface"]["api"].replace("_", "/");
+                let api = rmData.devices.data(device)["interface"]["api"].replace("_", "/");
                 api = api.replace("/default", "");
                 let style = "";
-                if (remoteData.devices.data(device)["settings"]["visible"] === "no") {
+                if (rmData.devices.data(device)["settings"]["visible"] === "no") {
                     style = " hidden";
                 }
 
                 html += "<li id='" + device + "'>";
-                html += "<div class='slist_li_content" + style + "'>" + remoteData.devices.label(device) + "<br/>";
+                html += "<div class='slist_li_content" + style + "'>" + rmData.devices.label(device) + "<br/>";
                 html += "<div style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>" + device + "</rm-id> (" + api + ")</div></div>";
-                html += "<div class='slist_li_edit'>" + this.remote_edit("device", device, remoteData.devices.data(device)["settings"]["visible"]) + "</div>";
+                html += "<div class='slist_li_edit'>" + this.remote_edit("device", device, rmData.devices.data(device)["settings"]["visible"]) + "</div>";
                 html += "</li>";
             }
         }
@@ -466,7 +466,7 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
     remote_edit(type, id, visible) {
 
         let delete_cmd;
-        let images = remoteData.elements.data("button_images");
+        let images = rmData.elements.data("button_images");
         let img_visible = rm_image(images["hidden"]);
         let img_edit = rm_image(images["edit"]);
         let img_delete = rm_image(images["trash"]);
@@ -479,7 +479,7 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
 
         let edit_commands = "";
         edit_commands += "<span onclick='apiRemoteChangeVisibility(\""+type+"\",\""+id+"\",\"rm_visibility_"+id+"\");"+onclick_reload+"' style='cursor:pointer;'>" + img_visible + "</span>&nbsp;&nbsp;&nbsp;";
-        edit_commands += "<span onclick='remoteToggleEditMode(true);rm3remotes.create(\""+type+"\",\""+id+"\");' style='cursor:pointer;'>" + img_edit + "</span>&nbsp;&nbsp;";
+        edit_commands += "<span onclick='remoteToggleEditMode(true);rmRemote.create(\""+type+"\",\""+id+"\");' style='cursor:pointer;'>" + img_edit + "</span>&nbsp;&nbsp;";
         edit_commands += "<input id=\"rm_visibility_"+id+"\" style=\"display:none;\" value=\""+visible+"\">";
         edit_commands += "<span onclick='"+delete_cmd+"(\""+id+"\");' style='cursor:pointer;'>" + img_delete + "</span>";
         return edit_commands;
@@ -497,12 +497,12 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
         add_command += "remoteToggleEditMode(true);";
         let width = this.input_width;
         let icon_container = "<button class='button device_off' style='width:50px;height:40px;'><div id='device_edit_button_image'></div></button>";
-        let device_types = remoteData.elements.data("device_types");
+        let device_types = rmData.elements.data("device_types");
 
         this.on_change_api = function(value) {
 
             let  api = value.split("_")[0];
-            let  api_config = remoteData.apis.data("list_api_configs")["list"];
+            let  api_config = rmData.apis.data("list_api_configs")["list"];
             let  remote_config = this.data["CONFIG"]["remotes"]["list"];
 
             if (value === "") {
@@ -572,18 +572,18 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
         const asterix = "<sup>*</sup>";
         this.input_width   = "180px";
         this.elements.input_width   = "180px";
-        rm3remotes.basic.input_width = "180px";
+        rmRemote.basic.input_width = "180px";
         set_temp  = this.tab.start();
         set_temp += this.tab.row( "Device type:"+asterix, this.elements.select("add_device", "device type", device_types, onchange3, "") );
         this.input_width = "180px";
-        set_temp += this.tab.row( "Interface:"+asterix, this.elements.select("add_device_api","interface", remoteData.apis.data("list_description"), onchange, device_data["api_device"]) );
+        set_temp += this.tab.row( "Interface:"+asterix, this.elements.select("add_device_api","interface", rmData.apis.data("list_description"), onchange, device_data["api_device"]) );
         set_temp += this.tab.row( "ID:"+asterix, "<span id='text_add_device_id'>" + lang("SELECT_DEV_TYPE_FIRST") + "</span>" +
             "<span style='display:none;'>" + this.elements.input("add_device_id", onchange, onchange + "apiDeviceAddCheckID(this);", device_data["id"]) +"</span>");
         set_temp += this.tab.line();
         set_temp += this.tab.row( "Device name:"+asterix, this.elements.input("add_device_descr", "", onchange, device_data["description"]) );
         set_temp += this.tab.row( "Label in menu:"+asterix, this.elements.input("add_device_label", "", onchange, device_data["label"]) );
         set_temp += this.tab.row( "External ID:", this.elements.input("add_device_id_external", "", "", device_data["external_id"]) );
-        set_temp += this.tab.row( icon_container, rm3remotes.edit.button_image_select("edit_image", 'device_edit_button_image') );
+        set_temp += this.tab.row( icon_container, rmRemote.edit.button_image_select("edit_image", 'device_edit_button_image') );
         set_temp += this.tab.line();
         set_temp += this.tab.row( "Device config:"+asterix, "<span id='txt_add_device_device'>"+lang("SELECT_API_FIRST")+"</span> " +
             "<span id='txt_add_device_device_2' style='display:none;'>" + this.elements.input("add_device_device")+".json</span>" );
@@ -702,20 +702,20 @@ class RemoteSettingsApi extends RemoteDefaultClass {
     show_overview() {
         let text = "<br/>";
 
-        const all_apis = Object.entries(remoteData.apis.data("list")).length;
-        const all_apis_active = Object.values(remoteStatus.status_system("interfaces")["active"]).filter(value => value === true).length;
-        const all_api_devices = Object.keys(remoteData.apis.data("list_description")).length;
-        const all_api_devices_active = Object.values(remoteStatus.status_system("connections")).reduce((count, api) => { if (api.active === true) { return count + Object.values(api["api_devices"]).filter(device => device.active === true).length; } return count; }, 0);
-        const all_devices = remoteData.devices.list_all().length;
-        const all_devices_active = Object.values(remoteData.devices.config_devices).filter(device => device["settings"]?.visible === "yes").length;
+        const all_apis = Object.entries(rmData.apis.data("list")).length;
+        const all_apis_active = Object.values(rmStatus.status_system("interfaces")["active"]).filter(value => value === true).length;
+        const all_api_devices = Object.keys(rmData.apis.data("list_description")).length;
+        const all_api_devices_active = Object.values(rmStatus.status_system("connections")).reduce((count, api) => { if (api.active === true) { return count + Object.values(api["api_devices"]).filter(device => device.active === true).length; } return count; }, 0);
+        const all_devices = rmData.devices.list_all().length;
+        const all_devices_active = Object.values(rmData.devices.config_devices).filter(device => device["settings"]?.visible === "yes").length;
 
         text += this.tab.start("100%", "140px:*");
         text += this.tab.row("Active APIs:",        `<b>${String(all_apis_active).padStart(2,'0')}</b> / ${String(all_apis).padStart(2,'0')}`);
         text += this.tab.row("Active API-devices:", `<b>${String(all_api_devices_active).padStart(2,'0')}</b> / ${String(all_api_devices).padStart(2,'0')}`);
         text += this.tab.row("Active devices:",     `<b>${String(all_devices_active).padStart(2,'0')}</b> / ${String(all_devices).padStart(2,'0')}`);
         text += this.tab.line()
-        text += this.tab.row("Last (re)connect:", `${remoteStatus.status_system("interfaces")["last_reconnect"]} (${remoteStatus.status_system("interfaces")["last_reconnect_device"]})`);
-        text += this.tab.row("Last discovery:",   `${remoteStatus.status_system("interfaces")["last_discovery"]}`);
+        text += this.tab.row("Last (re)connect:", `${rmStatus.status_system("interfaces")["last_reconnect"]} (${rmStatus.status_system("interfaces")["last_reconnect_device"]})`);
+        text += this.tab.row("Last discovery:",   `${rmStatus.status_system("interfaces")["last_discovery"]}`);
         text += this.tab.end();
         text += "<br/>&nbsp;<br/>";
 
@@ -759,8 +759,8 @@ class RemoteSettingsApi extends RemoteDefaultClass {
         this.update_data();
 
         let count = 1;
-        let devices_per_interface = remoteData.apis.data("structure");
-        let interface_status = remoteStatus.status_system("connections");
+        let devices_per_interface = rmData.apis.data("structure");
+        let interface_status = rmStatus.status_system("connections");
 
         for (let key in devices_per_interface) {
             if (key !== "") {
@@ -792,7 +792,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
         sheet_box.addSheet("Device details", this.show_device_details());
         sheet_box.addSheet("Logging QUERY", this.show_logs("query"), false);
         sheet_box.addSheet("Logging SEND", this.show_logs("send"), false);
-        sheet_box.addSheet("API Summary", remoteStatus.status_summary(), false);
+        sheet_box.addSheet("API Summary", rmStatus.status_summary(), false);
     }
 
     // load edit_ap_config()
@@ -812,11 +812,11 @@ class RemoteSettingsApi extends RemoteDefaultClass {
 
         this.button_add_device = function(api, api_device, external_id) {
 
-            if (!remoteData.apis.data("list_detect")[api+"_"+api_device]) {
+            if (!rmData.apis.data("list_detect")[api+"_"+api_device]) {
                 this.logging.warn("No detected devices found for "+api+"_"+api_device+".");
                 return "";
             }
-            const devices_detect = remoteData.apis.data("list_detect")[api+"_"+api_device];
+            const devices_detect = rmData.apis.data("list_detect")[api+"_"+api_device];
             let html = "";
 
             if (api === "ZIGBEE2MQTT") {
@@ -835,7 +835,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
                             label: new_device["name"],
                             name: new_device["name"],
                         }
-                        button_cmd  = "rm3settings.create(\"edit_devices\", \"add_device\", "+JSON.stringify(data)+");";
+                        button_cmd  = "rmSettings.create(\"edit_devices\", \"add_device\", "+JSON.stringify(data)+");";
                         html += "<button onclick='"+button_cmd+"'>"+lang("BUTTON_T_ADD")+"</button>";
                     }
 
@@ -849,13 +849,13 @@ class RemoteSettingsApi extends RemoteDefaultClass {
         this.api_device_connected_devices = function (api, device, data) {
             let text  = "";
             let count = 0;
-            let devices_per_api = remoteData.apis.data("structure");
-            let detected_devices = remoteData.apis.data("list_detect");
+            let devices_per_api = rmData.apis.data("structure");
+            let detected_devices = rmData.apis.data("list_detect");
             let connected_vs_detected = {};
             let details = "<div style='width:100%;height:9px;'></div>";
 
             for (let api_device in devices_per_api[api]) {
-                let connect  = remoteStatus.status_system("interfaces")["connect"][api + "_" + api_device];
+                let connect  = rmStatus.status_system("interfaces")["connect"][api + "_" + api_device];
                 if (device === "" || api_device !== device) { continue; }
                 if (device === "") { details += "<i>API Device: " + api_device + "</i>&nbsp;&nbsp;"; }
                 else { details += "<i>"+lang("CONNECTED_RMC")+":</i><hr/>&nbsp;&nbsp;"; }
@@ -864,15 +864,15 @@ class RemoteSettingsApi extends RemoteDefaultClass {
                 for (let i=0;i<devices_per_api[api][api_device].length;i++) {
                     count += 1;
                     let connected_device = devices_per_api[api][api_device][i];
-                    let device_settings = remoteData.devices.data(connected_device);
-                    let method = remoteData.devices.api_method(connected_device);
-                    let power_status = remoteStatus.status_device_raw(connected_device)["power"];
-                    let label = remoteData.devices.label(connected_device);
+                    let device_settings = rmData.devices.data(connected_device);
+                    let method = rmData.devices.api_method(connected_device);
+                    let power_status = rmStatus.status_device_raw(connected_device)["power"];
+                    let label = rmData.devices.label(connected_device);
                     let visibility = device_settings["settings"]["visible"];
                     let hidden = "";
                     let idle = "<small id=\"device_auto_off_"+connected_device+"\"></small>";
-                    let command_on = "appFW.requestAPI('GET',['set','"+connected_device+"','power','ON'], '', '', '' ); setTextById('CHANGE_STATUS_"+connected_device+"','ON');"; //rm3settings.on_off();remoteInit();";
-                    let command_off = "appFW.requestAPI('GET',['set','"+connected_device+"','power','OFF'], '', '', '' );setTextById('CHANGE_STATUS_"+connected_device+"','OFF');"; //rm3settings.on_off();remoteInit();";
+                    let command_on = "appFW.requestAPI('GET',['set','"+connected_device+"','power','ON'], '', '', '' ); setTextById('CHANGE_STATUS_"+connected_device+"','ON');"; //rmSettings.on_off();remoteInit();";
+                    let command_off = "appFW.requestAPI('GET',['set','"+connected_device+"','power','OFF'], '', '', '' );setTextById('CHANGE_STATUS_"+connected_device+"','OFF');"; //rmSettings.on_off();remoteInit();";
                     let external_id = "";
 
                     if (visibility !== "yes") {
@@ -926,7 +926,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
 
             let temp = "";
             let information = "<div id='api_status_data_"+api_name+"_"+device+"'></div>";
-            let devices_per_interface = remoteData.apis.data("structure");
+            let devices_per_interface = rmData.apis.data("structure");
             let connected_devices = devices_per_interface[api_name][device].length;
 
             let api_dev = api_name.toLowerCase() + "_" + device.toLowerCase();
@@ -936,7 +936,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
             // create edit dialog
             let command_on = `apiApiDeviceOnOff('${api_name}', '${device}', 'True');`;
             let command_off = `apiApiDeviceOnOff('${api_name}', '${device}', 'False');`;
-            let init = remoteStatus.status_system("connections")[api_name]["api_devices"][device]["active"];
+            let init = rmStatus.status_system("connections")[api_name]["api_devices"][device]["active"];
 
             let power_device = interfaces[api_name]["API-Devices"][device]["PowerDevice"] || "N/A";
             let toggle = this.toggle.toggleHTML("active_"+api_name+"-"+device, "", "", command_on, command_off, init);
@@ -980,12 +980,12 @@ class RemoteSettingsApi extends RemoteDefaultClass {
 
             let temp = "";
             let information = "<div id='api_status_data_"+api_name+"_"+device+"'></div>";
-            let devices_per_interface = remoteData.apis.data("structure");
+            let devices_per_interface = rmData.apis.data("structure");
             let connected_devices = devices_per_interface[api_name][device].length;
 
             let api_dev = api_name.toLowerCase() + "_" + device.toLowerCase();
-            let link_save = "apiSetConfig_InterfaceData( \""+api_name+"_"+device+"\", \"api_status_edit_"+api_name+"_"+device+"\" );" + "rm3json_edit.disable(\"api_status_edit_"+api_name+"_"+device+"\");";
-            let link_edit = "rm3json_edit.disable(\"api_status_edit_"+api_name+"_"+device+"\",false);" +
+            let link_save = "apiSetConfig_InterfaceData( \""+api_name+"_"+device+"\", \"api_status_edit_"+api_name+"_"+device+"\" );" + "rmJson.disable(\"api_status_edit_"+api_name+"_"+device+"\");";
+            let link_edit = "rmJson.disable(\"api_status_edit_"+api_name+"_"+device+"\",false);" +
                 "this.className=\"rm-button hidden\";" + "document.getElementById(\"save_"+api_dev+"\").className=\"rm-button settings\";";
 
             let buttons = "";
@@ -993,8 +993,8 @@ class RemoteSettingsApi extends RemoteDefaultClass {
             let buttons_admin = "";
 
             this.logging.log("module_interface_edit_list: " + api_name + "_" + device)
-            let connect_status_api = remoteStatus.status_system("interfaces")["active"][api_name];
-            let connect_status     = remoteStatus.status_system("interfaces")["connect"][api_name+"_"+device];
+            let connect_status_api = rmStatus.status_system("interfaces")["active"][api_name];
+            let connect_status     = rmStatus.status_system("interfaces")["connect"][api_name+"_"+device];
 
             if (!connect_status) { connect_status = "NO DEVICE connected yet."; }
 
@@ -1009,10 +1009,10 @@ class RemoteSettingsApi extends RemoteDefaultClass {
             buttons      += this.button.sized("edit_"+api_dev,       lang("EDIT"),     "settings",  link_edit)
             buttons      += this.button.sized("save_"+api_dev,       lang("SAVE"),     "hidden",    link_save);
 
-            if (remoteData.apis.data("list_api_commands")[api_name+"_"+device] && remoteData.apis.data("list_api_commands")[api_name+"_"+device].length > 0) {
+            if (rmData.apis.data("list_api_commands")[api_name+"_"+device] && rmData.apis.data("list_api_commands")[api_name+"_"+device].length > 0) {
                 if (show_buttons === undefined) { buttons_plus += "<hr style='width:100%;float:left;'/>"; }
-                for (let i=0;i<remoteData.apis.data("list_api_commands")[api_name+"_"+device].length > 0;i++) {
-                    let command = remoteData.apis.data("list_api_commands")[api_name+"_"+device][i];
+                for (let i=0;i<rmData.apis.data("list_api_commands")[api_name+"_"+device].length > 0;i++) {
+                    let command = rmData.apis.data("list_api_commands")[api_name+"_"+device][i];
                     let command_link = "apiSendToApi(\"" + api_name + "_" + device + "::" +command + "\", \""+api_name+"\");appMsg.info(\"Command send: " + api_name + "_" + device + "::" + command + "\");";
                     buttons_plus += this.button.sized("api_cmd_"+api_name+"_"+device, command, "settings", command_link);
                 }
@@ -1057,7 +1057,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
             let activate_create_button = "document.getElementById('create_button_"+api_name+"_"+device+"').disabled=false;document.getElementById('create_button_"+api_name+"_"+device+"').style.backgroundColor='';";
 
             if (detect_devices) {
-                const detected = remoteData.apis.data("list_detect")[api_name + "_" + device];
+                const detected = rmData.apis.data("list_detect")[api_name + "_" + device];
                 let detected_select = {}
                 Object.keys(detected).forEach(key => {
                     let api_string = api_name + "_" + device + "||";
@@ -1203,9 +1203,9 @@ class RemoteSettingsApi extends RemoteDefaultClass {
         this.update_data();
 
         let text = "<div id='setting_exec_time_list'>";
-        if (remoteStatus.status_system("request_time")) {
-            for (let key in remoteStatus.status_system("request_time")) {
-                text += key + ": " + use_color((Math.round(remoteStatus.status_system("request_time")[key] * 1000) / 1000) + "s<br/>", "VALUE", true);
+        if (rmStatus.status_system("request_time")) {
+            for (let key in rmStatus.status_system("request_time")) {
+                text += key + ": " + use_color((Math.round(rmStatus.status_system("request_time")[key] * 1000) / 1000) + "s<br/>", "VALUE", true);
             }
         }
         text += "</div>";
@@ -1220,7 +1220,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
 
     // create drop down with list of devices from config data (key => label)
     device_list(id,onchange="") {
-        let list = remoteData.devices.select();
+        let list = rmData.devices.select();
         return this.elements.select(id,"device",list,onchange);
     }
 
@@ -1229,8 +1229,8 @@ class RemoteSettingsApi extends RemoteDefaultClass {
         let status = "<br/>";
         let filter_list = document.getElementById(id_filter);
         let filter = filter_list.options[filter_list.selectedIndex].value;
-        let device_status = remoteStatus.status_device_raw(filter);
-        let device_values = remoteData.devices.list_commands(filter, "get");
+        let device_status = rmStatus.status_device_raw(filter);
+        let device_values = rmData.devices.list_commands(filter, "get");
         let dont_use = ["api", "api-last-query", "api-last-query-tc", "api-last-send", "api-last-send-tc", "api-status","presets"];
         let color = "VALUE";
         if (device_status["api-status"].indexOf("ERROR") > -1)          { color = "ERROR"; }
@@ -1375,8 +1375,8 @@ class RemoteSettingsGeneral extends RemoteDefaultClass {
         appleTouchIcon  = "";
         favicon         = "";
 
-        for (let icon in remoteData.elements.data("icons")) {
-            let currentUrl = "remote-v3/icon/" + remoteData.elements.data("icons")[icon];
+        for (let icon in rmData.elements.data("icons")) {
+            let currentUrl = "remote-v3/icon/" + rmData.elements.data("icons")[icon];
             if (appleTouchIconUrl.indexOf(currentUrl) >= 0) { appleTouchIcon += this.icon_img(currentUrl, false, false, true, "appleicon"); }
             else                                            { appleTouchIcon += this.icon_img(currentUrl, false, true, false, "appleicon"); }
             if (faviconUrl.indexOf(currentUrl) >= 0)        { favicon += this.icon_img(currentUrl, false, false, true, "favicon"); }
@@ -1419,7 +1419,7 @@ class RemoteSettingsGeneral extends RemoteDefaultClass {
 
         let html = "";
         if (edit) {
-            html += this.create_toggle("mode_edit", lang("MODE_EDIT"), "remoteToggleEditMode(true);", "remoteToggleEditMode(false);", rm3remotes.edit_mode);
+            html += this.create_toggle("mode_edit", lang("MODE_EDIT"), "remoteToggleEditMode(true);", "remoteToggleEditMode(false);", rmRemote.edit_mode);
         }
         if (easy_edit) {
             html += this.create_toggle("mode_easy", lang("MODE_EASY_EDIT"), "remoteToggleEasyEdit(true);", "remoteToggleEasyEdit(false);", easyEdit);
@@ -1514,10 +1514,10 @@ class RemoteSettingsInfo extends RemoteDefaultClass {
             cookie = "N/A";
         }
         let main_audio = statusCheck_audio.audio_device;  // get main audio device from file
-        let main_device_config = remoteData.devices.data(main_audio);
-        let main_device_commands = remoteData.devices.list_commands(main_audio, "definition");
-        let main_device = remoteStatus.status_device_raw(main_audio);
-        let system_health = remoteStatus.status_system("health");
+        let main_device_config = rmData.devices.data(main_audio);
+        let main_device_commands = rmData.devices.list_commands(main_audio, "definition");
+        let main_device = rmStatus.status_device_raw(main_audio);
+        let system_health = rmStatus.status_system("health");
         let audio_max = 100;
         let audio1, audio2;
 
@@ -1530,7 +1530,7 @@ class RemoteSettingsInfo extends RemoteDefaultClass {
                 this.logging.error("Max values not defined, set 100!");
             }
             audio1 = "Power: "  + main_device["power"] + " / " + "Volume: " + main_device["vol"] + " (" + audio_max + ")";
-            audio2 = remoteData.devices.label(main_audio) + " (" + main_audio + ")";
+            audio2 = rmData.devices.label(main_audio) + " (" + main_audio + ")";
         }
 
         // version information
@@ -1620,7 +1620,7 @@ class RemoteSettingsInfo extends RemoteDefaultClass {
 
         // button images
         set_temp = "";
-        let images = remoteData.elements.data("button_images");
+        let images = rmData.elements.data("button_images");
         for (let key in images) {
             let onclick = "appMsg.info(\"Copied button key ["+key+"] to clipboard.\");";
             onclick    += "navigator.clipboard.writeText(\""+key+"\");";
@@ -1634,7 +1634,7 @@ class RemoteSettingsInfo extends RemoteDefaultClass {
         setting  += this.basic.container("setting_button_images","Images buttons",set_temp,false);
 
         set_temp  = "";
-        let colors    = remoteData.elements.data("button_colors");
+        let colors    = rmData.elements.data("button_colors");
         for (let key in colors) {
             let onclick = "appMsg.info(\"Copied button key ["+key+"] to clipboard.\");";
             onclick    += "navigator.clipboard.writeText(\""+key+"\");";
@@ -1700,27 +1700,27 @@ class RemoteSettingsMacro extends RemoteDefaultClass {
         myBox2.addSheet("Raw Help",         lang("MANUAL_MACROS"));
 
         const jsonEdit = new RemoteJsonEditing("edit-macros", "compact", "width:100%;height:270px;");
-        jsonEdit.create("json-edit-groups", "groups",  remoteData.device_groups.config_groups);
-        jsonEdit.create("json-edit-macro",  "macro",   remoteData.macros.config_macros["global"]);
-        jsonEdit.create("json-edit-dev-on", "dev-on",  remoteData.macros.config_macros["device-on"]);
-        jsonEdit.create("json-edit-dev-off","dev-off", remoteData.macros.config_macros["device-off"]);
+        jsonEdit.create("json-edit-groups", "groups",  rmData.device_groups.config_groups);
+        jsonEdit.create("json-edit-macro",  "macro",   rmData.macros.config_macros["global"]);
+        jsonEdit.create("json-edit-dev-on", "dev-on",  rmData.macros.config_macros["device-on"]);
+        jsonEdit.create("json-edit-dev-off","dev-off", rmData.macros.config_macros["device-off"]);
     }
 
     load_macro_edit(container_id, macro_type, output_id=undefined ) {
 
         let source_data;
         if (macro_type === "global") {
-            source_data = remoteData.macros.prepare_edit_sources(true, true, false, true, true);
+            source_data = rmData.macros.prepare_edit_sources(true, true, false, true, true);
         }
         else if (macro_type.indexOf("device-") === 0) {
-            source_data = remoteData.macros.prepare_edit_sources(true, true, false, false, false);
+            source_data = rmData.macros.prepare_edit_sources(true, true, false, false, false);
         }
 
         const macroEdit = new RemoteMacroEditor(container_id, {
             categories: source_data,
-            devices: remoteData.macros.list_all(macro_type),
+            devices: rmData.macros.list_all(macro_type),
             devices_edit: true,
-            initial: remoteData.macros.data(macro_type),
+            initial: rmData.macros.data(macro_type),
             title: `Select ${macro_type.toUpperCase()} macro`,
         }, "editor-"+macro_type,  output_id);
     }
@@ -1751,14 +1751,14 @@ class RemoteSettingsTimer extends RemoteDefaultClass {
 
         if (value.indexOf("macro_group") > -1)   {
             value = value.split("_")[2];
-            data = remoteData.device_groups.list_buttons(value);
+            data = rmData.device_groups.list_buttons(value);
         }
         else if (value.indexOf("macro_") > -1)   {
             value = value.split("_")[1];
-            data = remoteData.macros.list_all(value);
+            data = rmData.macros.list_all(value);
         }
         else {
-            data = remoteData.devices.list_buttons(value);
+            data = rmData.devices.list_buttons(value);
         }
         this.settings.basic.input_width = "200px;";
         let onchange = "document.getElementById('add_button_"+key+"').removeAttribute('disabled');";
@@ -1783,7 +1783,7 @@ class RemoteSettingsTimer extends RemoteDefaultClass {
 
             let data_fields = "timer_name_"+key+",timer_description_"+key+",timer_regular_"+key+",timer_once_"+key+",timer_commands_"+key;
             let link_save   = "val=document.getElementById(\"timer_name_"+key+"\").value; if(val!=\"\") { apiTimerEdit(\""+key+"\",\""+data_fields+"\"); } else { appMsg.alert(\"Add a title!\"); }";
-            let link_reset  = "rm3settings.module_timer.create();";
+            let link_reset  = "rmSettings.module_timer.create();";
             let link_delete = "appMsg.confirm(#Delete timer?#, #apiTimerDelete(##"+key+"##);#, 140);";
             let link_try    = "appMsg.confirm(#Try out timer?#, #apiTimerTry(##"+key+"##);#, 140);";
 
@@ -1829,15 +1829,15 @@ class RemoteSettingsTimer extends RemoteDefaultClass {
             entry_html += tab.row("&nbsp;");
 
             this.settings.basic.input_width = "125px;";
-            let onchange = "rm3settings.module_timer.select('"+key+"', 'add_button_command_"+key+"','add_button_device_"+key+"');";
+            let onchange = "rmSettings.module_timer.select('"+key+"', 'add_button_command_"+key+"','add_button_device_"+key+"');";
             let onclick = "let command = getValueById(\"add_button_device_"+key+"\") + \"_\" + getValueById(\"add_button_command2_"+key+"\");";
             onclick += "let value = JSON.parse(getValueById(\"timer_commands_"+key+"\")); value.push(command); ";
             onclick += "setValueById(\"timer_commands_"+key+"\", JSON.stringify(value));";
 
             let device_macro = {};
-            for (let key2 in remoteData.devices.config_devices) { device_macro[key2] = "Device: " + remoteData.devices.label(key2); }
-            for (let key2 in remoteData.macros.config_macros)  { if (key2 !== "description" && key2 !== "groups") { device_macro["macro_"+key2] = "Macro: " + key2; } }
-            for (let key2 in remoteData.device_groups.config_groups)  { device_macro["macro_groups_"+key2] = "Group: " + key2; }
+            for (let key2 in rmData.devices.config_devices) { device_macro[key2] = "Device: " + rmData.devices.label(key2); }
+            for (let key2 in rmData.macros.config_macros)  { if (key2 !== "description" && key2 !== "groups") { device_macro["macro_"+key2] = "Macro: " + key2; } }
+            for (let key2 in rmData.device_groups.config_groups)  { device_macro["macro_groups_"+key2] = "Group: " + key2; }
 
             entry_html += tab.row("Add Command:");
             entry_html += tab.row(

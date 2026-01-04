@@ -3,7 +3,7 @@
 //--------------------------------
 
 
-let remoteData = undefined;
+let rmData = undefined;
 
 
 /* coordinate data preparation based on data type */

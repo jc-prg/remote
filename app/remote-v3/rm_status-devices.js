@@ -2,8 +2,8 @@
 // jc://remote/
 //--------------------------------
 
-let remoteStatus;
-let remoteStatus_logging = false;
+let rmStatus;
+let rmStatus_logging = false;
 
 
 // class that offers all types of status information for apis, api-devices, media devices, and scenes
@@ -115,7 +115,7 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
         this.create_data_scenes();
         this.create_data_groups(); // not implemented yet
 
-        if (remoteStatus_logging) {
+        if (rmStatus_logging) {
             this.logging.warn(this.status_data);
             let duration = Math.round(((new Date().getTime()) / 1000 - start_time) * 1000) / 1000;
             this.logging.warn("Duration data preparation: " + duration + "s");
@@ -511,7 +511,7 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
 
     /* create a 'link' to a device for messages*/
     message_device_link(device_id, device_label) {
-        return `<span onclick="rm3remotes.create('device','${device_id}');rm3settings.hide();" style="cursor:pointer;">${device_label}</span>`;
+        return `<span onclick="rmRemote.create('device','${device_id}');rmSettings.hide();" style="cursor:pointer;">${device_label}</span>`;
     }
 
     /* get status for all device types, includes checks if available*/

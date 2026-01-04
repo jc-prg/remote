@@ -186,7 +186,7 @@ class RemoteControlBasic extends RemoteDefaultClass {
 
         let onContext  = "";
         let onClick    = "";
-        let button_color = remoteData.elements.data("button_colors");  // definition of button color
+        let button_color = rmData.elements.data("button_colors");  // definition of button color
 
         if (Array.isArray(script_apiCommandSend)) {
             onClick    = "onmousedown_left_right(event,\"" + script_apiCommandSend[0].replaceAll("\"","#") + "\",\"" + script_apiCommandSend[1].replaceAll("\"","#") + "\");";
@@ -277,8 +277,8 @@ class RemoteControlBasic extends RemoteDefaultClass {
     image(label, style) {
 
         // set vars
-        let button_color = remoteData.elements.data("button_colors");  // definition of button color
-        let button_img2  = remoteData.elements.data("button_images");  // definition of images for buttons (without path and ".png")
+        let button_color = rmData.elements.data("button_colors");  // definition of button color
+        let button_img2  = rmData.elements.data("button_images");  // definition of images for buttons (without path and ".png")
 
         // if image available set image
         let button_img   = [];
@@ -428,22 +428,22 @@ class RemoteControlAdvanced extends RemoteDefaultClass{
         let device_api = "";
         let device_api_status = "";
 
-        if ((type === "devices" && !remoteData.devices.exists(device)) || (type === "scenes" && !remoteData.scenes.exists(device))) {
+        if ((type === "devices" && !rmData.devices.exists(device)) || (type === "scenes" && !rmData.scenes.exists(device))) {
             this.logging.error(this.name + ".slider_element: Could not create slider element: " + type + " '" + device + "' does not exist.");
             return "";
         }
 
         if (device.indexOf("group_") >= 0) {
             let group_name = device.split("_")[1];
-            let group_devices = remoteData.device_groups.list_devices(group_name);
+            let group_devices = rmData.device_groups.list_devices(group_name);
 
-            if (remoteData.device_groups.exists(group_name) || group_devices.length === 0) {
+            if (rmData.device_groups.exists(group_name) || group_devices.length === 0) {
                 this.logging.error(this.name + ".slider_element: Group " + group_name + " not defined correctly.");
                 return "";
             }
 
             let check_device = group_devices[0];
-            let status_check_device = remoteStatus.status_device(check_device, true);
+            let status_check_device = rmStatus.status_device(check_device, true);
 
             status_data = status_check_device["status"];
             device_api = `${status_check_device["api"]}_${status_check_device["api-device"]}`;
@@ -451,7 +451,7 @@ class RemoteControlAdvanced extends RemoteDefaultClass{
 
         }
         else {
-            let status_check_device = remoteStatus.status_device(device, true);
+            let status_check_device = rmStatus.status_device(device, true);
             status_data = status_check_device["status"];
             device_api = `${status_check_device["api"]}_${status_check_device["api-device"]}`;
             device_api_status = status_check_device["api-device-message"];
@@ -508,7 +508,7 @@ class RemoteControlAdvanced extends RemoteDefaultClass{
             device_id = device;
         }
 
-        if (remoteData.devices.exists(device_id) && remoteData.devices.api_method(device_id) !== "query") {
+        if (rmData.devices.exists(device_id) && rmData.devices.api_method(device_id) !== "query") {
             reset_value = "<span style='color:gray'>[<status onclick=\"appFW.requestAPI('GET',['set','" + device_id + "','power','OFF'], '', '', '' );\" style='cursor:pointer;'>OFF</status> | ";
             reset_value += "<status onclick=\"appFW.requestAPI('GET',['set','" + device_id + "','power','ON'], '', '', '' );\" style='cursor:pointer;'>ON</status>]</span>";
         }
