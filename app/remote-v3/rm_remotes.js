@@ -920,8 +920,6 @@ class RemoteMain extends RemoteDefaultClass {
         scene_macros["scene-on"] = remoteData.macros.data("scene-on", scene, []);
         scene_macros["scene-off"] = remoteData.macros.data("scene-off", scene, []);
 
-    console.warn(scene_macros);
-
         for (let key in scene_macros["scene"]) { macros[key] = scene_macros["scene"][key]; }
 
         // check if preview
