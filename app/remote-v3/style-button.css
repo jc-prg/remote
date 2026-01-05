@@ -52,13 +52,15 @@ button {
     justify-content: center; /* horizontal zentrieren */
     display: flex;
 
+    padding: 4px;
+    line-height: 0;
+
     border-radius   : 6px;
     border          : solid 0.5px var(--rm-color-button-border);
     background-color: var(--rm-color-button);
     color           : var(--rm-color-button-text);
     font-size       : var(--rm-size-remote-button-text);
-    padding         : 2px;
-    overflow        : visible;
+    overflow        : hidden;
     position        : relative;
 
     touch-action: manipulation;
@@ -166,12 +168,10 @@ button.rm-button.small {
 
 .rm-button svg {
     display: block;
-    height : unset;
-    width : unset;
     min-width : 0;
     min-height : 0;
-    max-width: 90%;
-    max-height: 90%;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .rm-button.sample {
