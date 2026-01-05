@@ -105,7 +105,15 @@ function remoteInitData(data) {
 //--------------------------------
 
 function remoteReload_load(trigger_server_side_reload=false) {
-	appFW.requestAPI("GET",["list"],"",remoteReload);
+	if (trigger_server_side_reload) {
+		setTimeout(function() {
+			appFW.requestAPI("GET", ["list"], "", remoteReload);
+		}, 2000);
+
+	}
+	else {
+		appFW.requestAPI("GET", ["list"], "", remoteReload);
+	}
 }
 
 function remoteReload(data) {
