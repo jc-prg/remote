@@ -7,7 +7,12 @@ function showRemoteInBackground(show=false) {
     const width = window.innerWidth;
 
     if (show === 1 || show === true) {
-        body.style.backgroundImage      = "url("+rm3background+")";
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            body.style.backgroundImage = "url(" + rm3background + ")";
+        } else {
+            body.style.backgroundImage = "url(" + rm3background_light + ")";
+        }
+
         body.style.backgroundRepeat     = "no-repeat";
         body.style.backgroundPosition   = "bottom center";
         body.style.backgroundAttachment = "fixed";

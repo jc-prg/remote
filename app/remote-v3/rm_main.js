@@ -2,7 +2,9 @@
 // jc://remote/
 //--------------------------------
 
-var rm3background  = "remote-v3/img/remote2.png";
+var rm3background  = "remote-v3/img/remote_black.png";
+var rm3background_light  = "remote-v3/img/remote_silver.png";
+var rm3theme = "light";
 var rm3scene_dir   = "/scenes/";
 
 var app_data = {};

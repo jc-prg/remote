@@ -87,6 +87,8 @@
     "stage"     : "stage.png",
     "stereo"    : "stereo.png",
     "stop"      : "stop.png",
+    "sensor"    : "sensor-temp-humid.png",
+    "temperature": "sensor-temp-humid.png",
     "subtitle"  : "subtitle.png",
     "subtitle-on-off" : "subtitle.png",
     "sleep"     : "timer.png",

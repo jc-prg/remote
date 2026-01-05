@@ -79,10 +79,12 @@ function app_initialize(data) {
 function app_theme_changed(theme) {
 	if (theme === "dark") {
 		color_button_inactive 	= "#111111";
+		rm3theme = "dark";
 		//colors_power["ERROR"]	= "lightpink";
 		}
 	else {
 		color_button_inactive 	= "#666666";
+		rm3theme = "light";
 		}
 	}
 

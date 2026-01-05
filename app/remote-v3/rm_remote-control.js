@@ -125,25 +125,8 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
             let startY = layout.box.height / 2 - totalTextHeight / 2 + lineHeight / 2;
             const isIPhone = /iPhone/.test(navigator.userAgent);
             if (isIPhone && layout.lines.length === 2) { startY = 26; }
-            if (isIPhone && layout.lines.length === 1) { startY = 32 ; }
+            if (isIPhone && layout.lines.length === 1) { startY = 32; }
             if (isIPhone && layout.lines.length === 3) { startY = 36; }
-
-            /*
-            layout.lines.forEach((line, i) => {
-                const t = document.createElementNS(svg.namespaceURI, "text");
-                t.setAttribute("x", String(layout.box.width / 2)); // horizontal center
-                t.setAttribute("y", String(startY + i * lineHeight)); // vertical position per line
-                t.setAttribute("text-anchor", "middle"); // center horizontally
-                t.setAttribute("dominant-baseline", "middle"); // center each line vertically on its y
-                t.setAttribute("font-size", this.fontSize);
-                t.setAttribute("font-family", this.fontFamily);
-                t.setAttribute("font-weight", this.fontWeight);
-                t.setAttribute("fill", this.fontColor);
-                t.textContent = String(line);
-                svg.appendChild(t);
-            });
-
-             */
 
             const textEl = document.createElementNS(svg.namespaceURI, "text");
 
