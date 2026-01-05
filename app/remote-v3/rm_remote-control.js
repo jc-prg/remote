@@ -4,7 +4,7 @@
 
 
 /* class to generate from text for buttons SVG images that can be scaled automatically with the button size */
-class RemoteSvgTextImage_org extends RemoteDefaultClass {
+class RemoteSvgTextImage extends RemoteDefaultClass {
     constructor(name) {
         super(name);
 
@@ -198,131 +198,6 @@ class RemoteSvgTextImage_org extends RemoteDefaultClass {
             requestIdleCallback(() => this.create_now(container, text));
         } else {
             // fallback
-            setTimeout(() => this.create_now(container, text), 0);
-        }
-    }
-}
-
-
-class RemoteSvgTextImage extends RemoteDefaultClass {
-    constructor(name) {
-        super(name);
-
-        this.text = "Even much longer button text ...";
-        this.fontSize = 40;
-        this.fontFamily = "Arial";
-        this.fontColor = "white";
-        this.fontWeight = "";
-        this.targetRatio = 4 / 2;
-
-        this.image_cache = {};
-    }
-
-    /* split text into lines (unchanged) */
-    splitIntoLines(words, lineCount) {
-        const lines = Array.from({ length: lineCount }, () => []);
-        const wordsPerLine = Math.ceil(words.length / lineCount);
-
-        let index = 0;
-        for (let i = 0; i < lineCount; i++) {
-            for (let j = 0; j < wordsPerLine && index < words.length; j++) {
-                lines[i].push(words[index++]);
-            }
-        }
-        return lines.map(l => l.join(" "));
-    }
-
-    /* choose best line count (simplified, no measuring) */
-    bestLayout(text) {
-        let words;
-        if (text.length > 8) {
-            words = text.split(/(\s|-)/).filter(Boolean);
-        } else {
-            words = [text];
-        }
-
-        // heuristic: max 3 lines
-        const maxLines = Math.min(3, words.length);
-        let best = words.join(" ");
-
-        for (let lines = 1; lines <= maxLines; lines++) {
-            const split = this.splitIntoLines(words, lines);
-            if (split.length <= maxLines) {
-                best = split;
-                break;
-            }
-        }
-
-        return best;
-    }
-
-    /* Build final SVG using foreignObject */
-    create_now(container, text = "") {
-
-        if (this.image_cache[text]) {
-            document.getElementById(container).innerHTML = this.image_cache[text];
-            return;
-        }
-
-        const layoutLines = this.bestLayout(text);
-        const svg = document.getElementById(container);
-
-        if (!svg) {
-            this.logging.error(`create(): container '${container}' not found.`);
-            return;
-        }
-
-        svg.innerHTML = "";
-
-        // Fixed coordinate system — NO measuring
-        const width = 100;
-        const height = 50;
-
-        svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-        svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
-
-        const fo = document.createElementNS(svg.namespaceURI, "foreignObject");
-        fo.setAttribute("x", "0");
-        fo.setAttribute("y", "0");
-        fo.setAttribute("width", "100%");
-        fo.setAttribute("height", "100%");
-
-        const div = document.createElement("div");
-        div.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
-
-        div.style.display = "flex";
-        div.style.flexDirection = "column";
-        div.style.alignItems = "center";
-        div.style.justifyContent = "center";
-        div.style.width = "100%";
-        div.style.height = "100%";
-        div.style.textAlign = "center";
-
-        div.style.fontFamily = this.fontFamily;
-        div.style.fontSize = `${this.fontSize}px`;
-        div.style.fontWeight = this.fontWeight;
-        div.style.color = this.fontColor;
-        div.style.lineHeight = "1.2";
-        div.style.whiteSpace = "normal";
-        div.style.pointerEvents = "none";
-
-        layoutLines.forEach(line => {
-            const span = document.createElement("span");
-            span.textContent = line;
-            div.appendChild(span);
-        });
-
-        fo.appendChild(div);
-        svg.appendChild(fo);
-
-        this.image_cache[text] = svg.innerHTML;
-    }
-
-    /* async call */
-    create(container, text = "") {
-        if ("requestIdleCallback" in window) {
-            requestIdleCallback(() => this.create_now(container, text));
-        } else {
             setTimeout(() => this.create_now(container, text), 0);
         }
     }
