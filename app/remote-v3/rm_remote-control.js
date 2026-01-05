@@ -154,7 +154,7 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
 
             const isIPhone = /iPhone/.test(navigator.userAgent);
             if (isIPhone && layout.lines.length === 1) { startY += 0; }
-            if (isIPhone && layout.lines.length === 2) { startY += 7; }
+            if (isIPhone && layout.lines.length === 2) { startY += 12; }
             if (isIPhone && layout.lines.length === 3) { startY += 0; }
 
             /*
