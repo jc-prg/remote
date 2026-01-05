@@ -149,7 +149,12 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
 
             const lineHeight = this.fontSize * 1.2; // adjust spacing between lines
             const totalTextHeight = layout.lines.length * lineHeight;
-            const startY = layout.box.height / 2 - totalTextHeight / 2 + lineHeight / 2;
+
+            let startY = layout.box.height / 2 - totalTextHeight / 2 + lineHeight / 2;
+            const isIPhone = /iPhone/.test(navigator.userAgent);
+            if (isIPhone) {
+                startY += 10;
+            }
 
             /*
             layout.lines.forEach((line, i) => {

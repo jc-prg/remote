@@ -181,7 +181,6 @@ button.rm-button.small {
     grid-column: unset;
     grid-row: unset;
     width: 60px;
- //   height: auto;
     margin: 4px;
     overflow: hidden;
     font-size: 14px;
