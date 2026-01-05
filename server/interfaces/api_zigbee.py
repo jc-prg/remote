@@ -48,13 +48,16 @@ class ApiControl(RemoteApiClass):
         self.mqtt_device_availability = {}
         self.mqtt_device_availability_subscribed = []
 
+        self.mqtt_force_update_interval = 5 * 60
+        self.mqtt_force_update_last = 0
+
         self.connect_config = {
             "FIRST_RECONNECT_DELAY": 1,
             "RECONNECT_RATE": 2,
             "MAX_RECONNECT_COUNT": 12,
             "MAX_RECONNECT_DELAY": 60
             }
-        self.not_available = [];
+        self.not_available = []
 
     def _on_connect(self, client, userdata, flags, rc, properties):
         """
@@ -129,7 +132,11 @@ class ApiControl(RemoteApiClass):
             self.execute_results(message.topic, return_data)
 
     def connect(self):
-        """Connect / check connection"""
+        """
+        Connect / check connection, if connect OK execute (subscribe & publish) the main topics.
+        -> answers will be process in _on_message()
+        -> this will trigger execute_results(), where devices will be subscribed
+        """
         self.logging.debug("(Re)connect " + self.api_name + " (" + self.api_config["IPAddress"] + ") ... ")
         self.status = "Starting ..."
         self.count_error = 0
@@ -144,7 +151,6 @@ class ApiControl(RemoteApiClass):
 
         try:
             self.mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
-
             self.mqtt_client.on_connect = self._on_connect
             self.mqtt_client.on_message = self._on_message
             self.mqtt_client.on_log = self._on_logging
@@ -161,9 +167,9 @@ class ApiControl(RemoteApiClass):
             if rc == 0:
                 self.status = "Connected"
                 self.mqtt_client.loop_start()
-                self.execute_request("bridge/devices")
-                self.execute_request("bridge/info")
-                self.execute_request("availability")
+                self.request_execute("bridge/devices")
+                self.request_execute("bridge/info")
+                self.request_execute("availability")
             else:
                 self.mqtt_client = None
                 raise "Could not send connect command correctly: " + str(rc)
@@ -185,6 +191,46 @@ class ApiControl(RemoteApiClass):
         self.mqtt_client.loop_stop()
         self.mqtt_client.disconnect()
 
+    def request_subscribe(self, topic):
+        """
+        subscribe a command, if not subscribed yet
+        """
+        if topic not in self.mqtt_subscribed and not topic.endswith("/get"):
+            self.logging.debug("subscribe: " + topic)
+            self.mqtt_client.subscribe(topic)
+            self.mqtt_subscribed.append(topic)
+
+    def request_execute(self, topic, data=None):
+        """
+        publish / subscribe command
+        """
+        if data is None or data == "":
+            data = {}
+        data = json.dumps(data)
+        topic = self.mqtt_msg_start + topic
+
+        # subscribe new topics and force update (first update or send)
+        self.request_subscribe(topic)
+
+        self.logging.debug("publish: " + topic + " - " + str(data))
+        if data is None:
+            rc = self.mqtt_client.publish(topic)
+        else:
+            rc = self.mqtt_client.publish(topic, data, 1)
+
+    def request_update_devices(self):
+        """
+        force an update for all registered devices, if last update interval has expired
+        """
+        if time.time() - self.mqtt_force_update_interval < self.mqtt_force_update_last:
+            return
+
+        self.logging.debug(f"Force update for all {len(self.mqtt_devices)} registered devices")
+        for device in self.mqtt_devices:
+            self.request_execute(self.mqtt_msg_start + device)
+
+        self.mqtt_force_update_last = time.time()
+
     def execute_results(self, topic, data):
         """
         execute commands based on received messages
@@ -194,10 +240,9 @@ class ApiControl(RemoteApiClass):
             if device_id in self.mqtt_friendly_name:
                 friendly_name = self.mqtt_friendly_name[device_id]
             if friendly_name not in self.mqtt_device_availability_subscribed:
-                self.mqtt_client.subscribe(self.mqtt_msg_start + friendly_name + "/availability")
-                self.mqtt_client.publish(self.mqtt_msg_start + friendly_name + "/availability")
-                self.mqtt_client.publish(self.mqtt_msg_start + friendly_name + "/availability/get")
                 self.logging.debug("Subscribed '/availability' for device " + friendly_name + "/" + device_id)
+                self.request_subscribe(self.mqtt_msg_start + friendly_name + "/availability")
+                self.request_execute(self.mqtt_msg_start + friendly_name + "/availability/get")
                 self.mqtt_device_availability_subscribed.append(friendly_name)
 
             if topic == self.mqtt_msg_start + device_id:
@@ -213,10 +258,12 @@ class ApiControl(RemoteApiClass):
             for device in data:
                 device_id = device["friendly_name"]
                 self.mqtt_devices[device_id] = device
-                self.mqtt_client.subscribe(self.mqtt_msg_start + device_id)
-                self.mqtt_client.publish(self.mqtt_msg_start + device_id + "/get")
                 self.mqtt_device_id[device_id] = device["ieee_address"]
                 self.mqtt_friendly_name[device["ieee_address"]] = device_id
+
+                self.request_subscribe(self.mqtt_msg_start + device_id)
+                self.request_execute(self.mqtt_msg_start + device_id + "/get")
+
             self.config.write(rm3config.commands + self.api_name + "/10_devices", self.mqtt_devices)
 
         if "availability" in topic and data != {} and data != "":
@@ -226,24 +273,7 @@ class ApiControl(RemoteApiClass):
                 friendly_name = self.mqtt_friendly_name[device_id]
             self.mqtt_device_availability[device_id] = data
             self.mqtt_device_availability[friendly_name] = data
-            self.logging.debug("Availability " + str(friendly_name) + ": " + str(data) +
-                               str(self.mqtt_device_availability))
-
-    def execute_request(self, topic, data=None):
-        """
-        publish / subscribe command
-        """
-        if data is None or data == "":
-            data = {}
-        data = json.dumps(data)
-        self.logging.debug("execute: " + str(data))
-        topic = self.mqtt_msg_start + topic
-
-        self.mqtt_client.subscribe(topic)
-        if data is None:
-            rc = self.mqtt_client.publish(topic)
-        else:
-            rc = self.mqtt_client.publish(topic, data, 1)
+            self.logging.debug("Availability " + str(friendly_name) + ": " + str(data) + str(self.mqtt_device_availability))
 
     def api_device_available(self, api_device):
         """
@@ -311,13 +341,13 @@ class ApiControl(RemoteApiClass):
         Args:
             active (bool): True to activate, False to disable
         """
-        self.execute_request("bridge/request/permit_join", {"value": active})
+        self.request_execute("bridge/request/permit_join", {"value": active})
 
     def devices_permit_joint(self):
         """
         permit new images to join for 2 min (120s)
         """
-        self.execute_request("bridge/request/permit_join", "{\"value\": true, \"time\": 120}")
+        self.request_execute("bridge/request/permit_join", "{\"value\": true, \"time\": 120}")
 
     def device_info(self, device_id=""):
         """
@@ -556,7 +586,7 @@ class ApiControl(RemoteApiClass):
                 command_value_json = json.loads(command_value)
             else:
                 command_value_json = {}
-            self.execute_request("bridge/" + command_key, command_value_json)
+            self.request_execute("bridge/" + command_key, command_value_json)
             self.logging.debug(result)
 
         return result
@@ -575,9 +605,10 @@ class ApiControl(RemoteApiClass):
         result = None
         self.wait_if_working()
         self.working = True
-        self.last_action = time.time()
-        self.last_action_cmd = "SEND: " + device + "/" + command
-
+        
+        # request an update, if interval has expired
+        self.request_update_devices()
+        
         if self.log_command:
             self.logging.info("__SEND: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
 
@@ -602,11 +633,11 @@ class ApiControl(RemoteApiClass):
             self.logging.debug("__SEND: " + str(device_id) + " !!! " + command_key + " -> " + command_value)
 
             if command_key == "set":
-                self.execute_request(device_id + "/set", command_value_json)
+                self.request_execute(device_id + "/set", command_value_json)
                 result = "OK"
 
             elif "request" in command_key:
-                self.execute_request("bridge/" + command_key, command_value_json)
+                self.request_execute("bridge/" + command_key, command_value_json)
 
             else:
                 result = "ERROR: unknown command (" + command + ")"
@@ -645,14 +676,10 @@ class ApiControl(RemoteApiClass):
             self.working = False
             return "N/A"
 
-        if self.log_command:
-            self.logging.info("__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
-
         if self.status == "Connected":
 
             command_key = command.split("=")[0]
             command_value = command[len(command_key)+1:].replace("'", "\"")
-            self.logging.debug("__QUERY: " + str(device_id) + " !!! " + command_key + " -> " + command_value)
 
             if command_key == "get":
                 result = "N/A"
@@ -688,12 +715,16 @@ class ApiControl(RemoteApiClass):
                             and "exposes" in self.mqtt_devices[friendly_name]["definition"]:
                         expose_entries = self.mqtt_devices[friendly_name]["definition"]["exposes"]
                         for expose_entry in expose_entries:
-                            if ("name" in expose_entry and "unit" in expose_entry and
-                                    expose_entry["name"] == command_value):
+                            if "name" in expose_entry and "unit" in expose_entry and expose_entry["name"] == command_value:
                                 unit = expose_entry["unit"]
 
                     if unit != "":
                         result = str(result) + " " + str(unit)
+
+            self.logging.debug(f"__QUERY: {str(friendly_name)} | {command_value} -> {str(result[40:])}")
+
+        if self.log_command:
+            self.logging.debug(f"__QUERY: {str(friendly_name)} | NO CONNECTION")
 
         self.working = False
         return result
@@ -725,9 +756,9 @@ class ApiControl(RemoteApiClass):
 
         self.logging.info("Testing API ...")
 
-        #self.execute_request("0x70b3d52b6004fd1f/set", {"state": "TOGGLE"})
+        #self.request_execute("0x70b3d52b6004fd1f/set", {"state": "TOGGLE"})
         #time.sleep(1)
-        #self.execute_request("0x70b3d52b6004fd1f/set", {"state": "TOGGLE"})
+        #self.request_execute("0x70b3d52b6004fd1f/set", {"state": "TOGGLE"})
 
         self.working = False
         return "OK"
