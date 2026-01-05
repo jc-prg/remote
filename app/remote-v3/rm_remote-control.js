@@ -156,7 +156,6 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
                 startY = layout.lines.length * 12;
             }
 
-
             /*
             layout.lines.forEach((line, i) => {
                 const t = document.createElementNS(svg.namespaceURI, "text");
