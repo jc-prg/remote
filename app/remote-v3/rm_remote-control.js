@@ -60,7 +60,7 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
         console.error(box, isIPhone);
 
         if (line_count > 1 && isIPhone) {
-            line_count = line_count * 0.80;
+            line_count = line_count * 0.70;
             box.height = box.height * line_count;
             box.width = box.width * line_count;
         }
