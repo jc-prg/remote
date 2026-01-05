@@ -73,8 +73,8 @@ class RemoteSettings extends RemoteDefaultClass {
             //this.settings_ext_append(2, lang("QUICK_ACCESS"), "&nbsp;<br/>" + this.index_quick(true, true));
             this.create_show_ext();
 
-            statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
-            statusShow_powerButton('button_manual_mode', getTextById('button_manual_mode'));
+            rmStatusShow.visualize_element_button('button_edit_mode', getTextById('button_edit_mode'));
+            rmStatusShow.visualize_element_button('button_manual_mode', getTextById('button_manual_mode'));
         }
         else if (selected_mode === "index_small") {
             this.settings_ext_reset();
@@ -102,9 +102,9 @@ class RemoteSettings extends RemoteDefaultClass {
             this.index_buttons_html = this.index(true, "SETTINGS_DEVICES");
             this.create_show_ext();
 
-            statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
-            statusShow_powerButton('button_manual_mode', getTextById('button_manual_mode'));
-            statusShow_powerButton('button_show_code', getTextById('button_show_code'));
+            rmStatusShow.visualize_element_button('button_edit_mode', getTextById('button_edit_mode'));
+            rmStatusShow.visualize_element_button('button_manual_mode', getTextById('button_manual_mode'));
+            rmStatusShow.visualize_element_button('button_show_code', getTextById('button_show_code'));
 
             startDragAndDrop("sort_devices", apiMovePosition);
         }
@@ -132,7 +132,7 @@ class RemoteSettings extends RemoteDefaultClass {
             this.index_buttons_html = this.index(true, "SETTINGS_API");
             this.module_api.edit_api_config_load();
             this.module_api.edit_api_overview();
-            statusShow_powerButton('button_edit_mode', getTextById('button_edit_mode'));
+            rmStatusShow.visualize_element_button('button_edit_mode', getTextById('button_edit_mode'));
         }
         else if (selected_mode === "edit_timer") {
             setNavTitle(lang('SETTINGS_TIMER'));

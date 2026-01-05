@@ -955,7 +955,7 @@ class RemoteMain extends RemoteDefaultClass {
         if (preview) {
             remote += "<div style='grid-column:span 4;'><b>" + lang("PREVIEW") + ":</b><br/><hr/></div>";
         } else {
-            remote += "<div id='scene-power-information-" + scene + "' class='remote-power-information' onclick='statusCheck_bigMessage(\"scene-power-information-" + scene + "\");'>POWER INFORMATION</div>";
+            remote += "<div id='scene-power-information-" + scene + "' class='remote-power-information' onclick='rmStatusShow.visualize_element_button(\"scene-power-information-" + scene + "\");'>POWER INFORMATION</div>";
         }
 
         // minimum size

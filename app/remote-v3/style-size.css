@@ -56,9 +56,13 @@
 
 @media (min-width: 880px) {
   :root {
-    --rm-size-remote-button-text    : 2cqw;
-    --rm-size-remote-channel-text   : 1.5cqw;
-    --rm-size-remote-display-text   : 1.2cqw;
+      --rm-size-remote-button-text: 2cqw;
+      --rm-size-remote-channel-text: 1.5cqw;
+      --rm-size-remote-display-text: 1.2cqw;
+
+      .remote-power-information {
+          min-height : 25px;
+      }
   }
 
   /* remote control in 2 columns */
@@ -158,16 +162,25 @@
     .rm-button_setting_index {
         width       :   calc(100% - 10px);
         }
+
+    .rm-button-grid {
+        gap: 3px;
     }
+    .header_image_text {
+        font-size: 18px;
+        height: 20px;
+        bottom: 0;
+    }
+}
 
 @media (min-width: 900px) {
     .rm-button_setting_index {
         width       :   calc(100%/3 - 10px);
-        }
     }
+}
 
 @media (min-width: 1200px) {
     .rm-button_setting_index {
         width       :   calc(100%/4 - 10px);
-        }
     }
+}

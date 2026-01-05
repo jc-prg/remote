@@ -57,15 +57,11 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
         document.body.removeChild(tempSvg);
 
         const isIPhone = /iPhone/.test(navigator.userAgent);
-        console.error(box, isIPhone);
-
         if (line_count > 1 && isIPhone) {
             line_count = line_count * 0.70;
             box.height = box.height * line_count;
             box.width = box.width * line_count;
         }
-
-        console.error(box);
 
         return box;
     }

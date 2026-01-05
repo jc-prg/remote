@@ -22,7 +22,7 @@ button {
     padding     : 10px;
     display     : grid;
     grid-template-columns: repeat(4, 1fr);
-    gap         : 10px;
+    gap         : 8px;
     box-sizing  : border-box;
 }
 
@@ -449,6 +449,8 @@ canvas {
 .header_image_text {
     width           : 100%;
     height          : 40px;
+    position        : absolute;
+    bottom          : 5%;
 }
 
 .header_image_text_info {
