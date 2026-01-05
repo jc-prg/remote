@@ -18,6 +18,7 @@ class RemoteStart extends RemoteDefaultClass {
     init(data) {
         this.data = data;
 
+        scrollTop();
         if (this.initial_load) {
             this.logging.default("Initialized new class 'RemoteStart'.");
             this.initial_load = false;
