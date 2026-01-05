@@ -70,35 +70,6 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
         return box;
     }
 
-    measure_test(lines) {
-        const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        const text = document.createElementNS(tempSvg.namespaceURI, "text");
-
-        text.setAttribute("font-size", this.fontSize);
-        text.setAttribute("font-family", this.fontFamily);
-        text.setAttribute("font-weight", this.fontWeight);
-        text.setAttribute("fill", this.fontColor);
-
-        lines.forEach((line, i) => {
-            const tspan = document.createElementNS(tempSvg.namespaceURI, "tspan");
-            tspan.setAttribute("x", "0");
-            if (i > 0) {
-                tspan.setAttribute("dy", "1.2em");
-            }
-            tspan.textContent = line;
-            text.appendChild(tspan);
-        });
-
-        tempSvg.appendChild(text);
-        document.body.appendChild(tempSvg);
-
-        const box = text.getBBox();
-        document.body.removeChild(tempSvg);
-
-        return box;
-    }
-
-
     /* Try different line breaks */
     bestLayout(text) {
         let words;
@@ -154,7 +125,7 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
             let startY = layout.box.height / 2 - totalTextHeight / 2 + lineHeight / 2;
             const isIPhone = /iPhone/.test(navigator.userAgent);
             if (isIPhone && layout.lines.length === 2) { startY = 26; }
-            if (isIPhone && layout.lines.length === 1) { startY = 30; }
+            if (isIPhone && layout.lines.length === 1) { startY = 32 ; }
             if (isIPhone && layout.lines.length === 3) { startY = 36; }
 
             /*
