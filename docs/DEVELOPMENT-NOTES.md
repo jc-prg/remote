@@ -4,7 +4,10 @@
 
 ## KNOWN BUGS -------------------------------------------------------------------
 
-* Q-query / api ... threads seemed to crash
+* edit mode
+  * toggle & slider for groups doesn't work (but are in the drop-down menus) -> rm_remote-control.js:432
+  * don't show groups in drop-down if no device is defined in it
+  * editing device - loses display size when saving
 
 ### known but not that urgent
 
@@ -26,18 +29,17 @@
 
 ## UNDER DEVELOPMENT -------------------------------------------------------------
 
-* ZigBee temperature / humidity sensor
-  * integrate status of "always on devices", e.g., via availability: { "state": "online" }
-  * display -> not in state "Manual Mode"
-  * idea for later: record and visualize data 
-
-* continue status refactoring:
-  * IN PROGRESS: groups | rm_status-devices.js + rm_status.js
-    * OK: group status
-    * OK: group messages
-    * OPEN: visualize group status
-  * OPEN: toggles, sliders
+* Improving text on displays
+  * OK: table instead of divs
+  * OK: scrollbars if necessary
+  * OK: check volume level, add possibility to display other values as bar also
+  * OPEN: check all text sizes
   
+* Refactoring of statusCheck
+  * IN PROGRESS: devices: after API restart show device error still as API restart
+  * improve start-up behavior in status messages
+    * DENON: POWER_OFF; 1st no ping; then "NetworkError: All connection attempts failed"
+
 * macro editing in the app
   * OPEN: sort in some order (alphabetically or in the order of the menu)
   * OPEN: edit groups with the same option (different data structure)
@@ -80,16 +82,17 @@
 
 ### NEW 01-2025
 
+* ZigBee temperature / humidity sensor
+  * idea for later: record and visualize data
+
 * other refactoring
   * rm_main.js; rethink / maybe create a class and restructure stuff
-  * improve start-up behavior in status messages
-    * DENON: POWER_OFF; 1st no ping; then "NetworkError: All connection attempts failed"
 
-* move data processing to -> class remoteData {} and remoteStatus {}
+* move data processing to -> class rmData {} and rmStatus {}
   * IDEA: move other configs to data("CONFIG")("elements"), such as "icons", "device-types", "methods"
   * check if still required: data("CONFIG")("templates")("list")
   * check which other parts are still required or can be removed
-  * check if elements remoteStatus.status_system can be further improved
+  * check if elements rmStatus.status_system can be further improved
 
 ### NEW 12-2025
 
@@ -121,12 +124,6 @@
 * device deletion (srv & app): when deleting a device, check if the remote is used somewhere else:
   * if yes -> do not delete
   * if no ask whether it should be deleted
-
-* Refactoring of statusCheck
-  * move device status to separate class
-  * devices: after API restart show device error still as API restart
-  * move scene status to separate class
-  * maybe move button format to separate class
 
 * working with templates
   * set buttons to "!template_" (instead of device)
@@ -202,12 +199,16 @@
     
 # DONE --------------------------------------------------------------------------
 
+* SOLVED: catch errors from pythonping
+* statusCheck_* refactoring -> RemoteVisualizeStatus()
+* OK: integrate status of Zigbee "always on devices", e.g., via availability: { "state": "online" }
+* integrate ZigBee temperature and humidity sensor
 * bugs due to refactoring
   * SOLVED: select with options
   * SOLVED: buttons for scene macros doesn't work - scene_test; scene_scene-on; scene_scene-off
 * visualize queues that hang for more than 120s (show attention sign)
 * create relevant classes out of RemoteDefaultClass (incl. unified logging)
-* move main parts of the data processing to -> class remoteData {} and class remoteStatus {}
+* move main parts of the data processing to -> class rmData {} and class rmStatus {}
 * Improve API Device settings
   * OK: add a toggle to API Device edit dialog to enable / disable
   * OK: activating an API device takes time, looks like it jumps back to old status?!
@@ -225,7 +226,7 @@
   * OK: first testing in Macro Settings with fixed data
   * OK: improved layout
   * OK: load data set
-* statusCheck_apiConnection() in rm-status.js -> use remoteStatus()
+* statusCheck_apiConnection() in rm-status.js -> use rmStatus()
   * OK: all show status elements plus different other functions
   * OK: Power Buttons scenes
   * OK: Power Buttons devices
