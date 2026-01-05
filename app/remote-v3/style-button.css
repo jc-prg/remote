@@ -37,6 +37,9 @@ button {
 }
 
 .rm-button {
+    appearance: none;
+    -webkit-appearance: none;
+
     height          :  auto;
     max-width       :  none;
     min-width       : 0;

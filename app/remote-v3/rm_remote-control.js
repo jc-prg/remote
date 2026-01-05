@@ -103,9 +103,48 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
 
             svg.innerHTML = "";
             svg.setAttribute("viewBox", `${-padding} ${-padding} ${layout.box.width + padding * 2} ${layout.box.height + padding * 2}`);
-            //svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+            svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+            /*
             svg.setAttribute("preserveAspectRatio", "xMidYMid slice");
 
+Final working combo (tested pattern)
+.rm-button {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+
+  width: 80px;
+  height: 80px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rm-button svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+<button class="rm-button">
+  <svg viewBox="-4 -4 92.4921875 100.5"
+       preserveAspectRatio="xMidYMid slice">
+    ...
+  </svg>
+</button>
+
+If you still see 1–2px extra height on iOS
+
+Safari sometimes enforces minimum tap height. You can override it with:
+
+.rm-button {
+  min-height: 0;
+}
+
+             */
             const lineHeight = this.fontSize * 1.2; // adjust spacing between lines
             const totalTextHeight = layout.lines.length * lineHeight;
             const startY = layout.box.height / 2 - totalTextHeight / 2 + lineHeight / 2;
