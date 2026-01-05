@@ -60,6 +60,7 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
         if (line_count > 1) { line_count = line_count * 0.75; }
         box.height = box.height * line_count;
         box.width = box.width * line_count;
+        box.y = 0;
         console.error(box);
 
         return box;
