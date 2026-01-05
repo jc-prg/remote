@@ -9,8 +9,8 @@ from logging.handlers import RotatingFileHandler
 # ---------------------------------
 
 API_name = "jc://remote/"
-API_version = "v3.0.5"
-APP_version = "v3.0.23"
+API_version = "v3.0.6"
+APP_version = "v3.0.24"
 APP_support = [APP_version,
                "v3.0.23"
                ]  # other supported versions

@@ -12,6 +12,10 @@
 ### known but not that urgent
 
 * reload of all configs doesn't work
+  * send request to server
+  * empty cache
+  * reload files that are loaded during start-up (check icons, buttons, templates, ...)
+  * if longer process, async message
 
 * when API has an error / isn't available anymore, the connect device still reports online
   * EISCP-ONKYO -> was connected during startup, plugged of -> still green with old values
@@ -45,15 +49,15 @@
   * OPEN: edit groups with the same option (different data structure)
   * OPEN: scene macros (additional place, partly collecting data from different places ... requires server adaption)
 
-### paused a bit
-
 * create a clean data set
   * OK: renamed cfg-files incl. references in README.md's 
   * OK: _ACTIVE-APIS.json -> clean version, one default API device per API
-  * OPEN: templates -> check, what to move to template also; check description inside
-  * OPEN: remotes -> rename device remotes to rmc-*.json; check description inside
-  * OPEN: remotes -> check own remotes, what to move into sample set
+  * OK: templates -> check, what to move to template also; check description inside
+  * OK: remotes -> rename device remotes to rmc-*.json; check description inside
+  * OK: remotes -> check own remotes, what to move into sample set
   * OPEN: _ACTIVE-DEVICES.json -> integrate at least one device per API (hidden, not status data)
+
+### paused a bit
 
 * check if data exist, if not create some from sample data (or create fresh data)
   * OK: .env (... ./start)
@@ -106,12 +110,10 @@
     * and optimize structure
   
 * front end improvements
-  display text format errors
+  * display text format errors
     * font-sizes for display text
-    * volume in display (number not in next line)
   * format errors
     * color picker (small -> color indicator drops into next line; stretch to right width)
-  * button size on iPhones for SVG Images (esp. not used buttons)
 
 * Implementing DENON API
   * OPEN: Data definition
@@ -189,10 +191,6 @@
   
 * Further ZigBee Integration
   * Check ZigBee with Password
-  * ZigBee Bulb -> how to get data without switching on and off
-    * IN PROGRESS: use availability as value
-      * IN PROGRESS: api_zigbee.py
-      * OPEN: app
   
 * "not used in this remote control" -> nicht vom API device sondern nur vom device nutzen (wird serverseitig gemergt)
   
