@@ -1074,16 +1074,22 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             device_status_raw = rmStatus.status_device_raw(first_device);
         }
 
+
         for (let key in device_status_raw) {
             if (document.getElementById("toggle_"+device_id+"_"+key+"_input")) {
 
-                let value = device_status_raw[key].toUpperCase();
+                let value = device_status;
+                if (key !== "power") {
+                    value = device_status_raw[key].toUpperCase();
+                }
+
+                this.logging.debug(`visualize_toggle_device: ${device_id}, ${device_status}, ${value}`);
 
                 if (device_status === "N/A") {
                     this.visualize_element_toggle(device_id, "toggle_"+device_id+"_"+key+"_input", "toggle_"+device_id+"_"+key+"_last_value", "slider_"+device_id+"_"+key, device_status, "middle");
                 } else if (value === "ON") {
                     this.visualize_element_toggle(device_id, "toggle_"+device_id+"_"+key+"_input", "toggle_"+device_id+"_"+key+"_last_value", "slider_"+device_id+"_"+key, value, "on");
-                } else if (value.includes("OFF") > -1) {
+                } else if (value === "OFF") {
                     this.visualize_element_toggle(device_id, "toggle_"+device_id+"_"+key+"_input", "toggle_"+device_id+"_"+key+"_last_value", "slider_"+device_id+"_"+key, value, "off");
                 } else {
                     this.visualize_element_toggle(device_id, "toggle_"+device_id+"_"+key+"_input", "toggle_"+device_id+"_"+key+"_last_value", value, "error");
