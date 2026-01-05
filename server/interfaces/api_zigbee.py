@@ -721,7 +721,9 @@ class ApiControl(RemoteApiClass):
                     if unit != "":
                         result = str(result) + " " + str(unit)
 
-            result_log = str(result)[40:]
+            result_log = str(result)
+            if len(result_log) > 50:
+                result_log = result_log[:50] + "..."
             self.logging.debug(f"__QUERY: {str(friendly_name)} | {command_value} -> {result_log}")
 
         if self.log_command:
