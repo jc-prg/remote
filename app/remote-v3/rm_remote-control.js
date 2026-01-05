@@ -156,7 +156,7 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
                 factor = 1.5;
             }
 
-            const startY = layout.box.height / 2 - totalTextHeight * factor / 2 + lineHeight / 2;
+            const startY = layout.box.height / 2 - totalTextHeight / factor / 2 + lineHeight / 2;
 
             /*
             layout.lines.forEach((line, i) => {
