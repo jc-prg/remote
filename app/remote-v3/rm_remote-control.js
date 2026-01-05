@@ -103,7 +103,8 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
 
             svg.innerHTML = "";
             svg.setAttribute("viewBox", `${-padding} ${-padding} ${layout.box.width + padding * 2} ${layout.box.height + padding * 2}`);
-            svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+            //svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+            svg.setAttribute("preserveAspectRatio", "xMidYMid slice");
 
             const lineHeight = this.fontSize * 1.2; // adjust spacing between lines
             const totalTextHeight = layout.lines.length * lineHeight;
