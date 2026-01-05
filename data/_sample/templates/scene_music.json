@@ -87,7 +87,8 @@
             "bd-api_stop",
             ".",
             "."
-        ]
+        ],
+        "type" : "scene"
     },
     "info": "jc://remote/ - In this file the remote layout and channel macros for the scene are defined."
 }

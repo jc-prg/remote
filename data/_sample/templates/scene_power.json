@@ -1,32 +1,28 @@
 {
     "data": {
-        "description": "Scene: Power supply for devices",
+        "description": "Power & Devices",
         "devices": [],
         "display": {},
-        "display-size": "json::display-size",
-        "label": "Power sockets & devices",
+        "display-size": "middle",
+        "label": "Power & Devices",
         "macro-channel": {},
         "macro-scene": {},
         "macro-scene-off": [],
         "macro-scene-on": [],
         "remote": [
             "HEADER-IMAGE",
-            "LINE||Power sockets",
+            "LINE||Power Supply",
             "TOGGLE||plug01_power||01: Power Office||plug01_on||plug01_off",
             "TOGGLE||plug02_power||02: Power Media Devices||macro_plug02-on||macro_plug02-off",
-            "LINE||Devices",
-            "TOGGLE||rec2_power||AV Receiver||rec2_on||rec2_off",
+            "LINE||Media Devices",
+            "TOGGLE||receiver2_power||AV Receiver||receiver2_on||receiver2_off",
             "TOGGLE||bd-api_power||Bluray Player (API)||bd-api_on||bd-api_off",
             "TOGGLE||beam_power||Beamer||beam_on||beam_off",
-            "TOGGLE||lw_power||Leinwand||lw_on||lw_off",
-            "TOGGLE||tv2_power||TV/Radio||dev-on_tv3||dev-off_tv3",
-            "LINE||Lights",
-            "TOGGLE||light_l1-power||Licht Table||light_l1-on||light_l1-off",
-            "TOGGLE||light_l2-power||Licht Couch||light_l2-on||light_l2-off",
-            "TOGGLE||group_led_power||LED Lights||group_led_on||group_led_off"
+            "TOGGLE||screen_power||Screen||screen_on||screen_off",
+            "TOGGLE||tv2_power||TV/Radio||dev-on_tv2||dev-off_tv2"
         ],
         "scene_power_status": "N/A",
-        "type" : "scene"
+        "type": "scene"
     },
     "info": "jc://remote/ - In this file the remote layout and channel macros for the scene are defined."
 }

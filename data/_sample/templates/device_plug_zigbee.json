@@ -1,0 +1,22 @@
+{
+    "data": {
+        "description": "ZigBee Plug",
+        "display": {
+            "Current": "e-current",
+            "Energy": "e-energy",
+            "Power": "e-power",
+            "State": "power",
+            "Voltage": "e-voltage"
+        },
+        "display-size": "h3w2",
+        "method": "query",
+        "remote": [
+            "LINE||SmartPlug 10",
+            "DISPLAY",
+            "on",
+            "off",
+            "LINE"
+        ],
+        "type": "device"
+    }
+}

@@ -45,6 +45,6 @@
             "stop",
             "ffw"
         ],
-       "type" : "device"
+        "type" : "device"
     }
 }

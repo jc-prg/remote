@@ -1,6 +1,6 @@
 {
     "data": {
-        "description": "Scene for light",
+        "description": "Scene for light incl. groups (1)",
         "devices": [],
         "display": {},
         "display-size": "json::display-size",

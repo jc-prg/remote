@@ -1,13 +1,23 @@
 {
     "data": {
-        "description": "Bluray: SONY BDP-S4500 (IR)",
-        "display": {},
+        "description": "Bluray: SONY BDP-S4500 (API)",
+        "display": {
+            "Duration": "media_duration",
+            "Position": "position_abs_time",
+            "Status": "playing_soap"
+        },
         "remote": [
             "open",
             ".",
-            ".",
-            "on-off",
+            "on",
+            "off",
             "LINE",
+            "DISPLAY",
+            "setup",
+            "home",
+            ".",
+            "fav",
+            "LINE||navigation",
             ".",
             "up",
             ".",
@@ -20,7 +30,7 @@
             "down",
             ".",
             "back",
-            "LINE",
+            "LINE||playback",
             "fbw",
             "play",
             "ffw",
@@ -29,20 +39,21 @@
             "pause",
             "next",
             ".",
-            ".",
+            "replay",
             "stop",
+            "advance",
             ".",
-            "mute",
-            "LINE",
+            "LINE||playback settings",
             "audio",
             "subtitle",
-            "setup",
             "display",
+            "3D",
             "LINE",
             "red",
             "green",
             "yellow",
             "blue"
-        ]
+        ],
+        "type" : "device"
     }
 }

@@ -1,0 +1,30 @@
+{
+    "data": {
+        "description": "Scene for light incl. groups (2)",
+        "devices": [],
+        "display": {},
+        "display-size": "middle",
+        "label": "Light living room",
+        "macro-channel": {},
+        "macro-scene": {},
+        "macro-scene-off": [],
+        "macro-scene-on": [],
+        "remote": [
+            "HEADER-IMAGE",
+            "TOGGLE||light_l1-power||Light table||light_l1-on||light_l1-off",
+            "TOGGLE||light_l2-power||Light couch||light_l2-on||light_l2-off",
+            "TOGGLE||plug_power||Other lights (plug)||plug_on||plug_off",
+            "LINE",
+            "TOGGLE||group_led_power||LED lights (group)||group_led_on||group_led_off",
+            "group_led_COLOR-PICKER||send-color-xy||Color CIE_1931 (small)||LED lights",
+            "group_led_COLOR-PICKER||send-color-temp2||Color temperature||LED lights",
+            "group_led_COLOR-PICKER||send-brightness||Brightness||LED lights",
+            "LINE",
+            "macro_licht-orgel||light-color",
+            "macro_Licht aus"
+        ],
+        "scene_power_status": "N/A",
+        "type": "scene"
+    },
+    "info": "jc://remote/ - In this file the remote layout and channel/scene macros for the scene are defined."
+}

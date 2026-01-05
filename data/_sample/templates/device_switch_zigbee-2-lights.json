@@ -1,0 +1,26 @@
+{
+    "data": {
+        "description": "zigbee-switch",
+        "display": {
+            "Couch": "l2-power",
+            "Link": "link-quality",
+            "Tisch": "l1-power"
+        },
+        "display-size": "h1w2",
+        "remote": [
+            ".",
+            ".",
+            "on",
+            "off",
+            "LINE",
+            "TOGGLE||l1-power||Licht Tisch||l1-on||l1-off",
+            "TOGGLE||l2-power||Licht Couch||l2-on||l2-off",
+            "LINE",
+            "DISPLAY",
+            "l1-toggle||on-off",
+            "l2-toggle"
+        ],
+        "type": "device"
+    },
+    "info": "jc://remote/ - In this file the remote layout and a display layout is defined."
+}
