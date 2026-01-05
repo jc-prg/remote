@@ -80,7 +80,7 @@
             "api_device": "SONY-BDP-S4500",
             "api_key": "SONY",
             "device": "cfg-bluray_sony-bdp-s4500",
-            "remote": "bluray_sony-bdp-s4500_api"
+            "remote": "rmc-bluray_sony-bdp-s4500_api"
         },
         "remote": {
             "description": "SONY BDP-S4500",
@@ -170,12 +170,12 @@
             "test": "Error"
         }
     },
-    "beam": {
+    "beamer": {
         "config": {
             "api_device": "default",
             "api_key": "BROADLINK",
             "device": "cfg-beamer_optoma-hd27",
-            "remote": "beamer_optoma-hd27_ir"
+            "remote": "rmc-beamer_optoma-hd27_ir"
         },
         "remote": {
             "description": "Optoma HD27",
@@ -238,7 +238,7 @@
             "api_key": "ZIGBEE2MQTT",
             "device": "cfg-zigbee-bulb",
             "device_id": "0xa4c138a2b7b53adc",
-            "remote": "bulb_zigbee"
+            "remote": "rmc-bulb_zigbee"
         },
         "remote": {
             "description": "Zigbee Bulb 01: zigbee-bulb",
@@ -333,7 +333,7 @@
             "api_device": "default",
             "api_key": "MAGIC-HOME",
             "device": "cfg-light_magichome_LED",
-            "remote": "light_magichome_LED"
+            "remote": "rmc-light_magichome_LED"
         },
         "remote": {
             "description": "Arotelicht LED Strip",
@@ -389,7 +389,7 @@
             "api_device": "default",
             "api_key": "BROADLINK",
             "device": "cfg-screen_elite-screens-100",
-            "remote": "screen_elite-screens-100_ir"
+            "remote": "rmc-screen_elite-screens-100_ir"
         },
         "remote": {
             "description": "Elite Screens 100\"",
@@ -443,7 +443,7 @@
             "api_device": "default",
             "api_key": "KODI",
             "device": "cfg-kodi",
-            "remote": "kodi_api"
+            "remote": "rmc-kodi_api"
         },
         "remote": {
             "description": "Kodi (API)",
@@ -537,7 +537,7 @@
             "api_device": "plug01",
             "api_key": "TAPO-P100",
             "device": "cfg-plug_tapo-p100",
-            "remote": "plug_tapo-p100_01"
+            "remote": "rmc-plug_tapo-p100_01"
         },
         "remote": {
             "description": "Tapo P100",
@@ -583,7 +583,7 @@
             "api_device": "plug02",
             "api_key": "TAPO-P100",
             "device": "cfg-plug_tapo-p100",
-            "remote": "plug_tapo-p100_02"
+            "remote": "rmc-plug_tapo-p100_02"
         },
         "remote": {
             "description": "Tapo P100",
@@ -631,7 +631,7 @@
             "api_device": "plug03",
             "api_key": "TAPO-P100",
             "device": "cfg-plug_tapo-p100",
-            "remote": "plug_tapo-p100_03"
+            "remote": "rmc-plug_tapo-p100_03"
         },
         "remote": {
             "description": "Tapo P100",
@@ -670,7 +670,7 @@
             "api_key": "ZIGBEE2MQTT",
             "device": "default",
             "device_id": "0x70b3d52b6004fd1f",
-            "remote": "plug_zigbee"
+            "remote": "rmc-plug_zigbee"
         },
         "remote": {
             "description": "ZigBee Plug",
@@ -735,7 +735,7 @@
             "api_device": "default",
             "api_key": "BROADLINK",
             "device": "cfg-receiver_onkyo-txnr686",
-            "remote": "receiver_onkyo-txnr686_ir"
+            "remote": "rmc-receiver_onkyo-txnr686_ir"
         },
         "remote": {
             "description": "ONKYO TX-NR686B (IR)",
@@ -809,7 +809,7 @@
             "api_device": "ONKYO-TXNR686",
             "api_key": "EISCP-ONKYO",
             "device": "cfg-receiver_onkyo-txnr686",
-            "remote": "receiver_onkyo-txnr686_api"
+            "remote": "rmc-receiver_onkyo-txnr686_api"
         },
         "remote": {
             "description": "ONKYO TX-NR686B",
@@ -898,57 +898,19 @@
     },
     "test2": {
         "config": {
-            "api_device": "default",
-            "api_key": "BROADLINK",
-            "device": "test2_test2",
-            "remote": "test2_test2_broadlink_default"
+            "api_device": "sample-api-device",
+            "api_key": "TEST",
+            "device": "cfg-test",
+            "remote": "rmc-test_device"
         },
         "remote": {
-            "description": "test2: test2",
+            "description": "test device",
             "display": {},
             "display-size": "middle",
-            "remote": [
-                "xxx",
-                ".",
-                ".",
-                "on-off",
-                "LINE",
-                "pc",
-                "bd",
-                "radio",
-                "bluetooth",
-                "cable-sat",
-                "aux",
-                "LINE",
-                "q",
-                "up",
-                "info",
-                "vol+",
-                "left",
-                "enter",
-                "right",
-                "mute",
-                "settings",
-                "down",
-                "return",
-                "vol-",
-                "LINE",
-                "movie-tv-mode",
-                "music-mode",
-                "game-mode",
-                ".",
-                "fbw",
-                "play",
-                "ffw",
-                ".",
-                "toggle",
-                "memory",
-                "mode",
-                "."
-            ]
+            "remote": []
         },
         "settings": {
-            "description": "test2: test2",
+            "description": "test device",
             "device_id": "",
             "image": "test2",
             "label": "test2",
