@@ -33,7 +33,7 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
     }
 
     /* Helper: measure text */
-    measure(lines) {
+    measure_org(lines) {
         const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         const g = document.createElementNS(tempSvg.namespaceURI, "g");
 
@@ -56,6 +56,35 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
 
         return box;
     }
+
+    measure(lines) {
+        const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        const text = document.createElementNS(tempSvg.namespaceURI, "text");
+
+        text.setAttribute("font-size", this.fontSize);
+        text.setAttribute("font-family", this.fontFamily);
+        text.setAttribute("font-weight", this.fontWeight);
+        text.setAttribute("fill", this.fontColor);
+
+        lines.forEach((line, i) => {
+            const tspan = document.createElementNS(tempSvg.namespaceURI, "tspan");
+            tspan.setAttribute("x", "0");
+            if (i > 0) {
+                tspan.setAttribute("dy", "1.2em");
+            }
+            tspan.textContent = line;
+            text.appendChild(tspan);
+        });
+
+        tempSvg.appendChild(text);
+        document.body.appendChild(tempSvg);
+
+        const box = text.getBBox();
+        document.body.removeChild(tempSvg);
+
+        return box;
+    }
+
 
     /* Try different line breaks */
     bestLayout(text) {
@@ -104,51 +133,12 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
             svg.innerHTML = "";
             svg.setAttribute("viewBox", `${-padding} ${-padding} ${layout.box.width + padding * 2} ${layout.box.height + padding * 2}`);
             svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
-            /*
-            svg.setAttribute("preserveAspectRatio", "xMidYMid slice");
 
-Final working combo (tested pattern)
-.rm-button {
-  appearance: none;
-  -webkit-appearance: none;
-  border: none;
-  padding: 0;
-  margin: 0;
-
-  width: 80px;
-  height: 80px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.rm-button svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-<button class="rm-button">
-  <svg viewBox="-4 -4 92.4921875 100.5"
-       preserveAspectRatio="xMidYMid slice">
-    ...
-  </svg>
-</button>
-
-If you still see 1–2px extra height on iOS
-
-Safari sometimes enforces minimum tap height. You can override it with:
-
-.rm-button {
-  min-height: 0;
-}
-
-             */
             const lineHeight = this.fontSize * 1.2; // adjust spacing between lines
             const totalTextHeight = layout.lines.length * lineHeight;
             const startY = layout.box.height / 2 - totalTextHeight / 2 + lineHeight / 2;
 
+            /*
             layout.lines.forEach((line, i) => {
                 const t = document.createElementNS(svg.namespaceURI, "text");
                 t.setAttribute("x", String(layout.box.width / 2)); // horizontal center
@@ -162,6 +152,33 @@ Safari sometimes enforces minimum tap height. You can override it with:
                 t.textContent = String(line);
                 svg.appendChild(t);
             });
+
+             */
+
+            const textEl = document.createElementNS(svg.namespaceURI, "text");
+
+            textEl.setAttribute("x", String(layout.box.width / 2));
+            textEl.setAttribute("y", String(startY));
+            textEl.setAttribute("text-anchor", "middle");
+            textEl.setAttribute("dominant-baseline", "middle");
+            textEl.setAttribute("font-size", this.fontSize);
+            textEl.setAttribute("font-family", this.fontFamily);
+            textEl.setAttribute("font-weight", this.fontWeight);
+            textEl.setAttribute("fill", this.fontColor);
+
+            layout.lines.forEach((line, i) => {
+                const tspan = document.createElementNS(svg.namespaceURI, "tspan");
+                tspan.setAttribute("x", String(layout.box.width / 2));
+                if (i > 0) {
+                    //tspan.setAttribute("dy", "1.2em");
+                    tspan.setAttribute("dy", `${this.fontSize * 1.2}`);
+                }
+                tspan.textContent = line;
+                textEl.appendChild(tspan);
+            });
+
+            svg.appendChild(textEl);
+
             this.image_cache[text] = svg.innerHTML;
             this.image_cache_layout[text] = layout;
         }
@@ -184,7 +201,6 @@ Safari sometimes enforces minimum tap height. You can override it with:
             setTimeout(() => this.create_now(container, text), 0);
         }
     }
-
 }
 
 
