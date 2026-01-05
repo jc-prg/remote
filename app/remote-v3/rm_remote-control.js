@@ -153,9 +153,9 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
 
             let startY = layout.box.height / 2 - totalTextHeight / 2 + lineHeight / 2;
             const isIPhone = /iPhone/.test(navigator.userAgent);
-            if (isIPhone && layout.lines.length > 1) {
+            if (isIPhone) {
                 //startY = layout.lines.length * 12;
-                startY = 20;
+                startY = 22;
             }
 
             /*
