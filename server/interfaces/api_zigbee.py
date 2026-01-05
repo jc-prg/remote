@@ -721,7 +721,8 @@ class ApiControl(RemoteApiClass):
                     if unit != "":
                         result = str(result) + " " + str(unit)
 
-            self.logging.debug(f"__QUERY: {str(friendly_name)} | {command_value} -> {str(result[40:])}")
+            result_log = str(result)[40:]
+            self.logging.debug(f"__QUERY: {str(friendly_name)} | {command_value} -> {result_log}")
 
         if self.log_command:
             self.logging.debug(f"__QUERY: {str(friendly_name)} | NO CONNECTION")
