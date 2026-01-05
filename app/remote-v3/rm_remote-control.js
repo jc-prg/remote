@@ -145,7 +145,8 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
 
             svg.innerHTML = "";
             svg.setAttribute("viewBox", `${-padding} ${-padding} ${layout.box.width + padding * 2} ${layout.box.height + padding * 2}`);
-            svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+            //svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+            svg.setAttribute("preserveAspectRatio", "xMidYMid slice");
 
             const lineHeight = this.fontSize * 1.2; // adjust spacing between lines
             const totalTextHeight = layout.lines.length * lineHeight;
@@ -153,7 +154,7 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
             let startY = layout.box.height / 2 - totalTextHeight / 2 + lineHeight / 2;
             const isIPhone = /iPhone/.test(navigator.userAgent);
             if (isIPhone && layout.lines.length > 1) {
-                startY = layout.lines.length * 12;
+                //startY = layout.lines.length * 12;
             }
 
             /*
