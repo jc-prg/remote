@@ -104,7 +104,10 @@ function remoteInitData(data) {
 // print after loading data (callback)
 //--------------------------------
 
-function remoteReload_load() { appFW.requestAPI("GET",["list"],"",remoteReload); }
+function remoteReload_load(trigger_server_side_reload=false) {
+	appFW.requestAPI("GET",["list"],"",remoteReload);
+}
+
 function remoteReload(data) {
 
 	if (!data["CONFIG"]) {

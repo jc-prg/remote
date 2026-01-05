@@ -62,7 +62,8 @@ function app_click_menu() {
 //--------------------------------
 
 function app_force_reload(data) {
-	remoteReload(data);
+	remoteReload_load(true);
+	console.warn("Force App Reload ...")
 	}
 	
 //--------------------------------
