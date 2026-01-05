@@ -36,6 +36,7 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
     measure(lines) {
         const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         const g = document.createElementNS(tempSvg.namespaceURI, "g");
+        let line_count = 0;
 
         tempSvg.appendChild(g);
         document.body.appendChild(tempSvg);
@@ -49,10 +50,17 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
             t.setAttribute("fill", this.fontColor);
             t.textContent = line;
             g.appendChild(t);
+            line_count += 1;
         });
 
         const box = g.getBBox();
         document.body.removeChild(tempSvg);
+
+        console.error(box);
+        if (line_count > 1) { line_count = line_count * 0.75; }
+        box.height = box.height * line_count;
+        box.width = box.width * line_count;
+        console.error(box);
 
         return box;
     }
