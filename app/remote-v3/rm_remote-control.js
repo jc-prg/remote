@@ -33,7 +33,7 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
     }
 
     /* Helper: measure text */
-    measure_org(lines) {
+    measure(lines) {
         const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         const g = document.createElementNS(tempSvg.namespaceURI, "g");
 
@@ -57,7 +57,7 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
         return box;
     }
 
-    measure(lines) {
+    measure_test(lines) {
         const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         const text = document.createElementNS(tempSvg.namespaceURI, "text");
 
