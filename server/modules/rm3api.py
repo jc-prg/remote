@@ -125,6 +125,19 @@ class RemoteAPI(RemoteDefaultClass):
             else:
                 status["system_health"][key] = round(time.time() - rm3presets.server_health[key], 2)
 
+        # check reload status triggered via app
+        timeout = 120
+        reload_indicator = self.config.app_reload_indicator
+        if time.time() - reload_indicator["app_request"] < timeout:
+            reload_cache = time.time() - reload_indicator["cache_reload"]
+            reload_api = time.time() - reload_indicator["api_reconnect"]
+            reload_done = reload_cache < timeout and reload_api < timeout
+            status["reload"] = reload_done == False
+            if reload_done:
+                self.logging.debug("Reload done!")
+            else:
+                self.logging.debug(f"Waiting for reload (cache:{reload_cache}|api:{reload_api}...")
+
         return status
 
     def _start(self, setting=None):
@@ -171,9 +184,6 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["load-time"] = (time.time() - data["REQUEST"]["start-time"])
         data["REQUEST"]["server-time"] = datetime.now().strftime("%Y-%m-%d | %H:%M | %A (%w)")
         data["REQUEST"]["server-time-local"] = self.config.local_time().strftime("%Y-%m-%d | %H:%M | %A (%w)")
-
-        if "CONFIG" in data:
-            data["CONFIG"]["reload_status"] = self.queue.reload
 
         if "no-data" in setting and "DATA" in data:
             del data["DATA"]
@@ -654,6 +664,14 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._end(data)
         return data
 
+    def get_config_reload(self):
+        """
+        Load and list all data - after cleaning the cache
+        """
+        self.logging.info("! Triggered data reload by app ...")
+        self.config.cache_refill_from_files()
+        return self.get_config()
+
     def get_config_device(self, device):
         """
         get configuration data for device
@@ -859,19 +877,19 @@ class RemoteAPI(RemoteDefaultClass):
         Return:
             dict: API response
         """
-        self.logging.warning("Request cache reload and device reconnect.")
-
-        self._refresh()
-        time.sleep(1)
+        self.logging.warning("Request cache reload and device reconnect ...")
 
         data = self._start()
         data["REQUEST"]["Return"] = "OK: Configuration reloaded"
         data["REQUEST"]["Command"] = "Reload"
+        data["STATUS"]["reload"] = True
 
-        self.apis.api_reconnect()
+        self.config.cache_request_update()
+        self.apis.api_request_reconnect("all", True)
         self.data.devices_get_status(data["STATUS"]["devices"], read_api=True)
+        self.config.app_reload_indicator["app_request"] = time.time()
 
-        data = self._end(data, ["no-data"])
+        data = self._end(data, ["no-data","no-config"])
         return data
 
     def reconnect_api(self, interface):
@@ -1457,6 +1475,7 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start(["status-only"])
         data["REQUEST"]["Return"] = "OK: Returned status data."
         data["REQUEST"]["Command"] = "Status"
+
         data = self._end(data)
         return data
 

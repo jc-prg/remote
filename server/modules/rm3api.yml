@@ -58,6 +58,29 @@ paths:
               DATA:
                 $ref: "#/definitions/DATA"
 
+    post:
+      operationId: __main__.remoteAPI.get_config_reload
+      tags:
+        - list
+      summary: list status and remote definition data
+      description: list status and remote definition data
+      responses:
+        200:
+          description: Successfully status data
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              CONFIG:
+                $ref: "#/definitions/CONFIG"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+              DATA:
+                $ref: "#/definitions/DATA"
+
+
   /status/:
     get:
       operationId: __main__.remoteAPI.status

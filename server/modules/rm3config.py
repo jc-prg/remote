@@ -85,6 +85,12 @@ class ConfigCache(RemoteThreadingClass):
         self.write_cache = False
         self.thread_priority(4)
 
+        self.app_reload_indicator = {
+            "app_request": 0.0,
+            "cache_reload": 0.0,
+            "api_reconnect": 0.0
+        }
+
         self.shutdown_request = False
         self.load_after_update = {}
         self.load_after = {}
@@ -183,6 +189,7 @@ class ConfigCache(RemoteThreadingClass):
         """
         reread all files into the cache
         """
+        start_time = time.time()
         self.logging.debug("Reread cache from config files ...")
         self.cache_update_cmd = True
         i = 0
@@ -194,9 +201,10 @@ class ConfigCache(RemoteThreadingClass):
                 i += 1
 
         self.logging.info("Reread " + str(i) + " config files into the cache (" + self.name + "," \
-                          + str(self.cache_interval) + "s)")
+                          + str(round(time.time()-start_time,2)) + "s)")
 
         self.cache_time = time.time()
+        self.app_reload_indicator["cache_reload"] = time.time()
         self.cache_update = False
         
     def cache_write_to_files(self, main_config=True):

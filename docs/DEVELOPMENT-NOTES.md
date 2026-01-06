@@ -12,10 +12,12 @@
 ### known but not that urgent
 
 * reload of all configs doesn't work
-  * send request to server
-  * empty cache
-  * reload files that are loaded during start-up (check icons, buttons, templates, ...)
-  * if longer process, async message
+  * rm_main.js > function remoteReload_load(trigger_server_side_reload=false) {} is optional ... // line 107
+  * app-side:
+  * server-side:
+    * reload function exists -> rm3api.reload() / line 863
+    * takes longer -> timeout -> trigger instead of immediately  
+    * waits for signal in /api/status/ (__main__.remoteAPI.status) -> status in config, show in data|"STATUS"|"reload" (e.g. for half a minute)
 
 * when API has an error / isn't available anymore, the connect device still reports online
   * EISCP-ONKYO -> was connected during startup, plugged of -> still green with old values
@@ -49,14 +51,6 @@
   * OPEN: edit groups with the same option (different data structure)
   * OPEN: scene macros (additional place, partly collecting data from different places ... requires server adaption)
 
-* create a clean data set
-  * OK: renamed cfg-files incl. references in README.md's 
-  * OK: _ACTIVE-APIS.json -> clean version, one default API device per API
-  * OK: templates -> check, what to move to template also; check description inside
-  * OK: remotes -> rename device remotes to rmc-*.json; check description inside
-  * OK: remotes -> check own remotes, what to move into sample set
-  * OPEN: _ACTIVE-DEVICES.json -> integrate at least one device per API (hidden, not status data)
-
 ### paused a bit
 
 * check if data exist, if not create some from sample data (or create fresh data)
@@ -72,6 +66,14 @@
 * when creating fresh config files 
   * coping /_sample/buttons/* doesn't work
   * idea: ensure TEST API does something -> e.g. though out visible messages; connect works ... and so on
+
+* create a clean data set
+  * OK: renamed cfg-files incl. references in README.md's 
+  * OK: _ACTIVE-APIS.json -> clean version, one default API device per API
+  * OK: templates -> check, what to move to template also; check description inside
+  * OK: remotes -> rename device remotes to rmc-*.json; check description inside
+  * OK: remotes -> check own remotes, what to move into sample set
+  * OPEN: _ACTIVE-DEVICES.json -> integrate at least one device per API (hidden, not status data)
 
 
 ### SOLVED / OBSERVE

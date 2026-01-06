@@ -129,6 +129,7 @@ class Connect(RemoteThreadingClass):
                 for key in self.api_request_reconnect_data:
                     [reread_config, done_message] = self.api_request_reconnect_data[key]
                     self.api_reconnect(key, reread_config, done_message)
+                self.config.app_reload_indicator["api_reconnect"] = time.time()
                 self.api_request_reconnect_data = {}
 
             if self.api_request_reconnect_all:
@@ -507,6 +508,8 @@ class Connect(RemoteThreadingClass):
         if interface != "all" and interface not in self.api:
             self.logging.warning(f"API Reconnect not possible, '{interface}' doesn't exist in self.api.")
             return
+        else:
+            self.logging.warning("RECONNECT " + interface)
 
         config = {}
         if interface in self.info_no_devices_found:
@@ -552,7 +555,7 @@ class Connect(RemoteThreadingClass):
         request a reconnect of a single or all API devices
         """
         self.api_request_reconnect_data[interface] = [reread_config, done_message]
-        self.logging.info(f"api_request_discovery('{interface}',{reread_config},{done_message})")
+        self.logging.info(f"api_request_reconnect('{interface}',{reread_config},{done_message})")
 
     def api_request_discovery(self):
         """

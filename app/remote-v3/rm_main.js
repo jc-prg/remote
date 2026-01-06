@@ -4,8 +4,12 @@
 
 var rm3background  = "remote-v3/img/remote_black.png";
 var rm3background_light  = "remote-v3/img/remote_silver.png";
-var rm3theme = "light";
 var rm3scene_dir   = "/scenes/";
+reload_times = {
+	OK: 15,
+	LONG: 30,
+	TIMEOUT: 60
+}
 
 var app_data = {};
 var reload_active = false;
@@ -104,16 +108,8 @@ function remoteInitData(data) {
 // print after loading data (callback)
 //--------------------------------
 
-function remoteReload_load(trigger_server_side_reload=false) {
-	if (trigger_server_side_reload) {
-		setTimeout(function() {
-			appFW.requestAPI("GET", ["list"], "", remoteReload);
-		}, 2000);
-
-	}
-	else {
-		appFW.requestAPI("GET", ["list"], "", remoteReload);
-	}
+function remoteReload_load() {
+	appFW.requestAPI("GET", ["list"], "", remoteReload);
 }
 
 function remoteReload(data) {
