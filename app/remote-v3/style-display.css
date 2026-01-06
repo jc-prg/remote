@@ -108,6 +108,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 350px;
+    min-width: 0;
+    width: unset;
     display: block;
 }
 .display-label {

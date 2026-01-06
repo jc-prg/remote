@@ -180,7 +180,7 @@ class RemoteControlDisplay extends RemoteDefaultClass {
 
             let display_data = [];
             let text  = "Device Information: "+device +"<hr/>";
-            text  += "<div style='width:100%;height:400px;overflow-y:scroll;'>";
+            text  += "<div style='width:100%;max-width:100%;max-height:400px;overflow-y:auto;overflow-x:hidden;display:block;'>";
 
             if (type === "scenes") {
                 if (!rmData.scenes.data(device)["remote"]["display-detail"]) {
