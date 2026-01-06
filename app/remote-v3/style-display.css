@@ -107,11 +107,18 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 350px;
+    max-width: 200px;
     min-width: 0;
     width: unset;
     display: block;
 }
+
+@media (min-width: 500px) {
+    .display-detail-dialog {
+        max-width: 300px;
+    }
+}
+
 .display-label {
    width        : 35%;
    max-width    : 35%;
