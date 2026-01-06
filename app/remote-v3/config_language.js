@@ -338,7 +338,9 @@ let language_app = {
                                   "</ul>",
 
         "METHOD"                : "Method",
-                          
+        "MENU_SHOW_HIDDEN_ON"   : "Show invisible",
+        "MENU_SHOW_HIDDEN_OFF"  : "Hide invisible",
+
         "MISSING_DATA"          : "Data are missing for '{0}'.<br/>Check files '{1}' and '{2}' in data directory.",
         "MISSING_DATA_SCENE"    : "Data are missing for '{0}'.<br/>Check file '{1}' in data directory.",
         

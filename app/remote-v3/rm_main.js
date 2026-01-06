@@ -146,6 +146,7 @@ function remoteDropDown(data) {
 	rmMenu.init(        data );	// load data to class
 	rmMenu.add_scenes(  data["CONFIG"]["scenes"] );
 	rmMenu.add_devices( data["CONFIG"]["devices"] );
+	rmMenu.add_show_hidden();
 	rmMenu.add_script( "rmSettings.create('index');", lang("SETTINGS"));
 	}
 

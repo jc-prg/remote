@@ -9,10 +9,11 @@ class RemoteMenu extends RemoteDefaultClass {
     constructor(name, menu) {
         super(name);
 
-        this.menuItems     = menu;
-        this.data          = {};
-        this.edit_mode     = false;
-        this.initial_load  = true;
+        this.menuItems      = menu;
+        this.data           = {};
+        this.edit_mode      = false;
+        this.edit_mode_show = false;
+        this.initial_load   = true;
     }
 
     // load data with devices (deviceConfig["devices"])
@@ -56,10 +57,10 @@ class RemoteMenu extends RemoteDefaultClass {
     }
 
     // add links to scenes to drop down menu
-    add_script(script, label) {
+    add_script(script, label, click_menu) {
 
         let menu = this.readMenu();
-        menu += this.entry_script(script,label);
+        menu += this.entry_script(script,label,click_menu);
         this.writeMenu(menu);
     }
 
@@ -84,13 +85,13 @@ class RemoteMenu extends RemoteDefaultClass {
                             menu += this.entry_scene(scene, "<div class=#entry_error#>! " + data[scene]["settings"]["label"] + "</div>");
                             console.warn("addScenes: " + scene);
                             console.warn(error[scene]);
-                        } else if (this.edit_mode) {
+                        } else if (this.edit_mode_show) {
                             menu += this.entry_scene(scene, "<div class=#entry_error#>.(" + data[scene]["settings"]["label"] + ").</div>");
                         }
                     } else {
                         if (data[scene]["settings"]["visible"] !== "no") {
                             menu += this.entry_scene(scene, data[scene]["settings"]["label"]);
-                        } else if (this.edit_mode) {
+                        } else if (this.edit_mode_show) {
                             menu += this.entry_scene(scene, "<div class=#hidden_entry_edit#>.(" + data[scene]["settings"]["label"] + ").</div>");
                         }
                     }
@@ -129,13 +130,13 @@ class RemoteMenu extends RemoteDefaultClass {
                     if (device in error) {
                         if (data[device]["settings"]["visible"] !== "no") {
                             menu += this.entry_device(device, "<div class=#entry_error#>! " + data[device]["settings"]["label"] + "</div>");
-                        } else if (this.edit_mode) {
+                        } else if (this.edit_mode_show) {
                             menu += this.entry_device(device, "<div class=#entry_error#>.(" + data[device]["settings"]["label"] + ").</div>");
                         }
                     } else {
                         if (data[device]["settings"]["visible"] !== "no") {
                             menu += this.entry_device(device, data[device]["settings"]["label"]);
-                        } else if (this.edit_mode) {
+                        } else if (this.edit_mode_show) {
                             menu += this.entry_device(device, "<div class=#hidden_entry_edit#>.(" + data[device]["settings"]["label"] + ").</div>");
                         }
                     }
@@ -147,6 +148,16 @@ class RemoteMenu extends RemoteDefaultClass {
         }
 
         this.writeMenu(menu + "<li><hr/></li>");
+    }
+
+    // entry show / hide hidden remotes
+    add_show_hidden() {
+        if (this.edit_mode) {
+            let message;
+            if (this.edit_mode_show) { message = lang("MENU_SHOW_HIDDEN_OFF"); }
+            else { message = lang("MENU_SHOW_HIDDEN_ON"); }
+            this.add_script(this.name+".toggle_invisible();", "<div class=\"hidden_entry_edit\">" + message + "</div>", false);
+        }
     }
 
     // hide menu when clicked
@@ -169,9 +180,11 @@ class RemoteMenu extends RemoteDefaultClass {
     }
 
     // create menu entry with javascript
-    entry_script(script, label) {
+    entry_script(script, label, click_menu=true) {
 
-        return "<li><a onClick=\"" + script + ";"+this.name+".click_menu();\">"+label+"</a></li>";
+        let click = "";
+        if (click_menu === true) { click = this.name+".click_menu();"; }
+        return "<li><a onClick=\"" + script + ";"+click+"\">"+label+"</a></li>";
     }
 
     // create menu entry with link
@@ -204,10 +217,16 @@ class RemoteMenu extends RemoteDefaultClass {
             setTextById(this.menuItems,menu_text);
             }
         else if (typeof this.menuItems == "object") {
-            for (var i=0; i<this.menuItems.length; i++) {
+            for (let i=0; i<this.menuItems.length; i++) {
                 setTextById(this.menuItems[i],menu_text);
                 }
             }
+    }
+
+    // show / hide hidden remotes as link
+    toggle_invisible() {
+        this.edit_mode_show = !this.edit_mode_show;
+        remoteDropDown_load();
     }
 
 }

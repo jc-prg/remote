@@ -106,9 +106,9 @@ class RemoteAPI(RemoteDefaultClass):
         status = {
             "config_errors":    self.data.errors,
             "devices":          self.data.devices_status(),
-            "scenes":           self.data.scenes_status(),
             "interfaces":       self.apis.api_get_status(),
             "request_time":     self.queue_send.average_exec,
+            "scenes":           self.data.scenes_status(),
             "system": {
                 "message":                  rm3presets.server_status,
                 "server_start":             rm3presets.start_time,
