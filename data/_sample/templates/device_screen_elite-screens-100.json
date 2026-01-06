@@ -1,5 +1,5 @@
 {
-    "screen_elite-screens-100": {
+    "data": {
         "description": "Screens: Elite Screens 100\"", 
         "remote": [
             ".",    ".", "on", "off", 

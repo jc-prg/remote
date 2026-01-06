@@ -1,5 +1,5 @@
 {
-    "receiver_onkyo-txnr686": {
+    "data": {
         "description": "AV-Receiver: ONKYO TX-NR686B (IR)", 
         "remote": [
                 ".",".",".","on-off",

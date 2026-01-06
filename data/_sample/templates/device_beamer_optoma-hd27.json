@@ -1,5 +1,5 @@
 {
-    "beamer_optoma-hd27": {
+    "data": {
         "description": "Beamer: Optoma HD27", 
         "remote": [
             ".", ".", "on", "off", 
