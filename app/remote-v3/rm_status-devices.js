@@ -41,7 +41,7 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
 
         this.warning = {}
         this.starting = {}
-        this.starting_offset = 10;
+        this.starting_offset = 3 * 60; // if device in this time after API_STARTING shows an error, it is still handled as starting
         this.tab = new RemoteElementTable(this.name + ".tab");
 
         this.update(data);
