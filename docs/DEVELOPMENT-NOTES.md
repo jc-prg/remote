@@ -7,17 +7,9 @@
 * edit mode
   * toggle & slider for groups doesn't work (but are in the drop-down menus) -> rm_remote-control.js:432
   * don't show groups in drop-down if no device is defined in it
-  * editing device - loses display size when saving
+  * SOLVED: editing device - looses display size when saving
 
 ### known but not that urgent
-
-* reload of all configs doesn't work
-  * rm_main.js > function remoteReload_load(trigger_server_side_reload=false) {} is optional ... // line 107
-  * app-side:
-  * server-side:
-    * reload function exists -> rm3api.reload() / line 863
-    * takes longer -> timeout -> trigger instead of immediately  
-    * waits for signal in /api/status/ (__main__.remoteAPI.status) -> status in config, show in data|"STATUS"|"reload" (e.g. for half a minute)
 
 * when API has an error / isn't available anymore, the connect device still reports online
   * EISCP-ONKYO -> was connected during startup, plugged of -> still green with old values
@@ -41,11 +33,6 @@
   * OK: check volume level, add possibility to display other values as bar also
   * OPEN: check all text sizes
   
-* Refactoring of statusCheck
-  * IN PROGRESS: devices: after API restart show device error still as API restart
-  * improve start-up behavior in status messages
-    * DENON: POWER_OFF; 1st no ping; then "NetworkError: All connection attempts failed"
-
 * macro editing in the app
   * OPEN: sort in some order (alphabetically or in the order of the menu)
   * OPEN: edit groups with the same option (different data structure)
@@ -199,6 +186,7 @@
     
 # DONE --------------------------------------------------------------------------
 
+* refactoring moved cookie handling to separate class
 * SOLVED: catch errors from pythonping
 * statusCheck_* refactoring -> RemoteVisualizeStatus()
 * OK: integrate status of Zigbee "always on devices", e.g., via availability: { "state": "online" }
