@@ -26,8 +26,8 @@ function apiCheckUpdates_msg( data ) {
 function apiAlertReturn(data) {
 
     setTimeout(function() {
-        if (data["REQUEST"]["Command"] === "DeleteDevice") 	{ appCookie.erase("remote"); rmRemote.active_name = ""; }
-        if (data["REQUEST"]["Command"] === "DeleteScene") 	{ appCookie.erase("remote"); rmRemote.active_name = ""; }
+        if (data["REQUEST"]["Command"] === "DeleteDevice") 	{ rmCookies.erase(); rmRemote.active_name = ""; }
+        if (data["REQUEST"]["Command"] === "DeleteScene") 	{ rmCookies.erase(); rmRemote.active_name = ""; }
         remoteReload_load();
         }, 1000);
 
@@ -202,7 +202,7 @@ function apiSceneJsonEdit(device,field_names) {
 function apiSceneDelete_exe(device) {
     appFW.requestAPI("DELETE",["scene",device], "", apiAlertReturn);
     rmRemote.active_name = "";
-    appCookie.erase("remote");
+    rmCookies.erase();
     }
 
 function apiSceneDelete(scene_id) {
@@ -380,7 +380,7 @@ function apiDeviceChangeConfigs(remote_id) {
 function apiDeviceDelete_exe(device) {
     appFW.requestAPI("DELETE",["device",device], "", apiAlertReturn);
     rmRemote.active_name = "";
-    appCookie.erase("remote");
+    rmCookies.erase();
     remoteInit(); // check if required !!!!!!!!!!!!!!!
     }
 

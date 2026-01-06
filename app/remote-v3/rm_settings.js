@@ -1506,13 +1506,7 @@ class RemoteSettingsInfo extends RemoteDefaultClass {
     load() {
         this.update_data();
 
-        let cookie = appCookie.get("remote");
-        if (typeof(cookie) === "string" && cookie.indexOf("::") >= 0) {
-            cookie = cookie.split("::");
-            cookie = cookie[0] + "=<b>" + cookie[1] + "</b>, label=<b>" + cookie[2] + "</b>, edit_mode=<b>" + cookie[3] + "</b>, easyEdit=<b>" + cookie[4] + "</b>, remoteHints=<b>" + cookie[5] + "</b>";
-        } else {
-            cookie = "N/A";
-        }
+        let cookie = rmCookies.info();
         let main_audio = rmStatusAudio.audio_device;  // get main audio device from file
         let main_device_config = rmData.devices.data(main_audio);
         let main_device_commands = rmData.devices.list_commands(main_audio, "definition");

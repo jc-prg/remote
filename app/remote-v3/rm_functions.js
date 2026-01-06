@@ -2,6 +2,7 @@
 // jc://remote/
 //--------------------------------
 
+
 function showRemoteInBackground(show=false) {
     const body = document.getElementById("app_background");
     const width = window.innerWidth;

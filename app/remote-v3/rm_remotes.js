@@ -79,7 +79,7 @@ class RemoteMain extends RemoteDefaultClass {
         }
         if (rm_id !== "" && !rmData.devices.exists(rm_id) && !rmData.scenes.exists(rm_id)) {
             this.logging.warn("Remote ID " + rm_id + " not found.");
-            appCookie.set("remote", ""); //device::"+device+"::"+remote_label);
+            rmCookies.erase();
             return;
         }
 
@@ -256,9 +256,7 @@ class RemoteMain extends RemoteDefaultClass {
             remote_display_size = "middle";
         }
 
-        // create remote control
-        appCookie.set("remote", "device::" + device + "::" + remote_label + "::" + this.edit_mode + "::" + easyEdit + "::" + remoteHints);
-        this.logging.info("Set cookie: " + "device::" + device + "::" + remote_label + "::" + this.edit_mode + "::" + easyEdit + "::" + remoteHints);
+        rmCookies.set_remote("device", device, remote_label);
 
         // add edit button
         let edit_cmd = "remoteToggleEditMode(true);rmRemote.create(\"device\",\"" + device + "\");";
@@ -879,8 +877,7 @@ class RemoteMain extends RemoteDefaultClass {
         this.active_label = scene_label;
         this.display.edit_mode = this.edit_mode;
 
-        appCookie.set("remote", "scene::" + scene + "::" + scene_label + "::" + this.edit_mode + "::" + easyEdit + "::" + remoteHints);
-        this.logging.info("Set cookie: " + "scene::" + scene + "::" + scene_label + "::" + this.edit_mode + "::" + easyEdit + "::" + remoteHints);
+        rmCookies.set_remote("scene", scene, scene_label);
 
         if (!rmData.scenes.exists(scene, true)) {
 

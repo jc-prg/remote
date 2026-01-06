@@ -32,6 +32,7 @@ function startRemote() {
     rmRemote    = new RemoteMain( "rmRemote");
     rmSettings  = new RemoteSettings( "rmSettings");
     rmJson      = new RemoteJsonEditing( "rmJson");
+	rmCookies    = new RemoteCookies("rmCookies");
 
     appMsg.info_message_init(appMsg);
     remoteInit(true);
@@ -47,8 +48,7 @@ function remoteMainMenu (cookie_erase=true) {
 	setNavTitle(appTitle);
 	showRemoteInBackground(1);
 	if (cookie_erase) {
-	    appCookie.erase('remote');
-	    console.log("Erase cookie: " + appCookie.get('remote'));
+	    rmCookies.erase();
 	    }
 
 	setTextById("menuItems","");
@@ -80,7 +80,8 @@ function remoteFirstLoad(data) {
 	remoteReload(data);		// initial load of data incl. remotes, settings
 	remoteStartMenu(data);		// initial load start menu
 	remoteDropDown(data);		// initial load drop down menu
-	remoteLastFromCookie();		// get data from cookie
+
+	rmCookies.get_settings(); // get initial settings from cookie
 	}
 
 
@@ -223,43 +224,3 @@ function remoteStartMenu(data) {
 	statusCheck(data);
 	}
 
-
-//--------------------------------
-
-function remoteLastFromCookie() {
-
-	// read cookie if exist
-	const cookie = appCookie.get("remote");
-
-	// if cookie ...
-	if (cookie && cookie !== "") {
-		const remote = cookie.split("::");
-		console.log("Load Cookie: " + cookie);
-		console.debug(remote);
-
-        if (remote.length > 2) { remoteToggleEditMode(remote[3]); }
-        if (remote.length > 3) { remoteToggleEasyEdit(remote[4]); }
-        if (remote.length > 4) { remoteToggleRemoteHints(remote[5]); }
-
-		// start remote if cookie is set (reopen with last remote control)
-		if (remote[0] === "scene") 	{
-			rmRemote.create('scene',remote[1]);
-			rmSettings.hide();
-			setNavTitle(remote[2]);
-			//clickMenu();
-			}
-		else if (remote[0] === "device") {
-			rmRemote.create('device',remote[1]);
-			rmSettings.hide();
-			setNavTitle(remote[2]);
-			//clickMenu();
-			}
-		else {}
-		}
-	}
-
-
-function remoteSetCookie() {
-    appCookie.set("remote",rmRemote.active_type+"::"+rmRemote.active_name+"::"+rmRemote.active_label+"::"+rmRemote.edit_mode+"::"+easyEdit+"::"+remoteHints);
-	console.info("Set cookie: "+rmRemote.active_type+"::"+rmRemote.active_name+"::"+rmRemote.active_type_label+"::"+rmRemote.edit_mode+"::"+easyEdit+"::"+remoteHints);
-}

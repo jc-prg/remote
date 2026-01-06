@@ -14,6 +14,7 @@ const remote_js = [
     "rm_settings.js",
     "rm_menu.js",
     "rm_start.js",
+    "rm_cookies.js",
     "rm_sort-list.js",
     "rm_remote-control.js",
     "rm_remote-control-color-picker.js",
