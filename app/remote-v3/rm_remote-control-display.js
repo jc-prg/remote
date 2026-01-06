@@ -213,9 +213,9 @@ class RemoteControlDisplay extends RemoteDefaultClass {
 
             for (let i=0; i<display_data.length; i++) {
 
-                if (display_data[i] !== "power" && display_data[i].substring && display_data[i].substring(0,3) !== "api") { // || display_data[i].indexOf("api") !== 0)) {
+                if (display_data[i] !== "power" && display_data[i] !== "device-configuration" && display_data[i].substring && display_data[i].substring(0,3) !== "api") { // || display_data[i].indexOf("api") !== 0)) {
                     let label = "<span class='display-label-dialog'>"+display_data[i]+":</span>";
-                    let input = use_color("<span class='display-detail-dialog' id='display_full_"+device+"_"+display_data[i]+"'>no data</span>", "VALUE");
+                    let input = use_color("<span class='display-detail-dialog' id='display_full_"+device+"_"+display_data[i]+"' onclick='this.style.whiteSpace=\"unset\";'>no data</span>", "VALUE");
                     //text += "<div class='display-element alert'>"+label+input+"</div><br/>";
                     text += this.tab_row("<div style='width:100px;'>"+label+"</div>",input);
                 }

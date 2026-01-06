@@ -717,7 +717,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         display_keys = display_keys.concat(additional_keys);
 
         // set values if device is active or scene is active (which can contain several devices)
-        if (status === "ON" || status === "OFF" || status === "OK" || status === "N/A") {
+        if (status === "ON" || status === "OFF" || status === "POWER_OFF" || status === "OK" || status === "N/A") {
 
             for (let i in display_keys) {
                 let key = display_keys[i];
