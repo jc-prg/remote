@@ -705,7 +705,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
         const all_apis = Object.entries(rmData.apis.data("list")).length;
         const all_apis_active = Object.values(rmStatus.status_system("interfaces")["active"]).filter(value => value === true).length;
         const all_api_devices = Object.keys(rmData.apis.data("list_description")).length;
-        const all_api_devices_active = Object.values(rmStatus.status_system("connections")).reduce((count, api) => { if (api.active === true) { return count + Object.values(api["api_devices"]).filter(device => device.active === true).length; } return count; }, 0);
+        const all_api_devices_active = Object.values(rmStatus.status_system("structure")).reduce((count, api) => { if (api.active === true) { return count + Object.values(api["api_devices"]).filter(device => device.active === true).length; } return count; }, 0);
         const all_devices = rmData.devices.list_all().length;
         const all_devices_active = Object.values(rmData.devices.config_devices).filter(device => device["settings"]?.visible === "yes").length;
 
@@ -714,8 +714,8 @@ class RemoteSettingsApi extends RemoteDefaultClass {
         text += this.tab.row("Active API-devices:", `<b>${String(all_api_devices_active).padStart(2,'0')}</b> / ${String(all_api_devices).padStart(2,'0')}`);
         text += this.tab.row("Active devices:",     `<b>${String(all_devices_active).padStart(2,'0')}</b> / ${String(all_devices).padStart(2,'0')}`);
         text += this.tab.line()
-        text += this.tab.row("Last (re)connect:", `${rmStatus.status_system("interfaces")["last_reconnect"]} (${rmStatus.status_system("interfaces")["last_reconnect_device"]})`);
-        text += this.tab.row("Last discovery:",   `${rmStatus.status_system("interfaces")["last_discovery"]}`);
+        text += this.tab.row("Last (re)connect:", `${rmStatus.status_system("interfaces")["status"]["last_reconnect"]} (${rmStatus.status_system("interfaces")["status"]["last_reconnect_device"]})`);
+        text += this.tab.row("Last discovery:",   `${rmStatus.status_system("interfaces")["status"]["last_discovery"]}`);
         text += this.tab.end();
         text += "<br/>&nbsp;<br/>";
 
@@ -760,7 +760,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
 
         let count = 1;
         let devices_per_interface = rmData.apis.data("structure");
-        let interface_status = rmStatus.status_system("connections");
+        let interface_status = rmStatus.status_system("structure");
 
         for (let key in devices_per_interface) {
             if (key !== "") {
@@ -936,7 +936,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
             // create edit dialog
             let command_on = `apiApiDeviceOnOff('${api_name}', '${device}', 'True');`;
             let command_off = `apiApiDeviceOnOff('${api_name}', '${device}', 'False');`;
-            let init = rmStatus.status_system("connections")[api_name]["api_devices"][device]["active"];
+            let init = rmStatus.status_system("structure")[api_name]["api_devices"][device]["active"];
 
             let power_device = interfaces[api_name]["API-Devices"][device]["PowerDevice"] || "N/A";
             let toggle = this.toggle.toggleHTML("active_"+api_name+"-"+device, "", "", command_on, command_off, init);

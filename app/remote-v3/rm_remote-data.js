@@ -455,7 +455,9 @@ class RemotePrepareDataDevices extends RemoteDefaultClass {
 
     // return display-size of a scene
     display_size(device_id) {
-        if (this.config_devices[device_id] && this.config_devices[device_id]["settings"]["display-size"]) { return this.config_devices[device_id]["settings"]["display-size"]; }
+        if (this.config_devices[device_id] && this.config_devices[device_id]["remote"]["display-size"]) {
+            return this.config_devices[device_id]["remote"]["display-size"];
+        }
         else {
             this.logging.info(`label(): no display-size for device_id "${device_id}" available.`)
             return {};
@@ -665,7 +667,9 @@ class RemotePrepareDataScenes extends RemoteDefaultClass {
 
     // return display-size of a scene
     display_size(scene_id) {
-        if (this.config_scenes[scene_id] && this.config_scenes[scene_id]["settings"]["display-size"]) { return this.config_scenes[scene_id]["settings"]["display-size"]; }
+        if (this.config_scenes[scene_id] && this.config_scenes[scene_id]["remote"]["display-size"]) {
+            return this.config_scenes[scene_id]["remote"]["display-size"];
+        }
         else {
             this.logging.info(`label(): no display-size for device_id "${scene_id}" available.`)
             return {};
@@ -853,9 +857,7 @@ class RemotePrepareDataElements extends RemoteDefaultClass {
 
         this.config_apis = this._data["CONFIG"]["apis"];
         this.config_elements = this._data["CONFIG"]["elements"];
-        this.config_device_types = this._data["CONFIG"]["device_types"];
         this.config_remotes = this._data["CONFIG"]["remotes"];
-        this.config_icons = this._data["CONFIG"]["icons"];
     }
 
     // return description of a template
@@ -865,12 +867,6 @@ class RemotePrepareDataElements extends RemoteDefaultClass {
         }
         else if (element_id === "remotes") {
             return this.config_remotes;
-        }
-        else if (element_id === "icons") {
-            return this.config_icons;
-        }
-        else if (element_id === "device_types") {
-            return this.config_device_types;
         }
         else if (this.config_elements[element_id]) {
             return this.config_elements[element_id];

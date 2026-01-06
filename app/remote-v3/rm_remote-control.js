@@ -233,7 +233,7 @@ class RemoteControlBasic extends RemoteDefaultClass {
             label = "<svg id='svg_image_"+label_id+"'></svg>";
             setTimeout(() => {
                 this.svg_image.create("svg_image_"+label_id, label_id);
-            }, 100);
+            }, 0);
         }
 
         return "<button id='" + id.toLowerCase() + "' class='rm-button" + style + "' " + button_style + " " + onClick + " " + onContext + " " + disabled + " >" + label + "</button>";

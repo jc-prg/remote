@@ -65,13 +65,13 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
         this.active_apis = this.data["STATUS"]["interfaces"]["active"];
 
         this.status_api_devices = this.data["STATUS"]["interfaces"]["connect"];
-        this.status_api_devices_all = this.data["STATUS"]["connections"];
+        this.status_api_devices_all = this.data["STATUS"]["interfaces"]["structure"];
         this.status_devices = this.data["STATUS"]["devices"];
 
         this.status_elements = {
             "config_errors": this.data["STATUS"]["config_errors"],
-            "connections": this.data["STATUS"]["connections"],
-            "health": this.data["STATUS"]["system_health"],
+            "structure": this.data["STATUS"]["interfaces"]["structure"],
+            "health": this.data["STATUS"]["system"]["health"],
             "interfaces": this.data["STATUS"]["interfaces"],
             "request_time": this.data["STATUS"]["request_time"],
             "system": this.data["STATUS"]["system"],

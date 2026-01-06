@@ -67,13 +67,14 @@ class RemoteAPI(RemoteDefaultClass):
                 "structure":            apis
                 },
             "devices":                  self.data.devices_read_config(),
-            "device_types":             device_types,
             "elements": {
                 "button_images":        self.config.read(rm3presets.icons_dir + "/index"),
                 "button_colors":        self.config.read(rm3presets.buttons + "button_colors"),
+                "device_types":         device_types,
+                "icons":                rm3presets.icon_files,
+                "methods":              self.apis.methods,
                 "scene_images":         self.config.read(rm3presets.scene_img_dir + "/index")
                 },
-            "icons":                    rm3presets.icon_files,
             "macros": {
                 "device-on":            macros.get("dev-on", {}),
                 "device-off":           macros.get("dev-off", {}),
@@ -81,7 +82,6 @@ class RemoteAPI(RemoteDefaultClass):
                 "groups":               macros.get("groups", {})
             },
             "main-audio":               "NONE",
-            "methods":                  self.apis.methods,
             "remotes":                  remotes,
             "scenes":                   self.data.scenes_read(None, True),
             "templates": {
@@ -105,7 +105,6 @@ class RemoteAPI(RemoteDefaultClass):
         """
         status = {
             "config_errors":    self.data.errors,
-            "connections":      self.data.api_devices_connections(),
             "devices":          self.data.devices_status(),
             "scenes":           self.data.scenes_status(),
             "interfaces":       self.apis.api_get_status(),
@@ -114,16 +113,17 @@ class RemoteAPI(RemoteDefaultClass):
                 "message":                  rm3presets.server_status,
                 "server_start":             rm3presets.start_time,
                 "server_start_duration":    rm3presets.start_duration,
-                "server_running":           time.time() - rm3presets.start_time
-                },
-            "system_health": {}  # to be filled in self._end()
+                "server_running":           time.time() - rm3presets.start_time,
+                "health":                   {}  # to be filled in self._end()
+                }
             }
+        status["interfaces"]["structure"] = self.data.api_devices_connections()
 
         for key in rm3presets.server_health:
             if rm3presets.server_health[key] == "stopped" or rm3presets.server_health[key] == "registered":
-                status["system_health"][key] = rm3presets.server_health[key]
+                status["system"]["health"][key] = rm3presets.server_health[key]
             else:
-                status["system_health"][key] = round(time.time() - rm3presets.server_health[key], 2)
+                status["system"]["health"][key] = round(time.time() - rm3presets.server_health[key], 2)
 
         # check reload status triggered via app
         timeout = 120

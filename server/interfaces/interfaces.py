@@ -625,9 +625,10 @@ class Connect(RemoteThreadingClass):
             interface_config = {
                 "connect": status_all_interfaces,
                 "active": {},
-                "last_reconnect": reconnect_last,
-                "last_reconnect_device": self.api_reconnect_last_interface,
-                "last_discovery": discover_last
+                "status": {
+                    "last_reconnect": reconnect_last,
+                    "last_reconnect_device": self.api_reconnect_last_interface,
+                    "last_discovery": discover_last}
             }
             for key in self.config.interface_configuration:
                 interface_config["active"][key] = self.config.interface_configuration[key]["active"]

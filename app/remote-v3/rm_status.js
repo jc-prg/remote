@@ -301,7 +301,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     /* check and visualize system health */
     show_status_system_health() {
 
-        const system_health = this.data["STATUS"]["system_health"];
+        const system_health = this.data["STATUS"]["system"]["health"];
         let threads = [];
         this.attention_errors["thread"] = {};
         this.attention_threads = false;
