@@ -174,3 +174,5 @@ class RemoteStart extends RemoteDefaultClass {
     }
 }
 
+
+remote_scripts_loaded += 1;

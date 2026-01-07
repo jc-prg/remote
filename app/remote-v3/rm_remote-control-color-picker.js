@@ -3,6 +3,7 @@
 //--------------------------------
 // uses parts from source: https://www.w3docs.com/tools/color-picker
 
+
 /* create a color-picker, to be embedded into a button -> RemoteControlAdvanced.colorPicker() */
 class RemoteElementColorPicker extends RemoteDefaultClass {
     constructor(name) {
@@ -201,3 +202,5 @@ class RemoteElementColorPicker extends RemoteDefaultClass {
             }
 }
 
+
+remote_scripts_loaded += 1;

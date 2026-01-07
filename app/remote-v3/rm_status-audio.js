@@ -191,3 +191,7 @@ class RemoteVisualizeMainAudioStatus extends RemoteDefaultClass {
         appFW.requestAPI( "GET",  ["set",rmStatusAudio.audio_device,"send-vol",volume], "", remoteReload_load );
     }
 }
+
+
+remote_scripts_loaded += 1;
+

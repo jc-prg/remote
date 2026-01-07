@@ -20,13 +20,13 @@ class RemoteElementsEdit extends RemoteDefaultClass {
     // create a basic container element that can be opened or closed dynamically
     container(id, title, text="", open=true) {
 
+        let onclick  = ' onclick="'+this.name+'.container_showHide(\''+id+'\')"; '
+
         if (this.container_open[id] !== undefined) {
             open = this.container_open[id];
         } else {
             this.container_open[id] = open;
         }
-
-        let onclick  = ' onclick="'+this.name+'.container_showHide(\''+id+'\')"; '
         let display  = "";
         let link     = "&minus;";
         let ct       = "";
@@ -441,3 +441,5 @@ class RemoteElementScrollBox extends RemoteDefaultClass {
         }
     }
 
+
+remote_scripts_loaded += 1;

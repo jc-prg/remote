@@ -156,3 +156,5 @@ var deactivateButton = false;   // default: deactivate buttons if device is not 
 
 //--------------------------------------
 //EOF
+
+remote_scripts_loaded += 1;

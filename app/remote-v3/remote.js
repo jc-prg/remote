@@ -2,6 +2,8 @@
 // jc://remote/
 //--------------------------------
 
+var remote_scripts_loaded = 0;
+
 const remote_js = [
     "config_language.js",
     "config_main.js",

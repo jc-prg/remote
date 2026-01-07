@@ -853,3 +853,5 @@ function appShutdownRestart_exec() {
     appFW.requestAPI( "GET", ["shutdown"], "", apiAlertReturn);
 
 }
+
+remote_scripts_loaded += 1;

@@ -320,6 +320,8 @@ var git_branch      = '""" + str(git_branch) + """';
 LANG                = '""" + app_language + """';
 
 if (rollout === "test")	{ test = true; }
+
+remote_scripts_loaded += 1;
 """
 
 f = open(app_config_file, "w")

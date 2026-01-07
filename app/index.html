@@ -20,7 +20,7 @@
 
     <!-- load main JavaScript files, dynamic load of additional files is managed at the end of this file -->
 
-    <script src="/modules/modules_1.2.4.js"></script>
+    <script src="/modules/modules_1.2.5.js"></script>
     <script src="/framework/app-fw.js"></script>
     <script src="/remote-v3/remote.js"></script>
     <style>
@@ -43,7 +43,12 @@
 </head>
 <body>
     <div id="loading_overlay" class="loading_overlay">
-        <img src="framework/img/loading3.gif" style='height:100px;width:100px' alt="loading" />
+        <div>
+            <img src="framework/img/loading3.gif" style='height:100px;width:100px' alt="loading" />
+            <br/>
+            <span id="loading_overlay_info" style='color:#FF0044;text-align:center;'></span>
+        </div>
+
     </div>
 
     <nav id="nav">
@@ -124,11 +129,37 @@
         loadCss("/remote-v3/",     remote_css);
         loadScripts("/remote-v3/", remote_js);
 
+        let loaded_modules = {};
+        let loaded_ok = false;
+
         setTimeout( function() {
-            startApp();
-            startRemote();
-            elementHidden("loading_overlay");
-        }, 1000 );
+            loaded_modules = {
+                module: loadScriptsOk("/modules/", modules_js, module_scripts_loaded),
+                framework: loadScriptsOk("/framework/", app_js, app_framework_loaded),
+                remote: loadScriptsOk("/remote-v3/", remote_js, remote_scripts_loaded)
+            }
+            loaded_ok = (loaded_modules.module && loaded_modules.framework && loaded_modules.remote);
+            console.log(loaded_modules);
+            console.log(loaded_ok);
+
+            setTimeout( function() {
+                if (loaded_ok) {
+                    startApp();
+                    startRemote();
+                    elementHidden("loading_overlay");
+                } else {
+                    let message = "&nbsp;<br/>";
+                    for (let key in loaded_modules) {
+                        if (!loaded_modules[key]) {
+                            message += `Could not load all <u>${key}</u> scripts.<br/>`;
+                        }
+                    }
+                    message += "Check browser logging for details."
+                    document.getElementById("loading_overlay_info").innerHTML = message;
+                }
+            }, 500 );
+        }, 1500);
+
 
     </script>
 

@@ -186,3 +186,5 @@ function startDragAndDrop(list_id, callback_pos) {
     remote_slist(document.getElementById(list_id), callback_pos);
     }
 
+
+remote_scripts_loaded += 1;

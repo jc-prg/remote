@@ -171,6 +171,10 @@ ul.help ul li {
 /* default size for boxes and buttons = iPhone 5c */
 /* boxes for remote controls */
 
+.loading_overlay {
+    color: white;
+    text-align:center;
+}
 
 .remote {
    position         : relative;

@@ -18,7 +18,8 @@ class RecordData(RemoteThreadingClass):
                 "record_interval": 600,
                 "record_timing": {"start":"5:00", "end":"22:00"},
                 "record_values": ["sensor_temperature", "sensor_humidity"],
-                "record_units": ["°C", "%"]
+                "record_units": ["°C", "%"],
+                "record_label": ["Temperature", "Humidity"]
             },
             "data": {
                 "2026-01-01": {
@@ -49,6 +50,7 @@ class RecordData(RemoteThreadingClass):
                 "record_interval": 600,
                 "record_timing": {"start":-1, "end":-1},
                 "record_values": [],
+                "record_label": [],
                 "record_units": []
             },
             "data": {},

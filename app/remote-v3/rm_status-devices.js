@@ -654,3 +654,6 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
         return result;
     }
 }
+
+
+remote_scripts_loaded += 1;

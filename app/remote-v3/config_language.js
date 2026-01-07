@@ -477,3 +477,5 @@ let language_app = {
         "WORKING_MODES"                : "Working modes",
         }
     }
+
+remote_scripts_loaded += 1;

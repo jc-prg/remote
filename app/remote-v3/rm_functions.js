@@ -82,3 +82,5 @@ class RemoteDefaultClass {
         this.logging.info("Initializing ...");
     }
 }
+
+remote_scripts_loaded += 1;

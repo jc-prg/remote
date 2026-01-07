@@ -92,3 +92,5 @@ class RemoteCookies extends RemoteDefaultClass {
         this.set([rmRemote.active_type, rmRemote.active_name, rmRemote.active_label, rmRemote.edit_mode, easyEdit, remoteHints, jsonHighlighting]);
     }
 }
+
+remote_scripts_loaded += 1;

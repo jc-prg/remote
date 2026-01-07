@@ -596,3 +596,5 @@ class RemoteControlAdvanced extends RemoteDefaultClass{
     }
 }
 
+
+remote_scripts_loaded += 1;

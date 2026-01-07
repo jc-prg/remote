@@ -224,3 +224,4 @@ function remoteStartMenu(data) {
 	statusCheck(data);
 	}
 
+remote_scripts_loaded += 1;
