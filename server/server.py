@@ -15,6 +15,7 @@ import server.modules.rm3presets as rm3presets
 import server.modules.rm3api as rm3api
 import server.modules.rm3timer as rm3timer
 import server.modules.rm3install as rm3install
+import server.modules.rm3record as rm3record
 import server.interfaces as interfaces
 
 
@@ -67,6 +68,7 @@ def shutdown():
     eval("log_srv." + rm3presets.log_level.lower() + "('---------------------------------------------------------------')")
     configFiles.stop()
     configInterfaces.stop()
+    configRecord.stop()
     queueSend.stop()
     queueQuery.stop()
     deviceAPIs.stop()
@@ -119,9 +121,11 @@ if __name__ == "__main__":
     remotesEdit = rm3data.RemotesEdit(remotesData, configFiles, configInterfaces, deviceAPIs, queueQuery)
     remoteSchedule = rm3timer.ScheduleTimer(configFiles, deviceAPIs, remotesData, queueSend)
     remoteAPI = rm3api.RemoteAPI(remotesData, remotesEdit, configFiles, deviceAPIs, queueQuery, queueSend, remoteSchedule)
+    configRecord = rm3record.RecordData(configFiles)
 
     configFiles.start()
     configInterfaces.start()
+    configRecord.start()
     queueSend.start()
     queueQuery.start()
     deviceAPIs.start()
