@@ -27,6 +27,7 @@ class RemoteMain extends RemoteDefaultClass {
         this.advanced = new RemoteControlAdvanced(this.name + ".advanced", this);
         this.button = new RemoteControlBasic(this.name + ".button");
         this.display = new RemoteControlDisplay(this.name + ".display");
+        this.chart = new RemoteChartJS(this.name + ".chart");
 
         this.json = new RemoteJsonHandling(this.name + ".json");
         this.tab = new RemoteElementTable(this.name + ".tab");
@@ -1096,6 +1097,8 @@ class RemoteMain extends RemoteDefaultClass {
                 next_button = this.button.device(scene + i, "color-picker scene N/A", scene_label, "", "", "disabled");
             } else if (button_def.indexOf("SLIDER") === 0) {
                 next_button = this.button.device(scene + i, "slider scene N/A", scene_label, "", "", "disabled");
+            } else if (button_def.indexOf("CHART") === 0) {
+                next_button = this.chart.create(scene, {});
             } else {
                 next_button = this.button.device(cmd, button[1], scene_label, "", cmd, "");
                 this.active_buttons.push(cmd);

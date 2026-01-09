@@ -69,6 +69,7 @@ class RemoteInstall:
             {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.remotes), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.remotes)},
             {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.devices), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.devices)},
             {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.templates), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.templates)},
+            {"type": "directory", "path": os.path.join(self.directory_data, rm3presets.record), "action": "create"},
             #{"type": "directory", "path": os.path.join(self.directory_data, rm3presets.buttons), "action": "create", "source": os.path.join(self.directory_sample, rm3presets.buttons)},
             #{"type": "file", "path": os.path.join(self.directory_data, rm3presets.buttons, "default", "index.json"), "action": "create", "source": os.path.join(self.directory_data, rm3presets.buttons, "default", "00_index.json")},
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_devices), "action": "create", "source": self.init_config["DEVICE"]},

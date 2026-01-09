@@ -70,3 +70,4 @@ server/tryout
 
 /data/zigbee2mqtt/
 /data/_ACTIVE-RECORD.json
+/data/record/

@@ -18,6 +18,7 @@ class RemotePrepareData extends RemoteDefaultClass {
         this.device_groups = new RemotePrepareDataGroups(this.name + ".device_groups");
         this.elements = new RemotePrepareDataElements(this.name + ".elements");
         this.macros = new RemotePrepareDataMacros(this.name + ".macros");
+        this.record = new RemotePrepareDataRecording(this.name + ".record");
         this.scenes = new RemotePrepareDataScenes(this.name + ".scenes")
         this.templates = new RemotePrepareDataTemplates(this.name + ".templates")
 
@@ -36,6 +37,7 @@ class RemotePrepareData extends RemoteDefaultClass {
         this.device_groups.update( data );
         this.elements.update( data );
         this.macros.update( data );
+        this.record.update( data );
         this.scenes.update( data );
         this.templates.update( data );
         this.apis.update( data );
@@ -844,6 +846,38 @@ class RemotePrepareDataTemplates extends RemoteDefaultClass {
 }
 
 
+/* prepare data for charts of recorded data */
+class RemotePrepareDataRecording extends RemoteDefaultClass {
+    constructor(name) {
+        super(name);
+    }
+
+    // update class data with fresh data from server
+    update(data) {
+        this._data = data;
+
+        this.config_record = this._data["CONFIG"]["record"]["config"];
+        this.config_available = this._data["CONFIG"]["record"]["available_dates"];
+    }
+
+    // return recording configuration
+    configuration() {
+        return this.config_record;
+    }
+
+    // return available dates where recorded data exist
+    available() {
+        return this.config_available;
+    }
+
+    // return test data (interim)
+    test_data() {
+        return this._data["CONFIG"]["record"]["test"];
+    }
+
+}
+
+
 /* prepare other elements data */
 class RemotePrepareDataElements extends RemoteDefaultClass {
     constructor(name) {
@@ -887,7 +921,7 @@ class RemotePrepareDataElements extends RemoteDefaultClass {
 }
 
 
-/* prepare data for APIs and API-Device; initial step just offer raw data ... later more logic possible */ // in progress
+/* prepare data for APIs and API-Device; initial step just offer raw data ... later more logic possible */
 class RemotePrepareDataApis extends RemoteDefaultClass {
     constructor(name) {
         super(name);

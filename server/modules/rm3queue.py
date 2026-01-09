@@ -38,8 +38,9 @@ class QueueApiCalls(RemoteThreadingClass):
         """
         loop running in the background
         """
+        while not self.config.all_available_api_loaded:
+            time.sleep(1)
 
-        time.sleep(20)
         self.logging.info("Starting " + self.name)
         count = 0
 

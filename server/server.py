@@ -114,14 +114,14 @@ if __name__ == "__main__":
         log_srv.error('Could not start jc://remote/ due to configuration error.')
         exit()
 
+    configRecord = rm3record.RecordData(configFiles)
     deviceAPIs = interfaces.Connect(configFiles)
     queueSend = rm3queue.QueueApiCalls("queueSend", "send", deviceAPIs, configFiles)
     queueQuery = rm3queue.QueueApiCalls("queueQuery", "query", deviceAPIs, configFiles)
     remotesData = rm3data.RemotesData(configFiles, configInterfaces, deviceAPIs, queueQuery)
     remotesEdit = rm3data.RemotesEdit(remotesData, configFiles, configInterfaces, deviceAPIs, queueQuery)
     remoteSchedule = rm3timer.ScheduleTimer(configFiles, deviceAPIs, remotesData, queueSend)
-    remoteAPI = rm3api.RemoteAPI(remotesData, remotesEdit, configFiles, deviceAPIs, queueQuery, queueSend, remoteSchedule)
-    configRecord = rm3record.RecordData(configFiles)
+    remoteAPI = rm3api.RemoteAPI(remotesData, remotesEdit, configFiles, deviceAPIs, queueQuery, queueSend, remoteSchedule, configRecord)
 
     configFiles.start()
     configInterfaces.start()

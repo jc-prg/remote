@@ -10,7 +10,7 @@ class RemoteAPI(RemoteDefaultClass):
     Class with API commands
     """
 
-    def __init__(self, data, edit, config, apis, queue, queue_send, timer):
+    def __init__(self, data, edit, config, apis, queue, queue_send, timer, record):
         """
         Class constructor for Remote API
 
@@ -32,6 +32,7 @@ class RemoteAPI(RemoteDefaultClass):
         self.queue_send = queue_send
         self.edit = edit
         self.timer = timer
+        self.record = record
         self.errors = {}
 
     def _api_CONFIG(self):
@@ -82,6 +83,10 @@ class RemoteAPI(RemoteDefaultClass):
                 "groups":               macros.get("groups", {})
             },
             "main-audio":               "NONE",
+            "record": {
+                "config":               self.record.get_config(),
+                "available_dates":      self.record.get_available_dates()
+            },
             "remotes":                  remotes,
             "scenes":                   self.data.scenes_read(None, True),
             "templates": {
@@ -648,6 +653,22 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Command"] = "edit_api_device/delete"
         data = self._end(data)
         self.logging.info(f"Delete API device {api}")
+        return data
+
+    def get_chart_data(self, chart_filter, chart_parameters):
+        """
+        get chart data
+        """
+        data = self._start()
+        data["REQUEST"]["Return"] = "OK: Returned chart data."
+        data["REQUEST"]["Command"] = "Get chart data"
+        data["REQUEST"]["ChartID"] = chart_parameters.get("chart-id", "")
+
+        filter_values = chart_parameters.get("filter-values", [])
+        data["DATA"] = self.record.get_chart_data(chart_filter, filter_values)
+        data["DATA"]["available"] = self.record.get_available_dates()
+
+        data = self._end(data, ["no-config", "no-status"])
         return data
 
     def get_config(self):

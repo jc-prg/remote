@@ -110,6 +110,7 @@ class Connect(RemoteThreadingClass):
                 self.check_activity()
                 self.api_check_device_connection_last = time.time()
                 self.api_check_device_connection_now = False
+                self.config.all_available_api_loaded = True
 
             if self.discover_now:
                 self.logging.debug(f"Discover available devices (now={self.discover_now}) ...")

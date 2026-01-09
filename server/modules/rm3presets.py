@@ -282,6 +282,7 @@ remotes = "remotes/"  # remote layouts for devices
 scenes = "remotes/"  # remote layouts for scenes
 templates = "templates/"  # templates for remote layouts
 buttons = "buttons/"  # button configuration files
+record = "record/" # recording of values, e.g., from sensors
 active = "_active"  # overview file name
 
 active_devices = "_ACTIVE-DEVICES"

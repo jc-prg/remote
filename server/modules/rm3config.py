@@ -96,6 +96,7 @@ class ConfigCache(RemoteThreadingClass):
         self.load_after = {}
         self.config_errors = {}
         self.config_messages = []
+        self.all_available_api_loaded = False
 
     def run(self):
         """

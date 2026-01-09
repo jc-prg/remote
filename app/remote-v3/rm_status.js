@@ -82,7 +82,7 @@ function statusCheck_measure(data, start) {
 // status messages in case the server is offline
 function statusCheck_offline(data) {
     console.error("Lost connection to the server.");
-    statusCheck_deviceActive(data, true);
+    //statusCheck_deviceActive(data, true);
     rmStatus.set_connection_error(true);
     rmStatusShow.set_connection_error(true);
 }
@@ -634,17 +634,17 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             if (remoteHints) { setTextById("display_ERROR_info_"+device_id,""); }
             else { setTextById("display_ERROR_info_" + device_id, lang("STATUS_NO_SERVER_CONNECT")); }
         }
-        else if (rmRemote.edit_mode)                         { this.visualize_element_display(device_id, "EDIT_MODE"); }
-        else if (deactivateButton || power_status === "N/A") { this.visualize_element_display(device_id, "MANUAL"); }
-        else if (power_status === "ON")                      { this.visualize_element_display(device_id, "ON"); }
-        else if (power_status === "OFF")                     { this.visualize_element_display(device_id, "OFF"); }
+        else if (rmRemote.edit_mode)                         { this.visualize_element_display(device_id, "EDIT_MODE", "device"); }
+        else if (deactivateButton || power_status === "N/A") { this.visualize_element_display(device_id, "MANUAL", "device"); }
+        else if (power_status === "ON")                      { this.visualize_element_display(device_id, "ON", "device"); }
+        else if (power_status === "OFF")                     { this.visualize_element_display(device_id, "OFF", "device"); }
         else if (power_status.indexOf("ERROR") >= 0) {
-            this.visualize_element_display(device_id, "ERROR");
+            this.visualize_element_display(device_id, "ERROR", "device");
             if (remoteHints) { setTextById("display_ERROR_info_"+device_id,""); }
             else { setTextById("display_ERROR_info_" + device_id, power_message); }
         }
         else if (power_status === "POWER_OFF") {
-            this.visualize_element_display(device_id, "POWER_OFF");
+            this.visualize_element_display(device_id, "POWER_OFF", "device");
             setTextById("display_POWER_OFF_info_"+device_id, "");
         }
     }
@@ -652,28 +652,18 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     /* visualize status for scenes by setting color of displays */
     visualize_display_type_scene(key, scene_status, scene_status_log) {
 
-        if (!document.getElementById("scene_on_"+key) && !document.getElementById("scene_off_"+key)) { return; }
+        if (!document.getElementById("display_"+key+"_ON")) { return; }
         console.debug("visualize_display_type_scene(): SCENE_"+key+"="+scene_status+" ... "+scene_status_log);
 
         if (this.app_connection_error) {
-            this.visualize_element_display(key, "ERROR");
+            this.visualize_element_display(key, "ERROR", "scene");
         }
-        else if (scene_status === "ON" || scene_status === "PARTLY") {
-            this.visualize_element_display(key, scene_status);
+        else if (rmRemote.edit_mode) {
+            this.visualize_element_display(key, "EDIT_MODE", "scene");
         }
-        else if (scene_status === "ERROR" || scene_status === "DISABLED") {
-            this.visualize_element_display(key, scene_status);
+        else {
+            this.visualize_element_display(key, scene_status, "scene");
         }
-        else if (scene_status === "OFF" || scene_status === "POWER_OFF") {
-            this.visualize_element_display(key, scene_status);
-        }
-        if (deactivateButton) {
-            this.visualize_element_display(key, "MANUAL");
-        }
-        if (rmRemote.edit_mode) {
-            this.visualize_element_display(key, "EDIT_MODE");
-        }
-
     }
 
     /* visualize display values for devices and scenes (device values) */
@@ -788,11 +778,21 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     }
 
     /* visualize display depending on status */
-    visualize_element_display(id, view) {
+    visualize_element_display(id, view, remote_type="") {
         let keys = ["ON", "OFF", "ERROR", "MANUAL", "EDIT_MODE", "POWER_OFF"];
         view = view.toUpperCase();
 
-        if (view === "N/A") { view = "MANUAL"; }
+        if (view === "N/A" && remote_type !== "scene") {
+            view = "MANUAL";
+        }
+        else if (view === "N/A") {
+            view = "ON";
+        }
+        else if (!keys.includes(view)) {
+            this.logging.error("visualize_element_display(): No display type defined fitting to status " + view + ".")
+            view = "ERROR";
+        }
+
         if (document.getElementById("display_"+id+"_"+view)) {
             for (let i=0;i<keys.length;i++) { elementHidden( "display_"+id+"_"+keys[i]); }
             elementVisible("display_"+id+"_"+view);

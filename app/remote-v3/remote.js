@@ -18,6 +18,7 @@ const remote_js = [
     "rm_start.js",
     "rm_cookies.js",
     "rm_sort-list.js",
+    "rm_charts.js",
     "rm_remote-control.js",
     "rm_remote-control-color-picker.js",
     "rm_remote-control-display.js",
@@ -33,6 +34,7 @@ const remote_js = [
 
 const remote_css = [
     "style-theme-colors.css",
+    "style-chart.css",
     "style-menu.css",
     "style-json.css",
     "style-json-edit.css",

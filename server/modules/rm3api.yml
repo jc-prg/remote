@@ -498,6 +498,36 @@ paths:
               DATA:
                 $ref: "#/definitions/DATA"
 
+  /chart-data/{chart_filter}/:
+    post:
+      operationId: __main__.remoteAPI.get_chart_data
+      tags:
+        - status
+      parameters:
+        - name: chart_filter
+          in: path
+          type: string
+          required: true
+        - name: chart_parameters
+          in: body
+          schema:
+            type:
+              object
+          required: true
+      summary: get recorded data for a chart
+      description: get recorded data for a chart
+      responses:
+        200:
+          description: Successfully status data
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              DATA:
+                $ref: "#/definitions/DATA"
+
   /timer-edit/{timer_id}/:
     put:
       operationId: __main__.remoteAPI.edit_timer

@@ -142,6 +142,10 @@ let language_app = {
         "CHANGE_MODES"          : "Change working modes",
         "CHANNEL"               : "channel",
 
+        "CHART_NO_ENTRIES"      : "No entries available.",
+        "CHART_ERROR_LOADING_CHART_JS": "Error: Could not load Chart.js.",
+        "CHART_LOADING"         : "Loading chart data ...",
+
         "CONNECTION_ERROR"      : "Connection Error",
         "CONNECTION_POWER_OFF"  : "Power Off",
         "CONNECTION_DEVICE_OFF" : "Device Off",
