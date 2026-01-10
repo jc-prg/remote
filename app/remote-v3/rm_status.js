@@ -158,7 +158,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         this.show_status_errors();
 
         if (edit_mode) {
-            const stop = "remoteToggleEditMode(false);rmCookie.set_status_quo()()remoteFirstLoad_load();";
+            const stop = "remoteToggleEditMode(false);rmCookies.set_status_quo()()remoteFirstLoad_load();";
             const html = "<img src='/icon/edit_stop.png' onclick='" + stop + "' style='cursor:pointer;width:100%' alt='stop editing'>";
             setTextById("edit1", html);
         } else {
@@ -209,12 +209,13 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             let power_status  = rmStatus.status_device(key);
             let power_message = rmStatus.status_device(key, true)["message"];
 
+            this.visualize_power_button_device(key, power_status);
+            this.visualize_buttons_device(key);
+
             if (!this.edit_mode) {
-                this.visualize_power_button_device(key, power_status);
                 this.visualize_display_type_device(key, power_status, power_message);
                 this.visualize_display_values_device(key);
 
-                this.visualize_buttons_device(key);
                 this.visualize_toggle_device(key);
                 this.visualize_send_slider_device(key);
                 this.visualize_color_picker_device(key);
@@ -223,7 +224,6 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             }
             this.visualize_device_idle_time(key);
         }
-
     }
 
     /* visualizes status for scenes */
@@ -236,11 +236,12 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             let power_status  = rmStatus.status_scene(key);
             let power_message = rmStatus.status_scene(key, true)["message"];
 
+            this.visualize_power_button_scene(key, power_status, power_message);
+            this.visualize_buttons_scene(key);
+
             if (!this.edit_mode) {
-                this.visualize_power_button_scene(key, power_status, power_message);
                 this.visualize_display_type_scene(key, power_status, power_message);
 
-                this.visualize_buttons_scene(key);
                 this.visualize_message_scene(key);
             }
         }
@@ -517,9 +518,10 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             let button   = relevant_buttons[i].toLowerCase();
             let power_off       = rmStatus.status_device(device_id) === "POWER_OFF";
 
-            if ((!buttons_power[button] && !power_on) || power_off) { this.visualize_element_disabled(device_id+"_"+button,false); }
-            else if (!buttons_power[button] && power_on)            { this.visualize_element_disabled(device_id+"_"+button,true); }
-            else                                                    { this.visualize_element_disabled(device_id+"_"+button,true); }
+            if (this.edit_mode)                                          { this.visualize_element_disabled(device_id+"_"+button,true); }
+            else if ((!buttons_power[button] && !power_on) || power_off) { this.visualize_element_disabled(device_id+"_"+button,false); }
+            else if (!buttons_power[button] && power_on)                 { this.visualize_element_disabled(device_id+"_"+button,true); }
+            else                                                         { this.visualize_element_disabled(device_id+"_"+button,true); }
         }
     }
 
@@ -531,7 +533,13 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         // check scene status: inactive macro_buttons, deactivate all buttons from list starting with "macro", power message
         let scene_status = rmStatus.status_scene(scene_id);
 
-        if (scene_status === "POWER_OFF") {
+        if (this.edit_mode) {
+            for (let i=0; i<rmRemote.active_buttons.length; i++) {
+                let button1 = rmRemote.active_buttons[i].split("_");
+                if (button1[0] === "macro") { this.visualize_element_disabled(button1[0]+"_"+button1[1],true); }
+            }
+        }
+       else if (scene_status === "POWER_OFF") {
             for (let i=0; i<rmRemote.active_buttons.length; i++) {
                 let button = rmRemote.active_buttons[i];
                 this.visualize_element_disabled(button,false);
@@ -968,7 +976,13 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     /* visualize status for devices by setting color of power buttons */
     visualize_power_button_device (device_id, power_status) {
 
-        if (deactivateButton === false) {
+        if (this.edit_mode) {
+            this.visualize_element_button("device_" + device_id, "");
+            this.visualize_element_button(device_id + "_on-off", "");
+            this.visualize_element_button(device_id + "_on", "");
+            this.visualize_element_button(device_id + "_off", "");
+        }
+        else if (deactivateButton === false) {
             if (power_status.indexOf("ERROR") >= 0 || this.app_connection_error) {
                 this.visualize_element_button("device_" + device_id, "ERROR"); // main menu button
                 this.visualize_element_button(device_id + "_on-off", "ERROR"); // on-off device button
