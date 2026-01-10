@@ -192,7 +192,7 @@ class RecordData(RemoteThreadingClass):
             else:
                 status_value = status_data[device]["status"][value]
 
-                if "unit" in self.record_data["config"]["record"][record_value]:
+                if record_value in self.record_data["config"]["record"] and "unit" in self.record_data["config"]["record"][record_value]:
                     unit = self.record_data["config"]["record"][record_value]["unit"]
                     self.logging.debug(f"{status_value} / {unit}")
                     status_value = status_value.replace(unit, "")
@@ -213,10 +213,10 @@ class RecordData(RemoteThreadingClass):
 
             for time_stamp in record_data["data"]["record"]:
                 record_item = record_data["data"]["record"][time_stamp]
-                if len(record_item) > count and record_item[count] is not None:
+                if len(record_item) > count and record_item[count] is not None and isinstance(record_item[count], (int, float)):
                     summary[record_value].append(record_item[count])
 
-            if len(summary[record_value]) > 1:
+            if record_value in summary and len(summary[record_value]) > 1 and record_value in record_data["data"]["summary"]:
                 record_data["data"]["summary"][record_value] = {
                     "minimum": min(summary[record_value]),
                     "maximum": max(summary[record_value]),
