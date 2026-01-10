@@ -29,6 +29,7 @@ class RemoteChartJS extends RemoteDefaultClass {
         this.html_no_entries = "<span class='center'>&nbsp;<br/>"+lang("CHART_NO_ENTRIES")+"<br/>&nbsp;<br/>&nbsp;<br/>&nbsp;</span>";
         this.sign_forth = "❯";
         this.sign_back = "❮";
+        this.chart_settings = {};
 
         this.draw = this.draw.bind(this);
         this.load = this.load.bind(this);
@@ -36,7 +37,7 @@ class RemoteChartJS extends RemoteDefaultClass {
         this.load_chartJS();
     }
 
-    // load ChartJS library
+    /* load ChartJS library */
     load_chartJS() {
         this.logging.warning("Loading ChartJS...");
 
@@ -59,14 +60,25 @@ class RemoteChartJS extends RemoteDefaultClass {
         }
     }
 
-    // create container and load chart data
+    /*
+    create container and load chart data
+
+    @param (string) chart_id: unique id for the chart, e.g., name of the scene where it is used
+    @param (object) settings: various settings to create the chart, e.g., date (YYYY-MM-DD), filter-values (list of values to be displayed)
+    */
     create(chart_id, settings={}) {
         let html = "";
         let wait_time = 10;
         const style = settings["size"] || "default";
         if (!this.chartJS_loaded) { wait_time += 1000; }
 
+        if (!settings && this.chart_settings) { settings = this.chart_settings; }
         if (!settings["date"]) { settings["date"] = "TODAY"; }
+        if (!settings["chart-id"]) { settings["chart-id"] = chart_id; }
+        if (!settings["filter-values"] && this.chart_settings["filter-values"]) { settings["filter-values"] = this.chart_settings["filter-values"]; }
+        if (!settings["filter-values"]) { settings["filter-values"] = rmData.record.recorded_values(); }
+
+        this.chart_settings = settings;
 
         setTimeout(() => {
             if (!this.chartJS_loaded) {
@@ -74,7 +86,7 @@ class RemoteChartJS extends RemoteDefaultClass {
                 setTextById(`chart_${chart_id}`, lang("CHART_ERROR_LOADING_CHART_JS"));
             }
             else {
-                appFW.requestAPI("POST", ["chart-data", settings["date"]], {"chart-id": chart_id, "values": {}}, this.load);
+                appFW.requestAPI("POST", ["chart-data", settings["date"]], settings, this.load);
                 //this.load({"DATA": {"chart_id": chart_id}});
             }
         }, wait_time);
@@ -112,6 +124,7 @@ class RemoteChartJS extends RemoteDefaultClass {
         }
 
         chart_html = `<div id ='chart_${chart_id}_title' class='rm-chart-title'></div>&nbsp;<br/>` + chart_html;
+        chart_html = `<div class='rm-chart-content'>` + chart_html + `</div>`;
 
         setTextById(`chart_${chart_id}`, chart_html);
         setTextById(`chart_${chart_id}_title`, chart_title);
@@ -127,7 +140,7 @@ class RemoteChartJS extends RemoteDefaultClass {
     * @param (string) type: type of chart, see documentation of chartjs.org
     * @param (boolean) sort_keys: define if keys/labels should be sorted
     * @param (string) id: id of div element
-    * @param (dict) size: possibility to overwrite size of chart, e.g., {"height": "100px", "width": "90%"}
+    * @param (object) size: possibility to overwrite size of chart, e.g., {"height": "100px", "width": "90%"}
     */
     draw(label, titles, units, data, type="line", sort_keys=true, id="rmChart", size="", set_colors=[], set_menu="bottom") {
 

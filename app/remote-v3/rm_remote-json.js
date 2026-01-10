@@ -360,6 +360,7 @@ class RemoteJsonElements extends RemoteDefaultClass {
         if (this.remote_type === "scene") {
             this.json_field_id = "json::remote";
             this.json_field_id_channel = "json::macro-channel";
+            this.json_field_id_chart = "json::chart";
             this.json_field_id_display = "json::display";
             this.json_field_id_display2 = "json::display-size";
         } else if (this.remote_type === "device") {
@@ -492,6 +493,66 @@ class RemoteJsonElements extends RemoteDefaultClass {
             this.add_button(scene, button, position);
             this.preview(scene);
         }
+    }
+
+    /* add chart to JSON */
+    add_chart(scene, position = "") {
+
+        let value = this.json.get_value(this.json_field_id);
+
+        if (value.indexOf("CHART") < 0) {
+            this.add_button(scene, "CHART", position);
+            this.preview(scene);
+        } else {
+            appMsg.alert(lang("CHART_EXISTS"));
+        }
+    }
+
+    /* add chart value from JSON */
+    add_chart_value(scene, value) {
+
+        const input_field = document.getElementById(value);
+
+        if (!input_field) {
+            appMsg.alert("Error with input field.");
+            return;
+        }
+
+        let value_new = input_field.options[input_field.selectedIndex].text;
+
+        if (value_new === "" || value_new === undefined) {
+            appMsg.alert(lang("CHART_VALUE_SELECT"));
+            return;
+        }
+
+console.error(value_new, value);
+
+        let chart_new = JSON.parse(getValueById(this.json_field_id_chart));
+
+        if (chart_new.indexOf(value_new) > -1) {
+            appMsg.alert(lang("CHART_VALUE_EXISTS"));
+            return;
+        }
+        chart_new.push(value_new);
+
+        setValueById(this.json_field_id_chart, JSON.stringify(chart_new));
+
+        /*
+        if (display_new[label_new] !== undefined) {
+            appMsg.alert(lang("DISPLAY_LABEL_EXISTS_ALREADY"));
+            return;
+        }
+
+        if (!display_new[label_new] && device_new !== "X") {
+            display_new[label_new] = device_new + "_" + value_new;
+        }
+        else if (!display_new[label_new]) {
+            display_new[label_new] = value_new;
+        }
+
+        this.json.textarea_replace(this.json_field_id_display, display_new);
+  */
+        this.preview(scene);
     }
 
     /* add display to JSON */

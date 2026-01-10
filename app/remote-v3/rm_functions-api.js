@@ -150,19 +150,19 @@ function apiSceneEdit(device,prefix,fields) {
 // edit button and display data using JSON
 function apiSceneJsonEdit(device,field_names) {
 
-    var fields = field_names.split(",");
-    var values = {};
-    var json   = {};
+    let fields = field_names.split(",");
+    let values = {};
+    let json   = {};
 
-    for (i=0;i<fields.length;i++) {
-        var field = fields[i];
-        var key   = field.split("::")[1];
-        var lower_case = false;
+    for (let i=0;i<fields.length;i++) {
+        let field = fields[i];
+        let key   = field.split("::")[1];
+        let lower_case = false;
 
-        if (field == "devices") { lower_case = true; }
+        if (field === "devices") { lower_case = true; }
         values[key] = check_if_element_or_value(field, lower_case);
 
-        if (key != "display-size") {
+        if (key !== "display-size") {
             try         { json[key] = JSON.parse(values[key]); }
             catch(e)    { appMsg.alert("<b>JSON " + field + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
             }
@@ -192,7 +192,7 @@ function apiSceneJsonEdit(device,field_names) {
 		
 	appFW.requestAPI("POST",["scene",device], info, apiAlertReturn);
 	*/
-
+console.error(json);
 	appFW.requestAPI("POST",["scene",device], json, apiAlertReturn);
 
 	}

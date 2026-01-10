@@ -1018,8 +1018,7 @@ class RemotesEdit(RemoteDefaultClass):
             str: success or error message
         """
         keys_active = ["label", "description", "image"]
-        keys_remotes = ["label", "remote", "macro-channel", "macro-scene-on", "macro-scene-off", "macro-scene",
-                        "devices", "display", "display-size", "type"]
+        keys_remotes = ["label", "remote", "macro-channel", "macro-scene-on", "macro-scene-off", "macro-scene", "devices", "type"]
 
         # check data format
         if not isinstance(info, dict):
@@ -1071,6 +1070,27 @@ class RemotesEdit(RemoteDefaultClass):
                     remotes[scene][key] = info[key]
                 i += 1
                 i_list += key + ","
+
+        if "display" in info:
+            if "display" not in remotes["data"]:
+                remotes["data"]["display"] = {}
+            remotes["data"]["display"]["values"] = info["display"]
+            collect_keys = []
+            for key in remotes["data"]["display"]:
+                if key != "values" and key != "size":
+                    collect_keys.append(key)
+            for key in collect_keys:
+                del remotes["data"]["display"][key]
+        if "display-size" in info:
+            if "display" not in remotes["data"]:
+                remotes["data"]["display"] = {}
+            remotes["data"]["display"]["size"] = info["display-size"]
+            if "display-size" in remotes["data"]:
+                del remotes["data"]["display-size"]
+        if "chart" in info:
+            if "chart" not in remotes["data"]:
+                remotes["data"]["chart"] = {}
+            remotes["data"]["chart"]["values"] = info["chart"]
 
         # write central config file
         msg = self.config.scene_set_values(scene, "settings", active_json[scene]["settings"])
@@ -1267,7 +1287,7 @@ class RemotesEdit(RemoteDefaultClass):
         keys_active = ["label", "image", "description", "main-audio", "interface"]
         keys_config = ["device_id"]
         keys_commands = ["description", "method"]
-        keys_remotes = ["description", "remote", "display", "display-size", "type"]
+        keys_remotes = ["description", "remote", "type"]
 
         #    keys_remotes  = ["label","remote","macro-channel","devices","display","display-size"]
 
@@ -1309,6 +1329,23 @@ class RemotesEdit(RemoteDefaultClass):
             if key in info:
                 remotes["data"][key] = info[key]
                 i += 1
+
+        if "display" in info:
+            if "display" not in remotes["data"]:
+                remotes["data"]["display"] = {}
+            remotes["data"]["display"]["values"] = info["display"]
+            collect_keys = []
+            for key in remotes["data"]["display"]:
+                if key != "values" and key != "size":
+                    collect_keys.append(key)
+            for key in collect_keys:
+                del remotes["data"]["display"][key]
+        if "display-size" in info:
+            if "display" not in remotes["data"]:
+                remotes["data"]["display"] = {}
+            remotes["data"]["display"]["size"] = info["display-size"]
+            if "display-size" in remotes["data"]:
+                del remotes["data"]["display-size"]
 
         # write central config file
         try:

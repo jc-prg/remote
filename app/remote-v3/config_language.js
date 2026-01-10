@@ -142,9 +142,13 @@ let language_app = {
         "CHANGE_MODES"          : "Change working modes",
         "CHANNEL"               : "channel",
 
+        "CHART"                 : "chart",
+        "CHART_EXISTS"          : "There is already a chart part of this remote control.",
         "CHART_NO_ENTRIES"      : "No entries available.",
         "CHART_ERROR_LOADING_CHART_JS": "Error: Could not load Chart.js.",
         "CHART_LOADING"         : "Loading chart data ...",
+        "CHART_VALUE_EXISTS"    : "Value already exists.",
+        "CHART_VALUE_SELECT"    : "Select chart value first.",
 
         "CONNECTION_ERROR"      : "Connection Error",
         "CONNECTION_POWER_OFF"  : "Power Off",
@@ -199,7 +203,7 @@ let language_app = {
         "DISCOVERY_FAILED"              : "ERROR: Discovery of API devices failed.",
 
         "DISPLAY"                       : "display",
-        "DISPLAY_EXISTS"                : "Display active for this remote.",
+        "DISPLAY_EXISTS"                : "There is already a display part of this remote control.",
         "DISPLAY_LABEL_SELECT"          : "Select label to be deleted in the display.",
         "DISPLAY_LABEL_DONT_EXIST"      : "Selected label doesn't exist in display definition.",
         "DISPLAY_VALUE_SELECT"          : "Select device and value to be added in the display.",

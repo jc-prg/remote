@@ -236,21 +236,23 @@ class RemoteMain extends RemoteDefaultClass {
 
         // check data for preview
         if (preview_remote === "") {
-            remote_definition = device_config["remote"]["remote"];
+            remote_definition = rmData.devices.remote(device);
         } else {
-            remote_definition = this.json.get_value(preview_remote, device_config["remote"]["remote"]);
+            remote_definition = this.json.get_value(preview_remote, rmData.devices.remote(device));
             preview = true;
         }
         if (preview_display === "") {
-            remote_display = device_config["remote"]["display"];
+            //remote_display = device_config["remote"]["display"];
+            remote_display = rmData.devices.display(device);
         } else {
-            remote_display = this.json.get_value(preview_display, device_config["remote"]["display"]);
+            remote_display = this.json.get_value(preview_display, rmData.devices.display(device));
             preview = true;
         }
         if (preview_display_size === "") {
-            remote_display_size = device_config["remote"]["display-size"];
+            //remote_display_size = device_config["remote"]["display-size"];
+            remote_display_size = rmData.devices.display_size(device);
         } else {
-            remote_display_size = this.json.get_value(preview_display_size, device_config["remote"]["display-size"]);
+            remote_display_size = this.json.get_value(preview_display_size, rmData.devices.display_size(device));
             preview = true;
         }
         if (remote_display_size === undefined) {
@@ -418,9 +420,9 @@ class RemoteMain extends RemoteDefaultClass {
         let device_buttons = device_config["buttons"];
 
         if (preview_remote === "") {
-            remote_buttons = device_config["remote"]["remote"];
+            remote_buttons = rmData.devices.remote(device);
         } else {
-            remote_buttons = this.json.get_value(preview_remote, device_config["remote"]["remote"]);
+            remote_buttons = this.json.get_value(preview_remote, rmData.devices.remote(device));
         }
 
         // show not used buttons if edit mode
@@ -856,8 +858,8 @@ class RemoteMain extends RemoteDefaultClass {
     device_reload_json(device) {
 
         let device_config = rmData.devices.data(device);
-        let remote_definition = this.json.get_value("remote_json_buttons", device_config["remote"]["remote"])
-        let remote_display = this.json.get_value("remote_json_display", device_config["remote"]["display"])
+        let remote_definition = this.json.get_value("remote_json_buttons", rmData.devices.remote(device))
+        let remote_display = this.json.get_value("remote_json_display", rmData.devices.display(device));
 
         const myJson = new RemoteJsonEditing("myJson", "default", "width:100%;height:200px");
         myJson.create("container_remote_json_buttons", "remote_json_buttons", remote_definition, "rmc");
@@ -915,9 +917,9 @@ class RemoteMain extends RemoteDefaultClass {
 
         // check if preview
         if (preview_remote === "") {
-            remote_definition = scene_definition["remote"]["remote"];
+            remote_definition = rmData.scenes.remote(scene);
         } else {
-            remote_definition = this.json.get_value(preview_remote, scene_definition["remote"]["remote"]);
+            remote_definition = this.json.get_value(preview_remote, rmData.scenes.remote(scene));
             preview = true;
         }
 
@@ -925,14 +927,14 @@ class RemoteMain extends RemoteDefaultClass {
         let remote_display_size;
 
         if (preview_display === "") {
-            remote_display = scene_definition["remote"]["display"];
+            remote_display = rmData.scenes.display(scene);
         } else {
-            remote_display = this.json.get_value(preview_display, scene_definition["remote"]["display"]);
+            remote_display = this.json.get_value(preview_display, rmData.scenes.display(scene));
             preview = true;
         }
 
         if (preview_display_size === "") {
-            remote_display_size = scene_definition["remote"]["display-size"];
+            remote_display_size = rmData.scenes.display_size(scene);
         } else {
             remote_display_size = this.json.get_value(preview_display_size, remote_display_size);
             preview = true;
@@ -1098,7 +1100,7 @@ class RemoteMain extends RemoteDefaultClass {
             } else if (button_def.indexOf("SLIDER") === 0) {
                 next_button = this.button.device(scene + i, "slider scene N/A", scene_label, "", "", "disabled");
             } else if (button_def.indexOf("CHART") === 0) {
-                next_button = this.chart.create(scene, {});
+                next_button = this.chart.create(scene, {"filter-values": rmData.scenes.chart(scene) });
             } else {
                 next_button = this.button.device(cmd, button[1], scene_label, "", cmd, "");
                 this.active_buttons.push(cmd);
@@ -1286,7 +1288,16 @@ class RemoteMain extends RemoteDefaultClass {
 
         for (let i = 0; i < json_edit_fields.length; i++) {
             let field = json_edit_fields[i];
-            if (json_preview_values[field] === "") {
+            if (field === "chart") {
+                json_edit_values[field] = rmData.scenes.chart(scene);
+            }
+            else if (field === "display") {
+                json_edit_values[field] = rmData.scenes.display(scene);
+            }
+            else if (field === "display-size") {
+                json_edit_values[field] = rmData.scenes.display_size(scene);
+            }
+            else if (json_preview_values[field] === "") {
                 json_edit_values[field] = scene_remote[field];
             }
             else if (typeof json_preview_values[field] === "string") {
@@ -1327,9 +1338,9 @@ class RemoteMain extends RemoteDefaultClass {
                 this.name + ".scene_remote(  '" + this.frames_remote[0] + "','" + scene + "','json::remote','json::display');" +
                 this.name + ".scene_channels('" + this.frames_remote[2] + "','" + scene + "','json::macro-channel');",
                 lang("BUTTON_T_RESET")) + "&nbsp;" +
-            this.button.edit("apiSceneJsonEdit('" + scene + "','json::remote,json::devices,json::display,json::macro-channel,json::macro-scene-on,json::macro-scene-off,json::macro-scene,json::display-size');",
+            this.button.edit("apiSceneJsonEdit('" + scene + "','json::remote,json::devices,json::display,json::display-size,json::chart,json::macro-channel,json::macro-scene-on,json::macro-scene-off,json::macro-scene');",
                 lang("BUTTON_T_SAVE"), "") + "&nbsp;" +
-            this.button.edit(this.name + ".scene_remote(  '" + this.frames_remote[0] + "','" + scene + "','json::remote','json::display','json::display-size');" +
+            this.button.edit(this.name + ".scene_remote(  '" + this.frames_remote[0] + "','" + scene + "','json::remote','json::display','json::display-size','json::chart');" +
                 this.name + ".scene_channels('" + this.frames_remote[2] + "','" + scene + "','json::macro-channel');",
                 lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
             this.button.edit("remoteToggleEditMode(false);" + this.name + ".create('" + this.active_type + "','" + scene + "');", lang("BUTTON_T_STOP_EDIT")) +
@@ -1377,6 +1388,7 @@ class RemoteMain extends RemoteDefaultClass {
         myBox1.addSheet(lang("TOGGLE"), this.dialog_scene.edit_fields("toggle", id, scene));
         myBox1.addSheet(lang("SLIDER"), this.dialog_scene.edit_fields("slider", id, scene));
         myBox1.addSheet(lang("COLOR_PICKER"), this.dialog_scene.edit_fields("color_picker", id, scene));
+        myBox1.addSheet(lang("CHART"), this.dialog_scene.edit_fields("chart", id, scene), false);
         myBox1.addSheet(lang("DELETE"), this.dialog_scene.edit_fields("delete", id, scene));
     }
 
@@ -1989,6 +2001,31 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
             setTimeout(() => {
                 this.update_fields(scene);
             }, 1000);
+        }
+        else if (this.remote_type === "scene" && element === "chart") {
+
+            let chart_exists = JSON.stringify(json_edit_values["remote"]).indexOf("\"CHART\"") > -1 ;
+            let onclick_add = this.name + ".rm_scene.add_chart('"+scene+"');"
+            let onclick_add_value = this.name + ".rm_scene.add_chart_value('"+scene+"', 'add_chart_value');"
+            let onclick_delete_value = ""; //this.name + ".rm_scene.add_chart_value('"+scene+"', 'add_chart_value');"
+
+            this.basic.input_width = "150px";
+            edit = "&nbsp;";
+            edit += this.tab.start();
+            if (!chart_exists) {
+                edit += this.tab.row("Add chart:&nbsp;",
+                        this.button.edit(onclick_add, lang("BUTTON_T_ADD"), ""));
+            } else {
+                edit += this.tab.row(lang("CHART_EXISTS"), this.button.edit("", "", "disabled"));
+            }
+            edit += this.tab.line();
+            edit += this.tab.row("Add:&nbsp;" + "<span style='float:right'>" + this.basic.select("add_chart_value", "chart value", rmData.record.recorded_values(), "") + "&nbsp;</span>",
+                this.button.edit(onclick_add_value, lang("BUTTON_T_ADD"), ""));
+            edit += this.tab.row("Delete:&nbsp;" + "<span style='float:right'>" + this.basic.select("delete_chart_value", "chart value", rmData.scenes.chart(scene), "") + "&nbsp;</span>",
+                this.button.edit(onclick_delete_value, lang("BUTTON_T_DELETE"), ""));
+            edit += this.tab.line();
+            edit += this.tab.row(this.basic.input("json::chart", JSON.stringify(rmData.scenes.chart(scene)), "disabled"), false);
+            edit += this.tab.end();
         }
 
         // element not found

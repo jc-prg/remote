@@ -315,13 +315,31 @@ class RecordData(RemoteThreadingClass):
         record_file = os.path.join(rm3presets.record, filter_date)
         record_data = self.config.read(record_file, from_file=True)
 
-        if not "ERROR" in record_data:
+        if not "ERROR" in record_data and not filter_values:
             chart_data = {
+                "keys" : record_data["data"]["keys"],
                 "labels" : record_data["data"]["labels"],
                 "units" : record_data["data"]["units"],
                 "data" : record_data["data"]["record"],
                 "title": filter_date
             }
+        elif not "ERROR" in record_data:
+            chart_data = { "keys": [], "labels": [], "units": [], "data": {}, "title": filter_date }
+            position = 0
+            key_position = {}
+            for key in record_data["data"]["keys"]:
+                key_position[key] = position
+                position += 1
+            for key in filter_values:
+                i = key_position[key]
+                chart_data["keys"].append(key)
+                for subkey in ["labels", "units"]:
+                    chart_data[subkey].append(record_data["data"][subkey][i] if i < len(record_data["data"][subkey]) else None)
+
+                for subkey in record_data["data"]["record"]:
+                    if not subkey in chart_data["data"]:
+                        chart_data["data"][subkey] = []
+                    chart_data["data"][subkey].append(record_data["data"]["record"][subkey][i] if i < len(record_data["data"]["record"][subkey]) else None)
         else:
             chart_data = { "labels": [], "units": [], "data": {}, "title": filter_date }
 

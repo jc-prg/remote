@@ -158,7 +158,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         this.show_status_errors();
 
         if (edit_mode) {
-            const stop = "remoteToggleEditMode(false);remoteSetCookie();remoteFirstLoad_load();";
+            const stop = "remoteToggleEditMode(false);rmCookie.set_status_quo()()remoteFirstLoad_load();";
             const html = "<img src='/icon/edit_stop.png' onclick='" + stop + "' style='cursor:pointer;width:100%' alt='stop editing'>";
             setTextById("edit1", html);
         } else {

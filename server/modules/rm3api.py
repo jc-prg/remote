@@ -664,6 +664,8 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Command"] = "Get chart data"
         data["REQUEST"]["ChartID"] = chart_parameters.get("chart-id", "")
 
+        self.logging.warning(chart_parameters)
+
         filter_values = chart_parameters.get("filter-values", [])
         data["DATA"] = self.record.get_chart_data(chart_filter, filter_values)
         data["DATA"]["available"] = self.record.get_available_dates()

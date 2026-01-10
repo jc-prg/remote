@@ -2,8 +2,8 @@
     min-width       : 0;
     min-height      : 0;
     border-radius   : 6px;
-    border          : solid 0.5px var(--rm-color-display-default-border);
-    background-color: #022626;
+    //border          : solid 0.5px var(--rm-color-display-default-border);
+    background-color: #0E1413;
     color           : white;
     font-size       : var(--rm-size-remote-display-text);
     overflow        : visible;
@@ -12,7 +12,9 @@
     opacity         : var(--rm-opacity-display-var);
     text-align      : center;
     align-content   : center;
-    padding     : 8px;
+    padding         : 10px;
+    margin-bottom   : 6px;
+    margin-top      : 6px;
 }
 
 .rm-chart.default   { grid-column: span 4; grid-row: span 8; aspect-ratio: 8 / 5; }
@@ -23,9 +25,17 @@
 
 .rm-chart-title {
     font-weight: bold;
-    border: 0.5px solid gray;
+    background-color: #182a28;
+    border: 0.5px dashed #283a38;
     border-radius: 5px;
     padding: 6px;
-    width: calc(100% - 13px);
+    width: calc(100% - 14px);
     text-align: center;
+}
+
+.rm-chart-content {
+    border: 0.5px dashed #182a28;
+    border-radius: 5px;
+    height: 100%;
+    background-color: #131918;
 }

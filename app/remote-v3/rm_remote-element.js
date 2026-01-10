@@ -63,9 +63,9 @@ class RemoteElementsEdit extends RemoteDefaultClass {
     }
 
     // create a simple input field
-    input(id, value="") {
+    input(id, value="", disabled="") {
 
-        return "<div style='width:" + this.input_width + ";margin:0;'><input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"'></div>";
+        return "<div style='width:" + this.input_width + ";margin:0;'><input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"' "+disabled+"></div>";
     }
 
     // create a select field with options from a dict

@@ -1405,8 +1405,8 @@ class RemoteSettingsGeneral extends RemoteDefaultClass {
             if (init === true)       { init = 1; }
             else if (init === false) { init = 0; }
 
-            command_on  += "remoteSetCookie();"
-            command_off += "remoteSetCookie();"
+            command_on  += "rmCookie.set_status_quo()()"
+            command_off += "rmCookie.set_status_quo()()"
 
             let html = "<div class='mode_setting_container'>";
             html += "   <div class='mode_setting_label'>"+label+":</div>";

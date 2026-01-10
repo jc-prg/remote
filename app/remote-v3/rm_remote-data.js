@@ -434,7 +434,10 @@ class RemotePrepareDataDevices extends RemoteDefaultClass {
 
     // return display of a scene
     display(device_id) {
-        if (this.config_devices[device_id] && this.config_devices[device_id]["remote"]["display"]) {
+        if (this.config_devices[device_id] && this.config_devices[device_id]["remote"]["display"] && this.config_devices[device_id]["remote"]["display"]["values"]) {
+            return this.config_devices[device_id]["remote"]["display"]["values"];
+        }
+        else if (this.config_devices[device_id] && this.config_devices[device_id]["remote"]["display"]) {
             return this.config_devices[device_id]["remote"]["display"];
         }
         else {
@@ -457,7 +460,10 @@ class RemotePrepareDataDevices extends RemoteDefaultClass {
 
     // return display-size of a scene
     display_size(device_id) {
-        if (this.config_devices[device_id] && this.config_devices[device_id]["remote"]["display-size"]) {
+        if (this.config_devices[device_id] && this.config_devices[device_id]["remote"]["display"] && this.config_devices[device_id]["remote"]["display"]["size"]) {
+            return this.config_devices[device_id]["remote"]["display"]["size"];
+        }
+        else if (this.config_devices[device_id] && this.config_devices[device_id]["remote"]["display-size"]) {
             return this.config_devices[device_id]["remote"]["display-size"];
         }
         else {
@@ -658,22 +664,42 @@ class RemotePrepareDataScenes extends RemoteDefaultClass {
         }
     }
 
+    // return chart of a scene
+    chart(scene_id) {
+        if (this.config_scenes[scene_id] && this.config_scenes[scene_id]["remote"]["chart"] && this.config_scenes[scene_id]["remote"]["chart"]["values"]) {
+            return this.config_scenes[scene_id]["remote"]["chart"]["values"];
+        }
+        else {
+            this.logging.info(`chart(): no display for device_id "${scene_id}" available.`)
+            return [];
+        }
+    }
+
     // return display of a scene
     display(scene_id) {
-        if (this.config_scenes[scene_id] && this.config_scenes[scene_id]["settings"]["display"]) { return this.config_scenes[scene_id]["settings"]["display"]; }
+
+        if (this.config_scenes[scene_id] && this.config_scenes[scene_id]["remote"]["display"] && this.config_scenes[scene_id]["remote"]["display"]["values"]) {
+            return this.config_scenes[scene_id]["remote"]["display"]["values"];
+        }
+        else if (this.config_scenes[scene_id] && this.config_scenes[scene_id]["remote"]["display"]) {
+            return this.config_scenes[scene_id]["remote"]["display"];
+        }
         else {
-            this.logging.info(`label(): no display for device_id "${scene_id}" available.`)
+            this.logging.info(`display(): no display for device_id "${scene_id}" available.`)
             return {};
         }
     }
 
     // return display-size of a scene
     display_size(scene_id) {
-        if (this.config_scenes[scene_id] && this.config_scenes[scene_id]["remote"]["display-size"]) {
+        if (this.config_scenes[scene_id] && this.config_scenes[scene_id]["remote"]["display"] && this.config_scenes[scene_id]["remote"]["display"]["size"]) {
+            return this.config_scenes[scene_id]["remote"]["display"]["size"];
+        }
+        else if (this.config_scenes[scene_id] && this.config_scenes[scene_id]["remote"]["display-size"]) {
             return this.config_scenes[scene_id]["remote"]["display-size"];
         }
         else {
-            this.logging.info(`label(): no display-size for device_id "${scene_id}" available.`)
+            this.logging.info(`display(): no display-size for device_id "${scene_id}" available.`)
             return {};
         }
     }
@@ -858,6 +884,7 @@ class RemotePrepareDataRecording extends RemoteDefaultClass {
 
         this.config_record = this._data["CONFIG"]["record"]["config"];
         this.config_available = this._data["CONFIG"]["record"]["available_dates"];
+        this.config_values = this._data["CONFIG"]["record"]["config"]["record"];
     }
 
     // return recording configuration
@@ -870,11 +897,10 @@ class RemotePrepareDataRecording extends RemoteDefaultClass {
         return this.config_available;
     }
 
-    // return test data (interim)
-    test_data() {
-        return this._data["CONFIG"]["record"]["test"];
+    // return recorded values
+    recorded_values() {
+        return Object.keys(this.config_values);
     }
-
 }
 
 
