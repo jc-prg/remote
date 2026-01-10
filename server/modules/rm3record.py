@@ -288,10 +288,20 @@ class RecordData(RemoteThreadingClass):
         """
         self.wait_while_working()
         self.is_working(True)
+        success = True
 
-        # add code in between
+        self.record_data = self.config.read(self.config_file, from_file=True)
+        check_fields = ["record", "record_interval", "record_timing"]
+        for field in check_fields:
+            if field not in config:
+                success = False
+
+        if success:
+            self.record_data["config"] = config
+            self.config.write(self.config_file, self.record_data, "edit_config()")
 
         self.is_working(False)
+        return success
 
     def get_chart_data(self, filter_date="", filter_values=None):
         """
@@ -354,7 +364,7 @@ class RecordData(RemoteThreadingClass):
             list: list of available dates
         """
         self.record_data = self.config.read(self.config_file)
-        return self.record_data["data"]["available"]
+        return self.record_data["data"].get("available", [])
 
     def get_config(self):
         """

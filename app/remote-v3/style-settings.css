@@ -113,6 +113,11 @@ nav-title {
   float         : right;
 }
 
+.setting_recording_textarea {
+    width: 95%;
+    height: 200px;
+}
+
 .server_logging.queue {
     background-color        : #ddddff;
 }

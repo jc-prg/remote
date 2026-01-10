@@ -528,6 +528,33 @@ paths:
               DATA:
                 $ref: "#/definitions/DATA"
 
+  /edit-recording/:
+    put:
+      operationId: __main__.remoteAPI.set_config_record
+      tags:
+        - edit
+      parameters:
+        - name: record_config
+          in: body
+          schema:
+            type:
+              object
+          required: true
+      summary: change recording configuration
+      description: change recording configuration
+      responses:
+        200:
+          description: Success
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              DATA:
+                $ref: "#/definitions/DATA"
+
+
   /timer-edit/{timer_id}/:
     put:
       operationId: __main__.remoteAPI.edit_timer

@@ -109,15 +109,9 @@ function app_setting_entries() {
     // leave 'icon' empty to work just with text
     // leave 'call_function' empty to create an information tile that's not clickable
 
-    appSettings.icon_dir = "";
-
-    //appSettings.add_entry("INTRO",  appTitle,           "icon/remote_ctrl",          "");
-    appSettings.add_entry("SETTINGS_DEVICES",  lang("SETTINGS_DEVICES"), "icon/remote_ctrl",   "rmSettings.create('edit_devices');");
-    appSettings.add_entry("SETTINGS_SCENES",   lang("SETTINGS_SCENES"), "icon/cinema",    "rmSettings.create('edit_scenes');");
-    appSettings.add_entry("SETTINGS_TIMER",    lang("SETTINGS_TIMER"), "icon/timer",      "rmSettings.create('edit_timer');");
-    appSettings.add_entry("INFORMATION",       lang("INFORMATION"), "icon/info2",         "rmSettings.create('info');");
-    appSettings.add_entry("SETTINGS_API",      lang("INFORMATION"), "icon/plug2",         "rmSettings.create('edit_interfaces');");
-    appSettings.add_entry("SETTINGS_GENERAL",  lang("INFORMATION"), "icon/settings2",     "rmSettings.create('general');");
+	/*
+	 not in use for jc://remote/ -> rm_settings.js > RemoteSettings > index()
+	 */
     }
 
 

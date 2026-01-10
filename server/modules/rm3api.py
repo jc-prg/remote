@@ -664,8 +664,6 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Command"] = "Get chart data"
         data["REQUEST"]["ChartID"] = chart_parameters.get("chart-id", "")
 
-        self.logging.warning(chart_parameters)
-
         filter_values = chart_parameters.get("filter-values", [])
         data["DATA"] = self.record.get_chart_data(chart_filter, filter_values)
         data["DATA"]["available"] = self.record.get_available_dates()
@@ -684,6 +682,17 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Return"] = "OK: Returned list and status data."
         data["REQUEST"]["Command"] = "List"
         data["REQUEST"]["server-messages"] = self.config.config_messages_get()
+        data = self._end(data)
+        return data
+
+    def set_config_record(self, record_config):
+        """
+        save recording configuration
+        """
+        data = self._start()
+        data["REQUEST"]["Return"] = "OK."
+        data["REQUEST"]["Command"] = "ConfigRecord"
+        data["REQUEST"]["Success"] = self.record.edit_config(record_config)
         data = self._end(data)
         return data
 

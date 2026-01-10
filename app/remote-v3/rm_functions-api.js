@@ -197,6 +197,10 @@ console.error(json);
 
 	}
 
+function apiRecordingEdit(config) {
+    appFW.requestAPI("PUT", ["edit-recording"], config, apiAlertReturn);
+}
+
 
 // delete scene
 function apiSceneDelete_exe(device) {

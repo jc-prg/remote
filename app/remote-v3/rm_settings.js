@@ -32,6 +32,7 @@ class RemoteSettings extends RemoteDefaultClass {
         this.module_general = new RemoteSettingsGeneral(this.name+".module_general", this);
         this.module_api = new RemoteSettingsApi(this.name+".module_api", this);
         this.module_remotes = new RemoteSettingsRemotes(this.name+".module_remotes", this);
+        this.module_record = new RemoteSettingsRecording(this.name+".module_record", this);
     }
 
     // initialize settings
@@ -151,6 +152,14 @@ class RemoteSettings extends RemoteDefaultClass {
             this.create_show_ext();
             this.module_macros.load();
         }
+        else if (selected_mode === "edit_record") {
+            setNavTitle(lang('SETTINGS_RECORDINGS'));
+            this.settings_ext_reset();
+            this.settings_ext_append(0,"", this.index(true, "WRAPPER"), "", true);
+            this.settings_ext_append(1,lang("EDIT_RECORDINGS"), this.module_record.create());
+            this.index_buttons_html = this.index(true, "SETTINGS_RECORDINGS");
+            this.create_show_ext();
+        }
         else {
             setNavTitle(lang('INFORMATION'));
             this.settings_ext_reset();
@@ -225,13 +234,14 @@ class RemoteSettings extends RemoteDefaultClass {
             "SETTINGS":         ["link_back",   "rmSettings.create('index');"],
         }
         let setting_modules = {
-            "SETTINGS_DEVICES": ["remote",      "rmSettings.create('edit_devices');"],
-            "SETTINGS_SCENES":  ["cinema",      "rmSettings.create('edit_scenes');"],
-            "SETTINGS_TIMER":   ["timer",       "rmSettings.create('edit_timer');"],
-            "SETTINGS_MACROS":  ["macros",       "rmSettings.create('edit_macros');"],
-            "INFORMATION":      ["info2",       "rmSettings.create('info');"],
-            "SETTINGS_API":     ["plug2",       "rmSettings.create('edit_interfaces');"],
-            "SETTINGS_GENERAL": ["settings2",   "rmSettings.create('general');"],
+            "SETTINGS_DEVICES":    ["remote",      "rmSettings.create('edit_devices');"],
+            "SETTINGS_SCENES":     ["cinema",      "rmSettings.create('edit_scenes');"],
+            "SETTINGS_TIMER":      ["timer",       "rmSettings.create('edit_timer');"],
+            "SETTINGS_MACROS":     ["macros",      "rmSettings.create('edit_macros');"],
+            "SETTINGS_RECORDINGS": ["statistics",  "rmSettings.create('edit_record');"],
+            "SETTINGS_API":        ["plug2",       "rmSettings.create('edit_interfaces');"],
+            "SETTINGS_GENERAL":    ["settings2",   "rmSettings.create('general');"],
+            "INFORMATION":         ["info2",       "rmSettings.create('info');"],
         }
         if (small) {
             let img_small = rm_image(button_img[setting_modules_back["SETTINGS"][0]], false);
@@ -1405,8 +1415,8 @@ class RemoteSettingsGeneral extends RemoteDefaultClass {
             if (init === true)       { init = 1; }
             else if (init === false) { init = 0; }
 
-            command_on  += "rmCookie.set_status_quo()()"
-            command_off += "rmCookie.set_status_quo()()"
+            command_on  += "rmCookies.set_status_quo();";
+            command_off += "rmCookies.set_status_quo();";
 
             let html = "<div class='mode_setting_container'>";
             html += "   <div class='mode_setting_label'>"+label+":</div>";
@@ -1924,6 +1934,167 @@ class RemoteSettingsTimer extends RemoteDefaultClass {
 
         timer_data["active"] = active.checked;
         setTextById("timer_regular_"+key, JSON.stringify(timer_data));
+    }
+}
+
+
+/* module to edit recording settings */
+class RemoteSettingsRecording extends RemoteDefaultClass {
+    constructor(name, parent) {
+        super(name);
+        this.settings = parent;
+
+        this.data = this.settings.data;
+        this.basic = this.settings.basic;
+        this.button = this.settings.button;
+        this.tab = this.settings.tab;
+        this.elements = new RemoteElementsEdit(this.name + ".elements");
+        this.json = new RemoteJsonEditing(this.name + ".json");
+
+        this.record_intervals = {"60":"1'", "120":"2'", "300":"5'", "600":"10'", "1200":"20'", "1800":"30'", "3600":"1h" };
+        this.recording_timing = ["N/A","0:00","1:00","2:00","3:00","4:00","5:00","6:00","7:00","8:00","9:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00","23:00"];
+    }
+
+    /* create initial view to edit recording settings */
+    create() {
+        let html = "";
+        let setting = "";
+
+        this.button.height = "30px";
+        this.button.width = "80px";
+
+        let record_settings = rmData.record.configuration();
+        let device_list = rmData.devices.select();
+        let device_onchange = this.name+".update_select('add');";
+        let delete_onchange = this.name+".update_select('delete');";
+        let delete_data = {};
+
+        let configuration = "<textarea id='record_config_json' class='setting_recording_textarea' disabled>" + this.json.customJSONStringify(record_settings["record"]) + "</textarea>";
+        configuration += "<textarea id='record_config_json_reset' style='display:none'>" + this.json.customJSONStringify(record_settings["record"]) + "</textarea>";
+
+        if (record_settings["record_timing"]["start"] === -1) { record_settings["record_timing"]["start"] = "N/A"; }
+        if (record_settings["record_timing"]["end"] === -1)   { record_settings["record_timing"]["end"] = "N/A"; }
+        for (let key in record_settings["record"]) { delete_data[key] = record_settings["record"][key]["label"] + " (" + key + ")"; }
+
+        this.elements.input_width = "50px";
+        let config_start = this.elements.select_array("record_config_start", "start", this.recording_timing, "", record_settings["record_timing"]["start"]);
+        let config_end = this.elements.select_array("record_config_end", "end", this.recording_timing, "", record_settings["record_timing"]["end"]);
+        this.elements.input_width = "120px";
+        let config_devices = this.elements.select("record_config_device", "device", device_list, device_onchange);
+        let config_delete = this.elements.select("record_config_delete", "element", delete_data, delete_onchange);
+
+        html += this.tab.start("80%");
+        html += this.tab.row("Recording interval:&nbsp;",  this.elements.select("record_config_interval", "interval", this.record_intervals, "", String(record_settings["record_interval"]) ) );
+        html += this.tab.row("Recording time:&nbsp;", "from " + config_start + " to " + config_end);
+        html += this.tab.end();
+
+        setting  += this.basic.container("record_general_settings",lang("EDIT_RECORDING_SETTINGS"),html,true);
+
+        html = this.tab.start();
+        html += this.tab.row("Add:", config_devices + "<span id='record_config_add'></span>" + "<br/>" + this.button.sized("add_value",lang("BUTTON_T_ADD"),"settings",this.name + ".add_value();", "disabled"));
+        html += this.tab.row("Delete:", config_delete + "<br/>" + this.button.sized("delete_value",lang("BUTTON_T_DELETE"),"settings",this.name + ".delete_value();", "disabled"));
+        html += this.tab.row("Configuration:", false);
+        html += this.tab.row(configuration, false);
+        html += this.tab.end();
+
+        setting  += this.basic.container("record_value_configuration",lang("EDIT_RECORDED_FIELDS"),html,true);
+
+        setting += "<br/>";
+        setting += this.button.sized("reset_config",lang("BUTTON_T_RESET"),"settings",this.name + ".reset();") + "&nbsp;";
+        setting += this.button.sized("save_config",lang("BUTTON_T_SAVE"),"settings",this.name + ".save();");
+        setting += "<br/>&nbsp;";
+
+        return setting;
+    }
+
+    /* update fields when options are selected */
+    update_select(select="add", details=false) {
+        this.capitalizeFirstLetter = function (str) {
+            if (!str) return str; // handles empty or null strings
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        let commands, commands_definition, config_commands;
+        let value_device = getValueById("record_config_device");
+        let value_delete = getValueById("record_config_delete");
+        let value_onchange = this.name+".update_select('"+select+"',true);";
+
+        if (select === "add") {
+            if (rmData.devices.exists(value_device)) {
+                commands = rmData.devices.list_commands(value_device, "get");
+                commands_definition = rmData.devices.list_commands(value_device, "definition");
+                config_commands = this.elements.select_array("record_config_value", "value", commands, value_onchange);
+            }
+            if (!details) {
+                setTextById("record_config_add", "&nbsp;" + config_commands + "<span id='record_config_add_details'></span>");
+            } else {
+                //let selected = getValueById("record_config_value");
+                let select_value = document.getElementById("record_config_value");
+                let selected = select_value.options[select_value.selectedIndex].value;
+
+                let unit = "";
+                if (commands_definition[selected]["unit"]) { unit = commands_definition[selected]["unit"]; }
+
+                let config_label = "<br/>" + this.elements.input("record_config_add_label", this.capitalizeFirstLetter(selected)) + "&nbsp;";
+                config_label += this.elements.input("record_config_add_unit", unit);
+                document.getElementById("add_value").disabled = "";
+                setTextById("record_config_add_details", "&nbsp;" + config_label);
+            }
+        }
+
+        if (select === "delete" && value_delete) {
+            document.getElementById("delete_value").disabled = "";
+        }
+    }
+
+    /* add a value to the configuration */
+    add_value() {
+        let configuration = JSON.parse(document.getElementById("record_config_json").innerHTML);
+        let key = getValueById("record_config_device") + "_" + getValueById("record_config_value");
+        configuration[key] = {
+            "label": getValueById("record_config_add_label"),
+            "unit": getValueById("record_config_add_unit"),
+        }
+        document.getElementById("record_config_json").innerHTML = this.json.customJSONStringify(configuration);
+    }
+
+    /* delete a value from the configruation */
+    delete_value() {
+        let configuration = JSON.parse(document.getElementById("record_config_json").innerHTML);
+        let delete_value = getValueById("record_config_delete");
+        console.log(delete_value);
+        delete configuration[delete_value];
+        document.getElementById("record_config_json").innerHTML = this.json.customJSONStringify(configuration);
+    }
+
+    /* reset configuration changes */
+    reset() {
+        let configuration = JSON.parse(document.getElementById("record_config_json_reset").innerHTML);
+        document.getElementById("record_config_json").innerHTML = this.json.customJSONStringify(configuration);
+    }
+
+    /* save changes */
+    save() {
+        let start = getValueById("record_config_start");
+        let end = getValueById("record_config_end");
+        if (start === "N/A") { start = -1; }
+        if (end === "N/A") { end = -1; }
+
+        let configuration = {
+            "record": JSON.parse(document.getElementById("record_config_json").innerHTML),
+            "record_interval": Number(getValueById("record_config_interval")),
+            "record_timing": {
+                "start": start,
+                "end": end
+            }
+        }
+        this.logging.debug("Save recording configuration ...");
+        this.logging.debug(configuration);
+        apiRecordingEdit(configuration);
+
+        setTimeout(()=>{
+            this.create();
+        }, 2000);
     }
 }
 

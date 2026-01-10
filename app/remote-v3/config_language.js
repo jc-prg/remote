@@ -225,6 +225,9 @@ let language_app = {
         "EDIT_REMOTES"           : "Edit remotes",
         "EDIT_SCENE"             : "Edit scene",
         "EDIT_SCENES"            : "Edit scenes",
+        "EDIT_RECORDINGS"        : "Edit recordings",
+        "EDIT_RECORDING_SETTINGS": "Edit general settings",
+        "EDIT_RECORDED_FIELDS"   : "Edit values to be recorded",
 
         "EXTERNAL_ID"            : "External ID",
         "ERROR_UNKNOWN"          : "Unknown error",
@@ -424,6 +427,7 @@ let language_app = {
         "SETTINGS_MACROS"              : "Global Macros &amp; Groups",
         "SETTINGS_SCENES"              : "Scene Settings",
         "SETTINGS_TIMER"               : "Timer Settings",
+        "SETTINGS_RECORDINGS"          : "Recording Settings",
 
         "SLIDER"                       : "slider",
         "SLIDER_SELECT_CMD"            : "Select command, to insert slider.",

@@ -400,7 +400,11 @@ class RemoteJsonElements extends RemoteDefaultClass {
         let value = this.json.get_value(this.json_field_id);
         let value_new = [];
 
-        if (this.remote_type === "scene" && button.indexOf("_") < 0 && button.indexOf("LINE") < 0  && button.indexOf("HEADER-IMAGE") < 0) { button = scene + "_" + button; }
+        if (this.remote_type === "scene"
+            && button.indexOf("_") < 0
+            && button.indexOf("LINE") < 0
+            && button.indexOf("CHART") < 0
+            && button.indexOf("HEADER-IMAGE") < 0) { button = scene + "_" + button; }
 
         if (position === "FIRST") {
             value_new.push(button);
@@ -524,8 +528,6 @@ class RemoteJsonElements extends RemoteDefaultClass {
             appMsg.alert(lang("CHART_VALUE_SELECT"));
             return;
         }
-
-console.error(value_new, value);
 
         let chart_new = JSON.parse(getValueById(this.json_field_id_chart));
 

@@ -12,6 +12,10 @@ button {
 
 /* REDEFINE buttons for remote-control */
 
+.jc-tooltip-v2 {
+    padding-top: 15px;
+}
+
 .rm-info {
    font-size       : var(--rm-size-remote-info-text);
    margin          : 0.5vw;
@@ -60,7 +64,7 @@ button {
     background-color: var(--rm-color-button);
     color           : var(--rm-color-button-text);
     font-size       : var(--rm-size-remote-button-text);
-    overflow        : hidden;
+    overflow        : visible;
     position        : relative;
 
     touch-action: manipulation;
@@ -334,7 +338,7 @@ button.rm-button.small {
     flex-shrink     : 0;
     transition      : background 0.3s;
 
-    width       : 11.2%;
+    width       : 9.9%;
     min-width   : 50px;
     margin      : 0.5%;
     height      : 40px;
