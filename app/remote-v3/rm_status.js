@@ -129,22 +129,25 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     }
 
     /* update class data */
-    update(data, edit_mode) {
+    update(data, edit_mode, error_status) {
         this.data = data;
         this.edit_mode = edit_mode;
+
         this.app_connection_error = false;
     }
 
     /* set app connection status, e.g., if offline */
     set_connection_error(state) {
         this.app_connection_error = state;
-
+        this.show_status(this.data, this.edit_mode, false);
     }
 
 
     /* coordinate status visualization for all device types */
-    show_status(data, edit_mode) {
-        this.update(data, edit_mode);
+    show_status(data, edit_mode, update=true) {
+        if (update) {
+            this.update(data, edit_mode);
+        }
 
         this.show_status_apis();
         this.show_status_api_devices();

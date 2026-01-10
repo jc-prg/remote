@@ -21,13 +21,9 @@ class RemoteControlDisplay extends RemoteDefaultClass {
             let status;
 
             if (rm_type === "scenes") {
-                //let [scene_status, status_log] = statusCheck_scenePowerStatus(dataAll);
-                //status = scene_status[device];
                 status = rmStatus.status_scene(device);
             }
             else {
-                //let [device_status, device_status_log] = statusCheck_devicePowerStatus(dataAll);
-                //status = device_status[device];
                 status = rmStatus.status_device(device);
             }
 
@@ -103,16 +99,6 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                 if (status === "ON" || status === "PARTLY")	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
                 else                                        { text  = text.replace( /##DISPLAY##/g, "none" ); }
 
-                /*
-                for (let key in display_data) {
-                    let input_id = "";
-                    if (display_data[key].indexOf("_") >= 0) { input_id = 'display_' + display_data[key]; }
-                    else { input_id = 'display_' + device + '_' + display_data[key]; }
-                    let label    = "<span class='display-label'>"+key+":</span>";
-                    let input    = "<span class='display-input' id='"+input_id+"'>no data</span>";
-                    text += "<div class='display-element "+style+"'>"+label+input+"</div>";
-                }
-                */
                 text += "<div class='display-table "+style+"'>";
                 text += this.tab.start("100%");
                 for (let key in display_data) {
@@ -123,9 +109,6 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                 }
                 text += this.tab.end();
                 text += "</div>";
-
-
-
                 text += display_end;
 
                 // display if MANUAL_MODE

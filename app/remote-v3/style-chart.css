@@ -3,7 +3,7 @@
     min-height      : 0;
     border-radius   : 6px;
     //border          : solid 0.5px var(--rm-color-display-default-border);
-    background-color: #0E1413;
+    background-color: #2e423e;
     color           : white;
     font-size       : var(--rm-size-remote-display-text);
     overflow        : visible;
@@ -12,7 +12,7 @@
     opacity         : var(--rm-opacity-display-var);
     text-align      : center;
     align-content   : center;
-    padding         : 10px;
+    padding         : 6px;
     margin-bottom   : 6px;
     margin-top      : 6px;
 }
@@ -25,7 +25,7 @@
 
 .rm-chart-title {
     font-weight: bold;
-    background-color: #182a28;
+    background-color: #0E1413;
     border: 0.5px dashed #283a38;
     border-radius: 5px;
     padding: 6px;
@@ -34,8 +34,21 @@
 }
 
 .rm-chart-content {
-    border: 0.5px dashed #182a28;
+    border: 0.5px dashed #213734;
     border-radius: 5px;
     height: 100%;
-    background-color: #131918;
+    background-color: #1f2928;
 }
+
+@media (prefers-color-scheme: dark) {
+    .rm-chart {
+        background-color: #0E1413;
+    }
+    .rm-chart-title {
+       background-color: #182a28;
+    }
+    .rm-chart-content {
+        background-color: #131918;
+    }
+}
+

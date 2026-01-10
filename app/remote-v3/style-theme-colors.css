@@ -92,14 +92,17 @@
     --rm-color-edit-cmd-text: #FFFF88;
     --rm-color-edit-cmd-border: #222222;
 
-    --rm-color-display-default: #000044;
+    --rm-color-display-default: #030333;
     --rm-color-display-default-text: yellow;
-    --rm-color-display-default-border: white;
+    --rm-color-display-default-border: #2d2d4e;
     --rm-color-display-error: #660000;
+    --rm-color-display-error-space: #520303;
     --rm-color-display-error-text: yellow;
     --rm-color-display-off: #000033;
+    --rm-color-display-off-space: #000033;
     --rm-color-display-off-text: yellow;
-    --rm-color-display-manual: #000044;
+    --rm-color-display-manual: #000033;
+    --rm-color-display-manual-space: #000055;
     --rm-color-display-manual-text: lightgray;
     --rm-color-display-element: white;
 
@@ -201,6 +204,13 @@
         --jc-tooltip-button-background: #5555ff;
         --jc-tooltip-button-background-hover: #5555ee;
         --jc-tooltip-button-color: white;
+
+        --rm-color-display-default: #39397e;
+        --rm-color-display-error: #6b2626;
+        --rm-color-display-error-space: #5b0f0f;
+    }
+    .display-content {
+        background-color: #1d1d55   ;
     }
 }
 

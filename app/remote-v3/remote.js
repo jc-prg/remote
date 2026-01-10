@@ -33,7 +33,6 @@ const remote_js = [
     ];
 
 const remote_css = [
-    "style-theme-colors.css",
     "style-chart.css",
     "style-menu.css",
     "style-json.css",
@@ -47,5 +46,6 @@ const remote_css = [
     "style-macros.css",
     "style-sort-list.css",
     "style-sheet-box.css",
+    "style-theme-colors.css",
     "style-size.css",
     ];
