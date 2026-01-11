@@ -885,8 +885,6 @@ class RemoteMain extends RemoteDefaultClass {
         let macros_deviceOff = rmData.macros.data("device-off");
         for (let key in rm_data["macro-scene"]) { macros[key] = rm_data["macro-scene"][key]; }
 
-console.error(preview, rm_data["remote"], rm_data["display"], rm_data["display-size"]);
-
         // include edit button
         let edit_cmd = "remoteToggleEditMode(true);rmRemote.create(\"scene\",\"" + scene + "\");";
         if (!this.edit_mode && easyEdit) {
