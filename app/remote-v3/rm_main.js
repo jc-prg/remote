@@ -64,6 +64,7 @@ function remoteInit (first_load=true) {
 	remoteMainMenu(false);
 	if (first_load) {
 		rmRemote.active_name = "";
+		rmCookies.get_settings();
 		showRemoteInBackground(1);			// show start screen
 		setTextById("frame4","<div style='width:100%;padding:15px;text-align:center;'>"+lang("LOADING_DATA")+"</div>");
 		remoteFirstLoad_load();			// init load of data

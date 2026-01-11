@@ -331,6 +331,10 @@ button.rm-button.small {
     border      : solid 2px var(--rm-color-button-setting-border);
 }
 
+.rm-button_setting_index:hover {
+    border      : solid 2px var(--rm-color-button-setting-border-select);
+}
+
 .rm-button_setting_index_small {
     display         : flex;
     align-items     : center;
@@ -350,6 +354,11 @@ button.rm-button.small {
 .rm-button_setting_index_small.selected {
     border      : solid 2px var(--rm-color-button-setting-border-select);
 }
+
+.rm-button_setting_index_small:hover {
+    border      : solid 2px var(--rm-color-button-setting-border-select);
+}
+
 
 .rm-button_setting_index.remote {
     width       : calc(100% / 3 - 8px);

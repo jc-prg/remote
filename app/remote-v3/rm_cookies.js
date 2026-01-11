@@ -73,7 +73,7 @@ class RemoteCookies extends RemoteDefaultClass {
         if (values && values !== []) {
             values = values.join("::");
         }
-        this.logging.error("set(): " + values, source);
+        this.logging.info("set(): " + values, source);
         this.cookie.set(this.cookie_remote, values);
     }
 

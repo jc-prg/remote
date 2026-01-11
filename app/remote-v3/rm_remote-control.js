@@ -230,9 +230,9 @@ class RemoteControlBasic extends RemoteDefaultClass {
         if (id.indexOf("||") > 0) { id = id.split("||")[0]; }
         if (label.indexOf("<img") < 0 && label !== "&nbsp;" && !(label in button_color) && text_as_image) {
             let label_id = label;
-            label = "<svg id='svg_image_"+label_id+"'></svg>";
+            label = "<svg id='svg_image_"+id+"-"+label_id+"'></svg>";
             setTimeout(() => {
-                this.svg_image.create("svg_image_"+label_id, label_id);
+                this.svg_image.create("svg_image_"+id+"-"+label_id, label_id);
             }, 0);
         }
 
