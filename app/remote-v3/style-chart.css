@@ -48,11 +48,12 @@
     border           : var(--rm-color-chart-title-border);
     border-radius    : 5px;
     padding          : 6px;
-    width            : calc(100% - 14px);
+    width            : calc(100% - 13px);
     text-align       : center;
 }
 
 .rm-chart-content {
+    display          : block;
     border           : var(--rm-color-chart-content-border);
     border-radius    : 5px;
     height           : 100%;
