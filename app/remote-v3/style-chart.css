@@ -58,5 +58,6 @@
     border-radius    : 5px;
     height           : 100%;
     background-color : var(--rm-color-chart-content-background);
+    overflow         : hidden;
 }
 
