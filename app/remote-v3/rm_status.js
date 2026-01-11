@@ -844,6 +844,8 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
 
         if (!slider) { return; }
 
+console.error("toggle", device, id_slider, id_value, status);
+
         if (status.toUpperCase() === "FALSE")            { status = "0"; }
         else if (status.toUpperCase().includes("OFF"))   { status = "0"; }
         else if (status.toUpperCase() === "OFF")         { status = "0"; }
@@ -1209,8 +1211,10 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
 
                 this.logging.debug(`visualize_toggle_device: ${device_id}, ${device_status}, ${value}`);
 
-                if (device_status === "N/A") {
-                    this.visualize_element_toggle(device_id, "toggle_"+device_id+"_"+key+"_input", "toggle_"+device_id+"_"+key+"_last_value", "slider_"+device_id+"_"+key, device_status, "middle");
+        console.error(device_id, device_status, value);
+
+                if ((device_status === "ON" && value === "N/A") || device_status === "N/A") {
+                    this.visualize_element_toggle(device_id, "toggle_"+device_id+"_"+key+"_input", "toggle_"+device_id+"_"+key+"_last_value", "slider_"+device_id+"_"+key, value, "middle");
                 } else if (value === "ON") {
                     this.visualize_element_toggle(device_id, "toggle_"+device_id+"_"+key+"_input", "toggle_"+device_id+"_"+key+"_last_value", "slider_"+device_id+"_"+key, value, "on");
                 } else if (value === "OFF") {
