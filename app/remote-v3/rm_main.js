@@ -57,16 +57,13 @@ function remoteMainMenu (cookie_erase=true) {
 	setTextById("frame3","");
 	setTextById("frame4","");
 	setTextById("frame5","");
-
-	rmRemote.active_name = "";
-	remoteFirstLoad_load();
 	}
 
 
 function remoteInit (first_load=true) {
-
 	remoteMainMenu(false);
 	if (first_load) {
+		rmRemote.active_name = "";
 		showRemoteInBackground(1);			// show start screen
 		setTextById("frame4","<div style='width:100%;padding:15px;text-align:center;'>"+lang("LOADING_DATA")+"</div>");
 		remoteFirstLoad_load();			// init load of data
@@ -74,7 +71,10 @@ function remoteInit (first_load=true) {
 	}
 	
 
-function remoteFirstLoad_load() {appFW.requestAPI("GET",["list"],"",remoteFirstLoad); }
+function remoteFirstLoad_load() {
+	appFW.requestAPI("GET",["list"],"",remoteFirstLoad);
+}
+
 function remoteFirstLoad(data) {
     dataAll = data;
 	remoteReload(data);		// initial load of data incl. remotes, settings
