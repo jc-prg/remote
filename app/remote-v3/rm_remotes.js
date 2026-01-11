@@ -173,18 +173,88 @@ class RemoteMain extends RemoteDefaultClass {
     }
 
     /* create preview from unsaved data */
-    preview(remote_type, scene_device) {
+    preview(remote_type, scene_device, changed_data=true) {
 
-        if (remote_type === "scene") {
-            this.scene_remote(this.frames_remote[0], scene_device, this.rm_scene.json_field_id, this.rm_scene.json_field_id_display, this.rm_scene.json_field_id_display2);
-            this.scene_channels(this.frames_remote[2], scene_device, this.rm_scene.json_field_id_channel);
-            this.scene_reload_json(scene_device);
+        if (changed_data && this.edit_mode_remote) {
+            if (remote_type === "scene") {
+                this.scene_remote(this.frames_remote[0], scene_device, true);
+                this.scene_channels(this.frames_remote[2], scene_device, this.rm_scene.json_field_id_channel);
+                this.scene_reload_json(scene_device, true);
+            }
+            else if (remote_type === "device") {
+                this.device_remote(this.frames_remote[0], scene_device, true);
+                this.device_not_used(this.frames_remote[2], scene_device, true);
+                this.device_reload_json(scene_device, this.rm_scene.json_field_id, this.rm_scene.json_field_id_display, this.rm_scene.json_field_id_display2);
+            }
+        } else {
+            if (remote_type === "scene") {
+                this.scene_remote(this.frames_remote[0], scene_device);
+                this.scene_channels(this.frames_remote[2], scene_device);
+            } else if (remote_type === "device") {
+                this.device_remote(this.frames_remote[0], scene_device);
+                this.device_not_used(this.frames_remote[2], scene_device);
+            }
         }
-        else if (remote_type === "device") {
-            this.device_remote(this.frames_remote[0], scene_device, this.rm_device.json_field_id, this.rm_device.json_field_id_display, this.rm_device.json_field_id_display2);
-            this.device_not_used(this.frames_remote[2], scene_device);
-            this.device_reload_json(scene_device);
+    }
+
+    main_data(rm_type, rm_id, preview=false) {
+        let result;
+        if (preview && rm_type === "device") {
+            result = {
+                "label":        rmData.devices.label(rm_id),
+                "remote":       this.json.get_value(this.rm_device.json_field_id),
+                "display":      this.json.get_value(this.rm_device.json_field_id_display),
+                "display-size": this.json.get_value(this.rm_device.json_field_id_display2),
+                "buttons":      rmData.devices.list_buttons(rm_id)
+            };
         }
+        else if (rm_type === "device") {
+            result = {
+                "label":        rmData.devices.label(rm_id),
+                "remote":       rmData.devices.remote(rm_id),
+                "display":      rmData.devices.display(rm_id),
+                "display-size": rmData.devices.display_size(rm_id),
+                "buttons":      rmData.devices.list_buttons(rm_id)
+            };
+        }
+        else if (preview && rm_type === "scene") {
+            result = {
+                "label":           rmData.scenes.label(rm_id),
+                "remote":          this.json.get_value(this.rm_scene.json_field_id),
+                "devices":         rmData.scenes.data(rm_id)["remote"]["devices"],            // to be validated
+                "display":         this.json.get_value(this.rm_scene.json_field_id_display),
+                "display-size":    this.json.get_value(this.rm_scene.json_field_id_display2),
+                "macro-channel":   this.json.get_value(this.rm_scene.json_field_id_channel),
+                "macro-scene":     rmData.scenes.data(rm_id)["remote"]["macro-scene"],        // to be validated
+                "macro-scene-on":  rmData.scenes.data(rm_id)["remote"]["macro-scene-on"],     // to be validated
+                "macro-scene-off": rmData.scenes.data(rm_id)["remote"]["macro-scene-off"],    // to be validated
+                "chart":           this.json.get_value(this.rm_scene.json_field_id_chart)     // to be validated
+            };
+        }
+        else if (rm_type === "scene") {
+            result = {
+                "label":           rmData.scenes.label(rm_id),
+                "remote":          rmData.scenes.remote(rm_id),
+                "devices":         rmData.scenes.data(rm_id)["remote"]["devices"],            // to be validated
+                "display":         rmData.scenes.display(rm_id),
+                "display-size":    rmData.scenes.display_size(rm_id),
+                "macro-channel":   rmData.scenes.data(rm_id)["remote"]["macro-channel"],      // to be validated
+                "macro-scene":     rmData.macros.data("scene", rm_id),
+                "macro-scene-on":  rmData.macros.data("scene-on", rm_id, []),
+                "macro-scene-off": rmData.macros.data("scene-off", rm_id, []),
+                "chart":           rmData.scenes.chart(rm_id),                                // to be validated
+            };
+        }
+
+        if (result["display-size"] === "") { result["display-size"] = "middle"; }
+
+        rmCookies.set_remote(rm_type, rm_id, result["label"]);
+
+        this.active_name = rm_id;
+        this.active_label = result["label"];
+        this.active_type = rm_type;
+
+        return result;
     }
 
     /* ensure, that all elements are visible and settings are hidden */
@@ -195,29 +265,23 @@ class RemoteMain extends RemoteDefaultClass {
         rmSettings.hide();				// ... check if part of another class ...
     }
 
+
+
+
     // DEVICE REMOTES - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     /* create remote for a specific device */
-    device_remote(id = "", device = "", preview_remote = "", preview_display = "", preview_display_size = "") {
+    device_remote(id = "", device = "", preview = false) {
 
-        let preview = false;
         let remote = "";
         let device_config = rmData.devices.data(device);
-
-        let remote_label = "";
-        let remote_buttons = [];
-        let remote_display_size = "";
-        let remote_definition = [];
-        let remote_display = {};
+        let rm_data = this.main_data("device", device, preview);
 
         this.button.default_size();
 
-        if (device_config && device_config["remote"]) {
-            remote_display_size = rmData.devices.display_size(device);
-            remote_label = rmData.devices.label(device);
-            remote_buttons = rmData.devices.list_buttons(device);
-            this.active_label = remote_label;
-        } else {
+        // check if configuration exists and is OK, otherwise show error message
+        if (device_config && device_config["remote"]) {}
+        else {
             if (rmStatus.status_system("config_errors")["devices"][device]) {
                 let errors = rmStatus.status_system("config_errors")["devices"][device];
                 remote += "<b class='entry_error'>" + lang("REMOTE_CONFIG_ERROR", [device]) + "</b>";
@@ -231,62 +295,29 @@ class RemoteMain extends RemoteDefaultClass {
             }
             remote += "</div>";
             setTextById(id, remote);
-            appMsg.alert(lang("MISSING_DATA", [device, device_config["interface"]["remote"] + ".json",
-                device_config["config"]["device"] + ".json"]));
+            appMsg.alert(lang("MISSING_DATA", [device, device_config["interface"]["remote"] + ".json", device_config["config"]["device"] + ".json"]));
             return;
         }
 
-        // check data for preview
-        if (preview_remote === "") {
-            remote_definition = rmData.devices.remote(device);
-        } else {
-            remote_definition = this.json.get_value(preview_remote, rmData.devices.remote(device));
-            preview = true;
-        }
-        if (preview_display === "") {
-            //remote_display = device_config["remote"]["display"];
-            remote_display = rmData.devices.display(device);
-        } else {
-            remote_display = this.json.get_value(preview_display, rmData.devices.display(device));
-            preview = true;
-        }
-        if (preview_display_size === "") {
-            //remote_display_size = device_config["remote"]["display-size"];
-            remote_display_size = rmData.devices.display_size(device);
-        } else {
-            remote_display_size = this.json.get_value(preview_display_size, rmData.devices.display_size(device));
-            preview = true;
-        }
-        if (remote_display_size === undefined) {
-            remote_display_size = "middle";
-        }
-
-        rmCookies.set_remote("device", device, remote_label);
-
         // add edit button
         let edit_cmd = "remoteToggleEditMode(true);rmRemote.create(\"device\",\"" + device + "\");";
-        if (!this.edit_mode && easyEdit) {
-            remote += "<div class='remote-edit-button' onclick='" + edit_cmd + "'><img src='icon/edit.png' alt='' style='height:20px;width:20px;'></div>";
-        }
+        if (!this.edit_mode && easyEdit) { remote += "<div class='remote-edit-button' onclick='" + edit_cmd + "'><img src='icon/edit.png' alt='' style='height:20px;width:20px;'></div>"; }
 
         // remote container
         remote += "<div id='remote_button' class='rm-button-grid'>";
 
         // add preview hint or error message container
-        if (preview) {
-            remote += "<div style='grid-column:span 4;'><b>" + lang("PREVIEW") + ":</b><br/><hr/></div>";
-        } else {
-            remote += "<div id='remote-power-information-" + device + "' class='remote-power-information'>POWER INFORMATION</div>";
-        }
+        if (preview) { remote += "<div style='grid-column:span 4;'><b>" + lang("PREVIEW") + ":</b><br/><hr/></div>"; }
+        else { remote += "<div id='remote-power-information-" + device + "' class='remote-power-information'>POWER INFORMATION</div>"; }
 
         // minimum size
-        if (remote_definition.length === 0 && !this.edit_mode) { remote_definition = ["."]; }
+        if (rm_data["remote"].length === 0 && !this.edit_mode) { rm_data["remote"] = ["."]; }
 
         // add remote buttons
-        for (let i = 0; i < remote_definition.length; i++) {
+        for (let i = 0; i < rm_data["remote"].length; i++) {
 
             let next_button;
-            let button = remote_definition[i];
+            let button = rm_data["remote"][i];
             let cmd = device + "_" + button;
             let button_style = "";
             this.display.edit_mode = this.edit_mode;
@@ -305,11 +336,11 @@ class RemoteMain extends RemoteDefaultClass {
             } else if (button === ".") {
                 next_button = this.button.device(device + i, ".", device, "empty", "", "disabled")
             } else if (button === "DISPLAY") {
-                next_button = this.display.default(id, device, "devices", remote_display_size, remote_display);
+                next_button = this.display.default(id, device, "devices", rm_data["display-size"], rm_data["display"]);
             } else if (button === "keyboard") {
                 next_button = this.button.device_keyboard(this.keyboard, cmd, button, device, "", cmd, "");
                 this.active_buttons.push(cmd);
-            } else if (remote_buttons.includes(button.split("||")[0])) {
+            } else if (rm_data["buttons"].includes(button.split("||")[0])) {
                 next_button = this.button.device(cmd, button, device, button_style, cmd, "");
                 this.active_buttons.push(cmd);
             } else if (this.edit_mode) {
@@ -320,7 +351,7 @@ class RemoteMain extends RemoteDefaultClass {
 
             // add tooltip data to new element
             if (this.edit_mode_remote) {
-                let context_menu = this.edit.tool_tip_context_menu("device", device, cmd, i, remote_definition);
+                let context_menu = this.edit.tool_tip_context_menu("device", device, cmd, i, rm_data["remote"]);
                 next_button = this.tooltip.create(["button","div"], next_button, context_menu);
             }
             remote += next_button;
@@ -356,30 +387,25 @@ class RemoteMain extends RemoteDefaultClass {
     }
 
     /* create list of buttons not used in RM definition (for devices) */
-    device_not_used(id, device, preview_remote = "") {
+    device_not_used(id, device, preview = false) {
 
         if (!rmData.devices.exists(device, true)) {
             setTextById(id, "");
             return;
         }
 
-        let device_config = rmData.devices.data(device);
+        let rm_data = this.main_data("device", device, preview);
+        let remote_buttons = rm_data["remote"];
+        let device_buttons = rm_data["buttons"];
+
         let remote = "";
         let not_used = [];
         let sign;
-        let remote_buttons;
         let display;
         let next_button = "";
         this.button.width = "120px";
 
         let link_preview = this.name + ".preview('device','" + device + "');";
-        let device_buttons = device_config["buttons"];
-
-        if (preview_remote === "") {
-            remote_buttons = rmData.devices.remote(device);
-        } else {
-            remote_buttons = this.json.get_value(preview_remote, rmData.devices.remote(device));
-        }
 
         // show not used buttons if edit mode
         if (this.edit_mode) {
@@ -711,7 +737,7 @@ class RemoteMain extends RemoteDefaultClass {
     }
 
     /* create edit panel to edit JSON data */
-    device_edit_json(id, device, preview_remote = "", preview_display = "", preview_display_size = "") {
+    device_edit_json(id, device, preview=false) {
 
         if (this.edit_mode) { elementVisible(id); }
         else { elementHidden(id, "remote_edit_json"); return; }
@@ -726,23 +752,8 @@ class RemoteMain extends RemoteDefaultClass {
         this.button.width = "100px";
 
         // check data for preview
-        let remote_definition;
-        let remote_display_size;
-        let remote_display;
-
-        if (preview_remote === "") { remote_definition = rmData.devices.remote(device); }
-        else { remote_definition = this.json.get_value(preview_remote, rmData.devices.remote(device)); }
-
-        if (preview_display === "") { remote_display = rmData.devices.display(device); }
-        else { remote_display = this.json.get_value(preview_display, rmData.devices.display(device)); }
-
-        if (remote_display === undefined) { remote_display = {}; }
-
-        if (preview_display_size === "") { remote_display_size = rmData.devices.display_size(device); }
-        else { remote_display_size = this.json.get_value(preview_display_size, rmData.devices.display_size(device)); }
-
-        // Start remote control edit section
         let remote = "";
+        let rm_data = this.main_data("device", device, preview);
 
         // Add GUI to add JSON elements
         remote += this.basic.container("remote_edit_add", lang("EDIT_ELEMENTS"), "<div id='remote-edit-add'></div>", true);
@@ -800,7 +811,7 @@ class RemoteMain extends RemoteDefaultClass {
         this.button.height = "25px";
 
         this.rm_device.update(this.data);
-        this.dialog_device.update(this.data, preview_remote, preview_display, preview_display_size);
+        this.dialog_device.update(this.data, preview);
 
         const myBoxJson = new RemoteElementSheetBox("remote-edit-json", "350px", true);
         myBoxJson.addSheet(lang("REMOTE"), "<h4>" + lang("JSON_REMOTE") + "</h4>" + "<div id='container_remote_json_buttons'></div><br/>" + lang("MANUAL_REMOTE"), false);
@@ -808,12 +819,12 @@ class RemoteMain extends RemoteDefaultClass {
         myBoxJson.addSheet(lang("MACROS"), "<h4>" + lang("JSON_REMOTE_MACROS") + "</h4>" + macro_edit, false);
 
         const myJson = new RemoteJsonEditing("myJson", "default", "width:100%;height:200px");
-        myJson.create("container_remote_json_buttons", "remote_json_buttons", remote_definition, "rmc");
-        myJson.create("container_remote_json_display", "remote_json_display", remote_display, "default");
+        myJson.create("container_remote_json_buttons", "remote_json_buttons", rm_data["remote"], "rmc");
+        myJson.create("container_remote_json_display", "remote_json_display", rm_data["display"], "default");
 
         const myBox = new RemoteElementSheetBox("remote-edit-add", "280px", true);
         myBox.addSheet(lang("INFO"), lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") + this.dialog_device.edit_fields("template", id, device));
-        myBox.addSheet(lang("BUTTONS"), this.dialog_device.edit_fields("button_line", id, device, preview_remote));
+        myBox.addSheet(lang("BUTTONS"), this.dialog_device.edit_fields("button_line", id, device, preview));
         myBox.addSheet(lang("DISPLAY"), this.dialog_device.edit_fields("display", id, device), false);
         myBox.addSheet(lang("TOGGLE"), this.dialog_device.edit_fields("toggle", id, device));
         if (this.edit.device_has_ranges(device))  myBox.addSheet(lang("SLIDER"), this.dialog_device.edit_fields("slider", id, device));
@@ -838,28 +849,22 @@ class RemoteMain extends RemoteDefaultClass {
     // SCENE REMOTES - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     /* create remote for a specific scene */
-    scene_remote(id = "", scene = "", preview_remote = "", preview_display = "", preview_display_size = "") {
+    //scene_remote(id = "", scene = "", preview_remote = undefined, preview_display = undefined, preview_display_size = undefined) {
+    scene_remote(id = "", scene = "", preview = false) {
 
-        let toggle_done;
-        let preview = false;
-        let remote = "";
-        let remote_definition = [];
-        let scene_definition = rmData.scenes.data(scene);
-        let scene_label = rmData.scenes.label(scene);
-        this.active_label = scene_label;
         this.display.edit_mode = this.edit_mode;
 
-        rmCookies.set_remote("scene", scene, scene_label);
+        let toggle_done;
+        let remote = "";
+        let rm_data = this.main_data("scene", scene, preview);
 
+        // if scene doesn't exist or error in configuration, show error message and abort
         if (!rmData.scenes.exists(scene, true)) {
-
             if (rmStatus.status_system("config_errors")["scenes"][scene]) {
                 let errors = rmStatus.status_system("config_errors")["scenes"][scene];
                 remote += "<b class='entry_error'>" + lang("REMOTE_CONFIG_ERROR", [scene]) + "</b>";
                 remote += "<hr/><ul>";
-                for (let key in errors) {
-                    remote += "<li><u>" + key + "</u>:<br/>" + errors[key] + "</li>";
-                }
+                for (let key in errors) { remote += "<li><u>" + key + "</u>:<br/>" + errors[key] + "</li>"; }
                 remote += "</ul>";
             } else {
                 remote += lang("REMOTE_CONFIG_ERROR_UNKNOWN", [scene]);
@@ -873,45 +878,12 @@ class RemoteMain extends RemoteDefaultClass {
         }
 
         // prepare macros
-        let scene_macros = {}
         let macros = rmData.macros.data("global");
         let macros_deviceOn = rmData.macros.data("device-on");
         let macros_deviceOff = rmData.macros.data("device-off");
+        for (let key in rm_data["macro-scene"]) { macros[key] = rm_data["macro-scene"][key]; }
 
-        scene_macros["scene"] = rmData.macros.data("scene", scene);
-        scene_macros["scene-on"] = rmData.macros.data("scene-on", scene, []);
-        scene_macros["scene-off"] = rmData.macros.data("scene-off", scene, []);
-
-        for (let key in scene_macros["scene"]) { macros[key] = scene_macros["scene"][key]; }
-
-        // check if preview
-        if (preview_remote === "") {
-            remote_definition = rmData.scenes.remote(scene);
-        } else {
-            remote_definition = this.json.get_value(preview_remote, rmData.scenes.remote(scene));
-            preview = true;
-        }
-
-        let remote_display;
-        let remote_display_size;
-
-        if (preview_display === "") {
-            remote_display = rmData.scenes.display(scene);
-        } else {
-            remote_display = this.json.get_value(preview_display, rmData.scenes.display(scene));
-            preview = true;
-        }
-
-        if (preview_display_size === "") {
-            remote_display_size = rmData.scenes.display_size(scene);
-        } else {
-            remote_display_size = this.json.get_value(preview_display_size, remote_display_size);
-            preview = true;
-        }
-
-        if (remote_display_size === undefined) {
-            remote_display_size = "middle";
-        }
+console.error(preview, rm_data["remote"], rm_data["display"], rm_data["display-size"]);
 
         // include edit button
         let edit_cmd = "remoteToggleEditMode(true);rmRemote.create(\"scene\",\"" + scene + "\");";
@@ -928,22 +900,22 @@ class RemoteMain extends RemoteDefaultClass {
         }
 
         // minimum size
-        if (remote_definition.length === 0 && !this.edit_mode) { remote_definition = ["."]; }
+        if (rm_data["remote"].length === 0 && !this.edit_mode) { rm_data["remote"] = ["."]; }
 
         // add buttons
-        for (let i = 0; i < remote_definition.length; i++) {
+        for (let i = 0; i < rm_data["remote"].length; i++) {
 
             let next_button = "";
-            let button_def = remote_definition[i];
-            let button = remote_definition[i].split("_");
+            let button_def = rm_data["remote"][i];
+            let button = rm_data["remote"][i].split("_");
             let cmd = button[0] + "_" + button[1];
 
-            if (remote_definition[i] === "scene-on") {
+            if (rm_data["remote"][i] === "scene-on") {
                 cmd = "scene-on_" + scene;
                 button = ["scene-on", scene];
                 button_def = cmd;
             }
-            if (remote_definition[i] === "scene-off") {
+            if (rm_data["remote"][i] === "scene-off") {
                 cmd = "scene-off_" + scene;
                 button = ["scene-off", scene];
                 button_def = cmd;
@@ -954,10 +926,10 @@ class RemoteMain extends RemoteDefaultClass {
             }
 
             //if (remote_definition[i].indexOf("COLOR-P") > 1) { button = [button[0], button_def.replace(button[0]+"_", "")]; }
-            if (remote_definition[i].indexOf("COLOR-P") > 1) {
+            if (rm_data["remote"][i].indexOf("COLOR-P") > 1) {
                 cmd = button_def;
-                let cp_device = remote_definition[i].split("_COLOR-PICKER")[0];
-                let cp_data = "COLOR-PICKER" + remote_definition[i].split("_COLOR-PICKER")[1];
+                let cp_device = rm_data["remote"][i].split("_COLOR-PICKER")[0];
+                let cp_data = "COLOR-PICKER" + rm_data["remote"][i].split("_COLOR-PICKER")[1];
                 button = [cp_device, cp_data];
             }
 
@@ -967,23 +939,23 @@ class RemoteMain extends RemoteDefaultClass {
             } else if (button[0].indexOf("LINE||") === 0) {
                 next_button = this.button.line(button[0].split("||")[1]);
             } else if (button[0] === ".") {
-                next_button = this.button.device(scene + i, ".", scene_label, "empty", "", "disabled");
+                next_button = this.button.device(scene + i, ".", rm_data["label"], "empty", "", "disabled");
             } else if (button[0] === "macro" || button[0] === "global" || button[0] === "scene") {
                 let pure_macro = button[1];
                 if (pure_macro.indexOf("||") > 0) { pure_macro = pure_macro.split("||")[0]; }
-                next_button = this.button.macro(cmd, button[1], scene_label, "", macros[pure_macro], "");
+                next_button = this.button.macro(cmd, button[1], rm_data["label"], "", macros[pure_macro], "");
                 this.active_buttons.push(cmd);
             } else if (button[0] === "scene-on") {
-                next_button = this.button.macro("scene_on_" + button[1], "on", scene_label, "", scene_macros["scene-on"], "");
+                next_button = this.button.macro("scene_on_" + button[1], "on", rm_data["label"], "", rm_data["macro-scene-on"], "");
                 this.active_buttons.push("scene_on_" + button[1]);
             } else if (button[0] === "scene-off") {
-                next_button = this.button.macro("scene_off_" + button[1], "off", scene_label, "", scene_macros["scene-off"], "");
+                next_button = this.button.macro("scene_off_" + button[1], "off", rm_data["label"], "", rm_data["macro-scene-off"], "");
                 this.active_buttons.push("scene_off_" + button[1]);
             } else if (button[0] === "device-on") {
-                next_button = this.button.macro(button[1] + "_on", "on", scene_label, "", macros_deviceOn[button[1]], "");
+                next_button = this.button.macro(button[1] + "_on", "on", rm_data["label"], "", macros_deviceOn[button[1]], "");
                 this.active_buttons.push(button[1] + "_on");
             } else if (button[0] === "device-off") {
-                next_button = this.button.macro(button[1] + "_off", "off", scene_label, "", macros_deviceOff[button[1]], "");
+                next_button = this.button.macro(button[1] + "_off", "off", rm_data["label"], "", macros_deviceOff[button[1]], "");
                 this.active_buttons.push(button[1] + "_off");
             } else if (button[1] === "keyboard") {
                 this.keyboard.set_device(button[0]);
@@ -991,8 +963,8 @@ class RemoteMain extends RemoteDefaultClass {
                 this.active_buttons.push(cmd);
             } else if (button[0].indexOf("HEADER-IMAGE") === 0) {
                 let toggle_html = "";
-                if (remote_definition.length > 1 && remote_definition[i + 1].indexOf("TOGGLE") === 0 && button_def.indexOf("toggle") > 0) {
-                    let toggle = remote_definition[i + 1];
+                if (rm_data["remote"].length > 1 && rm_data["remote"][i + 1].indexOf("TOGGLE") === 0 && button_def.indexOf("toggle") > 0) {
+                    let toggle = rm_data["remote"][i + 1];
                     toggle_html = this.advanced.toggle(this.data, id, toggle, "devices", toggle.split("||"), true);
                     toggle_done = i + 1;
                 }
@@ -1006,7 +978,7 @@ class RemoteMain extends RemoteDefaultClass {
                     next_button = "";
                 }
             } else if (button[0] === "DISPLAY") {
-                next_button = this.display.default(id, scene, "scenes", remote_display_size, remote_display);
+                next_button = this.display.default(id, scene, "scenes", rm_data["display-size"], rm_data["display"]);
             } else if (button.length > 1 && button[1].indexOf("COLOR-PICKER") >= 0) {
                 next_button = this.advanced.colorPicker(this.data, id, button[0], "devices", button[1].split("||"));
             } else if (button.length > 1 && button[1] === "group" && button[2].indexOf("COLOR-PICKER") >= 0) {
@@ -1019,19 +991,19 @@ class RemoteMain extends RemoteDefaultClass {
                     next_button = this.advanced.toggle(this.data, id, button_def, "devices", button_def.split("||"), false);
                 }
             } else if (button_def.indexOf("COLOR-P") === 0) {
-                next_button = this.button.device(scene + i, "color-picker scene N/A", scene_label, "", "", "disabled");
+                next_button = this.button.device(scene + i, "color-picker scene N/A", rm_data["label"], "", "", "disabled");
             } else if (button_def.indexOf("SLIDER") === 0) {
-                next_button = this.button.device(scene + i, "slider scene N/A", scene_label, "", "", "disabled");
+                next_button = this.button.device(scene + i, "slider scene N/A", rm_data["label"], "", "", "disabled");
             } else if (button_def.indexOf("CHART") === 0) {
                 next_button = this.chart.create(scene, {"filter-values": rmData.scenes.chart(scene) });
             } else {
-                next_button = this.button.device(cmd, button[1], scene_label, "", cmd, "");
+                next_button = this.button.device(cmd, button[1], rm_data["label"], "", cmd, "");
                 this.active_buttons.push(cmd);
             }
 
             // add tooltip data to new element
             if (this.edit_mode_remote && next_button !== undefined && next_button !== "") {
-                let context_menu = this.edit.tool_tip_context_menu("scene", scene, cmd, i, remote_definition);
+                let context_menu = this.edit.tool_tip_context_menu("scene", scene, cmd, i, rm_data["remote"]);
                 next_button = this.tooltip.create(["button","div"], next_button, context_menu);
             }
             remote += next_button;
@@ -1186,11 +1158,11 @@ class RemoteMain extends RemoteDefaultClass {
         myBox.addSheet(lang("API_SETTINGS"), this.dialog_edit_api());
 
         this.edit.image_preview();
-        this.preview("scene", scene);
+        this.preview("scene", scene, false);
     }
 
     /* create edit panel to edit JSON data */
-    scene_edit_json(id, scene, preview_remote = "", preview_channel = "", preview_display = "", preview_display_size = "") {
+    scene_edit_json(id, scene, preview=false) {
 
         if (this.edit_mode) { elementVisible(id); }
         else { elementHidden(id, "scene_edit_json"); return; }
@@ -1201,65 +1173,10 @@ class RemoteMain extends RemoteDefaultClass {
             return;
         }
 
-        let preview = false;
-        let scene_remote = rmData.scenes.data(scene)["remote"];
-
-        // prepare field values (not sure, if macro-scene* required)
-        let json_edit_fields = ["remote", "devices", "display", "display-size", "macro-channel", "macro-scene-on", "macro-scene-off", "macro-scene"];
-        let json_edit_values = {};
-        let json_preview_values = {
-            "remote": preview_remote,
-            "devices": "",
-            "display": preview_display,
-            "display-size": preview_display_size,
-            "macro-channel": preview_channel,
-            "macro-scene-on": [],
-            "macro-scene-off": [],
-            "macro-scene": {},
-        };
-
-        for (let i = 0; i < json_edit_fields.length; i++) {
-            let field = json_edit_fields[i];
-            if (field === "chart") {
-                json_edit_values[field] = rmData.scenes.chart(scene);
-            }
-            else if (field === "display") {
-                json_edit_values[field] = rmData.scenes.display(scene);
-            }
-            else if (field === "display-size") {
-                json_edit_values[field] = rmData.scenes.display_size(scene);
-            }
-            else if (json_preview_values[field] === "") {
-                json_edit_values[field] = scene_remote[field];
-            }
-            else if (typeof json_preview_values[field] === "string") {
-                json_edit_values[field] = this.json.get_value(json_preview_values[field], scene_remote[field]);
-                preview = true;
-            }
-        }
-
-        if (json_edit_values["display"] === undefined) {
-            json_edit_values["display"] = {};
-        }
-        if (json_edit_values["display-size"] === undefined) {
-            json_edit_values["display-size"] = "middle";
-        }
-        if (json_edit_values["macro-channel"] === undefined) {
-            json_edit_values["macro-channel"] = {};
-        }
-        if (json_edit_values["macro-scene-on"] === undefined) {
-            json_edit_values["macro-scene-on"] = scene_remote["macro-scene-on"];
-        }
-        if (json_edit_values["macro-scene-off"] === undefined) {
-            json_edit_values["macro-scene-off"] = scene_remote["macro-scene-off"];
-        }
-        if (json_edit_values["macro-scene"] === undefined) {
-            json_edit_values["macro-scene"] = scene_remote["macro-scene"];
-        }
+        let rm_data = this.main_data("scene", scene, preview);
 
         // frame
         let remote = "";
-        //remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_SCENE") + " &quot;" + rmData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
         remote += this.basic.edit_line();
         remote += this.basic.container("edit_elements", lang("EDIT_ELEMENTS"), "<div id='scene-edit-elements'></div>", true);
         remote += this.basic.container("edit_json_all", lang("EDIT_JSON"), "<div id='scene-edit-json'></div>", false);
@@ -1300,16 +1217,16 @@ class RemoteMain extends RemoteDefaultClass {
 
         // create JSON edit fields
         const myJson = new RemoteJsonEditing(id = "scene-edit-json", "default", "width:100%;height:150px;");
-        myJson.create("scene-edit-macro-scene-on", "json::macro-scene-on", json_edit_values["macro-scene-on"]);
-        myJson.create("scene-edit-macro-scene-off", "json::macro-scene-off", json_edit_values["macro-scene-off"]);
-        myJson.create("scene-edit-macro-scene-other", "json::macro-scene", json_edit_values["macro-scene"]);
-        myJson.create("scene-edit-display", "json::display", json_edit_values["display"]);
-        myJson.create("scene-edit-macro-channel", "json::macro-channel", json_edit_values["macro-channel"], "compact", "width:100%;height:220px;");
-        myJson.create("scene-edit-remote", "json::remote", json_edit_values["remote"], "rmc", "width:100%;height:220px;");
-        myJson.create("scene-edit-required", "json::devices", scene_remote["devices"], "compact", "width:100%;height:47px;");
+        myJson.create("scene-edit-macro-scene-on",    "json::macro-scene-on",  rm_data["macro-scene-on"]);
+        myJson.create("scene-edit-macro-scene-off",   "json::macro-scene-off", rm_data["macro-scene-off"]);
+        myJson.create("scene-edit-macro-scene-other", "json::macro-scene",     rm_data["macro-scene"]);
+        myJson.create("scene-edit-display",           "json::display",         rm_data["display"]);
+        myJson.create("scene-edit-macro-channel",     "json::macro-channel",   rm_data["macro-channel"], "compact", "width:100%;height:220px;");
+        myJson.create("scene-edit-remote",            "json::remote",          rm_data["remote"], "rmc", "width:100%;height:220px;");
+        myJson.create("scene-edit-required",          "json::devices",         rm_data["devices"], "compact", "width:100%;height:47px;");
 
         this.rm_scene.update(this.data);
-        this.dialog_scene.update(this.data, preview_remote, preview_display, preview_display_size, preview_channel);
+        this.dialog_scene.update(this.data, preview);
 
         // create sheet box elements
         const myBox1 = new RemoteElementSheetBox("scene-edit-elements", "300px", true);
@@ -1323,18 +1240,15 @@ class RemoteMain extends RemoteDefaultClass {
         myBox1.addSheet(lang("CHART"), this.dialog_scene.edit_fields("chart", id, scene), false);
         myBox1.addSheet(lang("DELETE"), this.dialog_scene.edit_fields("delete", id, scene));
 
-        this.preview("scene", scene);
+        this.preview("scene", scene, false);
     }
 
     /* reload JSON fields for remote and device definition as part of preview */
-    scene_reload_json(scene) {
-
-        let remote_definition = this.json.get_value("json::remote", rmData.scenes.remote(scene))
-        let remote_display = this.json.get_value("json::display", rmData.scenes.display(scene))
-
+    scene_reload_json(scene, preview=false) {
+        const rm_data = this.main_data("scene", scene, preview);
         const myJson = new RemoteJsonEditing("scene-edit-json", "default", "width:100%;height:150px;");
-        myJson.create("scene-edit-display", "json::display", remote_display);
-        myJson.create("scene-edit-remote", "json::remote", remote_definition, "rmc", "width:100%;height:220px;");
+        myJson.create("scene-edit-display", this.rm_scene.json_field_id_display, rm_data["display"]);
+        myJson.create("scene-edit-remote", this.rm_scene.json_field_id, rm_data["remote"], "rmc", "width:100%;height:220px;");
     }
 
 }
@@ -1349,11 +1263,7 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
 
         this.remote = remote;
         this.remote_type = remote_type;
-
-        this.preview_remote = "";
-        this.preview_display = "";
-        this.preview_display_size = "";
-        this.preview_channel = "";
+        this.preview = false;
 
         this.basic = new RemoteElementsEdit(name + ".basic");
         this.button = new RemoteControlBasic(name + ".button");
@@ -1369,15 +1279,18 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
     }
 
     /* Update data from parent */
-    update(data, preview_remote, preview_display, preview_display_size, preview_channel) {
+    update(data, preview=undefined) {
         this.data = data;
-        this.preview_remote = preview_remote;
-        this.preview_display = preview_display;
-        this.preview_display_size = preview_display_size;
-        this.preview_channel = preview_channel;
-
         this.rm_device.update(this.data);
         this.rm_scene.update(this.data);
+
+        if (preview === true || preview === false) { this.preview = preview; }
+        else {
+            this.preview_remote = preview;
+            this.preview_display = preview_display;
+            this.preview_display_size = preview_display_size;
+            this.preview_channel = preview_channel;
+        }
     }
 
     /* add json elements */
@@ -1396,13 +1309,10 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
         let color_models = this.advanced.color_picker_models;
 
         let display_sizes = undefined;
-        let json_edit_values = {};
 
         let devices = {};
-        let device_config = {};
         let devices_color_picker = {};
         let device_display = {};
-        let device_buttons = [];
         let devices_groups = {};
         let device_macro = {};
         let devices_slider = {};
@@ -1413,24 +1323,14 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
         let onchange_device_macro = "";
         let onchange_device_display = "";
 
-        let scene_remote = {};
-        let remote_definition = {};
-        let remote_display = [];
-        let remote_display_size = "";
+        let rm_data = this.remote.main_data(this.remote_type, device, this.preview);
 
         if (this.remote_type === "device") {
-            device_config = rmData.devices.data(device);
-            device_buttons = rmData.devices.list_buttons(device);
             display_sizes = this.display.sizes();
             link_template = this.name + ".rm_device.import_templates('" + device + "','add_template');";
-            remote_definition = rmData.devices.remote(device);
-            remote_display = rmData.devices.display(device);
-            remote_display_size = rmData.devices.display_size(device);
-
         }
         else if (this.remote_type === "scene") {
             scene = device;
-            scene_remote = rmData.scenes.data(scene)["remote"];
             display_sizes = this.display.sizes();
 
             for (let key in remote_info) {
@@ -1438,14 +1338,10 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
                 devices[key] = "Device: " + label;
                 devices_groups[key] = "Device: " + label;
                 device_macro["device_" + key] = "Device: " + label;
-                device_display[key] = label;
+                device_display[key] = rm_data["label"];
 
-                if (rmData.devices.has_ranges(key)) {
-                    devices_slider[key] = "Device: " + label;
-                }
-                if (rmData.devices.has_colors(key)) {
-                    devices_color_picker[key] = "Device: " + label;
-                }
+                if (rmData.devices.has_ranges(key)) { devices_slider[key] = "Device: " + label; }
+                if (rmData.devices.has_colors(key)) { devices_color_picker[key] = "Device: " + label; }
             }
 
             for (let i in rmData.device_groups.list_all()) {
@@ -1479,19 +1375,6 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
             onchange_color_picker = this.edit.name + ".scene_color_picker_select('add_color_picker_device');";
             onchange_device_macro = this.edit.name + ".scene_button_select('add_button_device_input','add_button_value','add_button_device','" + scene + "');";
             onchange_device_display = this.edit.name + ".scene_display_select('add_display_input','add_display_value','add_display_device');";
-
-            // prepare field values
-            json_edit_values = {
-                "remote": JSON.parse(getValueById("json::remote")),
-                "display": JSON.parse(getValueById("json::display")),
-                "macro-channel": JSON.parse(getValueById("json::macro-channel")),
-            }
-            if (this.preview_display_size !== "") {
-                json_edit_values["display-size"] = this.preview_display_size;
-            } else if (scene_remote["display-size"]) {
-                json_edit_values["display-size"] = scene_remote["display-size"];
-            }
-
         }
 
         // create editing elements for devices
@@ -1504,15 +1387,15 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
             );
             edit += this.tab.row(
                 "Value:",
-                this.basic.select_array("add_toggle_value", "value (boolean)", device_config["commands"]["get"], "", "power")
+                this.basic.select_array("add_toggle_value", "value (boolean)", rmData.devices.list_commands(device, "get"), "", "power")
             );
             edit += this.tab.row(
                 "Button ON:",
-                this.basic.select_array("add_toggle_on", "button ON", device_config["buttons"], "", "on")
+                this.basic.select_array("add_toggle_on", "button ON", rm_data["buttons"], "", "on")
             );
             edit += this.tab.row(
                 "Button OFF:",
-                this.basic.select_array("add_toggle_off", "button OFF", device_config["buttons"], "", "off")
+                this.basic.select_array("add_toggle_off", "button OFF", rm_data["buttons"], "", "off")
             );
             edit += this.tab.line();
             edit += this.tab.row(
@@ -1603,7 +1486,7 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
 
             edit = this.tab.start();
             edit += this.tab.row(
-                this.basic.select_array("add_button_select", "defined button", device_buttons, onchange_default, ""),
+                this.basic.select_array("add_button_select", "defined button", rm_data["buttons"], onchange_default, ""),
                 this.button.edit(this.name + ".rm_device.add_button_select_image('" + device + "','add_button_select', 'button-image-select','add_button_image');", lang("BUTTON_T"), "")
             );
             let button_select = this.tab.start("");
@@ -1648,7 +1531,7 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
         }
         else if (this.remote_type === "device" && element === "display") {
 
-            let check_display = JSON.stringify(remote_definition);
+            let check_display = JSON.stringify(rm_data["remote"]);
             let display_add_cmd = this.name + ".rm_device.add_display_value('" + device + "','add_display_device','remote_display_value','remote_display_label')";
             let display_del_cmd = this.name + ".rm_device.delete_display_value('" + device + "','remote_display_delete')";
 
@@ -1665,7 +1548,7 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
                 );
             }
             edit += this.tab.row(
-                this.basic.select("remote_display_size", "display size", display_sizes, this.remote.name + ".preview('device','" + device + "');", remote_display_size),
+                this.basic.select("remote_display_size", "display size", display_sizes, this.remote.name + ".preview('device','" + device + "');", rm_data["display-size"]),
                 this.button.edit(this.remote.name + ".preview('device','" + device + "');", lang("BUTTON_T_PREVIEW"))
             );
             edit += this.tab.line();
@@ -1680,7 +1563,7 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
             );
             edit += this.tab.line();
             edit += this.tab.row(
-                this.basic.select_array("remote_display_delete", lang("BUTTON_T_DISPLAY_VALUE"), Object.keys(remote_display), "", ""),
+                this.basic.select_array("remote_display_delete", lang("BUTTON_T_DISPLAY_VALUE"), Object.keys(rm_data["display"]), "", ""),
                 this.button.edit(display_del_cmd, lang("BUTTON_T_DEL_VALUE"))
             );
             edit += this.tab.end();
@@ -1697,7 +1580,7 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
             edit = "&nbsp;";
             edit += this.tab.start();
             edit += this.tab.row(
-                this.edit.button_select("del_button", device, remote_definition),
+                this.edit.button_select("del_button", device, rm_data["remote"]),
                 this.button.edit(this.name + ".rm_device.delete_button('" + device + "','del_button');", lang("BUTTON_T_DELETE"), "")
             );
             edit += this.tab.end();
@@ -1848,7 +1731,7 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
         }
         else if (this.remote_type === "scene" && element === "display") {
 
-            let check_display = JSON.stringify(json_edit_values["remote"]);
+            let check_display = JSON.stringify(rm_data["remote"]);
             let display_add_cmd = this.name + ".rm_scene.add_display_value('" + scene + "','add_display_device','scene_display_value','scene_display_label')";
             let display_del_cmd = this.name + ".rm_scene.delete_display_value('" + scene + "','scene_display_delete')";
 
@@ -1865,7 +1748,7 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
                 );
             }
             edit += this.tab.row(
-                this.basic.select("json::display-size", "display size", display_sizes, this.remote.name + ".preview(  'scene','" + scene + "');", json_edit_values["display-size"]),
+                this.basic.select("json::display-size", "display size", display_sizes, this.remote.name + ".preview(  'scene','" + scene + "');", rm_data["display-size"]),
                 this.button.edit(this.remote.name + ".preview(  'scene','" + scene + "');",
                     lang("BUTTON_T_PREVIEW"))
             );
@@ -1885,7 +1768,7 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
             );
             edit += this.tab.line();
             edit += this.tab.row(
-                this.basic.select_array("scene_display_delete", "display value", Object.keys(json_edit_values["display"]), "", ""),
+                this.basic.select_array("scene_display_delete", "display value", Object.keys(rm_data["display"]), "", ""),
                 this.button.edit(display_del_cmd, lang("BUTTON_T_DEL_VALUE"))
             );
             edit += this.tab.end();
@@ -1903,7 +1786,7 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
             edit = "&nbsp;";
             edit += this.tab.start();
             edit += this.tab.row(
-                this.edit.button_select("del_button", scene, json_edit_values["remote"]),
+                this.edit.button_select("del_button", scene, rm_data["remote"]),
                 this.button.edit(this.name + ".rm_scene.delete_button('" + scene + "','del_button');", lang("BUTTON_T_DEL"), "")
             );
             edit += this.tab.end();
@@ -1938,7 +1821,7 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
         }
         else if (this.remote_type === "scene" && element === "chart") {
 
-            let chart_exists = JSON.stringify(json_edit_values["remote"]).indexOf("\"CHART\"") > -1 ;
+            let chart_exists = JSON.stringify(rm_data["remote"]).indexOf("\"CHART\"") > -1 ;
             let onclick_add = this.name + ".rm_scene.add_chart('"+scene+"');"
             let onclick_add_value = this.name + ".rm_scene.add_chart_value('"+scene+"', 'add_chart_value');"
             let onclick_delete_value = ""; //this.name + ".rm_scene.add_chart_value('"+scene+"', 'add_chart_value');"

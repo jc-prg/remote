@@ -39,7 +39,7 @@ class RemoteChartJS extends RemoteDefaultClass {
 
     /* load ChartJS library */
     load_chartJS() {
-        this.logging.warning("Loading ChartJS...");
+        this.logging.info("Loading ChartJS...");
 
         if (this.chartJS_loaded === false) {
             const chartJS_script = document.createElement('script');

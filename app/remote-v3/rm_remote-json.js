@@ -16,30 +16,35 @@ class RemoteJsonHandling extends RemoteDefaultClass {
 
     /* get JSON value (and check if correct) */
     get_value(id, default_data="" ) {
+        let value = "";
 
-            if (typeof id === "object") {
-                let stack = new Error().stack;
-                let called_by = stack.split("\n")[2].replace("at ", "(call by: ") + ")";
-                this.logging.error(this.name + ".get_value: id is not type 'string' but '" + (typeof id) + "' (" + JSON.stringify(id) + "). " + called_by);
-                return;
-            }
-            else if (typeof id !== "string") {
-                let stack = new Error().stack;
-                let called_by = stack.split("\n")[2].replace("at ", "(call by: ") + ")";
-                this.logging.error(this.name+".get_value: id is not type 'string' but '"+(typeof id)+"'.");
-                return;
-            }
-
-            const element = document.getElementById(id);
-            this.logging.debug(this.name+".get_value: "+id);
-
-            if (!element)	{
-                this.logging.error(this.name+".get_value: element not found "+id);
-                return default_data;
-            }
-
-            return this.text2json( element.value, id );
+        if (id === undefined) {
+            value = default_data;
         }
+        else if (typeof id === "object") {
+            let stack = new Error().stack;
+            let called_by = stack.split("\n")[2].replace("at ", "(call by: ") + ")";
+            this.logging.error(this.name + ".get_value: id is not type 'string' but '" + (typeof id) + "' (" + JSON.stringify(id) + "). " + called_by);
+            return;
+        }
+        else if (typeof id !== "string") {
+            let stack = new Error().stack;
+            let called_by = stack.split("\n")[2].replace("at ", "(call by: ") + ")";
+            this.logging.error(this.name+".get_value: id is not type 'string' but '"+(typeof id)+"'.");
+            return;
+        }
+
+        const element = document.getElementById(id);
+        this.logging.debug(this.name+".get_value: "+id);
+
+        if (!element)	{
+            this.logging.error(this.name+".get_value: element not found "+id);
+            value = default_data;
+        } else {
+            value = this.text2json(element.value, id);
+        }
+        return value;
+    }
 
     /* convert text 2 json ... */
     text2json(json_text, id="" ) {
