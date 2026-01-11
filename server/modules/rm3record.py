@@ -110,8 +110,7 @@ class RecordData(RemoteThreadingClass):
         self.initial_load()
         while self._running:
             if time.time() - self.last_record > self.record_interval:
-                #self.record_values_now()
-                self.record_values_now2()
+                self.record_values_now()
 
             self.thread_wait()
 
@@ -136,7 +135,7 @@ class RecordData(RemoteThreadingClass):
 
         self.last_record = time.time()
 
-    def record_values_now2(self):
+    def record_values_now(self):
         """
         record defined values in the defined interval
         """
@@ -224,58 +223,13 @@ class RecordData(RemoteThreadingClass):
                 }
             count += 1
 
-        self.config.write(record_file, record_data, "record_values_now2()")
+        self.config.write(record_file, record_data, "record_values_now()")
 
         self.record_data = self.config.read(self.config_file, from_file=True)
         self.record_available = rm3json.available(rm3presets.record)
         self.record_data["data"]["available"] = self.record_available
         self.config.write(self.config_file, self.record_data, "record_values_now()")
 
-        self.last_record = time.time()
-        self.is_working(False)
-
-    def record_values_now(self):
-        """
-        record defined values in the defined interval
-        """
-        self.wait_while_working()
-        self.is_working(True)
-
-        record_date = self.config.local_time().strftime("%Y-%m-%d")
-        record_time = self.config.local_time().strftime("%H:%M")
-        self.record_data = self.config.read(self.config_file, from_file=True)
-        self.status_data = self.config.read(self.status_file)
-        self.record_values = self.record_data["config"]["record"]
-
-        count = 0
-        for record_value in self.record_values:
-            device, value = record_value.split("_", 1)
-
-            if device not in self.status_data:
-                self.logging.warning(f"Device {device} not found in {self.status_file}.json")
-                continue
-            elif value not in self.status_data[device]["status"]:
-                self.logging.warning(f"Value {record_value} not found in {self.status_file}.json")
-                continue
-            elif self.status_data[device]["status"][value] == "N/A":
-                continue
-
-            status_value = self.status_data[device]["status"][value]
-            if "unit" in self.record_values[record_value]:
-                self.logging.debug(f"{status_value} / {self.record_values[record_value]["unit"]}")
-                status_value = status_value.replace(self.record_values[record_value]["unit"], "")
-                status_value = float(status_value)
-
-            if record_date not in self.record_data["data"]:
-                self.record_data["data"][record_date] = {}
-            if record_time not in self.record_data["data"][record_date]:
-                self.record_data["data"][record_date][record_time] = {}
-            self.record_data["data"][record_date][record_time][record_value] = status_value
-
-            count += 1
-            self.logging.debug(f"record --> {record_date} {record_time} : {record_value} : {status_value}")
-
-        self.config.write(self.config_file, self.record_data, "record_values_now()")
         self.last_record = time.time()
         self.is_working(False)
 
@@ -298,6 +252,7 @@ class RecordData(RemoteThreadingClass):
 
         if success:
             self.record_data["config"] = config
+            self.record_interval = self.record_data["config"]["record_interval"]
             self.config.write(self.config_file, self.record_data, "edit_config()")
 
         self.is_working(False)
