@@ -232,6 +232,8 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
             if (this.status_devices[device]["power"]) { power_status = this.status_devices[device]["power"].toUpperCase(); } else { power_status = "ERROR"; }
             if (power_status === "N/A" && this.status_devices[device]["availability"].toUpperCase().indexOf("ONLINE") > -1) { power_status = "ON"; }
 
+    console.error(this.status_devices[device], power_status);
+
             // check, if other status available (Zigbee) ... others might have to follow
             if (power_status === "N/A") {
                 let power_details = this.status_device_raw(device);
