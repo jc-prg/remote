@@ -4,7 +4,7 @@
     min-width       : 0;
     min-height      : 0;
     border-radius   : 6px;
-    border          : dashed 0.5px var(--rm-color-display-default-border);
+    border          : dotted 0.5px var(--rm-color-display-default-border);
     //border : 0;
     background-color: var(--rm-color-display-default);
     color           : var(--rm-color-display-default-text);

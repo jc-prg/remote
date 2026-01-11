@@ -1,9 +1,28 @@
+:root {
+    --rm-color-chart-background: #2e423e;
+    --rm-color-chart-border: 0;
+    --rm-color-chart-title-background: #0E1413;
+    --rm-color-chart-title-border: 0.5px dashed #283a38;
+    --rm-color-chart-title-text: white;
+    --rm-color-chart-content-background: #1f2928;
+    --rm-color-chart-content-border: 0.5px dashed #213734;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --rm-color-chart-background: #283734;
+        --rm-color-chart-title-background: #182a28;
+        --rm-color-chart-title-text: white;
+        --rm-color-chart-content-background: #131918;
+    }
+}
+
 .rm-chart {
     min-width       : 0;
     min-height      : 0;
     border-radius   : 6px;
-    //border          : solid 0.5px var(--rm-color-display-default-border);
-    background-color: #2e423e;
+    border          : var(--rm-color-chart-border);
+    background-color: var(--rm-color-chart-background);
     color           : white;
     font-size       : var(--rm-size-remote-display-text);
     overflow        : visible;
@@ -24,31 +43,19 @@
 }
 
 .rm-chart-title {
-    font-weight: bold;
-    background-color: #0E1413;
-    border: 0.5px dashed #283a38;
-    border-radius: 5px;
-    padding: 6px;
-    width: calc(100% - 14px);
-    text-align: center;
+    font-weight      : bold;
+    background-color : var(--rm-color-chart-title-background);
+    border           : var(--rm-color-chart-title-border);
+    border-radius    : 5px;
+    padding          : 6px;
+    width            : calc(100% - 14px);
+    text-align       : center;
 }
 
 .rm-chart-content {
-    border: 0.5px dashed #213734;
-    border-radius: 5px;
-    height: 100%;
-    background-color: #1f2928;
-}
-
-@media (prefers-color-scheme: dark) {
-    .rm-chart {
-        background-color: #0E1413;
-    }
-    .rm-chart-title {
-       background-color: #182a28;
-    }
-    .rm-chart-content {
-        background-color: #131918;
-    }
+    border           : var(--rm-color-chart-content-border);
+    border-radius    : 5px;
+    height           : 100%;
+    background-color : var(--rm-color-chart-content-background);
 }
 
