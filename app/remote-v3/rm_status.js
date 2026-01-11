@@ -6,6 +6,7 @@ let device_media_info = {};
 let status_duration = [];
 let status_duration_load = [];
 let status_load_first = true;
+let status_load_expected_time = 0.2;
 let rmStatusShow;
 
 
@@ -60,8 +61,8 @@ function statusCheck(data={}) {
 function statusCheck_measure(data, start) {
 
     const duration = (Date.now() - start) / 1000;
-    if (duration < 0.1) { console.debug("statusCheck: Updated all status elements (" + String(duration) + "s)"); }
-    else { console.warn("statusCheck: Updated all status elements - longer than expected (max 0.1s): " + String(duration) + "s"); }
+    if (duration < status_load_expected_time) { console.debug("statusCheck: Updated all status elements (" + String(duration) + "s)"); }
+    else { console.warn("statusCheck: Updated all status elements - longer than expected (max "+status_load_expected_time+"s): " + String(duration) + "s"); }
 
     let average = status_duration.reduce((a, b) => a + b, 0) / status_duration.length;
     let average_load = status_duration_load.reduce((a, b) => a + b, 0) / status_duration_load.length;
@@ -796,7 +797,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         if (view === "N/A" && remote_type !== "scene") {
             view = "MANUAL";
         }
-        else if (view === "N/A") {
+        else if (view === "N/A" || view === "PARTLY") {
             view = "ON";
         }
         else if (!keys.includes(view)) {

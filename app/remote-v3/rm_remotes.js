@@ -139,7 +139,7 @@ class RemoteMain extends RemoteDefaultClass {
 
             // create edit panels
             this.device_edit(this.frames_edit[0], rm_id);
-            this.device_edit_json(this.frames_edit[1], rm_id);
+            this.device_edit_main(this.frames_edit[1], rm_id);
 
             // show
             this.show();
@@ -158,7 +158,7 @@ class RemoteMain extends RemoteDefaultClass {
 
             // create edit panels
             this.scene_edit(this.frames_edit[0], rm_id);
-            this.scene_edit_json(this.frames_edit[1], rm_id);
+            this.scene_edit_main(this.frames_edit[1], rm_id);
 
             // show
             this.show();
@@ -494,8 +494,24 @@ class RemoteMain extends RemoteDefaultClass {
         }
     }
 
-    /*  panel per remote ... */
     device_edit(id, device) {
+
+        if (this.edit_mode) { elementVisible(id); }
+        else { elementHidden(id, "device_edit"); return; }
+
+        // create frame
+        let remote = "";
+        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_REMOTE") + " &quot;" + rmData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
+        remote += this.basic.edit_line();
+        remote += this.edit.button_edit_category("edit", "Main Settings", `${this.name}.device_edit_main(${this.name}.frames_edit[1], \"${device}\");`);
+        remote += this.edit.button_edit_category("remote_ctrl", "Edit Remote", `${this.name}.device_edit_json(${this.name}.frames_edit[1], \"${device}\");`);
+        remote += this.edit.button_edit_category("macros", "Edit Macros", "appMsg.alert(\"not implemented yet\");");
+        setTextById(id, remote);
+        this.edit_mode = true;
+    }
+
+    /*  panel per remote ... */
+    device_edit_main(id, device) {
 
         if (this.edit_mode) {
             elementVisible(id);
@@ -508,6 +524,7 @@ class RemoteMain extends RemoteDefaultClass {
             return;
         }
 
+        let remote = "";
         let device_config = rmData.devices.data(device);
         let remote_visible = device_config["settings"]["visible"];
         let device_method = device_config["interface"]["method"];
@@ -523,10 +540,6 @@ class RemoteMain extends RemoteDefaultClass {
 
         this.basic.input_width = "180px";
         this.button.width = "90px";
-
-        let remote = "";
-        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_REMOTE") + " &quot;" + rmData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
-        remote += this.basic.edit_line();
 
         // Main Settings
         let edit = "";
@@ -741,12 +754,8 @@ class RemoteMain extends RemoteDefaultClass {
     /* create edit panel to edit JSON data */
     device_edit_json(id, device, preview_remote = "", preview_display = "", preview_display_size = "") {
 
-        if (this.edit_mode) {
-            elementVisible(id);
-        } else {
-            elementHidden(id, "remote_edit_json");
-            return;
-        }
+        if (this.edit_mode) { elementVisible(id); }
+        else { elementHidden(id, "remote_edit_json"); return; }
 
         let device_config = rmData.devices.data(device);
         if (rmStatus.status_system("config_errors")["devices"][device] || !rmData.devices.exists(device, true)) {
@@ -774,11 +783,9 @@ class RemoteMain extends RemoteDefaultClass {
 
         // Start remote control edit section
         let remote = "";
-        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_REMOTE") + " &quot;" + rmData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
-        remote += this.basic.edit_line();
 
         // Add GUI to add JSON elements
-        remote += this.basic.container("remote_edit_add", lang("EDIT_ELEMENTS"), "<div id='remote-edit-add'></div>", false);
+        remote += this.basic.container("remote_edit_add", lang("EDIT_ELEMENTS"), "<div id='remote-edit-add'></div>", true);
 
         // if record device, edit ... unclear if still required
         if (device_config["method"] === "record") {
@@ -1182,15 +1189,27 @@ class RemoteMain extends RemoteDefaultClass {
         setTextById(id, str);
     }
 
-    /* edit scene */
     scene_edit(id, scene) {
 
-        if (this.edit_mode) {
-            elementVisible(id);
-        } else {
-            elementHidden(id, "scene_edit");
-            return;
-        }
+        if (this.edit_mode) { elementVisible(id); }
+        else { elementHidden(id, "scene_edit"); return; }
+
+        // create frame
+        let remote = "";
+        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_SCENE") + " &quot;" + rmData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
+        remote += this.basic.edit_line();
+        remote += this.edit.button_edit_category("edit", "Main Settings", `${this.name}.scene_edit_main(${this.name}.frames_edit[1], \"${scene}\");`);
+        remote += this.edit.button_edit_category("remote_ctrl", "Edit Remote", `${this.name}.scene_edit_json(${this.name}.frames_edit[1], \"${scene}\");`);
+        remote += this.edit.button_edit_category("macros", "Edit Macros", "appMsg.alert(\"not implemented yet\");");
+        setTextById(id, remote);
+        this.edit_mode = true;
+    }
+
+    /* edit scene */
+    scene_edit_main(id, scene) {
+
+        if (this.edit_mode) { elementVisible(id); }
+        else { elementHidden(id, "scene_edit"); return; }
 
         if (rmStatus.status_system("config_errors")["scenes"][scene] || !rmData.scenes.exists(scene, true)) {
             setTextById(id, "");
@@ -1240,9 +1259,6 @@ class RemoteMain extends RemoteDefaultClass {
             return;
         }
 
-        // create frame
-        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_SCENE") + " &quot;" + rmData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
-        remote += this.basic.edit_line();
         remote += this.basic.container("scene_main", lang("SETTINGS_SCENES"), "<div id='scene-edit-main'></div>", true);
         setTextById(id, remote);
 
@@ -1327,9 +1343,9 @@ class RemoteMain extends RemoteDefaultClass {
 
         // frame
         let remote = "";
-        remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_SCENE") + " &quot;" + rmData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
+        //remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_SCENE") + " &quot;" + rmData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
         remote += this.basic.edit_line();
-        remote += this.basic.container("edit_elements", lang("EDIT_ELEMENTS"), "<div id='scene-edit-elements'></div>", false);
+        remote += this.basic.container("edit_elements", lang("EDIT_ELEMENTS"), "<div id='scene-edit-elements'></div>", true);
         remote += this.basic.container("edit_json_all", lang("EDIT_JSON"), "<div id='scene-edit-json'></div>", false);
         remote += this.basic.edit_line();
         this.button.width = "23%";
@@ -1383,7 +1399,7 @@ class RemoteMain extends RemoteDefaultClass {
         const myBox1 = new RemoteElementSheetBox("scene-edit-elements", "300px", true);
         myBox1.addSheet(lang("INFO"), lang("MANUAL_ADD_ELEMENTS") + lang("MANUAL_ADD_TEMPLATE") + this.dialog_scene.edit_fields("template", id, scene));
         myBox1.addSheet(lang("BUTTONS"), this.dialog_scene.edit_fields("default", id, scene));
-        myBox1.addSheet(lang("HEADER"), this.dialog_scene.edit_fields("header", id, scene));
+        myBox1.addSheet(lang("HEADER"), this.dialog_scene.edit_fields("header", id, scene), false);
         myBox1.addSheet(lang("DISPLAY"), this.dialog_scene.edit_fields("display", id, scene), false);
         myBox1.addSheet(lang("TOGGLE"), this.dialog_scene.edit_fields("toggle", id, scene));
         myBox1.addSheet(lang("SLIDER"), this.dialog_scene.edit_fields("slider", id, scene));
@@ -2133,6 +2149,12 @@ class RemoteMainEditElements extends RemoteDefaultClass {
     update() {
         this.data = this.remote.data;
         this.edit_mode = this.remote.edit_mode;
+    }
+
+    /* button to select the editing category */
+    button_edit_category(icon, description, command) {
+        let button_content = `<img src='icon/${icon}.png' alt=''><br/>${description}`;
+        return `<button class='rm-button_setting_index remote' onclick='${command}'>${button_content}</button>`;
     }
 
     /* return drop-down with scene images */

@@ -69,27 +69,27 @@ class RemoteCookies extends RemoteDefaultClass {
     }
 
     /* set cookie data */
-    set(values) {
+    set(values, source="") {
         if (values && values !== []) {
             values = values.join("::");
         }
-        this.logging.debug("set(): " + values);
+        this.logging.error("set(): " + values, source);
         this.cookie.set(this.cookie_remote, values);
     }
 
     /* set remote cookie data, and get the others from global vars */
     set_remote(rm_type, rm_active, rm_label) {
-        this.set([rm_type, rm_active, rm_label, rmRemote.edit_mode, easyEdit, remoteHints, jsonHighlighting]);
+        this.set([rm_type, rm_active, rm_label, rmRemote.edit_mode, easyEdit, remoteHints, jsonHighlighting], "set_remote()");
     }
 
     /* set all relevant cookie data directly */
     set_all(rm_type, rm_active, rm_label, rm_edit_mode, rm_easy_edit, rm_hints, rm_json) {
-        this.set([rm_type, rm_active, rm_label, rm_edit_mode, rm_easy_edit, rm_hints, rm_json]);
+        this.set([rm_type, rm_active, rm_label, rm_edit_mode, rm_easy_edit, rm_hints, rm_json], "set_all()");
     }
 
     /* set cookie data from global vars */
     set_status_quo() {
-        this.set([rmRemote.active_type, rmRemote.active_name, rmRemote.active_label, rmRemote.edit_mode, easyEdit, remoteHints, jsonHighlighting]);
+        this.set([rmRemote.active_type, rmRemote.active_name, rmRemote.active_label, rmRemote.edit_mode, easyEdit, remoteHints, jsonHighlighting], "set_status_quo()");
     }
 }
 

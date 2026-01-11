@@ -234,6 +234,7 @@ class RemoteSettings extends RemoteDefaultClass {
             "SETTINGS":         ["link_back",   "rmSettings.create('index');"],
         }
         let setting_modules = {
+            "INFORMATION":         ["info2",       "rmSettings.create('info');"],
             "SETTINGS_DEVICES":    ["remote",      "rmSettings.create('edit_devices');"],
             "SETTINGS_SCENES":     ["cinema",      "rmSettings.create('edit_scenes');"],
             "SETTINGS_TIMER":      ["timer",       "rmSettings.create('edit_timer');"],
@@ -241,7 +242,6 @@ class RemoteSettings extends RemoteDefaultClass {
             "SETTINGS_RECORDINGS": ["statistics",  "rmSettings.create('edit_record');"],
             "SETTINGS_API":        ["plug2",       "rmSettings.create('edit_interfaces');"],
             "SETTINGS_GENERAL":    ["settings2",   "rmSettings.create('general');"],
-            "INFORMATION":         ["info2",       "rmSettings.create('info');"],
         }
         if (small) {
             let img_small = rm_image(button_img[setting_modules_back["SETTINGS"][0]], false);
@@ -1402,10 +1402,35 @@ class RemoteSettingsGeneral extends RemoteDefaultClass {
 
         const myBox = new RemoteElementSheetBox("module_general_settings", "350px", true);
         myBox.addSheet("Modes",  "&nbsp;" + settings_index);
+        myBox.addSheet("Health", "&nbsp;" + this.system_health());
         myBox.addSheet("Icons",  "&nbsp;" + settings_icon);
         myBox.addSheet("Server", "&nbsp;" + settings_reload);
         myBox.addSheet("API",    "&nbsp;" + settings_api);
     }
+
+    /* prepare sheet to display server health information */
+    system_health() {
+
+        let system_health = rmStatus.status_system("health");
+        let set_temp;
+
+        let modules = [];
+        for (const [key, value] of Object.entries(system_health)) {
+            if (value === "registered")      { modules.push(key); }
+        }
+        setTimeout(() => { rmStatusShow.show_status_system_health(); }, 500 );
+
+        set_temp  = this.tab.start();
+        set_temp += this.tab.row( 	"Threads:&nbsp;", "<div id='system_health'></div>" );
+        set_temp += this.tab.row( 	"APIs:&nbsp;", modules.join(", ") );
+        set_temp += this.tab.row( 	"&nbsp;");
+        set_temp += this.tab.row( 	"StatusCheck&nbsp(Load):&nbsp;",  "<div id='average_status_duration_load'>"+lang("PLEASE_WAIT")+"</div>");
+        set_temp += this.tab.row( 	"StatusCheck&nbsp(Write):&nbsp;",  "<div id='average_status_duration'>"+lang("PLEASE_WAIT")+"</div>");
+        set_temp += this.tab.end();
+        return set_temp;
+    }
+
+
 
     // edit different modes: edit mode, easy edit mode, show hints, intelligent mode, show button modes
     edit_modes(edit=true, intelligent=false, button_code=false, easy_edit=false, remote_hints=false, json_highlight=false) {
@@ -1521,7 +1546,7 @@ class RemoteSettingsInfo extends RemoteDefaultClass {
         let main_device_config = rmData.devices.data(main_audio);
         let main_device_commands = rmData.devices.list_commands(main_audio, "definition");
         let main_device = rmStatus.status_device_raw(main_audio);
-        let system_health = rmStatus.status_system("health");
+        //let system_health = rmStatus.status_system("health");
         let audio_max = 100;
         let audio1, audio2;
 
@@ -1555,6 +1580,7 @@ class RemoteSettingsInfo extends RemoteDefaultClass {
         let setting_info = set_temp;
 
         // server health
+        /*
         let modules = [];
         for (const [key, value] of Object.entries(system_health)) {
             if (value === "registered")      { modules.push(key); }
@@ -1569,6 +1595,8 @@ class RemoteSettingsInfo extends RemoteDefaultClass {
         set_temp += this.tab.row( 	"StatusCheck&nbsp(Write):&nbsp;",  "<div id='average_status_duration'>"+lang("PLEASE_WAIT")+"</div>");
         set_temp += this.tab.end();
         let setting_health = set_temp;
+
+         */
 
         // sceen & display
         set_temp  = this.tab.start();
@@ -1596,7 +1624,6 @@ class RemoteSettingsInfo extends RemoteDefaultClass {
 
         const myBox = new RemoteElementSheetBox("module_system_info", "220px", true);
         myBox.addSheet("Info",   "&nbsp;" + setting_info);
-        myBox.addSheet("Health", "&nbsp;" + setting_health);
         myBox.addSheet("Screen", "&nbsp;" + setting_display);
         myBox.addSheet("Other",  "&nbsp;" + setting_other);
     }

@@ -351,6 +351,20 @@ button.rm-button.small {
     border      : solid 2px var(--rm-color-button-setting-border-select);
 }
 
+.rm-button_setting_index.remote {
+    width       : calc(100% / 3 - 8px);
+    max-width   : 150px;
+    margin      : 4px;
+    height      : 70px;
+    border-radius : 4px;
+}
+.rm-button_setting_index.remote img {
+    max-height: 35px;
+    max-width: 55px;
+    margin: auto;
+    padding: 0;
+}
+
 canvas {
     margin              : 5px;
 }

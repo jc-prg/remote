@@ -192,7 +192,7 @@ function apiSceneJsonEdit(device,field_names) {
 		
 	appFW.requestAPI("POST",["scene",device], info, apiAlertReturn);
 	*/
-console.error(json);
+
 	appFW.requestAPI("POST",["scene",device], json, apiAlertReturn);
 
 	}
