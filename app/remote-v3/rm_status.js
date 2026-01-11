@@ -143,7 +143,6 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         this.show_status(this.data, this.edit_mode, false);
     }
 
-
     /* coordinate status visualization for all device types */
     show_status(data, edit_mode, update=true) {
         if (update) {
@@ -646,17 +645,17 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             if (remoteHints) { setTextById("display_ERROR_info_"+device_id,""); }
             else { setTextById("display_ERROR_info_" + device_id, lang("STATUS_NO_SERVER_CONNECT")); }
         }
-        else if (rmRemote.edit_mode)                         { this.visualize_element_display(device_id, "EDIT_MODE", "device"); }
-        else if (deactivateButton || power_status === "N/A") { this.visualize_element_display(device_id, "MANUAL", "device"); }
-        else if (power_status === "ON")                      { this.visualize_element_display(device_id, "ON", "device"); }
-        else if (power_status === "OFF")                     { this.visualize_element_display(device_id, "OFF", "device"); }
+        else if (rmRemote.edit_mode)                         { this.visualize_element_display(device_id, "EDIT_MODE", "device", "1"); }
+        else if (deactivateButton || power_status === "N/A") { this.visualize_element_display(device_id, "MANUAL", "device", "2"); }
+        else if (power_status === "ON")                      { this.visualize_element_display(device_id, "ON", "device", "3"); }
+        else if (power_status === "OFF")                     { this.visualize_element_display(device_id, "OFF", "device", "4"); }
         else if (power_status.indexOf("ERROR") >= 0) {
-            this.visualize_element_display(device_id, "ERROR", "device");
+            this.visualize_element_display(device_id, "ERROR", "device", "5");
             if (remoteHints) { setTextById("display_ERROR_info_"+device_id,""); }
             else { setTextById("display_ERROR_info_" + device_id, power_message); }
         }
         else if (power_status === "POWER_OFF") {
-            this.visualize_element_display(device_id, "POWER_OFF", "device");
+            this.visualize_element_display(device_id, "POWER_OFF", "device", "6");
             setTextById("display_POWER_OFF_info_"+device_id, "");
         }
     }
@@ -665,6 +664,8 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     visualize_display_type_scene(key, scene_status, scene_status_log) {
 
         if (!document.getElementById("display_"+key+"_ON")) { return; }
+        if (rmRemote.active_type !== "scene") { return; }
+
         console.debug("visualize_display_type_scene(): SCENE_"+key+"="+scene_status+" ... "+scene_status_log);
 
         if (this.app_connection_error) {
@@ -790,16 +791,12 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     }
 
     /* visualize display depending on status */
-    visualize_element_display(id, view, remote_type="") {
+    visualize_element_display(id, view, remote_type="", xx="") {
         let keys = ["ON", "OFF", "ERROR", "MANUAL", "EDIT_MODE", "POWER_OFF"];
         view = view.toUpperCase();
 
-        if (view === "N/A" && remote_type !== "scene") {
-            view = "MANUAL";
-        }
-        else if (view === "N/A" || view === "PARTLY") {
-            view = "ON";
-        }
+        if (view === "N/A" && remote_type !== "scene") { view = "MANUAL"; }
+        else if (view === "N/A" || view === "PARTLY") { view = "ON"; }
         else if (!keys.includes(view)) {
             this.logging.error("visualize_element_display(): No display type defined fitting to status " + view + ".")
             view = "ERROR";
