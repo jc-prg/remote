@@ -73,6 +73,7 @@ class Connect(RemoteThreadingClass):
         self.check_error = time.time()
         self.last_message = ""
         self.info_no_devices_found = {}
+        self.check_activity_info = {"count": 0, "active": [], "inactive": []}
 
         self.discover_last = 0
         self.discover_now = True
@@ -105,7 +106,10 @@ class Connect(RemoteThreadingClass):
 
         while self._running:
             if time.time() - self.api_check_device_connection_last > self.api_check_device_connection_interval or self.api_check_device_connection_now:
-                self.logging.info(f"Check connected devices (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
+                if self.api_check_device_connection_now:
+                    self.logging.info(f"Check connected devices (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
+                else:
+                    self.logging.debug(f"Check connected devices (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
                 self.check_connection()
                 self.check_activity()
                 self.api_check_device_connection_last = time.time()
@@ -145,8 +149,7 @@ class Connect(RemoteThreadingClass):
         """
         check IP connection and try to reconnect if IP connection exists and status is not "Connected"
         """
-        self.logging.debug(".................... CHECK CONNECTION (" + str(self.api_check_device_connection_interval) +
-                           "s) ....................")
+        self.logging.debug(".................... CHECK CONNECTION (" + str(self.api_check_device_connection_interval) + "s) ....................")
         self.logging.debug("Check Interface configuration: " + str(self.config.interface_configuration))
 
         connected = []
@@ -229,43 +232,39 @@ class Connect(RemoteThreadingClass):
                 else:
                     connected.append(key.replace("_default", ""))
 
-        self.logging.debug("Checked device connections (duration=" + str(round(time.time() - start_time, 1)) +
-                          "s / interval=" + str(self.api_check_device_connection_interval) + "s) ...")
-        if len(connected) > 0:
-            self.logging.debug("-> CONNECTION OK: " + ", ".join(connected))
-        if len(not_connected) > 0:
-            self.logging.debug("-> NO CONNECTION: " + ", ".join(not_connected))
+        self.logging.debug("Checked device connections (duration=" + str(round(time.time() - start_time, 1)) + "s / interval=" + str(self.api_check_device_connection_interval) + "s) ...")
+        if len(connected) > 0:     self.logging.debug("-> CONNECTION OK: " + ", ".join(connected))
+        if len(not_connected) > 0: self.logging.debug("-> NO CONNECTION: " + ", ".join(not_connected))
 
     def check_activity(self):
         """
         check when the last command was send and if an auto-off has to be reflected in the system status
         """
-        self.logging.debug(".................... CHECK ACTIVITY (" + str(self.api_check_device_connection_interval) +
-                           "s) ....................")
+        self.logging.debug(".................... CHECK ACTIVITY (" + str(self.api_check_device_connection_interval) + "s) ....................")
 
         active = []
         inactive = []
-        auto_off = []
+        change = False
+        check_activity = {"active":[], "inactive":[]}
 
         for key in self.api:
             if key not in self.api_device_list:
                 if key not in self.info_no_devices_found or not self.info_no_devices_found[key]:
                     if self.api[key].status == "Connected":
-                        self.logging.warning("Device Activity: Could not find list of devices for '" + key + "'; " +
-                                             "Assumption: API device enabled but no devices defined yet.")
+                        self.logging.warning("Device Activity: Could not find list of devices for '" + key + "'; " + "Assumption: API device enabled but no devices defined yet.")
                     self.info_no_devices_found[key] = True
                 continue
 
             device_list = self.api_device_list[key]
             self.logging.debug(" * " + key + " : " + str(device_list))
             if self.api[key].last_action > 0:
-                self.logging.debug("   -> " + str(round((time.time() - self.api[key].last_action)*10)/10) +
-                                   "s  (" + self.api[key].last_action_cmd + ")")
-                active.append(key.replace("_default", "") +
-                              " (" + str(round((time.time() - self.api[key].last_action)*10)/10) + "s)")
+                self.logging.debug("   -> " + str(round((time.time() - self.api[key].last_action)*10)/10) + "s  (" + self.api[key].last_action_cmd + ")")
+                active.append(key.replace("_default", "") + " (" + str(round((time.time() - self.api[key].last_action)*10)/10) + "s)")
+                check_activity["active"].append(key)
             else:
                 self.logging.debug("   -> INACTIVE since server start")
                 inactive.append(key.replace("_default", ""))
+                check_activity["active"].append(key)
 
             for device in device_list:
                 auto_power_off = self.device_auto_power_off(device)
@@ -274,11 +273,22 @@ class Connect(RemoteThreadingClass):
                     if auto_power_off["switch_off"]:
                         self.device_save_status(device, button="power", status="OFF")
 
-        self.logging.info(f"Checked device activity (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
-        if len(active) > 0:
-            self.logging.info("-> ACTIVITY: " + ", ".join(active))
-        if len(inactive) > 0:
-            self.logging.info("-> INACTIVE: " + ", ".join(inactive))
+        if check_activity["active"] != self.check_activity_info["active"] or check_activity["inactive"] != self.check_activity_info["inactive"]:
+            change = True
+            self.check_activity_info["active"] = check_activity["active"]
+            self.check_activity_info["inactive"] = check_activity["inactive"]
+
+        if change or self.check_activity_info["count"] > 10 or self.api_check_device_connection_now:
+            if len(active) > 0:   self.logging.info("-> ACTIVITY: " + ", ".join(active))
+            if len(inactive) > 0: self.logging.info("-> INACTIVE: " + ", ".join(inactive))
+            self.logging.info(f"Checked device activity (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
+            self.check_activity_info["count"] = 0
+        else:
+            if len(active) > 0:   self.logging.debug("-> ACTIVITY: " + ", ".join(active))
+            if len(inactive) > 0: self.logging.debug("-> INACTIVE: " + ", ".join(inactive))
+            self.logging.debug(f"Checked device activity (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
+
+        self.check_activity_info["count"] += 1
 
     def check_devices(self):
         """
