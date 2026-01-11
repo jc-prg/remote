@@ -1,7 +1,7 @@
 netaddr
 configparser
 broadlink==0.19.0
-flask==2.2.2
+flask==2.2.5
 flask-restful
 flask-httpauth
 flask-cors
