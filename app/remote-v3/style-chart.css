@@ -31,7 +31,6 @@
     opacity         : var(--rm-opacity-display-var);
     text-align      : center;
     align-content   : center;
-    //padding         : 6px;
     margin-bottom   : 6px;
     margin-top      : 6px;
 }
@@ -56,8 +55,8 @@
     display          : block;
     border           : var(--rm-color-chart-content-border);
     border-radius    : 5px;
-    height           : calc(100% - 12px);
-    max-height       : calc(100% - 12px);
+    height           : calc(100% - 14px);
+    max-height       : calc(100% - 14px);
     background-color : var(--rm-color-chart-content-background);
     overflow         : hidden;
     margin           : 6px;
