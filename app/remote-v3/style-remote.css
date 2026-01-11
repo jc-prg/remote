@@ -434,6 +434,17 @@ ul.help ul li {
     max-width       : 200px;
 }
 
+#scene_edit_header_image {
+    height : 140px;
+    max-height : 140px;
+    max-width : 90%;
+    display: block;
+}
+
+#scene_edit_header_image img {
+    max-height: 120px;
+}
+
 .favicon {
     max-width: 60px;
     max-height: 60px;

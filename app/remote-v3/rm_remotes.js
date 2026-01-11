@@ -542,7 +542,9 @@ class RemoteMain extends RemoteDefaultClass {
             "<input id='remote_visibility' value='" + remote_visible + "' style='display:none;'>" +
             this.button.edit("apiRemoteChangeVisibility('device','" + device + "','remote_visibility');", lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
             this.button.edit("apiDeviceEdit('" + device + "','edit','description,label,interface,method,device_id,image');", lang("BUTTON_T_SAVE")) + "&nbsp;" +
-            this.button.edit("apiDeviceDelete('" + device + "');", "delete") + "</span>",
+            this.button.edit("apiDeviceDelete('" + device + "');", "delete") + "&nbsp;" +
+            this.button.edit("remoteToggleEditMode(false);" + this.name + ".create('" + this.active_type + "','" + device + "');", lang("BUTTON_T_STOP_EDIT")) +
+            "</span>",
             false
         );
         edit += this.tab.line();
@@ -1127,7 +1129,9 @@ console.error(preview, rm_data["remote"], rm_data["display"], rm_data["display-s
                 "<input id='scene_visibility' value='" + scene_info["visible"] + "' style='display:none;'>" +
                 this.button.edit("apiRemoteChangeVisibility('scene','" + scene + "','scene_visibility');", lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
                 this.button.edit("apiSceneEdit('" + scene + "','edit','description,label,image');", lang("BUTTON_T_SAVE"), "") + "&nbsp;" +
-                this.button.edit("apiSceneDelete('" + scene + "');", lang("BUTTON_T_DELETE"), "") + "</span>",
+                this.button.edit("apiSceneDelete('" + scene + "');", lang("BUTTON_T_DELETE"), "") + "&nbsp;" +
+                this.button.edit("remoteToggleEditMode(false);" + this.name + ".create('" + this.active_type + "','" + scene + "');", lang("BUTTON_T_STOP_EDIT")) +
+                "</span>",
                 false
             );
             edit += this.tab.end();
@@ -1153,7 +1157,7 @@ console.error(preview, rm_data["remote"], rm_data["display"], rm_data["display-s
         setTextById(id, remote);
 
         // create sheet box
-        const myBox = new RemoteElementSheetBox("scene-edit-main", "500px", true, false, false);
+        const myBox = new RemoteElementSheetBox("scene-edit-main", "400px", true, false, false);
         myBox.addSheet(lang("SCENE"), this.dialog_edit_main());
         myBox.addSheet(lang("API_SETTINGS"), this.dialog_edit_api());
 
@@ -2130,7 +2134,7 @@ class RemoteMainEditElements extends RemoteDefaultClass {
         let selected = getValueById("edit_image");
         if (images[selected]) {
             //let image_html = this.scene_header_image(id, scene, selected);
-            let image_html = "<img src='" + rm3scene_dir + images[selected][0] + "' style='width:100%;' alt=''>";
+            let image_html = "<img src='" + rm3scene_dir + images[selected][0] + "' alt=''>";
             image_html += "<br/><small><a href='" + images[selected][1] + "' target='_blank'>" + images[selected][1] + "</a></small><br/>&nbsp;";
             setTextById("scene_edit_header_image", image_html);
         }
