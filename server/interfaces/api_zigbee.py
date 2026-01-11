@@ -674,7 +674,7 @@ class ApiControl(RemoteApiClass):
                 self.logging.error("ERROR: No data for device '" + device_id + "' available (no further info for this device till reconnect).")
                 self.not_available.append(device_id)
             self.working = False
-            return "N/A"
+            return {"error": "ZigBee devices not available: " + str(self.not_available)}
 
         if self.status == "Connected":
 
