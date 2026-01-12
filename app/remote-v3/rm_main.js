@@ -42,7 +42,7 @@ function startRemote() {
 // initial settings and load menus
 //----------------------------------
 
-function remoteMainMenu (cookie_erase=true) {
+function remoteMainMenu (cookie_erase=true, load_remote=true) {
 
 	rmSettings.hide();
 	setNavTitle(appTitle);
@@ -57,19 +57,23 @@ function remoteMainMenu (cookie_erase=true) {
 	setTextById("frame3","");
 	setTextById("frame4","");
 	setTextById("frame5","");
+
+	remoteFirstLoad_load();
 	}
 
 
 function remoteInit (first_load=true) {
-	remoteMainMenu(false);
 	if (first_load) {
+		setTextById("frame4","<div style='width:100%;padding:15px;text-align:center;'>"+lang("LOADING_DATA")+"</div>");
 		rmRemote.active_name = "";
 		rmCookies.get_settings();
-		showRemoteInBackground(1);			// show start screen
-		setTextById("frame4","<div style='width:100%;padding:15px;text-align:center;'>"+lang("LOADING_DATA")+"</div>");
-		remoteFirstLoad_load();			// init load of data
-		}
+		showRemoteInBackground(1);
+		remoteMainMenu(false, true);
+		remoteFirstLoad_load();
+	} else {
+		remoteMainMenu(false);
 	}
+}
 	
 
 function remoteFirstLoad_load() {
