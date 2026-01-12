@@ -2,28 +2,28 @@
 // jc://remote/
 //--------------------------------
 
-var rm3background  = "remote-v3/img/remote_black.png";
-var rm3background_light  = "remote-v3/img/remote_silver.png";
-var rm3scene_dir   = "/scenes/";
+const rm3background = "remote-v3/img/remote_black.png";
+const rm3background_light = "remote-v3/img/remote_silver.png";
+const rm3scene_dir   = "/scenes/";
 reload_times = {
 	OK: 15,
 	LONG: 30,
 	TIMEOUT: 60
 }
 
-var app_data = {};
 var reload_active = false;
-var showImg = true;
-var startActive = true;
-var easyEdit = false;
-var remoteHints = true;
-var jsonHighlighting= false;
 
-var rmMenu     = undefined;
-var rmStart    = undefined;
-var rmRemote   = undefined;
-var rmSettings = undefined;
-var rmJson     = undefined;
+let showImg = true;
+let startActive = true;
+let easyEdit = false;
+let remoteHints = true;
+let jsonHighlighting= false;
+
+let rmMenu = undefined;
+let rmStart = undefined;
+let rmRemote = undefined;
+let rmSettings = undefined;
+let rmJson = undefined;
 
 function startRemote() {
 
@@ -58,17 +58,19 @@ function remoteMainMenu (cookie_erase=true, load_remote=true) {
 	setTextById("frame4","");
 	setTextById("frame5","");
 
-	remoteFirstLoad_load();
+	if (load_remote) {
+		remoteFirstLoad_load();
+		rmRemote.active_name = "";
 	}
+}
 
 
 function remoteInit (first_load=true) {
 	if (first_load) {
 		setTextById("frame4","<div style='width:100%;padding:15px;text-align:center;'>"+lang("LOADING_DATA")+"</div>");
-		rmRemote.active_name = "";
 		rmCookies.get_settings();
 		showRemoteInBackground(1);
-		remoteMainMenu(false, true);
+		remoteMainMenu(false, false);
 		remoteFirstLoad_load();
 	} else {
 		remoteMainMenu(false);
@@ -124,8 +126,6 @@ function remoteReload(data) {
 		console.error("remoteReload: data not loaded.");
 		return;
 		}
-
-    app_data = data;
 
     // remoteForceReload_checkIfReady(data); // check if reloaded
 	remoteInitData(data);               // init and reload data
