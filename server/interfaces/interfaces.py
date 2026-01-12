@@ -47,6 +47,7 @@ class Connect(RemoteThreadingClass):
             "SONY": "api_sony",
             "TAPO-P100": "api_p100",
             "TEST": "api_test",
+            "WEATHER": "api_weather",
             "ZIGBEE2MQTT": "api_zigbee"
         }
         self.api_configuration = {
@@ -430,7 +431,7 @@ class Connect(RemoteThreadingClass):
         if config_api != {}:
             for api in config_api:
                 if api not in self.api_modules:
-                    self.logging.error("API Connector for '" + api + "' not available.")
+                    self.logging.error("API Connector (Python module) for '" + api + "' not available.")
                     continue
                 for api_device in config_api[api]["devices"]:
                     api_dev = api + "_" + api_device
