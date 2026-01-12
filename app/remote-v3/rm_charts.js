@@ -108,8 +108,10 @@ class RemoteChartJS extends RemoteDefaultClass {
             "line", true, "rmChart_"+chart_id);
         let chart_available = chart_data["available"].sort();
         let chart_position = chart_data["available"].indexOf(chart_data["title"]);
+        let reload_click = this.name+".create(\"" + chart_id + "\");";
+        let reload = `&nbsp;&nbsp;<img src='icon/reload-white.png' alt='' onclick='${reload_click}' class='rm-chart-reload'>`;
 
-        let chart_title = chart_data["title"];
+        let chart_title = chart_data["title"]+reload;
         if (chart_available.length > 1) {
             if (chart_position > 0) {
                 let date = chart_available[chart_position - 1];
