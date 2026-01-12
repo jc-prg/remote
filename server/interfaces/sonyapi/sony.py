@@ -12,6 +12,7 @@ import time
 from sonyapilib.device     import SonyDevice
 from enum                  import Enum
 from sonyapilib.xml_helper import find_in_xml
+from server.modules.rm3presets import set_logging
 
 try:
   from urllib.parse import quote
@@ -39,7 +40,8 @@ class sonyDevice():
         '''
         initialize device
         '''
-        self.logging       = logging.getLogger("api-SONYlib")
+        #self.logging       = logging.getLogger("api-SONYlib")
+        self.logging       = set_logging("api-SONYlib")
 
         self.device_ip     = ip
         self.device_name   = name

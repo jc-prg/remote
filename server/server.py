@@ -81,7 +81,8 @@ def shutdown():
 
 
 log_srv = rm3presets.set_logging("server")
-log = logging.getLogger("werkzeug")
+log = rm3presets.set_logging("werkzeug")
+#log = logging.getLogger("werkzeug")
 
 # set system signal handler
 signal.signal(signal.SIGINT, on_exit)
