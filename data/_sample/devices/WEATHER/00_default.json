@@ -1,0 +1,64 @@
+{
+	"data": {
+        "buttons" : {},
+        "commands" : {
+          "availability": {
+            "get": "availability"
+          },
+          "credits": {
+            "get": "info_module.provider_link"
+          },
+          "update": {
+            "get": "info_update"
+          },
+          "location": {
+            "get": "info_position"
+          },
+          "status": {
+            "get": "info_status"
+          },
+          "current": {
+            "get": "current"
+          },
+          "temperature": {
+            "get": "current.temperature",
+            "type": "float",
+            "unit": "°C"
+          },
+          "humidity": {
+            "get": "current.humidity",
+            "type": "float",
+            "unit": "%"
+          },
+          "wind-speed": {
+            "get": "current.wind_speed",
+            "type": "float",
+            "unit": "km/h"
+          },
+          "power": {
+            "get": "power"
+          },
+          "sunrise": {
+            "get": "sunrise"
+          },
+          "sunset": {
+            "get": "sunset"
+          },
+          "weather": {
+            "get": "current.description"
+          },
+          "weather-icon": {
+            "get": "current.description_icon"
+          }
+        },
+        "query" : {
+          "load_intervals" : {},
+          "load_default" : 30,
+          "load_after" : [],
+          "load_never": []
+          },
+		"description" : "API for Open Meteo Weather",
+		"method" : "query"
+	},
+	"info": "jc://remote/ - In this files the API-specific commands and buttons are defined."
+}

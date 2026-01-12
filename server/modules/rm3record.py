@@ -96,6 +96,7 @@ class RecordData(RemoteThreadingClass):
         self.record_end = 0
         self.record_values = {}
         self.record_available = []
+        self.record_devices = []
         self.last_record = 0
         self.record_is_working = False
 
@@ -132,6 +133,12 @@ class RecordData(RemoteThreadingClass):
         self.record_end = self.record_data["config"]["record_timing"]["end"]
         self.record_values = self.record_data["config"]["record"]
         self.record_available = rm3json.available(rm3presets.record)
+        self.record_devices = []
+        for value in self.record_data["config"]["record"]:
+            device = value.split("_", 1)[0]
+            if device not in self.record_devices:
+                self.record_devices.append(device)
+        self.config.record_devices = self.record_devices
 
         self.last_record = time.time()
 
@@ -253,6 +260,12 @@ class RecordData(RemoteThreadingClass):
         if success:
             self.record_data["config"] = config
             self.record_interval = self.record_data["config"]["record_interval"]
+            self.record_devices = []
+            for value in self.record_data["config"]["record"]:
+                device = value.split("_", 1)[0]
+                if device not in self.record_devices:
+                    self.record_devices.append(device)
+            self.config.record_devices = self.record_devices
             self.config.write(self.config_file, self.record_data, "edit_config()")
 
         self.is_working(False)

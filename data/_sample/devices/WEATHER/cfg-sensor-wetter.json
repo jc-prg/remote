@@ -1,0 +1,8 @@
+{
+    "data": {
+        "buttons": {},
+        "commands": {},
+        "description": "Wetter München: sensor"
+    },
+    "info": "jc://remote/ - In this file the commands and buttons are defined."
+}

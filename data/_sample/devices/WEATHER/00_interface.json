@@ -1,0 +1,19 @@
+{
+    "API-Description": "Open Meteo Weather interfaces",
+    "API-Devices": {
+        "default": {
+            "Description": "Open Meteo Weather (incl. GeoPy)",
+            "IPAddress": "127.0.0.1",
+            "MacAddress": "",
+            "Methods": ["query"],
+            "MultiDevice": false,
+            "PowerDevice": "",
+            "Location": null,
+            "LocationGPS": null,
+            "Interval": 600,
+            "Timeout": 5
+        }
+    },
+    "API-Info": "https://github.com/jc-prg/remote/blob/master/server/interfaces/weather/README.md",
+    "API-Source": ""
+}

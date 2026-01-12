@@ -32,8 +32,7 @@ class ConfigInterfaces(RemoteThreadingClass):
                 # Reread values from interfaces with next request -> RemoteReload in server_cmd.py
                 self.cache_update_api = True
                 self.cache_time = time.time()
-                self.logging.debug("Reread device information via interface with next request (" + self.name + ", " +
-                                   str(self.cache_interval) + "s)")
+                self.logging.debug("Reread device information via interface with next request (" + self.name + ", " + str(self.cache_interval) + "s)")
 
             self.thread_wait()
 
@@ -96,6 +95,7 @@ class ConfigCache(RemoteThreadingClass):
         self.load_after = {}
         self.config_errors = {}
         self.config_messages = []
+        self.record_devices = []
         self.all_available_api_loaded = False
 
     def run(self):

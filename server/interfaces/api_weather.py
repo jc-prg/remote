@@ -31,6 +31,14 @@ class ApiControl(RemoteApiClass):
         RemoteApiClass.__init__(self, "api-WEATHER", api_name, "query",
                                 self.api_description, device, device_config, log_command, config)
 
+        self.config_add_key("Location", "")
+        self.config_add_key("LocationGPS", [0,0])
+        self.config_add_key("MultiDevice", False)
+        self.config_add_key("PowerDevice", "")
+        self.config_set_methods(["send","query"])
+
+        self.weather_api = ApiWeather(config)
+
     def connect(self):
         """Connect / check connection"""
 
@@ -39,6 +47,28 @@ class ApiControl(RemoteApiClass):
         self.status = "Connected"
         self.count_error = 0
         self.count_success = 0
+
+        test_param = {
+            "active": True,
+            "available_sources": [
+                "Python-Weather",
+                "Open-Meteo"
+            ],
+            "gps_location": [
+                48.14,
+                11.58,
+                "Munich"
+            ],
+            "last_sun_update": "20260112 14:13:27",
+            "last_sunrise": "08:00",
+            "last_sunset": "16:43",
+            "location": "Munich",
+            "source": "Open-Meteo"
+        }
+        self.weather_api.connect(test_param)
+        self.weather_api.start()
+        time.sleep(10)
+        #self.logging.info(str(self.weather_api.get_weather_info()))
 
         # ---- change for your api ----
         #       try:
@@ -93,16 +123,33 @@ class ApiControl(RemoteApiClass):
         if self.log_command:
             self.logging.info("__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
 
-        # ---- change for your api ----
-        #       if self.status == "Connected":
-        #         try:
-        #           result  = self.api.command(xxx)
-        #         except Exception as e:
-        #           self.working = False
-        #           return "ERROR "+self.api_name+" - query: " + str(e)
-        #       else:
-        #         self.working = False
-        #         return "ERROR "+self.api_name+": Not connected"
+        if self.weather_api.get_weather_info():
+            weather = self.weather_api.get_weather_info()
+            if "." in command:
+                commands = command.split(".")
+            else:
+                commands = [command]
+
+            if command == "availability" and "info_status" in weather and weather["info_status"]["running"] == "OK":
+                result = "ONLINE"
+            elif command == "power" and "info_status" in weather and weather["info_status"]["running"] == "OK":
+                result = "ON"
+            elif command == "sunrise":
+                result = self.weather_api.get_sunrise()
+            elif command == "sunset":
+                result = self.weather_api.get_sunset()
+            elif len(commands) == 1 and command in weather:
+                result = weather[command]
+            elif len(commands) == 2 and commands[0] in weather and commands[1] in weather[commands[0]]:
+                result = weather[commands[0]][commands[1]]
+            else:
+                result = f"ERROR Command {command} isn't available in the weather data."
+
+            self.logging.debug(f"{command} | {commands[len(commands)-1]} : {result}")
+            self.logging.debug(f"{weather['info_units']}")
+
+            if not "ERROR" in str(result) and commands[len(commands)-1] in weather["info_units"]:
+                result = f"{result} {weather["info_units"][commands[len(commands) - 1]]}"
 
         self.working = False
         return result
@@ -344,7 +391,6 @@ class ApiOpenMeteo(RemoteThreadingClass):
             self.logging.debug("Wait to read weather data (" + str(round(self.update_interval, 1)) + ":" +
                                str(round(self.update_wait, 1)) + "s) ...")
 
-            self.thread_control()
             self.thread_wait()
 
         self.logging.info("Stopped weather process 'Open-Meteo.com'.")
@@ -512,10 +558,10 @@ class ApiWeather(RemoteThreadingClass):
         RemoteThreadingClass.__init__(self, class_id="weather", name="weather")
         self.thread_priority(3)
 
+        self.param = {}
         self.config = config
         self.initial_date = self.config.local_time().strftime("%Y%m%d")
         self.id = self.config.local_time().strftime("%H%M%S")
-        self.param = self.config.param["weather"]
 
         self.weather = None
         self.weather_source = None
@@ -538,7 +584,7 @@ class ApiWeather(RemoteThreadingClass):
 
         self.module = None
         self.gps = ApiGPS()
-        self.connect(self.config.param["weather"])
+        #self.connect(self.param["weather"])
 
     def run(self):
         """
@@ -553,7 +599,7 @@ class ApiWeather(RemoteThreadingClass):
             self.error = False
             if self.update or self.initial_date != self.config.local_time().strftime("%Y%m%d"):
                 self.update = False
-                self.connect(self.config.param["weather"])
+                self.connect(self.param["weather"])
                 self.initial_date = self.config.local_time().strftime("%Y%m%d")
 
             # if paused
@@ -577,24 +623,24 @@ class ApiWeather(RemoteThreadingClass):
                             self.sunset_today = self.weather_info["forecast"]["today"]["sunset"]
 
             # write sunset and sunrise to main config
-            if not self.wrote_sunrise_sunset and self.sunset_today is not None and self.sunrise_today is not None:
-                self.config.param["weather"]["last_sunrise"] = self.sunrise_today
-                self.config.param["weather"]["last_sunset"] = self.sunset_today
-                self.config.param["weather"]["last_sun_update"] = self.config.local_time().strftime("%Y%m%d %H:%M:%S")
-                self.config.db_handler.write(config="main", data=self.config.param)
-                self.wrote_sunrise_sunset = True
+            #if not self.wrote_sunrise_sunset and self.sunset_today is not None and self.sunrise_today is not None:
+            #    self.param["weather"]["last_sunrise"] = self.sunrise_today
+            #    self.param["weather"]["last_sunset"] = self.sunset_today
+            #    self.param["weather"]["last_sun_update"] = self.config.local_time().strftime("%Y%m%d %H:%M:%S")
+            #    #self.db_handler.write(config="main", data=self.config.param)
+            #    self.wrote_sunrise_sunset = True
 
             # write weather data to file once every five minutes
-            weather_stamp = self.config.local_time().strftime("%H%M")+"00"
-            if int(self.config.local_time().strftime("%M")) % 5 == 0:
-                self.logging.info("Write weather data to file ...")
-                weather_data = self.get_weather_info("current")
-                self.config.queue.entry_add(config="weather", date="", key=weather_stamp, entry=weather_data)
-                time.sleep(60)
+            #weather_stamp = self.config.local_time().strftime("%H%M")+"00"
+            #if int(self.config.local_time().strftime("%M")) % 5 == 0:
+            #    self.logging.info("Write weather data to file ...")
+            #    weather_data = self.get_weather_info("current")
+            #    self.config.queue.entry_add(config="weather", date="", key=weather_stamp, entry=weather_data)
+            #    time.sleep(60)
 
             # check if data are correct
             if "current" not in self.weather_info:
-                self.raise_error("Weather data not correct (missing 'current').")
+            #    self.raise_error("Weather data not correct (missing 'current').")
                 self.weather_info = self.weather_empty.copy()
 
             # move errors to status info
@@ -610,7 +656,6 @@ class ApiWeather(RemoteThreadingClass):
             self.logging.debug("Wait to read weather data (" + str(round(self.update_time, 1)) + ":" +
                                str(round(self.update_wait, 1)) + "s) ...")
 
-            self.thread_control()
             self.thread_wait()
 
         self.logging.info("Stopped weather module.")
@@ -642,6 +687,11 @@ class ApiWeather(RemoteThreadingClass):
         Args:
             param (dict): weather parameters
         """
+        self.param = param
+
+        if not "source" in param or not "location" in param or not "gps_location" in param:
+            self.logging.error(f"Parameters missing to start weather module ({param}).")
+
         self.weather_source = param["source"]
         self.logging.info("(Re)connect weather module (source="+self.weather_source+")")
         update_gps = False
@@ -650,26 +700,18 @@ class ApiWeather(RemoteThreadingClass):
 
         if self.weather_source == "Open-Meteo":
             self.weather_city = param["location"]
-            if "gps_location" in param and param["gps_location"] != [0, 0] and len(param["gps_location"]) >= 2 \
-                    and not update_gps:
+            if "gps_location" in param and param["gps_location"] != [0, 0] and len(param["gps_location"]) >= 2 and not update_gps:
                 self.weather_gps = param["gps_location"]
             else:
                 self.weather_gps = self.gps.look_up_location(self.weather_city)
 
             if self.module is not None:
                 self.module.stop()
-            self.module = BirdhouseWeatherOpenMeteo(config=self.config, gps_location=self.weather_gps)
+            self.module = ApiOpenMeteo(config=self.config, gps_location=self.weather_gps)
             self.module.start()
 
         else:
-            self.weather_city = param["location"]
-            if "gps_location" in param and param["gps_location"] != [0, 0] and len(param["gps_location"]) == 2 \
-                    and not update_gps:
-                self.weather_gps = param["gps_location"]
-            else:
-                self.weather_gps = self.gps.look_up_location(self.weather_city)
-            self.module = BirdhouseWeatherPython(config=self.config, location=self.weather_city)
-            self.module.start()
+            self.logging.error(f"Weather module {param["source"]} doesn't exists.")
 
     def get_gps_info(self, param):
         """
