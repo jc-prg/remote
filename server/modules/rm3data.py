@@ -56,7 +56,10 @@ class RemotesData(RemoteThreadingClass):
             self.logging.debug("Waiting time = " + str(self.thread_waiting_time()) + "s")
 
             if not self.config.user_inactive() and not self.queue.reload:
-                self.devices_get_status({}, True)
+                self.devices_get_status(True)
+
+            elif len(self.config.record_devices) > 0:
+                self.devices_get_status(True, self.config.record_devices)
 
             elif self.config.user_inactive():
                 self.logging.debug("Skipping status request as last reload still running")
@@ -510,14 +513,14 @@ class RemotesData(RemoteThreadingClass):
         else:
             self.config.write_status(data, "rmData.devices_write()")
 
-    def devices_get_status(self, data, read_api):
+    def devices_get_status(self, read_api, selected_devices=None):
         """
         read status data from config file (method=record) and/or device APIs (method=query)
         data -> data["DATA"]["devices"]
 
         Args:
-            data (dict): config data
             read_api (bool): read from api (or get from config data)
+            selected_devices (list): list of selected devices; if not set, all devices
         Return:
             dict: device status data
         """
@@ -534,8 +537,12 @@ class RemotesData(RemoteThreadingClass):
             devices = self.cache_devices
             config = self.cache_config
 
+        # reduce reload to selected devices
+        if selected_devices is None or len(selected_devices) == 0:
+            selected_devices = devices
+
         # read status of all devices
-        for device in devices:
+        for device in selected_devices:
 
             if device == "default":
                 continue

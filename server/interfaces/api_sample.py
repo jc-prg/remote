@@ -3,7 +3,13 @@ import server.modules.rm3json as rm3json
 import server.modules.rm3presets as rm3config
 from server.modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 
-# import sampleAPI as sample
+# How to start an integration:
+# - create a copy of this file to api_<your-api-key>.py
+# - change the line rm3config.api_modules.append("SAMPLE") to rm3config.api_modules.append("<YOUR-API-KEY>")
+# - create a subdirectory <your-api-key> and a README.md in that directory
+# - create a directory data/devices/<YOUR-API-KEY>/ incl. 00_default.json and 00_interface.json
+# - in interface.py add "<YOUR-API-KEY>": "api_<your-api-key>" to self.api_modules = {}
+# - step by step replace comments in the api_sample.py, start with self.connect()
 
 # -------------------------------------------------
 # API-class

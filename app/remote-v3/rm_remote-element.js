@@ -132,11 +132,13 @@ class RemoteElementTable extends RemoteDefaultClass {
         super(name);
 
         this.row_ratio = "auto";
+        this.vertical_align = "top";
     }
 
     /* add a table start */
-    start(width="100%", row_ratio="") {
+    start(width="100%", row_ratio="", vertical_align="top") {
         this.row_ratio = row_ratio;
+        this.vertical_align = vertical_align;
         return "<table style=\"border:0;width:"+width+"\">";
     }
 
@@ -158,8 +160,8 @@ class RemoteElementTable extends RemoteDefaultClass {
         if (td2 === undefined)   { td2 = ""; }
         if (td1 === "start")     { return "<table style=\"border:0;widt:"+td2+"\">"; }
         else if (td1 === "end")  { return "</table>"; }
-        else if (td2 === false)  { return "<tr><td style=\"vertical-align:top;\" colspan=\"2\">" + td1 + "</td></tr>"; }
-        else                     { return "<tr><td style=\"vertical-align:top;"+row_ratio_left+"\">" + td1 + "</td><td style=\"vertical-align:top;"+row_ratio_right+"\">" + td2 + "</td></tr>"; }
+        else if (td2 === false)  { return "<tr><td style=\"vertical-align:"+this.vertical_align+";\" colspan=\"2\">" + td1 + "</td></tr>"; }
+        else                     { return "<tr><td style=\"vertical-align:"+this.vertical_align+";"+row_ratio_left+"\">" + td1 + "</td><td style=\"vertical-align:top;"+row_ratio_right+"\">" + td2 + "</td></tr>"; }
     }
 
     /* add a table row with a line in it*/

@@ -27,6 +27,22 @@
 
 ## UNDER DEVELOPMENT -------------------------------------------------------------
 
+* integrating weather API
+  * OPEN: specific weather display, e.g., big weather icon on one half and basic weather data on the other half 
+  * OPEN: create default configuration with sample data (quasi as device discovery)
+  * QUESTION: is there a need for a device or is it possible to get data if API-Device is defined
+    * idea: whenever MultiDevice = False and same set of commands (defined in 00_default.json) is enough, 
+      address it via <API-Device-Key>_Command - or additional setting in 00_interface.json - key starting with a specific character (:WEATHER:default_temperature)
+      -> no device remote required but data available in a scene ...
+  * OK: read weather data from API-Device configuration (00_interface.json)
+  * OK: record weather data, display in a remote control (default)
+  * OK: connect weather API with sample data set
+  * OK: create config file set
+  * OK: query to request all relevant data for current weather and API status
+
+* OK: reload button / icon on charts (in title?!)
+* OK: check, if recording is nto pause (if recording, do not deactivate an API)
+
 * Improving text on displays
   * OK: table instead of divs
   * OK: scrollbars if necessary

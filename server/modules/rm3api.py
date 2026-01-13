@@ -918,7 +918,7 @@ class RemoteAPI(RemoteDefaultClass):
 
         self.config.cache_request_update()
         self.apis.api_request_reconnect("all", True)
-        self.data.devices_get_status(data["STATUS"]["devices"], read_api=True)
+        self.data.devices_get_status(read_api=True)
         self.config.app_reload_indicator["app_request"] = time.time()
 
         data = self._end(data, ["no-data","no-config"])
@@ -1059,11 +1059,11 @@ class RemoteAPI(RemoteDefaultClass):
         if method == "query":
             # data["REQUEST"]["Return"] = self.apis.send(interface,device,command,value)
             data["REQUEST"]["Return"] = self.queue_send.add2queue([[interface, device, command, value]])
-            self.data.devices_get_status(data, read_api=True)
+            self.data.devices_get_status(read_api=True)
 
         elif method == "record":
             data["REQUEST"]["Return"] = self.edit.device_status_set(device, command, value)
-            self.data.devices_get_status(data, read_api=True)
+            self.data.devices_get_status(read_api=True)
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config", "no-status"])

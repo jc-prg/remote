@@ -111,13 +111,6 @@ def set_logging(set_name, set_log_level=None):
         if set_log_level is None:
             set_log_level = log_set2level
 
-        #if log_to_file:
-        #    logger = logging.getLogger(set_name + str(init_time))
-        #    logger.setLevel(set_log_level)
-        #else:
-        #    logger = logging.getLogger(set_name)
-        #    logger.setLevel(set_log_level)
-
         if log_to_file == "YES" and not os.access(log_filename, os.W_OK):
             print("Could not write to log file " + log_filename)
             log_to_file = "NO"
@@ -125,10 +118,10 @@ def set_logging(set_name, set_log_level=None):
         if log_to_file == "YES" and os.access(log_filename, os.W_OK):
             logger = logging.getLogger(set_name)
             logger.setLevel(set_log_level)
+            logger.propagate = False
 
             log_format_string = '%(asctime)s | %(levelname)-8s ' + set_name.ljust(10) + ' | %(message)s'
-            log_format = logging.Formatter(fmt=log_format_string,
-                                           datefmt='%m/%d %H:%M:%S')
+            log_format = logging.Formatter(fmt=log_format_string, datefmt='%m/%d %H:%M:%S')
             handler = RotatingFileHandler(filename=log_filename, mode='a',
                                           maxBytes=int(2.5 * 1024 * 1024),
                                           backupCount=2, encoding=None, delay=False)
@@ -138,11 +131,13 @@ def set_logging(set_name, set_log_level=None):
         else:
             logger = logging.getLogger(set_name + str(init_time))
             logger.setLevel(set_log_level)
+            logger.propagate = False
 
             log_format_string = '%(asctime)s | %(levelname)-8s %(name)-10s | %(message)s'
-            logging.basicConfig(format=log_format_string,
-                                datefmt='%m/%d %H:%M:%S',
-                                level=log_level)
+            log_format = logging.Formatter(fmt=log_format_string, datefmt='%m/%d %H:%M:%S')
+            handler = logging.StreamHandler(sys.stdout)
+            handler.setFormatter(log_format)
+            logger.addHandler(handler)
 
         logger.debug("Init logger '" + set_name + "', into_file=" + str(log_to_file))
 

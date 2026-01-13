@@ -41,6 +41,18 @@
     cursor: pointer;
 }
 
+.rm-chart-reload {
+    height:16px;
+    width:16px;
+    cursor:pointer;
+    position:relative;
+    top:2px;
+    opacity:30%;
+}
+.rm-chart-reload:hover {
+    opacity:1;
+}
+
 .rm-chart-title {
     font-weight      : bold;
     background-color : var(--rm-color-chart-title-background);
