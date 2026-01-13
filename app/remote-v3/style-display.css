@@ -32,6 +32,7 @@
 .display.h3w2 { grid-row: span 3; grid-column: span 2; }
 .display.h4w2 { grid-row: span 4; grid-column: span 2; aspect-ratio: 4 / 4; }
 .display.h4w4 { grid-row: span 4; grid-column: span 4; aspect-ratio: 4 / 2; }
+.display.weather { grid-row: span 4; grid-column: span 4; aspect-ratio: 4 / 2; }
 
 .display-content {
     position: absolute;
@@ -62,6 +63,12 @@
     color	: var(--rm-color-display-element);
     text-align: left;
     overflow: hidden;
+}
+
+.display-weather-element {
+    height: 100%;
+    vertical-align: center;
+    font-size: 40px;
 }
 
 .display-element.alert   { color : black; }

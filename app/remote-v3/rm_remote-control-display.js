@@ -52,19 +52,17 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                 if (this.edit_mode) { text  = text.replace( /##DISPLAY##/g, "block" ); }
                 else                { text  = text.replace( /##DISPLAY##/g, "none" ); }
 
-                /*
-                for (let key in display_data) {
-                    let label = "<span class='display-label'>"+key+":</span>";
-                    let input = "<span class='display-input-shorten' id='display_"+device+"_"+display_data[key]+"_edit'>{"+display_data[key]+"}</span>";
-                    text += "<div class='display-element "+style+"'>"+label+input+"</div>";
-                }
-                 */
-
                 text += "<div class='display-table "+style+"'>";
-                text += this.tab.start("100%");
+                text += this.tab.start("100%","", "center");
+                let text_tab = "";
+                text_tab += this.tab.start("100%");
                 for (let key in display_data) {
-                    text += this.tab.row(key+":&nbsp;", "<span id='display_"+device+"_"+display_data[key]+"_edit'>{" + display_data[key] + "}</span>");
+                    if (key !== "ICON") {
+                        text_tab += this.tab.row(key + ":&nbsp;", "<span id='display_" + device + "_" + display_data[key] + "_edit'>{" + display_data[key] + "}</span>");
+                    }
                 }
+                text_tab += this.tab.end();
+                text += this.tab.row("ICON: <br/>{" + display_data["ICON"] + "}", text_tab);
                 text += this.tab.end();
                 text += "</div>";
 
@@ -100,14 +98,36 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                 else                                        { text  = text.replace( /##DISPLAY##/g, "none" ); }
 
                 text += "<div class='display-table "+style+"'>";
-                text += this.tab.start("100%");
+
+                let text_tab = "";
+                text_tab += this.tab.start("100%");
                 for (let key in display_data) {
-                    let input_id = "";
-                    if (display_data[key].indexOf("_") >= 0) { input_id = 'display_' + display_data[key]; }
-                    else                                                { input_id = 'display_' + device + '_' + display_data[key]; }
-                    text += this.tab.row(key+":&nbsp;", "<span id='"+input_id+"'>no data</span>");
+                    if (key !== "ICON") {
+                        let input_id = "";
+                        if (display_data[key].indexOf("_") >= 0) {
+                            input_id = 'display_' + display_data[key];
+                        } else {
+                            input_id = 'display_' + device + '_' + display_data[key];
+                        }
+                        text_tab += this.tab.row(key + ":&nbsp;", "<span id='" + input_id + "'>no data</span>");
+                    }
                 }
-                text += this.tab.end();
+            console.error(style, display_data);
+                text_tab += this.tab.end();
+                if (style === "weather" && display_data["ICON"]) {
+                    let input_id = "";
+                    if (display_data["ICON"].indexOf("_") >= 0) {
+                        input_id = 'display_' + display_data["ICON"];
+                    } else {
+                        input_id = 'display_' + device + '_' + display_data["ICON"];
+                    }
+                    text += this.tab.start("100%", "", "center");
+                    text += this.tab.row("<span id='"+input_id+"' class='display-weather-element'></span>", text_tab);
+                    text += this.tab.end();
+                } else {
+                    text += text_tab;
+                }
+
                 text += "</div>";
                 text += display_end;
 
@@ -154,7 +174,9 @@ class RemoteControlDisplay extends RemoteDefaultClass {
             "h2w3": "2x height / 3x wide",
             "h2w4": "2x height / 4x wide",
             "h3w2": "3x height / 2x wide",
-            "h4w2": "4x height / 2x wide"
+            "h4w2": "4x height / 2x wide",
+            "h4w4": "4x height / 4x wide",
+            "weather": "weather display"
         };
     }
 
