@@ -112,7 +112,6 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                         text_tab += this.tab.row(key + ":&nbsp;", "<span id='" + input_id + "'>no data</span>");
                     }
                 }
-            console.error(style, display_data);
                 text_tab += this.tab.end();
                 if (style === "weather" && display_data["ICON"]) {
                     let input_id = "";
