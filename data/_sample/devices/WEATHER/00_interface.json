@@ -4,12 +4,10 @@
         "default": {
             "Description": "Open Meteo Weather (incl. GeoPy)",
             "IPAddress": "127.0.0.1",
-            "MacAddress": "",
             "Methods": ["query"],
             "MultiDevice": false,
-            "PowerDevice": "",
-            "Location": null,
-            "LocationGPS": null,
+            "Location": "Munich",
+            "LocationGPS": [48.14, 11.58, "Munich"],
             "Interval": 600,
             "Timeout": 5
         }

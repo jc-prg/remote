@@ -34,7 +34,6 @@ class ApiControl(RemoteApiClass):
         self.config_add_key("Location", "")
         self.config_add_key("LocationGPS", [0,0])
         self.config_add_key("MultiDevice", False)
-        self.config_add_key("PowerDevice", "")
         self.config_set_methods(["send","query"])
 
         self.weather_api = ApiWeather(config)
@@ -48,34 +47,27 @@ class ApiControl(RemoteApiClass):
         self.count_error = 0
         self.count_success = 0
 
-        test_param = {
-            "active": True,
-            "available_sources": [
-                "Python-Weather",
-                "Open-Meteo"
-            ],
-            "gps_location": [
-                48.14,
-                11.58,
-                "Munich"
-            ],
-            "last_sun_update": "20260112 14:13:27",
-            "last_sunrise": "08:00",
-            "last_sunset": "16:43",
-            "location": "Munich",
-            "source": "Open-Meteo"
-        }
-        self.weather_api.connect(test_param)
-        self.weather_api.start()
-        time.sleep(10)
-        #self.logging.info(str(self.weather_api.get_weather_info()))
+        self.logging.debug("Weather config: " + str(self.api_config))
 
-        # ---- change for your api ----
-        #       try:
-        #           result  = self.api.command(xxx)
-        #       except Exception as e:
-        #           self.status = "ERROR "+self.api_name+" - send: " + str(e)
-        #           return self.status
+        weather_param = {"active": True, "source": "Open-Meteo"}
+        if "LocationGPS" in self.api_config and self.api_config["LocationGPS"] and self.api_config["LocationGPS"] != []:
+            weather_param["gps_location"] =self.api_config["LocationGPS"]
+
+        if "Location" in self.api_config and self.api_config["Location"] and self.api_config["Location"] != "":
+            weather_param["location"] = self.api_config["Location"]
+            if "gps_location" in weather_param:
+                weather_param["gps_location"].append(self.api_config["Location"])
+
+        if not "gps_location" in weather_param and not "location" in weather_param:
+            self.logging.error("Could not start WEATHER API, as no location information are defined: " +str(weather_param))
+            self.status = "error"
+        else:
+            success = self.weather_api.connect(weather_param)
+            if success:
+                self.weather_api.start()
+                time.sleep(10)
+            else:
+                self.status = "error"
 
         return self.status
 
@@ -445,12 +437,18 @@ class ApiOpenMeteo(RemoteThreadingClass):
             self.weather_update = self.config.local_time()
             self.error = False
         except Exception as e:
-            self.raise_error("Could not read weather from open-meteo.com: " + str(e))
+            self.logging.error("Could not read weather from open-meteo.com: " + str(e))
 
     def _convert_data(self):
         """
         convert data to own format (see birdhouse_weather in presets.py)
         """
+        status = {
+            "running": self._running,
+            "paused": self._paused,
+            "error": self.error,
+            "error_msg": self.error_msg
+        }
         self.weather_info["info_module"] = {
             "name": "Open Meteo",
             "provider_link": self.link_provider,
@@ -460,12 +458,7 @@ class ApiOpenMeteo(RemoteThreadingClass):
         self.weather_info["info_module_link"] = self.link_provider
         self.weather_info["info_module_link_required"] = self.link_required
         self.weather_info["info_format"] = "metric"
-        self.weather_info["info_status"] = {
-            "running": self._running,
-            "paused": self._paused,
-            "error": self.error,
-            "error_msg": self.error_msg
-        }
+        self.weather_info["info_status"] = status
         self.weather_info["info_update"] = self.weather_update.strftime("%d.%m.%Y %H:%M:%S")
         self.weather_info["info_update_stamp"] = self.weather_update.strftime("%H%M%S")
         self.weather_info["info_position"] = self.weather_location
@@ -640,7 +633,7 @@ class ApiWeather(RemoteThreadingClass):
 
             # check if data are correct
             if "current" not in self.weather_info:
-            #    self.raise_error("Weather data not correct (missing 'current').")
+                self.logging.error("Weather data not correct (missing 'current').")
                 self.weather_info = self.weather_empty.copy()
 
             # move errors to status info
@@ -686,11 +679,14 @@ class ApiWeather(RemoteThreadingClass):
 
         Args:
             param (dict): weather parameters
+        Returns:
+            bool: True if connected
         """
         self.param = param
 
-        if not "source" in param or not "location" in param or not "gps_location" in param:
+        if not ("source" in param and ("location" in param or "gps_location" in param)):
             self.logging.error(f"Parameters missing to start weather module ({param}).")
+            return False
 
         self.weather_source = param["source"]
         self.logging.info("(Re)connect weather module (source="+self.weather_source+")")
@@ -699,6 +695,8 @@ class ApiWeather(RemoteThreadingClass):
             update_gps = True
 
         if self.weather_source == "Open-Meteo":
+            if not "location" in param:
+                param["location"] = "N/A"
             self.weather_city = param["location"]
             if "gps_location" in param and param["gps_location"] != [0, 0] and len(param["gps_location"]) >= 2 and not update_gps:
                 self.weather_gps = param["gps_location"]
@@ -709,9 +707,11 @@ class ApiWeather(RemoteThreadingClass):
                 self.module.stop()
             self.module = ApiOpenMeteo(config=self.config, gps_location=self.weather_gps)
             self.module.start()
+            return True
 
         else:
             self.logging.error(f"Weather module {param["source"]} doesn't exists.")
+            return False
 
     def get_gps_info(self, param):
         """
@@ -722,6 +722,8 @@ class ApiWeather(RemoteThreadingClass):
         Returns:
             dict: updated weather parameters
         """
+        if not "location" in param:
+            param["location"] = "N/A"
         self.weather_city = param["location"]
         self.weather_gps = self.gps.look_up_location(self.weather_city)
         if self.weather_gps[0] != 0 and self.weather_gps[1] != 0:
@@ -741,7 +743,7 @@ class ApiWeather(RemoteThreadingClass):
             dict: weather information
         """
         if "current" not in self.weather_info:
-            self.raise_error("Weather data not correct (get_weather_info): " + str(self.weather_info))
+            self.logging.error("Weather data not correct (get_weather_info): " + str(self.weather_info))
             self.weather_info = self.weather_empty.copy()
 
         if info_type == "status":
