@@ -495,8 +495,14 @@ class ApiOpenMeteo(RemoteThreadingClass):
             }
             count += 1
         hourly_data["today"] = hourly_data[today_stamp]
-        hourly_data["today"]["sunrise"] = daily_data_raw["sunrise"][0].split("T")[1]
-        hourly_data["today"]["sunset"] = daily_data_raw["sunset"][0].split("T")[1]
+        if not "sunrise" in  daily_data_raw or len(daily_data_raw["sunrise"]) == 0:
+            hourly_data["today"]["sunrise"] = daily_data_raw["sunrise"][0].split("T")[1]
+        else:
+            hourly_data["today"]["sunrise"] = "N/A"
+        if not "sunset" in  daily_data_raw or len(daily_data_raw["sunset"]) == 0:
+            hourly_data["today"]["sunset"] = daily_data_raw["sunset"][0].split("T")[1]
+        else:
+            hourly_data["today"]["sunset"] = "N/A"
 
         self.weather_info["forecast"] = hourly_data
 
