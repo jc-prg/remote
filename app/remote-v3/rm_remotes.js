@@ -1340,7 +1340,7 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
                 devices[key] = "Device: " + label;
                 devices_groups[key] = "Device: " + label;
                 device_macro["device_" + key] = "Device: " + label;
-                device_display[key] = rm_data["label"];
+                device_display[key] = label;
 
                 if (rmData.devices.has_ranges(key)) { devices_slider[key] = "Device: " + label; }
                 if (rmData.devices.has_colors(key)) { devices_color_picker[key] = "Device: " + label; }

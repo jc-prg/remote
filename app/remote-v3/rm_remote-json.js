@@ -409,6 +409,7 @@ class RemoteJsonElements extends RemoteDefaultClass {
             && button.indexOf("_") < 0
             && button.indexOf("LINE") < 0
             && button.indexOf("CHART") < 0
+            && button.indexOf("DISPLAY") < 0
             && button.indexOf("HEADER-IMAGE") < 0) { button = scene + "_" + button; }
 
         if (position === "FIRST") {
