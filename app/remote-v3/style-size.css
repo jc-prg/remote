@@ -36,6 +36,7 @@
 
 
 .setting_bg, .remote { max-width : 570px; }
+.setting_bg.main, .setting_bg.wide { max-width : unset; }
 
 
 /* size when menu gets visible */
@@ -70,7 +71,7 @@
       }
   }
 
-  /* remote control in 2 columns */
+    /* remote control in 2 columns */
   #frames {
     display: block;
     column-count: 2;
