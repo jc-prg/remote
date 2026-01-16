@@ -33,6 +33,9 @@
 .display.h4w2 { grid-row: span 4; grid-column: span 2; aspect-ratio: 4 / 4; }
 .display.h4w4 { grid-row: span 4; grid-column: span 4; aspect-ratio: 4 / 2; }
 .display.weather { grid-row: span 4; grid-column: span 4; aspect-ratio: 4 / 2; }
+.display.weather1 { grid-row: span 4; grid-column: span 4; aspect-ratio: 4 / 2; }
+.display.weather2 { grid-row: span 3; grid-column: span 4; aspect-ratio: 6 / 2; }
+.display.weather3 { grid-row: span 2; grid-column: span 4; aspect-ratio: 8 / 2; }
 
 .display-content {
     position: absolute;

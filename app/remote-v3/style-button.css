@@ -329,6 +329,7 @@ button.rm-button.small {
     padding     : 10px;
     background  : var(--rm-color-button-setting);
     border      : solid 2px var(--rm-color-button-setting-border);
+    color       : white;
 }
 
 .rm-button_setting_index:hover {

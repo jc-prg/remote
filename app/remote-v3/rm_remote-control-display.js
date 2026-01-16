@@ -175,7 +175,9 @@ class RemoteControlDisplay extends RemoteDefaultClass {
             "h3w2": "3x height / 2x wide",
             "h4w2": "4x height / 2x wide",
             "h4w4": "4x height / 4x wide",
-            "weather": "weather display"
+            "weather1": "weather big",
+            "weather2": "weather middle",
+            "weather3": "weather small"
         };
     }
 

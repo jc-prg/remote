@@ -138,10 +138,11 @@ class ApiControl(RemoteApiClass):
                 result = f"ERROR Command {command} isn't available in the weather data."
 
             self.logging.debug(f"{command} | {commands[len(commands)-1]} : {result}")
-            self.logging.debug(f"{weather['info_units']}")
 
-            if not "ERROR" in str(result) and commands[len(commands)-1] in weather["info_units"]:
+            if not "ERROR" in str(result) and "info_units" in weather and commands[len(commands)-1] in weather["info_units"]:
                 result = f"{result} {weather["info_units"][commands[len(commands) - 1]]}"
+            elif "ERROR" in str(result):
+                self.logging.error(result)
 
         self.working = False
         return result
@@ -248,7 +249,7 @@ class ApiOpenMeteo(RemoteThreadingClass):
         Constructor to initialize class
 
         Args:
-            config (modules.config.BirdhouseConfig): reference to config handler
+            config (): reference to config handler
             gps_location (tuple[float, float, str]): GPS latitude, longitude, address
         """
         RemoteThreadingClass.__init__(self, class_id="weather-om", name="weather-om")
@@ -438,6 +439,8 @@ class ApiOpenMeteo(RemoteThreadingClass):
             self.error = False
         except Exception as e:
             self.logging.error("Could not read weather from open-meteo.com: " + str(e))
+            self.error = True
+        return self.error
 
     def _convert_data(self):
         """
@@ -568,7 +571,28 @@ class ApiWeather(RemoteThreadingClass):
         self.weather_gps = None
         self.weather_info = {}
         self.weather_active = True
-        self.weather_empty = birdhouse_weather.copy()
+        self.weather_empty = {
+            "info_update": "none",
+            "info_update_stamp": "none",
+            "info_city": "",
+            "info_format": "",
+            "info_position": "",
+            "info_status": {"running": ""},
+            "current": {
+                "temperature": None,
+                "description": "",
+                "description_icon": "",
+                "wind_speed": None,
+                "uv_index": None,
+                "pressure": None,
+                "humidity": None,
+                "wind_direction": "",
+                "precipitation": None
+            },
+            "forecast": {
+                "today": {}
+            }
+        }
         self.weather_info = self.weather_empty.copy()
         self.weather_info["info_status"]["running"] = "started"
 
@@ -609,8 +633,7 @@ class ApiWeather(RemoteThreadingClass):
 
             # last update has been a while
             elif last_update + self.update_time < time.time():
-                self.logging.info("Get weather data from module (every " + str(self.update_time) + "s/" +
-                                  self.weather_source + ") ...")
+                self.logging.info("Get weather data from module (every " + str(self.update_time) + "s/" + self.weather_source + ") ...")
                 last_update = time.time()
                 self.weather_info = self.module.get_data()
                 if not self.error and not self.module.error:
@@ -641,6 +664,7 @@ class ApiWeather(RemoteThreadingClass):
             if "current" not in self.weather_info:
                 self.logging.error("Weather data not correct (missing 'current').")
                 self.weather_info = self.weather_empty.copy()
+                self.error = True
 
             # move errors to status info
             if self.error or self.module.error:
@@ -800,94 +824,3 @@ class ApiWeather(RemoteThreadingClass):
             str: sunset time of today
         """
         return self.sunset_today
-
-birdhouse_weather_descriptions = {
-    "0": "clear sky",
-    "1": "clear",
-    "2": "partly cloudy",
-    "3": "overcast",
-    "45": "fog",
-    "48": "depositing rime fog",
-    "51": "light drizzle",
-    "53": "moderate drizzle",
-    "55": "dense intensity drizzle",
-    "56": "light freezing drizzle",
-    "57": "dense intensity freezing drizzle",
-    "61": "slight rain",
-    "63": "moderate rain",
-    "65": "heavy rain",
-    "66": "light freezing rain",
-    "67": "heavy freezing rain",
-    "71": "slight snow fall",
-    "73": "moderate snow fall",
-    "75": "heavy snow fall",
-    "77": "snow grains",
-    "80": "slight rain showers",
-    "81": "moderate rain showers",
-    "82": "violent rain showers",
-    "85": "slight snow showers",
-    "86": "heavy snow showers",
-    "95": "slight or moderate thunderstorms",
-    "96": "thunderstorms with slight hail",
-    "99": "thunderstorms with heavy hail"
-}
-birdhouse_weather_icons = {
-    "0": "☀️",
-    "1": "☀️",
-    "2": "⛅️",
-    "3": "☁️",
-    "45": "🌫",
-    "48": "🌫",
-    "51": "🌦",
-    "53": "🌦",
-    "55": "🌧",
-    "56": "🌨",
-    "57": "️❄️",
-    "61": "🌦",
-    "63": "🌧",
-    "65": "🌧",
-    "66": "🌨",
-    "67": "❄️",
-    "71": "🌨",
-    "73": "🌨",
-    "75": "❄️",
-    "77": "❄️",
-    "80": "🌦",
-    "81": "🌦",
-    "82": "🌧",
-    "85": "🌨",
-    "86": "❄️",
-    "95": "🌩",
-    "96": "⛈",
-    "99": "⛈",
-    "100": "✨"
-}
-interesting_icons = {
-    "other": "🌂 ☔ ❄ 🌈 🌬 🌡 ⚡ 🌞 ✨ ⭐ 🌟 💫 💦 🔅 🔆 ⛷ 🌍 🌎 🌏 🌐",
-    "moons": "🌑 🌒 🌓 🌔 🌕 🌖 🌗 🌘",
-    "weather": "🌤 🌦 🌧 🌨 🌩 🌪 ",
-    "clock": "🕐 🕒 🕓 🕔 🕕 🕖 🕗 🕘 🕙 🕚 🕛 🕜 🕝 🕞 🕟 🕠 🕡 🕢 🕣 🕤 🕥 🕦 🕧",
-    "calendar": "🗓️ 📅 📆 ⌚ ⏰ 🔔 🗒️ 📜 ⏳ ⌛"
-}
-birdhouse_weather = {
-    "info_update": "none",
-    "info_update_stamp": "none",
-    "info_city": "",
-    "info_format": "",
-    "info_position": "",
-    "info_status": {"running": ""},
-    "current": {
-        "temperature": None,
-        "description": "",
-        "description_icon": "",
-        "wind_speed": None,
-        "uv_index": None,
-        "pressure": None,
-        "humidity": None,
-        "wind_direction": "",
-        "precipitation": None
-    },
-    "forecast": {
-        "today": {}
-    }
-}
