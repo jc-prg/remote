@@ -309,15 +309,16 @@ class RecordData(RemoteThreadingClass):
                 key_position[key] = position
                 position += 1
             for key in filter_values:
-                i = key_position[key]
-                chart_data["keys"].append(key)
-                for subkey in ["labels", "units"]:
-                    chart_data[subkey].append(record_data["data"][subkey][i] if i < len(record_data["data"][subkey]) else None)
+                if key in key_position:
+                    i = key_position[key]
+                    chart_data["keys"].append(key)
+                    for subkey in ["labels", "units"]:
+                        chart_data[subkey].append(record_data["data"][subkey][i] if i < len(record_data["data"][subkey]) else None)
 
-                for subkey in record_data["data"]["record"]:
-                    if not subkey in chart_data["data"]:
-                        chart_data["data"][subkey] = []
-                    chart_data["data"][subkey].append(record_data["data"]["record"][subkey][i] if i < len(record_data["data"]["record"][subkey]) else None)
+                    for subkey in record_data["data"]["record"]:
+                        if not subkey in chart_data["data"]:
+                            chart_data["data"][subkey] = []
+                        chart_data["data"][subkey].append(record_data["data"]["record"][subkey][i] if i < len(record_data["data"]["record"][subkey]) else None)
         else:
             chart_data = { "labels": [], "units": [], "data": {}, "title": filter_date }
 
