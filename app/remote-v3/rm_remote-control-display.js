@@ -53,7 +53,9 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                 else                { text  = text.replace( /##DISPLAY##/g, "none" ); }
 
                 text += "<div class='display-table "+style+"'>";
-                text += this.tab.start("100%","", "center");
+                if (style.indexOf("weather") === 0) {
+                    text += this.tab.start("100%", "", "center");
+                }
                 let text_tab = "";
                 text_tab += this.tab.start("100%");
                 for (let key in display_data) {
@@ -62,8 +64,12 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                     }
                 }
                 text_tab += this.tab.end();
-                text += this.tab.row("ICON: <br/>{" + display_data["ICON"] + "}", text_tab);
-                text += this.tab.end();
+                if (style.indexOf("weather") === 0) {
+                    text += this.tab.row("ICON: <br/>{" + display_data["ICON"] + "}", text_tab);
+                    text += this.tab.end();
+                } else {
+                    text += text_tab;
+                }
                 text += "</div>";
 
                 text += display_end;
