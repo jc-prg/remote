@@ -18,16 +18,17 @@ There are a few templates available to be used and modified.
 - [Disclaimer](#disclaimer)
 
 
-## Currently Supported Devices
+## Currently Supported Devices and Interfaces
 
 1. Broadlink Remote Controls  ... [API Info](./server/interfaces/broadlink/README.md)
 2. DENON devices with API ... [API Info](./server/interfaces/denon/README.md)
 3. KODI server  ... [API Info](./server/interfaces/kodi/README.md)
 4. Magic Home compatible LED strips  ... [API Info](./server/interfaces/magichome/README.md)
 5. ONKYO devices with API ... [API Info](./server/interfaces/eiscp/README.md)
-6. SONY devices with API ... [API Info](./server/interfaces/sonyapi/README.md)
-7. Tapo SmartPlugs P100 ... [API Info](./server/interfaces/p100/README.md)
-8. ZigBee Devices via ZigBee2MQTT API ... [API Info](./server/interfaces/zigbee/README.md)
+6. Open Meteo Weather / PyGeo ... [API-Info](./server/interfaces/weather/README.md)
+7. SONY devices with API ... [API Info](./server/interfaces/sonyapi/README.md)
+8. Tapo SmartPlugs P100 ... [API Info](./server/interfaces/p100/README.md)
+9. ZigBee Devices via ZigBee2MQTT API ... [API Info](./server/interfaces/zigbee/README.md)
 
 ## Screenshots
 
@@ -52,6 +53,8 @@ Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 
 ### v3.1 (in progress)
 
+* recording of device and weather data and visualization via Chart.js
+* integration of Open Meteo Weather (incl. GeoPy)
 * integration of Denon API incl. discovery
 * macro editing via app (instead of JSON editing) 
 
@@ -142,13 +145,16 @@ folder [_sample/devices](data/_sample/devices) to the productive folders.
 Many thanks to the authors ...
   
 * [BlackBeanControl](https://github.com/davorf/BlackBeanControl)
+* [Chart.js](https://www.chartjs.org/)
+* [DenonAVR](https://github.com/ol-iver/denonavr)
 * [eiscp-onkyo](https://github.com/miracle2k/onkyo-eiscp)
 * [KodiJson](https://github.com/jcsaaddupuy/python-kodijson)
 * [SonyApiLib](https://https://github.com/alexmohr/sonyapilib)
 * [MagicHome API](https://github.com/adamkempenich/magichome-python)
+* [Open Meteo](https://open-meteo.com/)
 * [PyP100 API](https://github.com/fishbigger/TapoP100)
 * [ZigBee2MQTT](https://www.zigbee2mqtt.io/)
-* Free icons and images: https://icon-icons.com/, https://www.freeicons.io/, https://www.flaticon.com/, https://icons8.com/, https://unsplash.com/
+* Free icons and images: https://icon-icons.com/, https://www.freeicons.io/, https://www.flaticon.com/, https://icons8.com/, https://unsplash.com/, https://chatgpt.com
 
 Own included modules:
 
