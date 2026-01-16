@@ -113,7 +113,7 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                     }
                 }
                 text_tab += this.tab.end();
-                if (style === "weather" && display_data["ICON"]) {
+                if (style.indexOf("weather") === 0 && display_data["ICON"]) {
                     let input_id = "";
                     if (display_data["ICON"].indexOf("_") >= 0) {
                         input_id = 'display_' + display_data["ICON"];
