@@ -622,7 +622,7 @@ class ApiWeather(RemoteThreadingClass):
             self.error = False
             if self.update or self.initial_date != self.config.local_time().strftime("%Y%m%d"):
                 self.update = False
-                self.connect(self.param["weather"])
+                self.connect(self.param)
                 self.initial_date = self.config.local_time().strftime("%Y%m%d")
 
             # if paused
