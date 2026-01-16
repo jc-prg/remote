@@ -652,7 +652,6 @@ function apiMacroSend( macro, device="", content="" ) {  // SEND -> FEHLER? obwo
             }
         }
         macro = commands_server.join("::");
-        console.error(commands_server, macro);
     }
 	let command = [ "macro", macro ];
 	appFW.requestAPI( "GET", command, "", apiMacroSend_return );
