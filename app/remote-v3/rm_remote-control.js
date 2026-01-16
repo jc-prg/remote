@@ -249,7 +249,7 @@ class RemoteControlBasic extends RemoteDefaultClass {
     // create button for single command
     device(id, label, device, style, cmd, disabled ) {
 
-        if (label.indexOf("||") > 0) { label = label.split("||")[1]; }
+        if (label && label.indexOf("||") > 0) { label = label.split("||")[1]; }
         if (cmd.indexOf("||") > 0)   { cmd = cmd.split("||")[0]; }
 
         let label2 = this.image( label, style );

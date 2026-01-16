@@ -910,15 +910,17 @@ class RemoteMain extends RemoteDefaultClass {
             let button = rm_data["remote"][i].split("_");
             let cmd = button[0] + "_" + button[1];
 
-            if (rm_data["remote"][i] === "scene-on") {
+            if (rm_data["remote"][i].indexOf("scene-on") > -1) {
                 cmd = "scene-on_" + scene;
                 button = ["scene-on", scene];
                 button_def = cmd;
+                if (rm_data["remote"][i].indexOf("||") > -1) { cmd += rm_data["remote"][i].split("||")[1]; }
             }
-            if (rm_data["remote"][i] === "scene-off") {
+            if (rm_data["remote"][i].indexOf("scene-off") > -1) {
                 cmd = "scene-off_" + scene;
                 button = ["scene-off", scene];
                 button_def = cmd;
+                if (rm_data["remote"][i].indexOf("||") > -1) { cmd += rm_data["remote"][i].split("||")[1]; }
             }
             if (button[0] === "group") {
                 cmd = button.join("_");

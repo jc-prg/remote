@@ -576,28 +576,30 @@ function apiMacroChange(data=[]) {
 
 // decompose macro data
 function apiMacroDecompose(macro) {
-    var types = ["macro", "dev-on", "dev-off"];
-    var full_decompose = [];
-    var translate = {
+    let full_decompose = [];
+    let macro_string = "";
+    let macro_wait = "";
+    let macro_wait_time = 0;
+
+    const types = ["macro", "dev-on", "dev-off"];
+    const translate = {
         "macro": "global",
         "dev-on": "device-on",
         "dev-off": "device-off"
     }
-    for (var a=0;a<types.length;a++) {
+
+    for (let a=0;a<types.length;a++) {
         if (macro.startsWith(types[a]+"_")) {
-            var macro_cmd = macro.split("_");
-            var macro_string = "";
-            var macro_wait = "";
-            var macro_translate = translate[types[a]];
-            var macro_data = rmRemote.data["CONFIG"]["macros"][macro_translate];
+            let macro_cmd = macro.split("_");
+            let macro_translate = translate[types[a]];
+            let macro_data = rmRemote.data["CONFIG"]["macros"][macro_translate];
 
             if (macro_data[macro_cmd[1]]) {
-                for (var i=0; i<macro_data[macro_cmd[1]].length; i++) {
-                    var command = macro_data[macro_cmd[1]][i];
+                for (let i=0; i<macro_data[macro_cmd[1]].length; i++) {
+                    let command = macro_data[macro_cmd[1]][i];
                     if (command.startsWith && (command.startsWith("WAIT") || command.startsWith("MSG"))) {
-                        var wait = command.split("-");
-                        macro_wait = 'appMsg.wait_time("'+lang("MACRO_PLEASE_WAIT")+'", '+wait[1]+');';
-                        full_decompose.push("wait=" + wait[1]+"s");
+                        let wait = command.split("-");
+                        macro_wait += Number(wait[1]);
                         }
                     else {
                         macro_string += macro_data[macro_cmd[1]][i] + "::";
@@ -607,6 +609,12 @@ function apiMacroDecompose(macro) {
                 }
             }
         }
+
+    if (macro_wait_time > 0) {
+        macro_wait = 'appMsg.wait_time("'+lang("MACRO_PLEASE_WAIT")+'", '+macro_wait_time+');';
+        full_decompose.push("wait=" + macro_wait_time + "s");
+    }
+
     console.debug("apiMacroDecompose: " + macro + " -> " + macro_string + " | " + macro_wait);
     if (showButton) {
         appMsg.info("<b>Macro Decompose:</b> " + macro + " -> " + full_decompose.join(", "));
@@ -617,29 +625,46 @@ function apiMacroDecompose(macro) {
 
 // separate macro into single commands and send commands
 function apiMacroSend( macro, device="", content="" ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
+
     console.debug("apiMacroSend: " + macro);
+    let macro_wait = "";
+    let macro_string = "";
+
     if (macro === "") {
         appMsg.info(lang("MACRO_EMPTY", [device]), "error");
         return;
     }
-    if (!macro.includes("::")) {
-        let [macro_string, macro_wait] = apiMacroDecompose(macro);
+    if (!macro.includes("::") && macro.indexOf("::") < 0) {
+        [macro_string, macro_wait] = apiMacroDecompose(macro);
         macro = macro_string;
         eval(macro_wait);
         }
+    else {
+        let commands = macro.split("::");
+        let commands_server = [];
+        for (let i=0; i<commands.length; i++) {
+            if (commands[i].indexOf("MSG") < 0 && commands[i].indexOf("WAIT") < 0) {
+                commands_server.push(commands[i]);
+            } else {
+                let macro_time = commands[i].split("-")[1];
+                macro_wait = 'appMsg.wait_time("'+lang("MACRO_PLEASE_WAIT")+'", '+macro_time+');';
+                eval(macro_wait);
+            }
+        }
+        macro = commands_server.join("::");
+        console.error(commands_server, macro);
+    }
 	let command = [ "macro", macro ];
 	appFW.requestAPI( "GET", command, "", apiMacroSend_return );
 	device_media_info[device] = content;
 
-	if (showButton) {
-	    appMsg.info("<b>Request Macro:</b> " + dc);
-	    }
+	if (showButton) { appMsg.info("<b>Request Macro:</b> " + macro); }
 	}
 
 function apiMacroSend_return( data ) {
 	console.log("Send macro return :");
 	console.log(data);
-	if (data["REQUEST"]["macro_error"] && data["REQUEST"]["macro_error"] != "") {
+	if (data["REQUEST"]["macro_error"] && data["REQUEST"]["macro_error"] !== "") {
 	    appMsg.info("<b>Macro Error:</b> " + data["REQUEST"]["macro_error"], "error");
 	    }
 	if (showButton) {
