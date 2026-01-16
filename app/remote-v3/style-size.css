@@ -34,6 +34,10 @@
   }
 }
 
+
+.setting_bg, .remote { max-width : 570px; }
+
+
 /* size when menu gets visible */
 
 @media (min-width: 705px) {
@@ -50,11 +54,12 @@
   .settings_button_index     { width  : calc(33% - 8px); height : 140px; }
   .settings_icon_big         { max-width : 120px; max-height : 60px; }
   .frame_block_content       { width  : var(--app-frame-width-100-menu); }
+
   }
 
 /* size when columns > 340px even with menu visible; switch to 2 columns */
 
-@media (min-width: 880px) {
+@media (min-width: 1000px) {
   :root {
       --rm-size-remote-button-text: 2cqw;
       --rm-size-remote-channel-text: 1.5cqw;
@@ -70,7 +75,7 @@
     display: block;
     column-count: 2;
     column-gap: 20px;
-    width: 100%
+    width: 100%;
   }
   .remote, .setting_bg {
     break-inside: avoid;
@@ -103,7 +108,7 @@
 
 /* format for Laptop & bigger screen with 3 columns incl. menu */
 
-@media (min-width: 1250px) {
+@media (min-width: 1400px) {
   :root {
     --rm-size-remote-button-text    : 16px;
     --rm-size-remote-channel-text   : 16px;
