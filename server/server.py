@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+import threading
 import time
 import sys
 import logging
@@ -26,6 +26,20 @@ def on_exception(exc_type, value, trace_back):
     tb_str = ''.join(traceback.format_exception(exc_type, value, trace_back))
     log.error("EXCEPTION:\n\n" + tb_str + "\n")
 
+def on_thread_exception(args):
+    """
+    send thread exceptions to logging
+    """
+    tb_str = ''.join(
+        traceback.format_exception(
+            args.exc_type,
+            args.exc_value,
+            args.exc_traceback
+        )
+    )
+    log.error(
+        f"EXCEPTION IN THREAD {args.thread.name}:\n\n{tb_str}\n"
+    )
 
 def on_exit(signum, handler):
     """
@@ -88,6 +102,7 @@ log = rm3presets.set_logging("werkzeug")
 signal.signal(signal.SIGINT, on_exit)
 signal.signal(signal.SIGTERM, on_kill)
 sys.excepthook = on_exception
+threading.excepthook = on_thread_exception
 
 eval("log_srv."+rm3presets.log_level.lower()+"('---------------------------------------------------------------')")
 eval("log_srv."+rm3presets.log_level.lower()+"('" + rm3presets.start_string + "')")

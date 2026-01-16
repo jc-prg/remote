@@ -616,6 +616,7 @@ class ApiWeather(RemoteThreadingClass):
         self.logging.info("Starting Weather module ...")
         self.thread_wait()
         last_update = 0
+
         while self._running:
 
             # if config update or new day
