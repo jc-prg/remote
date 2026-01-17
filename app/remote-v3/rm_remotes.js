@@ -197,6 +197,7 @@ class RemoteMain extends RemoteDefaultClass {
         }
     }
 
+    /* get main data depending on wheather there are preview data or not */
     main_data(rm_type, rm_id, preview=false) {
         let result;
         if (preview && rm_type === "device") {
@@ -221,29 +222,35 @@ class RemoteMain extends RemoteDefaultClass {
             result = {
                 "label":           rmData.scenes.label(rm_id),
                 "remote":          this.json.get_value(this.rm_scene.json_field_id),
-                "devices":         rmData.scenes.data(rm_id)["remote"]["devices"],            // to be validated
+                "devices":         rmData.scenes.data(rm_id)["remote"]["devices"],
                 "display":         this.json.get_value(this.rm_scene.json_field_id_display),
                 "display-size":    this.json.get_value(this.rm_scene.json_field_id_display2),
                 "macro-channel":   this.json.get_value(this.rm_scene.json_field_id_channel),
-                "macro-scene":     rmData.scenes.data(rm_id)["remote"]["macro-scene"],        // to be validated
-                "macro-scene-on":  rmData.scenes.data(rm_id)["remote"]["macro-scene-on"],     // to be validated
-                "macro-scene-off": rmData.scenes.data(rm_id)["remote"]["macro-scene-off"],    // to be validated
-                "chart":           this.json.get_value(this.rm_scene.json_field_id_chart)     // to be validated
+                "macro-scene":     rmData.scenes.data(rm_id)["remote"]["macro-scene"],
+                "macro-scene-on":  rmData.scenes.data(rm_id)["remote"]["macro-scene-on"],
+                "macro-scene-off": rmData.scenes.data(rm_id)["remote"]["macro-scene-off"],
+                "chart":           this.json.get_value(this.rm_scene.json_field_id_chart)
             };
+            result["macro-scene-edit"] = Object.assign({}, result["macro-scene"]);
+            result["macro-scene-edit"]["!scene-on!"] = result["macro-scene-on"];
+            result["macro-scene-edit"]["!scene-off!"] = result["macro-scene-off"];
         }
         else if (rm_type === "scene") {
             result = {
                 "label":           rmData.scenes.label(rm_id),
                 "remote":          rmData.scenes.remote(rm_id),
-                "devices":         rmData.scenes.data(rm_id)["remote"]["devices"],            // to be validated
+                "devices":         rmData.scenes.data(rm_id)["remote"]["devices"],
                 "display":         rmData.scenes.display(rm_id),
                 "display-size":    rmData.scenes.display_size(rm_id),
-                "macro-channel":   rmData.scenes.data(rm_id)["remote"]["macro-channel"],      // to be validated
+                "macro-channel":   rmData.scenes.data(rm_id)["remote"]["macro-channel"],
                 "macro-scene":     rmData.macros.data("scene", rm_id),
                 "macro-scene-on":  rmData.macros.data("scene-on", rm_id, []),
                 "macro-scene-off": rmData.macros.data("scene-off", rm_id, []),
-                "chart":           rmData.scenes.chart(rm_id),                                // to be validated
+                "chart":           rmData.scenes.chart(rm_id),
             };
+            result["macro-scene-edit"] = Object.assign({}, result["macro-scene"]);
+            result["macro-scene-edit"]["!scene-on!"] = result["macro-scene-on"];
+            result["macro-scene-edit"]["!scene-off!"] = result["macro-scene-off"];
         }
 
         if (result["display-size"] === "") { result["display-size"] = "middle"; }
@@ -264,9 +271,6 @@ class RemoteMain extends RemoteDefaultClass {
         showRemoteInBackground(0);			// ... check if part of this class ...
         rmSettings.hide();				// ... check if part of another class ...
     }
-
-
-
 
     // DEVICE REMOTES - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -486,7 +490,7 @@ class RemoteMain extends RemoteDefaultClass {
         remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_REMOTE") + " &quot;" + rmData.devices.label(device) + "&quot;</b> [" + device + "]</span>";
         remote += this.basic.edit_line();
         remote += this.edit.button_edit_category("edit", "Main Settings", `${this.name}.device_edit_main(${this.name}.frames_edit[1], \"${device}\");`);
-        remote += this.edit.button_edit_category("remote_ctrl", "Edit Remote", `${this.name}.device_edit_json(${this.name}.frames_edit[1], \"${device}\");`);
+        remote += this.edit.button_edit_category("remote_ctrl", "Edit Remote", `${this.name}.device_edit_remote(${this.name}.frames_edit[1], \"${device}\");`);
         remote += this.edit.button_edit_category("macros", "Edit Macros", "appMsg.alert(\"not implemented yet\");");
         setTextById(id, remote);
         this.edit_mode = true;
@@ -739,7 +743,7 @@ class RemoteMain extends RemoteDefaultClass {
     }
 
     /* create edit panel to edit JSON data */
-    device_edit_json(id, device, preview=false) {
+    device_edit_remote(id, device, preview=false) {
 
         if (this.edit_mode) { elementVisible(id); }
         else { elementHidden(id, "remote_edit_json"); return; }
@@ -796,7 +800,7 @@ class RemoteMain extends RemoteDefaultClass {
         remote += "<br/>";
         remote += this.basic.edit_line();
         remote += "<br/><span class='center'>" +
-            this.button.edit(this.name + ".device_edit_json('" + id + "','" + device + "');" +
+            this.button.edit(this.name + ".device_edit_remote('" + id + "','" + device + "');" +
                 this.name + ".device_remote('" + this.frames_remote[0] + "','" + device + "','remote_json_buttons','remote_json_channel');" +
                 this.name + ".device_not_used('" + this.frames_remote[2] + "','" + device + "','remote_json_buttons');", lang("BUTTON_T_RESET")) + "&nbsp;" +
             this.button.edit("apiDeviceJsonEdit('" + device + "','remote_json_buttons','remote_json_display','remote_display_size');", lang("BUTTON_T_SAVE")) + "&nbsp;" +
@@ -851,7 +855,6 @@ class RemoteMain extends RemoteDefaultClass {
     // SCENE REMOTES - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     /* create remote for a specific scene */
-    //scene_remote(id = "", scene = "", preview_remote = undefined, preview_display = undefined, preview_display_size = undefined) {
     scene_remote(id = "", scene = "", preview = false) {
 
         this.display.edit_mode = this.edit_mode;
@@ -1090,8 +1093,8 @@ class RemoteMain extends RemoteDefaultClass {
         remote += "<span class='remote_edit_headline center'><b>" + lang("EDIT_SCENE") + " &quot;" + rmData.scenes.label(scene) + "&quot;</b> [" + scene + "]</span>";
         remote += this.basic.edit_line();
         remote += this.edit.button_edit_category("edit", "Main Settings", `${this.name}.scene_edit_main(${this.name}.frames_edit[1], \"${scene}\");`);
-        remote += this.edit.button_edit_category("remote_ctrl", "Edit Remote", `${this.name}.scene_edit_json(${this.name}.frames_edit[1], \"${scene}\");`);
-        remote += this.edit.button_edit_category("macros", "Edit Macros", "appMsg.alert(\"not implemented yet\");");
+        remote += this.edit.button_edit_category("remote_ctrl", "Edit Remote", `${this.name}.scene_edit_remote(${this.name}.frames_edit[1], \"${scene}\");`);
+        remote += this.edit.button_edit_category("macros", "Edit Macros", `${this.name}.scene_edit_macros(${this.name}.frames_edit[1], \"${scene}\");`);
         setTextById(id, remote);
         this.edit_mode = true;
     }
@@ -1166,37 +1169,29 @@ class RemoteMain extends RemoteDefaultClass {
     }
 
     /* create edit panel to edit JSON data */
-    scene_edit_json(id, scene, preview=false) {
+    scene_edit_remote(id, scene, preview=false) {
 
-        if (this.edit_mode) { elementVisible(id); }
-        else { elementHidden(id, "scene_edit_json"); return; }
+        if (this.edit_mode) { elementVisible(id); } else { elementHidden(id, "scene_edit_remote"); return; }
+        if (rmStatus.status_system("config_errors")["scenes"][scene] || !rmData.scenes.exists(scene, true)) { setTextById(id, ""); return; }
+
         this.edit_mode_remote = true;
-
-        if (rmStatus.status_system("config_errors")["scenes"][scene] || !rmData.scenes.exists(scene, true)) {
-            setTextById(id, "");
-            return;
-        }
-
         let rm_data = this.main_data("scene", scene, preview);
+        let button_cmd_reset = this.name + ".scene_edit_remote('" + id + "','" + scene + "');" + this.name + ".scene_remote(  '" + this.frames_remote[0] + "','" + scene + "','json::remote','json::display');" + this.name + ".scene_channels('" + this.frames_remote[2] + "','" + scene + "','json::macro-channel');";
+        let button_cmd_save = "apiSceneJsonEdit('" + scene + "','json::remote,json::devices,json::display,json::display-size,json::chart,json::macro-channel,json::macro-scene-on,json::macro-scene-off,json::macro-scene');";
+        let button_cmd_preview = this.name + ".scene_remote(  '" + this.frames_remote[0] + "','" + scene + "','json::remote','json::display','json::display-size','json::chart');" + this.name + ".scene_channels('" + this.frames_remote[2] + "','" + scene + "','json::macro-channel');";
+        let button_cmd_stop = "remoteToggleEditMode(false);" + this.name + ".create('" + this.active_type + "','" + scene + "');";
 
         // frame
         let remote = "";
-        remote += this.basic.edit_line();
         remote += this.basic.container("edit_elements", lang("EDIT_ELEMENTS"), "<div id='scene-edit-elements'></div>", true);
         remote += this.basic.container("edit_json_all", lang("EDIT_JSON"), "<div id='scene-edit-json'></div>", false);
         remote += this.basic.edit_line();
-        this.button.width = "23%";
+        this.button.width = "20%";
         remote += "<br/><span class='center'>" +
-            this.button.edit(this.name + ".scene_edit_json('" + id + "','" + scene + "');" +
-                this.name + ".scene_remote(  '" + this.frames_remote[0] + "','" + scene + "','json::remote','json::display');" +
-                this.name + ".scene_channels('" + this.frames_remote[2] + "','" + scene + "','json::macro-channel');",
-                lang("BUTTON_T_RESET")) + "&nbsp;" +
-            this.button.edit("apiSceneJsonEdit('" + scene + "','json::remote,json::devices,json::display,json::display-size,json::chart,json::macro-channel,json::macro-scene-on,json::macro-scene-off,json::macro-scene');",
-                lang("BUTTON_T_SAVE"), "") + "&nbsp;" +
-            this.button.edit(this.name + ".scene_remote(  '" + this.frames_remote[0] + "','" + scene + "','json::remote','json::display','json::display-size','json::chart');" +
-                this.name + ".scene_channels('" + this.frames_remote[2] + "','" + scene + "','json::macro-channel');",
-                lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
-            this.button.edit("remoteToggleEditMode(false);" + this.name + ".create('" + this.active_type + "','" + scene + "');", lang("BUTTON_T_STOP_EDIT")) +
+            this.button.edit(button_cmd_reset, lang("BUTTON_T_RESET")) + "&nbsp;" +
+            this.button.edit(button_cmd_save,  lang("BUTTON_T_SAVE"), "") + "&nbsp;" +
+            this.button.edit(button_cmd_preview, lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
+            this.button.edit(button_cmd_stop, lang("BUTTON_T_STOP_EDIT")) +
             "</span><br/>";
 
         setTextById(id, remote);
@@ -1205,7 +1200,7 @@ class RemoteMain extends RemoteDefaultClass {
         let edit_json_required = "<h4>" + lang("JSON_REQUIRED_DEVICES") + ":</h4><div id='scene-edit-required'></div><br/>" + lang("MANUAL_DEVICES");
         let edit_json_remote = "<h4>" + lang("JSON_EDIT_RMC_DEFINITION") + ":</h4><div id='scene-edit-remote'></div><br/>" + "&nbsp;<br/>" + lang("MANUAL_DISPLAY");
         let edit_json_display = "<h4>" + lang("JSON_EDIT_DISPLAY_DEFINITION") + ":</h4><div id='scene-edit-display'></div><br/>" + "&nbsp;<br/>" + lang("MANUAL_DISPLAY");
-        let edit_json_channel = "<h4>" + lang("JSON_EDIT_CHANNEL_MACROS") + ":</h4><div id='scene-edit-macro-channel'></div><br/>" + "&nbsp;<br/>" + lang("MANUAL_DISPLAY");
+        let edit_json_channel = "<h4>" + lang("JSON_EDIT_CHANNEL_MACROS") + ":</h4><div id='scene-edit-macro-channel'></div><br/>" + "&nbsp;<br/>" + lang("MANUAL_CHANNEL");
         let edit_json_macros = "<h4>" + lang("JSON_EDIT_MACRO_SCENE") + " ON:</h4>" + "<div id='scene-edit-macro-scene-on'></div><br/>" +
             "<h4>" + lang("JSON_EDIT_MACRO_SCENE") + " OFF:</h4>" + "<div id='scene-edit-macro-scene-off'></div><br/>" +
             "<h4>" + lang("JSON_EDIT_MACRO_SCENE_OTHER") + ":</h4>" + "<div id='scene-edit-macro-scene-other'></div><br/>" +
@@ -1245,6 +1240,83 @@ class RemoteMain extends RemoteDefaultClass {
         myBox1.addSheet(lang("DELETE"), this.dialog_scene.edit_fields("delete", id, scene));
 
         this.preview("scene", scene, false);
+    }
+
+    /* edit scene macros via app */
+    scene_edit_macros(id, scene) {
+
+        if (this.edit_mode) { elementVisible(id); } else { elementHidden(id, "scene_edit_remote"); return; }
+        if (rmStatus.status_system("config_errors")["scenes"][scene] || !rmData.scenes.exists(scene, true)) { setTextById(id, ""); return; }
+
+        this.edit_mode_remote = false;
+        let rm_data = this.main_data("scene", scene);
+        let button_cmd_reset = "alert('not implemented yet');";
+        let button_cmd_save = this.name+".scene_edit_macros_save('"+scene+"');";
+        let button_cmd_stop = "remoteToggleEditMode(false);" + this.name + ".create('" + this.active_type + "','" + scene + "');";
+
+        // frame
+        let remote = "";
+        remote += this.basic.container("edit_elements", lang("EDIT_MACROS"), "<div id='scene-edit-macros'></div>", true);
+        remote += this.basic.container("edit_json_all", lang("EDIT_JSON"), "<div id='scene-edit-json'></div>", false);
+        remote += this.basic.edit_line();
+        this.button.width = "20%";
+        remote += "<br/><span class='center'>" +
+            this.button.edit(button_cmd_reset, lang("BUTTON_T_RESET")) + "&nbsp;" +
+            this.button.edit(button_cmd_save, lang("BUTTON_T_SAVE"), "") + "&nbsp;" +
+            this.button.edit(button_cmd_stop, lang("BUTTON_T_STOP_EDIT")) +
+            "</span><br/>";
+
+        setTextById(id, remote);
+
+        const edit_fields_invisible = "<div style='display:none;'><textarea id='json::macro-scene-on'></textarea><textarea id='json::macro-scene-off'></textarea><textarea id='json::macro-scene'></textarea></div>";
+        const edit_macros_channel = "<div id='scene-edit-macro-channel'></div><br/>&nbsp;<br/>";
+        const edit_macros_macros = "<div id='scene-edit-macro-scene'></div><br/>&nbsp;<br/>";
+        const edit_json_channel = "<h4>" + lang("JSON_EDIT_CHANNEL_MACROS") + ":</h4><div id='scene-edit-json-macro-channel'></div><br/>&nbsp;<br/>" + lang("MANUAL_CHANNEL");
+        const edit_json_macros = "<h4>" + lang("JSON_EDIT_MACRO_SCENE") + "</h4>" + "<div id='scene-edit-json-macro-scene'></div><br/>&nbsp;<br/>" + lang("MANUAL_MACROS_SCENE") + edit_fields_invisible;
+
+        // create sheet box JSON
+        const myBox1 = new RemoteElementSheetBox("scene-edit-macros", "630px", true);
+        myBox1.addSheet(lang("CHANNEL"), edit_macros_channel, false);
+        myBox1.addSheet(lang("MACROS"), edit_macros_macros, false);
+
+        // create sheet box JSON
+        const myBox2 = new RemoteElementSheetBox("scene-edit-json", "300px", true);
+        myBox2.addSheet(lang("CHANNEL"), edit_json_channel, false);
+        myBox2.addSheet(lang("MACROS"), edit_json_macros, false);
+
+        // create json edit fields
+        const myJson = new RemoteJsonEditing(id = "scene-edit-json", "default", "width:100%;height:150px;");
+        myJson.create("scene-edit-json-macro-scene",    "json::macro-scene-edit",  rm_data["macro-scene-edit"]);
+        myJson.create("scene-edit-json-macro-channel",  "json::macro-channel", rm_data["macro-channel"]);
+
+        // create macro editor
+        const macroEdit = new RemoteMacroEditor('scene-edit-macro-scene', {
+            categories: rmData.macros.prepare_edit_sources(true, true, true, true, true),
+            devices: Object.keys(rm_data["macro-scene-edit"]),
+            devices_edit: true,
+            flex_layout: false,
+            initial: rm_data["macro-scene-edit"],
+            title: `Select SCENE macro`,
+        }, "editor-macro-scene",  "json::macro-scene-edit");
+        const channelEdit = new RemoteMacroEditor('scene-edit-macro-channel', {
+            categories: rmData.macros.prepare_edit_sources(true, true, true, true, true),
+            devices: Object.keys(rm_data["macro-channel"]),
+            devices_edit: true,
+            flex_layout: false,
+            initial: rm_data["macro-channel"],
+            title: `Select CHANNEL macro`,
+        }, "editor-macro-channel",  "json::macro-channel");
+
+    }
+
+    scene_edit_macros_save(scene) {
+        const scene_macros = JSON.parse(getValueById("json::macro-scene-edit"));
+        setValueById("json::macro-scene-on", JSON.stringify(scene_macros["!scene-on!"]));
+        setValueById("json::macro-scene-off", JSON.stringify(scene_macros["!scene-off!"]));
+        delete scene_macros["!scene-on!"];
+        delete scene_macros["!scene-off!"];
+        setValueById("json::macro-scene", JSON.stringify(scene_macros));
+        apiSceneJsonEdit(scene,'json::macro-channel,json::macro-scene-on,json::macro-scene-off,json::macro-scene');
     }
 
     /* reload JSON fields for remote and device definition as part of preview */

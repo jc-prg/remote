@@ -18,8 +18,8 @@ let macro_sample_data_set = {
 }
 let macro_container = `
     <div class="macro-edit-container">
-      <div class="macro-edit-palette" id="{editor_id}palette"></div>
-      <div class="macro-edit-area">
+      <div class="macro-edit-palette {layout}" id="{editor_id}palette"></div>
+      <div class="macro-edit-area {layout}">
       
         <div class="macro-device">
             <div class="macro-device-header">{editor_title}<span class='macro-edit-add-open' id="{editor_id}-edit-button-open" style="display:none;"><img src='icon/edit.png' alt=''></span></div>
@@ -30,8 +30,8 @@ let macro_container = `
             </div>
             <div class="macro-edit-add" id="{editor_id}macroAddDelete">
                 <div class="macro-edit-add-div">
-                    <input id="{editor_id}-add-id" class="macro-edit-input"> <button class="macro-edit-button" id="{editor_id}-edit-button-add">add</button> &nbsp;&nbsp; 
-                    <input id="{editor_id}-delete-id" class="macro-edit-input" disabled"> <button class="macro-edit-button" id="{editor_id}-edit-button-delete">delete</button>
+                    <span id="{editor_id}-macro-device-add"><input id="{editor_id}-add-id" class="macro-edit-input"> <button class="macro-edit-button" id="{editor_id}-edit-button-add">add</button></span>&nbsp;&nbsp; 
+                    <span id="{editor_id}-macro-device-delete"><input id="{editor_id}-delete-id" class="macro-edit-input" disabled"> <button class="macro-edit-button" id="{editor_id}-edit-button-delete">delete</button></span>
                 </div>
             
             </div>
@@ -148,7 +148,11 @@ class RemoteMacroEditor extends RemoteDefaultClass {
         if (!this.container) {
             this.logging.error("init(): container elemente '"+this.container_name+"' doesn't exist.")
         } else {
+            let layout = "flex";
+            if (this.config.flex_layout === false) { layout = "fix"; }
+
             this.container.innerHTML = macro_container
+                .replaceAll("{layout}", layout)
                 .replaceAll("{editor_id}", this.editorId)
                 .replaceAll("{editor_title}", this.config.title || "Select macro");
             this.paletteEl = document.getElementById(this.editorId+"palette");
@@ -163,7 +167,6 @@ class RemoteMacroEditor extends RemoteDefaultClass {
             this.editButtonOpen = document.getElementById(this.editorId+"-edit-button-open");
             this.editInputAdd = document.getElementById(this.editorId+"-add-id");
             this.editInputDel = document.getElementById(this.editorId+"-delete-id");
-
         }
 
         this.categories = this.config.categories;
@@ -402,42 +405,49 @@ class RemoteMacroEditor extends RemoteDefaultClass {
         this.dropzoneEl.innerHTML = "";
         const macro = this.macros[this.activeDevice];
 
-        macro.forEach((item, index) => {
+        if (macro) {
+            macro.forEach((item, index) => {
 
-            const tag = document.createElement("div");
-            tag.className = "macro-tag";
-            if (!item.label) {
-                let cmd_label = item.command;
-                if (typeof item.command === "number") { cmd_label = item.command + "s"; }
-                else if (item.command.indexOf("WAIT-") === 0) { cmd_label = "Msg " + item.command.split("-")[1] + "s"; }
-                else if (item.command.indexOf("MSG-") === 0) { cmd_label = "Msg " + item.command.split("-")[1] + "s"; }
+                const tag = document.createElement("div");
+                tag.className = "macro-tag";
+                if (!item.label) {
+                    let cmd_label = item.command;
+                    if (typeof item.command === "number") {
+                        cmd_label = item.command + "s";
+                    } else if (item.command.indexOf("WAIT-") === 0) {
+                        cmd_label = "Msg " + item.command.split("-")[1] + "s";
+                    } else if (item.command.indexOf("MSG-") === 0) {
+                        cmd_label = "Msg " + item.command.split("-")[1] + "s";
+                    }
 
-                tag.textContent = cmd_label;
-            }
-            else { tag.innerHTML = item.label; }
+                    tag.textContent = cmd_label;
+                } else {
+                    tag.innerHTML = item.label;
+                }
 
-            tag.style.background = item.color;
-            tag.style.background = this.category_color[item.category] || "gray";
+                tag.style.background = item.color;
+                tag.style.background = this.category_color[item.category] || "gray";
 
-            tag.draggable = true;
-            tag.ondragstart = () => {
-                this.dragged = { source: "macro", index };
-            };
-            tag.ondragstart = () => {
-                this.dragged = { source: "macro", index };
-                this.dropSucceeded = false;
-            };
-            if (this.isTouch) {
-                tag.addEventListener("touchstart", e => {
-                    e.preventDefault();
-                    const touch = e.touches[0];
-                    this.dragged = { source: "macro", index };
-                    this.touchPos = { x: touch.clientX, y: touch.clientY };
-                });
-                this.attachTouchDrag(tag, { source: "macro", index });
-            }
-            this.dropzoneEl.appendChild(tag);
-        });
+                tag.draggable = true;
+                tag.ondragstart = () => {
+                    this.dragged = {source: "macro", index};
+                };
+                tag.ondragstart = () => {
+                    this.dragged = {source: "macro", index};
+                    this.dropSucceeded = false;
+                };
+                if (this.isTouch) {
+                    tag.addEventListener("touchstart", e => {
+                        e.preventDefault();
+                        const touch = e.touches[0];
+                        this.dragged = {source: "macro", index};
+                        this.touchPos = {x: touch.clientX, y: touch.clientY};
+                    });
+                    this.attachTouchDrag(tag, {source: "macro", index});
+                }
+                this.dropzoneEl.appendChild(tag);
+            });
+        }
 
         this.attachDropzoneHandlers();
         this.updateOutput();
@@ -446,17 +456,26 @@ class RemoteMacroEditor extends RemoteDefaultClass {
     /* ---------- Output ---------- */
     updateOutput() {
         const result = {};
-        this.devices.forEach(d => {
-            result[d] = this.macros[d].map(m =>
-                (m.category === "Timing" || m.category === "Waiting") ? m.command : `${m.category}_${m.command}`
-            );
-        });
+        if (this.devices) {
+            this.devices.forEach(d => {
+                result[d] = this.macros[d].map(m =>
+                    (m.category === "Timing" || m.category === "Waiting") ? m.command : `${m.category}_${m.command}`
+                );
+            });
+        }
 
-        //this.outputEl.value = JSON.stringify(result, null, 2);
         this.outputEl.value = this.json.json2text("", result, "macros");
         this.outputDetailEl.innerHTML = JSON.stringify(result[this.activeDevice], null, 2);
         this.deviceSelectEl.innerHTML = `[${this.activeDevice}]`;
         this.editInputDel.value = this.activeDevice;
+        this.editInputDel.disabled = true;
+
+        if (Object.keys(this.devices).length === 0) {
+            this.addDeleteEl.style.display = "block";
+        }
+
+        if (this.editInputDel.value.indexOf("!") === 0 || this.editInputDel.value === "undefined") { elementHidden(this.editorId+"-macro-device-delete"); }
+        else { elementVisible(this.editorId+"-macro-device-delete"); }
     }
 
     /* ---------- Macro Drop ---------- */

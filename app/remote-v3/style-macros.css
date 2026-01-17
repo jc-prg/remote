@@ -19,35 +19,38 @@
     margin-top: 15px;
 }
 
-.macro-edit-area {
-    background:#fff;
-    color: black;
-    padding:15px;
-    border-radius:8px;
-    box-shadow:0 2px 6px rgba(0,0,0,.1);
-
-    margin: 5px;
-    display: block;
-    float: left;
-    width: calc(70% - 40px);
-    height: 370px;
-    max-height: unset;
-    position: relative;  /* needed for absolute arrows inside */
-}
-
 .macro-edit-palette {
     background:#fff;
     padding:15px;
     border-radius:8px;
     box-shadow:0 2px 6px rgba(0,0,0,.1);
-    min-height: 150px;
     overflow:auto;
-
     float: left;
     margin: 5px;
-    width: calc(30% - 40px);
+
+    min-height: 150px;
     max-height: 370px;
 }
+.macro-edit-palette.flex { width: calc(30% - 40px); }
+.macro-edit-palette.fix  { width: 90%; height: 150px; max-height: 150px; }
+
+.macro-edit-area {
+    background: #fff;
+    color: black;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .1);
+
+    margin: 5px;
+    display: block;
+    position: relative; /* needed for absolute arrows inside */
+    float: left;
+
+    height: 370px;
+    max-height: unset;
+}
+.macro-edit-area.flex { width: calc(70% - 40px); }
+.macro-edit-area.fix  { width: 90%; height: auto; }
 
 .category, .macro-device {
     border:1px solid #ddd;
@@ -83,6 +86,10 @@
     position: relative;
     display: block;
     padding: 10px;
+}
+
+.macro-edit-input {
+    width: 100px;
 }
 
 .macro-output {
@@ -300,13 +307,13 @@ textarea {
         height:650px;
     }
 
-    .macro-edit-palette {
+    .macro-edit-palette.flex {
         width: 90%;
         height: 130px;
         max-height: 130px;
         min-height: unset;
     }
-    .macro-edit-area {
+    .macro-edit-area.flex {
         width: 90%;
         height: auto;
         max-height: unset;
