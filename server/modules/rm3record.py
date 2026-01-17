@@ -200,9 +200,10 @@ class RecordData(RemoteThreadingClass):
 
                 if record_value in self.record_data["config"]["record"] and "unit" in self.record_data["config"]["record"][record_value]:
                     unit = self.record_data["config"]["record"][record_value]["unit"]
-                    self.logging.debug(f"{status_value} / {unit}")
-                    status_value = status_value.replace(unit, "")
-                    status_value = float(status_value)
+                    self.logging.debug(f"{device}:{value} -> {status_value} / {unit}")
+                    if status_value is not None:
+                        status_value = status_value.replace(unit, "")
+                        status_value = float(status_value)
 
             record_item.append(status_value)
 
