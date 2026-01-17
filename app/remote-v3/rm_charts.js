@@ -102,11 +102,19 @@ class RemoteChartJS extends RemoteDefaultClass {
         let chart_id = data["REQUEST"]["ChartID"];
         let chart_data = data["DATA"];
         let recording = rmData.record.configuration();
+
         let labels = [];
-        for (let i = 0; i < chart_data["keys"].length; i++) {
-            let key = chart_data["keys"][i];
-            if (recording["record"][key])   { labels.push(recording["record"][key]["label"]); }
-            else                            { labels.push(chart_data["labels"][i]); }
+        if (chart_data["keys"]) {
+            for (let i = 0; i < chart_data["keys"].length; i++) {
+                let key = chart_data["keys"][i];
+                if (recording["record"][key]) {
+                    labels.push(recording["record"][key]["label"]);
+                } else {
+                    labels.push(chart_data["labels"][i]);
+                }
+            }
+        } else {
+            labels = chart_data["labels"];
         }
         let chart_html = this.draw(
             chart_data["title"],
