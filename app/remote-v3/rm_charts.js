@@ -156,8 +156,7 @@ class RemoteChartJS extends RemoteDefaultClass {
 
             if (!listContainer) {
                 listContainer = document.createElement('div');
-                listContainer.style.display = 'flex';
-                listContainer.style.flexDirection = 'row';
+                listContainer.style.display = 'block';
                 listContainer.style.margin = 0;
                 listContainer.style.padding = 0;
 
@@ -181,11 +180,12 @@ class RemoteChartJS extends RemoteDefaultClass {
 
                 items.forEach(item => {
                     const li = document.createElement('div');
-                    li.style.alignItems = 'center';
                     li.style.cursor = 'pointer';
                     li.style.display = 'flex';
-                    li.style.flexDirection = 'row';
+                    li.style.float = 'left';
+                    li.style.margin = '4px';
                     li.style.marginLeft = '10px';
+                    li.style.width = 'auto';
 
                     li.onclick = () => {
                         const {type} = chart.config;
@@ -203,17 +203,18 @@ class RemoteChartJS extends RemoteDefaultClass {
                     boxSpan.style.background = item.fillStyle;
                     boxSpan.style.borderColor = item.strokeStyle;
                     boxSpan.style.borderWidth = item.lineWidth + 'px';
-                    boxSpan.style.display = 'inline-block';
+                    boxSpan.style.display = 'block';
                     boxSpan.style.flexShrink = 0;
                     boxSpan.style.height = '12px';
                     boxSpan.style.marginRight = '10px';
                     boxSpan.style.width = '12px';
 
                     // Text
-                    const textContainer = document.createElement('p');
+                    const textContainer = document.createElement('span');
                     textContainer.style.color = item.fontColor;
                     textContainer.style.margin = 0;
                     textContainer.style.padding = 0;
+                    textContainer.style.whiteSpace = "nowrap";
                     textContainer.style.textDecoration = item.hidden ? 'line-through' : '';
 
                     const text = document.createTextNode(item.text);
