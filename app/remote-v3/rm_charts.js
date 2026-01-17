@@ -152,10 +152,10 @@ class RemoteChartJS extends RemoteDefaultClass {
 
         const getOrCreateLegendList = (chart, id) => {
             const legendContainer = document.getElementById(id);
-            let listContainer = legendContainer.querySelector('ul');
+            let listContainer = legendContainer.querySelector('div');
 
             if (!listContainer) {
-                listContainer = document.createElement('ul');
+                listContainer = document.createElement('div');
                 listContainer.style.display = 'flex';
                 listContainer.style.flexDirection = 'row';
                 listContainer.style.margin = 0;
@@ -180,7 +180,7 @@ class RemoteChartJS extends RemoteDefaultClass {
                 const items = chart.options.plugins.legend.labels.generateLabels(chart);
 
                 items.forEach(item => {
-                    const li = document.createElement('li');
+                    const li = document.createElement('div');
                     li.style.alignItems = 'center';
                     li.style.cursor = 'pointer';
                     li.style.display = 'flex';
