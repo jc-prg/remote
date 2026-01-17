@@ -45,6 +45,7 @@ class RemoteControlDisplay extends RemoteDefaultClass {
 
             // create display content
             if (this.edit_mode) {
+
                 // display if EDIT_MODE
                 text += display_start;
                 text  = text.replace( /##STATUS##/g, "EDIT_MODE" );
@@ -53,29 +54,14 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                 else                { text  = text.replace( /##DISPLAY##/g, "none" ); }
 
                 text += "<div class='display-table "+style+"'>";
-                if (style.indexOf("weather") === 0) {
-                    text += this.tab.start("100%", "", "center");
-                }
-                let text_tab = "";
-                text_tab += this.tab.start("100%");
-                for (let key in display_data) {
-                    if (key !== "ICON") {
-                        text_tab += this.tab.row(key + ":&nbsp;", "<span id='display_" + device + "_" + display_data[key] + "_edit'>{" + display_data[key] + "}</span>");
-                    }
-                }
-                text_tab += this.tab.end();
-                if (style.indexOf("weather") === 0) {
-                    text += this.tab.row("ICON: <br/>{" + display_data["ICON"] + "}", text_tab);
-                    text += this.tab.end();
-                } else {
-                    text += text_tab;
-                }
+                if (style.indexOf("weather") === 0) { text += this.values(device, display_data, "weather_edit"); }
+                else if (style.indexOf("c2") > 0) { text += this.values(device, display_data, "columns_edit"); }
+                else { text += this.values(device, display_data, "edit"); }
                 text += "</div>";
-
                 text += display_end;
-            }
 
-            else {
+            } else {
+
                 // display if ERROR
                 text += display_start;
                 text  = text.replace( /##STATUS##/g, "ERROR" );
@@ -104,35 +90,9 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                 else                                        { text  = text.replace( /##DISPLAY##/g, "none" ); }
 
                 text += "<div class='display-table "+style+"'>";
-
-                let text_tab = "";
-                text_tab += this.tab.start("100%");
-                for (let key in display_data) {
-                    if (key !== "ICON") {
-                        let input_id = "";
-                        if (display_data[key].indexOf("_") >= 0) {
-                            input_id = 'display_' + display_data[key];
-                        } else {
-                            input_id = 'display_' + device + '_' + display_data[key];
-                        }
-                        text_tab += this.tab.row(key + ":&nbsp;", "<span id='" + input_id + "'>no data</span>");
-                    }
-                }
-                text_tab += this.tab.end();
-                if (style.indexOf("weather") === 0 && display_data["ICON"]) {
-                    let input_id = "";
-                    if (display_data["ICON"].indexOf("_") >= 0) {
-                        input_id = 'display_' + display_data["ICON"];
-                    } else {
-                        input_id = 'display_' + device + '_' + display_data["ICON"];
-                    }
-                    text += this.tab.start("100%", "", "center");
-                    text += this.tab.row("<span id='"+input_id+"' class='display-weather-element'></span>", text_tab);
-                    text += this.tab.end();
-                } else {
-                    text += text_tab;
-                }
-
+                if (style.indexOf("weather") === 0) { text += this.values(device, display_data, "weather"); }
+                else if (style.indexOf("c2") > 0) { text += this.values(device, display_data, "columns"); }
+                else { text += this.values(device, display_data, "default"); }
                 text += "</div>";
                 text += display_end;
 
@@ -167,20 +127,141 @@ class RemoteControlDisplay extends RemoteDefaultClass {
             return text;
         }
 
+    values(device, display_data, format="default") {
+        let html = "";
+        let html_col1 = "";
+        let html_col2 = "";
+
+        // weather data - icon on the righten side
+        if (format === "weather" && display_data["ICON"]) {
+            let input_id = "";
+            html += this.tab.start("100%", "", "center");
+
+            if (display_data["ICON"].indexOf("_") >= 0) { input_id = 'display_' + display_data["ICON"]; }
+            else { input_id = 'display_' + device + '_' + display_data["ICON"]; }
+            html_col1 += "<span id='"+input_id+"' class='display-weather-element'></span>";
+
+            html_col2 += this.tab.start("100%");
+            for (let key in display_data) {
+                if (display_data[key].indexOf("_") >= 0) { input_id = 'display_' + display_data[key]; }
+                else { input_id = 'display_' + device + '_' + display_data[key]; }
+                if (key !== "ICON") { html_col2 += this.tab.row(key + ":&nbsp;", "<span id='" + input_id + "'>no data</span>"); }
+            }
+            html_col2 += this.tab.end();
+
+            html += this.tab.row(html_col1, html_col2);
+            html += this.tab.end();
+        }
+        // weather data - icon on the righten side - edit mode
+        if (format === "weather_edit") {
+            let input_id = "";
+            html += this.tab.start("100%", "", "center");
+
+            if (display_data["ICON"].indexOf("_") >= 0) { input_id = 'display_' + display_data["ICON"]; }
+            else { input_id = 'display_' + device + '_' + display_data["ICON"]; }
+            html_col1 += "<span id='edit_"+input_id+"'>ICON<br/>{"+display_data["ICON"]+"}</span>";
+
+            html_col2 += this.tab.start("100%");
+            for (let key in display_data) {
+                if (display_data[key].indexOf("_") >= 0) { input_id = 'display_' + display_data[key]; }
+                else { input_id = 'display_' + device + '_' + display_data[key]; }
+                if (key !== "ICON") { html_col2 += this.tab.row(key + ":&nbsp;", "<span id='edit_" + input_id + "'>{"+display_data[key]+"}</span>"); }
+            }
+            html_col2 += this.tab.end();
+
+            html += this.tab.row(html_col1, html_col2);
+            html += this.tab.end();
+        }
+        // data in 2 columns
+        else if (format === "columns") {
+            let count = 1;
+            let key_per_column = Math.round(Object.keys(display_data).length / 2);
+            let column = 0;
+            let html_cols = ["",""];
+            for (let key in display_data) {
+                let input_id = "";
+                if (display_data[key].indexOf("_") >= 0) { input_id = 'display_' + display_data[key]; }
+                else { input_id = 'display_' + device + '_' + display_data[key]; }
+                html_cols[column] += this.tab.row(key + ":&nbsp;", "<span id='" + input_id + "'>no data</span>");
+                if (count >= key_per_column) { column = 1; }
+                count += 1;
+            }
+            html_cols[0] = this.tab.start("100%") + html_cols[0] + this.tab.end();
+            html_cols[1] = this.tab.start("100%") + html_cols[1] + this.tab.end();
+
+            html += this.tab.start("100%");
+            html += this.tab.row(html_cols[0], html_cols[1]);
+            html += this.tab.end();
+        }
+        // data in 2 columns - edit mode
+        else if (format === "columns_edit") {
+            let count = 1;
+            let key_per_column = Math.round(Object.keys(display_data).length / 2);
+            let column = 0;
+            let html_cols = ["",""];
+            for (let key in display_data) {
+                let input_id = "";
+                if (display_data[key].indexOf("_") >= 0) { input_id = 'display_' + display_data[key]; }
+                else { input_id = 'display_' + device + '_' + display_data[key]; }
+                html_cols[column] += this.tab.row(key + ":&nbsp;", "<span id='edit_" + input_id + "'>{"+display_data[key]+"}</span>");
+                if (count >= key_per_column) { column = 1; }
+                count += 1;
+            }
+            html_cols[0] = this.tab.start("100%") + html_cols[0] + this.tab.end();
+            html_cols[1] = this.tab.start("100%") + html_cols[1] + this.tab.end();
+
+            html += this.tab.start("100%");
+            html += this.tab.row(html_cols[0], html_cols[1]);
+            html += this.tab.end();
+        }
+        // default edit - just a table of keys and values - show {data_keys}
+        else if (format === "edit") {
+            html += this.tab.start("100%");
+            for (let key in display_data) {
+                let input_id = "";
+                if (display_data[key].indexOf("_") >= 0) { input_id = 'display_' + display_data[key]; }
+                else { input_id = 'display_' + device + '_' + display_data[key]; }
+                html += this.tab.row(key + ":&nbsp;", "<span id='edit_" + input_id + "'>{"+display_data[key]+"}</span>");
+            }
+            html += this.tab.end();
+        }
+        // default - just a table of keys and values
+        else {
+            html += this.tab.start("100%");
+            for (let key in display_data) {
+                let input_id = "";
+                if (display_data[key].indexOf("_") >= 0) { input_id = 'display_' + display_data[key]; }
+                else { input_id = 'display_' + device + '_' + display_data[key]; }
+                html += this.tab.row(key + ":&nbsp;", "<span id='" + input_id + "'>no data</span>");
+            }
+            html += this.tab.end();
+        }
+
+        return html;
+    }
+
+
     /* return the set of available display sizes - connect to css definition in style-display.css */
     sizes() {
         return {
             "small": "Small",
             "middle": "Middle",
             "big": "Big",
-            "h1w2": "1x height / 2x wide",
-            "h1w4": "1x height / 4x wide",
-            "h2w2": "2x height / 2x wide",
-            "h2w3": "2x height / 3x wide",
-            "h2w4": "2x height / 4x wide",
-            "h3w2": "3x height / 2x wide",
-            "h4w2": "4x height / 2x wide",
-            "h4w4": "4x height / 4x wide",
+
+            "h1w2": "2x width / 1x height",
+            "h2w2": "2x width / 2x height",
+            "h3w2": "2x width / 3x height",
+            "h4w2": "2x width / 4x height",
+            "h2w3": "3x width / 2x height",
+            "h1w4": "4x width / 1x height",
+            "h2w4": "4x width / 2x height",
+            "h3w4": "4x width / 3x height",
+            "h4w4": "4x width / 4x height",
+            "h1w4 c2": "4x width / 1x height / 2 columns",
+            "h2w4 c2": "4x width / 2x height / 2 columns",
+            "h3w4 c2": "4x width / 3x height / 2 columns",
+            "h4w4 c2": "4x width / 4x height / 2 columns",
+
             "weather1": "weather big",
             "weather2": "weather middle",
             "weather3": "weather small"
