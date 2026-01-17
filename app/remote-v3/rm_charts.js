@@ -92,6 +92,7 @@ class RemoteChartJS extends RemoteDefaultClass {
         }, wait_time);
 
         html += `<div id ='chart_${chart_id}' class='rm-chart ${style}'>${this.html_loading}</div>`;
+        html += `<div class='rm-chart legend' style='margin-top:0;'><div id ='chart_${chart_id}_legend' class='rm-chart-content legend'>${this.html_loading}</div></div>`;
         return html;
     }
 
@@ -105,7 +106,7 @@ class RemoteChartJS extends RemoteDefaultClass {
             chart_data["labels"],
             chart_data["units"],
             chart_data["data"],
-            "line", true, "rmChart_"+chart_id);
+            "line", true, "chart_"+chart_id);
         let chart_available = chart_data["available"].sort();
         let chart_position = chart_data["available"].indexOf(chart_data["title"]);
         let reload_click = this.name+".create(\"" + chart_id + "\");";
@@ -148,6 +149,82 @@ class RemoteChartJS extends RemoteDefaultClass {
 
         // https://www.chartjs.org/docs/latest/samples/line/line.html
         // data = { "label1" : [1, 2, 3], "label2" : [1, 2, 3] };
+
+        const getOrCreateLegendList = (chart, id) => {
+            const legendContainer = document.getElementById(id);
+            let listContainer = legendContainer.querySelector('ul');
+
+            if (!listContainer) {
+                listContainer = document.createElement('ul');
+                listContainer.style.display = 'flex';
+                listContainer.style.flexDirection = 'row';
+                listContainer.style.margin = 0;
+                listContainer.style.padding = 0;
+
+                legendContainer.appendChild(listContainer);
+            }
+
+            return listContainer;
+        };
+        const htmlLegendPlugin = {
+            id: 'htmlLegend',
+            afterUpdate(chart, args, options) {
+                const ul = getOrCreateLegendList(chart, options.containerID);
+
+                // Remove old legend items
+                while (ul.firstChild) {
+                    ul.firstChild.remove();
+                }
+
+                // Reuse the built-in legendItems generator
+                const items = chart.options.plugins.legend.labels.generateLabels(chart);
+
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.style.alignItems = 'center';
+                    li.style.cursor = 'pointer';
+                    li.style.display = 'flex';
+                    li.style.flexDirection = 'row';
+                    li.style.marginLeft = '10px';
+
+                    li.onclick = () => {
+                        const {type} = chart.config;
+                        if (type === 'pie' || type === 'doughnut') {
+                            // Pie and doughnut charts only have a single dataset and visibility is per item
+                            chart.toggleDataVisibility(item.index);
+                        } else {
+                            chart.setDatasetVisibility(item.datasetIndex, !chart.isDatasetVisible(item.datasetIndex));
+                        }
+                        chart.update();
+                    };
+
+                    // Color box
+                    const boxSpan = document.createElement('span');
+                    boxSpan.style.background = item.fillStyle;
+                    boxSpan.style.borderColor = item.strokeStyle;
+                    boxSpan.style.borderWidth = item.lineWidth + 'px';
+                    boxSpan.style.display = 'inline-block';
+                    boxSpan.style.flexShrink = 0;
+                    boxSpan.style.height = '12px';
+                    boxSpan.style.marginRight = '10px';
+                    boxSpan.style.width = '12px';
+
+                    // Text
+                    const textContainer = document.createElement('p');
+                    textContainer.style.color = item.fontColor;
+                    textContainer.style.margin = 0;
+                    textContainer.style.padding = 0;
+                    textContainer.style.textDecoration = item.hidden ? 'line-through' : '';
+
+                    const text = document.createTextNode(item.text);
+                    textContainer.appendChild(text);
+
+                    li.appendChild(boxSpan);
+                    li.appendChild(textContainer);
+                    ul.appendChild(li);
+                });
+            }
+        };
 
         let html = "";
         let canvas_size = {"height": "unset", "width": "unset"};
@@ -216,7 +293,7 @@ class RemoteChartJS extends RemoteDefaultClass {
         let canvas_style = "";
         Object.keys(size).forEach((key)        => { canvas_size[key] = size[key]; });
         Object.keys(canvas_size).forEach((key) => { canvas_style += key+":"+canvas_size[key]+";"; });
-        html += "<div style=\""+canvas_style+"\"><canvas id=\""+id+"\" style=\""+canvas_style+"\">"+this.html_loading+"</canvas></div>\n";
+        html += "<div style=\""+canvas_style+"\"><canvas id=\""+id+"_chart\" style=\""+canvas_style+"\">"+this.html_loading+"</canvas></div>\n";
 
 
         const chart_labels = data_keys;
@@ -225,6 +302,8 @@ class RemoteChartJS extends RemoteDefaultClass {
             datasets : data_sets
         };
 
+        setTextById(id+"_legend", "");
+
         if (this.chartJS_config === undefined) { this.chartJS_config = {}; }
         this.chartJS_config[id] = {
             type : type,
@@ -232,7 +311,12 @@ class RemoteChartJS extends RemoteDefaultClass {
             options : {
                 responsive: true,
                 plugins: {
+                    htmlLegend: {
+                        display: true,
+                        containerID: id+"_legend",
+                    },
                     legend: {
+                        display: false,
                         position: set_menu,
                         align: "left",
                         labels : {
@@ -241,7 +325,8 @@ class RemoteChartJS extends RemoteDefaultClass {
                         }
                     }
                 }
-            }
+            },
+            plugins: [htmlLegendPlugin],
         };
         if (label !== "") {
             //chartJS_config[id].options.plugins.title = {text: label, display: true}
@@ -250,7 +335,7 @@ class RemoteChartJS extends RemoteDefaultClass {
             if (this.chartJS_chart) {
                 this.chartJS_chart.destroy();
             }
-            this.chartJS_chart = new Chart(document.getElementById(id), this.chartJS_config[id] );
+            this.chartJS_chart = new Chart(document.getElementById(id+"_chart"), this.chartJS_config[id] );
         }, 1000 );
         return html;
     }
