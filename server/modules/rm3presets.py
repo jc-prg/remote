@@ -120,7 +120,7 @@ def set_logging(set_name, set_log_level=None):
             logger.setLevel(set_log_level)
             logger.propagate = False
 
-            log_format_string = '%(asctime)s | %(levelname)-8s ' + set_name.ljust(10) + ' | %(message)s'
+            log_format_string = '%(asctime)s | %(levelname)-8s ' + set_name.ljust(11) + ' | %(message)s'
             log_format = logging.Formatter(fmt=log_format_string, datefmt='%m/%d %H:%M:%S')
             handler = RotatingFileHandler(filename=log_filename, mode='a',
                                           maxBytes=int(2.5 * 1024 * 1024),
@@ -133,7 +133,7 @@ def set_logging(set_name, set_log_level=None):
             logger.setLevel(set_log_level)
             logger.propagate = False
 
-            log_format_string = '%(asctime)s | %(levelname)-8s %(name)-10s | %(message)s'
+            log_format_string = '%(asctime)s | %(levelname)-8s %(name)-11s | %(message)s'
             log_format = logging.Formatter(fmt=log_format_string, datefmt='%m/%d %H:%M:%S')
             handler = logging.StreamHandler(sys.stdout)
             handler.setFormatter(log_format)
