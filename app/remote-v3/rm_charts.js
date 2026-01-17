@@ -156,7 +156,7 @@ class RemoteChartJS extends RemoteDefaultClass {
 
             if (!listContainer) {
                 listContainer = document.createElement('div');
-                listContainer.style.display = 'block';
+                listContainer.style.display = 'flex';
                 listContainer.style.flexDirection = 'row';
                 listContainer.style.margin = 0;
                 listContainer.style.padding = 0;
@@ -183,7 +183,7 @@ class RemoteChartJS extends RemoteDefaultClass {
                     const li = document.createElement('div');
                     li.style.alignItems = 'center';
                     li.style.cursor = 'pointer';
-                    li.style.display = 'block';
+                    li.style.display = 'flex';
                     li.style.flexDirection = 'row';
                     li.style.marginLeft = '10px';
 

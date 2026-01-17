@@ -36,7 +36,7 @@
 }
 
 .rm-chart.default   { grid-column: span 4; grid-row: span 8; aspect-ratio: 8 / 5; }
-.rm-chart.legend    { grid-column: span 4; grid-row: span 1; aspect-ratio: 8 / 1; }
+.rm-chart.legend    { grid-column: span 4; grid-row: span 1;  }
 .rm-chart-content.legend {
     text-align: center;
     align-content: center;
