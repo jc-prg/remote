@@ -92,7 +92,7 @@ class RemoteChartJS extends RemoteDefaultClass {
         }, wait_time);
 
         html += `<div id ='chart_${chart_id}' class='rm-chart ${style}'>${this.html_loading}</div>`;
-        html += `<div class='rm-chart legend' style='margin-top:0;'><div id ='chart_${chart_id}_legend' class='rm-chart-content legend'>${this.html_loading}</div></div>`;
+        html += `<div class='rm-chart legend' style='margin-top:0;'><div id ='chart_${chart_id}_legend' class='rm-chart-content legend'></div></div>`;
         return html;
     }
 
