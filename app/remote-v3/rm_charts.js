@@ -226,7 +226,7 @@ class RemoteChartJS extends RemoteDefaultClass {
 
                     // Text
                     const textContainer = document.createElement('span');
-                    textContainer.style.color = item.fontColor;
+                    //textContainer.style.color = item.fontColor;
                     textContainer.style.margin = 0;
                     textContainer.style.padding = 0;
                     textContainer.style.whiteSpace = "nowrap";
