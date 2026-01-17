@@ -182,7 +182,7 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                 let input_id = "";
                 if (display_data[key].indexOf("_") >= 0) { input_id = 'display_' + display_data[key]; }
                 else { input_id = 'display_' + device + '_' + display_data[key]; }
-                html_cols[column] += this.tab.row(key + ":&nbsp;", "<span id='" + input_id + "'>no data</span>");
+                html_cols[column] += this.tab.row(key + ":", "<span id='" + input_id + "'>no data</span>");
                 if (count >= key_per_column) { column = 1; }
                 count += 1;
             }
