@@ -203,7 +203,10 @@ class RecordData(RemoteThreadingClass):
                     self.logging.debug(f"{device}:{value} -> {status_value} / {unit}")
                     if status_value is not None:
                         status_value = status_value.replace(unit, "")
-                        status_value = float(status_value)
+                        try:
+                            status_value = float(status_value)
+                        except Exception as e:
+                            self.logging.warning(f"Could not convert value to float: {device}:{value} -> {status_value} / {unit}")
 
             record_item.append(status_value)
 
