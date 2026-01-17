@@ -88,6 +88,7 @@
 .display-element.h4w2    { width : 98%; }
 
 .display-table {
+    display     : table;
     text-align  : left;
     width       : 95%;
     max-height  : 95%;
@@ -97,6 +98,18 @@
 
     scrollbar-width: thin;                 /* auto | thin | none */
     scrollbar-color: #6b7280 transparent;
+}
+.display-table table {
+    display: inline-table;
+    border-collapse: collapse;
+    height: 100%;
+    min-height: 100%;
+}
+.display-table td {
+    vertical-align: middle;  /* vertical */
+    align-items: center;     /* vertical */
+    padding-top: 4px;
+    padding-bottom: 4px;
 }
 
 .display-table::-webkit-scrollbar {
