@@ -59,6 +59,10 @@ class RemoteElementsEdit extends RemoteDefaultClass {
             document.getElementById(id+"_status").innerHTML   = "true";
             document.getElementById(id+"_link").innerHTML     = "&minus;";
             this.container_open[id] = true;
+
+            document
+                .getElementById(id + "_body")
+                .scrollIntoView({ behavior: "smooth", block: "nearest" });
         }
     }
 

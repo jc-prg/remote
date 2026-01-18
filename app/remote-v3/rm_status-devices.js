@@ -66,6 +66,7 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
 
         this.status_api_devices = this.data["STATUS"]["interfaces"]["connect"];
         this.status_api_devices_all = this.data["STATUS"]["interfaces"]["structure"];
+        this.status_api_discovery = this.data["STATUS"]["interfaces"]["discovery"];
         this.status_devices = this.data["STATUS"]["devices"];
 
         this.status_elements = {
@@ -592,6 +593,11 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
     /* get status for groups */
     status_group (id, details=false) {
         return this.get_status("group", id, details);
+    }
+
+    /* get status of discovery */
+    status_discovery() {
+        return this.status_api_discovery;
     }
 
     /* return several raw data from status ... potential for more */
