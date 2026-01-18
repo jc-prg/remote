@@ -1899,8 +1899,8 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
 
             let chart_exists = JSON.stringify(rm_data["remote"]).indexOf("\"CHART\"") > -1 ;
             let onclick_add = this.name + ".rm_scene.add_chart('"+scene+"');"
-            let onclick_add_value = this.name + ".rm_scene.add_chart_value('"+scene+"', 'add_chart_value');"
-            let onclick_delete_value = ""; //this.name + ".rm_scene.add_chart_value('"+scene+"', 'add_chart_value');"
+            let onclick_add_value = this.name + ".rm_scene.add_chart_value('"+scene+"', 'add_chart_value');";
+            let onclick_delete_value = this.name + ".rm_scene.delete_chart_value('"+scene+"', 'delete_chart_value');";
 
             this.basic.input_width = "150px";
             edit = "&nbsp;";

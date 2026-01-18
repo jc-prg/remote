@@ -544,22 +544,35 @@ class RemoteJsonElements extends RemoteDefaultClass {
         chart_new.push(value_new);
 
         setValueById(this.json_field_id_chart, JSON.stringify(chart_new));
+        this.preview(scene);
+    }
 
-        /*
-        if (display_new[label_new] !== undefined) {
-            appMsg.alert(lang("DISPLAY_LABEL_EXISTS_ALREADY"));
+    /* add chart value from JSON */
+    delete_chart_value(scene, value) {
+
+        const input_field = document.getElementById(value);
+
+        if (!input_field) {
+            appMsg.alert("Error with input field.");
             return;
         }
 
-        if (!display_new[label_new] && device_new !== "X") {
-            display_new[label_new] = device_new + "_" + value_new;
-        }
-        else if (!display_new[label_new]) {
-            display_new[label_new] = value_new;
+        let value_delete = input_field.options[input_field.selectedIndex].text;
+
+        if (value_delete === "" || value_delete === undefined) {
+            appMsg.alert(lang("CHART_VALUE_SELECT"));
+            return;
         }
 
-        this.json.textarea_replace(this.json_field_id_display, display_new);
-  */
+        let chart_new = JSON.parse(getValueById(this.json_field_id_chart));
+
+        if (chart_new.indexOf(value_delete) < 0) {
+            appMsg.alert(lang("CHART_VALUE_DOESNT_EXISTS"));
+            return;
+        }
+        chart_new = chart_new.filter(item => item !== value_delete);
+
+        setValueById(this.json_field_id_chart, JSON.stringify(chart_new));
         this.preview(scene);
     }
 

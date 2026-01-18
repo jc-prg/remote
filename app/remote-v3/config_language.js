@@ -148,6 +148,7 @@ let language_app = {
         "CHART_ERROR_LOADING_CHART_JS": "Error: Could not load Chart.js.",
         "CHART_LOADING"         : "Loading chart data ...",
         "CHART_VALUE_EXISTS"    : "Value already exists.",
+        "CHART_VALUE_DOESNT_EXISTS" : "Value doesn't exists.",
         "CHART_VALUE_SELECT"    : "Select chart value first.",
 
         "CONNECTION_ERROR"      : "Connection Error",
