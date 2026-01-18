@@ -132,5 +132,6 @@
     "volume-down" : "vol-.png",
     "vol+"      : "vol+.png",
     "vol-"      : "vol-.png",
-    "weather"   : "weather.png"
+    "weather"   : "weather.png",
+    "weather2"  : "weather2.png"
 }
