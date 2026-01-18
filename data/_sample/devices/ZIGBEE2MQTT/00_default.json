@@ -1,0 +1,80 @@
+{
+	"data": {
+        "api_commands": {
+            "permit-join": "request/permit_join={'value': true, 'time': 120}",
+            "restart-api": "request/restart="
+        },
+        "buttons" : {
+			"off": "set={'state': 'OFF'}",
+            "on": "set={'state': 'ON'}",
+            "toggle": "set={'state': 'TOGGLE'}"
+		},
+        "commands" : {
+            "availability": {
+                "cmd": ["get"],
+                "get": "get=availability",
+                "type": "enum",
+                "values": ["online", "offline"]
+            },
+            "api-last-answer": {
+                "cmd": ["get"],
+                "get": "get=api-last-answer"
+            },
+			"link-quality": {
+                "cmd": [
+                    "get"
+                ],
+                "get": "get=linkquality"
+            },
+            "power": {
+                "cmd": [
+                    "get",
+                    "set"
+                ],
+                "get": "get=state",
+                "set": "get={'state': '{DATA}'}",
+                "type": "enum",
+                "values": [
+                    "ON",
+                    "OFF"
+                ]
+            },
+            "state": {
+                "cmd": [
+                    "get",
+                    "set"
+                ],
+                "get": "get=state",
+                "set": "get={'state': '{DATA}'}",
+                "type": "enum",
+                "values": [
+                    "ON",
+                    "OFF"
+                ]
+            },
+            "device-info": {
+                "cmd": ["get"],
+                "get": "get=device-info"
+            },
+            "device-configuration": {
+                "cmd": ["get"],
+                "get": "get=device-configuration"
+            },
+            "device-features": {
+                "cmd": ["get"],
+                "get": "get=device-features"
+            }
+		},
+        "query" : {
+          "load_intervals" : {
+            "10": ["power"]
+          },
+          "load_default" : 30,
+          "load_after" : ["on", "off", "toggle"],
+          "load_never": ["device-info","device-features","device-configuration"]
+          },
+		"description" : "API for ZigBee Devices",
+		"method" : "query"
+	},
+	"info": "jc://remote/ - In this files the API-specific commands and buttons are defined."
+}
