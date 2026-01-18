@@ -123,6 +123,7 @@ class RemoteAPI(RemoteDefaultClass):
                 }
             }
         status["interfaces"]["structure"] = self.data.api_devices_connections()
+        status["interfaces"]["discovery"] = self.apis.discover_last > 0
 
         for key in rm3presets.server_health:
             if rm3presets.server_health[key] == "stopped" or rm3presets.server_health[key] == "registered":

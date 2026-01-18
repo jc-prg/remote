@@ -36,6 +36,9 @@ class ApiControl(RemoteApiClass):
         self.config_add_key("MultiDevice", False)
         self.config_set_methods(["send","query"])
 
+        self.api_info_url = "https://github.com/jc-prg/remote/blob/master/server/interfaces/weather/README.md"
+        self.api_source_url = "https://open-meteo.com/en/docs"
+
         self.weather_api = ApiWeather(config)
 
     def connect(self):
@@ -70,6 +73,34 @@ class ApiControl(RemoteApiClass):
                 self.status = "error"
 
         return self.status
+
+    def discover(self):
+        """
+        create a default api configuration
+        """
+        api_config = {
+            "API-Description": self.api_description,
+            "API-Devices": {
+                "default": {
+                    "Description": "Open Meteo Weather (incl. GeoPy)",
+                    "IPAddress": "127.0.0.1",
+                    "Methods": ["query"],
+                    "MultiDevice": False,
+                    "Location": None,
+                    "LocationGPS": [48.128, 11.646, "Munich"],
+                    "Interval": 900,
+                    "Timeout": 5
+                }
+            },
+            "API-Info": self.api_info_url,
+            "API-Source": self.api_source_url
+        }
+        self.api_discovery = api_config.copy()
+        self.logging.info("__DISCOVER: " + self.api_name + " - " + str(len(self.api_discovery["API-Devices"])) + " devices")
+        self.logging.debug("            " + self.api_name + " - " + str(self.api_discovery))
+        return api_config.copy()
+
+
 
     def wait_if_working(self):
         """Some devices run into problems, if send several requests at the same time"""
@@ -124,6 +155,8 @@ class ApiControl(RemoteApiClass):
 
             if command == "availability" and "info_status" in weather and weather["info_status"]["running"] == "OK":
                 result = "ONLINE"
+            elif command == "api-discovery":
+                result = self.api_discovery
             elif command == "api-last-answer":
                 result = self.weather_api.last_get_weather
             elif command == "power" and "info_status" in weather and weather["info_status"]["running"] == "OK":
@@ -137,7 +170,7 @@ class ApiControl(RemoteApiClass):
             elif len(commands) == 2 and commands[0] in weather and commands[1] in weather[commands[0]]:
                 result = weather[commands[0]][commands[1]]
             else:
-                result = f"ERROR Command {command} isn't available in the weather data."
+                result = f"ERROR Command {commands} isn't available in the weather data."
 
             self.logging.debug(f"{command} | {commands[len(commands)-1]} : {result}")
 

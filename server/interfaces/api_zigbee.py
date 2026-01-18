@@ -505,57 +505,81 @@ class ApiControl(RemoteApiClass):
         """
         extract exposed features from 10_devices.json format
         """
-        result = {
-            "data": {
-                "buttons": {},
-                "commands": {},
-                "query": {
-                    "load_intervals": {},
-                    "load_default": 60,
-                    "load_after": [],
-                    "load_after_values": [],
-                    "load_only": [],
-                    "load_never": []
+        if device_information.get("friendly_name","") == "Coordinator":
+            result = {
+                "data": {
+                    "buttons": {},
+                    "commands": {},
+                    "query": {},
+                    "details": {
+                        "description": "Coordinator",
+                        "model_id": device_information.get("model_id",""),
+                        "manufacturer": device_information.get("manufacturer",""),
+                        "ieee_address": device_information.get("ieee_address",""),
+                        "friendly_name": device_information.get("friendly_name",""),
+                        "type": device_information.get("type","unknown"),
+                    },
                 },
-                "details": {
-                    "description": device_information["definition"]["description"],
-                    "model_id": device_information["model_id"],
-                    "manufacturer": device_information["manufacturer"],
-                    "ieee_address": device_information["ieee_address"],
-                    "friendly_name": device_information["friendly_name"],
-                    "type": device_information["type"],
-                }
-            },
-            "info": "jc://remote/ device configuration for '" + device_information["definition"]["description"] + "' (" +
-                    device_information["manufacturer"] + " / " + device_information["model_id"] + ")",
-        }
-        features = device_information["definition"]["exposes"]
+                "info": "jc://remote/ device configuration - a coordinator can't be used directly.",
+            }
 
-        for entry in features:
-            if "property" in entry:
-                key = entry["property"]
-                cmd_value = self.device_configuration_command(entry)
-                btn_value = self.device_configuration_button(entry)
-                my_key = key.replace("_","-")
-                result["data"]["commands"][my_key] = cmd_value
-                for btn_key in btn_value:
-                    result["data"]["buttons"][btn_key] = btn_value[btn_key]
-            elif "features" in entry:
-                subentries = entry["features"]
-                for subentry in subentries:
-                    key = subentry["property"]
-                    cmd_value = self.device_configuration_command(subentry)
-                    btn_value = self.device_configuration_button(subentry)
-                    my_key = key.replace("_", "-")
+        elif not "definition" in device_information:
+            self.logging.error(f"ZigBee device information of {device_information.get("friendly_name")} doesn't contain a definition: {device_information}")
+            result = {}
+
+        else:
+
+            result = {
+                "data": {
+                    "buttons": {},
+                    "commands": {},
+                    "query": {
+                        "load_intervals": {},
+                        "load_default": 60,
+                        "load_after": [],
+                        "load_after_values": [],
+                        "load_only": [],
+                        "load_never": []
+                    },
+                    "details": {
+                        "description": device_information["definition"]["description"],
+                        "model_id": device_information["model_id"],
+                        "manufacturer": device_information["manufacturer"],
+                        "ieee_address": device_information["ieee_address"],
+                        "friendly_name": device_information["friendly_name"],
+                        "type": device_information["type"],
+                    }
+                },
+                "info": "jc://remote/ device configuration for '" + device_information["definition"]["description"] + "' (" +
+                        device_information["manufacturer"] + " / " + device_information["model_id"] + ")",
+            }
+            features = device_information["definition"]["exposes"]
+
+            for entry in features:
+                if "property" in entry:
+                    key = entry["property"]
+                    cmd_value = self.device_configuration_command(entry)
+                    btn_value = self.device_configuration_button(entry)
+                    my_key = key.replace("_","-")
                     result["data"]["commands"][my_key] = cmd_value
                     for btn_key in btn_value:
                         result["data"]["buttons"][btn_key] = btn_value[btn_key]
+                elif "features" in entry:
+                    subentries = entry["features"]
+                    for subentry in subentries:
+                        key = subentry["property"]
+                        cmd_value = self.device_configuration_command(subentry)
+                        btn_value = self.device_configuration_button(subentry)
+                        my_key = key.replace("_", "-")
+                        result["data"]["commands"][my_key] = cmd_value
+                        for btn_key in btn_value:
+                            result["data"]["buttons"][btn_key] = btn_value[btn_key]
 
-        important_commands = []
-        for key in result["data"]["commands"]:
-            if (key.startswith("state") or key.startswith("linkquality")) and "get" in result["data"]["commands"][key]["cmd"]:
-                important_commands.append(key)
-        result["data"]["query"]["load_intervals"]["10"] = important_commands
+            important_commands = []
+            for key in result["data"]["commands"]:
+                if (key.startswith("state") or key.startswith("linkquality")) and "get" in result["data"]["commands"][key]["cmd"]:
+                    important_commands.append(key)
+            result["data"]["query"]["load_intervals"]["10"] = important_commands
 
         return result
 

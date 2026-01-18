@@ -5,6 +5,9 @@
           "availability": {
             "get": "availability"
           },
+          "api-discovery": {
+             "get": "api-discovery"
+          },
           "api-last-answer": {
             "get": "api-last-answer"
           },
