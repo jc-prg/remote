@@ -5,6 +5,9 @@
           "availability": {
             "get": "availability"
           },
+          "api-last-answer": {
+            "get": "api-last-answer"
+          },
           "credits": {
             "get": "info_module.provider_link"
           },
