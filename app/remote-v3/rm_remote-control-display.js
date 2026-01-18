@@ -127,6 +127,7 @@ class RemoteControlDisplay extends RemoteDefaultClass {
             return text;
         }
 
+    /* format display values */
     values(device, display_data, format="default") {
         let html = "";
         let html_col1 = "";
@@ -153,7 +154,7 @@ class RemoteControlDisplay extends RemoteDefaultClass {
             html += this.tab.end();
         }
         // weather data - icon on the righten side - edit mode
-        if (format === "weather_edit") {
+        else if (format === "weather_edit") {
             let input_id = "";
             html += this.tab.start("100%", "", "center");
 
@@ -240,7 +241,6 @@ class RemoteControlDisplay extends RemoteDefaultClass {
         return html;
     }
 
-
     /* return the set of available display sizes - connect to css definition in style-display.css */
     sizes() {
         return {
@@ -315,10 +315,11 @@ class RemoteControlDisplay extends RemoteDefaultClass {
             }
             text  += this.tab_row("<hr/>",false);
 
-            text  += this.tab_row("<span class='display-label-dialog'>API:</span>",             use_color("<span class='display-detail' id='display_full_"+device+"_api'>no data</span>", "VALUE") );
-            text  += this.tab_row("<span class='display-label-dialog'>Status:</span>",          use_color("<span class='display-detail' id='display_full_"+device+"_api-status'>no data</span>", "VALUE") );
-            text  += this.tab_row("<span class='display-label-dialog'>Last&nbsp;Send:</span>",  use_color("<span class='display-detail' id='display_full_"+device+"_api-last-send'>no data</span>", "VALUE") );
-            text  += this.tab_row("<span class='display-label-dialog'>Last&nbsp;Query:</span>", use_color("<span class='display-detail' id='display_full_"+device+"_api-last-query'>no data</span>", "VALUE") );
+            text  += this.tab_row("<span class='display-label-dialog'>API:</span>",              use_color("<span class='display-detail' id='display_full_"+device+"_api'>no data</span>", "VALUE") );
+            text  += this.tab_row("<span class='display-label-dialog'>Status:</span>",           use_color("<span class='display-detail' id='display_full_"+device+"_api-status'>no data</span>", "VALUE") );
+            text  += this.tab_row("<span class='display-label-dialog'>Last&nbsp;Send:</span>",   use_color("<span class='display-detail' id='display_full_"+device+"_api-last-send'>no data</span>", "VALUE") );
+            text  += this.tab_row("<span class='display-label-dialog'>Last&nbsp;Query:</span>",  use_color("<span class='display-detail' id='display_full_"+device+"_api-last-query'>no data</span>", "VALUE") );
+            text  += this.tab_row("<span class='display-label-dialog'>Last&nbsp;Answer:</span>", use_color("<span class='display-detail' id='display_full_"+device+"_api-last-answer'>no data</span>", "VALUE") );
             text  += this.tab_row("end");
 
             text  += "</div>";
