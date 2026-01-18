@@ -4,10 +4,21 @@
 
 ## KNOWN BUGS -------------------------------------------------------------------
 
+* error in weather and record - restart / reconnect after a while?
+
+        01/17 09:29:49 | INFO     weather    | Get weather data from module (every 600s/Open-Meteo) ...
+        01/17 09:29:49 | ERROR    weather-om | Could not read weather from open-meteo.com: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=48.128&longitude=11.646&timezone=auto&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,weathercode&daily=sunset,sunrise (Caused by NameResolutionError("HTTPSConnection(host='api.open-meteo.com', port=443): Failed to resolve 'api.open-meteo.com' ([Errno -3] Temporary failure in name resolution)"))
+        ..
+        01/17 20:07:23 | ERROR    api-WEATHER | ERROR Command availability isn't available in the weather data.
+        01/17 20:07:23 | ERROR    api-WEATHER | ERROR Command info_module.provider_link isn't available in the weather data.
+        01/17 20:07:53 | ERROR    api-WEATHER | ERROR Command availability isn't available in the weather data.
+        01/17 20:07:53 | ERROR    api-WEATHER | ERROR Command info_module.provider_link isn't available in the weather data.
+        01/17 20:08:23 | ERROR    api-WEATHER | ERROR Command availability isn't available in the weather data.
+        01/17 20:08:23 | ERROR    api-WEATHER | ERROR Command info_module.provider_link isn't available in the weather data.
+
 * edit mode
   * toggle & slider for groups doesn't work (but are in the drop-down menus) -> rm_remote-control.js:432
   * don't show groups in drop-down if no device is defined in it
-  * SOLVED: editing device - looses display size when saving
 
 ### known but not that urgent
 
@@ -28,31 +39,11 @@
 ## UNDER DEVELOPMENT -------------------------------------------------------------
 
 * integrating weather API
-  * OPEN: specific weather display, e.g., big weather icon on one half and basic weather data on the other half 
   * OPEN: create default configuration with sample data (quasi as device discovery)
-  * QUESTION: is there a need for a device or is it possible to get data if API-Device is defined
-    * idea: whenever MultiDevice = False and same set of commands (defined in 00_default.json) is enough, 
-      address it via <API-Device-Key>_Command - or additional setting in 00_interface.json - key starting with a specific character (:WEATHER:default_temperature)
-      -> no device remote required but data available in a scene ...
-  * OK: read weather data from API-Device configuration (00_interface.json)
-  * OK: record weather data, display in a remote control (default)
-  * OK: connect weather API with sample data set
-  * OK: create config file set
-  * OK: query to request all relevant data for current weather and API status
-
-* OK: reload button / icon on charts (in title?!)
-* OK: check, if recording is nto pause (if recording, do not deactivate an API)
-
-* Improving text on displays
-  * OK: table instead of divs
-  * OK: scrollbars if necessary
-  * OK: check volume level, add possibility to display other values as bar also
-  * OPEN: check all text sizes
-  
+ 
 * macro editing in the app
   * OPEN: sort in some order (alphabetically or in the order of the menu)
   * OPEN: edit groups with the same option (different data structure)
-  * OPEN: scene macros (additional place, partly collecting data from different places ... requires server adaption)
 
 ### paused a bit
 
@@ -71,28 +62,17 @@
   * idea: ensure TEST API does something -> e.g. though out visible messages; connect works ... and so on
 
 * create a clean data set
-  * OK: renamed cfg-files incl. references in README.md's 
-  * OK: _ACTIVE-APIS.json -> clean version, one default API device per API
-  * OK: templates -> check, what to move to template also; check description inside
-  * OK: remotes -> rename device remotes to rmc-*.json; check description inside
-  * OK: remotes -> check own remotes, what to move into sample set
   * OPEN: _ACTIVE-DEVICES.json -> integrate at least one device per API (hidden, not status data)
 
-
-### SOLVED / OBSERVE
-
-* OK/OBSERVE: size display compared to buttons (possible reason - reduce border size from 1 to 0.5px)
-  * json_edit_values["display-size"] not set correctly? rm_remotes.js, Line 2751
-  * h1w2, manual mode - Höhe abhängig von der Breite nicht adaptiv (bleibt konstant, während buttons sich verändern)
-  * andere modi, andere größen sind unauffällig
-
-
+  
 ## NEW / IDEAS --------------------------------------------------------------------
 
 ### NEW 01-2025
 
-* ZigBee temperature / humidity sensor
-  * idea for later: record and visualize data
+* QUESTION: is there a need for a device or is it possible to get data if API-Device is defined
+  * idea: whenever MultiDevice = False and same set of commands (defined in 00_default.json) is enough,
+    address it via <API-Device-Key>_Command - or additional setting in 00_interface.json - key starting with a specific character (:WEATHER:default_temperature)
+    -> no device remote required but data available in a scene ...
 
 * other refactoring
   * rm_main.js; rethink / maybe create a class and restructure stuff
@@ -168,13 +148,6 @@
 
 ### NEW 09-2025
 
-* PROBLEM - Bug im Firefox
-  * Strom & Geräte / Media Center / Kino after reload -> nothing visible (frame3); when selected after working scene remote then OK
-    * same for bluray, LED lampe, LED streifen
-    * shown on the right at the big screen / Browser window?!
-    * after resize OK
-    * reaction on CSS "break-inside: avoid"? Bug in Firefox only?!
-
 * SAVE - change apple icon in the settings (maybe just in .env-file)
 
 * optimize API communication
@@ -202,6 +175,45 @@
     
 # DONE --------------------------------------------------------------------------
 
+* save last get data in zigbee API and show in display details
+* create a clean data set
+  * OK: renamed cfg-files incl. references in README.md's
+  * OK: _ACTIVE-APIS.json -> clean version, one default API device per API
+  * OK: templates -> check, what to move to template also; check description inside
+  * OK: remotes -> rename device remotes to rmc-*.json; check description inside
+  * OK: remotes -> check own remotes, what to move into sample set
+* SOLVED: macro editing -> reset button is missing
+* SOLVED: RuntimeError: dictionary changed size during iteration -> configFiles -> assumption: after adding ZigBee device
+* SOLVED: error in rm3record.self.record_values_now() - new / alternative error
+* SOLVED: error in rm3record.self.record_values_now()
+* double column display
+* SOLVED: WAIT-xx Macros lead to errors
+  * scene-on -> dev-on -> WAIT-xx // Umstellung auf MSG-xx ? und wie damit umgehen, dass mehrere dev-on hintereinander möglich sind?
+  * ideen: MSG nur auf oberste Ebene auswerten, d.h. in dem Falle nur bei scene-on
+* OK/OBSERVE: size display compared to buttons (possible reason - reduce border size from 1 to 0.5px)
+  * json_edit_values["display-size"] not set correctly? rm_remotes.js, Line 2751
+  * h1w2, manual mode - Höhe abhängig von der Breite nicht adaptiv (bleibt konstant, während buttons sich verändern)
+  * andere modi, andere größen sind unauffällig
+* bugs edit mode
+  * SOLVED: DISPLAY - not weather display
+  * SOLVED: editing device - looses display size when saving
+* integrating weather API
+  * OK: specific weather display, e.g., big weather icon on one half and basic weather data on the other half
+  * OK: read weather data from API-Device configuration (00_interface.json)
+  * OK: record weather data, display in a remote control (default)
+  * OK: connect weather API with sample data set
+  * OK: create config file set
+  * OK: query to request all relevant data for current weather and API status
+* OK: reload button / icon on charts (in title?!)
+* OK: check, if recording is nto pause (if recording, do not deactivate an API)
+* Improving text on displays
+  * OK: table instead of divs
+  * OK: scrollbars if necessary
+  * OK: check volume level, add possibility to display other values as bar also
+* Rethink sizing
+  * keep: show menu ...
+  * change -> 2 columns now 880 -> 1000
+  * change -> 3 columns now 1250 -> 1400
 * refactoring moved cookie handling to separate class
 * SOLVED: catch errors from pythonping
 * statusCheck_* refactoring -> RemoteVisualizeStatus()
@@ -219,7 +231,7 @@
   * OK: move API definition to separate sheet, keep initial sheet for information, enable/disable, and reconnect
   * OK: move add API device to sheet box and move "create device config" there if exists
 * macro editing in the app
-  * OPEN: sort in some order (alphabetically or in the order of the menu)
+  * OK: scene macros (additional place, partly collecting data from different places ... requires server adaption)
   * OK: add / delete macro keys
   * OK: save from this GUI / realize for all types of macros (and groups?)
   * OK: improve layout (best use the available space on different screen sizes)
