@@ -217,7 +217,8 @@ class ConfigCache(RemoteThreadingClass):
         main_config_files = [rm3presets.active_devices, rm3presets.active_scenes]
 
         self.logging.debug("Write cache to config files (main_config="+str(main_config)+") ...")
-        for key in self.cache:
+        keys = self.cache.keys()
+        for key in keys:
             key_path = key.replace("**", "/")
             if (main_config and key_path in main_config_files) or not main_config:
                 self.write(key_path, self.cache[key], "cache_write_to_file")

@@ -124,6 +124,8 @@ class ApiControl(RemoteApiClass):
 
             if command == "availability" and "info_status" in weather and weather["info_status"]["running"] == "OK":
                 result = "ONLINE"
+            elif command == "api-last-answer":
+                result = self.weather_api.last_get_weather
             elif command == "power" and "info_status" in weather and weather["info_status"]["running"] == "OK":
                 result = "ON"
             elif command == "sunrise":
@@ -598,6 +600,7 @@ class ApiWeather(RemoteThreadingClass):
 
         self.sunset_today = None
         self.sunrise_today = None
+        self.last_get_weather = "N/A"
 
         self.error = False
         self.update = False
@@ -637,6 +640,7 @@ class ApiWeather(RemoteThreadingClass):
                 self.logging.info("Get weather data from module (every " + str(self.update_time) + "s/" + self.weather_source + ") ...")
                 last_update = time.time()
                 self.weather_info = self.module.get_data()
+                self.last_get_weather = self.config.local_time().strftime("%H:%M:%S (%d.%m.%Y)")
                 if not self.error and not self.module.error:
                     self.weather_info["info_status"]["running"] = "OK"
                     if "forecast" in self.weather_info and "today" in self.weather_info["forecast"]:

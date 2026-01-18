@@ -106,6 +106,7 @@ class Connect(RemoteThreadingClass):
                 self.logging.info("Loading API connectors OK.")
 
         while self._running:
+            #self.logging.warn(f"LOOP 1")
             if time.time() - self.api_check_device_connection_last > self.api_check_device_connection_interval or self.api_check_device_connection_now:
                 if self.api_check_device_connection_now:
                     self.logging.info(f"Check connected devices (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
@@ -117,6 +118,7 @@ class Connect(RemoteThreadingClass):
                 self.api_check_device_connection_now = False
                 self.config.all_available_api_loaded = True
 
+            #self.logging.warn(f"LOOP 2")
             if self.discover_now:
                 self.logging.debug(f"Discover available devices (now={self.discover_now}) ...")
                 self.check_devices()
@@ -128,18 +130,19 @@ class Connect(RemoteThreadingClass):
                 self.discover_now = False
                 self.discover_now_message = False
 
+            #self.logging.warn(f"LOOP 3")
             self.thread_wait()
 
+            #self.logging.warn(f"LOOP 4")
             if self.api_request_reconnect_data != {}:
-                start_time = time.time()
                 for key in self.api_request_reconnect_data:
                     [reread_config, done_message] = self.api_request_reconnect_data[key]
                     self.api_reconnect(key, reread_config, done_message)
                 self.config.app_reload_indicator["api_reconnect"] = time.time()
                 self.api_request_reconnect_data = {}
 
+            #self.logging.warn(f"LOOP 5")
             if self.api_request_reconnect_all:
-                start_time = time.time()
                 self.load_api_connectors()
                 self.api_request_reconnect_all = False
                 self.api_check_device_connection_now = True
@@ -386,6 +389,8 @@ class Connect(RemoteThreadingClass):
             self.logging.debug("- " + api)
             if time.time() - start_time_api > 10:
                 self.logging.warning(f"check_discover_all():{api} took longer than expected: {round(time.time() - start_time_api, 1)}s")
+
+            self.thread_life_signal()
 
         self.available_discover = discover_list.copy()
         if time.time() - start_time > 25:
@@ -654,7 +659,6 @@ class Connect(RemoteThreadingClass):
         """
         check the amount of errors, if more than 80% errors and at least 5 requests try to reconnect
         """
-
         api_dev = self.device_api_string(device)
 
         if api_dev not in self.api:
@@ -667,8 +671,7 @@ class Connect(RemoteThreadingClass):
         else:
             error_rate = 0
 
-        self.logging.debug(
-            "ERROR RATE ... " + str(error_rate) + "/" + str(self.api[api_dev].count_error) + "/" + str(requests))
+        self.logging.debug(f"ERROR RATE ... {device}:{api_dev} - {error_rate}/{self.api[api_dev].count_error}/{requests}")
 
         if error_rate >= 0.8 and requests > 5:
             self.api[api_dev].status = self.api[api_dev].not_connected + " ... HIGH ERROR RATE"
@@ -692,7 +695,7 @@ class Connect(RemoteThreadingClass):
             self.api[api_dev].count_success += 1
 
         if self.api[api_dev].count_error > 0:
-            self.logging.debug("ERROR RATE ... error: " + str(is_error) +  " / " + str(self.api[api_dev].count_error))
+            self.logging.debug(f"ERROR RATE ... error - {device}:{api_dev} - {is_error}/{self.api[api_dev].count_error}")
 
     def api_send_directly(self, device, command, external=False):
         """

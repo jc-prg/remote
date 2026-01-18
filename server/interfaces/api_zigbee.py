@@ -247,6 +247,7 @@ class ApiControl(RemoteApiClass):
 
             if topic == self.mqtt_msg_start + device_id:
                 self.mqtt_devices_status[device_id] = data
+                self.mqtt_devices_status[device_id]["api-last-answer"] = self.config.local_time().strftime("%H:%M:%S (%d.%m.%Y)")
                 self.logging.debug("-> " + device_id + " : " + str(data))
 
         if "bridge/info" in topic and data != {} and data is not None:
@@ -688,24 +689,27 @@ class ApiControl(RemoteApiClass):
                 if "availability" in command:
                     result = self.mqtt_device_availability[friendly_name]
 
-                if "device-info" in command:
+                elif "api-last-answer" in command and friendly_name in self.mqtt_devices_status and "api-last-answer" in self.mqtt_devices_status[friendly_name]:
+                    result = self.mqtt_devices_status[friendly_name]["api-last-answer"]
+
+                elif "device-info" in command:
                     result = self.device_info(friendly_name)
 
-                if "device-features" in command:
+                elif "device-features" in command:
                     result = self.device_info(friendly_name)
                     if "friendly_name" in result:
                         result = self.device_features(result)
                     else:
                         result = {"error": "Device '" + friendly_name + "' not yet found in the configuration."}
 
-                if "device-configuration" in command:
+                elif "device-configuration" in command:
                     result = self.device_info(friendly_name)
                     if "friendly_name" in result:
                         result = self.device_configuration(result)
                     else:
                         result = {"error": "Device '" + friendly_name + "' not yet found in the configuration."}
 
-                if friendly_name in self.mqtt_devices_status and command_value in self.mqtt_devices_status[friendly_name]:
+                elif friendly_name in self.mqtt_devices_status and command_value in self.mqtt_devices_status[friendly_name]:
                     result = self.mqtt_devices_status[friendly_name][command_value]
                     if command_value == "color":
                         result["x"] = round(result["x"], 4)
@@ -720,6 +724,8 @@ class ApiControl(RemoteApiClass):
 
                     if unit != "":
                         result = str(result) + " " + str(unit)
+                else:
+                    result = "N/A"
 
             result_log = str(result)
             if len(result_log) > 50:

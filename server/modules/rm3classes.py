@@ -286,6 +286,12 @@ class RemoteThreadingClass(threading.Thread, RemoteDefaultClass):
 
         rm3presets.server_health[self.class_id] = time.time()
 
+    def thread_life_signal(self):
+        """
+        send a life signal from another source than the thread_wait() in a loop for longer lasting processes
+        """
+        rm3presets.server_health[self.class_id] = time.time()
+
     def thread_priority(self, priority):
         """
         set thread priority, influence on loop_wait
