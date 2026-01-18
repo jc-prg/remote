@@ -716,7 +716,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         const dev_status = rmStatus.status_device_raw(device_id);
         let display_keys = rmData.devices.list_commands(device_id, "get");
         let commands = rmData.devices.list_commands(device_id, "definition");
-        let additional_keys = ["api","api-status","api-last-query","api-last-record", "api-last-send","api-auto-off"];
+        let additional_keys = ["api","api-status","api-last-query","api-last-record","api-last-send","api-last-answer","api-auto-off"];
         display_keys = display_keys.concat(additional_keys);
 
         // set values if device is active or scene is active (which can contain several devices)

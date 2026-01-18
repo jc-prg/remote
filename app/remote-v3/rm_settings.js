@@ -1701,10 +1701,12 @@ class RemoteSettingsMacro extends RemoteDefaultClass {
     // create container for macro settings
     create() {
         this.button.width = "100px";
+        this.button.height = "30px";
         let setting   = "";
         setting  += "<br/><span class='center'><div id='macros-edit-json'></div></span>";
         setting  += "<span class='center'><div style='width:100%;text-align:center;'><br/>";
-        setting  += this.button.sized("add_scene",lang("BUTTON_T_SAVE"),"settings","apiMacroChange([#groups#,#macro#,#dev-on#,#dev-off#]);","");
+        setting  += this.button.sized("add_scene",lang("BUTTON_T_SAVE"),"settings","apiMacroChange([#groups#,#macro#,#dev-on#,#dev-off#]);","") + "&nbsp;";
+        setting  += this.button.sized("reset_scene",lang("BUTTON_T_RESET"),"settings",this.settings.name+".create(\"edit_macros\");","");
         setting  += "<br/></div></span>";
         return setting;
     }
@@ -1720,9 +1722,6 @@ class RemoteSettingsMacro extends RemoteDefaultClass {
             <div id='json-edit-dev-off'></div>
         `;
         const myBox2 = new RemoteElementSheetBox("macros-edit-json", "500px", true);
-        //myBox2.addSheet("Macros",       "<h4>Edit JSON for global macros:</h4>" +     "<div id='json-edit-macro'></div>", false);
-        //myBox2.addSheet("Device ON",    "<h4>Edit JSON for device ON macros:</h4>" +  "<div id='json-edit-dev-on'></div>", false);
-        //myBox2.addSheet("Device OFF",   "<h4>Edit JSON for device OFF macros:</h4>" + "<div id='json-edit-dev-off'></div>", false);
         myBox2.addSheet("Macros",    "<h4>Edit JSON for global macros:</h4>" + "<div id='json-edit-macro-1'></div>", true, this.name +".load_macro_edit('json-edit-macro-1','global','macro');");
         myBox2.addSheet("Device ON", "<h4>Edit JSON for global macros:</h4>" + "<div id='json-edit-macro-2'></div>", true, this.name +".load_macro_edit('json-edit-macro-2','device-on','dev-on');");
         myBox2.addSheet("Device OFF","<h4>Edit JSON for global macros:</h4>" + "<div id='json-edit-macro-3'></div>", true, this.name +".load_macro_edit('json-edit-macro-3','device-off','dev-off');");
