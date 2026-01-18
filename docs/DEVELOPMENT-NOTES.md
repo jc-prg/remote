@@ -78,10 +78,8 @@
   * rm_main.js; rethink / maybe create a class and restructure stuff
 
 * move data processing to -> class rmData {} and rmStatus {}
-  * IDEA: move other configs to data("CONFIG")("elements"), such as "icons", "device-types", "methods"
   * check if still required: data("CONFIG")("templates")("list")
   * check which other parts are still required or can be removed
-  * check if elements rmStatus.status_system can be further improved
 
 ### NEW 12-2025
 
@@ -119,7 +117,6 @@
   * save default icon in device templates
   * save default header image in scene templates
 
-* reload all configuration files (empty cache?!) ... by pull down remote more than 80px
 * installation after initial load
   * server side - copy / create initial config files (all APIs are off, no API devices configured)
   * app side - add API devices (use discovery if available or default config from API)
@@ -165,7 +162,6 @@
   * General idea:
     * method to request all data at once (are in QUEUE all at once already)
   * Improve KODI:   ~1s - cache not only for request of complete data but also of single values
-  * Improve ONYKO:  ~5s - analyze options
   
 * Further ZigBee Integration
   * Check ZigBee with Password
@@ -175,6 +171,7 @@
     
 # DONE --------------------------------------------------------------------------
 
+* app: scroll opened container into view 
 * save last get data in zigbee API and show in display details
 * create a clean data set
   * OK: renamed cfg-files incl. references in README.md's
@@ -182,6 +179,7 @@
   * OK: templates -> check, what to move to template also; check description inside
   * OK: remotes -> rename device remotes to rmc-*.json; check description inside
   * OK: remotes -> check own remotes, what to move into sample set
+* SOLVED: reload all configuration files (empty cache?!) ... by pull down remote more than 80px
 * SOLVED: macro editing -> reset button is missing
 * SOLVED: RuntimeError: dictionary changed size during iteration -> configFiles -> assumption: after adding ZigBee device
 * SOLVED: error in rm3record.self.record_values_now() - new / alternative error
@@ -255,6 +253,7 @@
   * function statusCheck_devicePowerStatus, function statusCheck_scenePowerStatus
   * refactoring -> move to class; enable more specific requests (such as for a single device, with or without message details)
 * SOLVED: when devices or APIs are disabled, the message shows an error (API_ERROR_DEVICE) instead of a message with inactive
+* OK: move other configs to data("CONFIG")("elements"), such as "icons", "device-types", "methods"
 * scene macros doesn't work or just not defined?!
 * when updating without config files for a new device, such as DENON, it shows a messages and starts without that API
   * OK: attention sign / no content in API settings -> give at least recommendations, what to do and show an error for the API (may already open with message)!
