@@ -58,6 +58,7 @@ class ApiControl(RemoteApiClass):
             "MAX_RECONNECT_DELAY": 60
             }
         self.not_available = []
+        self.start_time = time.time()
 
     def _on_connect(self, client, userdata, flags, rc, properties):
         """
@@ -695,7 +696,7 @@ class ApiControl(RemoteApiClass):
         elif device_id in self.mqtt_device_id:
             friendly_name = device_id
         else:
-            if device_id not in self.not_available:
+            if device_id not in self.not_available and self.start_time + 20 < time.time():
                 self.logging.error("ERROR: No data for device '" + device_id + "' available (no further info for this device till reconnect).")
                 self.not_available.append(device_id)
             self.working = False
