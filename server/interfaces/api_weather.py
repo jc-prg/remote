@@ -69,12 +69,13 @@ class ApiControl(RemoteApiClass):
             if success and not self.weather_api.thread_is_running():
                 self.logging.info("Connecting Weather API ...")
                 self.weather_api.start()
-                time.sleep(5)
+                time.sleep(15)
             elif success and self.weather_api.thread_is_running():
                 self.logging.info("Reconnection Weather API ...")
                 self.weather_api.stop()
                 time.sleep(5)
                 self.weather_api.start()
+                time.sleep(15)
             else:
                 self.status = "error"
 
@@ -640,7 +641,7 @@ class ApiWeather(RemoteThreadingClass):
         self.last_get_weather = "N/A"
 
         self.error = False
-        self.update = False
+        self.update = True
         self.update_time = 60 * 10
         self.update_wait = 0
         self.wrote_sunrise_sunset = False
