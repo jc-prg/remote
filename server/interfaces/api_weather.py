@@ -142,6 +142,9 @@ class ApiControl(RemoteApiClass):
         if not self.weather_api.connected:
             self.logging.warning("query(): Weather API not connected yet ...")
             return "N/A"
+        elif not self.weather_api.got_first_data:
+            self.logging.warning("query(): Weather API didn't request first data yet ...")
+            return "N/A"
 
         result = ""
         self.wait_if_working()
@@ -649,6 +652,7 @@ class ApiWeather(RemoteThreadingClass):
 
         self.module = None
         self.connected = False
+        self.got_first_data = False
         self.gps = ApiGPS()
 
     def run(self):
@@ -687,6 +691,8 @@ class ApiWeather(RemoteThreadingClass):
                             self.sunrise_today = self.weather_info["forecast"]["today"]["sunrise"]
                         if "sunset" in self.weather_info["forecast"]["today"]:
                             self.sunset_today = self.weather_info["forecast"]["today"]["sunset"]
+                if not self.got_first_data:
+                    self.got_first_data = True
 
             # write sunset and sunrise to main config
             #if not self.wrote_sunrise_sunset and self.sunset_today is not None and self.sunrise_today is not None:
