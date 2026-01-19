@@ -65,18 +65,15 @@ class ApiControl(RemoteApiClass):
             self.logging.error("Could not start WEATHER API, as no location information are defined: " +str(weather_param))
             self.status = "error"
         else:
+            if not self.weather_api.thread_is_running():
+                self.weather_api.start()
+
             success = self.weather_api.connect(weather_param)
-            if success and not self.weather_api.thread_is_running():
-                self.logging.info("Connecting Weather API ...")
-                self.weather_api.start()
-                time.sleep(15)
-            elif success and self.weather_api.thread_is_running():
-                self.logging.info("Reconnection Weather API ...")
-                self.weather_api.stop()
-                time.sleep(5)
-                self.weather_api.start()
-                time.sleep(15)
+            if success:
+                time.sleep(10)
+                self.logging.info("(Re)connected Weather API ...")
             else:
+                self.logging.error("Could not (re)connected Weather API ...")
                 self.status = "error"
 
         return self.status
@@ -653,7 +650,6 @@ class ApiWeather(RemoteThreadingClass):
         self.module = None
         self.connected = False
         self.gps = ApiGPS()
-        #self.connect(self.param["weather"])
 
     def run(self):
         """
