@@ -40,7 +40,7 @@ class ApiControl(RemoteApiClass):
         self.api_source_url = "https://open-meteo.com/en/docs"
 
         self.weather_api = ApiWeather(config)
-        self.weather_api.start()
+        self.weather_api_connect = False
 
     def connect(self):
         """Connect / check connection"""
@@ -66,6 +66,10 @@ class ApiControl(RemoteApiClass):
             self.logging.error("Could not start WEATHER API, as no location information are defined: " +str(weather_param))
             self.status = "error"
         else:
+            if not self.weather_api_connect:
+                self.weather_api.start()
+                self.weather_api_connect = True
+
             success = self.weather_api.connect(weather_param)
             if success:
                 time.sleep(10)
