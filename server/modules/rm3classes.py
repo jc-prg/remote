@@ -312,3 +312,8 @@ class RemoteThreadingClass(threading.Thread, RemoteDefaultClass):
         """
         return self._thread_waiting_times[self._thread_priority]
 
+    def thread_is_running(self):
+        """
+        return True if thread is running
+        """
+        return self._running

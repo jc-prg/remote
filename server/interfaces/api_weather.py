@@ -66,9 +66,15 @@ class ApiControl(RemoteApiClass):
             self.status = "error"
         else:
             success = self.weather_api.connect(weather_param)
-            if success:
+            if success and not self.weather_api.thread_is_running():
+                self.logging.info("Connecting Weather API ...")
                 self.weather_api.start()
-                time.sleep(10)
+                time.sleep(5)
+            elif success and self.weather_api.thread_is_running():
+                self.logging.info("Reconnection Weather API ...")
+                self.weather_api.stop()
+                time.sleep(5)
+                self.weather_api.start()
             else:
                 self.status = "error"
 
@@ -99,8 +105,6 @@ class ApiControl(RemoteApiClass):
         self.logging.info("__DISCOVER: " + self.api_name + " - " + str(len(self.api_discovery["API-Devices"])) + " devices")
         self.logging.debug("            " + self.api_name + " - " + str(self.api_discovery))
         return api_config.copy()
-
-
 
     def wait_if_working(self):
         """Some devices run into problems, if send several requests at the same time"""
