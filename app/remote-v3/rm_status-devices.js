@@ -325,6 +325,12 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
                 for (let device_id in dev_required) {
                     // collect status infos for each required device
                     let device = dev_required[device_id];
+
+                    if (!this.status_data["device"][device]) {
+                        console.debug("create_data_scenes(): Status for '" + device + "' not found - part of scene '" + scene + "'");
+                        continue;
+                    }
+
                     let device_status = this.status_data["device"][device]["status"];
                     let device_label = this.config_devices[device]["settings"]["label"];
 

@@ -135,7 +135,7 @@ function remoteReload(data) {
 	statusCheck(data);	
 
 	// reset button info in header
-	//setTimeout(function(){setTextById("audio4", "");}, 1000);
+	//setTimeout(function(){setTextById("menu-audio4", "");}, 1000);
 	}
 	
 //--------------------------------

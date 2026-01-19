@@ -60,6 +60,7 @@ class RemoteSettings extends RemoteDefaultClass {
 
         this.index_buttons = "";
         this.header_title = getTextById("header_title");
+        let archived = rmData.elements.data("keys_archive");
         elementVisible("setting_ext_top_frame");
         elementVisible("setting_ext_frames");
 
@@ -99,7 +100,11 @@ class RemoteSettings extends RemoteDefaultClass {
             this.settings_ext_reset();
             this.settings_ext_append(0,"", this.index(true, "WRAPPER"), "", true);
             this.settings_ext_append(2,lang("ADD_DEVICE"), this.module_remotes.add_device(direct_cmd, direct_data));
-            this.settings_ext_append(4,lang('EDIT_DEVICES'), this.module_remotes.list_devices());
+            this.settings_ext_append(3,lang('EDIT_DEVICES'), this.module_remotes.list_devices());
+            if (archived["devices"].length > 0) {
+                this.settings_ext_append(4, lang('EDIT_ARCHIVED_DEVICES'), "<div id='list_archived_remotes'></div>");
+                this.module_remotes.load_archived_devices();
+            }
             this.index_buttons_html = this.index(true, "SETTINGS_DEVICES");
             this.create_show_ext();
 
@@ -115,7 +120,11 @@ class RemoteSettings extends RemoteDefaultClass {
             this.settings_ext_reset();
             this.settings_ext_append(0,"", this.index(true, "WRAPPER"), "", true);
             this.settings_ext_append(2,lang("ADD_SCENE"), this.module_remotes.add_scene(direct_cmd, direct_data));
-            this.settings_ext_append(1,lang('EDIT_SCENES'), this.module_remotes.list_scenes());
+            this.settings_ext_append(3,lang('EDIT_SCENES'), this.module_remotes.list_scenes());
+            if (archived["scenes"].length > 0) {
+                this.settings_ext_append(4, lang('EDIT_ARCHIVED_SCENES'), "<div id='list_archived_remotes'></div>");
+                this.module_remotes.load_archived_scenes();
+            }
             this.index_buttons_html = this.index(true, "SETTINGS_SCENES");
             this.create_show_ext();
 
@@ -355,6 +364,10 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
         this.button = this.settings.button;
         this.elements = this.settings.elements;
         this.tab = this.settings.tab;
+
+        this.remote_edit = this.remote_edit.bind(this);
+        this.list_devices = this.list_devices.bind(this);
+        this.list_scenes = this.list_scenes.bind(this);
     }
 
     // create dialogs to add scenes
@@ -384,38 +397,51 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
     }
 
     // create drag & droppable list of scenes
-    list_scenes() {
-        this.update_data();
+    list_scenes(data=undefined) {
 
-        let scenes = rmData.scenes.config_scenes;
-        let html = "&nbsp;<br/><ul id='sort_scenes'>";
+        let devices, html, order, scenes;
+        let direct = true;
 
-        for (let key in scenes) {
-            scenes[key]["position"] = rmData.scenes.remote_position(key);
+        if (data !== undefined) {
+            html   = "&nbsp;<br/><ul id='sort_scenes_archived' class='slist'>";
+            scenes = data["DATA"]["archive"];
+            order = Object.keys(scenes);
+            direct = false;
+        } else {
+            this.update_data();
+            html   = "&nbsp;<br/><ul id='sort_scenes' class='slist'>";
+            scenes = rmData.scenes.config_scenes;
+            for (let key in scenes) {
+                scenes[key]["position"] = rmData.scenes.remote_position(key);
+            }
+            order  = sortDict(scenes, "position");
         }
-        let order  = sortDict(scenes, "position");
+
         if (order.length > 0) {
             for (let key in order) {
                 let scene = order[key];
                 let style = "";
+                let edit, edit_style;
                 if (scenes[scene]["settings"]["visible"] === "no") {
                     style = " hidden";
                 }
+                if (direct) { edit = this.remote_edit("scene", scene, scenes[scene]["settings"]["visible"]); edit_style = ""; }
+                else        { edit = this.remote_archive("scene", scene, scenes[scene]["settings"]["visible"]); edit_style = " archive"; }
 
                 html += "<li id='" + scene + "'>";
-                html += "<div class='slist_li_content" + style + "'>" + rmData.scenes.label(scene) + "<br/>";
+                html += "<div class='slist_li_content" + style + "'>" + scenes[scene]["settings"]["label"] + "<br/>";
                 html += "<span style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>" + scene + "</rm-id></span></div>";
-                html += "<div class='slist_li_edit'>" + this.remote_edit("scene", scene, rmData.scenes.data(scene)["settings"]["visible"]) + "</div>";
+                html += "<div class='slist_li_edit"+edit_style+"'>" + edit + "</div>";
                 html += "</li>";
             }
+            html += "</ul>";
         }
         else {
             html += "<div style='width:100%;padding:15px;'>" + lang("SCENES_NOT_DEFINED_YET") + "</div>";
         }
 
-
-        html += "</ul>";
-        return html;
+        if (direct) { return html; }
+        else { setTextById('list_archived_remotes', html); }
     }
 
     // create dialogs to add devices
@@ -438,38 +464,67 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
     }
 
     // create drag & droppable list of devices
-    list_devices() {
-        this.update_data();
+    list_devices(data=undefined) {
 
-        let devices = rmData.devices.config_devices;
-        let html   = "&nbsp;<br/><ul id='sort_devices'>";
+        let devices, html, order;
+        let direct = true;
 
-        for (let key in devices) {
-            devices[key]["position"] = rmData.devices.remote_position(key);
+        if (data !== undefined) {
+            html   = "&nbsp;<br/><ul id='sort_devices_archived' class='slist'>";
+            devices = data["DATA"]["archive"];
+            order = Object.keys(devices);
+            direct = false;
+        } else {
+            this.update_data();
+            html   = "&nbsp;<br/><ul id='sort_devices' class='slist'>";
+            devices = rmData.devices.config_devices;
+            for (let key in devices) {
+                devices[key]["position"] = rmData.devices.remote_position(key);
+            }
+            order  = sortDict(devices, "position");
         }
-        let order  = sortDict(devices, "position");
+
         if (order.length > 0) {
             for (let key in order) {
                 let device = order[key];
-                let api = rmData.devices.data(device)["interface"]["api"].replace("_", "/");
+                let api, edit, edit_style;
+                if (devices[device]["interface"]) {
+                    api = devices[device]["interface"]["api"].replace("_", "/");
+                } else {
+                    api = devices[device]["config"]["api_key"] + "/" + devices[device]["config"]["api_device"];
+                }
                 api = api.replace("/default", "");
                 let style = "";
-                if (rmData.devices.data(device)["settings"]["visible"] === "no") {
+                if (devices[device]["settings"]["visible"] === "no") {
                     style = " hidden";
                 }
+                if (direct) { edit = this.remote_edit("device", device, devices[device]["settings"]["visible"]); edit_style = ""; }
+                else        { edit = this.remote_archive("device", device, devices[device]["settings"]["visible"]); edit_style = " archive"; }
 
                 html += "<li id='" + device + "'>";
-                html += "<div class='slist_li_content" + style + "'>" + rmData.devices.label(device) + "<br/>";
+                html += "<div class='slist_li_content" + style + "'>" + devices[device]["settings"]["label"] + "<br/>";
                 html += "<div style='color:#999999;font-style:normal;font-weight:normal;font-size:9px;'><rm-id>" + device + "</rm-id> (" + api + ")</div></div>";
-                html += "<div class='slist_li_edit'>" + this.remote_edit("device", device, rmData.devices.data(device)["settings"]["visible"]) + "</div>";
+                html += "<div class='slist_li_edit"+edit_style+"'>" + edit + "</div>";
                 html += "</li>";
             }
+            html += "</ul>";
         }
         else {
             html += "<div style='width:100%;padding:15px;'>" + lang("DEVICES_NOT_DEFINED_YET") + "</div>";
         }
 
-        return html;
+        if (direct) { return html; }
+        else { setTextById('list_archived_remotes', html); }
+    }
+
+    // load archived devices
+    load_archived_devices() {
+        appFW.requestAPI("GET", ["archive", "device"], "", eval(this.name+".list_devices"));
+    }
+
+    // load archived devices
+    load_archived_scenes() {
+        appFW.requestAPI("GET", ["archive", "scene"], "", eval(this.name+".list_scenes"));
     }
 
     // create links for drag & drop items to edit the remotes (for scenes and devices)
@@ -480,8 +535,10 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
         let img_visible = rm_image(images["hidden"]);
         let img_edit = rm_image(images["edit"]);
         let img_delete = rm_image(images["trash"]);
+        let img_archive = rm_image(images["archive1"]);
 
         let onclick_reload = "setTimeout(function() { "+this.settings.name+".create(\"edit_"+type+"s\"); }, 2000);";
+        let onclick_archive = "apiMoveToArchive(\""+type+"\", \""+id+"\");" + onclick_reload;
 
         if (visible === "no")  { img_visible = rm_image(images["visible"]); }
         if (type === "device") { delete_cmd  = "apiDeviceDelete"; }
@@ -491,7 +548,29 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
         edit_commands += "<span onclick='apiRemoteChangeVisibility(\""+type+"\",\""+id+"\",\"rm_visibility_"+id+"\");"+onclick_reload+"' style='cursor:pointer;'>" + img_visible + "</span>&nbsp;&nbsp;&nbsp;";
         edit_commands += "<span onclick='remoteToggleEditMode(true);rmRemote.create(\""+type+"\",\""+id+"\");' style='cursor:pointer;'>" + img_edit + "</span>&nbsp;&nbsp;";
         edit_commands += "<input id=\"rm_visibility_"+id+"\" style=\"display:none;\" value=\""+visible+"\">";
+        edit_commands += "<span onclick='"+onclick_archive+"' style='cursor:pointer;'>" + img_archive + "</span>&nbsp;&nbsp;";
         edit_commands += "<span onclick='"+delete_cmd+"(\""+id+"\");' style='cursor:pointer;'>" + img_delete + "</span>";
+        return edit_commands;
+    }
+
+    // create links for drag & drop items to edit the remotes (for scenes and devices)
+    remote_archive(type, id) {
+
+        let delete_cmd;
+        let images = rmData.elements.data("button_images");
+        let img_delete = rm_image(images["trash"]);
+        let img_archive = rm_image(images["archive2"]);
+
+        let onclick_reload = "setTimeout(function() { "+this.settings.name+".create(\"edit_"+type+"s\"); }, 2000);";
+        let onclick_archive = "apiRestoreFromArchive(\""+type+"\", \""+id+"\");" + onclick_reload;
+
+        if (type === "device") { delete_cmd  = "apiDeviceDelete"; }
+        else                   { delete_cmd  = "apiSceneDelete"; }
+
+        let edit_commands = "";
+        edit_commands += "<span onclick='"+onclick_archive+"' style='cursor:pointer;'>" + img_archive + "</span>";
+        //edit_commands += "&nbsp;&nbsp;";
+        //edit_commands += "<span onclick='"+delete_cmd+"(\""+id+"\");' style='cursor:pointer;'>" + img_delete + "</span>";
         return edit_commands;
     }
 

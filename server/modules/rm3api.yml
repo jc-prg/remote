@@ -528,6 +528,64 @@ paths:
               DATA:
                 $ref: "#/definitions/DATA"
 
+
+  /archive/{remote_type}/:
+    get:
+      operationId: __main__.remoteAPI.get_archived_data
+      tags:
+        - list
+      parameters:
+        - name: remote_type
+          in: path
+          type: string
+          required: true
+      summary: get data of archived remote controls
+      description: get data of archived remote controls
+      responses:
+        200:
+          description: Successfully status data
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              DATA:
+                $ref: "#/definitions/DATA"
+
+  /archiving/{direction}/{remote_type}/{remote_id}/:
+    put:
+      operationId: __main__.remoteAPI.edit_remote_archive
+      tags:
+        - edit
+      parameters:
+        - name: direction
+          in: path
+          type: string
+          required: true
+        - name: remote_type
+          in: path
+          type: string
+          required: true
+        - name: remote_id
+          in: path
+          type: string
+          required: true
+      summary: change recording configuration
+      description: change recording configuration
+      responses:
+        200:
+          description: Success
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              DATA:
+                $ref: "#/definitions/DATA"
+
+
   /edit-recording/:
     put:
       operationId: __main__.remoteAPI.set_config_record

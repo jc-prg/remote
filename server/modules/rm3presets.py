@@ -287,6 +287,8 @@ active_macros = "_ACTIVE-MACROS"
 active_apis = "_ACTIVE-APIS"
 active_timer = "_ACTIVE-TIMER"
 active_record = "_ACTIVE-RECORD"
+archive_devices = "_ARCHIVE-DEVICES"
+archive_scenes = "_ARCHIVE-SCENES"
 
 git_branch = get_git_branch_from_head()
 git_submodules_directory = os.path.join(os.path.dirname(__file__), "..", "..")

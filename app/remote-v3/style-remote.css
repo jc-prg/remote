@@ -11,7 +11,7 @@ nav-info {
     opacity: 1;
 }
 
-#audio {
+#menu-audio {
     display: block;
     position: absolute;
     right: 40px;
@@ -20,7 +20,7 @@ nav-info {
     width: auto;
 }
 
-#audio1 {
+#menu-audio1 {
     float : right;
     position: unset;
     margin: 1px 7px 1px 1px;
@@ -31,7 +31,7 @@ nav-info {
     color             : var(--rm-color-audio-text);
 }
 
-#audio2 {
+#menu-audio2 {
     float : right;
     position: unset;
     margin: 1px 7px 1px 1px;
@@ -42,7 +42,7 @@ nav-info {
     color             : var(--rm-color-audio-text);
 }
 
-#audio3 {
+#menu-audio3 {
     margin-top: 1px;
     float : right;
     position: unset;
@@ -50,7 +50,7 @@ nav-info {
     font-family: Helvetica, Arial, sans-serif;
 }
 
-#audio4 {
+#menu-audio4 {
     float : right;
     position: unset;
     margin: 1px 7px 1px 1px;

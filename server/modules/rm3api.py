@@ -74,7 +74,11 @@ class RemoteAPI(RemoteDefaultClass):
                 "device_types":         device_types,
                 "icons":                rm3presets.icon_files,
                 "methods":              self.apis.methods,
-                "scene_images":         self.config.read(rm3presets.scene_img_dir + "/index")
+                "scene_images":         self.config.read(rm3presets.scene_img_dir + "/index"),
+                "keys_archive": {
+                    "scenes":           self.data.archive_get_keys("scene"),
+                    "devices":          self.data.archive_get_keys("device")
+                }
                 },
             "macros": {
                 "device-on":            macros.get("dev-on", {}),
@@ -566,6 +570,26 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
+    def edit_remote_archive(self, direction, remote_type, remote_id):
+        """
+        move remote to archive or restore from archive
+        """
+        data = self._start(["request-only"])
+        data["REQUEST"]["Device"] = remote_id
+        data["REQUEST"]["Parameter"] = direction
+        data["REQUEST"]["Command"] = "archive_" + direction
+
+        if direction == "move":
+            data["REQUEST"]["Return"] = self.data.archive_move_to(remote_type, remote_id)
+        elif direction == "restore":
+            data["REQUEST"]["Return"] = self.data.archive_restore_from(remote_type, remote_id)
+        else:
+            data["REQUEST"]["Return"] = f"ERROR: command {direction} for {remote_type}:{remote_id} not supported"
+
+        self._refresh()
+        data = self._end(data, ["no-data", "no-config", "no-status"])
+        return data
+
     def edit_scene(self, scene, info):
         """
         Edit data of scene
@@ -842,6 +866,17 @@ class RemoteAPI(RemoteDefaultClass):
         data["DATA"]["log_query"] = self.queue.get_query_log()
         data["DATA"]["log_send"] = self.queue_send.get_query_log()
         data["DATA"]["log_api"] = self.apis.get_query_log()
+        data = self._end(data, ["no-config", "no-status"])
+        return data
+
+    def get_archived_data(self, remote_type):
+        """
+        return archived data for an API request
+        """
+        data = self._start(["request-only"])
+        data["REQUEST"]["Return"] = "OK: Returned data for " + remote_type
+        data["REQUEST"]["Command"] = "List"
+        data["DATA"] = self.data.archive_get_data(remote_type)
         data = self._end(data, ["no-config", "no-status"])
         return data
 

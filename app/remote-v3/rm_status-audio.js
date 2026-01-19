@@ -18,9 +18,9 @@ class RemoteVisualizeMainAudioStatus extends RemoteDefaultClass {
         this.audio_active = undefined;
         this.audio_status = "INIT";
         this.audio_info = {
-            "mute": "audio1",
-            "active": "audio2",
-            "volume": "audio3"
+            "mute": "menu-audio1",
+            "active": "menu-audio2",
+            "volume": "menu-audio3"
         }
         this.audio_level = {
             "min": 0,

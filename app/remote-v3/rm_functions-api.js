@@ -329,6 +329,7 @@ function apiMovePosition(id, dnd_list, from, to) {
         }
     }
 
+
 // create new device
 function apiDeviceAdd(data,onchange) {
 
@@ -815,6 +816,7 @@ function apiReconnectInterface_exec(interface_id) {
 	appFW.requestAPI( "POST", send_cmd, "", apiAlertReturn );
 }
 
+
 // reload API Device connections
 function apiDiscoverDevices() {
     appMsg.confirm(lang("API_DEVICE_DISCOVERY"), "apiDiscoverDevices_exec();", 140);
@@ -823,6 +825,28 @@ function apiDiscoverDevices() {
 function apiDiscoverDevices_exec() {
     let send_cmd    = ["discovery"];
 	appFW.requestAPI( "POST", send_cmd, "", apiAlertReturn );
+}
+
+
+// move remote control to archive
+function apiMoveToArchive(remote_type, remote_id) {
+    appMsg.confirm(lang("REMOTE_MOVE_TO_ARCHIVE", [remote_id]), "apiMoveToArchive_exec('"+remote_type+"','"+remote_id+"');", 140);
+}
+
+function apiMoveToArchive_exec(remote_type, remote_id) {
+    let commands = ["archiving", "move", remote_type, remote_id];
+    appFW.requestAPI( "PUT", commands, "", apiAlertReturn );
+}
+
+
+// move remote control to archive
+function apiRestoreFromArchive(remote_type, remote_id) {
+    appMsg.confirm(lang("REMOTE_RESTORE_FROM_ARCHIVE", [remote_id]), "apiRestoreFromArchive_exec('"+remote_type+"','"+remote_id+"');", 140);
+}
+
+function apiRestoreFromArchive_exec(remote_type, remote_id) {
+    let commands = ["archiving", "restore", remote_type, remote_id];
+    appFW.requestAPI( "PUT", commands, "", apiAlertReturn );
 }
 
 

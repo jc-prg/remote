@@ -133,6 +133,124 @@ class RemotesData(RemoteThreadingClass):
         connection["_all"] = status_devices_power
         return connection.copy()
 
+    def archive_move_to(self, remote_type, remote_id):
+        """
+        move a remote control to the archive
+        """
+        if remote_type == "device":
+            active = self.config.read(rm3presets.active_devices)
+            archive = self.config.read(rm3presets.archive_devices)
+            if "ERROR" in archive:
+                archive = {}
+        elif remote_type == "scene":
+            active = self.config.read(rm3presets.active_scenes)
+            archive = self.config.read(rm3presets.archive_scenes)
+            if "ERROR" in archive:
+                archive = {}
+        else:
+            msg = f"{remote_type} not supported."
+            self.logging.error("archive_move_to(): " + msg)
+            return "ERROR: " + msg
+
+        if remote_id in active and remote_id not in archive:
+            archive[remote_id] = active[remote_id].copy()
+            del active[remote_id]
+        elif remote_id not in active:
+            msg = f"remote {remote_id} not found."
+            self.logging.error("archive_move_to(): " + msg)
+            return "ERROR: " + msg
+        else:
+            msg = f"remote {remote_id} already exists in archive."
+            self.logging.error("archive_move_to(): " + msg)
+            return "ERROR: " + msg
+
+        if remote_type == "device":
+             self.config.write(rm3presets.active_devices, active)
+             self.config.write(rm3presets.archive_devices, archive)
+        elif remote_type == "scene":
+             self.config.write(rm3presets.active_scenes, active)
+             self.config.write(rm3presets.archive_scenes, archive)
+
+        self.config.cache_request_update()
+        self.logging.info("Moved remote " + remote_id + " to archive.")
+
+        return "OK: moved " + remote_id + " to archive"
+
+    def archive_restore_from(self, remote_type, remote_id):
+        """
+        restore a remote control from the archive
+        """
+        if remote_type == "device":
+            active = self.config.read(rm3presets.active_devices)
+            archive = self.config.read(rm3presets.archive_devices)
+            if "ERROR" in archive:
+                archive = {}
+        elif remote_type == "scene":
+            active = self.config.read(rm3presets.active_scenes)
+            archive = self.config.read(rm3presets.archive_scenes)
+            if "ERROR" in archive:
+                archive = {}
+        else:
+            msg = f"{remote_type} not supported."
+            self.logging.error("archive_restore_from(): "+msg)
+            return "ERROR: " + msg
+
+        if remote_id in archive and remote_id not in active:
+            active[remote_id] = archive[remote_id].copy()
+            del archive[remote_id]
+        elif remote_id not in archive:
+            msg = f"remote {remote_id} not found."
+            self.logging.error("archive_restore_from(): "+msg)
+            return "ERROR: " + msg
+        else:
+            msg = f"remote {remote_id} already exists in active devices."
+            self.logging.error("archive_restore_from(): "+msg)
+            return "ERROR: " + msg
+
+        if remote_type == "device":
+             self.config.write(rm3presets.active_devices, active)
+             self.config.write(rm3presets.archive_devices, archive)
+        elif remote_type == "scene":
+             self.config.write(rm3presets.active_scenes, active)
+             self.config.write(rm3presets.archive_scenes, archive)
+
+        self.config.cache_request_update()
+        self.logging.info("Restored remote " + remote_id + " from archive.")
+
+        return "OK: restored " + remote_id + " from archive"
+
+    def archive_get_keys(self, remote_type):
+        """
+        get keys from archive
+        """
+        if remote_type == "device":
+            archive = self.config.read(rm3presets.archive_devices)
+        elif remote_type == "scene":
+            archive = self.config.read(rm3presets.archive_scenes)
+        else:
+            self.logging.error(f"archive_get_keys(): {remote_type} not supported.")
+            return []
+
+        if "ERROR" in archive:
+            self.logging.debug(f"archive_get_keys(): for {remote_type} no archive exists or it's defect.")
+            return []
+
+        return list(archive.keys())
+
+    def archive_get_data(self, remote_type):
+        """
+        get data from archive
+        """
+        if remote_type == "device":
+            archive = self.config.read(rm3presets.archive_devices)
+        elif remote_type == "scene":
+            archive = self.config.read(rm3presets.archive_scenes)
+        else:
+            self.logging.error(f"archive_get_keys(): {remote_type} not supported.")
+            return {"archive": {}}
+
+        return {"archive": archive}
+
     def devices_read_config(self, more_details=False):
         """
         read configuration of all devices

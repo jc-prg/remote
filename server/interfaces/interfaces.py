@@ -259,7 +259,13 @@ class Connect(RemoteThreadingClass):
                     self.info_no_devices_found[key] = True
                 continue
 
-            device_list = self.api_device_list[key]
+            device_list_complete = list(self.config.read(rm3presets.active_devices).keys())
+            device_list_temp = self.api_device_list[key]
+            device_list = []
+            for dev in device_list_temp:
+                if dev in device_list_complete:
+                    device_list.append(dev)
+
             self.logging.debug(" * " + key + " : " + str(device_list))
             if self.api[key].last_action > 0:
                 self.logging.debug("   -> " + str(round((time.time() - self.api[key].last_action)*10)/10) + "s  (" + self.api[key].last_action_cmd + ")")

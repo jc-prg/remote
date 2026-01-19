@@ -3,6 +3,8 @@
     "add"       : "add.png",
     "addons"    : "puzzle.png",
     "audio-video": "av_device.png",
+    "archive1"  : "archive_move.png",
+    "archive2"  : "archive_restore.png",
     "back"      : "back.png",
     "back2"     : "nav-back.png",
     "beam"      : "beamer.png",

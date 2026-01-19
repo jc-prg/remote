@@ -67,8 +67,13 @@
 }
 
 .slist_li_edit {
-    width           : 80px;
+    width           : 110px;
     float           : right;
+    text-align      : right;
+}
+
+.slist_li_edit.archive {
+    text-align      : right;
 }
 
 .slist_li_content {

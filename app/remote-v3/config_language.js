@@ -216,6 +216,7 @@ let language_app = {
         "EDIT_ADD_DISPLAY"       : "Add and edit display",
         "EDIT_DEVICE"            : "Edit device",
         "EDIT_DEVICES"           : "Edit devices",
+        "EDIT_ARCHIVED_DEVICES"  : "Manage archived devices",
         "EDIT_DISPLAY"           : "Edit display",
         "EDIT_ELEMENTS"          : "Edit elements",
         "EDIT_JSON"              : "Edit JSON",
@@ -226,6 +227,7 @@ let language_app = {
         "EDIT_REMOTES"           : "Edit remotes",
         "EDIT_SCENE"             : "Edit scene",
         "EDIT_SCENES"            : "Edit scenes",
+        "EDIT_ARCHIVED_SCENES"   : "Manage archived scenes",
         "EDIT_RECORDINGS"        : "Edit recordings",
         "EDIT_RECORDING_SETTINGS": "Edit general settings",
         "EDIT_RECORDED_FIELDS"   : "Edit values to be recorded",
@@ -398,6 +400,8 @@ let language_app = {
         "RESET_VOLUME_TO_ZERO"         : "Reset audio settings:<br/>set the volume of all audio devices to mininum (0) before.",
         "RESTART"                      : "Are you sure you want to restart the server?",
         "RELOAD_ALL_SCRIPTS"           : "Reload all CSS and JavaScript files.",
+        "REMOTE_MOVE_TO_ARCHIVE"       : "Do you want to move the remote control <b>{0}</b> to archive?",
+        "REMOTE_RESTORE_FROM_ARCHIVE"  : "Do you want to restore the remote control <b>{0}</b> from archive?",
 
         "SAVE"                         : "Save",
 
