@@ -678,7 +678,7 @@ class ApiWeather(RemoteThreadingClass):
 
             # last update has been a while
             elif last_update + self.update_time < time.time():
-                self.logging.info("Get weather data from module (every " + str(self.update_time) + "s/" + self.weather_source + ") ...")
+                self.logging.info(f"Get weather data from module (every {self.update_time}s/{self.weather_source}) ...")
                 last_update = time.time()
                 self.weather_info = self.module.get_data()
                 self.last_get_weather = self.config.local_time().strftime("%H:%M:%S (%d.%m.%Y)")
@@ -769,7 +769,7 @@ class ApiWeather(RemoteThreadingClass):
             return False
 
         self.weather_source = param["source"]
-        self.logging.info("(Re)connect weather module (source="+self.weather_source+")")
+        self.logging.info(f"(Re)connect weather module (source={self.weather_source})")
         update_gps = False
         if self.update:
             update_gps = True
