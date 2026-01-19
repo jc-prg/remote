@@ -65,6 +65,7 @@ class ApiControl(RemoteApiClass):
             self.logging.error("Could not start WEATHER API, as no location information are defined: " +str(weather_param))
             self.status = "error"
         else:
+            self.logging.error(f"CHECK {self.weather_api.thread_is_running()}")
             if not self.weather_api.thread_is_running():
                 self.weather_api.start()
 
@@ -143,7 +144,7 @@ class ApiControl(RemoteApiClass):
             self.logging.warning("query(): Weather API not connected yet ...")
             return "N/A"
         elif not self.weather_api.got_first_data:
-            self.logging.warning("query(): Weather API didn't request first data yet ...")
+            self.logging.debug("query(): Weather API didn't got first data yet ...")
             return "N/A"
 
         result = ""
