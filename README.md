@@ -53,6 +53,7 @@ Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 
 ### v3.1 (in progress)
 
+* move remote controls to archive, check scene definition for errors
 * recording of device and weather data and visualization via Chart.js
 * integration of Open Meteo Weather (incl. GeoPy)
 * integration of Denon API incl. discovery
