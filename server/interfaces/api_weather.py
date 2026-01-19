@@ -164,14 +164,22 @@ class ApiControl(RemoteApiClass):
             else:
                 commands = [command]
 
-            if command == "availability" and "info_status" in weather and weather["info_status"]["running"] == "OK":
-                result = "ONLINE"
+            if command == "availability" or command == "power":
+                if "info_status" in weather:
+                    if weather["info_status"]["error"]:
+                        result = "ERROR"
+                    elif  weather["info_status"]["running"] == "OK":
+                        result = "ONLINE"
+                    else:
+                        result = "OFFLINE"
+                else:
+                    result = "ERROR"
+            elif command == "availability":
+                result = "ERROR"
             elif command == "api-discovery":
                 result = self.api_discovery
             elif command == "api-last-answer":
                 result = self.weather_api.last_get_weather
-            elif command == "power" and "info_status" in weather and weather["info_status"]["running"] == "OK":
-                result = "ON"
             elif command == "sunrise":
                 result = self.weather_api.get_sunrise()
             elif command == "sunset":
@@ -423,8 +431,7 @@ class ApiOpenMeteo(RemoteThreadingClass):
                     self._create_url()
                     self.update_settings = False
                 self._request_data()
-                if not self.error:
-                    self._convert_data()
+                self._convert_data()
 
             self.update_wait = (last_update + self.update_interval) - time.time()
             self.logging.debug("Wait to read weather data (" + str(round(self.update_interval, 1)) + ":" +
@@ -515,60 +522,62 @@ class ApiOpenMeteo(RemoteThreadingClass):
         self.weather_info["info_update_stamp"] = self.weather_update.strftime("%H%M%S")
         self.weather_info["info_position"] = self.weather_location
         self.weather_info["info_rhythm"] = self.weather_update_rhythm
-        self.weather_info["info_units"] = {
-            "temperature": self.weather_raw_data["hourly_units"]["temperature_2m"],
-            "humidity": self.weather_raw_data["hourly_units"]["relativehumidity_2m"],
-            "wind_speed": self.weather_raw_data["hourly_units"]["windspeed_10m"]
-        }
 
-        self.weather_info["current"] = self.weather_raw_data["current_weather"]
-        self.weather_info["current"]["wind_speed"] = self.weather_info["current"]["windspeed"]
-        self.weather_info["current"]["description"] = self._weather_descriptions(self.weather_raw_data["current_weather"]["weathercode"])
-        self.weather_info["current"]["description_icon"] = self._weather_icons(self.weather_raw_data["current_weather"]["weathercode"])
-
-        today_stamp = self.weather_update.strftime("%Y-%m-%d")
-        hourly_data_raw = self.weather_raw_data["hourly"]
-        daily_data_raw = self.weather_raw_data["daily"]
-        hourly_data = {}
-        count = 0
-        for key in hourly_data_raw["time"]:
-            stamp_date, stamp_time = key.split("T")
-            if count == 0:
-                today_stamp = stamp_date
-            if stamp_date not in hourly_data:
-                hourly_data[stamp_date] = {}
-                hourly_data[stamp_date]["hourly"] = {}
-            hourly_data[stamp_date]["hourly"][stamp_time] = {
-                "temperature": hourly_data_raw["temperature_2m"][count],
-                "wind_speed": hourly_data_raw["windspeed_10m"][count],
-                "humidity": hourly_data_raw["relativehumidity_2m"][count],
-                "description": self._weather_descriptions(hourly_data_raw["weathercode"][count]),
-                "description_icon": self._weather_icons(hourly_data_raw["weathercode"][count])
+        if not self.error:
+            self.weather_info["info_units"] = {
+                "temperature": self.weather_raw_data["hourly_units"]["temperature_2m"],
+                "humidity": self.weather_raw_data["hourly_units"]["relativehumidity_2m"],
+                "wind_speed": self.weather_raw_data["hourly_units"]["windspeed_10m"]
             }
-            count += 1
-        hourly_data["today"] = hourly_data[today_stamp]
-        if not "sunrise" in  daily_data_raw or len(daily_data_raw["sunrise"]) == 0:
-            hourly_data["today"]["sunrise"] = daily_data_raw["sunrise"][0].split("T")[1]
-        else:
-            hourly_data["today"]["sunrise"] = "N/A"
-        if not "sunset" in  daily_data_raw or len(daily_data_raw["sunset"]) == 0:
-            hourly_data["today"]["sunset"] = daily_data_raw["sunset"][0].split("T")[1]
-        else:
-            hourly_data["today"]["sunset"] = "N/A"
 
-        self.weather_info["forecast"] = hourly_data
+            self.weather_info["current"] = self.weather_raw_data["current_weather"]
+            self.weather_info["current"]["wind_speed"] = self.weather_info["current"]["windspeed"]
+            self.weather_info["current"]["description"] = self._weather_descriptions(self.weather_raw_data["current_weather"]["weathercode"])
+            self.weather_info["current"]["description_icon"] = self._weather_icons(self.weather_raw_data["current_weather"]["weathercode"])
 
-        current_date = self.weather_info["current"]["time"].split("T")[0]
-        current_time = self.weather_info["current"]["time"].split("T")[1]
-        self.weather_info["current"]["time"] = current_time
-        self.weather_info["current"]["date"] = current_date
-        current_time_hour = current_time.split(":")[0] + ":00"
-        if current_time in self.weather_info["forecast"][current_date]["hourly"]:
-            self.weather_info["current"]["humidity"] = self.weather_info["forecast"][current_date]["hourly"][current_time]["humidity"]
-        elif current_time_hour in self.weather_info["forecast"][current_date]["hourly"]:
-            self.weather_info["current"]["humidity"] = self.weather_info["forecast"][current_date]["hourly"][current_time_hour]["humidity"]
-        else:
-            self.weather_info["current"]["humidity"] = "N/A"
+            today_stamp = self.weather_update.strftime("%Y-%m-%d")
+            hourly_data_raw = self.weather_raw_data["hourly"]
+            daily_data_raw = self.weather_raw_data["daily"]
+            hourly_data = {}
+            count = 0
+            for key in hourly_data_raw["time"]:
+                stamp_date, stamp_time = key.split("T")
+                if count == 0:
+                    today_stamp = stamp_date
+                if stamp_date not in hourly_data:
+                    hourly_data[stamp_date] = {}
+                    hourly_data[stamp_date]["hourly"] = {}
+                hourly_data[stamp_date]["hourly"][stamp_time] = {
+                    "temperature": hourly_data_raw["temperature_2m"][count],
+                    "wind_speed": hourly_data_raw["windspeed_10m"][count],
+                    "humidity": hourly_data_raw["relativehumidity_2m"][count],
+                    "description": self._weather_descriptions(hourly_data_raw["weathercode"][count]),
+                    "description_icon": self._weather_icons(hourly_data_raw["weathercode"][count])
+                }
+                count += 1
+            hourly_data["today"] = hourly_data[today_stamp]
+            if not "sunrise" in  daily_data_raw or len(daily_data_raw["sunrise"]) == 0:
+                hourly_data["today"]["sunrise"] = daily_data_raw["sunrise"][0].split("T")[1]
+            else:
+                hourly_data["today"]["sunrise"] = "N/A"
+            if not "sunset" in  daily_data_raw or len(daily_data_raw["sunset"]) == 0:
+                hourly_data["today"]["sunset"] = daily_data_raw["sunset"][0].split("T")[1]
+            else:
+                hourly_data["today"]["sunset"] = "N/A"
+
+            self.weather_info["forecast"] = hourly_data
+
+            current_date = self.weather_info["current"]["time"].split("T")[0]
+            current_time = self.weather_info["current"]["time"].split("T")[1]
+            self.weather_info["current"]["time"] = current_time
+            self.weather_info["current"]["date"] = current_date
+            current_time_hour = current_time.split(":")[0] + ":00"
+            if current_time in self.weather_info["forecast"][current_date]["hourly"]:
+                self.weather_info["current"]["humidity"] = self.weather_info["forecast"][current_date]["hourly"][current_time]["humidity"]
+            elif current_time_hour in self.weather_info["forecast"][current_date]["hourly"]:
+                self.weather_info["current"]["humidity"] = self.weather_info["forecast"][current_date]["hourly"][current_time_hour]["humidity"]
+            else:
+                self.weather_info["current"]["humidity"] = "N/A"
 
     def set_location(self, settings):
         """
