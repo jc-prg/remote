@@ -127,6 +127,8 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         this.attention_config = false;
         this.attention_threads = false;
         this.attention_errors = {};
+
+        this.edit_error_open = false;
     }
 
     /* update class data */
@@ -244,8 +246,9 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
 
             if (!this.edit_mode) {
                 this.visualize_display_type_scene(key, power_status, power_message);
-
                 this.visualize_message_scene(key);
+            } else {
+                this.visualize_edit_status_scene(key);
             }
         }
     }
@@ -758,6 +761,116 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             }
 
         }
+    }
+
+    /* check if scene definition is OK */
+    visualize_edit_status_scene(scene_id) {
+        if (rmRemote.active_type !== "scene" || rmRemote.active_name !== scene_id) { return; }
+
+        this.device_identify = function (button) {
+            let device;
+            if (button.indexOf("||") > 0) { button = button.split("||")[0]; }
+            if (button === "DISPLAY" || button === "CHART" || button === "LINE" || button === "HEADER-IMAGE" || button === ".") {
+                device = "";
+            } else if (button.indexOf("TOGGLE") > -1) {
+                device = button.split("||")[1];
+                if (device && device.indexOf("_") > -1) {
+                    device = device.split("_")[0];
+                } else {
+                    device = "";
+                }
+            } else if (button.indexOf("COLOR_PICKER") > -1) {
+                device = button.split("_")[0];
+            } else if (button.indexOf("SLIDER") > -1) {
+                device = button.split("_")[0];
+            } else if (button.indexOf("_") > -1) {
+                device = button.split("_")[0];
+            } else {
+                device = "";
+            }
+            return device;
+        }
+        this.check_errors = function(key) {
+            let error = "";
+            let device = this.device_identify(key);
+
+            if (device !== "") {
+                if (device === "scene" || device === "scene-on" || device === "scene-off") {
+                    let macro = "";
+                    if (key.indexOf("_") > -1) { macro = key.split("_")[1]; }
+                    if (device === "scene-on" && (!scene_config["remote"]["macro-scene-on"] || scene_config["remote"]["macro-scene-on"].length === 0)) {
+                        error = `This scene uses the macro <u>${key}</u> but it's not defined yet`;
+                    } else if (device === "scene-off" && (!scene_config["remote"]["macro-scene-off"] || scene_config["remote"]["macro-scene-off"].length === 0)) {
+                        error = `This scene uses the macro <u>${key}</u> but it's not defined yet`;
+                    } else if (device === "scene" && macro !== "" && !scene_config["remote"]["macro-scene"][macro]) {
+                        error = `This scene uses the macro <u>${key}</u> but it's not defined yet`;
+                    }
+                } else if (device === "device-on" || device === "device-off" || device === "dev-on" || device === "dev-off") {
+                    let macro = key.split("_")[1].split("||")[0];
+                    if (device.indexOf("dev-") > -1) { device = device.replace("dev-", "device-"); }
+                    if (!rmData.macros.exists(device, macro)) {
+                        error = `This scene uses the macro <u>${key}</u> which doesn't exist`;
+                    }
+                } else if (device === "macro" || device === "global") {
+                    let macro = key.split("_")[1].split("||")[0];
+                    if (!rmData.macros.exists("global", macro)) {
+                        error = `This scene uses the macro <u>${key}</u> which doesn't exist`;
+                    }
+                } else if (device === "group") {
+                    let group = key.split("_")[1].split("||")[0];
+                    if (!rmData.device_groups.exists(group)) {
+                        error = `This scene uses the group <u>${group}</u> but no configuration exists for this group (<u>${key}</u>)`;
+                    }
+                } else {
+                    if (!rmData.devices.exists(device)) {
+                        error = `This scene uses <u>${key}</u> but no configuration exists for the device <u>${device}</u>`;
+                    }
+                }
+            }
+            return error;
+        }
+
+        let error = [];
+        let error_msg;
+        let display_devices = [];
+        let scene_config = rmData.scenes.data(scene_id);
+        let scene_devices = scene_config["remote"]["devices"];
+        let scene_channels = scene_config["remote"]["macro-channel"];
+        let scene_remote = rmData.scenes.remote(scene_id);
+        let scene_display = rmData.scenes.display(scene_id);
+
+
+        for (let i in scene_devices) {
+            if (!rmData.devices.exists(scene_devices[i])) { error.push(`Device <u>${scene_devices[i]}</u> is used in scene <u>${scene_id}</u> but no configuration exists`); }
+        }
+        for (let key in scene_display) {
+            let device = scene_display[key].split("_")[0];
+            if (!rmData.devices.exists(device) && !display_devices.includes(device)) { display_devices.push(device); }
+        }
+        if (display_devices.length > 0) {
+            error.push(`Display uses values from devices where no configuration exists: ${display_devices.join(", ")}`);
+        }
+
+        for (let i=0;i<scene_remote.length;i++) {
+            let key = scene_remote[i];
+            let error_msg = this.check_errors(key);
+            if (error_msg !== "") { error.push(error_msg); }
+        }
+
+        if (error.length > 0) {
+            let s = "";
+            let onclick = "";
+            let display_error = "";
+            if (!this.edit_error_open) {
+                onclick = "document.getElementById('error_details').style.display='block';"+this.name+".edit_error_open=true;";
+                display_error = "display:none;";
+            }
+            if (error.length > 1) { s = "s"; }
+            error_msg = `<span onclick="${onclick}" style="cursor:pointer;" class="scene_error"><b>${error.length} error${s} occurred ...</b><br/><small id="error_details" style="${display_error}"><ul class="scene_error_list"><li>` + error.join(";</li><li>") + "</li></ul></small></span>";
+        } else {
+            error_msg = "OK";
+        }
+        setTextById("scene_edit_status_"+scene_id, error_msg);
     }
 
     /* visualize color depending on status */

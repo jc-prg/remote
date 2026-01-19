@@ -472,3 +472,12 @@ ul.help ul li {
     display: block;
     text-align: center;
 }
+
+.scene_error {
+    color: var(--rm-color-font-error);
+}
+.scene_error_list {
+    color: var(--rm-color-font-default);
+    list-style-position: inside;
+    padding-left: 2px;
+}

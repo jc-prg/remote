@@ -328,7 +328,7 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
 
                     if (!this.status_data["device"][device]) {
                         console.debug("create_data_scenes(): Status for '" + device + "' not found - part of scene '" + scene + "'");
-                        continue;
+                        break;
                     }
 
                     let device_status = this.status_data["device"][device]["status"];
@@ -336,7 +336,7 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
 
                     if (!device_status || !device_label) {
                         this.logging.error("update_data_structure(): No device settings available for " + device);
-                        continue;
+                        break;
                     }
                     if (!dev_status[device_status]) {
                         dev_status[device_status] = 0;

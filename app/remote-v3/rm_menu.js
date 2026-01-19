@@ -152,12 +152,12 @@ class RemoteMenu extends RemoteDefaultClass {
 
     // entry show / hide hidden remotes
     add_show_hidden() {
-        if (this.edit_mode) {
+        //if (this.edit_mode) {
             let message;
             if (this.edit_mode_show) { message = lang("MENU_SHOW_HIDDEN_OFF"); }
             else { message = lang("MENU_SHOW_HIDDEN_ON"); }
             this.add_script(this.name+".toggle_invisible();", "<div class=\"hidden_entry_edit\">" + message + "</div>", false);
-        }
+        //}
     }
 
     // hide menu when clicked

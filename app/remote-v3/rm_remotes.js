@@ -1125,6 +1125,7 @@ class RemoteMain extends RemoteDefaultClass {
             edit += this.tab.row(lang("LABEL") + ":", this.basic.input("edit_label", scene_info["label"]));
             edit += this.tab.row(lang("DESCRIPTION") + ":&nbsp;", this.basic.input("edit_description", scene_info["description"]));
             edit += this.tab.row(lang("SCENE_IMAGE") + ":&nbsp;", this.edit.image_select("edit_image", scene_info["image"]));
+            edit += this.tab.row(lang("SCENE_STATUS") + ":&nbsp;", "<div id='scene_edit_status_"+scene+"'>"+lang("PLEASE_WAIT")+" ...</div>");
             edit += this.tab.line();
             edit += this.tab.row("<div id='scene_edit_header_image' style='text-align:center;'></div>", false);
             edit += this.tab.line();

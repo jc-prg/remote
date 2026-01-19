@@ -567,7 +567,7 @@ class RemoteControlAdvanced extends RemoteDefaultClass{
             device_api_status = this.data["STATUS"]["interfaces"][device_api];
         }
 
-        if (!group && status_data[key] && device_api_status === "Connected") {
+        if (!group && status_data && status_data[key] && device_api_status === "Connected") {
             if (status_data[key].toUpperCase() === "TRUE") {
                 init = "1";
             } else if (status_data[key].toUpperCase() === "FALSE") {

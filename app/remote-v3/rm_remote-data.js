@@ -125,6 +125,13 @@ class RemotePrepareDataMacros extends RemoteDefaultClass {
         return result;
     }
 
+    // check if macro exists
+    exists(category, macro_id) {
+        let macros = this.list_all();
+        if (macros[category].includes(macro_id)) { return true; }
+        else { return false; }
+    }
+
     // list all macros as dict of arrays or all macros of a category as an array
     list_all(category="", scene_id="", incl_on_off=false) {
 

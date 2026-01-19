@@ -406,6 +406,7 @@ let language_app = {
         "SAVE"                         : "Save",
 
         "SCENE"                        : "scene",
+        "SCENE_STATUS"                 : "Scene status",
         "SCENE_CONFIG_ERROR"           : "Error in scene config file(s) '{0}': ",
         "SCENE_CONFIG_ERROR_UNKNOWN"   : "Unknown error in scene config file(s) '{0}'",
 
