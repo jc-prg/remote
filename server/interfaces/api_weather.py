@@ -791,7 +791,9 @@ class ApiWeather(RemoteThreadingClass):
                 self.weather_gps = self.gps.look_up_location(self.weather_city)
 
             if self.module is not None:
+                self.logging.info("Stop weather process to restart ...")
                 self.module.stop()
+
             self.module = ApiOpenMeteo(config=self.config, gps_location=self.weather_gps)
             self.module.start()
             self.connected = True
