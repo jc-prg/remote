@@ -790,14 +790,17 @@ class ApiWeather(RemoteThreadingClass):
             else:
                 self.weather_gps = self.gps.look_up_location(self.weather_city)
 
-            if self.module is not None:
-                self.logging.info("Stop weather process to restart ...")
-                self.module.stop()
+            if self.module is None:
+                self.module = ApiOpenMeteo(config=self.config, gps_location=self.weather_gps)
+                self.module.start()
+                self.connected = True
+            else:
+                # reset location open ...
+                self.logging.info("Weather module already connected.")
+                self.logging.warning("Reset to new location not implemented yet ...")
 
-            self.module = ApiOpenMeteo(config=self.config, gps_location=self.weather_gps)
-            self.module.start()
-            self.connected = True
             return True
+
 
         else:
             self.logging.error(f"Weather module {param["source"]} doesn't exists.")
