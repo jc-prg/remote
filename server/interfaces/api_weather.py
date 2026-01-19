@@ -478,13 +478,16 @@ class ApiOpenMeteo(RemoteThreadingClass):
         """
         request weather data from API
         """
+        data = "N/A"
         try:
             data = requests.get(url=self.weather_api, timeout=5)
             self.weather_raw_data = data.json()
             self.weather_update = self.config.local_time()
             self.error = False
         except Exception as e:
-            self.logging.error("Could not read weather from open-meteo.com: " + str(e))
+            self.logging.error(f"Could not read weather from open-meteo.com: {e}")
+            self.logging.error(f"-> url: {self.weather_api}")
+            self.logging.error(f"-> data: {data}")
             self.error = True
         return self.error
 
