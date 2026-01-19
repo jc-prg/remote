@@ -142,6 +142,10 @@ class ApiControl(RemoteApiClass):
     def query(self, device, device_id, command):
         """Send command to API and wait for answer"""
 
+        if not self.weather_api.connected:
+            self.logging.warning("query(): Weather API not connected yet ...")
+            return "N/A"
+
         result = ""
         self.wait_if_working()
         self.working = True
@@ -647,6 +651,7 @@ class ApiWeather(RemoteThreadingClass):
         self.wrote_sunrise_sunset = False
 
         self.module = None
+        self.connected = False
         self.gps = ApiGPS()
         #self.connect(self.param["weather"])
 
@@ -731,6 +736,7 @@ class ApiWeather(RemoteThreadingClass):
         stop weather loop
         """
         self._running = False
+        self.connected = False
         self.module.stop()
 
     def active(self, active):
@@ -759,6 +765,7 @@ class ApiWeather(RemoteThreadingClass):
 
         if not ("source" in param and ("location" in param or "gps_location" in param)):
             self.logging.error(f"Parameters missing to start weather module ({param}).")
+            self.connected = False
             return False
 
         self.weather_source = param["source"]
@@ -780,10 +787,12 @@ class ApiWeather(RemoteThreadingClass):
                 self.module.stop()
             self.module = ApiOpenMeteo(config=self.config, gps_location=self.weather_gps)
             self.module.start()
+            self.connected = True
             return True
 
         else:
             self.logging.error(f"Weather module {param["source"]} doesn't exists.")
+            self.connected = False
             return False
 
     def get_gps_info(self, param):
