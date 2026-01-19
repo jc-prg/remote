@@ -766,6 +766,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     /* check if scene definition is OK */
     visualize_edit_status_scene(scene_id) {
         if (rmRemote.active_type !== "scene" || rmRemote.active_name !== scene_id) { return; }
+        if (!document.getElementById("scene_edit_status_"+scene_id)) { return; }
 
         this.device_identify = function (button) {
             let device;
@@ -790,7 +791,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             }
             return device;
         }
-        this.check_errors = function(key) {
+        this.check_errors = function(key, source) {
             let error = "";
             let device = this.device_identify(key);
 
@@ -799,31 +800,31 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
                     let macro = "";
                     if (key.indexOf("_") > -1) { macro = key.split("_")[1]; }
                     if (device === "scene-on" && (!scene_config["remote"]["macro-scene-on"] || scene_config["remote"]["macro-scene-on"].length === 0)) {
-                        error = `This scene uses the macro <u>${key}</u> but it's not defined yet`;
+                        error = `This scene ${source} uses the macro <u>${key}</u> but it's not defined yet`;
                     } else if (device === "scene-off" && (!scene_config["remote"]["macro-scene-off"] || scene_config["remote"]["macro-scene-off"].length === 0)) {
-                        error = `This scene uses the macro <u>${key}</u> but it's not defined yet`;
+                        error = `This scene ${source} uses the macro <u>${key}</u> but it's not defined yet`;
                     } else if (device === "scene" && macro !== "" && !scene_config["remote"]["macro-scene"][macro]) {
-                        error = `This scene uses the macro <u>${key}</u> but it's not defined yet`;
+                        error = `This scene ${source} uses the macro <u>${key}</u> but it's not defined yet`;
                     }
                 } else if (device === "device-on" || device === "device-off" || device === "dev-on" || device === "dev-off") {
                     let macro = key.split("_")[1].split("||")[0];
                     if (device.indexOf("dev-") > -1) { device = device.replace("dev-", "device-"); }
                     if (!rmData.macros.exists(device, macro)) {
-                        error = `This scene uses the macro <u>${key}</u> which doesn't exist`;
+                        error = `This scene ${source} uses the macro <u>${key}</u> which doesn't exist`;
                     }
                 } else if (device === "macro" || device === "global") {
                     let macro = key.split("_")[1].split("||")[0];
                     if (!rmData.macros.exists("global", macro)) {
-                        error = `This scene uses the macro <u>${key}</u> which doesn't exist`;
+                        error = `This scene ${source} uses the macro <u>${key}</u> which doesn't exist`;
                     }
                 } else if (device === "group") {
                     let group = key.split("_")[1].split("||")[0];
                     if (!rmData.device_groups.exists(group)) {
-                        error = `This scene uses the group <u>${group}</u> but no configuration exists for this group (<u>${key}</u>)`;
+                        error = `This scene ${source} uses the group <u>${group}</u> but no configuration exists for this group (<u>${key}</u>)`;
                     }
                 } else {
                     if (!rmData.devices.exists(device)) {
-                        error = `This scene uses <u>${key}</u> but no configuration exists for the device <u>${device}</u>`;
+                        error = `This scene ${source} uses the element <u>${key}</u> but no configuration exists for the device <u>${device}</u>`;
                     }
                 }
             }
@@ -853,8 +854,15 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
 
         for (let i=0;i<scene_remote.length;i++) {
             let key = scene_remote[i];
-            let error_msg = this.check_errors(key);
+            let error_msg = this.check_errors(key, "remote");
             if (error_msg !== "") { error.push(error_msg); }
+        }
+        for (let key in scene_channels) {
+            for (let i in scene_channels[key]) {
+                let command = scene_channels[key][i];
+                let error_msg = this.check_errors(command, "channel-macro");
+                if (error_msg !== "") { error.push(error_msg); }
+            }
         }
 
         if (error.length > 0) {
