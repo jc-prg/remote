@@ -1172,127 +1172,130 @@ class RemoteAPI(RemoteDefaultClass):
         # prepare and send request
         for device in devices:
 
-            method = self.apis.api_method(device)
-            interface = data["CONFIG"]["devices"][device]["interface"]["api_key"]
-            api_dev = data["CONFIG"]["devices"][device]["interface"]["api"]
-            self.logging.info("__BUTTON: " + device + "/" + button + " (" + interface + "/" + method + ")")
+            if device in data["CONFIG"]["devices"]:
+                method = self.apis.api_method(device)
+                interface = data["CONFIG"]["devices"][device]["interface"]["api_key"]
+                api_dev = data["CONFIG"]["devices"][device]["interface"]["api"]
+                self.logging.info("__BUTTON: " + device + "/" + button + " (" + interface + "/" + method + ")")
 
-            # if recorded values, check against status quo
-            if method == "record":
+                # if recorded values, check against status quo
+                if method == "record":
 
-                # Get method and presets
-                definition = data["CONFIG"]["devices"][device]["commands"]["definition"]
+                    # Get method and presets
+                    definition = data["CONFIG"]["devices"][device]["commands"]["definition"]
 
-                # special with power buttons / and vol buttons
-                if button == "on-off" or button == "on" or button == "off":
-                    value = "power"
-                elif button[-1:] == "-" or button[-1:] == "+":
-                    value = button[:-1]
-                else:
-                    value = button
-
-                # get status
-                current_status = self.edit.device_status_get(device, value)
-                device_status = self.edit.device_status_get(device, "power")
-
-                data["REQUEST"]["status_device"] = device_status
-                data["REQUEST"]["status_value"] = current_status
-
-                # buttons power / ON / OFF
-                if value == "power":
-                    if button == "on":
-                        status = "ON"
-                    if button == "off":
-                        status = "OFF"
-                    if button == "on-off":
-                        status = self._button_toggle(current_status, ["ON", "OFF"])
-
-                # other buttons
-                elif value in definition and "type" in definition[value] \
-                        and ("values" in definition[value] or "param" in definition[value]):
-
-                    d_type = definition[value]["type"]
-                    if "param" in definition[value]:
-                        d_values = definition[value]["param"]
+                    # special with power buttons / and vol buttons
+                    if button == "on-off" or button == "on" or button == "off":
+                        value = "power"
+                    elif button[-1:] == "-" or button[-1:] == "+":
+                        value = button[:-1]
                     else:
-                        d_values = definition[value]["values"]
+                        value = button
 
-                    if device_status == "ON":
-                        if d_type == "enum":
-                            status = self._button_toggle(current_status, d_values)
+                    # get status
+                    current_status = self.edit.device_status_get(device, value)
+                    device_status = self.edit.device_status_get(device, "power")
 
-                        elif d_type == "integer" and "min" in d_values and "max" in d_values:
-                            minimum = int(d_values["min"])
-                            maximum = int(d_values["max"])
-                            direction = button[-1:]
-                            current_status = str(current_status).strip()
-                            if current_status:
-                                current_status = int(current_status)
+                    data["REQUEST"]["status_device"] = device_status
+                    data["REQUEST"]["status_value"] = current_status
+
+                    # buttons power / ON / OFF
+                    if value == "power":
+                        if button == "on":
+                            status = "ON"
+                        if button == "off":
+                            status = "OFF"
+                        if button == "on-off":
+                            status = self._button_toggle(current_status, ["ON", "OFF"])
+
+                    # other buttons
+                    elif value in definition and "type" in definition[value] \
+                            and ("values" in definition[value] or "param" in definition[value]):
+
+                        d_type = definition[value]["type"]
+                        if "param" in definition[value]:
+                            d_values = definition[value]["param"]
+                        else:
+                            d_values = definition[value]["values"]
+
+                        if device_status == "ON":
+                            if d_type == "enum":
+                                status = self._button_toggle(current_status, d_values)
+
+                            elif d_type == "integer" and "min" in d_values and "max" in d_values:
+                                minimum = int(d_values["min"])
+                                maximum = int(d_values["max"])
+                                direction = button[-1:]
+                                current_status = str(current_status).strip()
+                                if current_status:
+                                    current_status = int(current_status)
+                                else:
+                                    current_status = 0
+
+                                if direction == "+" and current_status < maximum:
+                                    status = current_status + 1
+                                elif direction == "+":
+                                    dont_send = True
+                                elif direction == "-" and current_status > minimum:
+                                    status = current_status - 1
+                                elif direction == "-":
+                                    dont_send = True
+
                             else:
-                                current_status = 0
-
-                            if direction == "+" and current_status < maximum:
-                                status = current_status + 1
-                            elif direction == "+":
-                                dont_send = True
-                            elif direction == "-" and current_status > minimum:
-                                status = current_status - 1
-                            elif direction == "-":
-                                dont_send = True
+                                self.logging.warning("RemoteOnOff - Unknown command definition: " +
+                                                     device + "_" + button + ":" + value +
+                                                     " (" + d_type + "/" + str(d_values) + ")")
 
                         else:
-                            self.logging.warning("RemoteOnOff - Unknown command definition: " +
-                                                 device + "_" + button + ":" + value +
-                                                 " (" + d_type + "/" + str(d_values) + ")")
+                            self.logging.debug("RemoteOnOff - Device is off: " + device)
+                            dont_send = True
+
+                    # ----------------------------- OLD
+                    # other buttons with defined values
+                    elif value in types and value in presets:
+
+                        if device_status == "ON":
+
+                            if types[value]["type"] == "enum":
+                                status = self._button_toggle(current_status, presets[value])
+
+                            if types[value]["type"] == "integer":
+                                minimum = int(presets[value]["min"])
+                                maximum = int(presets[value]["max"])
+                                direction = button[-1:]
+                                current_status = str(current_status).strip()
+                                if current_status:
+                                    current_status = int(current_status)
+                                else:
+                                    current_status = 0
+
+                                if direction == "+" and current_status < maximum:
+                                    status = current_status + 1
+                                elif direction == "+":
+                                    dont_send = True
+                                elif direction == "-" and current_status > minimum:
+                                    status = current_status - 1
+                                elif direction == "-":
+                                    dont_send = True
+
+                        else:
+                            self.logging.debug("RemoteOnOff - Device is off: " + device)
+                            dont_send = True
+                    # ----------------------------- OLD
 
                     else:
-                        self.logging.debug("RemoteOnOff - Device is off: " + device)
-                        dont_send = True
+                        self.logging.warning("RemoteOnOff - Command not defined: " + device + "_" + value)
+                        self.logging.debug("types = " + str(types) + " / presets = " + str(presets))
 
-                # ----------------------------- OLD
-                # other buttons with defined values
-                elif value in types and value in presets:
-
-                    if device_status == "ON":
-
-                        if types[value]["type"] == "enum":
-                            status = self._button_toggle(current_status, presets[value])
-
-                        if types[value]["type"] == "integer":
-                            minimum = int(presets[value]["min"])
-                            maximum = int(presets[value]["max"])
-                            direction = button[-1:]
-                            current_status = str(current_status).strip()
-                            if current_status:
-                                current_status = int(current_status)
-                            else:
-                                current_status = 0
-
-                            if direction == "+" and current_status < maximum:
-                                status = current_status + 1
-                            elif direction == "+":
-                                dont_send = True
-                            elif direction == "-" and current_status > minimum:
-                                status = current_status - 1
-                            elif direction == "-":
-                                dont_send = True
-
-                    else:
-                        self.logging.debug("RemoteOnOff - Device is off: " + device)
-                        dont_send = True
-                # ----------------------------- OLD
-
+                # send request if everything is OK
+                if dont_send:
+                    data["REQUEST"]["Return"] += ("Dont send " + device + "/" + button +
+                                                 " as values not valid (" + str(current_status) + ").")
                 else:
-                    self.logging.warning("RemoteOnOff - Command not defined: " + device + "_" + value)
-                    self.logging.debug("types = " + str(types) + " / presets = " + str(presets))
-
-            # send request if everything is OK
-            if dont_send:
-                data["REQUEST"]["Return"] += ("Dont send " + device + "/" + button +
-                                             " as values not valid (" + str(current_status) + ").")
+                    data["REQUEST"]["Return"] += self.queue_send.add2queue([[api_dev, device, button, status]])
+                    self.logging.debug("... add to queue [" + str(api_dev) + "," + str(device) + "," + str(button) + "," + str(status) + "]")
             else:
-                data["REQUEST"]["Return"] += self.queue_send.add2queue([[api_dev, device, button, status]])
-                self.logging.debug("... add to queue [" + str(api_dev) + "," + str(device) + "," + str(button) + "," + str(status) + "]")
+                data["REQUEST"]["Return"] += "Dont send " + device + "/" + button + " as device not defined (deleted or moved to archive)."
 
         self._refresh()
         data["DATA"] = {}
