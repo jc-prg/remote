@@ -34,17 +34,9 @@ config/modules/
 
 config/app-framework/
 
-data/_ACTIVE-DEVICES.json
-
-data/_ACTIVE-SCENES.json
-
-data/_ACTIVE-MACROS.json
-
-data/_ACTIVE-APIS.json
-
-/data/_ACTIVE-TIMER.json
-
-/data/_DEVICE-TYPES.json
+data/_ACTIVE-*
+data/_ARCHIVE-*
+/data/_DEVICE-*
 
 /data/templates/
 
