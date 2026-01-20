@@ -90,7 +90,7 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                 else                                        { text  = text.replace( /##DISPLAY##/g, "none" ); }
 
                 text += "<div class='display-table "+style+"'>";
-                if (style.indexOf("weather") === 0) { text += this.values(device, display_data, "weather"); }
+                if (style && style.indexOf("weather") === 0) { text += this.values(device, display_data, "weather"); }
                 else if (style.indexOf("c2") > 0) { text += this.values(device, display_data, "columns"); }
                 else { text += this.values(device, display_data, "default"); }
                 text += "</div>";
