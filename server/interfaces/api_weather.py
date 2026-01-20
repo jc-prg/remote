@@ -817,8 +817,8 @@ class ApiWeather(RemoteThreadingClass):
                 self.module.start()
                 self.connected = True
             else:
-                self.logging.info(f"Weather module already connected, reset settings: {self.weather_gps} {self.weather_city}")
-                self.module.set_location(self.weather_gps)
+                self.logging.info(f"Weather module already connected, reset settings: {param["gps_location"]} {param["location"]}")
+                self.module.set_location(param)
 
             return True
 
