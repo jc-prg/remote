@@ -20,16 +20,15 @@ class RemoteControlDisplay extends RemoteDefaultClass {
             let text          = "";
             let status;
 
-            if (rm_type === "scenes") {
-                status = rmStatus.status_scene(device);
-            }
-            else {
-                status = rmStatus.status_device(device);
-            }
+            if (rm_type === "scenes") { status = rmStatus.status_scene(device); }
+            else { status = rmStatus.status_device(device); }
 
             if (status === undefined) {
                 this.logging.error("default(): No status available for "+device);
                 return
+            }
+            if (style === undefined || style === "") {
+                style = "middle";
             }
 
             // create link for details (for scenes not defined yet)
