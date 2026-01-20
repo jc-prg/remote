@@ -1533,6 +1533,7 @@ class RemotesEdit(RemoteDefaultClass):
 
         if "OK:" in msg1: #and "OK:" in msg2:
             message = "OK: Device '" + device + "' deleted."
+            self.config.cache_request_update()
         else:
             message = "ERROR: Could not fully delete device '" + device + "'. (" + msg1 + ")" #; " + msg2 + ")"
         return message
