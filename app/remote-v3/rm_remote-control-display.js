@@ -87,7 +87,7 @@ class RemoteControlDisplay extends RemoteDefaultClass {
                 text  = text.replace( /##STYLE##/g, style + " display_on" );
                 if (status === "ON" || status === "PARTLY")	{ text  = text.replace( /##DISPLAY##/g, "block" ); }
                 else                                        { text  = text.replace( /##DISPLAY##/g, "none" ); }
-
+console.error("test",style);
                 text += "<div class='display-table "+style+"'>";
                 if (style && style.indexOf("weather") === 0) { text += this.values(device, display_data, "weather"); }
                 else if (style.indexOf("c2") > 0) { text += this.values(device, display_data, "columns"); }
