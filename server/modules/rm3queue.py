@@ -1,3 +1,4 @@
+import sys
 import time
 import datetime
 from server.modules.rm3classes import RemoteThreadingClass
@@ -124,8 +125,8 @@ class QueueApiCalls(RemoteThreadingClass):
                         self.logging.debug("queue_execute: load_after activated - " + device + "_" + button)
 
                 except Exception as e:
-                    result = "ERROR queue query_list (send," + interface + "," + device + "," +\
-                             button + "=" + str(state) + "): " + str(e)
+                    self.error_details(sys.exc_info())
+                    result = "ERROR queue query_list (send," + interface + "," + device + "," + button + "=" + str(state) + "): " + str(e)
                     self.logging.error(result)
 
             elif self.query_send == "query":
@@ -149,6 +150,7 @@ class QueueApiCalls(RemoteThreadingClass):
                         log_results.append(value + "=" + str(result))
 
                     except Exception as e:
+                        self.error_details(sys.exc_info())
                         result = "ERROR queue query_list (query," + str(interface) + "," + str(device) + "," + str(value) + "): " + str(e)
                         self.logging.error(result)
 

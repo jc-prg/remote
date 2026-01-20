@@ -468,6 +468,7 @@ class Connect(RemoteThreadingClass):
                     except AttributeError:
                         self.logging.error(f"Could not connect API (1): Class or function not found")
                     except Exception as e:
+                        self.error_details(sys.exc_info())
                         self.logging.error("Could not connect API (2): " + str(e) + " (" + api_dev + ")")
                     except:
                         self.logging.error("Could not connect API (3): Unknown reason (" + api_dev + ")")
@@ -510,6 +511,7 @@ class Connect(RemoteThreadingClass):
                         self.logging.error("... if exist, check if all required modules are installed, " +
                                            "that are to be imported in this module.")
                     except Exception as e:
+                        self.error_details(sys.exc_info())
                         self.logging.error("Could not connect API (5): " + str(e) + " (" + api_dev + ")")
                     except:
                         self.logging.error("Could not connect API (6): Unknown reason (" + api_dev + ")")
@@ -801,6 +803,7 @@ class Connect(RemoteThreadingClass):
                     try:
                         button_code = self.command_get(call_api, "send-data", device, button)
                     except Exception as e:
+                        self.error_details(sys.exc_info())
                         button_code = "ERROR send: count not get_command."
                 else:
                     button_code = "ERROR send: wrong method (!query) or no data transmitted."
@@ -923,6 +926,7 @@ class Connect(RemoteThreadingClass):
             try:
                 button_code = self.command_get(call_api, "queries", device, button)
             except Exception as e:
+                self.error_details(sys.exc_info())
                 self.logging.error(button_code)
                 button_code = "ERROR query, get_command: "+str(e)
 
