@@ -20,6 +20,9 @@ let language_app = {
         "PLEASE_WAIT"                   : "Bitte warten ... .",
         "MACRO_PLEASE_WAIT"             : "Führe ein paar Kommandos aus, bitte warte ein paar Sekunden.",
 
+        "MENU_SHOW_HIDDEN_ON"           : "Weitere zeigen",
+        "MENU_SHOW_HIDDEN_OFF"          : "Weitere verbergen",
+
         "STATUS_DEV_OK"                 : "Das Gerät <b>{0}</b> ist OK.",
         "STATUS_DEV_N/A"                : "Der Status vom Gerät <b>{0}</b> ist unbekannt, ausprobieren!",
         "STATUS_DEV_POWER_OFF"          : "Der Strom ist ausgeschaltet: <b>{0}</b>",
