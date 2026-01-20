@@ -795,26 +795,30 @@ class ApiWeather(RemoteThreadingClass):
 
         self.weather_source = param["source"]
         self.logging.info(f"(Re)connect weather module (source={self.weather_source})")
-        update_gps = False
-        if self.update:
-            update_gps = True
 
         if self.weather_source == "Open-Meteo":
+            if not "location" in self.param and not "gps_location" in self.param:
+                self.logging.error("No location defined.")
+                return False
+            elif "gps_location" in param and type(param["gps_location"]) is list and len(param["gps_location"]) >= 2:
+                self.weather_gps = param["gps_location"]
+                if len(self.weather_gps) > 2:
+                    self.weather_city = param["gps_location"][2]
+            elif "location" in self.param and param["location"] is not None and param["location"] != "":
+                self.weather_gps = self.gps.look_up_location(self.weather_city)
+            else:
+                self.logging.error(f"No valid location defined: {param}.")
             if not "location" in param:
                 param["location"] = "N/A"
-            self.weather_city = param["location"]
-            if "gps_location" in param and param["gps_location"] != [0, 0] and len(param["gps_location"]) >= 2 and not update_gps:
-                self.weather_gps = param["gps_location"]
-            else:
-                self.weather_gps = self.gps.look_up_location(self.weather_city)
 
             if self.module is None:
+                self.logging.info(f"Connecting weather module: {param["gps_location"]} {param["location"]}")
                 self.module = ApiOpenMeteo(config=self.config, gps_location=self.weather_gps)
                 self.module.start()
                 self.connected = True
             else:
                 # reset location open ...
-                self.logging.info("Weather module already connected.")
+                self.logging.info(f"Weather module already connected: {self.weather_gps} {self.weather_city}")
                 self.logging.warning("Reset to new location not implemented yet ...")
 
             return True

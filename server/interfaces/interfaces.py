@@ -305,7 +305,7 @@ class Connect(RemoteThreadingClass):
         check devices available in the local network
         """
         start_time = time.time()
-        network = "192.168.2.0/24"
+        network = "192.168.1.0/24"
         if "." in rm3presets.local_network:
             network = rm3presets.local_network
 
@@ -361,6 +361,8 @@ class Connect(RemoteThreadingClass):
         """
         discover all devices where available
         """
+        inactive_apis = []
+        config_api = self.config.read(rm3presets.active_apis)
         start_time = time.time()
         if wait > 0:
             time.sleep(wait)
@@ -368,6 +370,10 @@ class Connect(RemoteThreadingClass):
         self.logging.info(f"Discover all devices for all {len(self.api_check)} APIs ...")
         discover_list = {}
         for api in self.api_check:
+            if not config_api[api]["active"]:
+                inactive_apis.append(api)
+                continue
+
             start_time_api = time.time()
             discover = self.api_check[api].discover()
 
@@ -401,6 +407,8 @@ class Connect(RemoteThreadingClass):
         self.available_discover = discover_list.copy()
         if time.time() - start_time > 25:
             self.logging.warning(f"check_discover_all() took longer than expected: {round(time.time() - start_time,1)}s")
+        if len(inactive_apis) > 0:
+            self.logging.info(f"Didn't check {len(inactive_apis)} inactive APIs: {inactive_apis}")
 
     def load_api_connectors(self):
         """
