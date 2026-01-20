@@ -101,6 +101,8 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
     /* Build final SVG */
     create_now(container, text="") {
 
+
+
         if (!this.image_cache[text]) {
 
             const layout = this.bestLayout(text);
@@ -151,13 +153,15 @@ class RemoteSvgTextImage extends RemoteDefaultClass {
             this.image_cache[text] = svg.innerHTML;
             this.image_cache_layout[text] = layout;
         }
-        else {
+        else if (document.getElementById(container)) {
             const layout = this.image_cache_layout[text];
             const padding = this.fontSize * 0.1; // 10% padding
             let svg = document.getElementById(container);
             svg.setAttribute("viewBox", `${-padding} ${-padding} ${layout.box.width + padding * 2} ${layout.box.height + padding * 2}`);
             svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
             svg.innerHTML = this.image_cache[text];
+        } else {
+            this.logging.warn("create_now(): Could not find container '"+container+"' to create an SVG.")
         }
     }
 
