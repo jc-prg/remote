@@ -24,22 +24,14 @@ def on_exception(exc_type, value, trace_back):
     grab all exceptions and write them to the logfile (if active)
     """
     tb_str = ''.join(traceback.format_exception(exc_type, value, trace_back))
-    log.error("EXCEPTION:\n\n" + tb_str + "\n")
+    log.error(f"EXCEPTION:\n\n{tb_str}\n")
 
 def on_thread_exception(args):
     """
     send thread exceptions to logging
     """
-    tb_str = ''.join(
-        traceback.format_exception(
-            args.exc_type,
-            args.exc_value,
-            args.exc_traceback
-        )
-    )
-    log.error(
-        f"EXCEPTION IN THREAD {args.thread.name}:\n\n{tb_str}\n"
-    )
+    tb_str = ''.join(traceback.format_exception(args.exc_type,args.exc_value,args.exc_traceback))
+    log.error(f"EXCEPTION IN THREAD {args.thread.name}:\n\n{tb_str}\n")
 
 def on_exit(signum, handler):
     """

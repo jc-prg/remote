@@ -188,7 +188,7 @@ class RemoteVisualizeMainAudioStatus extends RemoteDefaultClass {
     // send API call to set volume
     change_volume(volume) {
         console.debug("change_volume(): " + rmStatusAudio.audio_device+" -> "+volume);
-        appFW.requestAPI( "GET",  ["set",rmStatusAudio.audio_device,"send-vol",volume], "", remoteReload_load );
+        appFW.requestAPI( "GET",  ["set",rmStatusAudio.audio_device,"send-vol",volume], "", rmMain.load_remote );
     }
 }
 

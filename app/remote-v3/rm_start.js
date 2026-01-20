@@ -116,14 +116,14 @@ class RemoteStart extends RemoteDefaultClass {
         if (data[button[1]]["settings"]["label"]) { label2 = data[button[1]]["settings"]["label"]; }
 
         let d = this.button_image( label, style );
-        return this.button( id, d[0], style, 'rmRemote.create("device","' + button[1] + '");setNavTitle("' + label2 + '");', "" );
+        return this.button( id, d[0], style, 'rmRemote.create("device","' + button[1] + '");rmMain.set_title("' + label2 + '");', "" );
     }
 
     /* create big button for scene */
     entry_scene(data, id, label, image, style) {
         let d = this.button_image( label, style );
         let i = id.split("_");
-        return this.button( id, d[0], style, 'rmRemote.create("scene","' + i[1] + '");setNavTitle("' + label + '");', "", image );
+        return this.button( id, d[0], style, 'rmRemote.create("scene","' + i[1] + '");rmMain.set_title("' + label + '");', "", image );
     }
 
     /* switch from and to edit mode */

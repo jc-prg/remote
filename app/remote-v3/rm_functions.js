@@ -2,34 +2,6 @@
 // jc://remote/
 //--------------------------------
 
-
-function showRemoteInBackground(show=false) {
-    const body = document.getElementById("app_background");
-    const width = window.innerWidth;
-
-    if (show === 1 || show === true) {
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            body.style.backgroundImage = "url(" + rm3background + ")";
-        } else {
-            body.style.backgroundImage = "url(" + rm3background_light + ")";
-        }
-
-        body.style.backgroundRepeat     = "no-repeat";
-        body.style.backgroundPosition   = "bottom center";
-        body.style.backgroundAttachment = "fixed";
-        if (width < 350)	{ body.style.backgroundSize     = "100%"; }
-        else 			    { body.style.backgroundSize     = "350px"; }
-        }
-    else {
-        body.style.backgroundImage    = "";
-        }
-    }
-
-function setNavTitle (title) {
-
-        setTextById("navTitle", "<div onClick=\"remoteMainMenu();\" id='header_title'>"+title.replace(/#/g,"\"")+"</div>");
-        }
-
 function rm_image(file, big=false) {
     let style;
     if (big)    { style = "max-height:54px;max-width:72px;"; }

@@ -5,7 +5,7 @@
 // check if APP updates are available
 function apiCheckUpdates() {
 
-	appMsg.wait("Loading App ...", "remoteInit();" );
+	appMsg.wait("Loading App ...", "rmMain.start();" );
 	appFW.requestAPI("GET", ["version",rm3version], "", apiCheckUpdates_msg, "wait" ); 	// doesn't work asynchronuous yet ... -> "wait" as param
 	}
 
@@ -14,7 +14,7 @@ function apiCheckUpdates_msg( data ) {
 	let msg = data["REQUEST"]["Return"];
 	msg = "<br/></b><i>"+msg+"</i>";
 
-	appMsg.wait("Loading App ..."+msg, "remoteInit();" );
+	appMsg.wait("Loading App ..."+msg, "rmMain.start();" );
 
 	if (data["REQUEST"]["ReturnCode"] !== "802") {
 		rm3update = true;
@@ -28,7 +28,7 @@ function apiAlertReturn(data) {
     setTimeout(function() {
         if (data["REQUEST"]["Command"] === "DeleteDevice") 	{ rmCookies.erase(); rmRemote.active_name = ""; }
         if (data["REQUEST"]["Command"] === "DeleteScene") 	{ rmCookies.erase(); rmRemote.active_name = ""; }
-        remoteReload_load();
+        rmMain.load_remote();
         }, 1000);
 
     setTimeout(function() {
@@ -42,8 +42,8 @@ function apiAlertReturn(data) {
             if (data["REQUEST"]["Device"] === "device") { rmRemote.create( "device", data["REQUEST"]["Device"] ); }
             if (data["REQUEST"]["Device"] === "scene") { rmRemote.create( "scene", data["REQUEST"]["Device"] ); }
             }
-        else if (data["REQUEST"]["Command"] === "DeleteDevice") { remoteMainMenu(); }
-        else if (data["REQUEST"]["Command"] === "DeleteScene") { remoteMainMenu(); }
+        else if (data["REQUEST"]["Command"] === "DeleteDevice") { rmMain.load_main(); }
+        else if (data["REQUEST"]["Command"] === "DeleteScene") { rmMain.load_main(); }
         else {}
 
         if (data["REQUEST"]["Return"].indexOf("ERROR") > -1 && data["REQUEST"]["Command"]) {
@@ -74,12 +74,12 @@ function setMainAudio(device) {
 
 // swt volume
 function setVolume(main_audio,volume) {
-    appFW.requestAPI( "GET",  ["set",main_audio,"send-vol",volume], "", remoteReload_load );
+    appFW.requestAPI( "GET",  ["set",main_audio,"send-vol",volume], "", rmMain.load_remote );
 }
 
 function apiSetVolume(volume) {
-    //appFW.requestAPI( "GET",  ["set",rm3slider.device,"send-vol",volume], "", remoteReload_load );
-    appFW.requestAPI( "GET",  ["set",rmStatusAudio.slider.device,"send-vol",volume], "", remoteReload_load );
+    //appFW.requestAPI( "GET",  ["set",rm3slider.device,"send-vol",volume], "", rmMain.load_remote );
+    appFW.requestAPI( "GET",  ["set",rmStatusAudio.slider.device,"send-vol",volume], "", rmMain.load_remote );
 }
 
 
@@ -318,7 +318,7 @@ function apiDeviceMovePosition_get(data) {
 function apiDeviceMovePosition(data) {
 	rmSettings.data = data;
 	rmSettings.create();
-	remoteReload(data);
+    rmMain.create_remote(data);
 	}
 
 function apiMovePosition(id, dnd_list, from, to) {
@@ -386,7 +386,7 @@ function apiDeviceDelete_exe(device) {
     appFW.requestAPI("DELETE",["device",device], "", apiAlertReturn);
     rmRemote.active_name = "";
     rmCookies.erase();
-    remoteInit(); // check if required !!!!!!!!!!!!!!!
+    rmMain.start(); // check if required !!!!!!!!!!!!!!!
     }
 
 function apiDeviceDelete(device_id) {
@@ -438,7 +438,7 @@ function apiCommandSend(cmdButton, sync="", callback="", device="") {
 	if (deactivateButton)   { send_command = ["send" , send_command[0] , send_command[1]]; }
     else                    { send_command = ["send_check" , send_command[0] , send_command[1]]; }
 
-    //if (callback == "")	{ callback = remoteReload_load; }
+    //if (callback == "")	{ callback = rmMain.load_remote; }
 
 	// send via app
 	if (sync === "sync") {

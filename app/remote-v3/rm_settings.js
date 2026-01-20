@@ -69,7 +69,7 @@ class RemoteSettings extends RemoteDefaultClass {
 
         if (selected_mode === "index") {
 
-            setNavTitle(lang('SETTINGS'));
+            rmMain.set_title(lang('SETTINGS'));
             this.settings_ext_reset();
             this.settings_ext_append(1, lang("SETTINGS"), this.index(), "", false, true);
             //this.settings_ext_append(2, lang("QUICK_ACCESS"), "&nbsp;<br/>" + this.index_quick(true, true));
@@ -84,7 +84,7 @@ class RemoteSettings extends RemoteDefaultClass {
             this.create_show_ext();
         }
         else if (selected_mode === "general") {
-            setNavTitle(lang('SETTINGS_GENERAL'));
+            rmMain.set_title(lang('SETTINGS_GENERAL'));
             this.settings_ext_reset();
             this.settings_ext_append(0,"", this.index(true, "WRAPPER"), "", true);
             //this.settings_ext_append(1,lang("SETTINGS_GENERAL"), this.module_general_settings());
@@ -95,7 +95,7 @@ class RemoteSettings extends RemoteDefaultClass {
             this.module_general.load();
         }
         else if (selected_mode === "edit_devices") {
-            setNavTitle(lang('SETTINGS_DEVICES'));
+            rmMain.set_title(lang('SETTINGS_DEVICES'));
 
             this.settings_ext_reset();
             this.settings_ext_append(0,"", this.index(true, "WRAPPER"), "", true);
@@ -115,7 +115,7 @@ class RemoteSettings extends RemoteDefaultClass {
             startDragAndDrop("sort_devices", apiMovePosition);
         }
         else if (selected_mode === "edit_scenes") {
-            setNavTitle(lang('SETTINGS_SCENES'));
+            rmMain.set_title(lang('SETTINGS_SCENES'));
 
             this.settings_ext_reset();
             this.settings_ext_append(0,"", this.index(true, "WRAPPER"), "", true);
@@ -131,7 +131,7 @@ class RemoteSettings extends RemoteDefaultClass {
             startDragAndDrop("sort_scenes", apiMovePosition);
         }
         else if (selected_mode === "edit_interfaces") {
-            setNavTitle(lang('SETTINGS_API'));
+            rmMain.set_title(lang('SETTINGS_API'));
             this.settings_ext_reset();
             this.settings_ext_append(0,"", this.index(true, "WRAPPER"), "", true);
             this.module_api.create_container_overview();
@@ -145,7 +145,7 @@ class RemoteSettings extends RemoteDefaultClass {
             rmStatusShow.visualize_element_button('button_edit_mode', getTextById('button_edit_mode'));
         }
         else if (selected_mode === "edit_timer") {
-            setNavTitle(lang('SETTINGS_TIMER'));
+            rmMain.set_title(lang('SETTINGS_TIMER'));
             this.settings_ext_reset();
             this.settings_ext_append(0,"", this.index(true, "WRAPPER"), "", true);
             this.settings_ext_append(1,lang("SETTINGS_TIMER"), this.module_timer.create());
@@ -153,7 +153,7 @@ class RemoteSettings extends RemoteDefaultClass {
             this.create_show_ext();
         }
         else if (selected_mode === "edit_macros") {
-            setNavTitle(lang('SETTINGS_MACROS'));
+            rmMain.set_title(lang('SETTINGS_MACROS'));
             this.settings_ext_reset();
             this.settings_ext_append(0,"", this.index(true, "WRAPPER"), "", true);
             this.settings_ext_append(1,lang("EDIT_MACROS"), this.module_macros.create());
@@ -162,7 +162,7 @@ class RemoteSettings extends RemoteDefaultClass {
             this.module_macros.load();
         }
         else if (selected_mode === "edit_record") {
-            setNavTitle(lang('SETTINGS_RECORDINGS'));
+            rmMain.set_title(lang('SETTINGS_RECORDINGS'));
             this.settings_ext_reset();
             this.settings_ext_append(0,"", this.index(true, "WRAPPER"), "", true);
             this.settings_ext_append(1,lang("EDIT_RECORDINGS"), this.module_record.create());
@@ -170,7 +170,7 @@ class RemoteSettings extends RemoteDefaultClass {
             this.create_show_ext();
         }
         else {
-            setNavTitle(lang('INFORMATION'));
+            rmMain.set_title(lang('INFORMATION'));
             this.settings_ext_reset();
             this.settings_ext_append(0,"", this.index(true, "WRAPPER"), "", true);
             this.settings_ext_append(1,lang("VERSION_AND_STATUS"), this.module_info.create());
@@ -203,7 +203,7 @@ class RemoteSettings extends RemoteDefaultClass {
         let show_settings = true;
         let show_remotes = false;
         this.active = true;
-        showRemoteInBackground(0);
+        rmMain.set_background(0);
 
         for (let i=0; i<this.e_remotes.length; i++)  { elementHidden(this.e_remotes[i],show_remotes);  }
         for (let i=0; i<this.e_settings.length; i++) { elementVisible(this.e_settings[i],show_settings); }
@@ -315,7 +315,7 @@ class RemoteSettings extends RemoteDefaultClass {
 
         //elementVisible("frame1");
         //elementVisible("frame2");
-        showRemoteInBackground(0);
+        rmMain.set_background(0);
         }
 
     // hide all settings frames and show frames for remotes
@@ -546,7 +546,7 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
 
         let edit_commands = "";
         edit_commands += "<span onclick='apiRemoteChangeVisibility(\""+type+"\",\""+id+"\",\"rm_visibility_"+id+"\");"+onclick_reload+"' style='cursor:pointer;'>" + img_visible + "</span>&nbsp;&nbsp;&nbsp;";
-        edit_commands += "<span onclick='remoteToggleEditMode(true);rmRemote.create(\""+type+"\",\""+id+"\");' style='cursor:pointer;'>" + img_edit + "</span>&nbsp;&nbsp;";
+        edit_commands += "<span onclick='rmMain.set_main_var(\"edit_mode\",true);rmRemote.create(\""+type+"\",\""+id+"\");' style='cursor:pointer;'>" + img_edit + "</span>&nbsp;&nbsp;";
         edit_commands += "<input id=\"rm_visibility_"+id+"\" style=\"display:none;\" value=\""+visible+"\">";
         edit_commands += "<span onclick='"+onclick_archive+"' style='cursor:pointer;'>" + img_archive + "</span>&nbsp;&nbsp;";
         edit_commands += "<span onclick='"+delete_cmd+"(\""+id+"\");' style='cursor:pointer;'>" + img_delete + "</span>";
@@ -583,7 +583,7 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
         let onchange = this.name + ".on_change_api(this.value);";
         let onchange3 = this.name + ".on_change_dev_type(this.value);";
         let add_command = "apiDeviceAdd([#add_device_id#,#add_device_descr#,#add_device_label#,#add_device_api#,#add_device#,#add_device_device#,#add_device_remote#,#add_device_id_external#,#edit_image#],"+onchange2+");";
-        add_command += "remoteToggleEditMode(true);";
+        add_command += "rmMain.set_main_var(\"edit_mode\",true);";
         let width = this.input_width;
         let icon_container = "<button class='button device_off' style='width:50px;height:40px;'><div id='device_edit_button_image'></div></button>";
         let device_types = rmData.elements.data("device_types");
@@ -963,8 +963,8 @@ class RemoteSettingsApi extends RemoteDefaultClass {
                     let visibility = device_settings["settings"]["visible"];
                     let hidden = "";
                     let idle = "<small id=\"device_auto_off_"+connected_device+"\"></small>";
-                    let command_on = "appFW.requestAPI('GET',['set','"+connected_device+"','power','ON'], '', '', '' ); setTextById('CHANGE_STATUS_"+connected_device+"','ON');"; //rmSettings.on_off();remoteInit();";
-                    let command_off = "appFW.requestAPI('GET',['set','"+connected_device+"','power','OFF'], '', '', '' );setTextById('CHANGE_STATUS_"+connected_device+"','OFF');"; //rmSettings.on_off();remoteInit();";
+                    let command_on = "appFW.requestAPI('GET',['set','"+connected_device+"','power','ON'], '', '', '' ); setTextById('CHANGE_STATUS_"+connected_device+"','ON');";
+                    let command_off = "appFW.requestAPI('GET',['set','"+connected_device+"','power','OFF'], '', '', '' );setTextById('CHANGE_STATUS_"+connected_device+"','OFF');";
                     let external_id = "";
 
                     if (visibility !== "yes") {
@@ -1343,8 +1343,8 @@ class RemoteSettingsApi extends RemoteDefaultClass {
 
         for (let key in device_status) {
             if (key === "power") {
-                let command_on = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','ON'], '', '', '' );remoteInit();";
-                let command_off = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','OFF'], '', '', '' );remoteInit();";
+                let command_on = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','ON'], '', '', '' );rmMain.start();";
+                let command_off = "appFW.requestAPI('GET',['set','"+filter+"','"+key+"','OFF'], '', '', '' );rmMain.start();";
                 let status_value = device_status[key];
                 let command_link;
 
@@ -1515,8 +1515,6 @@ class RemoteSettingsGeneral extends RemoteDefaultClass {
         return set_temp;
     }
 
-
-
     // edit different modes: edit mode, easy edit mode, show hints, intelligent mode, show button modes
     edit_modes(edit=true, intelligent=false, button_code=false, easy_edit=false, remote_hints=false, json_highlight=false) {
 
@@ -1539,22 +1537,22 @@ class RemoteSettingsGeneral extends RemoteDefaultClass {
 
         let html = "";
         if (edit) {
-            html += this.create_toggle("mode_edit", lang("MODE_EDIT"), "remoteToggleEditMode(true);", "remoteToggleEditMode(false);", rmRemote.edit_mode);
+            html += this.create_toggle("mode_edit", lang("MODE_EDIT"), "rmMain.set_main_var('edit_mode',true);", "rmMain.set_main_var('edit_mode',false);", rmRemote.edit_mode);
         }
         if (easy_edit) {
-            html += this.create_toggle("mode_easy", lang("MODE_EASY_EDIT"), "remoteToggleEasyEdit(true);", "remoteToggleEasyEdit(false);", easyEdit);
+            html += this.create_toggle("mode_easy", lang("MODE_EASY_EDIT"), "rmMain.set_main_var('easy_edit',true);", "rmMain.set_main_var('easy_edit',false);", easyEdit);
         }
         if (json_highlight) {
-            html += this.create_toggle("mode_json", lang("MODE_JSON_HIGHLIGHT"), "remoteToggleJsonHighlighting(true);", "remoteToggleJsonHighlighting(false);", jsonHighlighting);
+            html += this.create_toggle("mode_json", lang("MODE_JSON_HIGHLIGHT"), "rmMain.set_main_var('json_highlighting',true);", "rmMain.set_main_var('json_highlighting',false);", jsonHighlighting);
         }
         if (remote_hints) {
-            html += this.create_toggle("mode_hint", lang("MODE_HINT"), "remoteToggleRemoteHints(true);", "remoteToggleRemoteHints(false);", remoteHints);
+            html += this.create_toggle("mode_hint", lang("MODE_HINT"), "rmMain.set_main_var('remote_hints',true);", "rmMain.set_main_var('remote_hints',false);", remoteHints);
         }
         if (intelligent) {
-            html += this.create_toggle("mode_intelligent", lang("MODE_INTELLIGENT"), this.name+".button_manual_mode(true);", this.name+".button_manual_mode(false);", this.manual_mode);
+            html += this.create_toggle("mode_intelligent", lang("MODE_INTELLIGENT"), "rmMain.set_main_var('manual_mode',true);", "rmMain.set_main_var('manual_mode',false);", this.manual_mode);
         }
         if (button_code) {
-            html += this.create_toggle("mode_button_show", lang("MODE_SHOW_BUTTON"), this.name+".button_show(true);", this.name+this.name+".button_show(false);", showButton);
+            html += this.create_toggle("mode_button_show", lang("MODE_SHOW_BUTTON"), "rmMain.set_main_var('button_code',true);", "rmMain.set_main_var('button_code',false);", showButton);
         }
         return html;
     }
@@ -1572,26 +1570,6 @@ class RemoteSettingsGeneral extends RemoteDefaultClass {
             appleTouchIcon2.href = url;
         }
         this.load();
-    }
-
-    // show button code in header if pressed button
-    button_show(show="") {
-        if (show === "") {
-            showButton = !showButton;
-        } else {
-            showButton = show;
-        }
-    }
-
-    // toggles between manual mode and intelligent mode for buttons (default is intelligent)
-    button_manual_mode(menu_entry=false) {
-        if (deactivateButton) 	{
-            deactivateButton = false;
-            this.manual_mode = false;
-        } else {
-            deactivateButton = true;
-            this.manual_mode = true;
-        }
     }
 
     // get updated config data from parent class

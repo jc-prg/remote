@@ -226,7 +226,7 @@ class RemoteMenu extends RemoteDefaultClass {
     // show / hide hidden remotes as link
     toggle_invisible() {
         this.edit_mode_show = !this.edit_mode_show;
-        remoteDropDown_load();
+        rmMain.load_drop_down();
     }
 
 }

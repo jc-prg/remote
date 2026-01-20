@@ -40,19 +40,19 @@ class RemoteCookies extends RemoteDefaultClass {
             if (cookie[0] === "scene") 	{
                 rmRemote.create('scene',cookie[1]);
                 rmSettings.hide();
-                setNavTitle(cookie[2]);
+                rmMain.set_title(cookie[2]);
             }
             else if (cookie[0] === "device") {
                 rmRemote.create('device',cookie[1]);
                 rmSettings.hide();
-                setNavTitle(cookie[2]);
+                rmMain.set_title(cookie[2]);
             }
             else {}
 
-            if (cookie.length > 3) { remoteToggleEditMode(cookie[3]); }
-            if (cookie.length > 4) { remoteToggleEasyEdit(cookie[4]); }
-            if (cookie.length > 5) { remoteToggleRemoteHints(cookie[5]); }
-            if (cookie.length > 6) { remoteToggleJsonHighlighting(cookie[6]); }
+            if (cookie.length > 3) { rmMain.set_main_var("edit_mode",cookie[3]); }
+            if (cookie.length > 4) { rmMain.set_main_var("easy_edit",cookie[4]); }
+            if (cookie.length > 5) { rmMain.set_main_var("remote_hints",cookie[5]); }
+            if (cookie.length > 6) { rmMain.set_main_var("json_highlighting",cookie[6]); }
         }
     }
 

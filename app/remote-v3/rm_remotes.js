@@ -6,7 +6,7 @@
 /*
 * class to create and edit remote controls (scene and device)
 */
-class RemoteMain extends RemoteDefaultClass {
+class RemoteControl extends RemoteDefaultClass {
     constructor(name) {
         super(name);
 
@@ -36,11 +36,11 @@ class RemoteMain extends RemoteDefaultClass {
         this.keyboard = new RemoteControlKeyboard(this.name + ".keyboard");
         this.tooltip = new JcTooltip2(this.name + ".tooltip");
 
-        this.edit = new RemoteMainEditElements(this.name + ".edit", this);
+        this.edit = new RemoteControlEditElements(this.name + ".edit", this);
         this.rm_scene = new RemoteJsonElements(this.name + ".rm_scene", "scene", this);
         this.rm_device = new RemoteJsonElements(this.name + ".rm_device", "device", this);
-        this.dialog_scene = new RemoteMainEditDialogs(this.name + ".dialog_scene", "scene", this);
-        this.dialog_device = new RemoteMainEditDialogs(this.name + ".dialog_device", "device", this);
+        this.dialog_scene = new RemoteControlEditDialogs(this.name + ".dialog_scene", "scene", this);
+        this.dialog_device = new RemoteControlEditDialogs(this.name + ".dialog_device", "device", this);
     }
 
     /* load data with devices (deviceConfig["devices"]) */
@@ -129,7 +129,7 @@ class RemoteMain extends RemoteDefaultClass {
 
         if (type === "device") {
 
-            setNavTitle(rmData.devices.label(rm_id) + edit_mode);
+            rmMain.set_title(rmData.devices.label(rm_id) + edit_mode);
 
             // set vars
             this.logging.default("Write Device Remote Control: " + rm_id);
@@ -148,7 +148,7 @@ class RemoteMain extends RemoteDefaultClass {
             scrollTop();
         } else if (type === "scene") {
 
-            setNavTitle(rmData.scenes.label(rm_id) + edit_mode);
+            rmMain.set_title(rmData.scenes.label(rm_id) + edit_mode);
 
             // set vars
             this.logging.default("Write Scene Remote Control: " + rm_id);
@@ -268,7 +268,7 @@ class RemoteMain extends RemoteDefaultClass {
     show() {
 
         statusCheck_load();			// ... check if part of class ...
-        showRemoteInBackground(0);			// ... check if part of this class ...
+        rmMain.set_background(0);			// ... check if part of this class ...
         rmSettings.hide();				// ... check if part of another class ...
     }
 
@@ -304,7 +304,7 @@ class RemoteMain extends RemoteDefaultClass {
         }
 
         // add edit button
-        let edit_cmd = "remoteToggleEditMode(true);rmRemote.create(\"device\",\"" + device + "\");";
+        let edit_cmd = "rmMain.set_main_var(\"edit_mode\",true);rmRemote.create(\"device\",\"" + device + "\");";
         if (!this.edit_mode && easyEdit) { remote += "<div class='remote-edit-button' onclick='" + edit_cmd + "'><img src='icon/edit.png' alt='' style='height:20px;width:20px;'></div>"; }
 
         // remote container
@@ -547,7 +547,7 @@ class RemoteMain extends RemoteDefaultClass {
             this.button.edit("apiRemoteChangeVisibility('device','" + device + "','remote_visibility');", lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
             this.button.edit("apiDeviceEdit('" + device + "','edit','description,label,interface,method,device_id,image');", lang("BUTTON_T_SAVE")) + "&nbsp;" +
             this.button.edit("apiDeviceDelete('" + device + "');", "delete") + "&nbsp;" +
-            this.button.edit("remoteToggleEditMode(false);" + this.name + ".create('" + this.active_type + "','" + device + "');", lang("BUTTON_T_STOP_EDIT")) +
+            this.button.edit("rmMain.set_main_var('edit_mode',false);" + this.name + ".create('" + this.active_type + "','" + device + "');", lang("BUTTON_T_STOP_EDIT")) +
             "</span>",
             false
         );
@@ -805,7 +805,7 @@ class RemoteMain extends RemoteDefaultClass {
                 this.name + ".device_not_used('" + this.frames_remote[2] + "','" + device + "','remote_json_buttons');", lang("BUTTON_T_RESET")) + "&nbsp;" +
             this.button.edit("apiDeviceJsonEdit('" + device + "','remote_json_buttons','remote_json_display','remote_display_size');", lang("BUTTON_T_SAVE")) + "&nbsp;" +
             this.button.edit(this.name + ".preview('device','" + device + "');", lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
-            this.button.edit("remoteToggleEditMode(false);" + this.name + ".create('" + this.active_type + "','" + device + "');", "stop edit") +
+            this.button.edit("rmMain.set_main_var('edit_mode',false);" + this.name + ".create('" + this.active_type + "','" + device + "');", "stop edit") +
             "</span><br/>";
 
 
@@ -889,7 +889,7 @@ class RemoteMain extends RemoteDefaultClass {
         for (let key in rm_data["macro-scene"]) { macros[key] = rm_data["macro-scene"][key]; }
 
         // include edit button
-        let edit_cmd = "remoteToggleEditMode(true);rmRemote.create(\"scene\",\"" + scene + "\");";
+        let edit_cmd = "rmMain.set_main_var(\"edit_mode\",true);rmRemote.create(\"scene\",\"" + scene + "\");";
         if (!this.edit_mode && easyEdit) {
             remote += "<div class='remote-edit-button' onclick='" + edit_cmd + "'><img src='icon/edit.png' style='height:20px;width:20px;' alt=''></div>";
         }
@@ -1134,7 +1134,7 @@ class RemoteMain extends RemoteDefaultClass {
                 this.button.edit("apiRemoteChangeVisibility('scene','" + scene + "','scene_visibility');", lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
                 this.button.edit("apiSceneEdit('" + scene + "','edit','description,label,image');", lang("BUTTON_T_SAVE"), "") + "&nbsp;" +
                 this.button.edit("apiSceneDelete('" + scene + "');", lang("BUTTON_T_DELETE"), "") + "&nbsp;" +
-                this.button.edit("remoteToggleEditMode(false);" + this.name + ".create('" + this.active_type + "','" + scene + "');", lang("BUTTON_T_STOP_EDIT")) +
+                this.button.edit("rmMain.set_main_var('edit_mode',false);" + this.name + ".create('" + this.active_type + "','" + scene + "');", lang("BUTTON_T_STOP_EDIT")) +
                 "</span>",
                 false
             );
@@ -1180,7 +1180,7 @@ class RemoteMain extends RemoteDefaultClass {
         let button_cmd_reset = this.name + ".scene_edit_remote('" + id + "','" + scene + "');" + this.name + ".scene_remote(  '" + this.frames_remote[0] + "','" + scene + "','json::remote','json::display');" + this.name + ".scene_channels('" + this.frames_remote[2] + "','" + scene + "','json::macro-channel');";
         let button_cmd_save = "apiSceneJsonEdit('" + scene + "','json::remote,json::devices,json::display,json::display-size,json::chart,json::macro-channel,json::macro-scene-on,json::macro-scene-off,json::macro-scene');";
         let button_cmd_preview = this.name + ".scene_remote(  '" + this.frames_remote[0] + "','" + scene + "','json::remote','json::display','json::display-size','json::chart');" + this.name + ".scene_channels('" + this.frames_remote[2] + "','" + scene + "','json::macro-channel');";
-        let button_cmd_stop = "remoteToggleEditMode(false);" + this.name + ".create('" + this.active_type + "','" + scene + "');";
+        let button_cmd_stop = "rmMain.set_main_var('edit_mode',false);" + this.name + ".create('" + this.active_type + "','" + scene + "');";
 
         // frame
         let remote = "";
@@ -1253,7 +1253,7 @@ class RemoteMain extends RemoteDefaultClass {
         let rm_data = this.main_data("scene", scene);
         let button_cmd_reset = "alert('not implemented yet');";
         let button_cmd_save = this.name+".scene_edit_macros_save('"+scene+"');";
-        let button_cmd_stop = "remoteToggleEditMode(false);" + this.name + ".create('" + this.active_type + "','" + scene + "');";
+        let button_cmd_stop = "rmMain.set_main_var('edit_mode',false);" + this.name + ".create('" + this.active_type + "','" + scene + "');";
 
         // frame
         let remote = "";
@@ -1334,7 +1334,7 @@ class RemoteMain extends RemoteDefaultClass {
 /*
 * class to create GUI dialogs to add, edit or delete elements of the remote definition, when edit mode is set true
 */
-class RemoteMainEditDialogs extends RemoteDefaultClass{
+class RemoteControlEditDialogs extends RemoteDefaultClass{
     constructor (name, remote_type, remote) {
         super(name);
 
@@ -1348,7 +1348,7 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
         this.tab = new RemoteElementTable(name + ".tab");
         this.advanced = new RemoteControlAdvanced(name + ".advanced", this);
 
-        this.edit = new RemoteMainEditElements(this.name + ".edit", this.remote);
+        this.edit = new RemoteControlEditElements(this.name + ".edit", this.remote);
         this.rm_scene = new RemoteJsonElements(this.name + ".rm_scene", "scene", this.remote);
         this.rm_device = new RemoteJsonElements(this.name + ".rm_device", "device", this.remote);
 
@@ -2005,7 +2005,7 @@ class RemoteMainEditDialogs extends RemoteDefaultClass{
 
 
 /* class with elements mainly used from edit dialogs */
-class RemoteMainEditElements extends RemoteDefaultClass {
+class RemoteControlEditElements extends RemoteDefaultClass {
     constructor(name, remote) {
         super(name);
 

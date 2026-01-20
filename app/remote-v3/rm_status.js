@@ -145,6 +145,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         this.show_status(this.data, this.edit_mode, false);
     }
 
+
     /* coordinate status visualization for all device types */
     show_status(data, edit_mode, update=true) {
         if (update) {
@@ -163,7 +164,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         this.show_status_errors();
 
         if (edit_mode) {
-            const stop = "remoteToggleEditMode(false);rmCookies.set_status_quo;remoteFirstLoad_load();";
+            const stop = "rmMain.set_main_var(\"edit_mode\",false);rmCookies.set_status_quo();rmMain.load_app();";
             const html = "<img src='/icon/edit_stop.png' onclick='" + stop + "' style='cursor:pointer;width:100%' alt='stop editing'>";
             setTextById("edit1", html);
         } else {
