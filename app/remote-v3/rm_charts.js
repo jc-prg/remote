@@ -51,7 +51,7 @@ class RemoteChartJS extends RemoteDefaultClass {
                 setTimeout(() => {
                     if (typeof Chart === 'function') {
                         this.chartJS_loaded = true;
-                        this.logging.warning("Loading ChartJS... done.");
+                        this.logging.info("Loading ChartJS... done.");
                     } else {
                         this.logging.error("Loading ChartJS... failed.");
                     }
