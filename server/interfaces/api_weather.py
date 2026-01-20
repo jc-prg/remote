@@ -167,18 +167,20 @@ class ApiControl(RemoteApiClass):
 
             if command == "availability" or command == "power":
                 if "info_status" in weather:
-                    if weather["info_status"]["error"]:
+                    if "error" in weather["info_status"] and weather["info_status"]["error"]:
                         result = "ERROR"
-                    elif  weather["info_status"]["running"] == "OK":
+                    elif "running" in weather["info_status"] and weather["info_status"]["running"] == "OK":
                         if command == "power":
                             result = "ON"
                         else:
                             result = "ONLINE"
-                    else:
+                    elif "running" in weather["info_status"]:
                         if command == "power":
                             result = "OFF"
                         else:
                             result = "OFFLINE"
+                    else:
+                        result = "ERROR"
                 else:
                     result = "ERROR"
             elif command == "availability":
