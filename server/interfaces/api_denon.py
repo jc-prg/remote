@@ -188,7 +188,7 @@ class ApiControl(RemoteApiClass):
         avr = self.discover_denon_avrs()
 
         if not avr:
-            self.logging.info("No Denon / Marantz AVRs found.")
+            self.logging.debug("No Denon / Marantz AVRs found.")
         else:
             count = 1
             self.logging.debug("Discovered Denon / Marantz AVRs:\n")
