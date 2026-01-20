@@ -817,9 +817,8 @@ class ApiWeather(RemoteThreadingClass):
                 self.module.start()
                 self.connected = True
             else:
-                # reset location open ...
-                self.logging.info(f"Weather module already connected: {self.weather_gps} {self.weather_city}")
-                self.logging.warning("Reset to new location not implemented yet ...")
+                self.logging.info(f"Weather module already connected, reset settings: {self.weather_gps} {self.weather_city}")
+                self.module.set_location(self.weather_gps)
 
             return True
 
