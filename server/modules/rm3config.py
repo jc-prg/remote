@@ -158,16 +158,16 @@ class ConfigCache(RemoteThreadingClass):
         read and check main config_files
         """
         error_msg = {}
-        check = self.read(rm3presets.active_devices)
+        check = self.read(rm3presets.active_devices, False, "check_main_config_files()")
         if "ERROR" in check:
             error_msg[rm3presets.active_devices] = check["ERROR_MSG"]
-        check = self.read(rm3presets.active_scenes)
+        check = self.read(rm3presets.active_scenes, False, "check_main_config_files()")
         if "ERROR" in check:
             error_msg[rm3presets.active_scenes] = check["ERROR_MSG"]
-        check = self.read(rm3presets.active_macros)
+        check = self.read(rm3presets.active_macros, False, "check_main_config_files()")
         if "ERROR" in check:
             error_msg[rm3presets.active_macros] = check["ERROR_MSG"]
-        check = self.read(rm3presets.active_apis)
+        check = self.read(rm3presets.active_apis, False, "check_main_config_files()")
         if "ERROR" in check:
             self.logging.warning("Error while reading MAIN CONFIG FILES:")
             self.logging.warning(" - " + rm3presets.data_dir + "/" + rm3presets.active_apis + ".json: " + check["ERROR"])
@@ -197,7 +197,7 @@ class ConfigCache(RemoteThreadingClass):
         for key in self.cache:
             if key != "_api":
                 key_path = key.replace("**", "/")
-                self.cache[key] = rm3json.read(key_path)
+                self.cache[key] = rm3json.read(key_path, True, "cache_refill_from_files()")
                 self.logging.debug(" ... refill from " + key_path)
                 i += 1
 
@@ -223,14 +223,14 @@ class ConfigCache(RemoteThreadingClass):
             if (main_config and key_path in main_config_files) or not main_config:
                 self.write(key_path, self.cache[key], "cache_write_to_file")
 
-    def read(self, config_file, from_file=False):
+    def read(self, config_file, from_file=False, called_by="unknown"):
         """
         read config from cache if not empty and not to old
         else read from file
         """
         config_file_key = config_file.replace("/", "**")
         if config_file_key not in self.cache or from_file:
-            self.cache[config_file_key] = rm3json.read(config_file)
+            self.cache[config_file_key] = rm3json.read(config_file, True, called_by)
             self.logging.debug("readConfig: " + config_file + "... from file (from_file=" + str(from_file) + ").")
         else:
             # self.logging.debug("readConfig: " + config_file + "... from cache")
@@ -248,7 +248,7 @@ class ConfigCache(RemoteThreadingClass):
         Returns:
             dict: status data for all or a selected device
         """
-        status = self.read(rm3presets.active_devices)
+        status = self.read(rm3presets.active_devices, False, "read_status()")
 
         # initial load of methods (record vs. query)
         if self.configMethods == {} and selected_device == "" and "ERROR" not in status:
@@ -257,7 +257,7 @@ class ConfigCache(RemoteThreadingClass):
                 key = status[device]["config"]["device"]
                 interface = status[device]["config"]["api_key"]
                 if interface != "" and key != "":
-                    config = self.read(rm3presets.commands + interface + "/" + key)
+                    config = self.read(rm3presets.commands + interface + "/" + key, False, "read_status()")
                     config_default = self.read(rm3presets.commands + interface + "/00_default")
                     if "ERROR" not in config and "method" in config["data"]:
                         self.configMethods[device] = config["data"]["method"]
@@ -332,7 +332,7 @@ class ConfigCache(RemoteThreadingClass):
         relevant_categories = ["config", "settings", "status"]
         active_devices_key = rm3presets.active_devices.replace("/", "**")
         if active_devices_key not in self.cache:
-            self.read(rm3presets.active_devices)
+            self.read(rm3presets.active_devices, False, "device_set_values()")
 
         if device_id in self.cache[active_devices_key]:
             self.logging.debug("Change values for '" + device_id + "' in device configuration ...")
@@ -368,7 +368,7 @@ class ConfigCache(RemoteThreadingClass):
         """
         active_devices_key = rm3presets.active_devices.replace("/", "**")
         if active_devices_key not in self.cache:
-            self.read(rm3presets.active_devices)
+            self.read(rm3presets.active_devices, False, "device_add()")
 
         self.logging.debug("Add '" + device_id + "' to device configuration ...")
         self.cache[active_devices_key][device_id] = configuration
@@ -386,7 +386,7 @@ class ConfigCache(RemoteThreadingClass):
         """
         active_devices_key = rm3presets.active_devices.replace("/", "**")
         if active_devices_key not in self.cache:
-            self.read(rm3presets.active_devices)
+            self.read(rm3presets.active_devices, False, "device_delete()")
 
         if device_id in self.cache[active_devices_key]:
             self.logging.debug("Delete '" + device_id + "' from device configuration ...")
@@ -411,7 +411,7 @@ class ConfigCache(RemoteThreadingClass):
         relevant_categories = ["config", "settings", "status"]
         active_key = rm3presets.active_scenes.replace("/", "**")
         if active_key not in self.cache:
-            self.read(rm3presets.active_scenes)
+            self.read(rm3presets.active_scenes, False, "scene_set_values()")
 
         if scene_id in self.cache[active_key]:
             self.logging.debug("Change values for '" + scene_id + "' in device configuration ...")
@@ -447,7 +447,7 @@ class ConfigCache(RemoteThreadingClass):
         """
         active_key = rm3presets.active_scenes.replace("/", "**")
         if active_key not in self.cache:
-            self.read(rm3presets.active_scenes)
+            self.read(rm3presets.active_scenes, False, "scene_add()")
 
         self.logging.debug("Add '" + scene_id + "' to device configuration ...")
         self.cache[active_key][scene_id] = configuration
@@ -465,7 +465,7 @@ class ConfigCache(RemoteThreadingClass):
         """
         active_key = rm3presets.active_scenes.replace("/", "**")
         if active_key not in self.cache:
-            self.read(rm3presets.active_scenes)
+            self.read(rm3presets.active_scenes, False, "scene_delete()")
 
         if scene_id in self.cache[active_key]:
             self.logging.debug("Delete '" + scene_id + "' from device configuration ...")
@@ -480,7 +480,7 @@ class ConfigCache(RemoteThreadingClass):
         """
         get device name as file name
         """
-        status = self.read(rm3presets.active_devices)
+        status = self.read(rm3presets.active_devices, False, "translate_device()")
         if device in status:
             return status[device]["config"]["device"]
         else:
@@ -490,10 +490,10 @@ class ConfigCache(RemoteThreadingClass):
         """
         get method for device
         """
-        status = self.read(rm3presets.active_devices)
+        status = self.read(rm3presets.active_devices, False, "get_method()")
         interface = status[device]["config"]["api_key"]
         device = status[device]["config"]["device"]
-        definition = self.read(rm3presets.devices + interface + "/" + device)
+        definition = self.read(rm3presets.devices + interface + "/" + device, False, "get_method()")
         return definition["data"]["method"]
 
     def interfaces_identify(self):
@@ -514,7 +514,7 @@ class ConfigCache(RemoteThreadingClass):
         self.logging.debug("API Config file: " + str(os.path.join(rm3presets.data_dir, rm3presets.active_apis)))
 
         if os.path.exists(os.path.join(rm3presets.data_dir, rm3presets.active_apis + ".json")):
-            interface_config = self.read(rm3presets.active_apis)
+            interface_config = self.read(rm3presets.active_apis, False, "interface_identify()")
             for key in interface_config:
                 if "error" in interface_config[key]:
                     del interface_config[key]["error"]
@@ -534,7 +534,7 @@ class ConfigCache(RemoteThreadingClass):
                 }
             config_file = os.path.join(rm3presets.data_dir, interface_config_dir + ".json")
             if os.path.exists(config_file):
-                interface_config_detail = self.read(interface_config_dir).copy()
+                interface_config_detail = self.read(interface_config_dir, False, "interface_identify()").copy()
                 interface_config[key]["devices"] = interface_config_detail["API-Devices"]
                 interface_config[key]["devices_count"] = len(interface_config_detail["API-Devices"])
                 interface_config[key]["description"] = interface_config_detail["API-Description"]
@@ -584,7 +584,7 @@ class ConfigCache(RemoteThreadingClass):
         Returns:
             str: 'OK' or 'ERROR'
         """
-        interface_config = self.read(rm3presets.active_apis)
+        interface_config = self.read(rm3presets.active_apis, False, "interface_active()")
 
         if interface in interface_config:
             self.logging.debug(interface_config[interface])
@@ -612,7 +612,7 @@ class ConfigCache(RemoteThreadingClass):
         Returns:
             str: 'OK' or 'ERROR'
         """
-        interface_config = self.read(rm3presets.active_apis)
+        interface_config = self.read(rm3presets.active_apis, False, "interface_device_active()")
 
         if interface in interface_config:
             self.logging.debug(interface_config[interface])
@@ -653,7 +653,7 @@ class ConfigCache(RemoteThreadingClass):
             return "ERROR"
 
         elif "IPAddress" in api_data and "Description" in api_data:
-            configuration = self.read(interface_config_dir, True)
+            configuration = self.read(interface_config_dir, True, "interface_device_add()")
             if not "API-Devices" in configuration:
                 self.logging.error("Configuration file doesn't fit the requirements: " + config_file)
                 return "ERROR"
@@ -696,7 +696,7 @@ class ConfigCache(RemoteThreadingClass):
             self.logging.error("Configuration file for API doesn't exist: " + config_file)
             return "ERROR"
 
-        configuration = self.read(interface_config_dir, True)
+        configuration = self.read(interface_config_dir, True, "interface_device_delete()")
         if not "API-Devices" in configuration:
             self.logging.error("Configuration file for API doesn't fit required format: " + config_file)
             return "ERROR"

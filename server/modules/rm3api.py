@@ -50,7 +50,7 @@ class RemoteAPI(RemoteDefaultClass):
         apis_dev_configs = self.data.api_config_read()
         apis_detect = self.data.devices_read_api_new_devices()
         macros = self.data.macros_read()
-        device_types = self.config.read(rm3presets.data_dir + "/" + rm3presets.active_device_types)
+        device_types = self.config.read(rm3presets.data_dir + "/" + rm3presets.active_device_types, False, "rm3api._api_CONFIG()")
         if "data" in device_types:
             device_types = device_types["data"]
         else:
@@ -69,12 +69,12 @@ class RemoteAPI(RemoteDefaultClass):
                 },
             "devices":                  self.data.devices_read_config(),
             "elements": {
-                "button_images":        self.config.read(rm3presets.icons_dir + "/index"),
-                "button_colors":        self.config.read(rm3presets.buttons + "button_colors"),
+                "button_images":        self.config.read(rm3presets.icons_dir + "/index", False, "rm3api._api_CONFIG()"),
+                "button_colors":        self.config.read(rm3presets.buttons + "button_colors", False, "rm3api._api_CONFIG()"),
                 "device_types":         device_types,
                 "icons":                rm3presets.icon_files,
                 "methods":              self.apis.methods,
-                "scene_images":         self.config.read(rm3presets.scene_img_dir + "/index"),
+                "scene_images":         self.config.read(rm3presets.scene_img_dir + "/index", False, "rm3api._api_CONFIG()"),
                 "keys_archive": {
                     "scenes":           self.data.archive_get_keys("scene"),
                     "devices":          self.data.archive_get_keys("device")
@@ -389,7 +389,7 @@ class RemoteAPI(RemoteDefaultClass):
             api, dev = interface.split("_")
             data["REQUEST"]["Return"] = "OK: saved interface configuration (" + interface + ")"
             data["DATA"]["interface"] = interface
-            config_org = self.config.read(rm3presets.commands + api + "/00_interface")
+            config_org = self.config.read(rm3presets.commands + api + "/00_interface", False, "rm3api.edit_config_interface()")
             config_org["API-Devices"][dev] = config
             try:
                 self.config.write(rm3presets.commands + api + "/00_interface", config_org)
@@ -745,7 +745,7 @@ class RemoteAPI(RemoteDefaultClass):
 
         if device in device_config:
             api = device_config[device]["interface"]["api_key"]
-            api_config = self.config.read(rm3presets.commands + api + "/00_interface")
+            api_config = self.config.read(rm3presets.commands + api + "/00_interface", False, "rm3api.get_config_device()")
 
             data["REQUEST"]["Return"] = "OK"
             data["DATA"]["device"] = device
@@ -760,7 +760,7 @@ class RemoteAPI(RemoteDefaultClass):
             for key in device_config:
                 api = device_config[key]["interface"]["api_key"]
                 api_method = device_config[key]["interface"]["method"]
-                api_config = self.config.read(rm3presets.commands + api + "/00_interface")
+                api_config = self.config.read(rm3presets.commands + api + "/00_interface", False, "rm3api.get_config_device()")
 
                 if "ERROR" not in str(api_config):
                     data["DATA"]["devices"][key]["interface_details"] = str(api_config)
@@ -802,8 +802,8 @@ class RemoteAPI(RemoteDefaultClass):
             data["DATA"]["interface"] = "all"
             data["DATA"]["interfaces"] = {}
             for api in interfaces:
-                api_config = self.config.read(rm3presets.commands + api + "/00_interface")
-                api_device_config = self.config.read(rm3presets.commands + api + "/00_default")
+                api_config = self.config.read(rm3presets.commands + api + "/00_interface", False, "rm3api.get_config_device()")
+                api_device_config = self.config.read(rm3presets.commands + api + "/00_default", False, "rm3api.get_config_device()")
                 # data["DATA"]["interfaces"][api] = str(api_config)
                 if "API-Devices" in api_config:
                     for key1 in api_config["API-Devices"]:
@@ -822,8 +822,8 @@ class RemoteAPI(RemoteDefaultClass):
         elif interface in interfaces:
             data["REQUEST"]["Return"] = "OK"
             data["DATA"]["interface"] = interface
-            api_config = self.config.read(rm3presets.commands + interface + "/00_interface")
-            api_device_config = self.config.read(rm3presets.commands + api + "/00_default")
+            api_config = self.config.read(rm3presets.commands + interface + "/00_interface", False, "rm3api.get_config_device()")
+            api_device_config = self.config.read(rm3presets.commands + api + "/00_default", False, "rm3api.get_config_device()")
             for key1 in api_config["API-Devices"]:
                 for key2 in api_config["API-Devices"][key1]:
                     if key2 == "MACAddress":
@@ -1163,7 +1163,7 @@ class RemoteAPI(RemoteDefaultClass):
         # decompose group
         if "group" in device:
             group_id = device.split("_")[1]
-            act_macros = self.config.read(rm3presets.active_macros)
+            act_macros = self.config.read(rm3presets.active_macros, False, "rm3api.send_button_on_off()")
             devices = act_macros["groups"][group_id].get("devices", [])
             self.logging.info("send_text: GROUP " + group_id + " (" + str(devices) + ")")
         else:
@@ -1449,7 +1449,7 @@ class RemoteAPI(RemoteDefaultClass):
         self.logging.debug("send_text: " + button + " / " + device)
         if device.startswith("group"):
             group_id = device.replace("group_","")
-            act_macros = self.config.read(rm3presets.active_macros)
+            act_macros = self.config.read(rm3presets.active_macros, False, "rm3api.send_text()")
             devices = act_macros["groups"][group_id].get("devices", [])
             self.logging.info("send_text: " + button + " for GROUP " + group_id + " (" + str(devices) + ")")
         else:
