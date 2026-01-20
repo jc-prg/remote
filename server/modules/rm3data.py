@@ -1531,10 +1531,10 @@ class RemotesEdit(RemoteDefaultClass):
         msg1 = self.config.delete(file_device_remote)
         #msg2 = self.config.delete(file_interface_remote)
 
-        if "OK:" in msg1 and "OK:" in msg2:
+        if "OK:" in msg1: #and "OK:" in msg2:
             message = "OK: Device '" + device + "' deleted."
         else:
-            message = "ERROR: Could not fully delete device '" + device + "'. (" + msg1 + "; " + msg2 + ")"
+            message = "ERROR: Could not fully delete device '" + device + "'. (" + msg1 + ")" #; " + msg2 + ")"
         return message
 
     def device_edit_api_settings(self, device, info):

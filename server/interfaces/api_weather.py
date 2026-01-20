@@ -822,7 +822,6 @@ class ApiWeather(RemoteThreadingClass):
 
             return True
 
-
         else:
             self.logging.error(f"Weather module {param["source"]} doesn't exists.")
             self.connected = False
