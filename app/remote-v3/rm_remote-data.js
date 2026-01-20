@@ -475,7 +475,7 @@ class RemotePrepareDataDevices extends RemoteDefaultClass {
         }
         else {
             this.logging.info(`label(): no display-size for device_id "${device_id}" available.`)
-            return {};
+            return "";
         }
     }
 
@@ -707,7 +707,7 @@ class RemotePrepareDataScenes extends RemoteDefaultClass {
         }
         else {
             this.logging.info(`display(): no display-size for device_id "${scene_id}" available.`)
-            return {};
+            return "";
         }
     }
 
