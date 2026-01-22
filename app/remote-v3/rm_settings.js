@@ -1875,10 +1875,10 @@ class RemoteSettingsTimer extends RemoteDefaultClass {
         this.dialog = function (key, entry) {
 
             let data_fields = "timer_name_"+key+",timer_description_"+key+",timer_regular_"+key+",timer_once_"+key+",timer_commands_"+key;
-            let link_save   = "val=document.getElementById(\"timer_name_"+key+"\").value; if(val!=\"\") { apiTimerEdit(\""+key+"\",\""+data_fields+"\"); } else { appMsg.alert(\"Add a title!\"); }";
+            let link_save   = "val=document.getElementById(\"timer_name_"+key+"\").value; if(val!=\"\") { rmApi.call(\"TimerEdit\",[\""+key+"\",\""+data_fields+"\"]); } else { appMsg.alert(\"Add a title!\"); }";
             let link_reset  = "rmSettings.module_timer.create();";
-            let link_delete = "appMsg.confirm(#Delete timer?#, #apiTimerDelete(##"+key+"##);#, 140);";
-            let link_try    = "appMsg.confirm(#Try out timer?#, #apiTimerTry(##"+key+"##);#, 140);";
+            let link_delete = "rmApi.call(#TimerDelete#, #"+key+"#);";
+            let link_try    = "rmApi.call(#TimerTry#, #"+key+"#);";
 
             const now = new Date();
             const hours = now.getHours();

@@ -80,8 +80,10 @@ class RemoteControl extends RemoteDefaultClass {
             this.logging.warn("Data not loaded yet.");
             return;
         }
-        if (rm_id !== "" && !rmData.devices.exists(rm_id) && !rmData.scenes.exists(rm_id)) {
-            this.logging.warn("Remote ID " + rm_id + " not found.");
+        if ((rm_id !== "" && type === "device" && !rmData.devices.exists(rm_id)) ||
+            (rm_id !== "" && type === "scene" && !rmData.scenes.exists(rm_id))) {
+
+            this.logging.warn("Remote ID " + rm_id + " (" + type + ") not found.");
             rmCookies.erase();
             return;
         }
@@ -634,7 +636,8 @@ class RemoteControl extends RemoteDefaultClass {
         myBox.addSheet(lang("API_TEST"), edit_test, false);
 
         this.device_edit_api_update(device);
-        apiGetConfig_createDropDown(device, this.device_edit_api_commands);
+        //apiGetConfig_createDropDown(device, this.device_edit_api_commands);
+        apiGetConfig_createDropDown(device, rmRemote.device_edit_api_commands);
 
         this.preview("device", device);
     }

@@ -1051,6 +1051,30 @@ class RemotesEdit(RemoteDefaultClass):
         self.data = data
         self.errors = {}
 
+    def scene_add_filename(self, scene):
+        """
+        create a unique filename
+        """
+        scene_name = scene  # e.g. "test" or "test-01"
+        match = re.search(r"-(\d+)$", scene_name) # Match trailing -NN
+
+        if match:
+            base_scene = scene_name[:match.start()]
+            counter = int(match.group(1))
+        else:
+            base_scene = scene_name
+            counter = 0
+
+        base_filename = f"scene_{base_scene}"
+
+        while True:
+            counter += 1
+            filename = f"{base_filename}-{counter:02d}"
+            if not rm3json.if_exist(rm3presets.remotes + filename):
+                break
+
+        return filename
+
     def scene_add(self, scene, info):
         """
         add new scene in active_jsons and create scene remote layout
@@ -1066,14 +1090,7 @@ class RemotesEdit(RemoteDefaultClass):
         if scene in active_json:
             return "WARNING: Scene " + scene + " already exists (active)."
 
-        if rm3json.if_exist(rm3presets.remotes + "scene_" + scene):
-            self.logging.warning("WARNING: Scene " + scene + " already exists (remotes).")
-            counter = 1
-            while True:
-                scene = f"{scene}-{counter:02d}"
-                if not rm3json.if_exist(rm3presets.remotes + "scene_" + scene):
-                    break
-                counter += 1
+        filename = self.scene_add_filename(scene)
 
         self.logging.info("remotesEdit.scene_add(): add " + scene)
 
@@ -1087,7 +1104,7 @@ class RemotesEdit(RemoteDefaultClass):
         # add to _active.json
         active_json[scene] = {
             "config": {
-                "remote": "scene_" + scene
+                "remote": filename
             },
             "settings": {
                 "description": info["description"],
@@ -1113,8 +1130,10 @@ class RemotesEdit(RemoteDefaultClass):
             "data": {
                 "label": info["label"],
                 "description": info["label"],
-                "display": {},
-                "display-size": "middle",
+                "display": {
+                    "values": {},
+                    "size": "middle"
+                },
                 "remote": [],
                 "devices": [],
                 "macro-channel": {},
@@ -1126,11 +1145,11 @@ class RemotesEdit(RemoteDefaultClass):
         }
 
         try:
-            self.config.write(rm3presets.remotes + "scene_" + scene, remote)
+            self.config.write(rm3presets.remotes + filename, remote)
         except Exception as e:
             return "ERROR: " + str(e)
 
-        return "OK: Scene " + scene + " added."
+        return "OK: Scene " + scene + " added (remote: " + filename + ".json)."
 
     def scene_edit(self, scene, info):
         """
@@ -1368,7 +1387,10 @@ class RemotesEdit(RemoteDefaultClass):
             "data": {
                 "description": info["label"] + ": " + info["device"],
                 "remote": [],
-                "display": {}
+                "display": {
+                    "values": {},
+                    "size": "middle"
+                }
             }
         }
         try:

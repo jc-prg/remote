@@ -94,7 +94,7 @@ let language_app = {
         "API_EDIT_SELECT_API_DEVICE": "Please select a <b>device config</b> file",
         "API_EDIT_SELECT_REMOTE": "Please select a <b>remote control config</b> file",
 
-        "BUTTON_ASK_DELETE"     : "Do you really want to delete the button '{0}' from '{1}'?",
+        "BUTTON_ASK_DELETE"     : "Do you really want to delete the button '{0}_{1}' from '{2}'?",
         "BUTTON_ASK_DELETE_NUMBER" : "Do you really want to delete the button number [{0}] from '{1}'?",
         "BUTTON_INSERT_NAME"    : "Please insert name for button.",
         "BUTTON_RECORD"         : "Record button &quot;{0}&quot; for device &quot;{1}&quot;: click OK and then press the respective button on your remote control within the next 5 seconds.",
@@ -274,6 +274,7 @@ let language_app = {
         "LABEL"                 : "Label",
 
         "LOAD_TEMPLATE"         : "Load template",
+        "LOADING_APP"           : "Loading App ...",
 
         "MACRO"                 : "macro",
         "MACROS"                : "macros",
@@ -403,8 +404,8 @@ let language_app = {
         "RESET_VOLUME_TO_ZERO"         : "Reset audio settings:<br/>set the volume of all audio devices to mininum (0) before.",
         "RESTART"                      : "Are you sure you want to restart the server?",
         "RELOAD_ALL_SCRIPTS"           : "Reload all CSS and JavaScript files.",
-        "REMOTE_MOVE_TO_ARCHIVE"       : "Do you want to move the remote control <b>{0}</b> to archive?",
-        "REMOTE_RESTORE_FROM_ARCHIVE"  : "Do you want to restore the remote control <b>{0}</b> from archive?",
+        "REMOTE_MOVE_TO_ARCHIVE"       : "Do you want to move the {0} remote control <b>{1}</b> to archive?",
+        "REMOTE_RESTORE_FROM_ARCHIVE"  : "Do you want to restore the {0} remote control <b>{1}</b> from archive?",
 
         "SAVE"                         : "Save",
 
@@ -484,6 +485,9 @@ let language_app = {
         "TEMPLATE_OVERWRITE"           : "Do you really want overwrite buttons of '{0}' with template '{1}'?",
         "TEST_DEVICE_COMMANDS"         : "Test here your commands for device {0}.",
         "TRY_OUT"                      : "try out",
+
+        "TIMER_TRY"                    : "Try out timer {0}?",
+        "TIMER_DELETE"                 : "Do you want to delete the timer {0}?",
 
         "TOGGLE"                       : "toggle",
         "TOGGLE_SELECT_DEVICE"         : "Select a toggle device.",

@@ -12,6 +12,7 @@ reload_times = {
 	TIMEOUT: 60
 }
 reload_active = false;
+rm3update = false;
 
 let showImg = true;
 let startActive = true;
@@ -19,6 +20,7 @@ let easyEdit = false;
 let remoteHints = true;
 let jsonHighlighting= false;
 
+let rmApi = undefined;
 let rmMain = undefined;
 let rmMenu = undefined;
 let rmStart = undefined;
@@ -32,6 +34,7 @@ function startRemote() {
 
 	appMsg.info_message_init(appMsg);
 
+	rmApi       = new RemoteApiControl("rmApi");
 	rmMain		= new RemoteMain("rmMain");
     rmMenu      = new RemoteMenu( "rmMenu", ["menuItems","menuItems2"] );
     rmStart     = new RemoteStart( "rmStart");
