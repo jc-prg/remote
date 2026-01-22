@@ -81,6 +81,13 @@
 
 ## UNDER DEVELOPMENT -------------------------------------------------------------
 
+* refactoring rm_functions-api.js
+  * OPEN: check functions that doesn't seem to be required any more
+  * OPEN: directly call refactored functions from class
+  * OPEN: check / move / integrate functions that are not (yet) part of the class
+  * OPEN: check and fix all bugs found due to the refactoring
+  * OK: moved all api-calls incl. preparation and confirm into a class
+
 * archiving
   * OPEN: update view in settings when moved
   * OPEN: check if scene-on / scene-off / scene macro consist of valid commands
