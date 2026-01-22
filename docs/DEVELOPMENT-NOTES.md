@@ -3,80 +3,64 @@
 * .... release v3.0.x
 
 ## KNOWN BUGS -------------------------------------------------------------------
- 
+
+* app / server / rm3api.yml: unused functions
+
+      // currently not used ?! Reintroduce or clean-up in server and app 
+      function apiGroupSend( macro, device="", content="" ) { rmApi.call("GroupSend", [macro, device, content]); }
+          //-> unclear where it is or was used? - used once in class RemoteControlBasic.btn_group(), but this function is never used somewhere else
+      function apiButtonDelete(device_id, button_id)                  { rmApi.call("ButtonDelete", [device_id, button_id]); }
+          //-> unclear where it is or was used? - assumption: not required any more, as working with complete remote (json format)
+      function apiButtonAdd(device_id, button_id)                     { rmApi.call("ButtonAdd", [device_id, button_id]); }
+          //-> unclear where it is or was used? - assumption: not required any more, as working with complete remote (json format)
+      function apiTemplateAdd(device_id, template_id)                 { rmApi.call("TemplateAdd", [device_id, template_id]); } // -> Anpassung an rm3api.yml erforderlich (zusätzliches ungenutztes Parameter)
+          //-> unclear where it is or was used? - assumption: not required any more, as working with complete remote (json format)
+      function apiDeviceApiSettingsEdit(device,prefix,fields)         { rmApi.call("ApiDeviceSettingsEdit", [device,prefix,fields]); }
+          //-> unclear where it is or was used?
+
+* recording if API-Device (or API) is not active -> seems to work but doesn't and should create an error appMsg alert!
+* error in device specific definition (devices/INTERFACE/*.json) -> is not shown in the attention section yet?!
+* app: settings
+
+      Uncaught TypeError: can't access property "BROADLINK", interfaces is undefined
+      edit_api_config http://localhost:81/remote-v3/rm_settings.js:1244
+      rm_settings.js:1244:30
+
+      Uncaught TypeError: can't access property "other", api_config[api] is undefined
+      on_change_api http://localhost:81/remote-v3/rm_settings.js:611
+      oninput http://localhost:81/:1
+
+* app: add device
+
+      rmData.scenes: label(): device_id "sensor3" does not exist. jc-functions-0.1.9.js:335:75
+      error http://localhost:81/modules/jc-functions/jc-functions-0.1.9.js:335
+      label http://localhost:81/remote-v3/rm_remote-data.js:724
+
+      Uncaught TypeError: can't access property "other", api_config[api] is undefined
+      on_change_api http://localhost:81/remote-v3/rm_settings.js:611
+      oninput http://localhost:81/:1
+
+      http://localhost:5001/api/config/device/sensor3/device_edit_api_commands(data)%20%7B%0A%20%20%20%20%20%20%20%20if%20(data%5B%22DATA%22%5D%5B%22error%22%5D)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20return;%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20let%20device%20=%20data%5B%22DATA%22%5D%5B%22device%22%5D;%0A%20%20%20%20%20%20%20%20let%20commands%20=%20data%5B%22DATA%22%5D%5Bdevice%5D%5B%22api_commands%22%5D;%0A%20%20%20%20%20%20%20%20let%20api_url%20=%20data%5B%22DATA%22%5D%5Bdevice%5D%5B%22interface_details%22%5D%5B%22API-Info%22%5D;%0A%20%20%20%20%20%20%20%20let%20api_name%20=%20data%5B%22DATA%22%5D%5Bdevice%5D%5B%22interface%22%5D%5B%22api_key%22%5D;%0A%20%20%20%20%20%20%20%20let%20on_change%20=%20%22setValueById('api_command',%20getValueById('api_cmd_select'));%22;%0A%0A%20%20%20%20%20%20%20%20const%20basic%20=%20new%20RemoteElementsEdit(%22rmRemote.basic%22);%09%09//%20!!!%20should%20use%20this.name,%20but%20doesn't%20work%0A%20%20%20%20%20%20%20%20basic.input_width%20=%20%2290%25%22;%0A%0A%20%20%20%20%20%20%20%20let%20select%20=%20basic.select(%22api_cmd_select%22,%20lang(%22API_SELECT_CMD%22),%20commands,%20on_change,%20'',%20false,%20true);%0A%0A%20%20%20%20%20%20%20%20setTextById('api_command_select',%20select);%0A%0A%20%20%20%20%20%20%20%20if%20(api_url)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20setTextById('api_description',%20%22%3Ca%20href='%22%20+%20api_url%20+%20%22'%20target='_blank'%20style='color:white'%3EAPI%20Documentation%20%22%20+%20api_name%20+%20%22%3C/a%3E%22);%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D/
+
+
+* app: timer ... adding group macros -> "macro_groups_*" instead of "group_*"
+* app: adding a new device from ZigBee doesn't work ... doesn't open the container?
+* app: editing API device configuration via app doesn't work -> no "save" button
+
+      rmJson.disable(&quot;api_status_edit_ZIGBEE2MQTT_default&quot;,false);
+      this.className=&quot;rm-button hidden&quot;
+      document.getElementById(&quot;save_zigbee2mqtt_default&quot;).className=&quot;rm-button settings&quot;;
+
+* server: reconnect of interfaces leads to error messages
+* server: shutdown doesn't shutdown completely ... maybe weather?
+* server: queue bleibt hängen?! // tapo funktioniert nicht richtig?
+* server: zigbee geräte -> online, obwohl power definiert ist (rückgängig machen)
+
 * edit mode
   * toggle & slider for groups doesn't work (but are in the drop-down menus) -> rm_remote-control.js:432
   * don't show groups in drop-down if no device is defined in it
 
 ### Observe ...
-
-* SOLVED: error in rm3api
-
-        01/19 19:16:24 | INFO     Q-send      | Queue still running.
-        01/19 19:18:38 | INFO     weather     | Get weather data from module (every 600s/Open-Meteo) ...
-        01/19 19:21:05 | INFO     rm-api      | {'remote': ['HEADER-IMAGE||toggle', 'TOGGLE||plug02_power||Power Device||macro_plug02-on||macro_plug02-off', '.', '.', 'group_led_on', 'group_led_off', 'LINE', 'rec2_test', 'LINE', 'dev-on_lw||Leinwand runter', 'scene_test', 'scene-on', 'global_aa', 'LINE', 'TOGGLE||group_led_power||Alle LEDs||group_led_on||group_led_off', 'TOGGLE||led_power||Toggle LED Streifen (led)||led_on||led_off', 'TOGGLE||plug02_power||Toggle SmartPlug 02 (plug02)||plug02_on||plug02_off', 'DISPLAY', 'bulb01_COLOR-PICKER||send-color-xy||Color CIE_1931||test description', 'COLOR-PICKER||send-brightness||Brightness', 'COLOR-PICKER||send-color-temp2||Color temperature', '.', '.', 'rec2_SLIDER||send-vol||AV Receiver: Vol||0-70||vol'], 'devices': [], 'display': {}, 'display-size': 'h1w4', 'chart': [], 'macro-channel': {}, 'macro-scene-on': ['MSG-17', 'led_on', 'global_aa'], 'macro-scene-off': ['receiver2_off'], 'macro-scene': {'test': ['MSG-10', 'led_on']}}
-        01/19 19:21:19 | ERROR    server      | Exception on /api/send_check/rec2/test/ [GET]
-        Traceback (most recent call last):
-        File "/usr/local/lib/python3.14/site-packages/flask/app.py", line 2525, in wsgi_app
-        response = self.full_dispatch_request()
-        File "/usr/local/lib/python3.14/site-packages/flask/app.py", line 1822, in full_dispatch_request
-        rv = self.handle_user_exception(e)
-        File "/usr/local/lib/python3.14/site-packages/flask_cors/extension.py", line 176, in wrapped_function
-        return cors_after_request(app.make_response(f(*args, **kwargs)))
-        ~^^^^^^^^^^^^^^^^^
-        File "/usr/local/lib/python3.14/site-packages/flask/app.py", line 1820, in full_dispatch_request
-        rv = self.dispatch_request()
-        File "/usr/local/lib/python3.14/site-packages/flask/app.py", line 1796, in dispatch_request
-        return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
-        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
-        File "/usr/local/lib/python3.14/site-packages/connexion/decorators/decorator.py", line 68, in wrapper
-        response = function(request)
-        File "/usr/local/lib/python3.14/site-packages/connexion/decorators/uri_parsing.py", line 149, in wrapper
-        response = function(request)
-        File "/usr/local/lib/python3.14/site-packages/connexion/decorators/validation.py", line 399, in wrapper
-        return function(request)
-        File "/usr/local/lib/python3.14/site-packages/connexion/decorators/parameter.py", line 120, in wrapper
-        return function(**kwargs)
-        File "/usr/src/app/server/modules/rm3api.py", line 1176, in send_button_on_off
-        interface = data["CONFIG"]["devices"][device]["interface"]["api_key"]
-        ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
-        KeyError: 'rec2'
-
-* SOLVED: error in interfaces.py
-
-        01/18 22:35:17 | INFO     weather-om  | Starting weather process 'Open-Meteo.com' for GPS=[48.14, 11.58, 'Munich'] ...
-        01/18 22:35:17 | INFO     weather-om  | Read weather data (every 900.0s) ...
-        01/18 22:35:17 | ERROR    werkzeug    | EXCEPTION IN THREAD API Device Controller:
-        
-        Traceback (most recent call last):
-          File "/usr/local/lib/python3.14/threading.py", line 1082, in _bootstrap_inner
-            self._context.run(self.run)
-            ~~~~~~~~~~~~~~~~~^^^^^^^^^^
-          File "/usr/src/app/server/interfaces/interfaces.py", line 140, in run
-            self.api_reconnect(key, reread_config, done_message)
-            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-          File "/usr/src/app/server/interfaces/interfaces.py", line 558, in api_reconnect
-            self.api[api_dev].connect()
-            ~~~~~~~~~~~~~~~~~~~~~~~~~^^
-          File "/usr/src/app/server/interfaces/api_weather.py", line 70, in connect
-            self.weather_api.start()
-            ~~~~~~~~~~~~~~~~~~~~~~^^
-          File "/usr/local/lib/python3.14/threading.py", line 989, in start
-            raise RuntimeError("threads can only be started once")
-        RuntimeError: threads can only be started once
-
-
-* SOLVED: error in weather and record - restart / reconnect after a while?
-
-        01/17 09:29:49 | INFO     weather    | Get weather data from module (every 600s/Open-Meteo) ...
-        01/17 09:29:49 | ERROR    weather-om | Could not read weather from open-meteo.com: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=48.128&longitude=11.646&timezone=auto&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,weathercode&daily=sunset,sunrise (Caused by NameResolutionError("HTTPSConnection(host='api.open-meteo.com', port=443): Failed to resolve 'api.open-meteo.com' ([Errno -3] Temporary failure in name resolution)"))
-        ..
-        01/17 20:07:23 | ERROR    api-WEATHER | ERROR Command availability isn't available in the weather data.
-        01/17 20:07:23 | ERROR    api-WEATHER | ERROR Command info_module.provider_link isn't available in the weather data.
-        01/17 20:07:53 | ERROR    api-WEATHER | ERROR Command availability isn't available in the weather data.
-        01/17 20:07:53 | ERROR    api-WEATHER | ERROR Command info_module.provider_link isn't available in the weather data.
-        01/17 20:08:23 | ERROR    api-WEATHER | ERROR Command availability isn't available in the weather data.
-        01/17 20:08:23 | ERROR    api-WEATHER | ERROR Command info_module.provider_link isn't available in the weather data.
 
 
 ### known but not that urgent
@@ -132,21 +116,14 @@
 
 ### NEW 01-2025
 
-* set a time difference in .env -> config.local_time()
+* start discovery only if API is active
 
-* differ between "invisible" and "archived" for remotes
-  * archived are filtered nearly everywhere, except in the settings in an own list (no drag&drop required) - filtering done in rmData.XX
-  * archived have to be moved to active before editing them again
-  * archived just can be moved to active or deleted
-  * invisible can be made visible via menu entry
+* set a time difference in .env -> config.local_time()
 
 * QUESTION: is there a need for a device or is it possible to get data if API-Device is defined
   * idea: whenever MultiDevice = False and same set of commands (defined in 00_default.json) is enough,
     address it via <API-Device-Key>_Command - or additional setting in 00_interface.json - key starting with a specific character (:WEATHER:default_temperature)
     -> no device remote required but data available in a scene ...
-
-* other refactoring
-  * rm_main.js; rethink / maybe create a class and restructure stuff
 
 * move data processing to -> class rmData {} and rmStatus {}
   * check if still required: data("CONFIG")("templates")("list")
@@ -242,6 +219,7 @@
     
 # DONE --------------------------------------------------------------------------
 
+* rm_main.js; rethink, create a class and restructure stuff
 * archiving
   * OK: check / visualize if remotes are missing for scenes
   * OK: check if device is required from a scene ... make this part of the message
