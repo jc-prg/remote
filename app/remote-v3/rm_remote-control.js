@@ -527,8 +527,8 @@ class RemoteControlAdvanced extends RemoteDefaultClass{
         }
 
         if (rmData.devices.exists(device_id) && rmData.devices.api_method(device_id) !== "query") {
-            reset_value = "<span style='color:gray'>[<status onclick=\"appFW.requestAPI('GET',['set','" + device_id + "','power','OFF'], '', '', '' );\" style='cursor:pointer;'>OFF</status> | ";
-            reset_value += "<status onclick=\"appFW.requestAPI('GET',['set','" + device_id + "','power','ON'], '', '', '' );\" style='cursor:pointer;'>ON</status>]</span>";
+            reset_value = "<span style='color:gray'>[<status onclick=\"rmApi.call('SetValue',['" + device_id + "','power','OFF']);\" style='cursor:pointer;'>OFF</status> | ";
+            reset_value += "<status onclick=\"rmApi.call('SetValue',['" + device_id + "','power','ON']);\" style='cursor:pointer;'>ON</status>]</span>";
         }
 
         let toggle_start = "";

@@ -12,7 +12,7 @@ let rmStatusShow;
 
 // load the devices status -> visualization via function statusCheck();
 function statusCheck_load() {
-    appFW.requestAPI("GET",["list"], "", statusCheck, "" );
+    rmApi.call("List", [], "", statusCheck);
 }
 
 

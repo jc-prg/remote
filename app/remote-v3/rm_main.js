@@ -111,17 +111,17 @@ class RemoteMain extends RemoteDefaultClass {
 
 	/* load complete setting with start menu, remote control, setting, drop down menu */
 	load_app() {
-		appFW.requestAPI("GET",["list"], "", this.create_app);
+		rmApi.call("List", [], "", this.create_app);
 	}
 
 	/* load drop down menu */
 	load_drop_down() {
-		appFW.requestAPI( "GET", ["list"], "", this.create_drop_down );
+		rmApi.call("List", [], "", this.create_drop_down );
 	}
 
 	/* load or reload remote control */
 	load_remote() {
-		appFW.requestAPI("GET", ["list"], "", this.create_remote);
+		rmApi.call("List", [], "", this.create_remote);
 	}
 
 	/* initially create app with start menu, remote control, setting, drop down menu */

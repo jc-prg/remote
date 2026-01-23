@@ -105,7 +105,7 @@ class RemoteElementColorPicker extends RemoteDefaultClass {
             input     = xy_color[0] + ":" + xy_color[1];
 
             this.logging.log("Send CIE 1931 XY color coordinates: " + input + " / " + this.name + " / " + device);
-            appFW.requestAPI('GET',[ 'send-data', device, send_command, '"'+input+'"' ], '','');
+        rmApi.call("SendData", [device, send_command, '"'+input+'"' ]);
         }
 
     // send color code for brightness
@@ -133,7 +133,8 @@ class RemoteElementColorPicker extends RemoteDefaultClass {
             if (type === "integer") { value = Math.round(value); }
             this.logging.log("BRIGHTNESS: " + send_command + " / " + input + " / min=" + min_max["min"] + "; max=" + min_max["max"] + " / " + value);
             this.logging.debug(min_max);
-            appFW.requestAPI('GET',[ 'send-data', device, send_command, value ], '','');
+            rmApi.call("SendData", [device, send_command, value ]);
+
         }
     }
 
@@ -162,16 +163,17 @@ class RemoteElementColorPicker extends RemoteDefaultClass {
                 if (type === "integer") { value = Math.round(value); }
                 this.logging.log("TEMPERATURE: " + send_command + " / " + input + " / min=" + min_max["min"] + "; max=" + min_max["max"] + " / " + value);
                 this.logging.debug(min_max);
-                appFW.requestAPI('GET',[ 'send-data', device, send_command, value ], '','');
-                }
+                rmApi.call("SendData", [device, send_command, value ]);
+
+            }
             }
 
     // send commands depending on color model
     sendColorCode(send_command, input, device) {
 
             this.logging.log("Send default color code: " + input + " / " + this.name + " / " + device);
-            appFW.requestAPI('GET',[ 'send-data', device, send_command, '"'+input+'"'	 ], '','');
-            }
+            rmApi.call("SendData", [device, send_command, '"'+input+'"' ]);
+    }
 
     // Function to convert RGB to XY
     RGB_to_XY(rgb) {

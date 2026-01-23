@@ -86,8 +86,7 @@ class RemoteChartJS extends RemoteDefaultClass {
                 setTextById(`chart_${chart_id}`, lang("CHART_ERROR_LOADING_CHART_JS"));
             }
             else {
-                appFW.requestAPI("POST", ["chart-data", settings["date"]], settings, this.load);
-                //this.load({"DATA": {"chart_id": chart_id}});
+                rmApi.call("ChartData", [settings["date"]], settings, this.load);
             }
         }, wait_time);
 

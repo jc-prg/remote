@@ -40,7 +40,6 @@
 
 * refactoring API requests
   * OPEN: check and fix all bugs found due to the refactoring
-  * OPEN: check all other .js files for appFW.requestAPI
 
 * archiving
   * OPEN: update view in settings when moved
@@ -185,6 +184,7 @@
 * SOLVED: app: bugs @ add device
 * SOLVED: timer ... adding group macros -> "macro_groups_*" instead of "group_*"
 * refactoring rm_functions-api.js
+  * OK: check all other .js files for appFW.requestAPI
   * OK: check functions that doesn't seem to be required any more
   * OK: directly call refactored functions from class
   * OK: check / move / integrate functions that are not (yet) part of the class

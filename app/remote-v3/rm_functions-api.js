@@ -13,6 +13,8 @@ class RemoteApiControl extends RemoteDefaultClass {
         this.answer_api_request = this.answer_api_request.bind(this);
 
         /*
+                        appFW.requestAPI("POST", ["chart-data", settings["date"]], settings, this.load);
+
          */
 
         this.log_level_status = "warning";
@@ -29,7 +31,10 @@ class RemoteApiControl extends RemoteDefaultClass {
             "ApiDeviceAdd":         { command: "edit_api_device", method: "PUT", confirm: false, param: 1, param_info: "[api_name]", prepare: true, answer: this.answer },
             "ApiDeviceDelete":      { command: "edit_api_device", method: "DELETE", confirm: true, param: 2, param_info: "[api_name, api_device]", message: "API_DEVICE_DELETE", prepare: true, answer: this.answer },
             "ApiDeviceOnOff":       { command: "api_device", method: "PUT", confirm: false, param: 3, param_info: "[interface, api_device, value]" },
+            "ArchiveList":          { command: "archive", method: "GET", confirm: false, param: 1, param_info: "[rm_type]" },
             "ChangeVisibility":     { command: "visibility", method: "PUT", confirm: false, param: 3, param_info: "[rm_type, rm_id, value_id]", prepare: true, answer: this.answer },
+            "CheckVersion":         { command: "version", method: "GET", confirm: false, param: 1, param_info: "[version]", prepare: false, wait: true },
+            "ChartData":            { command: "chart-data", method: "POST", param: 1, param_info: "[date]", data: true },
             "CommandDelete":        { command: "command", method: "DELETE", confirm: true, message: "BUTTON_ASK_DELETE", param: 2, param_info: "[device_id, button_id]", prepare: true, answer: this.answer },
             "CommandRecord":        { command: "command", method: "POST", confirm: true, message: "BUTTON_RECORD", param: 3, param_info: "[device_id, button_id, read_from_input]", prepare: true, answer: this.answer },
             "CommandSend":          { command: "send", method: "GET", confirm: false, param: 3, param_info: "[cmdButton, sync, device]", prepare: true },
@@ -46,6 +51,7 @@ class RemoteApiControl extends RemoteDefaultClass {
             "DeviceJsonEdit":       { command: "device", method: "POST", confirm: false, param: 4, param_info: "[device_id, json_buttons, json_display, display_size]", prepare: true, answer: this.answer },
             "DiscoverDevices":      { command: "discovery", method: "POST", confirm: true, message: "API_DEVICE_DISCOVERY", param: 0, prepare: false, answer: this.answer },
             "InterfaceOnOff":       { command: "interface", method: "PUT", confirm: false, param: 2, param_info: "[interface, value]", prepare: false },
+            "List":                 { command: "list", method: "GET", confirm: false, param: 0, prepare: false },
             "LoggingLoad":          { command: "log_queue", method: "GET", confirm: false, param: 0, prepare: false },
             "MacroChange":          { command: "macro", method: "PUT", confirm: false, param: 4, param_info: "['groups','macro','dev-on','dev-off']", prepare: true, answer: this.answer },
             "MacroSend":            { command: "macro", method: "GET", confirm: false, param: 3, param_info: "[macro, device, content]", prepare: true, answer: this.answer },
@@ -61,11 +67,14 @@ class RemoteApiControl extends RemoteDefaultClass {
             "SceneDelete":          { command: "scene", method: "DELETE", confirm: true, message: "SCENE_ASK_DELETE", param: 1, param_info: "[scene_id]", prepare: true, answer: this.answer },
             "SceneEdit":            { command: "scene", method: "POST", confirm: false, param: 3, param_info: "[scene_id, prefix, fields]", prepare: true, answer: this.answer },
             "SceneJsonEdit":        { command: "scene", method: "POST", confirm: false, param: 2, param_info: "[scene_id, field_names]", prepare: true, answer: this.answer },
+            "SendData":             { command: "send-data", method: "GET", confirm: false, param: 3, param_info: "[device, command, value]", prepare: false, answer: this.answer },
             "SendToApi":            { command: "send-api-command", method: "POST", confirm: false, param: 1, param_info: "[api_command]", prepare: false, answer: this.answer_api_request },
             "SendToDeviceApi":      { command: "send-api", method: "POST", confirm: false, param: 2, param_info: "[device, external_id]", prepare: true, answer: this.answer_api_request },
             "SendToDeviceApi-ext":  { command: "send-api-external", method: "POST", confirm: false, param: 2, param_info: "[device, external_id]", prepare: true, answer: this.answer_api_request },
             "SetMainAudio":         { command: "main-audio", method: "POST", confirm: false, param: 1, param_info: "[volume]", answer: this.answer },
+            "SetValue":             { command: "set", method: "GET", param: 3, param_info: "[filter, key, value]", prepare: false, answer: this.answer },
             "ShutdownRestart":      { command: "shutdown", method: "GET", confirm: true, message: "RESTART", param: 0, prepare: false, answer: this.answer },
+            "TimerShow":            { command: "timer", method: "GET", confirm: false, param: 0, prepare: false },
             "TimerDelete":          { command: "timer-edit", method: "DELETE", confirm: true, message: "TIMER_DELETE", param: 1, param_info: "[timer_id]", prepare: false, answer: this.answer },
             "TimerEdit":            { command: "timer-edit", method: "PUT", confirm: false, prepare: true, param: 2, param_info: "[key, data_fields]", answer: this.answer },
             "TimerTry":             { command: "timer-try", method: "PUT", confirm: true, message: "TIMER_TRY", param: 1, param_info: "[timer_id]", prepare: false, answer: this.answer },
@@ -531,7 +540,7 @@ class RemoteApiControl extends RemoteDefaultClass {
             "SceneAdd", "SceneEdit", "SceneJsonEdit",
             "TemplateAdd"
         ];
-        const dont_show_info = ["Macro", "MacroSend", "CommandSend", "Set", "SceneAdd"];
+        const dont_show_info = ["Macro", "MacroSend", "CommandSend", "Set", "SceneAdd", "List", "RemoteSendText"];
 
         this.status("answer: " + cmd + " | " + msg + " | " + JSON.stringify(data["REQUEST"]));
 

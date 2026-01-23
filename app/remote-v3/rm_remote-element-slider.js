@@ -35,8 +35,8 @@ class RemoteElementSlider extends RemoteDefaultClass {
 		else                                  { defaultValue = min; }
 
 		setValueCmd  = " onInput=\"document.getElementById('"+name+"_value').innerHTML=this.value;\" ";
-		setValueCmd += " onMouseUp=\"appFW.requestAPI('GET',[ 'send-data', '"+device+"', '"+command+"', this.value ], '','');\" ";
-		setValueCmd += " onTouchEnd=\"appFW.requestAPI('GET',[ 'send-data', '"+device+"', '"+command+"', this.value ], '','');\" ";
+		setValueCmd += " onMouseUp=\"rmApi.call('SendData', ['"+device+"', '"+command+"', this.value]);\" ";
+		setValueCmd += " onTouchEnd=\"rmApi.call('SendData', ['"+device+"', '"+command+"', this.value]);\" ";
 
 		this.slider_code  =  "<div id=\""+name+"_container\" class=\"rm-slide-container\" style=\"display:block\">";
 		this.slider_code += "<div  id=\""+name+"_label\" class=\"rm-sliderlabel\">"+label+"</div>";
