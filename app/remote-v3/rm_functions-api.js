@@ -3,6 +3,7 @@
 //--------------------------------
 
 
+/* bundle and simplify all API calls incl. confirm, data preparation and reacting on server response */
 class RemoteApiControl extends RemoteDefaultClass {
     constructor(name) {
         super(name);
