@@ -3,58 +3,8 @@
 //--------------------------------
 
 
-// show return message as alert
-function apiAlertReturn(data) {
-
-    setTimeout(function() {
-        //if (data["REQUEST"]["Command"] === "DeleteDevice") 	{ rmCookies.erase(); rmRemote.active_name = ""; }
-        //if (data["REQUEST"]["Command"] === "DeleteScene") 	{ rmCookies.erase(); rmRemote.active_name = ""; }
-        rmMain.load_remote(); // ????
-        }, 1000);
-
-    setTimeout(function() {
-        //if (data["REQUEST"]["Command"] === "AddTemplate") { rmRemote.create( "device", data["REQUEST"]["Device"] ); }
-        if (data["REQUEST"]["Command"] === "AddDevice") { rmRemote.create( "device", data["REQUEST"]["Device"] ); }
-        else if (data["REQUEST"]["Command"] === "EditDevice") { rmRemote.create( "device", data["REQUEST"]["Device"] ); }
-        else if (data["REQUEST"]["Command"] === "EditDeviceApiSettings") { rmRemote.create( "device", data["REQUEST"]["Device"] ); }
-
-        else if (data["REQUEST"]["Command"] === "AddScene") { rmRemote.create( "scene",  data["REQUEST"]["Scene"] ); }
-        else if (data["REQUEST"]["Command"] === "EditScene") { rmRemote.create( "scene",  data["REQUEST"]["Scene"] ); }
-        else if (data["REQUEST"]["Command"] === "DeleteDevice") { rmMain.load_main(); }
-        else if (data["REQUEST"]["Command"] === "DeleteScene") { rmMain.load_main(); }
-        else {}
-
-        if (data["REQUEST"]["Return"].indexOf("ERROR") > -1 && data["REQUEST"]["Command"]) {
-            appMsg.alert("<b>" + data["REQUEST"]["Command"] + "</b>: " + data["REQUEST"]["Return"]);
-            }
-        else if (data["REQUEST"]["Return"].indexOf("ERROR") > -1 && data["REQUEST"]["Command"]) {
-            appMsg.alert(data["REQUEST"]["Return"]);
-            }
-        else if (data["REQUEST"]["Return"] && data["REQUEST"]["Command"] && data["REQUEST"]["Return"].indexOf("OK") > -1) {
-            appMsg.info("<b>" + data["REQUEST"]["Command"] + "</b>: " + data["REQUEST"]["Return"], "ok");
-            }
-        else if (data["REQUEST"]["Return"] && data["REQUEST"]["Command"]) {
-            appMsg.info("<b>" + data["REQUEST"]["Command"] + "</b>: " + data["REQUEST"]["Return"]);
-            }
-        else if (data["REQUEST"]["Return"]) {
-            appMsg.info(data["REQUEST"]["Return"]);
-            }
-
-        }, 5000);
-    }
-
-
-//----------------------------------------------------------------
 // Potentially not used any more ... to be check
 //----------------------------------------------------------------
-
-function setVolume(main_audio,volume) {
-    appFW.requestAPI( "GET",  ["set",main_audio,"send-vol",volume], "", rmMain.load_remote );
-}
-
-function apiSetVolume(volume) {
-    appFW.requestAPI( "GET",  ["set",rmStatusAudio.slider.device,"send-vol",volume], "", rmMain.load_remote );
-}
 
 // currently not used ?! Reintroduce or clean-up in server and app
 function apiGroupSend( macro, device="", content="" ) { rmApi.call("GroupSend", [macro, device, content]); }
@@ -67,32 +17,6 @@ function apiTemplateAdd(device_id, template_id)                 { rmApi.call("Te
 //-> unclear where it is or was used? - assumption: not required any more, as working with complete remote (json format)
 function apiDeviceApiSettingsEdit(device,prefix,fields)         { rmApi.call("ApiDeviceSettingsEdit", [device,prefix,fields]); }
 //-> unclear where it is or was used?
-
-
-//----------------------------------------------------------------
-// Non API request related functions - to be integrated / to be moved somewhere else?
-//----------------------------------------------------------------
-
-// create new device
-function apiSceneAddCheckID(element) {
-    if (element.value && dataAll["CONFIG"]["scenes"][element.value]) {
-        element.style.color = "red";
-    }
-    else {
-        element.style.color = "";
-    }
-}
-
-// create new device
-function apiDeviceAddCheckID(element) {
-    if (element.value && dataAll["CONFIG"]["devices"][element.value]) {
-        element.style.color = "red";
-    }
-    else {
-        element.style.color = "";
-    }
-}
-
 // switch interfaces and API devices On or Off
 function apiApiDeviceOnOff_button(interface, api_device, button) {
 
@@ -111,132 +35,11 @@ function apiApiDeviceOnOff_button(interface, api_device, button) {
     }
 }
 
-// decompose macro data
-function apiMacroDecompose(macro) {
-    let full_decompose = [];
-    let macro_string = "";
-    let macro_wait = "";
-    let macro_wait_time = 0;
-
-    const types = ["macro", "dev-on", "dev-off"];
-    const translate = {
-        "macro": "global",
-        "dev-on": "device-on",
-        "dev-off": "device-off"
-    }
-
-    for (let a=0;a<types.length;a++) {
-        if (macro.startsWith(types[a]+"_")) {
-            let macro_cmd = macro.split("_");
-            let macro_translate = translate[types[a]];
-            let macro_data = rmRemote.data["CONFIG"]["macros"][macro_translate];
-
-            if (macro_data[macro_cmd[1]]) {
-                for (let i=0; i<macro_data[macro_cmd[1]].length; i++) {
-                    let command = macro_data[macro_cmd[1]][i];
-                    if (command.startsWith && (command.startsWith("WAIT") || command.startsWith("MSG"))) {
-                        let wait = command.split("-");
-                        macro_wait += Number(wait[1]);
-                    }
-                    else {
-                        macro_string += macro_data[macro_cmd[1]][i] + "::";
-                        full_decompose.push(macro_data[macro_cmd[1]][i]);
-                    }
-                }
-            }
-        }
-    }
-
-    if (macro_wait_time > 0) {
-        macro_wait = 'appMsg.wait_time("'+lang("MACRO_PLEASE_WAIT")+'", '+macro_wait_time+');';
-        full_decompose.push("wait=" + macro_wait_time + "s");
-    }
-
-    console.debug("apiMacroDecompose: " + macro + " -> " + macro_string + " | " + macro_wait);
-    if (showButton) {
-        appMsg.info("<b>Macro Decompose:</b> " + macro + " -> " + full_decompose.join(", "));
-    }
-    return [ macro_string, macro_wait ];
-}
-
-// send a command directly to an API of a device
-function apiSendToDeviceApi_return( data ) {
-    console.debug("apiSendToDeviceApi_return:");
-    console.debug(data);
-
-    let formatted = "N/A";
-    const response = data["REQUEST"]["Return"];
-    const response_id = data["REQUEST"]["Return"]["request_id"];
-    const timecode = response["answer"]["last_action"]; // timestamp (seconds)
-    if (timecode > 0) {
-        const date = new Date(timecode * 1000); // convert to milliseconds
-        formatted =
-            String(date.getDate()).padStart(2, '0') + '.' +
-            String(date.getMonth() + 1).padStart(2, '0') + '.' +
-            String(date.getFullYear()).slice(-2) + ' ' +
-            String(date.getHours()).padStart(2, '0') + ':' +
-            String(date.getMinutes()).padStart(2, '0') + ':' +
-            String(date.getSeconds()).padStart(2, '0');
-    }
-
-    let answer = "";
-    answer += "<i>Request:</i> <b>" + response["command"] + "</b><br/>";
-    if (response["command"] === "api-discovery")    { answer += "<i>Interface:</i> " + response["device"].split("_")[0]; }
-    else if (response["answer"]["device_id"])       { answer += "<i>Interface &amp; device:</i> " + response["device"].replace("||", " / "); }
-    else                                            { answer += "<i>Interface &amp; device:</i> " + response["interface"] + " / " + response["device"] + " (" + response["status"] + ")"; }
-    answer += "<br/>-----<br/>";
-    answer += "<pre>" + syntaxHighlightJSON(response["answer"]["answer"]) + "</pre>";
-    answer += "<pre id='JSON_copy' style='display:none;'>" + JSON.stringify(response["answer"]["answer"], null, 2) + "</pre>";
-    answer += "<br/>&nbsp;<br/>-----<br/><i>";
-    answer += "total: " + (data["REQUEST"]["load-time-app"])/1000 + "s / srv: " + Math.round(data["REQUEST"]["load-time"]*10000)/10000 + "s / " +
-        "last: " + formatted;
-
-    if (response_id !== "") {
-        setTextById('api_response_' + response_id, answer);
-    } else {
-        setTextById('api_response', answer);
-    }
-}
-
-// load logging information from API
-function apiLoggingWrite(data) {
-    let log_data = data["DATA"];
-    if (!log_data) {
-        console.error("apiLoggingWrite: got no logging data!");
-        return;
-        }
-    let title = "<b>API Send</b><hr/>";
-    setTextById("logging_api_send",     title + log_data["log_api"]["send"].join("<br/>"));
-    title    = "<b>QUEUE Send</b><hr/>";
-    setTextById("logging_queue_send",   title + log_data["log_send"].join("<br/>"));
-
-    title    = "<b>API Query</b><hr/>";
-    setTextById("logging_api_query",     title + log_data["log_api"]["query"].join("<br/>"));
-    title    = "<b>QUEUE Query</b><hr/>";
-    setTextById("logging_queue_query",   title + log_data["log_query"].join("<br/>"));
-}
-
-// move remote position
-function apiDeviceMovePosition_get(data) {
-
-    if (data["REQUEST"]["Return"].indexOf("ERROR") > -1)   { appMsg.alert(data["REQUEST"]["Return"]); }
-    else if (data["REQUEST"]["Return"].indexOf("OK") > -1) { appMsg.info("<b>" + data["REQUEST"]["Command"] + "</b>: " + data["REQUEST"]["Return"], "ok"); }
-
-    setTimeout(function() { rmApi.call("RemoteMoveUpdate"); }, 3000 );
-}
-
-function apiDeviceMovePosition(data) {
-    rmSettings.data = data;
-    rmSettings.create();
-    rmMain.create_remote(data);
-}
-
 
 //----------------------------------------------------------------
 // refactoring done
 //----------------------------------------------------------------
 
-function apiLoggingLoad()                                       { rmApi.call("LoggingLoad"); }
 function apiInterfaceOnOff(interface, value)                    { rmApi.call("InterfaceOnOff", [interface, value]); }
 function apiRemoteChangeVisibility(type, device_id, value_id)   { rmApi.call("ChangeVisibility", [type, device_id, value_id]); }
 function setMainAudio(device)                                   { rmApi.call("SetMainAudio", device); }
@@ -285,7 +88,12 @@ class RemoteApiControl extends RemoteDefaultClass {
 
         this.execute = this.execute.bind(this);
         this.answer = this.answer.bind(this);
+        this.answer_api_request = this.answer_api_request.bind(this);
 
+        /*
+         */
+
+        this.log_level_status = "warning";
         this.temp_data = {};
         this.temp_callback = undefined;
         this.commands = {
@@ -318,23 +126,25 @@ class RemoteApiControl extends RemoteDefaultClass {
             "DeviceEdit":           { command: "device", method: "POST", confirm: false, param: 3, prepare: true, answer: this.answer },
             "DeviceJsonEdit":       { command: "device", method: "POST", confirm: false, param: 4, prepare: true, answer: this.answer },
             "DiscoverDevices":      { command: "discovery", method: "POST", confirm: true, message: "API_DEVICE_DISCOVERY", param: 0, prepare: false, answer: this.answer },
-            "InterfaceOnOff":       { command: "interface", method: "PUT", confirm: false, param: 2, prepare: false, answer: "" },
-            "LoggingLoad":          { command: "log_queue", method: "GET", confirm: false, param: 0, prepare: false, answer: apiLoggingWrite },
+            "InterfaceOnOff":       { command: "interface", method: "PUT", confirm: false, param: 2, prepare: false },
+            "LoggingLoad":          { command: "log_queue", method: "GET", confirm: false, param: 0, prepare: false },
             "MacroChange":          { command: "macro", method: "PUT", confirm: false, param: 0, prepare: true, answer: this.answer },
             "MacroSend":            { command: "macro", method: "GET", confirm: false, param: 3, prepare: true, answer: this.answer },
+            "MainVolume":           { command: "set", method: "GET", param: 1, prepare: true, answer: this.answer },
             "MoveToArchive":        { command: ["archiving", "move"], method: "PUT", confirm: true, message: "REMOTE_MOVE_TO_ARCHIVE", param: 2, prepare: false, answer: this.answer },
             "ReconnectInterface":   { command: "reconnect", method: "POST", confirm: true, message: "API_RECONNECT_ALL", param: 1, prepare: false, answer: this.answer },
             "RecordingEdit":        { command: "edit-recording", method: "PUT", confirm: false, param: 0, prepare: false, answer: this.answer },
-            "RemoteMove":           { command: "move", method: "POST", confirm: false, param: 4, prepare: true, answer: apiDeviceMovePosition_get },
-            "RemoteMoveUpdate":     { command: "list", method: "GET", confirm: false, param: 0, prepare: false, answer: apiDeviceMovePosition },
+            "RemoteMove":           { command: "move", method: "POST", confirm: false, param: 4, prepare: true, answer: this.answer },
+            "Reset":                { command: "reset", method:"GET", confirm: true, message: "RESET_SWITCH_OFF", answer: this.answer },
+            "ResetAudio":           { command: "reset-audio", method:"GET", confirm: true, message: "RESET_VOLUME_TO_ZERO", answer: this.answer },
             "RestoreFromArchive":   { command: ["archiving", "restore"], method: "PUT", confirm: true, message: "REMOTE_RESTORE_FROM_ARCHIVE", param: 2, prepare: false, answer: this.answer },
             "SceneAdd":             { command: "scene", method: "PUT", confirm: false, param: 0, prepare: true, answer: this.answer },
             "SceneDelete":          { command: "scene", method: "DELETE", confirm: true, message: "SCENE_ASK_DELETE", param: 1, prepare: true, answer: this.answer },
             "SceneEdit":            { command: "scene", method: "POST", confirm: false, param: 3, prepare: true, answer: this.answer },
             "SceneJsonEdit":        { command: "scene", method: "POST", confirm: false, param: 2, prepare: true, answer: this.answer },
-            "SendToApi":            { command: "send-api-command", method: "POST", confirm: false, param: 1, prepare: false, answer: apiSendToDeviceApi_return },
-            "SendToDeviceApi":      { command: "send-api", method: "POST", confirm: false, param: 2, prepare: true, answer: apiSendToDeviceApi_return },
-            "SendToDeviceApi-ext":  { command: "send-api-external", method: "POST", confirm: false, param: 2, prepare: true, answer: apiSendToDeviceApi_return },
+            "SendToApi":            { command: "send-api-command", method: "POST", confirm: false, param: 1, prepare: false, answer: this.answer_api_request },
+            "SendToDeviceApi":      { command: "send-api", method: "POST", confirm: false, param: 2, prepare: true, answer: this.answer_api_request },
+            "SendToDeviceApi-ext":  { command: "send-api-external", method: "POST", confirm: false, param: 2, prepare: true, answer: this.answer_api_request },
             "SetMainAudio":         { command: "main-audio", method: "POST", confirm: false, param: 1, answer: this.answer },
             "ShutdownRestart":      { command: "shutdown", method: "GET", confirm: true, message: "RESTART", param: 0, prepare: false, answer: this.answer },
             "TimerDelete":          { command: "timer-edit", method: "DELETE", confirm: true, message: "TIMER_DELETE", param: 1, prepare: false, answer: this.answer },
@@ -346,7 +156,7 @@ class RemoteApiControl extends RemoteDefaultClass {
     /* coordinate api call */
     call(cmd, param=[], data=undefined, callback=undefined) {
         if (typeof param === "string") { param = [param]; }
-        this.logging.warn("call: " + cmd + " | " + JSON.stringify(param));
+        this.status("call: " + cmd + " | " + JSON.stringify(param));
 
         if (!this.commands[cmd]) { this.logging.error("Command not defined: " + cmd); return; }
         else if (this.commands[cmd].param !== param.length) { this.logging.error("Got other amount of parameters than required: " + this.commands[cmd].param + " param required, got " + param); return; }
@@ -355,8 +165,8 @@ class RemoteApiControl extends RemoteDefaultClass {
         if (data)                        { this.temp_data[cmd] = data; }
         if (callback && callback !== "") { this.temp_callback = callback; } else { this.temp_callback = undefined; }
 
-        console.warn("callback", this.temp_callback);
-        console.warn("data", data);
+        //console.warn("callback", this.temp_callback);
+        //console.warn("data", data);
 
         if (command.prepare)        { this.prepare(cmd, param); }
         else if (command.confirm)   { this.confirm(cmd, param); }
@@ -365,7 +175,7 @@ class RemoteApiControl extends RemoteDefaultClass {
 
     /* prepare data before executing */
     prepare(cmd, param=[]) {
-        this.logging.warn("prepare: " + cmd + " | " + JSON.stringify(param));
+        this.status("prepare: " + cmd + " | " + JSON.stringify(param));
 
         let command = this.commands[cmd];
         let data = "";
@@ -436,6 +246,8 @@ class RemoteApiControl extends RemoteDefaultClass {
         else if (cmd === "CommandRecord") {
             let device, button;
             let [device_id, button_id, read_from_input] = param;
+
+            if (!this.status_ok("device", device_id, cmd)) { return; }
 
             if (document.getElementById(device_id) && read_from_input) {
                 device	= document.getElementById(device_id).value.toLowerCase();
@@ -609,7 +421,7 @@ class RemoteApiControl extends RemoteDefaultClass {
             }
 
             if (!macro.includes("::") && macro.indexOf("::") < 0) {
-                [macro_string, macro_wait] = apiMacroDecompose(macro);
+                [macro_string, macro_wait] = rmData.macros.decompose(macro);
                 macro = macro_string;
                 eval(macro_wait);
             } else {
@@ -629,6 +441,10 @@ class RemoteApiControl extends RemoteDefaultClass {
             device_media_info[param[1]] = param[2];
             if (showButton) { appMsg.info("<b>Request Macro:</b> " + macro); }
             param = [param[0]];
+        }
+        else if (cmd === "MainVolume") {
+            if (!this.status_ok("device", rmStatusAudio.audio_device, cmd)) { return; }
+            param = [rmStatusAudio.audio_device,"send-vol",param[0]];
         }
         else if (cmd === "GroupSend") {
             device_media_info[param[1]] = param[2];
@@ -729,7 +545,7 @@ class RemoteApiControl extends RemoteDefaultClass {
 
     /* display confirm message if command shall be executed */
     confirm(cmd, param=[]) {
-        this.logging.warn("confirm: " + cmd + " | " + JSON.stringify(param));
+        this.status("confirm: " + cmd + " | " + JSON.stringify(param));
 
         let command = this.commands[cmd];
         let parameters = JSON.stringify(param).replaceAll("\"", "#");
@@ -739,7 +555,7 @@ class RemoteApiControl extends RemoteDefaultClass {
 
     /* send api request */
     execute(cmd, param=[]) {
-        this.logging.warn("execute: " + cmd + " | " + JSON.stringify(param));
+        this.status("execute: " + cmd + " | " + JSON.stringify(param));
 
         let api_commands;
         let wait = "";
@@ -773,20 +589,21 @@ class RemoteApiControl extends RemoteDefaultClass {
         let cmd = data["REQUEST"]["Command"];
         let msg = data["REQUEST"]["Return"];
 
-        let erase_settings = ["SceneDelete", "DeviceDelete"];
-        let create_remote_device = ["DeviceAdd"];
-        let create_remote_scene = ["SceneAdd"];
-        let load_main_menu = ["SceneDelete", "DeviceDelete"];
-        let reload_drop_down = ["ChangeVisibility"];
-        let reload_app = [
+        const erase_settings = ["SceneDelete", "DeviceDelete"];
+        const create_remote_device = ["DeviceAdd"];
+        const create_remote_scene = ["SceneAdd"];
+        const load_main_menu = ["SceneDelete", "DeviceDelete"];
+        const reload_drop_down = ["ChangeVisibility", "MainVolume", "RemoteMove"];
+        const reload_app = [
             "ApiDeviceSettingsEdit",
             "CommandRecord",
             "DeviceAdd", "DeviceEdit", "DeviceJsonEdit",
             "SceneAdd", "SceneEdit", "SceneJsonEdit",
             "TemplateAdd"
         ];
+        const dont_show_info = ["Macro", "MacroSend", "CommandSend", "Set"];
 
-        this.logging.warn("execute: " + cmd + " | " + msg + " | " + JSON.stringify(data["REQUEST"]));
+        this.status("answer: " + cmd + " | " + msg + " | " + JSON.stringify(data["REQUEST"]));
 
         setTimeout(() => {
             if (erase_settings.includes(cmd)) { rmRemote.active_name = ""; rmCookies.erase(); rmMain.set_main_var("edit_mode", "false"); }
@@ -831,10 +648,82 @@ class RemoteApiControl extends RemoteDefaultClass {
 
             if (cmd && msg.indexOf("ERROR") > -1) { appMsg.alert("<b>" + cmd + "</b>: " + msg); }
             else if (msg.indexOf("ERROR") > -1) { appMsg.alert(msg); }
-            else if (msg && cmd && msg.indexOf("OK") > -1) { appMsg.info("<b>" + cmd + "</b>: " + msg, "ok"); }
-            else if (msg && cmd) { appMsg.info("<b>" + cmd + "</b>: " + msg); }
-            else if (msg) { appMsg.info(msg); }
+            else if (msg && cmd && !dont_show_info.includes(cmd)) {
+                if (msg && cmd && msg.indexOf("OK") > -1) {
+                    appMsg.info("<b>" + cmd + "</b>: " + msg, "ok");
+                } else if (msg && cmd) {
+                    appMsg.info("<b>" + cmd + "</b>: " + msg);
+                } else if (msg) {
+                    appMsg.info(msg);
+                }
+            }
         }, 4000);
+    }
+
+    /* answer for api requests - "SendToApi" and "SendToDeviceApi" */
+    answer_api_request( data ) {
+        let formatted = "N/A";
+        const response = data["REQUEST"]["Return"];
+        const response_id = data["REQUEST"]["Return"]["request_id"];
+        const timestamp = response["answer"]["last_action"]; // timestamp (seconds)
+
+        this.status("answer_api_request: " + response_id + " | " + timestamp + " | " + JSON.stringify(response));
+
+        if (timestamp > 0) {
+            const date = new Date(timestamp * 1000); // convert to milliseconds
+            formatted =
+                String(date.getDate()).padStart(2, '0') + '.' +
+                String(date.getMonth() + 1).padStart(2, '0') + '.' +
+                String(date.getFullYear()).slice(-2) + ' ' +
+                String(date.getHours()).padStart(2, '0') + ':' +
+                String(date.getMinutes()).padStart(2, '0') + ':' +
+                String(date.getSeconds()).padStart(2, '0');
+        }
+
+        let answer = "";
+        answer += "<i>Request:</i> <b>" + response["command"] + "</b><br/>";
+        if (response["command"] === "api-discovery")    { answer += "<i>Interface:</i> " + response["device"].split("_")[0]; }
+        else if (response["answer"]["device_id"])       { answer += "<i>Interface &amp; device:</i> " + response["device"].replace("||", " / "); }
+        else                                            { answer += "<i>Interface &amp; device:</i> " + response["interface"] + " / " + response["device"] + " (" + response["status"] + ")"; }
+        answer += "<br/>-----<br/>";
+        answer += "<pre>" + syntaxHighlightJSON(response["answer"]["answer"]) + "</pre>";
+        answer += "<pre id='JSON_copy' style='display:none;'>" + JSON.stringify(response["answer"]["answer"], null, 2) + "</pre>";
+        answer += "<br/>&nbsp;<br/>-----<br/><i>";
+        answer += "total: " + (data["REQUEST"]["load-time-app"])/1000 + "s / srv: " + Math.round(data["REQUEST"]["load-time"]*10000)/10000 + "s / " +
+            "last: " + formatted;
+
+        if (response_id !== "") {
+            setTextById('api_response_' + response_id, answer);
+        } else {
+            setTextById('api_response', answer);
+        }
+    }
+
+    /* check if status of required device is OK or return a message ... to be embedded for commands in the prepare section */
+    status_ok (rm_type, rm_id, source, on_error_show_message=true) {
+        let rm_status, rm_status_details, rm_status_message;
+        let rm_status_return = true;
+
+        rm_status = rmStatus.get_status(rm_type, rm_id, false);
+        rm_status_return = (rm_status === "ON" || rm_status === "OK");
+
+        if (!rm_status_return && on_error_show_message) {
+            rm_status_details = rmStatus.get_status(rm_type, rm_id, true);
+            rm_status_message = rm_status_details["message"];
+            appMsg.alert(lang("EXECUTION_ERROR", [rm_type, rm_id, source, rm_status_message]));
+        }
+
+
+        this.status(`status_ok: ${source} | ${rm_type}:${rm_id} | ${rm_status} (${rm_status_return}): ${rm_status_message}`);
+        return rm_status_return;
+    }
+
+    /* show status message with log level set in the constructor */
+    status(message) {
+        if (this.log_level_status === "warning") { this.logging.warn(message); }
+        else if (this.log_level_status === "info") { this.logging.info(message); }
+        else if (this.log_level_status === "error") { this.logging.error(message); }
+        else { this.logging.debug(message); }
     }
 }
 

@@ -1032,6 +1032,19 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         appMsg.confirm(message, "", 280);
     }
 
+    /* visualize input text as red, if the id already exists */
+    visualize_id_exists(rm_type, element) {
+        let exists;
+
+        if (!element) { this.logging.error("visualize_id_exists(): parameter 'element' doesn't exists."); return; }
+        if (rm_type === "device") { exists = rmData.devices.exists(element.value); }
+        else if (rm_type === "scene") { exists = rmData.scenes.exists(element.value); }
+        else { this.logging.error("visualize_id_exists(): rm_type '"+rm_type+"' doesn't exists."); return; }
+
+        if (element.value && exists) { element.style.color = "red"; }
+        else { element.style.color = ""; }
+    }
+
     /* visualizes device status via message on top of the remote control */
     visualize_message_device(device_id) {
 
@@ -1344,6 +1357,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             }
         }
     }
+
 }
 
 

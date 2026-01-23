@@ -384,7 +384,7 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
         if (rmData.scenes.not_available()) { open_add_scene = true; }
 
         set_temp  = this.tab.start();
-        set_temp += this.tab.row( "ID:",            this.elements.input("add_scene_id", "", "apiSceneAddCheckID(this);") );
+        set_temp += this.tab.row( "ID:",            this.elements.input("add_scene_id", "", "rmStatusShow.visualize_id_exists('scene', this)") );
         set_temp += this.tab.row( "Label:",         this.elements.input("add_scene_label") );
         set_temp += this.tab.row( "Description:",   this.elements.input("add_scene_descr") );
         set_temp += this.tab.row( "<span class='center'>" +
@@ -667,7 +667,7 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
         this.input_width = "180px";
         set_temp += this.tab.row( "Interface:"+asterix, this.elements.select("add_device_api","interface", rmData.apis.data("list_description"), onchange, device_data["api_device"]) );
         set_temp += this.tab.row( "ID:"+asterix, "<span id='text_add_device_id'>" + lang("SELECT_DEV_TYPE_FIRST") + "</span>" +
-            "<span style='display:none;'>" + this.elements.input("add_device_id", onchange, onchange + "apiDeviceAddCheckID(this);", device_data["id"]) +"</span>");
+            "<span style='display:none;'>" + this.elements.input("add_device_id", onchange, onchange + "rmStatusShow.visualize_id_exists('device', this);", device_data["id"]) +"</span>");
         set_temp += this.tab.line();
         set_temp += this.tab.row( "Device name:"+asterix, this.elements.input("add_device_descr", "", onchange, device_data["description"]) );
         set_temp += this.tab.row( "Label in menu:"+asterix, this.elements.input("add_device_label", "", onchange, device_data["label"]) );
@@ -758,14 +758,33 @@ class RemoteSettingsApi extends RemoteDefaultClass {
         return setting;
     }
 
-    // show API logging information, to be filled by apiLoggingLoad();
+    // show API logging information -> write
+    show_logs_write(data) {
+        let log_data = data["DATA"];
+        if (!log_data) {
+            console.error("apiLoggingWrite: got no logging data!");
+            return;
+        }
+        let title = "<b>API Send</b><hr/>";
+        setTextById("logging_api_send",     title + log_data["log_api"]["send"].join("<br/>"));
+        title    = "<b>QUEUE Send</b><hr/>";
+        setTextById("logging_queue_send",   title + log_data["log_send"].join("<br/>"));
+
+        title    = "<b>API Query</b><hr/>";
+        setTextById("logging_api_query",     title + log_data["log_api"]["query"].join("<br/>"));
+        title    = "<b>QUEUE Query</b><hr/>";
+        setTextById("logging_queue_query",   title + log_data["log_query"].join("<br/>"));
+    }
+
+    // show API logging information
     show_logs(log_type="all") {
         let setting = "";
         let set_temp = "";
 
         if (log_type === "all") {
+            let show = this.name+".show_logs_write";
             setting += "<b>&nbsp;API logging</b><text style='font-size:25px;'>&nbsp;</text>";
-            setting += " [<text onclick='apiLoggingLoad();' style='cursor:pointer;'>reload</text>]";
+            setting += " [<text onclick='rmApi.call(\"LoggingLoad\", [], undefined, "+show+")' style='cursor:pointer;'>reload</text>]";
             setting += this.line;
         }
 
@@ -783,7 +802,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
         setting  += set_temp;
         setting  += "</div>";
 
-        apiLoggingLoad();
+        rmApi.call("LoggingLoad", [], undefined, eval(this.name+".show_logs_write"));
         return setting;
     }
 
@@ -1398,8 +1417,6 @@ class RemoteSettingsGeneral extends RemoteDefaultClass {
     // load data for general settings
     load() {
         // Edit Server Settings
-        let q1 = lang("RESET_SWITCH_OFF");
-        let q2 = lang("RESET_VOLUME_TO_ZERO");
         let q3 = lang("RELOAD_ALL_SCRIPTS");
 
         this.button.height = "30px";
@@ -1419,8 +1436,8 @@ class RemoteSettingsGeneral extends RemoteDefaultClass {
             this.button.sized("set03","restart server","settings","apiShutdownRestart();")
         );
         set_temp += this.tab.row("<i>Devices:</i>",
-            this.button.sized("set21","Dev ON/OFF", "settings","appMsg.confirm(#" + q1 + "#, #appFW.requestAPI(##GET##,[##reset##],####,apiAlertReturn );#);") + "&nbsp;" +
-            this.button.sized("set22","Audio Level","settings", "appMsg.confirm(#" + q2 + "#, #appFW.requestAPI(##GET##,[##reset-audio##],####,apiAlertReturn );# );")
+            this.button.sized("set21","Dev ON/OFF", "settings","rmApi.call(#Reset#);") + "&nbsp;" +
+            this.button.sized("set22","Audio Level","settings", "rmApi.call(#ResetAudio#);")
         );
         set_temp += this.tab.row("<i>Reload CSS and JavaScript files:</i>",
             this.button.sized("set23","Reload", "settings","appMsg.confirm(#" + q3 + "#, #reloadScriptsAndCss();#);") + "&nbsp;"

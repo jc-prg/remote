@@ -10,15 +10,18 @@ let language_app = {
     "DE" : {
         "CONNECTION_ERROR"              : "Verbindungsfehler",
         "CONNECTION_DISABLED"           : "API deaktiviert",
-        "RESET_SWITCH_OFF"              : "Reset Devices:<br/>vorher alle Geräte ausschalten.",
-        "RESET_VOLUME_TO_ZERO"          : "Reset Audio Settings:<br/>vorher alle Receiver mit Audio auf Mininum (0) einstellen.",
+
+        "EXECUTION_ERROR"               : "Konnte das Kommando &quot;{2}&quot; für {0} <b>{1}</b> nicht ausführen: <i>{3}</i>",
+
+        "RESET_SWITCH_OFF"              : "Reset Devices ohne API-Anbindung:<br/>vorher alle Geräte ausschalten.",
+        "RESET_VOLUME_TO_ZERO"          : "Reset Audio Settings für Devices ohne API-Anbindung:<br/>vorher alle Receiver mit Audio auf Mininum (0) einstellen.",
 
         "POWER_DEVICE_OFF"              : "Schalte zuerst den Strom für das Gerät ein. {0}",
         "POWER_DEVICE_OFF_SCENE"        : "Schalte über den Toggle oben rechts den Strom für das Gerät ein. {0}",
         "POWER_DEVICE_OFF_SCENE_INFO"   : "<b>Strom ausgeschaltet:</b> Schalte den Strom für diese Szene über den Toggle oben rechts ein.",
 
         "PLEASE_WAIT"                   : "Bitte warten ... .",
-        "MACRO_PLEASE_WAIT"             : "Führe ein paar Kommandos aus, bitte warte ein paar Sekunden.",
+        "MACRO_PLEASE_WAIT"             : "Führe ein paar Kommandos aus, bitte kurz warten.",
 
         "MENU_SHOW_HIDDEN_ON"           : "Weitere zeigen",
         "MENU_SHOW_HIDDEN_OFF"          : "Weitere verbergen",
@@ -27,7 +30,7 @@ let language_app = {
         "STATUS_DEV_N/A"                : "Der Status vom Gerät <b>{0}</b> ist unbekannt, ausprobieren!",
         "STATUS_DEV_POWER_OFF"          : "Der Strom ist ausgeschaltet: <b>{0}</b>",
         "STATUS_DEV_ERROR"              : "Beim Gerät <b>{0}</b> ist ein Fehler aufgetreten. {1}",
-        "STATUS_DEV_API_DISABLED"       : "Die API <b>{0}</b> für das Gerät <b>{1}</b> wurde deaktiviert.",
+        "STATUS_DEV_API_DISABLED"       : "Die API <b>{0}</b> für das Gerät <b>{1}</b> ist deaktiviert.",
         "STATUS_DEV_API_STARTING"       : "Die API <b>{0}</b> für das Gerät <b>{1}</b> wird gerade gestartet, bitte warten.",
         "STATUS_DEV_API_ERROR"          : "Bei der API <b>{0}</b> für das angeschlossene Gerät <b>{1}</b> ist ein Fehler aufgetreten: <i>{2}</i>",
         "STATUS_DEV_OTHER_ERROR"        : "Es ist ein unbekannter Fehler beim Gerät <b>{0}</b> aufgetreten.",
@@ -38,7 +41,7 @@ let language_app = {
         "STATUS_SCENE_STARTING"         : "Mindestens eine für die Szene <b>{0}</b> nötige API startet gerade, bitte warten.",
         "STATUS_SCENE_POWER_OFF"        : "Der Strom über für Szene <b>{0}</b> ist ausgeschaltet. Nutze <b>{1}</b> zum einschalten.",
         "STATUS_SCENE_PARTLY"           : "Für die Szene <b>{0}</b> sind noch nicht alle nötigen Geräte eingeschaltet: <i>{1}</i>. &quot;ON&quot; dr&uuml;cken, um fehlende zu starten.",
-        "STATUS_SCENE_DISABLED"         : "Mindestens ein für die Szene <b>{0}</b> erforderliche device ist deaktiviert: <i>{1}</i>",
+        "STATUS_SCENE_DISABLED"         : "Mindestens ein für die Szene <b>{0}</b> erforderliches Device ist deaktiviert: <i>{1}</i>",
         "STATUS_SCENE_ERROR"            : "Für mindestens eines der für die Szene <b>{0}</b> benötigten Geräte ist ein Fehler aufgetreten: <i>{1}</i>.",
         "STATUS_SCENE_EMPTY"            : "Für die Szene <b>{0}</b> wurde bislang noch keine Fernbedienung definiert.",
 
@@ -236,6 +239,7 @@ let language_app = {
         "EDIT_RECORDED_FIELDS"   : "Edit values to be recorded",
 
         "EXTERNAL_ID"            : "External ID",
+        "EXECUTION_ERROR"        : "Could not execute command &quot;{2}&quot; for {0} <b>{1}</b>: <i>{3}</i>",
         "ERROR_UNKNOWN"          : "Unknown error",
         "ERROR_THREAD_TOO_LONG"  : "The thread <b>{0}</b> did not respond for <b>{1}s</b>.",
 
@@ -400,8 +404,8 @@ let language_app = {
         "REMOTE_CONFIG_ERROR_UNKNOWN"  : "Unknown error in remote config file(s) '{0}'",
         "RELOAD_TAKES_LONGER"          : "Reload takes longer than expected ...",
         "RELOAD_TAKES_MUCH_LONGER"     : "Reload takes longer than much expected ...",
-        "RESET_SWITCH_OFF"             : "Reset devices:<br/>switch off all devices before.",
-        "RESET_VOLUME_TO_ZERO"         : "Reset audio settings:<br/>set the volume of all audio devices to mininum (0) before.",
+        "RESET_SWITCH_OFF"             : "Reset devices without API connect:<br/>switch off all devices before.",
+        "RESET_VOLUME_TO_ZERO"         : "Reset audio settings for devices without API connect:<br/>set the volume of all audio devices to mininum (0) before.",
         "RESTART"                      : "Are you sure you want to restart the server?",
         "RELOAD_ALL_SCRIPTS"           : "Reload all CSS and JavaScript files.",
         "REMOTE_MOVE_TO_ARCHIVE"       : "Do you want to move the {0} remote control <b>{1}</b> to archive?",

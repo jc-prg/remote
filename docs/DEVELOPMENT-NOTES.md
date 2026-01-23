@@ -4,6 +4,8 @@
 
 ## KNOWN BUGS -------------------------------------------------------------------
 
+* app: timer ... adding group macros -> "macro_groups_*" instead of "group_*"
+* app: adding a new device from ZigBee doesn't work ... doesn't open the container?
 * app / server / rm3api.yml: unused functions
 
       // currently not used ?! Reintroduce or clean-up in server and app 
@@ -18,8 +20,6 @@
       function apiDeviceApiSettingsEdit(device,prefix,fields)         { rmApi.call("ApiDeviceSettingsEdit", [device,prefix,fields]); }
           //-> unclear where it is or was used?
 
-* recording if API-Device (or API) is not active -> seems to work but doesn't and should create an error appMsg alert!
-* error in device specific definition (devices/INTERFACE/*.json) -> is not shown in the attention section yet?!
 * app: settings
 
       Uncaught TypeError: can't access property "BROADLINK", interfaces is undefined
@@ -42,15 +42,15 @@
 
       http://localhost:5001/api/config/device/sensor3/device_edit_api_commands(data)%20%7B%0A%20%20%20%20%20%20%20%20if%20(data%5B%22DATA%22%5D%5B%22error%22%5D)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20return;%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20let%20device%20=%20data%5B%22DATA%22%5D%5B%22device%22%5D;%0A%20%20%20%20%20%20%20%20let%20commands%20=%20data%5B%22DATA%22%5D%5Bdevice%5D%5B%22api_commands%22%5D;%0A%20%20%20%20%20%20%20%20let%20api_url%20=%20data%5B%22DATA%22%5D%5Bdevice%5D%5B%22interface_details%22%5D%5B%22API-Info%22%5D;%0A%20%20%20%20%20%20%20%20let%20api_name%20=%20data%5B%22DATA%22%5D%5Bdevice%5D%5B%22interface%22%5D%5B%22api_key%22%5D;%0A%20%20%20%20%20%20%20%20let%20on_change%20=%20%22setValueById('api_command',%20getValueById('api_cmd_select'));%22;%0A%0A%20%20%20%20%20%20%20%20const%20basic%20=%20new%20RemoteElementsEdit(%22rmRemote.basic%22);%09%09//%20!!!%20should%20use%20this.name,%20but%20doesn't%20work%0A%20%20%20%20%20%20%20%20basic.input_width%20=%20%2290%25%22;%0A%0A%20%20%20%20%20%20%20%20let%20select%20=%20basic.select(%22api_cmd_select%22,%20lang(%22API_SELECT_CMD%22),%20commands,%20on_change,%20'',%20false,%20true);%0A%0A%20%20%20%20%20%20%20%20setTextById('api_command_select',%20select);%0A%0A%20%20%20%20%20%20%20%20if%20(api_url)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20setTextById('api_description',%20%22%3Ca%20href='%22%20+%20api_url%20+%20%22'%20target='_blank'%20style='color:white'%3EAPI%20Documentation%20%22%20+%20api_name%20+%20%22%3C/a%3E%22);%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D/
 
-
-* app: timer ... adding group macros -> "macro_groups_*" instead of "group_*"
-* app: adding a new device from ZigBee doesn't work ... doesn't open the container?
 * app: editing API device configuration via app doesn't work -> no "save" button
 
       rmJson.disable(&quot;api_status_edit_ZIGBEE2MQTT_default&quot;,false);
       this.className=&quot;rm-button hidden&quot;
       document.getElementById(&quot;save_zigbee2mqtt_default&quot;).className=&quot;rm-button settings&quot;;
 
+* server: weather API - change of date leads to an error (and no data available any more) - looks similar to loss of network
+* server: unsure if/why Tapo P100 are not accessible after a while (back again after restart)
+* server: error in device specific definition (devices/INTERFACE/*.json) -> is not shown in the attention section yet?!
 * server: reconnect of interfaces leads to error messages
 * server: shutdown doesn't shutdown completely ... maybe weather?
 * server: queue bleibt hängen?! // tapo funktioniert nicht richtig?
@@ -226,6 +226,7 @@
     
 # DONE --------------------------------------------------------------------------
 
+* SOLVED: app: recording if API-Device (or API) is not active -> seems to work but doesn't and should create an error appMsg alert!
 * rm_main.js; rethink, create a class and restructure stuff
 * archiving
   * OK: check / visualize if remotes are missing for scenes
