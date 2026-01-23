@@ -81,12 +81,7 @@
 
 ## UNDER DEVELOPMENT -------------------------------------------------------------
 
-* refactoring rm_functions-api.js
-  * OPEN: check functions that doesn't seem to be required any more
-  * OPEN: directly call refactored functions from class
-  * OPEN: check / move / integrate functions that are not (yet) part of the class
-  * OPEN: check and fix all bugs found due to the refactoring
-  * OK: moved all api-calls incl. preparation and confirm into a class
+* OPEN: check and fix all bugs found due to the refactoring
 
 * archiving
   * OPEN: update view in settings when moved
@@ -226,6 +221,11 @@
     
 # DONE --------------------------------------------------------------------------
 
+* refactoring rm_functions-api.js
+  * OK: check functions that doesn't seem to be required any more
+  * OK: directly call refactored functions from class
+  * OK: check / move / integrate functions that are not (yet) part of the class
+  * OK: moved all api-calls incl. preparation and confirm into a class
 * SOLVED: app: recording if API-Device (or API) is not active -> seems to work but doesn't and should create an error appMsg alert!
 * rm_main.js; rethink, create a class and restructure stuff
 * archiving
