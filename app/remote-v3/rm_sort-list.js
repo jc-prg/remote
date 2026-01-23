@@ -2,7 +2,7 @@ dragStartPos   = "";
 dragEndPos     = "";
 dragStartCount = false;
 
-function remote_slist(target, callback_pos) {
+function remote_sort_list(target, callback_pos) {
 
     let handle_element = "<img src='/remote-v3/img/dragndrop.png' style='height:22px;' alt=''>";
     target.classList.add("slist");
@@ -183,7 +183,7 @@ function remote_slist(target, callback_pos) {
 
 function startDragAndDrop(list_id, callback_pos) {
 
-    remote_slist(document.getElementById(list_id), callback_pos);
+    remote_sort_list(document.getElementById(list_id), callback_pos);
     }
 
 function movePosition(id, dnd_list, from, to) {
