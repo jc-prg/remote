@@ -196,23 +196,23 @@ class RemoteControlBasic extends RemoteDefaultClass {
         for (let i=0; i<macro.length; i++) { macro_string = macro_string + macro[i] + "::"; }
 
         this.logging.debug(label+" - "+macro_string);
-        return "<button id='" + id + "' class='channel-entry " + style + "' " + disabled + " onclick=\"apiMacroSend('" + macro_string + "','"+scene+"','"+label+"');\">" + label + "</button>";
+        return "<button id='" + id + "' class='channel-entry " + style + "' " + disabled + " onclick=\"rmApi.call('MacroSend', ['" + macro_string + "','"+scene+"','"+label+"']);\">" + label + "</button>";
     }
 
     // default buttons
-    default(id, label, style, script_apiCommandSend, disabled="", button_style="", text_as_image=true) {
+    default(id, label, style, script_CommandSend, disabled="", button_style="", text_as_image=true) {
 
         let onContext  = "";
         let onClick    = "";
         let button_color = rmData.elements.data("button_colors");  // definition of button color
 
-        if (Array.isArray(script_apiCommandSend)) {
-            onClick    = "onmousedown_left_right(event,\"" + script_apiCommandSend[0].replaceAll("\"","#") + "\",\"" + script_apiCommandSend[1].replaceAll("\"","#") + "\");";
+        if (Array.isArray(script_CommandSend)) {
+            onClick    = "onmousedown_left_right(event,\"" + script_CommandSend[0].replaceAll("\"","#") + "\",\"" + script_CommandSend[1].replaceAll("\"","#") + "\");";
             onClick    = "onmousedown='"+onClick+"'";
             onContext  = "oncontextmenu=\"return false;\"";
         }
-        else if (script_apiCommandSend !== "") {
-            onClick    = "onclick='" + script_apiCommandSend + "'";
+        else if (script_CommandSend !== "") {
+            onClick    = "onclick='" + script_CommandSend + "'";
             onClick    = onClick.replaceAll("##", "{{!!}}");
             onClick    = onClick.replaceAll("#", "\"");
             onClick    = onClick.replaceAll("{{!!}}", "#");
@@ -251,7 +251,7 @@ class RemoteControlBasic extends RemoteDefaultClass {
             label2[0] = "&nbsp;";
         }
         if (cmd !== "") {
-            cmd = 'apiCommandSend("'+cmd+'","","","'+device+'");';
+            cmd = 'rmApi.call("CommandSend", ["'+cmd+'","","'+device+'"]);';
         }
         return this.default( id, label2[0], label2[1], cmd, disabled );
     }
@@ -344,7 +344,7 @@ class RemoteControlBasic extends RemoteDefaultClass {
                     macro_string = macro_string + macro[i] + "::";
                 }
             }
-            let b = this.default( id, d[0], d[1], 'apiMacroSend("'+macro_string+'","'+scene+'");'+macro_wait, disabled );
+            let b = this.default( id, d[0], d[1], 'rmApi.call("MacroSend", ["'+macro_string+'","'+scene+'", ""]);'+macro_wait, disabled );
             this.logging.debug("button_macro - "+b);
             return b;
         }
@@ -354,13 +354,13 @@ class RemoteControlBasic extends RemoteDefaultClass {
     }
 
     // default with size from values
-    sized(id, label, style, script_apiCommandSend, disabled="") {
+    sized(id, label, style, script_CommandSend, disabled="") {
         let button_style	= "";
         if (this.width  !== "") { button_style += "width:" + this.width + ";max-width:" + this.width + ";"; }
         if (this.height !== "") { button_style += "height:" + this.height + ";max-height:" + this.height + ";"; }
         if (button_style !== "") { button_style  = "style='" + button_style + "'"; }
 
-        return this.default(id, label, style, script_apiCommandSend, disabled, button_style, false);
+        return this.default(id, label, style, script_CommandSend, disabled, button_style, false);
     }
 
 }

@@ -3,43 +3,6 @@
 //--------------------------------
 
 
-// Potentially not used any more ... to be check
-//----------------------------------------------------------------
-
-// currently not used ?! Reintroduce or clean-up in server and app
-function apiGroupSend( macro, device="", content="" ) { rmApi.call("GroupSend", [macro, device, content]); }
-//-> unclear where it is or was used? - used once in class RemoteControlBasic.btn_group(), but this function is never used somewhere else
-function apiButtonDelete(device_id, button_id)                  { rmApi.call("ButtonDelete", [device_id, button_id]); }
-//-> unclear where it is or was used? - assumption: not required any more, as working with complete remote (json format)
-function apiButtonAdd(device_id, button_id)                     { rmApi.call("ButtonAdd", [device_id, button_id]); }
-//-> unclear where it is or was used? - assumption: not required any more, as working with complete remote (json format)
-function apiTemplateAdd(device_id, template_id)                 { rmApi.call("TemplateAdd", [device_id, template_id]); } // -> Anpassung an rm3api.yml erforderlich (zusätzliches ungenutztes Parameter)
-//-> unclear where it is or was used? - assumption: not required any more, as working with complete remote (json format)
-
-
-//----------------------------------------------------------------
-// refactoring done
-//----------------------------------------------------------------
-
-function apiRemoteChangeVisibility(type, device_id, value_id)   { rmApi.call("ChangeVisibility", [type, device_id, value_id]); }
-function apiMoveToArchive(remote_type, remote_id)               { rmApi.call("MoveToArchive", [remote_type, remote_id]); }
-function apiRestoreFromArchive(remote_type, remote_id)          { rmApi.call("RestoreFromArchive", [remote_type, remote_id]); }
-function apiDeviceChangeConfigs(remote_id)                      { rmApi.call("DeviceChangeConfigs", remote_id); }
-function apiSendToDeviceApi( device, api_command, external_id=false ) { rmApi.call( "SendToDeviceApi", [device, external_id], api_command);}
-
-function apiMacroSend( macro, device="", content="" ){ rmApi.call("MacroSend", [macro, device, content]); }
-function apiCommandSend(cmdButton, sync="", callback="", device="")  { rmApi.call("CommandSend", [cmdButton, sync, device], undefined, callback); }
-function apiSceneEdit(device,prefix,fields)                     { rmApi.call("SceneEdit", [device,prefix,fields]); }
-function apiSceneDelete(scene_id)                               { rmApi.call("SceneDelete", [scene_id]); }
-function apiSceneJsonEdit(device,field_names)                   { rmApi.call("SceneJsonEdit", [device, field_names]); }
-function apiDeviceAdd(data,onchange)                            { rmApi.call("DeviceAdd", [data, onchange]); }
-function apiDeviceDelete(device)                                { rmApi.call("DeviceDelete",[device]); }
-function apiDeviceJsonEdit(device,json_buttons,json_display,display_size) { rmApi.call("DeviceJsonEdit", [device, json_buttons, json_display, display_size]); }
-function apiDeviceEdit(device,prefix,fields)                    { rmApi.call("DeviceEdit", [device,prefix,fields]); }
-
-
-//----------------------------------------------------------------
-
 class RemoteApiControl extends RemoteDefaultClass {
     constructor(name) {
         super(name);
@@ -259,7 +222,7 @@ class RemoteApiControl extends RemoteDefaultClass {
 
             // check if macro
             for (let i=0;i<types.length;i++) {
-                if (cmdButton.startsWith(types[i]+"_")) { return apiMacroSend(cmdButton, device); }
+                if (cmdButton.startsWith(types[i]+"_")) { rmApi.call("MacroSend", [cmdButton, device,""]); return; }
             }
 
             // split into device and button

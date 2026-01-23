@@ -538,18 +538,18 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
         let img_archive = rm_image(images["archive1"]);
 
         let onclick_reload = "setTimeout(function() { "+this.settings.name+".create(\"edit_"+type+"s\"); }, 2000);";
-        let onclick_archive = "apiMoveToArchive(\""+type+"\", \""+id+"\");" + onclick_reload;
+        let onclick_archive = "rmApi.call(\"MoveToArchive\", [\""+type+"\", \""+id+"\"]);" + onclick_reload;
 
         if (visible === "no")  { img_visible = rm_image(images["visible"]); }
-        if (type === "device") { delete_cmd  = "apiDeviceDelete"; }
-        else                   { delete_cmd  = "apiSceneDelete"; }
+        if (type === "device") { delete_cmd  = "rmApi.call(\"DeviceDelete\", \""+id+"\")"; }
+        else                   { delete_cmd  = "rmApi.call(\"SceneDelete\", \""+id+"\")"; }
 
         let edit_commands = "";
-        edit_commands += "<span onclick='apiRemoteChangeVisibility(\""+type+"\",\""+id+"\",\"rm_visibility_"+id+"\");"+onclick_reload+"' style='cursor:pointer;'>" + img_visible + "</span>&nbsp;&nbsp;&nbsp;";
+        edit_commands += "<span onclick='rmApi.call(\"ChangeVisibility\",[\""+type+"\",\""+id+"\",\"rm_visibility_"+id+"\"]);"+onclick_reload+"' style='cursor:pointer;'>" + img_visible + "</span>&nbsp;&nbsp;&nbsp;";
         edit_commands += "<span onclick='rmMain.set_main_var(\"edit_mode\",true);rmRemote.create(\""+type+"\",\""+id+"\");' style='cursor:pointer;'>" + img_edit + "</span>&nbsp;&nbsp;";
         edit_commands += "<input id=\"rm_visibility_"+id+"\" style=\"display:none;\" value=\""+visible+"\">";
         edit_commands += "<span onclick='"+onclick_archive+"' style='cursor:pointer;'>" + img_archive + "</span>&nbsp;&nbsp;";
-        edit_commands += "<span onclick='"+delete_cmd+"(\""+id+"\");' style='cursor:pointer;'>" + img_delete + "</span>";
+        edit_commands += "<span onclick='"+delete_cmd+"' style='cursor:pointer;'>" + img_delete + "</span>";
         return edit_commands;
     }
 
@@ -562,15 +562,10 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
         let img_archive = rm_image(images["archive2"]);
 
         let onclick_reload = "setTimeout(function() { "+this.settings.name+".create(\"edit_"+type+"s\"); }, 2000);";
-        let onclick_archive = "apiRestoreFromArchive(\""+type+"\", \""+id+"\");" + onclick_reload;
-
-        if (type === "device") { delete_cmd  = "apiDeviceDelete"; }
-        else                   { delete_cmd  = "apiSceneDelete"; }
+        let onclick_archive = "rmApi.call(\"RestoreFromArchive\",[\""+type+"\", \""+id+"\"]);" + onclick_reload;
 
         let edit_commands = "";
         edit_commands += "<span onclick='"+onclick_archive+"' style='cursor:pointer;'>" + img_archive + "</span>";
-        //edit_commands += "&nbsp;&nbsp;";
-        //edit_commands += "<span onclick='"+delete_cmd+"(\""+id+"\");' style='cursor:pointer;'>" + img_delete + "</span>";
         return edit_commands;
     }
 
@@ -582,7 +577,7 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
         let onchange2 = this.name + ".edit_filenames";
         let onchange = this.name + ".on_change_api(this.value);";
         let onchange3 = this.name + ".on_change_dev_type(this.value);";
-        let add_command = "apiDeviceAdd([#add_device_id#,#add_device_descr#,#add_device_label#,#add_device_api#,#add_device#,#add_device_device#,#add_device_remote#,#add_device_id_external#,#edit_image#],"+onchange2+");";
+        let add_command = "rmApi.call(#DeviceAdd#, [#add_device_id#,#add_device_descr#,#add_device_label#,#add_device_api#,#add_device#,#add_device_device#,#add_device_remote#,#add_device_id_external#,#edit_image#],"+onchange2+");";
         add_command += "rmMain.set_main_var(\"edit_mode\",true);";
         let width = this.input_width;
         let icon_container = "<button class='button device_off' style='width:50px;height:40px;'><div id='device_edit_button_image'></div></button>";
@@ -1186,7 +1181,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
             temp += this.tab.row("API Call:<br/>","<div id='api_command-"+api_name+"_"+device+"'>get=device-configuration</div><br/>");
             temp += this.tab.row("<div class='remote-edit-cmd' id='api_response_"+api_name+"_"+device+"'></div><br/>",false);
             temp += this.tab.end();
-            temp += this.button.edit("apiSendToDeviceApi(getValueById('api_device-"+api_name+"_"+device+"')+'||"+api_name+"_"+device+"', getTextById('api_command-"+api_name+"_"+device+"'), true);"+activate_copy_button, lang("CREATE"), "disabled", "create_button_"+api_name+"_"+device) + "&nbsp;";
+            temp += this.button.edit("rmApi.call('SendToDeviceApi', [getValueById('api_device-"+api_name+"_"+device+"')+'||"+api_name+"_"+device+"', true], getTextById('api_command-"+api_name+"_"+device+"'));"+activate_copy_button, lang("CREATE"), "disabled", "create_button_"+api_name+"_"+device) + "&nbsp;";
             temp += this.button.edit("copyTextById('JSON_copy',appMsg,'"+lang("COPIED_TO_CLIPBOARD")+"');"+activate_copy_button, lang("COPY"), "disabled", "copy_button_"+api_name+"_"+device);
 
             return temp;
@@ -1205,7 +1200,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
             temp += this.tab.row("API Call:<br/>","<div id='api_command-"+api_name+"_"+device+"'>api-discovery</div><br/>");
             temp += this.tab.row("<div class='remote-edit-cmd' id='api_response_"+api_name+"_"+device+"'></div><br/>", false);
             temp += this.tab.end();
-            temp += this.button.edit("apiSendToDeviceApi( '"+api_name+"_"+device+"||xx||"+api_name+"_"+device+"', getTextById('api_command-"+api_name+"_"+device+"'), true);"+activate_copy_button, lang("CREATE"), "", "create_button_"+api_name+"_"+device) + "&nbsp;";
+            temp += this.button.edit("rmApi.call('SendToDeviceApi', ['"+api_name+"_"+device+"||xx||"+api_name+"_"+device+"', true], getTextById('api_command-"+api_name+"_"+device+"'));"+activate_copy_button, lang("CREATE"), "", "create_button_"+api_name+"_"+device) + "&nbsp;";
             temp += this.button.edit("copyTextById('JSON_copy',appMsg,'"+lang("COPIED_TO_CLIPBOARD")+"');"+activate_copy_button, lang("COPY"), "disabled", "copy_button_"+api_name+"_"+device);
 
             return temp;

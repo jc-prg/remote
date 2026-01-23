@@ -546,9 +546,9 @@ class RemoteControl extends RemoteDefaultClass {
         edit += this.tab.line();
         edit += this.tab.row("<span class='center'>" +
             "<input id='remote_visibility' value='" + remote_visible + "' style='display:none;'>" +
-            this.button.edit("apiRemoteChangeVisibility('device','" + device + "','remote_visibility');", lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
-            this.button.edit("apiDeviceEdit('" + device + "','edit','description,label,interface,method,device_id,image');", lang("BUTTON_T_SAVE")) + "&nbsp;" +
-            this.button.edit("apiDeviceDelete('" + device + "');", "delete") + "&nbsp;" +
+            this.button.edit("rmApi.call('ChangeVisibility', ['device','" + device + "','remote_visibility']);", lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
+            this.button.edit("rmApi.call('DeviceEdit', ['" + device + "','edit','description,label,interface,method,device_id,image']);", lang("BUTTON_T_SAVE")) + "&nbsp;" +
+            this.button.edit("rmApi.call('DeviceDelete',['" + device + "']);", "delete") + "&nbsp;" +
             this.button.edit("rmMain.set_main_var('edit_mode',false);" + this.name + ".create('" + this.active_type + "','" + device + "');", lang("BUTTON_T_STOP_EDIT")) +
             "</span>",
             false
@@ -612,9 +612,9 @@ class RemoteControl extends RemoteDefaultClass {
         edit += "<div id='api_command_select'><select style='width:90%'><option>" + lang("LOADING") + " ...</option></select></div><br/>";
         edit += this.basic.input("api_command") + "<br/>";
         this.button.width = "80px;";
-        edit += this.button.edit("apiSendToDeviceApi( '" + device + "', getValueById('api_command'));"+activate_copy_button, lang("TRY_OUT"), "") + "&nbsp;";
+        edit += this.button.edit("rmApi.call('SendToDeviceApi', ['" + device + "', false], getValueById('api_command'));"+activate_copy_button, lang("TRY_OUT"), "") + "&nbsp;";
         this.button.width = "120px;";
-        edit += this.button.edit("apiSendToDeviceApi( '" + device + "', 'jc.get_available_commands()');"+activate_copy_button, lang("GET_AVAILABLE_COMMANDS"), "") + "&nbsp;";
+        edit += this.button.edit("rmApi.call('SendToDeviceApi', ['" + device + "', false], 'jc.get_available_commands()');"+activate_copy_button, lang("GET_AVAILABLE_COMMANDS"), "") + "&nbsp;";
         this.button.width = "80px;";
         edit += this.button.edit("copyTextById('JSON_copy',appMsg,'"+lang("COPIED_TO_CLIPBOARD")+"');", lang("COPY"), "disabled", "copy_button");
         edit += "<br/>&nbsp;<br/>";
@@ -716,7 +716,7 @@ class RemoteControl extends RemoteDefaultClass {
         if (select_1.value === "") { appMsg.alert(lang("API_EDIT_SELECT_API_DEVICE")); return; }
         if (select_2.value === "") { appMsg.alert(lang("API_EDIT_SELECT_REMOTE")); return; }
 
-        let cmd = "apiDeviceChangeConfigs('"+device+"');";
+        let cmd = "rmApi.call('DeviceChangeConfigs',['"+device+"']);";
         appMsg.confirm(lang("API_EDIT_REALLY_CHANGE"),cmd);
     }
 
@@ -805,7 +805,7 @@ class RemoteControl extends RemoteDefaultClass {
             this.button.edit(this.name + ".device_edit_remote('" + id + "','" + device + "');" +
                 this.name + ".device_remote('" + this.frames_remote[0] + "','" + device + "','remote_json_buttons','remote_json_channel');" +
                 this.name + ".device_not_used('" + this.frames_remote[2] + "','" + device + "','remote_json_buttons');", lang("BUTTON_T_RESET")) + "&nbsp;" +
-            this.button.edit("apiDeviceJsonEdit('" + device + "','remote_json_buttons','remote_json_display','remote_display_size');", lang("BUTTON_T_SAVE")) + "&nbsp;" +
+            this.button.edit("rmApi.call('DeviceJsonEdit', ['" + device + "','remote_json_buttons','remote_json_display','remote_display_size']);", lang("BUTTON_T_SAVE")) + "&nbsp;" +
             this.button.edit(this.name + ".preview('device','" + device + "');", lang("BUTTON_T_PREVIEW")) + "&nbsp;" +
             this.button.edit("rmMain.set_main_var('edit_mode',false);" + this.name + ".create('" + this.active_type + "','" + device + "');", "stop edit") +
             "</span><br/>";
@@ -1133,9 +1133,9 @@ class RemoteControl extends RemoteDefaultClass {
             edit += this.tab.line();
             edit += this.tab.row("<span class='center'>" +
                 "<input id='scene_visibility' value='" + scene_info["visible"] + "' style='display:none;'>" +
-                this.button.edit("apiRemoteChangeVisibility('scene','" + scene + "','scene_visibility');", lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
-                this.button.edit("apiSceneEdit('" + scene + "','edit','description,label,image');", lang("BUTTON_T_SAVE"), "") + "&nbsp;" +
-                this.button.edit("apiSceneDelete('" + scene + "');", lang("BUTTON_T_DELETE"), "") + "&nbsp;" +
+                this.button.edit("rmApi.call('ChangeVisibility', ['scene','" + scene + "','scene_visibility']);", lang("BUTTON_T_SHOW_HIDE")) + "&nbsp;" +
+                this.button.edit("rmApi.call('SceneEdit', ['" + scene + "','edit','description,label,image']);", lang("BUTTON_T_SAVE"), "") + "&nbsp;" +
+                this.button.edit("rmApi.call('SceneDelete', ['" + scene + "']);", lang("BUTTON_T_DELETE"), "") + "&nbsp;" +
                 this.button.edit("rmMain.set_main_var('edit_mode',false);" + this.name + ".create('" + this.active_type + "','" + scene + "');", lang("BUTTON_T_STOP_EDIT")) +
                 "</span>",
                 false
@@ -1180,7 +1180,7 @@ class RemoteControl extends RemoteDefaultClass {
         this.edit_mode_remote = true;
         let rm_data = this.main_data("scene", scene, preview);
         let button_cmd_reset = this.name + ".scene_edit_remote('" + id + "','" + scene + "');" + this.name + ".scene_remote(  '" + this.frames_remote[0] + "','" + scene + "','json::remote','json::display');" + this.name + ".scene_channels('" + this.frames_remote[2] + "','" + scene + "','json::macro-channel');";
-        let button_cmd_save = "apiSceneJsonEdit('" + scene + "','json::remote,json::devices,json::display,json::display-size,json::chart,json::macro-channel,json::macro-scene-on,json::macro-scene-off,json::macro-scene');";
+        let button_cmd_save = "rmApi.call('SceneJsonEdit', ['" + scene + "','json::remote,json::devices,json::display,json::display-size,json::chart,json::macro-channel,json::macro-scene-on,json::macro-scene-off,json::macro-scene']);";
         let button_cmd_preview = this.name + ".scene_remote(  '" + this.frames_remote[0] + "','" + scene + "','json::remote','json::display','json::display-size','json::chart');" + this.name + ".scene_channels('" + this.frames_remote[2] + "','" + scene + "','json::macro-channel');";
         let button_cmd_stop = "rmMain.set_main_var('edit_mode',false);" + this.name + ".create('" + this.active_type + "','" + scene + "');";
 
@@ -1319,7 +1319,7 @@ class RemoteControl extends RemoteDefaultClass {
         delete scene_macros["!scene-on!"];
         delete scene_macros["!scene-off!"];
         setValueById("json::macro-scene", JSON.stringify(scene_macros));
-        apiSceneJsonEdit(scene,'json::macro-channel,json::macro-scene-on,json::macro-scene-off,json::macro-scene');
+        rmApi.call("SceneJsonEdit", [scene,'json::macro-channel,json::macro-scene-on,json::macro-scene-off,json::macro-scene']);
     }
 
     /* reload JSON fields for remote and device definition as part of preview */
