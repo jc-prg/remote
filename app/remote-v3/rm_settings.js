@@ -112,7 +112,7 @@ class RemoteSettings extends RemoteDefaultClass {
             rmStatusShow.visualize_element_button('button_manual_mode', getTextById('button_manual_mode'));
             rmStatusShow.visualize_element_button('button_show_code', getTextById('button_show_code'));
 
-            startDragAndDrop("sort_devices", apiMovePosition);
+            startDragAndDrop("sort_devices", movePosition);
         }
         else if (selected_mode === "edit_scenes") {
             rmMain.set_title(lang('SETTINGS_SCENES'));
@@ -128,7 +128,7 @@ class RemoteSettings extends RemoteDefaultClass {
             this.index_buttons_html = this.index(true, "SETTINGS_SCENES");
             this.create_show_ext();
 
-            startDragAndDrop("sort_scenes", apiMovePosition);
+            startDragAndDrop("sort_scenes", movePosition);
         }
         else if (selected_mode === "edit_interfaces") {
             rmMain.set_title(lang('SETTINGS_API'));
@@ -388,7 +388,7 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
         set_temp += this.tab.row( "Label:",         this.elements.input("add_scene_label") );
         set_temp += this.tab.row( "Description:",   this.elements.input("add_scene_descr") );
         set_temp += this.tab.row( "<span class='center'>" +
-            this.button.sized("add_scene",lang("ADD_SCENE"),"settings","apiSceneAdd([#add_scene_id#,#add_scene_label#,#add_scene_descr#]);") +
+            this.button.sized("add_scene",lang("ADD_SCENE"),"settings","rmApi.call(#SceneAdd#, [#add_scene_id#,#add_scene_label#,#add_scene_descr#]);") +
             "</span>", false);
         set_temp += this.tab.end();
         setting  += this.basic.container("setting_add_scene",lang("ADD_SCENE"),set_temp,open_add_scene);
@@ -829,7 +829,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
 
         this.button.width = "120px";
         text += this.button.edit("apiReconnectInterface('all');", "Reconnect APIs", "", "api_reconnect_all") + "&nbsp;&nbsp;";
-        text += this.button.edit("apiDiscoverDevices();", "Device discovery", "", "api_discover_all");
+        text += this.button.edit("rmApi.call('DiscoverDevices');", "Device discovery", "", "api_discover_all");
         return text;
     }
 
@@ -879,8 +879,8 @@ class RemoteSettingsApi extends RemoteDefaultClass {
                 let initial_visible = "display:none;";
                 if (!interface_status[key]["active"]) { initial_visible = "display:none"; }
 
-                let command_on = 'javascript:apiInterfaceOnOff(\''+key+'\', \'True\'); document.getElementById(\'interface_edit_'+key+'\').style.display=\'block\';';
-                let command_off = 'javascript:apiInterfaceOnOff(\''+key+'\', \'False\');';
+                let command_on = 'javascript:rmApi.call(\'InterfaceOnOff\', [\''+key+'\', \'True\']); document.getElementById(\'interface_edit_'+key+'\').style.display=\'block\';';
+                let command_off = 'javascript:rmApi.call(\'InterfaceOnOff\', [\''+key+'\', \'False\']);';
                 let command_show_hide = "let el_"+key2+" = document.getElementById(\"interface_edit_"+key+"\"); ";
                 command_show_hide += "if (el_"+key2+".style.display == \"block\") { el_"+key2+".style.display = \"none\"; } else { el_"+key2+".style.display = \"block\"; el_"+key2+".scrollIntoView({ behavior: \"smooth\", block: \"nearest\" }); }";
 
@@ -908,7 +908,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
 
     // load edit_ap_config()
     edit_api_config_load() {
-        apiGetConfig_showInterfaceData(this.edit_api_config);
+        rmApi.call("ConfigInterfaceShow", [], undefined, this.edit_api_config);
     }
 
     // create dialogs to edit api settings */
@@ -1041,12 +1041,12 @@ class RemoteSettingsApi extends RemoteDefaultClass {
             let connected_devices = devices_per_interface[api_name][device].length;
 
             let api_dev = api_name.toLowerCase() + "_" + device.toLowerCase();
-            let link_reconnect = "apiReconnectInterface_exec( \""+api_name+"_"+device+"\");"
-            let link_delete = "apiDeleteApiDevice(\""+api_name+"\",\""+device+"\");";
+            let link_reconnect = "rmApi.call(\"ReconnectInterface\", [\""+api_name+"_"+device+"\"]);"
+            let link_delete = "rmApi.call(\"ApiDeviceDelete\", [\""+api_name+"\",\""+device+"\"]);";
 
             // create edit dialog
-            let command_on = `apiApiDeviceOnOff('${api_name}', '${device}', 'True');`;
-            let command_off = `apiApiDeviceOnOff('${api_name}', '${device}', 'False');`;
+            let command_on = `rmApi.call('ApiDeviceOnOff', ['${api_name}', '${device}', 'True']);`;
+            let command_off = `rmApi.call('ApiDeviceOnOff', ['${api_name}', '${device}', 'False']);`;
             let init = rmStatus.status_system("structure")[api_name]["api_devices"][device]["active"];
 
             let power_device = interfaces[api_name]["API-Devices"][device]["PowerDevice"] || "N/A";
@@ -1095,7 +1095,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
             let connected_devices = devices_per_interface[api_name][device].length;
 
             let api_dev = api_name.toLowerCase() + "_" + device.toLowerCase();
-            let link_save = "apiSetConfig_InterfaceData( \""+api_name+"_"+device+"\", \"api_status_edit_"+api_name+"_"+device+"\" );" + "rmJson.disable(\"api_status_edit_"+api_name+"_"+device+"\");";
+            let link_save = "rmApi.call(\"ConfigInterface\", [\""+api_name+"_"+device+"\", \"api_status_edit_"+api_name+"_"+device+"\"]);" + "rmJson.disable(\"api_status_edit_"+api_name+"_"+device+"\");";
             let link_edit = "rmJson.disable(\"api_status_edit_"+api_name+"_"+device+"\",false);" +
                 "this.className=\"rm-button hidden\";" + "document.getElementById(\"save_"+api_dev+"\").className=\"rm-button settings\";";
 
@@ -1124,7 +1124,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
                 if (show_buttons === undefined) { buttons_plus += "<hr style='width:100%;float:left;'/>"; }
                 for (let i=0;i<rmData.apis.data("list_api_commands")[api_name+"_"+device].length > 0;i++) {
                     let command = rmData.apis.data("list_api_commands")[api_name+"_"+device][i];
-                    let command_link = "apiSendToApi(\"" + api_name + "_" + device + "::" +command + "\", \""+api_name+"\");appMsg.info(\"Command send: " + api_name + "_" + device + "::" + command + "\");";
+                    let command_link = "rmApi.call(\"SendToApi\", \"" + api_name + "_" + device + "::" +command + "\");appMsg.info(\"Command send: " + api_name + "_" + device + "::" + command + "\");";
                     buttons_plus += this.button.sized("api_cmd_"+api_name+"_"+device, command, "settings", command_link);
                 }
             }
@@ -1247,7 +1247,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
             temp += this.tab.end();
             temp += "<br/>";
 
-            temp += this.button.edit("apiAddApiDevice('"+api_name+"');", lang("ADD"));
+            temp += this.button.edit("rmApi.call('ApiDeviceAdd', '"+api_name+"');", lang("ADD"));
             temp += "</div>";
 
             return temp;
@@ -1433,7 +1433,7 @@ class RemoteSettingsGeneral extends RemoteDefaultClass {
             this.button.sized("set02","check updates","settings","appFW.requestAPI(\"GET\",[\"version\",\"" + appVersion +"\"], \"\", appMsg.alertReturn, \"wait\");")
         );
         set_temp += this.tab.row("",
-            this.button.sized("set03","restart server","settings","apiShutdownRestart();")
+            this.button.sized("set03","restart server","settings","rmApi.call(#ShutdownRestart#);")
         );
         set_temp += this.tab.row("<i>Devices:</i>",
             this.button.sized("set21","Dev ON/OFF", "settings","rmApi.call(#Reset#);") + "&nbsp;" +
@@ -1785,7 +1785,7 @@ class RemoteSettingsMacro extends RemoteDefaultClass {
         let setting   = "";
         setting  += "<br/><span class='center'><div id='macros-edit-json'></div></span>";
         setting  += "<span class='center'><div style='width:100%;text-align:center;'><br/>";
-        setting  += this.button.sized("add_scene",lang("BUTTON_T_SAVE"),"settings","apiMacroChange([#groups#,#macro#,#dev-on#,#dev-off#]);","") + "&nbsp;";
+        setting  += this.button.sized("add_scene",lang("BUTTON_T_SAVE"),"settings","rmApi.call(#MacroChange#, [#groups#,#macro#,#dev-on#,#dev-off#]);","") + "&nbsp;";
         setting  += this.button.sized("reset_scene",lang("BUTTON_T_RESET"),"settings",this.settings.name+".create(\"edit_macros\");","");
         setting  += "<br/></div></span>";
         return setting;
@@ -2196,7 +2196,7 @@ class RemoteSettingsRecording extends RemoteDefaultClass {
         }
         this.logging.debug("Save recording configuration ...");
         this.logging.debug(configuration);
-        apiRecordingEdit(configuration);
+        rmApi.call("RecordingEdit", [], configuration);
 
         setTimeout(()=>{
             this.create();

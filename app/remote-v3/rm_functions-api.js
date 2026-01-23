@@ -15,52 +15,20 @@ function apiButtonAdd(device_id, button_id)                     { rmApi.call("Bu
 //-> unclear where it is or was used? - assumption: not required any more, as working with complete remote (json format)
 function apiTemplateAdd(device_id, template_id)                 { rmApi.call("TemplateAdd", [device_id, template_id]); } // -> Anpassung an rm3api.yml erforderlich (zusätzliches ungenutztes Parameter)
 //-> unclear where it is or was used? - assumption: not required any more, as working with complete remote (json format)
-function apiDeviceApiSettingsEdit(device,prefix,fields)         { rmApi.call("ApiDeviceSettingsEdit", [device,prefix,fields]); }
-//-> unclear where it is or was used?
-// switch interfaces and API devices On or Off
-function apiApiDeviceOnOff_button(interface, api_device, button) {
-
-    let value  = button.innerHTML;
-    if (value === "ON") {
-        apiApiDeviceOnOff(interface, api_device, "False");
-        button.innerHTML = "OFF";
-    }
-    else if (value === "OFF") {
-        apiApiDeviceOnOff(interface, api_device, "True");
-        button.innerHTML = "ON";
-    }
-    else if (value === "ERROR") {
-        apiApiDeviceOnOff(interface, api_device, "False");
-        button.innerHTML = "OFF";
-    }
-}
 
 
 //----------------------------------------------------------------
 // refactoring done
 //----------------------------------------------------------------
 
-function apiInterfaceOnOff(interface, value)                    { rmApi.call("InterfaceOnOff", [interface, value]); }
 function apiRemoteChangeVisibility(type, device_id, value_id)   { rmApi.call("ChangeVisibility", [type, device_id, value_id]); }
-function setMainAudio(device)                                   { rmApi.call("SetMainAudio", device); }
-function apiDiscoverDevices()                                   { rmApi.call("DiscoverDevices"); }
-function apiReconnectInterface(interface_id)                    { rmApi.call("ReconnectInterface", interface_id); }
-function apiShutdownRestart()                                   { rmApi.call("ShutdownRestart"); }
 function apiMoveToArchive(remote_type, remote_id)               { rmApi.call("MoveToArchive", [remote_type, remote_id]); }
 function apiRestoreFromArchive(remote_type, remote_id)          { rmApi.call("RestoreFromArchive", [remote_type, remote_id]); }
-function apiSendToApi( api_command )                            { rmApi.call("SendToApi", api_command ); }
 function apiDeviceChangeConfigs(remote_id)                      { rmApi.call("DeviceChangeConfigs", remote_id); }
 function apiSendToDeviceApi( device, api_command, external_id=false ) { rmApi.call( "SendToDeviceApi", [device, external_id], api_command);}
-function apiGetConfig_showInterfaceData( callback )             { rmApi.call("ConfigInterfaceShow", [], undefined, callback); }
-function apiSetConfig_InterfaceData( device, config )           { rmApi.call("ConfigInterface", [device, config]); }
-function apiGetConfig_createDropDown( device, callback )        { rmApi.call("ConfigDropDown", [device], undefined, callback); }
 
-// partly checked ....
-function apiMovePosition(id, dnd_list, from, to)                { rmApi.call("RemoteMove", [id, dnd_list, from, to]); }
 function apiMacroSend( macro, device="", content="" ){ rmApi.call("MacroSend", [macro, device, content]); }
-function apiMacroChange(data=[])                          { rmApi.call("MacroChange", [], data); }
-function apiCommandSend(cmdButton, sync="", callback="", device="")  { rmApi.call("CommandSend", [cmdButton, sync, callback, device], undefined, callback); }
-function apiSceneAdd(data)                                      { rmApi.call("SceneAdd", [], data); }
+function apiCommandSend(cmdButton, sync="", callback="", device="")  { rmApi.call("CommandSend", [cmdButton, sync, device], undefined, callback); }
 function apiSceneEdit(device,prefix,fields)                     { rmApi.call("SceneEdit", [device,prefix,fields]); }
 function apiSceneDelete(scene_id)                               { rmApi.call("SceneDelete", [scene_id]); }
 function apiSceneJsonEdit(device,field_names)                   { rmApi.call("SceneJsonEdit", [device, field_names]); }
@@ -68,16 +36,6 @@ function apiDeviceAdd(data,onchange)                            { rmApi.call("De
 function apiDeviceDelete(device)                                { rmApi.call("DeviceDelete",[device]); }
 function apiDeviceJsonEdit(device,json_buttons,json_display,display_size) { rmApi.call("DeviceJsonEdit", [device, json_buttons, json_display, display_size]); }
 function apiDeviceEdit(device,prefix,fields)                    { rmApi.call("DeviceEdit", [device,prefix,fields]); }
-function apiCommandRecord(device_id, button_id, read_from_input=false) { rmApi.call("CommandRecord", [device_id, button_id, read_from_input]); }
-function apiApiDeviceOnOff(interface, api_device, value)        { rmApi.call("ApiDeviceOnOff", [interface, api_device, value]); }
-function apiRecordingEdit(config)                               { rmApi.call("RecordingEdit", [], config); }
-function apiAddApiDevice(api_name)                              { rmApi.call("ApiDeviceAdd", api_name); }
-function apiDeleteApiDevice(api_name, api_device)               { rmApi.call("ApiDeviceDelete", [api_name, api_device]); }
-
-
-// might be useful again - but not accessible at the moment
-function apiCommandDelete(device_id, button_id)                 { rmApi.call("CommandDelete", [device_id, button_id]); }
-    //-> part of rm_remotes, for some reason not accessible yet (line 771 and following)
 
 
 //----------------------------------------------------------------
@@ -96,60 +54,57 @@ class RemoteApiControl extends RemoteDefaultClass {
         this.log_level_status = "warning";
         this.temp_data = {};
         this.temp_callback = undefined;
-        this.commands = {
-            // potentially not required and more
+        this.commands_unused = {
             "ApiDeviceSettingsEdit":{ command: "device_api_settings", method: "POST", confirm: false, param: 3, prepare: true, answer: this.answer },
             "ButtonAdd":            { command: "button", method: "PUT", confirm: false, param: 2, prepare: true, answer: this.answer },
             "ButtonDelete":         { command: "button", method: "DELETE", confirm: true, message: "BUTTON_ASK_DELETE_NUMBER", param: 2, prepare: true, answer: this.answer },
             "GroupSend":            { command: "macro", method: "GET", confirm: false, param: 3, prepare: true, answer: this.answer },
             "TemplateAdd":          { command: "template", method: "PUT", confirm: true, message: "TEMPLATE_OVERWRITE", param: 2, prepare: true, answer: this.answer },
-
-            // to be checked
-            "CommandDelete":        { command: "command", method: "DELETE", confirm: true, message: "BUTTON_ASK_DELETE", param: 2, prepare: true, answer: this.answer },
-
-            // checked
-            "ApiDeviceAdd":         { command: "edit_api_device", method: "PUT", confirm: false, param: 1, prepare: true, answer: this.answer },
-            "ApiDeviceDelete":      { command: "edit_api_device", method: "DELETE", confirm: true, message: "API_DEVICE_DELETE", prepare: true, param: 2, answer: this.answer },
-            "ApiDeviceOnOff":       { command: "api_device", method: "PUT", confirm: false, param: 3, answer: "" },
-            "ChangeVisibility":     { command: "visibility", method: "PUT", confirm: false, param: 3, prepare: true, answer: this.answer },
-            "CommandRecord":        { command: "command", method: "POST", confirm: true, message: "BUTTON_RECORD", param: 3, prepare: true, answer: this.answer },
-            "CommandSend":          { command: "send", method: "GET", confirm: false, param: 4, prepare: true },
-            "CommandSendWait":      { command: "send", method: "GET", confirm: false, param: 4, prepare: true, wait: true },
-            "CommandSendCheck":     { command: "send_check", method: "GET", confirm: false, param: 4, prepare: true },
-            "CommandSendCheckWait": { command: "send_check", method: "GET", confirm: false, param: 4, prepare: true, wait: true },
-            "ConfigInterface":      { command: ["config", "interface"], method: "POST", confirm: false, param: 1, prepare: true, answer: this.answer },
+        }
+        this.commands = {
+            "ApiDeviceAdd":         { command: "edit_api_device", method: "PUT", confirm: false, param: 1, param_info: "[api_name]", prepare: true, answer: this.answer },
+            "ApiDeviceDelete":      { command: "edit_api_device", method: "DELETE", confirm: true, param: 2, param_info: "[api_name, api_device]", message: "API_DEVICE_DELETE", prepare: true, answer: this.answer },
+            "ApiDeviceOnOff":       { command: "api_device", method: "PUT", confirm: false, param: 3, param_info: "[interface, api_device, value]" },
+            "ChangeVisibility":     { command: "visibility", method: "PUT", confirm: false, param: 3, param_info: "[rm_type, rm_id, value_id]", prepare: true, answer: this.answer },
+            "CommandDelete":        { command: "command", method: "DELETE", confirm: true, message: "BUTTON_ASK_DELETE", param: 2, param_info: "[device_id, button_id]", prepare: true, answer: this.answer },
+            "CommandRecord":        { command: "command", method: "POST", confirm: true, message: "BUTTON_RECORD", param: 3, param_info: "[device_id, button_id, read_from_input]", prepare: true, answer: this.answer },
+            "CommandSend":          { command: "send", method: "GET", confirm: false, param: 3, param_info: "[cmdButton, sync, device]", prepare: true },
+            "CommandSendWait":      { command: "send", method: "GET", confirm: false, param: 3, param_info: "[cmdButton, sync, device]", prepare: true, wait: true },
+            "CommandSendCheck":     { command: "send_check", method: "GET", confirm: false, param: 3, param_info: "[cmdButton, sync, device]", prepare: true },
+            "CommandSendCheckWait": { command: "send_check", method: "GET", confirm: false, param:  3, param_info: "[cmdButton, sync, device]", prepare: true, wait: true },
+            "ConfigInterface":      { command: ["config", "interface"], method: "POST", confirm: false, param: 1, param_info: "[device, config]", prepare: true, answer: this.answer },
             "ConfigInterfaceShow":  { command: ["config", "interface"], method: "GET", confirm: false, param: 0, prepare: true },
-            "ConfigDropDown":       { command: ["config", "device"], method: "GET", confirm: false, param: 1, prepare: true },
-            "DeviceAdd":            { command: "device", method: "PUT", confirm: false, param: 2, prepare: true, answer: this.answer },
-            "DeviceChangeConfigs":  { command: "device-api-settings", method: "POST", confirm: false, param: 1, prepare: true, answer: this.answer },
-            "DeviceDelete":         { command: "device", method: "DELETE", confirm: true, message: "DEVICE_ASK_DELETE", param: 1, prepare: true, answer: this.answer },
-            "DeviceEdit":           { command: "device", method: "POST", confirm: false, param: 3, prepare: true, answer: this.answer },
-            "DeviceJsonEdit":       { command: "device", method: "POST", confirm: false, param: 4, prepare: true, answer: this.answer },
+            "ConfigDropDown":       { command: ["config", "device"], method: "GET", confirm: false, param: 1, param_info: "[device]", prepare: true },
+            "DeviceAdd":            { command: "device", method: "PUT", confirm: false, param: 2, param_info: "[data, onchange]", prepare: true, answer: this.answer },
+            "DeviceChangeConfigs":  { command: "device-api-settings", method: "POST", confirm: false, param: 1, param_info: "[remote_id]", prepare: true, answer: this.answer },
+            "DeviceDelete":         { command: "device", method: "DELETE", confirm: true, message: "DEVICE_ASK_DELETE", param: 1, param_info: "[device_id]", prepare: true, answer: this.answer },
+            "DeviceEdit":           { command: "device", method: "POST", confirm: false, param: 3, param_info: "[device_id, prefix, fields]", prepare: true, answer: this.answer },
+            "DeviceJsonEdit":       { command: "device", method: "POST", confirm: false, param: 4, param_info: "[device_id, json_buttons, json_display, display_size]", prepare: true, answer: this.answer },
             "DiscoverDevices":      { command: "discovery", method: "POST", confirm: true, message: "API_DEVICE_DISCOVERY", param: 0, prepare: false, answer: this.answer },
-            "InterfaceOnOff":       { command: "interface", method: "PUT", confirm: false, param: 2, prepare: false },
+            "InterfaceOnOff":       { command: "interface", method: "PUT", confirm: false, param: 2, param_info: "[interface, value]", prepare: false },
             "LoggingLoad":          { command: "log_queue", method: "GET", confirm: false, param: 0, prepare: false },
-            "MacroChange":          { command: "macro", method: "PUT", confirm: false, param: 0, prepare: true, answer: this.answer },
-            "MacroSend":            { command: "macro", method: "GET", confirm: false, param: 3, prepare: true, answer: this.answer },
-            "MainVolume":           { command: "set", method: "GET", param: 1, prepare: true, answer: this.answer },
-            "MoveToArchive":        { command: ["archiving", "move"], method: "PUT", confirm: true, message: "REMOTE_MOVE_TO_ARCHIVE", param: 2, prepare: false, answer: this.answer },
-            "ReconnectInterface":   { command: "reconnect", method: "POST", confirm: true, message: "API_RECONNECT_ALL", param: 1, prepare: false, answer: this.answer },
-            "RecordingEdit":        { command: "edit-recording", method: "PUT", confirm: false, param: 0, prepare: false, answer: this.answer },
-            "RemoteMove":           { command: "move", method: "POST", confirm: false, param: 4, prepare: true, answer: this.answer },
+            "MacroChange":          { command: "macro", method: "PUT", confirm: false, param: 4, param_info: "['groups','macro','dev-on','dev-off']", prepare: true, answer: this.answer },
+            "MacroSend":            { command: "macro", method: "GET", confirm: false, param: 3, param_info: "[macro, device, content]", prepare: true, answer: this.answer },
+            "MainVolume":           { command: "set", method: "GET", param: 1, param_info: "[volume]", prepare: true, answer: this.answer },
+            "MoveToArchive":        { command: ["archiving", "move"], method: "PUT", confirm: true, message: "REMOTE_MOVE_TO_ARCHIVE", param: 2, param_info: "[remote_type, remote_id]", prepare: false, answer: this.answer },
+            "ReconnectInterface":   { command: "reconnect", method: "POST", confirm: true, message: "API_RECONNECT_ALL", param: 1, param_info: "[interface_id]", prepare: false, answer: this.answer },
+            "RecordingEdit":        { command: "edit-recording", method: "PUT", confirm: false, param: 0, data: true, prepare: false, answer: this.answer },
+            "RemoteMove":           { command: "move", method: "POST", confirm: false, param: 4, param_info: "[id, dnd_list, from, to]", prepare: true, answer: this.answer },
             "Reset":                { command: "reset", method:"GET", confirm: true, message: "RESET_SWITCH_OFF", answer: this.answer },
             "ResetAudio":           { command: "reset-audio", method:"GET", confirm: true, message: "RESET_VOLUME_TO_ZERO", answer: this.answer },
-            "RestoreFromArchive":   { command: ["archiving", "restore"], method: "PUT", confirm: true, message: "REMOTE_RESTORE_FROM_ARCHIVE", param: 2, prepare: false, answer: this.answer },
-            "SceneAdd":             { command: "scene", method: "PUT", confirm: false, param: 0, prepare: true, answer: this.answer },
-            "SceneDelete":          { command: "scene", method: "DELETE", confirm: true, message: "SCENE_ASK_DELETE", param: 1, prepare: true, answer: this.answer },
-            "SceneEdit":            { command: "scene", method: "POST", confirm: false, param: 3, prepare: true, answer: this.answer },
-            "SceneJsonEdit":        { command: "scene", method: "POST", confirm: false, param: 2, prepare: true, answer: this.answer },
-            "SendToApi":            { command: "send-api-command", method: "POST", confirm: false, param: 1, prepare: false, answer: this.answer_api_request },
-            "SendToDeviceApi":      { command: "send-api", method: "POST", confirm: false, param: 2, prepare: true, answer: this.answer_api_request },
-            "SendToDeviceApi-ext":  { command: "send-api-external", method: "POST", confirm: false, param: 2, prepare: true, answer: this.answer_api_request },
-            "SetMainAudio":         { command: "main-audio", method: "POST", confirm: false, param: 1, answer: this.answer },
+            "RestoreFromArchive":   { command: ["archiving", "restore"], method: "PUT", confirm: true, message: "REMOTE_RESTORE_FROM_ARCHIVE", param: 2, param_info: "[remote_type, remote_id]", prepare: false, answer: this.answer },
+            "SceneAdd":             { command: "scene", method: "PUT", confirm: false, param: 3, param_info: "[add_scene_id,add_scene_label,add_scene_description]", prepare: true, answer: this.answer },
+            "SceneDelete":          { command: "scene", method: "DELETE", confirm: true, message: "SCENE_ASK_DELETE", param: 1, param_info: "[scene_id]", prepare: true, answer: this.answer },
+            "SceneEdit":            { command: "scene", method: "POST", confirm: false, param: 3, param_info: "[scene_id, prefix, fields]", prepare: true, answer: this.answer },
+            "SceneJsonEdit":        { command: "scene", method: "POST", confirm: false, param: 2, param_info: "[scene_id, field_names]", prepare: true, answer: this.answer },
+            "SendToApi":            { command: "send-api-command", method: "POST", confirm: false, param: 1, param_info: "[api_command]", prepare: false, answer: this.answer_api_request },
+            "SendToDeviceApi":      { command: "send-api", method: "POST", confirm: false, param: 2, param_info: "[device, external_id]", prepare: true, answer: this.answer_api_request },
+            "SendToDeviceApi-ext":  { command: "send-api-external", method: "POST", confirm: false, param: 2, param_info: "[device, external_id]", prepare: true, answer: this.answer_api_request },
+            "SetMainAudio":         { command: "main-audio", method: "POST", confirm: false, param: 1, param_info: "[volume]", answer: this.answer },
             "ShutdownRestart":      { command: "shutdown", method: "GET", confirm: true, message: "RESTART", param: 0, prepare: false, answer: this.answer },
-            "TimerDelete":          { command: "timer-edit", method: "DELETE", confirm: true, message: "TIMER_DELETE", param: 1, prepare: false, answer: this.answer },
-            "TimerEdit":            { command: "timer-edit", method: "PUT", confirm: false, prepare: true, param: 2, answer: this.answer },
-            "TimerTry":             { command: "timer-try", method: "PUT", confirm: true, message: "TIMER_TRY", param: 1, prepare: false, answer: this.answer },
+            "TimerDelete":          { command: "timer-edit", method: "DELETE", confirm: true, message: "TIMER_DELETE", param: 1, param_info: "[timer_id]", prepare: false, answer: this.answer },
+            "TimerEdit":            { command: "timer-edit", method: "PUT", confirm: false, prepare: true, param: 2, param_info: "[key, data_fields]", answer: this.answer },
+            "TimerTry":             { command: "timer-try", method: "PUT", confirm: true, message: "TIMER_TRY", param: 1, param_info: "[timer_id]", prepare: false, answer: this.answer },
         }
     }
 
@@ -158,8 +113,17 @@ class RemoteApiControl extends RemoteDefaultClass {
         if (typeof param === "string") { param = [param]; }
         this.status("call: " + cmd + " | " + JSON.stringify(param));
 
-        if (!this.commands[cmd]) { this.logging.error("Command not defined: " + cmd); return; }
-        else if (this.commands[cmd].param !== param.length) { this.logging.error("Got other amount of parameters than required: " + this.commands[cmd].param + " param required, got " + param); return; }
+        if (!this.commands[cmd]) {
+            this.logging.error("call: command not defined: " + cmd);
+            return;
+        } else if (this.commands[cmd].param !== param.length) {
+            this.logging.error("call: got other amount of parameters than required: " + this.commands[cmd].param + " param required, got " + param);
+            return;
+        } else if (this.commands[cmd].data === true && (data === undefined || data === "")) {
+            this.logging.error("call: 'data' are required but not delivered as parameter.");
+            return;
+        }
+
         let command = this.commands[cmd];
 
         if (data)                        { this.temp_data[cmd] = data; }
@@ -247,7 +211,7 @@ class RemoteApiControl extends RemoteDefaultClass {
             let device, button;
             let [device_id, button_id, read_from_input] = param;
 
-            if (!this.status_ok("device", device_id, cmd)) { return; }
+            if (!this.status_ok("device", device_id, cmd, false, ["OFF"])) { return; }
 
             if (document.getElementById(device_id) && read_from_input) {
                 device	= document.getElementById(device_id).value.toLowerCase();
@@ -287,9 +251,9 @@ class RemoteApiControl extends RemoteDefaultClass {
             param = button.split("_");
             param = param.push(device);
         }
-        else if (cmd === "CommandSend") {
+        else if (cmd === "CommandSend" || cmd === "CommandSendWait" || cmd === "CommandSendCheck" || cmd === "CommandSendCheckWait") {
 
-            let [cmdButton, sync, callback, device] = param;
+            let [cmdButton, sync, device] = param;
             let send_command = [];
             let types = ["macro", "scene-on", "scene-off", "dev-on", "dev-off"];
 
@@ -402,11 +366,12 @@ class RemoteApiControl extends RemoteDefaultClass {
         }
         else if (cmd === "MacroChange") {
             let send_data = {};
-            for (let i=0;i<this.temp_data[cmd].length;i++) {
-                let key = this.temp_data[cmd][i];
+            for (let i=0;i<param.length;i++) {
+                let key = param[i];
                 try         { send_data[key] = JSON.parse(getValueById(key)); }
                 catch(e)    { appMsg.alert("<b>JSON Macro " + key + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
             }
+            param = [];
             this.temp_data[cmd] = send_data;
         }
         else if (cmd === "MacroSend") {
@@ -460,13 +425,13 @@ class RemoteApiControl extends RemoteDefaultClass {
         else if (cmd === "RemoteMoveUpdate") {}
         else if (cmd === "SceneAdd") {
             let send_data = {};
-            send_data["id"]             = getValueById(data[0]).replaceAll("_","-");
-            send_data["label"]          = getValueById(data[1]);
-            send_data["description"]    = getValueById(data[2]);
+            send_data["id"]             = getValueById(param[0]).replaceAll("_","-");
+            send_data["label"]          = getValueById(param[1]);
+            send_data["description"]    = getValueById(param[2]);
 
-            if (dataAll["CONFIG"]["scenes"][send_data["id"]])   { appMsg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
-            else if (send_data["id"] === "")                    { appMsg.alert(lang("SCENE_INSERT_ID")); return; }
-            else if (send_data["label"] === "")                 { appMsg.alert(lang("SCENE_INSERT_LABEL")); return; }
+            if (rmData.scenes.exists(send_data["id"]))   { appMsg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
+            else if (send_data["id"] === "")             { appMsg.alert(lang("SCENE_INSERT_ID")); return; }
+            else if (send_data["label"] === "")          { appMsg.alert(lang("SCENE_INSERT_LABEL")); return; }
 
             this.temp_data[cmd] = send_data;
             param = [send_data["id"]];
@@ -596,12 +561,12 @@ class RemoteApiControl extends RemoteDefaultClass {
         const reload_drop_down = ["ChangeVisibility", "MainVolume", "RemoteMove"];
         const reload_app = [
             "ApiDeviceSettingsEdit",
-            "CommandRecord",
+            "CommandRecord", "SetMainAudio",
             "DeviceAdd", "DeviceEdit", "DeviceJsonEdit",
             "SceneAdd", "SceneEdit", "SceneJsonEdit",
             "TemplateAdd"
         ];
-        const dont_show_info = ["Macro", "MacroSend", "CommandSend", "Set"];
+        const dont_show_info = ["Macro", "MacroSend", "CommandSend", "Set", "SceneAdd"];
 
         this.status("answer: " + cmd + " | " + msg + " | " + JSON.stringify(data["REQUEST"]));
 
@@ -700,12 +665,14 @@ class RemoteApiControl extends RemoteDefaultClass {
     }
 
     /* check if status of required device is OK or return a message ... to be embedded for commands in the prepare section */
-    status_ok (rm_type, rm_id, source, on_error_show_message=true) {
+    status_ok (rm_type, rm_id, source, on_error_show_message=true, additional_commands=[]) {
         let rm_status, rm_status_details, rm_status_message;
         let rm_status_return = true;
+        let ok_commands = ["ON", "OK"];
+        ok_commands = ok_commands.concat(additional_commands);
 
         rm_status = rmStatus.get_status(rm_type, rm_id, false);
-        rm_status_return = (rm_status === "ON" || rm_status === "OK");
+        rm_status_return = (ok_commands.includes(rm_status));
 
         if (!rm_status_return && on_error_show_message) {
             rm_status_details = rmStatus.get_status(rm_type, rm_id, true);

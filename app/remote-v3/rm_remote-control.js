@@ -190,17 +190,6 @@ class RemoteControlBasic extends RemoteDefaultClass {
         this.default_size();
     }
 
-    // create button for multiple commands (macro)
-    btn_group(id, label, scene, style, group, disabled ) {
-        if (group) {
-            let d = this.image( label, style );
-            let b = this.default( id, d[0], d[1], 'apiGroupSend("'+group.join("_")+'","'+scene+'");', disabled );
-            this.logging.debug("button_macro - "+b);
-            return b;
-        }
-        else { return this.default( id, label, style+" notfound", "", "disabled" ); }
-    }
-
     // create button for channel (macro)
     channel(id, label, scene, macro, style, disabled="") {
         let macro_string = "";
@@ -274,7 +263,7 @@ class RemoteControlBasic extends RemoteDefaultClass {
         let label2 = this.image( label, style );
         if (label === ".")	{ disabled = "disabled"; label2[0] = "&nbsp;"; }
 
-        return this.default(id, label2[0], label2[1], 'apiCommandRecord("' + device_button[0] + '","' + device_button[1] + '");', disabled);
+        return this.default(id, label2[0], label2[1], 'rmApi.call("CommandRecord", ["' + device_button[0] + '","' + device_button[1] + '", false]);', disabled);
     }
 
     // create button for single command

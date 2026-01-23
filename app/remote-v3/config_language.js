@@ -397,7 +397,7 @@ let language_app = {
         "RECONNECT_FAILED"             : "ERROR: Reconnect failed ({0}).",
 
         "RECORD_COMMAND"               : "record command",
-        "RECORD_DELETE_COMMANDS"       : "record / delete commands",
+        "RECORD_DELETE_COMMANDS"       : "Record or delete commands",
         "REMOTE"                       : "remote",
         "REMOTE_ADD"                   : "Add remote controls",
         "REMOTE_CONFIG_ERROR"          : "Error in remote config file(s) '{0}': ",

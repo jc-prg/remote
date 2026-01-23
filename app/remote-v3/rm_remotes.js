@@ -561,7 +561,7 @@ class RemoteControl extends RemoteDefaultClass {
         let commands_def = rmData.devices.list_commands(device,"definition");
         let main_audio = rmStatusAudio.audio_device;
         if (device !== main_audio && commands_def["vol"] && commands_def["vol"] !== undefined) {
-            edit += this.tab.row(lang("AUDIO_SET_AS_MAIN", [main_audio]), this.button.edit("setMainAudio('" + device + "');", "set main device", ""));
+            edit += this.tab.row(lang("AUDIO_SET_AS_MAIN", [main_audio]), this.button.edit("rmApi.call('SetMainAudio', '" + device + "');", "set main device", ""));
         } else if (device === main_audio) {
             edit += this.tab.row(lang("AUDIO_IS_MAIN"), false);
         } else {
@@ -636,8 +636,7 @@ class RemoteControl extends RemoteDefaultClass {
         myBox.addSheet(lang("API_TEST"), edit_test, false);
 
         this.device_edit_api_update(device);
-        //apiGetConfig_createDropDown(device, this.device_edit_api_commands);
-        apiGetConfig_createDropDown(device, rmRemote.device_edit_api_commands);
+        rmApi.call("ConfigDropDown", [device], undefined, rmRemote.device_edit_api_commands);
 
         this.preview("device", device);
     }
@@ -768,18 +767,18 @@ class RemoteControl extends RemoteDefaultClass {
         remote += this.basic.container("remote_edit_add", lang("EDIT_ELEMENTS"), "<div id='remote-edit-add'></div>", true);
 
         // if record device, edit ... unclear if still required
-        if (device_config["method"] === "record") {
+        if (device_config["interface"]["method"] === "record") {
             this.button.height = "45px";
             let edit = this.tab.start();
             edit += this.tab.row(
                 this.edit.command_select_record("rec_button", device),
-                this.button.edit("apiCommandRecord('" + device + "','rec_button');", lang("RECORD_COMMAND"))
+                this.button.edit("rmApi.call('CommandRecord', ['" + device + "','rec_button',false]);", lang("RECORD_COMMAND"))
             );
             edit += this.tab.row("<small>" + lang("COMMAND_RECORD_INFO") + "</small>", false);
             edit += this.tab.line();
             edit += this.tab.row(
                 this.edit.command_select("del_command", device),
-                this.button.edit("apiCommandDelete('" + device + "','del_command');", lang("DELETE_COMMAND"))
+                this.button.edit("rmApi.call('CommandDelete', ['" + device + "','del_command']);", lang("DELETE_COMMAND"))
             );
             edit += this.tab.row("<small>" + lang("COMMAND_DELETE_INFO") + "</small>", false);
             edit += this.tab.end();
@@ -2115,19 +2114,19 @@ class RemoteControlEditElements extends RemoteDefaultClass {
     }
 
     /* return drop-down with commands to be recorded */
+/// !!!!!
     command_select_record(id, device = "") {
         let list = {};
-        if (device !== "" && device in rmData.devices.list_all()) {
-            let button_list = [];
-            let remote_definition = rmData.devices.remote();
-            for (let i = 0; i < remote_definition.length; i++) {
-                button_list.push(remote_definition[i]);
-            }
-            button_list.sort();
 
-            for (let i = 0; i < button_list.length; i++) {
-                if (button_list[i].includes("LINE") === false && button_list[i] !== "." && button_list[i].includes("DISPLAY") === false) {
-                    list[button_list[i]] = button_list[i];
+console.error(device);
+
+        if (device !== "" && rmData.devices.exists(device)) {
+            let remote_definition = rmData.devices.remote(device);
+            let button_list = rmData.devices.list_buttons(device);
+
+            for (let i = 0; i < remote_definition.length; i++) {
+                if (!button_list.includes(remote_definition[i])) {
+                    list[remote_definition[i]] = remote_definition[i];
                 }
             }
         }
