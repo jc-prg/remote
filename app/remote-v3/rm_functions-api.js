@@ -36,7 +36,7 @@ class RemoteApiControl extends RemoteDefaultClass {
             "CommandSendWait":      { command: "send", method: "GET", confirm: false, param: 3, param_info: "[cmdButton, sync, device]", prepare: true, wait: true },
             "CommandSendCheck":     { command: "send_check", method: "GET", confirm: false, param: 3, param_info: "[cmdButton, sync, device]", prepare: true },
             "CommandSendCheckWait": { command: "send_check", method: "GET", confirm: false, param:  3, param_info: "[cmdButton, sync, device]", prepare: true, wait: true },
-            "ConfigInterface":      { command: ["config", "interface"], method: "POST", confirm: false, param: 1, param_info: "[device, config]", prepare: true, answer: this.answer },
+            "ConfigInterface":      { command: ["config", "interface"], method: "POST", confirm: false, param: 2, param_info: "[device, config]", prepare: true, answer: this.answer },
             "ConfigInterfaceShow":  { command: ["config", "interface"], method: "GET", confirm: false, param: 0, prepare: true },
             "ConfigDropDown":       { command: ["config", "device"], method: "GET", confirm: false, param: 1, param_info: "[device]", prepare: true },
             "DeviceAdd":            { command: "device", method: "PUT", confirm: false, param: 2, param_info: "[data, onchange]", prepare: true, answer: this.answer },
@@ -81,13 +81,13 @@ class RemoteApiControl extends RemoteDefaultClass {
         this.status("call: " + cmd + " | " + JSON.stringify(param));
 
         if (!this.commands[cmd]) {
-            this.logging.error("call: command not defined: " + cmd);
+            this.logging.error("call: "+cmd+" | command not defined: " + cmd);
             return;
-        } else if (this.commands[cmd].param !== param.length) {
-            this.logging.error("call: got other amount of parameters than required: " + this.commands[cmd].param + " param required, got " + param);
+        } else if (this.commands[cmd].param !== -1 && this.commands[cmd].param !== param.length) {
+            this.logging.error("call: "+cmd+" |  got other amount of parameters than required: " + this.commands[cmd].param + " param required, got " + param);
             return;
         } else if (this.commands[cmd].data === true && (data === undefined || data === "")) {
-            this.logging.error("call: 'data' are required but not delivered as parameter.");
+            this.logging.error("call: "+cmd+" | 'data' are required but not delivered as parameter.");
             return;
         }
 
@@ -264,7 +264,7 @@ class RemoteApiControl extends RemoteDefaultClass {
             const data = param[0];
             const onchange = param[1];
 
-            if (onchange && (getValueById(data[5]) === "" || getValueById(data[6]) === "")) { onchange(); }
+            if (onchange && (getValueById(data[5]) === "" || getValueById(data[6]) === "")) { onchange(0); }
 
             let send_data = {};
             send_data["id"]            = getValueById(data[0]).replaceAll("_", "-");

@@ -4,49 +4,6 @@
 
 ## KNOWN BUGS -------------------------------------------------------------------
 
-* app: timer ... adding group macros -> "macro_groups_*" instead of "group_*"
-* app: adding a new device from ZigBee doesn't work ... doesn't open the container?
-* app / server / rm3api.yml: unused functions
-
-      // currently not used ?! Reintroduce or clean-up in server and app 
-      function apiGroupSend( macro, device="", content="" ) { rmApi.call("GroupSend", [macro, device, content]); }
-          //-> unclear where it is or was used? - used once in class RemoteControlBasic.btn_group(), but this function is never used somewhere else
-      function apiButtonDelete(device_id, button_id)                  { rmApi.call("ButtonDelete", [device_id, button_id]); }
-          //-> unclear where it is or was used? - assumption: not required any more, as working with complete remote (json format)
-      function apiButtonAdd(device_id, button_id)                     { rmApi.call("ButtonAdd", [device_id, button_id]); }
-          //-> unclear where it is or was used? - assumption: not required any more, as working with complete remote (json format)
-      function apiTemplateAdd(device_id, template_id)                 { rmApi.call("TemplateAdd", [device_id, template_id]); } // -> Anpassung an rm3api.yml erforderlich (zusätzliches ungenutztes Parameter)
-          //-> unclear where it is or was used? - assumption: not required any more, as working with complete remote (json format)
-      function apiDeviceApiSettingsEdit(device,prefix,fields)         { rmApi.call("ApiDeviceSettingsEdit", [device,prefix,fields]); }
-          //-> unclear where it is or was used?
-
-* app: settings
-
-      Uncaught TypeError: can't access property "BROADLINK", interfaces is undefined
-      edit_api_config http://localhost:81/remote-v3/rm_settings.js:1244
-      rm_settings.js:1244:30
-
-      Uncaught TypeError: can't access property "other", api_config[api] is undefined
-      on_change_api http://localhost:81/remote-v3/rm_settings.js:611
-      oninput http://localhost:81/:1
-
-* app: add device
-
-      rmData.scenes: label(): device_id "sensor3" does not exist. jc-functions-0.1.9.js:335:75
-      error http://localhost:81/modules/jc-functions/jc-functions-0.1.9.js:335
-      label http://localhost:81/remote-v3/rm_remote-data.js:724
-
-      Uncaught TypeError: can't access property "other", api_config[api] is undefined
-      on_change_api http://localhost:81/remote-v3/rm_settings.js:611
-      oninput http://localhost:81/:1
-
-      http://localhost:5001/api/config/device/sensor3/device_edit_api_commands(data)%20%7B%0A%20%20%20%20%20%20%20%20if%20(data%5B%22DATA%22%5D%5B%22error%22%5D)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20return;%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20let%20device%20=%20data%5B%22DATA%22%5D%5B%22device%22%5D;%0A%20%20%20%20%20%20%20%20let%20commands%20=%20data%5B%22DATA%22%5D%5Bdevice%5D%5B%22api_commands%22%5D;%0A%20%20%20%20%20%20%20%20let%20api_url%20=%20data%5B%22DATA%22%5D%5Bdevice%5D%5B%22interface_details%22%5D%5B%22API-Info%22%5D;%0A%20%20%20%20%20%20%20%20let%20api_name%20=%20data%5B%22DATA%22%5D%5Bdevice%5D%5B%22interface%22%5D%5B%22api_key%22%5D;%0A%20%20%20%20%20%20%20%20let%20on_change%20=%20%22setValueById('api_command',%20getValueById('api_cmd_select'));%22;%0A%0A%20%20%20%20%20%20%20%20const%20basic%20=%20new%20RemoteElementsEdit(%22rmRemote.basic%22);%09%09//%20!!!%20should%20use%20this.name,%20but%20doesn't%20work%0A%20%20%20%20%20%20%20%20basic.input_width%20=%20%2290%25%22;%0A%0A%20%20%20%20%20%20%20%20let%20select%20=%20basic.select(%22api_cmd_select%22,%20lang(%22API_SELECT_CMD%22),%20commands,%20on_change,%20'',%20false,%20true);%0A%0A%20%20%20%20%20%20%20%20setTextById('api_command_select',%20select);%0A%0A%20%20%20%20%20%20%20%20if%20(api_url)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20setTextById('api_description',%20%22%3Ca%20href='%22%20+%20api_url%20+%20%22'%20target='_blank'%20style='color:white'%3EAPI%20Documentation%20%22%20+%20api_name%20+%20%22%3C/a%3E%22);%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D/
-
-* app: editing API device configuration via app doesn't work -> no "save" button
-
-      rmJson.disable(&quot;api_status_edit_ZIGBEE2MQTT_default&quot;,false);
-      this.className=&quot;rm-button hidden&quot;
-      document.getElementById(&quot;save_zigbee2mqtt_default&quot;).className=&quot;rm-button settings&quot;;
 
 * server: weather API - change of date leads to an error (and no data available any more) - looks similar to loss of network
 * server: unsure if/why Tapo P100 are not accessible after a while (back again after restart)
@@ -81,7 +38,9 @@
 
 ## UNDER DEVELOPMENT -------------------------------------------------------------
 
-* OPEN: check and fix all bugs found due to the refactoring
+* refactoring API requests
+  * OPEN: check and fix all bugs found due to the refactoring
+  * OPEN: check all other .js files for appFW.requestAPI
 
 * archiving
   * OPEN: update view in settings when moved
@@ -221,6 +180,10 @@
     
 # DONE --------------------------------------------------------------------------
 
+* SOLVED: settings bugs
+* SOLVED: editing API device configuration via app doesn't work -> no "save" button
+* SOLVED: app: bugs @ add device
+* SOLVED: timer ... adding group macros -> "macro_groups_*" instead of "group_*"
 * refactoring rm_functions-api.js
   * OK: check functions that doesn't seem to be required any more
   * OK: directly call refactored functions from class
