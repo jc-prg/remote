@@ -69,6 +69,9 @@ class RemoteApiControl extends RemoteDefaultClass {
             "TimerEdit":            { command: "timer-edit", method: "PUT", confirm: false, prepare: true, param: 2, param_info: "[key, data_fields]", answer: this.answer },
             "TimerTry":             { command: "timer-try", method: "PUT", confirm: true, message: "TIMER_TRY", param: 1, param_info: "[timer_id]", prepare: false, answer: this.answer },
         }
+
+        this.logging.debug("available commands: " + JSON.stringify(Object.keys(this.commands)));
+        this.logging.debug("unused commands: " + JSON.stringify(Object.keys(this.commands_unused)));
     }
 
     /* coordinate api call */
@@ -105,8 +108,6 @@ class RemoteApiControl extends RemoteDefaultClass {
         this.status("prepare: " + cmd + " | " + JSON.stringify(param));
 
         let command = this.commands[cmd];
-        let data = "";
-        if (this.temp_data[cmd]) { data = this.temp_data[cmd]; }
 
         if (cmd === "ApiDeviceAdd") {
             this.temp_data[cmd] = {
@@ -629,13 +630,12 @@ class RemoteApiControl extends RemoteDefaultClass {
 
     /* check if status of required device is OK or return a message ... to be embedded for commands in the prepare section */
     status_ok (rm_type, rm_id, source, on_error_show_message=true, additional_commands=[]) {
-        let rm_status, rm_status_details, rm_status_message;
-        let rm_status_return = true;
+        let rm_status_details, rm_status_message;
         let ok_commands = ["ON", "OK"];
         ok_commands = ok_commands.concat(additional_commands);
 
-        rm_status = rmStatus.get_status(rm_type, rm_id, false);
-        rm_status_return = (ok_commands.includes(rm_status));
+        const rm_status = rmStatus.get_status(rm_type, rm_id, false);
+        const rm_status_return = (ok_commands.includes(rm_status));
 
         if (!rm_status_return && on_error_show_message) {
             rm_status_details = rmStatus.get_status(rm_type, rm_id, true);
