@@ -4,14 +4,12 @@
 
 ## KNOWN BUGS -------------------------------------------------------------------
 
-
 * server: weather API - change of date leads to an error (and no data available any more) - looks similar to loss of network
 * server: unsure if/why Tapo P100 are not accessible after a while (back again after restart)
 * server: error in device specific definition (devices/INTERFACE/*.json) -> is not shown in the attention section yet?!
 * server: reconnect of interfaces leads to error messages
-* server: shutdown doesn't shutdown completely ... maybe weather?
 * server: queue bleibt hängen?! // tapo funktioniert nicht richtig?
-* server: zigbee geräte -> online, obwohl power definiert ist (rückgängig machen)
+* server/app: zigbee geräte -> online, obwohl power definiert ist (rückgängig machen)
 
 * edit mode
   * toggle & slider for groups doesn't work (but are in the drop-down menus) -> rm_remote-control.js:432
@@ -179,7 +177,8 @@
     
 # DONE --------------------------------------------------------------------------
 
-* SOLVED: settings bugs
+* SOLVED: shutdown doesn't shutdown completely ... maybe weather?
+* SOLVED: app settings bugs
 * SOLVED: editing API device configuration via app doesn't work -> no "save" button
 * SOLVED: app: bugs @ add device
 * SOLVED: timer ... adding group macros -> "macro_groups_*" instead of "group_*"

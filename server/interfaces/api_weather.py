@@ -255,6 +255,15 @@ class ApiControl(RemoteApiClass):
         self.working = False
         return "OK"
 
+    def stop(self):
+        """
+        stop weather treads
+        """
+        if hasattr(self.weather_api, "stop"):
+            self.weather_api.stop()
+        time.sleep(10)
+        self.logging.info("Stopped Weather API")
+
 
 class ApiGPS(object):
     """
@@ -762,7 +771,8 @@ class ApiWeather(RemoteThreadingClass):
         """
         self._running = False
         self.connected = False
-        self.module.stop()
+        if hasattr(self.module, "stop"):
+            self.module.stop()
 
     def active(self, active):
         """
