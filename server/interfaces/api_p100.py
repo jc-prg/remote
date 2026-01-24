@@ -324,7 +324,12 @@ class APIaddOn(RemoteDefaultClass):
             elif "device_on" in info_result:
                 self.power_status = "OFF"
 
-            if "error" not in info_result:
+            if param == "error_code" and "error_code" in self.info_answer:
+                info_result = {"result": self.info_answer["error_code"], "param": param}
+            elif param == "error_code":
+                info_result = {"result": -1, "param": param}
+
+            elif "error" not in info_result:
                 if param in info_result:
                     info_result = {"result": info_result[param], "param": param}
                 elif param == "status":
