@@ -34,7 +34,8 @@
                     "ON",
                     "OFF"
                 ]
-            }
+            },
+            "power": {}
         },
         "query" : {
           "load_intervals" : {
