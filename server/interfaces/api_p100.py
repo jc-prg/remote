@@ -305,8 +305,8 @@ class APIaddOn(RemoteDefaultClass):
                 from_cache = True
 
             if param == "power":
-                self.logging.debug(f"{self.info_answer}")
-                self.logging.debug(f"last request: {time.time() - self.last_request_time}s (cache-wait: {self.cache_wait}s | {from_cache})")
+                self.logging.debug(f"{self.api_device} | {self.info_answer}")
+                self.logging.debug(f"{self.api_device} | last request: {time.time() - self.last_request_time}s (cache-wait: {self.cache_wait}s | {from_cache})")
 
             if "error_code" in self.info_answer and self.info_answer["error_code"] != 0:
                 if "result" in self.info_answer:
