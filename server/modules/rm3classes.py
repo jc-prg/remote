@@ -4,7 +4,7 @@ import time
 import threading
 import traceback
 import server.modules.rm3presets as rm3presets
-
+from datetime import datetime
 
 class RemoteDefaultClass(object):
     """
@@ -50,6 +50,10 @@ class RemoteDefaultClass(object):
         exc_type, exc_value, exc_tb = details
         tb = traceback.format_tb(exc_tb)
         self.logging.error(f"EXCEPTION in {self.name}: {exc_type} | {exc_value} | {tb}")
+
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with open(rm3presets.log_filename_error, "a", encoding="utf-8") as f:
+            f.write(f"{timestamp} -> OTHER EXCEPTION:\n{message}\n")
 
 
 class RemoteApiClass(RemoteDefaultClass):
