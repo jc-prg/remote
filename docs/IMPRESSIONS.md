@@ -1,4 +1,4 @@
-# Impressions
+# jc://remote/ - Impressions
 
 ## App light theme - remote controls
 

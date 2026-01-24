@@ -3,7 +3,7 @@
 * .... release v3.0.x
 
 ## KNOWN BUGS -------------------------------------------------------------------
- 
+
 * edit mode
   * toggle & slider for groups doesn't work (but are in the drop-down menus) -> rm_remote-control.js:432
   * don't show groups in drop-down if no device is defined in it
@@ -20,7 +20,7 @@
   * when just started and create new configs from sample ...
   * no connection, no deletion without error
   * after restart it works
-
+  
 * remote editing
   * Happens when not using BROADLINK_default:
     * RecordCommand: ERROR BROADLINK: Could not learn command ([Errno -5] The device storage is full) ... 
@@ -152,6 +152,7 @@
     
 # DONE --------------------------------------------------------------------------
 
+* bugfix visualize group status (toggle and power button)
 * integrating weather API
   * OPEN: create default configuration with sample data (quasi as device discovery)
 * check in scene editing for errors in current 

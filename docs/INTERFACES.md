@@ -13,6 +13,7 @@ The following interfaces are integrated at the moment.
 * [MAGIC-HOME](../server/interfaces/magichome/README.md) / [api_magichome.py](../server/interfaces/api_magichome.py)
 * [SONY API](../server/interfaces/sonyapi/README.md) / [api_sony.py](../server/interfaces/api_sony.py)
 * [TAPO P100](../server/interfaces/p100/README.md) / [api_p100.py](../server/interfaces/api_p100.py)
+* [WEATHER](../server/interfaces/weather/README.md) / [api_weather.py](../server/interfaces/api_weather.py)
 * [ZIGBEE](../server/interfaces/zigbee/README.md) / [api_zigbee.py](../server/interfaces/api_zigbee.py)
 
 ## Definitions
