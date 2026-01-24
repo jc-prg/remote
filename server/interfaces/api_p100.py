@@ -57,6 +57,7 @@ class ApiControl(RemoteApiClass):
             self.api.jc = APIaddOn(self.api, self.logging)
             self.api.jc.status = self.status
             self.api.jc.not_connected = self.not_connected
+            self.api.jc.api_device = self.api_config["Description"]
 
         except Exception as e:
             self.status = self.not_connected + " ... CONNECT " + str(e)
@@ -227,6 +228,7 @@ class APIaddOn(RemoteDefaultClass):
         self.last_request_time = time.time()
         self.last_request_data = {}
         self.cache_wait = 1
+        self.api_device = None
 
         self.available_commands = {
             "jc.get_available_commands()": {
@@ -287,7 +289,7 @@ class APIaddOn(RemoteDefaultClass):
         info_result = {}
         if self.status == "Connected":
 
-
+            from_cache = False
             if self.last_request_time < time.time() - self.cache_wait:
                 try:
                     self.info_answer = self.api.getDeviceInfo()
@@ -297,13 +299,14 @@ class APIaddOn(RemoteDefaultClass):
                 if "result" in self.info_answer:
                     self.last_request_data = self.info_answer.copy()
                     self.last_request_time = time.time()
-                self.logging.debug(str(self.info_answer))
+                self.logging.debug(f"{self.api_device} | {param}: {self.info_answer}")
             else:
                 self.info_answer = self.last_request_data.copy()
+                from_cache = true
 
             if param == "power":
-                self.logging.debug(str(self.info_answer))
-                self.logging.debug(f"last request: {time.time()} - {self.last_request_time} = {time.time() - self.last_request_time}s")
+                self.logging.debug(f"{self.info_answer}")
+                self.logging.debug(f"last request: {time.time() - self.last_request_time}s (cache-wait: {self.cache_wait}s | {from_cache})")
 
             if "error_code" in self.info_answer and self.info_answer["error_code"] != 0:
                 if "result" in self.info_answer:
