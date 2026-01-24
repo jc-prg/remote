@@ -49,7 +49,8 @@ class RemoteDefaultClass(object):
         """
         exc_type, exc_value, exc_tb = details
         tb = traceback.format_tb(exc_tb)
-        self.logging.error(f"EXCEPTION in {self.name}: {exc_type} | {exc_value} | {tb}")
+        message = f"{self.name}: {exc_type} | {exc_value} | {tb}"
+        self.logging.error(f"EXCEPTION in {message}")
 
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open(rm3presets.log_filename_error, "a", encoding="utf-8") as f:
