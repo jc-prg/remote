@@ -138,7 +138,7 @@ class ApiControl(RemoteApiClass):
             try:
                 command = "self.api." + command_param[0]
                 result = eval(command)
-                self.logging.debug(f"{self.api_config["Description"]} | {result}")
+                self.logging.debug(f"{self.api_config["Description"]} | {command} | {result}")
 
             except Exception as e:
                 self.working = False
