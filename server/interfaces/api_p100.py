@@ -287,7 +287,6 @@ class APIaddOn(RemoteDefaultClass):
         info_result = {}
         if self.status == "Connected":
 
-            self.logging.debug(str(self.last_request_time) + "__" + str(time.time()))
 
             if self.last_request_time < time.time() - self.cache_wait:
                 try:
@@ -302,7 +301,9 @@ class APIaddOn(RemoteDefaultClass):
             else:
                 self.info_answer = self.last_request_data.copy()
 
-            self.logging.debug(str(self.info_answer))
+            if param == "power":
+                self.logging.debug(str(self.info_answer))
+                self.logging.debug(f"last request: {time.time()} - {self.last_request_time} = {time.time() - self.last_request_time}s")
 
             if "error_code" in self.info_answer and self.info_answer["error_code"] != 0:
                 if "result" in self.info_answer:
