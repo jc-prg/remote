@@ -138,12 +138,11 @@ class ApiControl(RemoteApiClass):
             try:
                 command = "self.api." + command_param[0]
                 result = eval(command)
-                self.logging.debug(str(result))
+                self.logging.debug(f"{self.api_config["Description"]} | {result}")
 
             except Exception as e:
                 self.working = False
-                return "ERROR " + self.api_name + " - query*: " + str(e) + " | " + command + " | " + \
-                       str(result) + " | " + str(self.api.jc.info_result)
+                return f"ERROR {self.api_name} - query*: {e} | {command} | {result} | {self.api.jc.info_result}"
 
             try:
                 if "error" in result:
@@ -211,7 +210,7 @@ class APIaddOn(RemoteDefaultClass):
 
     def __init__(self, api, logger):
         self.api_description = "API-Addon for Tapo-Link P100"
-        RemoteDefaultClass.__init__(self, "api-P100", self.api_description)
+        RemoteDefaultClass.__init__(self, "api-P100*", self.api_description)
 
         self.addon = "jc://addon/p100/"
         self.api = api
