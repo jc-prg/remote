@@ -28,6 +28,7 @@ timezone_offset = local_network = config_dir = start_string = None
 log_level = log_to_file = log_webserver = log_api_data = log_api_ext = log_set2level = None
 log_level_module = {"INFO": [], "DEBUG": [], "WARNING": [], "ERROR": []}
 log_filename = '/log/server.log'
+log_filename_error = '/log/server.error.log'
 log_loggers = {}
 log_logger_list = []
 
