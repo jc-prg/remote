@@ -227,7 +227,7 @@ class APIaddOn(RemoteDefaultClass):
         self.info_result = {}
         self.last_request_time = time.time()
         self.last_request_data = {}
-        self.cache_wait = 1
+        self.cache_wait = 5
         self.api_device = None
 
         self.available_commands = {
