@@ -3,7 +3,7 @@
 //--------------------------------
 
 let rmStatus;
-let rmStatus_logging = false;
+let rmStatus_logging = true;
 
 
 // class that offers all types of status information for apis, api-devices, media devices, and scenes
@@ -230,13 +230,27 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
 
             // identify power status devices
             let power_status;
+            let available;
+            if (this.status_devices[device]["availability"]) {
+                if (this.status_devices[device]["availability"].toUpperCase().indexOf("ONLINE") > -1) { available = "ONLINE"; }
+                else if (this.status_devices[device]["availability"].toUpperCase().indexOf("ON") > -1) { available = "ONLINE"; }
+                else { available = "OFFLINE"; }
+            } else {
+                available = "N/A";
+            }
+
+
             if (this.status_devices[device]["power"]) { power_status = this.status_devices[device]["power"].toUpperCase(); } else { power_status = "ERROR"; }
-            if ((!this.status_devices[device]["power"] || power_status === "N/A") && this.status_devices[device]["availability"] && this.status_devices[device]["availability"].toUpperCase().indexOf("ONLINE") > -1) { power_status = "ON"; }
+            if ((!this.status_devices[device]["power"] || power_status === "N/A")
+                    && this.status_devices[device]["availability"]
+                    && this.status_devices[device]["availability"].toUpperCase().indexOf("ONLINE") > -1)
+                    { power_status = "ON"; } // ???? ON works, N/A works partly, ONLINE or other shows error
 
             // check, if other status available (Zigbee) ... others might have to follow
             if (power_status === "N/A") {
                 let power_details = this.status_device_raw(device);
-                if (power_details["availability"] && power_details["availability"].toUpperCase().indexOf("ONLINE") > -1) { power_status = "ON"; }
+                if (power_details["availability"] && power_details["availability"].toUpperCase().indexOf("ONLINE") > -1)
+                    { power_status = "ON"; } // ???? ON works, N/A works partly, ONLINE or other shows error
             }
 
             // identify labels
@@ -281,18 +295,29 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
             // if disabled, status is still OK (but message shows details)
             if (status !== "API_DISABLED" && !active && status !== "ON" && status !== "OFF") { status = "DISABLED"; }
 
+            let status_overall = "ERROR";
+            if (status === "ON" && available === "ONLINE")                  { status_overall = "ON"; }
+            else if (status === "N/A" && available === "ONLINE")            { status_overall = "ON"; }
+            else if (status === "ON" && available === "N/A")                { status_overall = "ON"; }
+            else if (status.indexOf("OFF") >= 0 && available === "OFFLINE") { status_overall = "OFF"; }
+            else if (status === "N/A" && available === "OFFLINE")           { status_overall = "OFF"; }
+            else if (status.indexOf("OFF") >= 0 && available === "N/A")     { status_overall = "OFF"; }
+            else if (status.indexOf("OFF") >= 0 && available === "ONLINE")  { status_overall = "OFF"; }
+
             this.status_data["device"][device] = {
+                "active": active,
                 "api": api,
                 "api-status": this.status_data["api"][api]["status"],
                 "api-message": this.status_data["api"][api]["message"],
                 "api-device": api_device,
                 "api-device-message": this.status_data["api-device"][api_key]["message"],
                 "api-device-status": this.status_data["api-device"][api_key]["status"],
-                "active": active,
-                "status": status,
+                "available": available,
+                "message": message,
                 "power": power_device,
                 "power2": label_power,
-                "message": message
+                "status": status,
+                "status_overall": status_overall
             }
         }
     }
@@ -580,6 +605,12 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
     /* get status for devices */
     status_device (id, details=false) {
         return this.get_status("device", id, details);
+    }
+
+    /* get overall status for devices */
+    status_device_overall (id) {
+        let status = this.get_status("device", id, true);
+        return status["status_overall"];
     }
 
     /* get raw status for devices */
