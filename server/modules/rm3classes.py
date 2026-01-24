@@ -44,7 +44,7 @@ class RemoteDefaultClass(object):
             self.logging.info(f"Set log-level for {self.class_id} to {self.log_level_name}.")
 
     def error_details(self, details):
-        """
+        """ 
         print error details, call self.error_details(sys.exc_info())
         """
         exc_type, exc_value, exc_tb = details

@@ -1671,14 +1671,17 @@ class RemoteSettingsInfo extends RemoteDefaultClass {
         // status
         set_temp  = this.tab.start();
         set_temp += this.tab.row( 	"Server:", 	this.settings.app_stat );
+        set_temp += this.tab.row( 	"Time:",	rmStatus.status_server("time") );
+        set_temp += this.tab.row( 	"Local:",	rmStatus.status_server("time-local") + "&nbsp;&nbsp;&nbsp;<i>(diff: " + rmStatus.status_server("time-difference")+"h)</i>");
+        set_temp += this.tab.row( 	"<hr/>", false );
         set_temp += this.tab.row( 	"Cookie:",	cookie );
-        set_temp += this.tab.row( 	"Button:",	this.settings.app_last );
         if (main_device && main_device_config) {
             set_temp += this.tab.row( 	"Audio:",	audio2 + "<br/>" + audio1 );
         }
         else {
             set_temp += this.tab.row( 	"Audio:",	"<i>No main audio device defined yet.</i>" );
         }
+        set_temp += this.tab.row( 	"Button:",	this.settings.app_last );
         set_temp += this.tab.end();
         let setting_other = set_temp;
 

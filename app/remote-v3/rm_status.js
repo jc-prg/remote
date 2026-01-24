@@ -1333,9 +1333,9 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             device_status_raw = rmStatus.status_device_raw(first_device);
         }
 
-
         for (let key in device_status_raw) {
             if (document.getElementById("toggle_"+device_id+"_"+key+"_input")) {
+
 
                 let value = device_status;
                 if (key !== "power") {

@@ -194,6 +194,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["load-time"] = (time.time() - data["REQUEST"]["start-time"])
         data["REQUEST"]["server-time"] = datetime.now().strftime("%Y-%m-%d | %H:%M | %A (%w)")
         data["REQUEST"]["server-time-local"] = self.config.local_time().strftime("%Y-%m-%d | %H:%M | %A (%w)")
+        data["REQUEST"]["server-time-diff"] = rm3presets.timezone_offset
 
         if "no-data" in setting and "DATA" in data:
             del data["DATA"]

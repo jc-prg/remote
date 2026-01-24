@@ -3,7 +3,7 @@
 //--------------------------------
 
 let rmStatus;
-let rmStatus_logging = true;
+let rmStatus_logging = false;
 
 
 // class that offers all types of status information for apis, api-devices, media devices, and scenes
@@ -27,6 +27,8 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
         this.active_api_devices = {};
         this.status_api_devices_all = {};
         this.status_devices = {};
+        this.status_server_data = {};
+        this.status_request = {};
         this.config_apis = {};
         this.config_devices = {};
         this.power_devices = {}
@@ -68,6 +70,7 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
         this.status_api_devices_all = this.data["STATUS"]["interfaces"]["structure"];
         this.status_api_discovery = this.data["STATUS"]["interfaces"]["discovery"];
         this.status_devices = this.data["STATUS"]["devices"];
+        this.status_request = this.data["REQUEST"];
 
         this.status_elements = {
             "config_errors": this.data["STATUS"]["config_errors"],
@@ -114,7 +117,8 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
         this.create_data_api_devices();
         this.create_data_devices();
         this.create_data_scenes();
-        this.create_data_groups(); // not implemented yet
+        this.create_data_groups();
+        this.create_data_server();
 
         if (rmStatus_logging) {
             this.logging.warn(this.status_data);
@@ -239,19 +243,7 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
                 available = "N/A";
             }
 
-
             if (this.status_devices[device]["power"]) { power_status = this.status_devices[device]["power"].toUpperCase(); } else { power_status = "ERROR"; }
-            if ((!this.status_devices[device]["power"] || power_status === "N/A")
-                    && this.status_devices[device]["availability"]
-                    && this.status_devices[device]["availability"].toUpperCase().indexOf("ONLINE") > -1)
-                    { power_status = "ON"; } // ???? ON works, N/A works partly, ONLINE or other shows error
-
-            // check, if other status available (Zigbee) ... others might have to follow
-            if (power_status === "N/A") {
-                let power_details = this.status_device_raw(device);
-                if (power_details["availability"] && power_details["availability"].toUpperCase().indexOf("ONLINE") > -1)
-                    { power_status = "ON"; } // ???? ON works, N/A works partly, ONLINE or other shows error
-            }
 
             // identify labels
             let label_power = "";
@@ -450,13 +442,13 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
                     device_status = this.status_device(device_id, true);
                 }
                 let api_device = device_status["api"] + "_" + device_status["api-device"];
-                if (!status_check.includes(device_status["status"])) { status_check.push(device_status["status"]); }
-                if (!status_apis.includes(api_device)) { status_apis.push(api_device); }
+                if (!status_check.includes(device_status["status"]))    { status_check.push(device_status["status"]); }
+                if (!status_apis.includes(api_device))                  { status_apis.push(api_device); }
                 status_device[device_id] = device_status["status"];
 
-                if (device_status["status"].indexOf("ERROR")) { devices_error.push(device_status["message"]); }
-                if (device_status["status"].indexOf("DISABLED")) { devices_disabled.push(device_id); }
-                if (device_status["status"].indexOf("POWER_OFF")) { devices_power_off.push(device_id); }
+                if (device_status["status"].indexOf("ERROR"))           { devices_error.push(device_status["message"]); }
+                if (device_status["status"].indexOf("DISABLED"))        { devices_disabled.push(device_id); }
+                if (device_status["status"].indexOf("POWER_OFF"))       { devices_power_off.push(device_id); }
             }
 
             if (status_check.length === 0) {
@@ -471,8 +463,11 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
             else if (status_check.length > 1 && (status_check.includes("ERROR") || status_check.includes("API_ERROR") || status_check.includes("UNKNOWN"))) {
                 status_group = "ERROR";
             }
-            else if (status_check.length === 2 && status_check.includes("ON") && status_check.includes("OFF")) {
+            else if (status_check.length >= 2 && status_check.includes("ON") && (!status_check.includes("API_STARTING") && !status_check.includes("ERROR") && !status_check.includes("DISABLED") && !status_check.includes("API_DISABLED"))) {
                 status_group = "PARTLY";
+            }
+            else if (status_check.length >= 2 && status_check.includes("OFF") && (!status_check.includes("API_STARTING") && !status_check.includes("ERROR") && !status_check.includes("DISABLED") && !status_check.includes("API_DISABLED"))) {
+                status_group = "OFF";
             }
             else if (status_check.length > 2 && (status_check.includes("ON") || status_check.includes("OFF")) && (status_check.includes("DISABLED") || status_check.includes("API_DISABLED"))) {
                 status_group = "PARTLY_DISABLED";
@@ -495,7 +490,18 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
                 "message": message,
                 "status": status_group,
                 "status-devices": status_device,
+                "status-check": status_check
             }
+        }
+    }
+
+    /* create data server */
+    create_data_server() {
+        this.status_server_data = {
+            "start-time": this.status_request["start-time"],
+            "time-difference": this.status_request["server-time-diff"],
+            "time": this.status_request["server-time"],
+            "time-local": this.status_request["server-time-local"],
         }
     }
 
@@ -645,6 +651,13 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
             this.logging.error(`status_system(): No data available for id '${id}'.`)
             return {};
         }
+    }
+
+    /* return some server related data */
+    status_server (id="") {
+        if (id === "") { return this.status_server_data}
+        else if (this.status_server_data[id]) { return this.status_server_data[id]; }
+        else { this.logging.warn("status_server(): didn't find key " + id + "."); }
     }
 
     /* create a summary of all status information */
