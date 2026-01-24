@@ -132,6 +132,50 @@ class RemotePrepareDataMacros extends RemoteDefaultClass {
         else { return false; }
     }
 
+    // decompose existing macro
+    decompose(macro_id) {
+        let full_decompose = [];
+        let macro_string = "";
+        let macro_wait = "";
+        let macro_wait_time = 0;
+
+        const types = ["macro", "dev-on", "dev-off"];
+        const translate = {"macro": "global", "dev-on": "device-on", "dev-off": "device-off"}
+
+        for (let a=0;a<types.length;a++) {
+            if (macro_id.startsWith(types[a]+"_")) {
+                let macro_cmd = macro_id.split("_");
+                let macro_category = translate[types[a]];
+                let macro_data = this.config_macros[macro_category];
+
+                if (macro_data[macro_cmd[1]]) {
+                    for (let i=0; i<macro_data[macro_cmd[1]].length; i++) {
+                        let command = macro_data[macro_cmd[1]][i];
+                        if (command.startsWith && (command.startsWith("WAIT") || command.startsWith("MSG"))) {
+                            let wait = command.split("-");
+                            macro_wait_time += Number(wait[1]);
+                        }
+                        else {
+                            macro_string += macro_data[macro_cmd[1]][i] + "::";
+                            full_decompose.push(macro_data[macro_cmd[1]][i]);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (macro_wait_time > 0) {
+            macro_wait = 'appMsg.wait_time("'+lang("MACRO_PLEASE_WAIT")+'", '+macro_wait_time+');';
+            full_decompose.push("wait=" + macro_wait_time + "s");
+        }
+
+        this.logging.error("decompose(): " + macro_id + " -> " + macro_string + " | " + macro_wait + " | " + macro_wait_time);
+        if (showButton) {
+            appMsg.info("<b>Macro Decompose:</b> " + macro_id + " -> " + full_decompose.join(", "));
+        }
+        return [ macro_string, macro_wait ];
+    }
+
     // list all macros as dict of arrays or all macros of a category as an array
     list_all(category="", scene_id="", incl_on_off=false) {
 

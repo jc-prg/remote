@@ -33,14 +33,14 @@ class RemoteControlKeyboard extends RemoteDefaultClass{
         if (this.kupdate) { return; }
         this.kupdate = true;
         let input = document.getElementById(this.name+"_keyboard_input").value;
-        appFW.requestAPI('GET',[ 'send-data', this.active_name, 'send-text', input ], '','');
+        rmApi.call("SendData", [this.active_name, 'send-text', input]);
         this.kupdate = false;
         }
 
     /* send input to API */
     send() {
         let input = document.getElementById(this.name+"_keyboard_input").value;
-        appFW.requestAPI('GET',[ 'send-data', this.active_name, 'send-text-enter', input ], '','');
+        rmApi.call("SendData", [this.active_name, 'send-text-enter', input]);
     }
 
     /* command to toggle between visible and hidden */

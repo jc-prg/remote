@@ -35,8 +35,8 @@ class RemoteElementSlider extends RemoteDefaultClass {
 		else                                  { defaultValue = min; }
 
 		setValueCmd  = " onInput=\"document.getElementById('"+name+"_value').innerHTML=this.value;\" ";
-		setValueCmd += " onMouseUp=\"appFW.requestAPI('GET',[ 'send-data', '"+device+"', '"+command+"', this.value ], '','');\" ";
-		setValueCmd += " onTouchEnd=\"appFW.requestAPI('GET',[ 'send-data', '"+device+"', '"+command+"', this.value ], '','');\" ";
+		setValueCmd += " onMouseUp=\"rmApi.call('SendData', ['"+device+"', '"+command+"', this.value]);\" ";
+		setValueCmd += " onTouchEnd=\"rmApi.call('SendData', ['"+device+"', '"+command+"', this.value]);\" ";
 
 		this.slider_code  =  "<div id=\""+name+"_container\" class=\"rm-slide-container\" style=\"display:block\">";
 		this.slider_code += "<div  id=\""+name+"_label\" class=\"rm-sliderlabel\">"+label+"</div>";
@@ -62,11 +62,11 @@ class RemoteElementSlider extends RemoteDefaultClass {
 
 		if (command_on.indexOf("(") > -1 || command_on.indexOf("javascript:") > -1 || command_on.indexOf("javascript:") > -1)
 				{ command_on_JS = command_on.replace("javascript:", ""); }
-		else    { command_on_JS = "apiCommandSend('"+command_on+"','','','toggle');"; }
+		else    { command_on_JS = "rmApi.call('CommandSend', ['"+command_on+"','','toggle']);"; }
 
 		if (command_off.indexOf("(") > -1 || command_off.indexOf("javascript:") > -1 || command_off.indexOf("javascript:") > -1)
 				{ command_off_JS = command_off.replace("javascript:", ""); }
-		else    { command_off_JS = "apiCommandSend('"+command_off+"','','','toggle');"; }
+		else    { command_off_JS = "rmApi.call('CommandSend', ['"+command_off+"','','toggle']);"; }
 
 		let setCmdOn = "if (document.getElementById('toggle_"+device+"_"+value_key+"_value').value==1) ";
 		setCmdOn += "{ " + command_on_JS + " }";

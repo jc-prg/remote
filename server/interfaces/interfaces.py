@@ -149,6 +149,19 @@ class Connect(RemoteThreadingClass):
 
         self.logging.info("Stopped " + self.name)
 
+    def stop(self):
+        """
+        stop thread and check if threads in APIs have to be stopped
+        """
+        self.logging.info("Try to stop all APIs with threads ...")
+        for key in self.api_check:
+            if hasattr(self.api_check[key], "stop"):
+                self.api_check[key].stop()
+        for key in self.api:
+            if hasattr(self.api[key], "stop"):
+                self.api[key].stop()
+        super().stop()
+
     def check_connection(self):
         """
         check IP connection and try to reconnect if IP connection exists and status is not "Connected"

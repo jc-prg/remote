@@ -10,40 +10,53 @@ let language_app = {
     "DE" : {
         "CONNECTION_ERROR"              : "Verbindungsfehler",
         "CONNECTION_DISABLED"           : "API deaktiviert",
-        "RESET_SWITCH_OFF"              : "Reset Devices:<br/>vorher alle Geräte ausschalten.",
-        "RESET_VOLUME_TO_ZERO"          : "Reset Audio Settings:<br/>vorher alle Receiver mit Audio auf Mininum (0) einstellen.",
+
+        "EXECUTION_ERROR"               : "Konnte das Kommando &quot;{2}&quot; für {0} <b>{1}</b> nicht ausführen: <i>{3}</i>",
+
+        "RESET_SWITCH_OFF"              : "Reset Devices ohne API-Anbindung:<br/>vorher alle Geräte ausschalten.",
+        "RESET_VOLUME_TO_ZERO"          : "Reset Audio Settings für Devices ohne API-Anbindung:<br/>vorher alle Receiver mit Audio auf Mininum (0) einstellen.",
 
         "POWER_DEVICE_OFF"              : "Schalte zuerst den Strom für das Gerät ein. {0}",
         "POWER_DEVICE_OFF_SCENE"        : "Schalte über den Toggle oben rechts den Strom für das Gerät ein. {0}",
         "POWER_DEVICE_OFF_SCENE_INFO"   : "<b>Strom ausgeschaltet:</b> Schalte den Strom für diese Szene über den Toggle oben rechts ein.",
 
         "PLEASE_WAIT"                   : "Bitte warten ... .",
-        "MACRO_PLEASE_WAIT"             : "Führe ein paar Kommandos aus, bitte warte ein paar Sekunden.",
+        "MACRO_PLEASE_WAIT"             : "Führe ein paar Kommandos aus, bitte kurz warten.",
 
         "MENU_SHOW_HIDDEN_ON"           : "Weitere zeigen",
         "MENU_SHOW_HIDDEN_OFF"          : "Weitere verbergen",
 
-        "STATUS_DEV_OK"                 : "Das Gerät <b>{0}</b> ist OK.",
+        "STATUS_DEV_OK"                 : "Das Gerät <b>{0}</b> ist bereit.",
         "STATUS_DEV_N/A"                : "Der Status vom Gerät <b>{0}</b> ist unbekannt, ausprobieren!",
         "STATUS_DEV_POWER_OFF"          : "Der Strom ist ausgeschaltet: <b>{0}</b>",
         "STATUS_DEV_ERROR"              : "Beim Gerät <b>{0}</b> ist ein Fehler aufgetreten. {1}",
-        "STATUS_DEV_API_DISABLED"       : "Die API <b>{0}</b> für das Gerät <b>{1}</b> wurde deaktiviert.",
+        "STATUS_DEV_API_DISABLED"       : "Die API <b>{0}</b> für das Gerät <b>{1}</b> ist deaktiviert.",
         "STATUS_DEV_API_STARTING"       : "Die API <b>{0}</b> für das Gerät <b>{1}</b> wird gerade gestartet, bitte warten.",
         "STATUS_DEV_API_ERROR"          : "Bei der API <b>{0}</b> für das angeschlossene Gerät <b>{1}</b> ist ein Fehler aufgetreten: <i>{2}</i>",
         "STATUS_DEV_OTHER_ERROR"        : "Es ist ein unbekannter Fehler beim Gerät <b>{0}</b> aufgetreten.",
         "STATUS_DEV_EMPTY"              : "Für dieses Gerät <b>{0}</b> wurde bislang noch keine Fernbedienung definiert.",
 
-        "STATUS_SCENE_OK"               : "Die Szene <b>{0}</b> ist OK.",
+        "STATUS_SCENE_OK"               : "Die Szene <b>{0}</b> ist bereit.",
         "STATUS_DEV_OFF"                : "Alle Geräte der Szene <b>{0}</b> sind ausgeschaltet.",
         "STATUS_SCENE_STARTING"         : "Mindestens eine für die Szene <b>{0}</b> nötige API startet gerade, bitte warten.",
         "STATUS_SCENE_POWER_OFF"        : "Der Strom über für Szene <b>{0}</b> ist ausgeschaltet. Nutze <b>{1}</b> zum einschalten.",
         "STATUS_SCENE_PARTLY"           : "Für die Szene <b>{0}</b> sind noch nicht alle nötigen Geräte eingeschaltet: <i>{1}</i>. &quot;ON&quot; dr&uuml;cken, um fehlende zu starten.",
-        "STATUS_SCENE_DISABLED"         : "Mindestens ein für die Szene <b>{0}</b> erforderliche device ist deaktiviert: <i>{1}</i>",
+        "STATUS_SCENE_DISABLED"         : "Mindestens ein für die Szene <b>{0}</b> erforderliches Device ist deaktiviert: <i>{1}</i>",
         "STATUS_SCENE_ERROR"            : "Für mindestens eines der für die Szene <b>{0}</b> benötigten Geräte ist ein Fehler aufgetreten: <i>{1}</i>.",
         "STATUS_SCENE_EMPTY"            : "Für die Szene <b>{0}</b> wurde bislang noch keine Fernbedienung definiert.",
 
         "STATUS_SCENE_API_DISABLED"     : "Mindestens eine für die Szene <b>{0}</b> erforderliche API ist deaktiviert: <i>{1}</i>",
-        "STATUS_SCENE_NO_DEVICES"       : "Es sind keiner erforderlichen Geräte für die Szene <b>{0}</b> definiert.",
+        "STATUS_SCENE_NO_DEVICES"       : "Es sind keine erforderlichen Geräte für die Szene <b>{0}</b> definiert.",
+
+        "STATUS_GROUP_OK"                : "Die Gruppe <b>{0}</b> und die enthaltenen Geräte sind bereit.",
+        "STATUS_GROUP_N/A"               : "Der Power-Status der Gruppe <b>{0}</b> ist nicht verfügbar. Bitte, ausprobieren.",
+        "STATUS_GROUP_POWER_OFF"         : "Mindestens eines der in der Gruppe <b>{0}</b> enthaltenen Geräte ist ausgeschaltet: {1}.",
+        "STATUS_GROUP_ERROR"             : "Für mindestens eines der in der Gruppe <b>{0}</b> enthaltenen Geräte ist ein Fehler aufgetreten: {1}",
+        "STATUS_GROUP_API_DISABLED"      : "Die API <b>{0}</b> für <b>{1}</b> ist deaktiviert.",
+        "STATUS_GROUP_API_STARTING"      : "Mindestens eine relevante API für <b>{0}</b> startet gerade, bitte warten.",
+        "STATUS_GROUP_API_ERROR"         : "Für mindestens eine relevante API von <b>{1}</b> ist ein Fehler aufgetreten: <i>{2}</i>",
+        "STATUS_GROUP_OTHER_ERROR"       : "Unbekannter Fehler für die Gruppe <b>{0}</b> aufgetreten.",
+        "STATUS_GROUP_EMPTY"             : "Die Gruppe <b>{0}</b> enthält bislang keine Geräte.",
 
         "STATUS_NO_SERVER_CONNECT"      : "Aktuell besteht keine Verbindung zum Server.",
         },
@@ -94,7 +107,7 @@ let language_app = {
         "API_EDIT_SELECT_API_DEVICE": "Please select a <b>device config</b> file",
         "API_EDIT_SELECT_REMOTE": "Please select a <b>remote control config</b> file",
 
-        "BUTTON_ASK_DELETE"     : "Do you really want to delete the button '{0}' from '{1}'?",
+        "BUTTON_ASK_DELETE"     : "Do you really want to delete the button '{0}_{1}' from '{2}'?",
         "BUTTON_ASK_DELETE_NUMBER" : "Do you really want to delete the button number [{0}] from '{1}'?",
         "BUTTON_INSERT_NAME"    : "Please insert name for button.",
         "BUTTON_RECORD"         : "Record button &quot;{0}&quot; for device &quot;{1}&quot;: click OK and then press the respective button on your remote control within the next 5 seconds.",
@@ -236,6 +249,7 @@ let language_app = {
         "EDIT_RECORDED_FIELDS"   : "Edit values to be recorded",
 
         "EXTERNAL_ID"            : "External ID",
+        "EXECUTION_ERROR"        : "Could not execute command &quot;{2}&quot; for {0} <b>{1}</b>: <i>{3}</i>",
         "ERROR_UNKNOWN"          : "Unknown error",
         "ERROR_THREAD_TOO_LONG"  : "The thread <b>{0}</b> did not respond for <b>{1}s</b>.",
 
@@ -274,6 +288,7 @@ let language_app = {
         "LABEL"                 : "Label",
 
         "LOAD_TEMPLATE"         : "Load template",
+        "LOADING_APP"           : "Loading App ...",
 
         "MACRO"                 : "macro",
         "MACROS"                : "macros",
@@ -392,19 +407,19 @@ let language_app = {
         "RECONNECT_FAILED"             : "ERROR: Reconnect failed ({0}).",
 
         "RECORD_COMMAND"               : "record command",
-        "RECORD_DELETE_COMMANDS"       : "record / delete commands",
+        "RECORD_DELETE_COMMANDS"       : "Record or delete commands",
         "REMOTE"                       : "remote",
         "REMOTE_ADD"                   : "Add remote controls",
         "REMOTE_CONFIG_ERROR"          : "Error in remote config file(s) '{0}': ",
         "REMOTE_CONFIG_ERROR_UNKNOWN"  : "Unknown error in remote config file(s) '{0}'",
         "RELOAD_TAKES_LONGER"          : "Reload takes longer than expected ...",
         "RELOAD_TAKES_MUCH_LONGER"     : "Reload takes longer than much expected ...",
-        "RESET_SWITCH_OFF"             : "Reset devices:<br/>switch off all devices before.",
-        "RESET_VOLUME_TO_ZERO"         : "Reset audio settings:<br/>set the volume of all audio devices to mininum (0) before.",
+        "RESET_SWITCH_OFF"             : "Reset devices without API connect:<br/>switch off all devices before.",
+        "RESET_VOLUME_TO_ZERO"         : "Reset audio settings for devices without API connect:<br/>set the volume of all audio devices to mininum (0) before.",
         "RESTART"                      : "Are you sure you want to restart the server?",
         "RELOAD_ALL_SCRIPTS"           : "Reload all CSS and JavaScript files.",
-        "REMOTE_MOVE_TO_ARCHIVE"       : "Do you want to move the remote control <b>{0}</b> to archive?",
-        "REMOTE_RESTORE_FROM_ARCHIVE"  : "Do you want to restore the remote control <b>{0}</b> from archive?",
+        "REMOTE_MOVE_TO_ARCHIVE"       : "Do you want to move the {0} remote control <b>{1}</b> to archive?",
+        "REMOTE_RESTORE_FROM_ARCHIVE"  : "Do you want to restore the {0} remote control <b>{1}</b> from archive?",
 
         "SAVE"                         : "Save",
 
@@ -484,6 +499,9 @@ let language_app = {
         "TEMPLATE_OVERWRITE"           : "Do you really want overwrite buttons of '{0}' with template '{1}'?",
         "TEST_DEVICE_COMMANDS"         : "Test here your commands for device {0}.",
         "TRY_OUT"                      : "try out",
+
+        "TIMER_TRY"                    : "Try out timer {0}?",
+        "TIMER_DELETE"                 : "Do you want to delete the timer {0}?",
 
         "TOGGLE"                       : "toggle",
         "TOGGLE_SELECT_DEVICE"         : "Select a toggle device.",

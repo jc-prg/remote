@@ -333,7 +333,7 @@ class RemoteAPI(RemoteDefaultClass):
 
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Button"] = button
-        data["REQUEST"]["Command"] = "RecordCommand"
+        data["REQUEST"]["Command"] = "CommandRecord"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -429,7 +429,7 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start(["request-only"])
         data["REQUEST"]["Return"] = self.edit.device_edit(device, info)
         data["REQUEST"]["Device"] = device
-        data["REQUEST"]["Command"] = "EditDevice"
+        data["REQUEST"]["Command"] = "DeviceEdit"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -449,7 +449,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Return"] = self.edit.device_add(device, device_data)
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Parameter"] = device_data
-        data["REQUEST"]["Command"] = "AddDevice"
+        data["REQUEST"]["Command"] = "DeviceAdd"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -468,7 +468,7 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start(["request-only"])
         data["REQUEST"]["Return"] = self.edit.device_delete(device)
         data["REQUEST"]["Device"] = device
-        data["REQUEST"]["Command"] = "DeleteDevice"
+        data["REQUEST"]["Command"] = "DeviceDelete"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -489,7 +489,7 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start(["request-only"])
         data["REQUEST"]["Return"] = self.edit.device_edit_api_settings(device, info)
         data["REQUEST"]["Device"] = device
-        data["REQUEST"]["Command"] = "EditDeviceApiSettings"
+        data["REQUEST"]["Command"] = "ApiDeviceSettingsEdit"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -509,7 +509,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Return"] = self.edit.remote_add_template(device, template)
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Parameter"] = template
-        data["REQUEST"]["Command"] = "AddTemplate"
+        data["REQUEST"]["Command"] = "TemplateAdd"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -577,7 +577,12 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start(["request-only"])
         data["REQUEST"]["Device"] = remote_id
         data["REQUEST"]["Parameter"] = direction
-        data["REQUEST"]["Command"] = "archive_" + direction
+        data["REQUEST"]["Type"] = remote_type
+
+        if direction == "restore":
+            data["REQUEST"]["Command"] = "RestoreFromArchive"
+        elif direction == "move":
+            data["REQUEST"]["Command"] = "MoveToArchive"
 
         if direction == "move":
             data["REQUEST"]["Return"] = self.data.archive_move_to(remote_type, remote_id)
@@ -605,7 +610,7 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start(["request-only"])
         data["REQUEST"]["Return"] = self.edit.scene_edit(scene, info)
         data["REQUEST"]["Scene"] = scene
-        data["REQUEST"]["Command"] = "EditScene"
+        data["REQUEST"]["Command"] = "SceneEdit"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -625,7 +630,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Return"] = self.edit.scene_add(scene, info)
         data["REQUEST"]["Scene"] = scene
         data["REQUEST"]["Parameter"] = info
-        data["REQUEST"]["Command"] = "AddScene"
+        data["REQUEST"]["Command"] = "SceneAdd"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -643,7 +648,7 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start(["request-only"])
         data["REQUEST"]["Return"] = self.edit.scene_delete(scene)
         data["REQUEST"]["Scene"] = scene
-        data["REQUEST"]["Command"] = "DeleteScene"
+        data["REQUEST"]["Command"] = "SceneDelete"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -659,7 +664,7 @@ class RemoteAPI(RemoteDefaultClass):
         else:
             data["REQUEST"]["Return"] = f"ERROR: add API device ({api})"
 
-        data["REQUEST"]["Command"] = "edit_api_device/add"
+        data["REQUEST"]["Command"] = "ApiDeviceAdd"
         data = self._end(data)
         self.logging.info(f"Add API device for {api}: " + str(api_data))
         return data
@@ -675,7 +680,7 @@ class RemoteAPI(RemoteDefaultClass):
         else:
             data["REQUEST"]["Return"] = f"ERROR: delete API device ({api})"
 
-        data["REQUEST"]["Command"] = "edit_api_device/delete"
+        data["REQUEST"]["Command"] = "ApiDeviceDelete"
         data = self._end(data)
         self.logging.info(f"Delete API device {api}")
         return data
@@ -966,7 +971,7 @@ class RemoteAPI(RemoteDefaultClass):
         """
         data = self._start()
         data["REQUEST"]["Return"] = "OK: Reconnect and configuration reload triggered"
-        data["REQUEST"]["Command"] = "Reconnect"
+        data["REQUEST"]["Command"] = "ReconnectInterface"
 
         self.apis.api_request_reconnect(interface, True, True)
 
@@ -979,7 +984,7 @@ class RemoteAPI(RemoteDefaultClass):
         """
         data = self._start()
         data["REQUEST"]["Return"] = "OK: Triggered API device discovery"
-        data["REQUEST"]["Command"] = "Discovery"
+        data["REQUEST"]["Command"] = "DiscoverDevices"
 
         self.apis.api_request_discovery()
 
@@ -1483,7 +1488,7 @@ class RemoteAPI(RemoteDefaultClass):
         """
         data = self._start(["request-only"])
         data["REQUEST"]["Return"] = self.edit.device_main_audio_set(device)
-        data["REQUEST"]["Command"] = "ChangeMainAudio"
+        data["REQUEST"]["Command"] = "SetMainAudio"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config", "no-status"])
@@ -1503,7 +1508,7 @@ class RemoteAPI(RemoteDefaultClass):
 
         data["REQUEST"]["Interface"] = interface
         data["REQUEST"]["Parameter"] = active
-        data["REQUEST"]["Command"] = "Change interface status"
+        data["REQUEST"]["Command"] = "InterfaceOnOff"
         data["REQUEST"]["Return"] = self.config.interface_active(interface, active)
 
         self.apis.check_directly = True

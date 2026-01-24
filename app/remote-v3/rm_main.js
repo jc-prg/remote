@@ -12,6 +12,7 @@ reload_times = {
 	TIMEOUT: 60
 }
 reload_active = false;
+rm3update = false;
 
 let showImg = true;
 let startActive = true;
@@ -19,6 +20,7 @@ let easyEdit = false;
 let remoteHints = true;
 let jsonHighlighting= false;
 
+let rmApi = undefined;
 let rmMain = undefined;
 let rmMenu = undefined;
 let rmStart = undefined;
@@ -32,6 +34,7 @@ function startRemote() {
 
 	appMsg.info_message_init(appMsg);
 
+	rmApi       = new RemoteApiControl("rmApi");
 	rmMain		= new RemoteMain("rmMain");
     rmMenu      = new RemoteMenu( "rmMenu", ["menuItems","menuItems2"] );
     rmStart     = new RemoteStart( "rmStart");
@@ -108,17 +111,17 @@ class RemoteMain extends RemoteDefaultClass {
 
 	/* load complete setting with start menu, remote control, setting, drop down menu */
 	load_app() {
-		appFW.requestAPI("GET",["list"], "", this.create_app);
+		rmApi.call("List", [], "", this.create_app);
 	}
 
 	/* load drop down menu */
 	load_drop_down() {
-		appFW.requestAPI( "GET", ["list"], "", this.create_drop_down );
+		rmApi.call("List", [], "", this.create_drop_down );
 	}
 
 	/* load or reload remote control */
 	load_remote() {
-		appFW.requestAPI("GET", ["list"], "", this.create_remote);
+		rmApi.call("List", [], "", this.create_remote);
 	}
 
 	/* initially create app with start menu, remote control, setting, drop down menu */

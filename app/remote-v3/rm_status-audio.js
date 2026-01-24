@@ -155,7 +155,7 @@ class RemoteVisualizeMainAudioStatus extends RemoteDefaultClass {
         this.main_audio_settings(data);
 
         if (!this.audio_active || this.audio_status.indexOf("ERROR") >= 0) {
-            this.logging.error("show(): device=" + this.audio_device + "; status=" + this.audio_status);
+            this.logging.info("show(): device=" + this.audio_device + "; status=" + this.audio_status);
             this.volume();
             this.mute();
         }
@@ -187,8 +187,7 @@ class RemoteVisualizeMainAudioStatus extends RemoteDefaultClass {
 
     // send API call to set volume
     change_volume(volume) {
-        console.debug("change_volume(): " + rmStatusAudio.audio_device+" -> "+volume);
-        appFW.requestAPI( "GET",  ["set",rmStatusAudio.audio_device,"send-vol",volume], "", rmMain.load_remote );
+        rmApi.call("MainVolume", volume);
     }
 }
 

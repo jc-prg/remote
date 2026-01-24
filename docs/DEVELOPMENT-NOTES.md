@@ -10,75 +10,6 @@
 
 ### Observe ...
 
-* SOLVED: error in rm3api
-
-        01/19 19:16:24 | INFO     Q-send      | Queue still running.
-        01/19 19:18:38 | INFO     weather     | Get weather data from module (every 600s/Open-Meteo) ...
-        01/19 19:21:05 | INFO     rm-api      | {'remote': ['HEADER-IMAGE||toggle', 'TOGGLE||plug02_power||Power Device||macro_plug02-on||macro_plug02-off', '.', '.', 'group_led_on', 'group_led_off', 'LINE', 'rec2_test', 'LINE', 'dev-on_lw||Leinwand runter', 'scene_test', 'scene-on', 'global_aa', 'LINE', 'TOGGLE||group_led_power||Alle LEDs||group_led_on||group_led_off', 'TOGGLE||led_power||Toggle LED Streifen (led)||led_on||led_off', 'TOGGLE||plug02_power||Toggle SmartPlug 02 (plug02)||plug02_on||plug02_off', 'DISPLAY', 'bulb01_COLOR-PICKER||send-color-xy||Color CIE_1931||test description', 'COLOR-PICKER||send-brightness||Brightness', 'COLOR-PICKER||send-color-temp2||Color temperature', '.', '.', 'rec2_SLIDER||send-vol||AV Receiver: Vol||0-70||vol'], 'devices': [], 'display': {}, 'display-size': 'h1w4', 'chart': [], 'macro-channel': {}, 'macro-scene-on': ['MSG-17', 'led_on', 'global_aa'], 'macro-scene-off': ['receiver2_off'], 'macro-scene': {'test': ['MSG-10', 'led_on']}}
-        01/19 19:21:19 | ERROR    server      | Exception on /api/send_check/rec2/test/ [GET]
-        Traceback (most recent call last):
-        File "/usr/local/lib/python3.14/site-packages/flask/app.py", line 2525, in wsgi_app
-        response = self.full_dispatch_request()
-        File "/usr/local/lib/python3.14/site-packages/flask/app.py", line 1822, in full_dispatch_request
-        rv = self.handle_user_exception(e)
-        File "/usr/local/lib/python3.14/site-packages/flask_cors/extension.py", line 176, in wrapped_function
-        return cors_after_request(app.make_response(f(*args, **kwargs)))
-        ~^^^^^^^^^^^^^^^^^
-        File "/usr/local/lib/python3.14/site-packages/flask/app.py", line 1820, in full_dispatch_request
-        rv = self.dispatch_request()
-        File "/usr/local/lib/python3.14/site-packages/flask/app.py", line 1796, in dispatch_request
-        return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
-        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
-        File "/usr/local/lib/python3.14/site-packages/connexion/decorators/decorator.py", line 68, in wrapper
-        response = function(request)
-        File "/usr/local/lib/python3.14/site-packages/connexion/decorators/uri_parsing.py", line 149, in wrapper
-        response = function(request)
-        File "/usr/local/lib/python3.14/site-packages/connexion/decorators/validation.py", line 399, in wrapper
-        return function(request)
-        File "/usr/local/lib/python3.14/site-packages/connexion/decorators/parameter.py", line 120, in wrapper
-        return function(**kwargs)
-        File "/usr/src/app/server/modules/rm3api.py", line 1176, in send_button_on_off
-        interface = data["CONFIG"]["devices"][device]["interface"]["api_key"]
-        ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
-        KeyError: 'rec2'
-
-* SOLVED: error in interfaces.py
-
-        01/18 22:35:17 | INFO     weather-om  | Starting weather process 'Open-Meteo.com' for GPS=[48.14, 11.58, 'Munich'] ...
-        01/18 22:35:17 | INFO     weather-om  | Read weather data (every 900.0s) ...
-        01/18 22:35:17 | ERROR    werkzeug    | EXCEPTION IN THREAD API Device Controller:
-        
-        Traceback (most recent call last):
-          File "/usr/local/lib/python3.14/threading.py", line 1082, in _bootstrap_inner
-            self._context.run(self.run)
-            ~~~~~~~~~~~~~~~~~^^^^^^^^^^
-          File "/usr/src/app/server/interfaces/interfaces.py", line 140, in run
-            self.api_reconnect(key, reread_config, done_message)
-            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-          File "/usr/src/app/server/interfaces/interfaces.py", line 558, in api_reconnect
-            self.api[api_dev].connect()
-            ~~~~~~~~~~~~~~~~~~~~~~~~~^^
-          File "/usr/src/app/server/interfaces/api_weather.py", line 70, in connect
-            self.weather_api.start()
-            ~~~~~~~~~~~~~~~~~~~~~~^^
-          File "/usr/local/lib/python3.14/threading.py", line 989, in start
-            raise RuntimeError("threads can only be started once")
-        RuntimeError: threads can only be started once
-
-
-* SOLVED: error in weather and record - restart / reconnect after a while?
-
-        01/17 09:29:49 | INFO     weather    | Get weather data from module (every 600s/Open-Meteo) ...
-        01/17 09:29:49 | ERROR    weather-om | Could not read weather from open-meteo.com: HTTPSConnectionPool(host='api.open-meteo.com', port=443): Max retries exceeded with url: /v1/forecast?latitude=48.128&longitude=11.646&timezone=auto&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,weathercode&daily=sunset,sunrise (Caused by NameResolutionError("HTTPSConnection(host='api.open-meteo.com', port=443): Failed to resolve 'api.open-meteo.com' ([Errno -3] Temporary failure in name resolution)"))
-        ..
-        01/17 20:07:23 | ERROR    api-WEATHER | ERROR Command availability isn't available in the weather data.
-        01/17 20:07:23 | ERROR    api-WEATHER | ERROR Command info_module.provider_link isn't available in the weather data.
-        01/17 20:07:53 | ERROR    api-WEATHER | ERROR Command availability isn't available in the weather data.
-        01/17 20:07:53 | ERROR    api-WEATHER | ERROR Command info_module.provider_link isn't available in the weather data.
-        01/17 20:08:23 | ERROR    api-WEATHER | ERROR Command availability isn't available in the weather data.
-        01/17 20:08:23 | ERROR    api-WEATHER | ERROR Command info_module.provider_link isn't available in the weather data.
-
-
 ### known but not that urgent
 
 * when API has an error / isn't available anymore, the connect device still reports online
@@ -97,12 +28,6 @@
 
 ## UNDER DEVELOPMENT -------------------------------------------------------------
 
-* archiving
-  * OPEN: update view in settings when moved
-  * OPEN: check if scene-on / scene-off / scene macro consist of valid commands
-
-* integrating weather API
-  * OPEN: create default configuration with sample data (quasi as device discovery)
  
 * macro editing in the app
   * OPEN: sort in some order (alphabetically or in the order of the menu)
@@ -134,23 +59,10 @@
 
 * set a time difference in .env -> config.local_time()
 
-* differ between "invisible" and "archived" for remotes
-  * archived are filtered nearly everywhere, except in the settings in an own list (no drag&drop required) - filtering done in rmData.XX
-  * archived have to be moved to active before editing them again
-  * archived just can be moved to active or deleted
-  * invisible can be made visible via menu entry
-
 * QUESTION: is there a need for a device or is it possible to get data if API-Device is defined
   * idea: whenever MultiDevice = False and same set of commands (defined in 00_default.json) is enough,
     address it via <API-Device-Key>_Command - or additional setting in 00_interface.json - key starting with a specific character (:WEATHER:default_temperature)
     -> no device remote required but data available in a scene ...
-
-* other refactoring
-  * rm_main.js; rethink / maybe create a class and restructure stuff
-
-* move data processing to -> class rmData {} and rmStatus {}
-  * check if still required: data("CONFIG")("templates")("list")
-  * check which other parts are still required or can be removed
 
 ### NEW 12-2025
 
@@ -164,8 +76,6 @@
     * and optimize structure
   
 * front end improvements
-  * display text format errors
-    * font-sizes for display text
   * format errors
     * color picker (small -> color indicator drops into next line; stretch to right width)
 
@@ -242,6 +152,18 @@
     
 # DONE --------------------------------------------------------------------------
 
+* integrating weather API
+  * OPEN: create default configuration with sample data (quasi as device discovery)
+* check in scene editing for errors in current 
+* differ between "invisible" and "archived" for remotes
+  * archived are filtered nearly everywhere, except in the settings in an own list (no drag&drop required) - filtering done in rmData.XX
+  * archived have to be moved to active before editing them again
+  * archived just can be moved to active or deleted
+  * invisible can be made visible via menu entry
+* complete refactoring of rm_main.js
+* complete refactoring of rm_functions-api.js
+* compacter API status summery
+* SOLVED several bugs
 * archiving
   * OK: check / visualize if remotes are missing for scenes
   * OK: check if device is required from a scene ... make this part of the message

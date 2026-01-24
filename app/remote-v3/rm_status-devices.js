@@ -3,7 +3,7 @@
 //--------------------------------
 
 let rmStatus;
-let rmStatus_logging = false;
+let rmStatus_logging = true;
 
 
 // class that offers all types of status information for apis, api-devices, media devices, and scenes
@@ -230,13 +230,27 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
 
             // identify power status devices
             let power_status;
+            let available;
+            if (this.status_devices[device]["availability"]) {
+                if (this.status_devices[device]["availability"].toUpperCase().indexOf("ONLINE") > -1) { available = "ONLINE"; }
+                else if (this.status_devices[device]["availability"].toUpperCase().indexOf("ON") > -1) { available = "ONLINE"; }
+                else { available = "OFFLINE"; }
+            } else {
+                available = "N/A";
+            }
+
+
             if (this.status_devices[device]["power"]) { power_status = this.status_devices[device]["power"].toUpperCase(); } else { power_status = "ERROR"; }
-            if ((!this.status_devices[device]["power"] || power_status === "N/A") && this.status_devices[device]["availability"] && this.status_devices[device]["availability"].toUpperCase().indexOf("ONLINE") > -1) { power_status = "ON"; }
+            if ((!this.status_devices[device]["power"] || power_status === "N/A")
+                    && this.status_devices[device]["availability"]
+                    && this.status_devices[device]["availability"].toUpperCase().indexOf("ONLINE") > -1)
+                    { power_status = "ON"; } // ???? ON works, N/A works partly, ONLINE or other shows error
 
             // check, if other status available (Zigbee) ... others might have to follow
             if (power_status === "N/A") {
                 let power_details = this.status_device_raw(device);
-                if (power_details["availability"] && power_details["availability"].toUpperCase().indexOf("ONLINE") > -1) { power_status = "ON"; }
+                if (power_details["availability"] && power_details["availability"].toUpperCase().indexOf("ONLINE") > -1)
+                    { power_status = "ON"; } // ???? ON works, N/A works partly, ONLINE or other shows error
             }
 
             // identify labels
@@ -281,18 +295,29 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
             // if disabled, status is still OK (but message shows details)
             if (status !== "API_DISABLED" && !active && status !== "ON" && status !== "OFF") { status = "DISABLED"; }
 
+            let status_overall = "ERROR";
+            if (status === "ON" && available === "ONLINE")                  { status_overall = "ON"; }
+            else if (status === "N/A" && available === "ONLINE")            { status_overall = "ON"; }
+            else if (status === "ON" && available === "N/A")                { status_overall = "ON"; }
+            else if (status.indexOf("OFF") >= 0 && available === "OFFLINE") { status_overall = "OFF"; }
+            else if (status === "N/A" && available === "OFFLINE")           { status_overall = "OFF"; }
+            else if (status.indexOf("OFF") >= 0 && available === "N/A")     { status_overall = "OFF"; }
+            else if (status.indexOf("OFF") >= 0 && available === "ONLINE")  { status_overall = "OFF"; }
+
             this.status_data["device"][device] = {
+                "active": active,
                 "api": api,
                 "api-status": this.status_data["api"][api]["status"],
                 "api-message": this.status_data["api"][api]["message"],
                 "api-device": api_device,
                 "api-device-message": this.status_data["api-device"][api_key]["message"],
                 "api-device-status": this.status_data["api-device"][api_key]["status"],
-                "active": active,
-                "status": status,
+                "available": available,
+                "message": message,
                 "power": power_device,
                 "power2": label_power,
-                "message": message
+                "status": status,
+                "status_overall": status_overall
             }
         }
     }
@@ -582,6 +607,12 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
         return this.get_status("device", id, details);
     }
 
+    /* get overall status for devices */
+    status_device_overall (id) {
+        let status = this.get_status("device", id, true);
+        return status["status_overall"];
+    }
+
     /* get raw status for devices */
     status_device_raw (id) {
         if (this.status_devices[id]) {
@@ -624,23 +655,19 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
         for (let api in this.config_apis) {
             let api_status = this.status_api(api, true);
             result += this.tab.line();
-            result += this.tab.row("<b>API:</b><br/>", false);
-            result += this.tab.row("-&nbsp;"+api, "<b>"+api_status["status"] + "</b> / " + api_status["message"]);
+            result += this.tab.row("<big><b>" + api + "</b> ("+api_status["status"]+")</big>", false);
 
             for (let api_device in this.config_apis_structure[api]) {
                 let api_device_status = this.status_api_device(api+"_"+api_device, true);
-                result += this.tab.row("&nbsp;<br/><b>API-Device:</b>", false);
-                result += this.tab.row("-&nbsp;"+api_device, "<b>"+api_device_status["status"] + "</b> / " + api_device_status["message"]);
+                let message = api_device_status["message"];
+                if (message.indexOf("DISABLED") > -1) { message = "DISABLED"; }
+                result += this.tab.row("&nbsp;<br/><b>"+api_device+"</b> (" + message + ")", false);
 
-                let count = 0;
                 for (let device in this.config_devices) {
                     let device_status = this.status_device(device, true);
+                    let status = `<b>${device_status["status_overall"]}</b> (${device_status["status"]}|${device_status["available"]})`;
                     if (device_status["api"] === api && device_status["api-device"] === api_device) {
-                        if (count === 0) {
-                            result += this.tab.row("&nbsp;<br/><b>Devices:</b>");
-                        }
-                        result += this.tab.row("-&nbsp;"+device, "<b>"+device_status["status"] + "</b> / " + device_status["message"]);
-                        count += 1;
+                        result += this.tab.row("-&nbsp;"+device, status + " <br/><i>" + device_status["message"] + "</i>");
                     }
 
                 }
@@ -648,17 +675,18 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
         }
 
         result += this.tab.line();
-        result += this.tab.row("<b>Scenes:</b>", false);
+        result += this.tab.row("<big><b>Scenes:</b></big>", false);
         for (let scene in this.config_scenes) {
             let scene_status = this.status_scene(scene, true);
-            result += this.tab.row("-&nbsp;"+scene, "<b>"+scene_status["status"] + "</b> / " + scene_status["message"]);
+            let status = `${scene_status["status"]}`;
+            result += this.tab.row("-&nbsp;"+scene, "<b>" + status + "</b> <br/><i>" + scene_status["message"] + "</i>");
         }
 
         result += this.tab.line();
-        result += this.tab.row("<b>Groups:</b>", false);
+        result += this.tab.row("<big><b>Groups:</b></big>", false);
         for (let group in this.config_groups) {
             let group_status = this.status_group(group, true);
-            result += this.tab.row("-&nbsp;"+group, "<b>"+group_status["status"] + "</b> / " + group_status["message"]);
+            result += this.tab.row("-&nbsp;"+group, "<b>"+group_status["status"] + "</b> <br/><i>" + group_status["message"] + "</i>");
         }
 
         result += this.tab.end();

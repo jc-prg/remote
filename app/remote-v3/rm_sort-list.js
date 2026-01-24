@@ -2,9 +2,9 @@ dragStartPos   = "";
 dragEndPos     = "";
 dragStartCount = false;
 
-function remote_slist(target, callback_pos) {
+function remote_sort_list(target, callback_pos) {
 
-    var handle_element = "<img src='/remote-v3/img/dragndrop.png' style='height:22px;'>";
+    let handle_element = "<img src='/remote-v3/img/dragndrop.png' style='height:22px;' alt=''>";
     target.classList.add("slist");
     let items = target.getElementsByTagName("li"), current = null, clone = null, startPos = null;
 
@@ -13,19 +13,18 @@ function remote_slist(target, callback_pos) {
       current = e.target.closest("li");
       startPos = current.getBoundingClientRect();
 
-      let currentPos = Array.from(items).indexOf(current);
-      dragStartPos   = currentPos;
+      dragStartPos   = Array.from(items).indexOf(current);
       dragStartCount = true;
 
       for (let it of items) {
-        if (it != current) { it.classList.add("hint"); }
+        if (it !== current) { it.classList.add("hint"); }
       }
       e.dataTransfer?.setData("text/plain", ""); // Required for Firefox
     }
 
     function handleDragEnter(e) {
       const li = e.target.closest("li");
-      if (li && li != current) {
+      if (li && li !== current) {
         li.classList.add("active");
 
         // Simulate new position of elements
@@ -49,24 +48,25 @@ function remote_slist(target, callback_pos) {
 
     function handleDragEnd(e) {
 
-        var i = 0;
-        var startElement, endElement;
+        let i = 0;
+        let startElement, endElement;
 
         for (let it of items) {
             it.classList.remove("hint");
             it.classList.remove("active");
-            if (i == dragStartPos) { startElement = it; }
-            if (i == dragEndPos)   { endElement   = it; }
+            if (i === dragStartPos) { startElement = it; }
+            if (i === dragEndPos)   { endElement   = it; }
             i += 1;
             }
 
-        if (dragStartPos != dragEndPos && dragStartCount == true) {
+        if (dragStartPos !== dragEndPos && dragStartCount === true) {
+            let id;
             if (endElement.innerHTML.indexOf("rm-id") > 0) {
-                var id = endElement.innerHTML.split("</rm-id>")[0];
-                id     = id.split("<rm-id>")[1];
+                id = endElement.innerHTML.split("</rm-id>")[0];
+                id = id.split("<rm-id>")[1];
                 }
             else {
-                var id = "";
+                id = "";
                 }
             callback_pos(id, target.id, dragStartPos, dragEndPos); dragStartCount = false;
             }
@@ -80,11 +80,11 @@ function remote_slist(target, callback_pos) {
     function handleDrop(e) {
       e.preventDefault();
       const li = e.target.closest("li");
-      if (li && li != current) {
+      if (li && li !== current) {
         let currentPos = 0, droppedPos = 0;
         for (let it = 0; it < items.length; it++) {
-          if (current == items[it]) { currentPos = it; }
-          if (li == items[it]) { droppedPos = it; }
+          if (current === items[it]) { currentPos = it; }
+          if (li === items[it]) { droppedPos = it; }
         }
         if (currentPos < droppedPos) {
           li.parentNode.insertBefore(current, li.nextSibling);
@@ -100,7 +100,7 @@ function remote_slist(target, callback_pos) {
       return document.elementFromPoint(touch.clientX, touch.clientY);
     }
 
-    var count = 0;
+    let count = 0;
     for (let i of items) {
       // Create and append the handle element
       count += 1;
@@ -152,7 +152,7 @@ function remote_slist(target, callback_pos) {
           clone.style.top = `${touch.clientY}px`;
         }
 
-        if (targetElement && targetElement.nodeName === "LI" && targetElement != current) {
+        if (targetElement && targetElement.nodeName === "LI" && targetElement !== current) {
           handleDragEnter({ target: targetElement });
         }
         e.preventDefault();
@@ -161,11 +161,11 @@ function remote_slist(target, callback_pos) {
       handle.addEventListener('touchend', e => {
         const targetElement = getElementAtTouch(e);
 
-        if (targetElement && targetElement.nodeName === "LI" && targetElement != current) {
+        if (targetElement && targetElement.nodeName === "LI" && targetElement !== current) {
           let currentPos = 0, droppedPos = 0;
           for (let it = 0; it < items.length; it++) {
-            if (current == items[it]) { currentPos = it; }
-            if (targetElement == items[it]) { droppedPos = it; }
+            if (current === items[it]) { currentPos = it; }
+            if (targetElement === items[it]) { droppedPos = it; }
           }
           if (currentPos < droppedPos) {
             targetElement.parentNode.insertBefore(current, targetElement.nextSibling);
@@ -183,8 +183,12 @@ function remote_slist(target, callback_pos) {
 
 function startDragAndDrop(list_id, callback_pos) {
 
-    remote_slist(document.getElementById(list_id), callback_pos);
+    remote_sort_list(document.getElementById(list_id), callback_pos);
     }
+
+function movePosition(id, dnd_list, from, to) {
+    rmApi.call("RemoteMove", [id, dnd_list, from, to]);
+}
 
 
 remote_scripts_loaded += 1;

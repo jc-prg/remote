@@ -136,7 +136,7 @@ class RemoteStart extends RemoteDefaultClass {
         }
 
     /* create standard button */
-    button(id, label, style, script_apiCommandSend, disabled, image="" ) {
+    button(id, label, style, script_CommandSend, disabled, image="" ) {
         let background_image = "";
         if (image !== "") {
             let scene_images  = rmData.elements.data("scene_images");
@@ -145,10 +145,10 @@ class RemoteStart extends RemoteDefaultClass {
             }
 
             background_image = "style='background-image:url("+rm3scene_dir+image+");'"
-            return "<button id='" + id + "' class='rm-button " + style + "' onclick='" + script_apiCommandSend + "' " + disabled + " " + background_image + "></button>";
+            return "<button id='" + id + "' class='rm-button " + style + "' onclick='" + script_CommandSend + "' " + disabled + " " + background_image + "></button>";
         }
         else {
-            return "<button id='" + id + "' class='rm-button " + style + "' onclick='" + script_apiCommandSend + "' " + disabled + " >" + label + "</button>";
+            return "<button id='" + id + "' class='rm-button " + style + "' onclick='" + script_CommandSend + "' " + disabled + " >" + label + "</button>";
         }
     }
 

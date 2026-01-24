@@ -134,7 +134,7 @@ class RemoteControlDisplay extends RemoteDefaultClass {
 
         // weather data - icon on the righten side
         if (format === "weather" && display_data["ICON"]) {
-            let input_id = "";
+            let input_id;
             html += this.tab.start("100%", "", "center");
 
             if (display_data["ICON"].indexOf("_") >= 0) { input_id = 'display_' + display_data["ICON"]; }
@@ -154,7 +154,7 @@ class RemoteControlDisplay extends RemoteDefaultClass {
         }
         // weather data - icon on the righten side - edit mode
         else if (format === "weather_edit") {
-            let input_id = "";
+            let input_id;
             html += this.tab.start("100%", "", "center");
 
             if (display_data["ICON"].indexOf("_") >= 0) { input_id = 'display_' + display_data["ICON"]; }

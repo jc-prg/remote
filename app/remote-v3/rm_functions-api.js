@@ -2,908 +2,670 @@
 // jc://remote/
 //--------------------------------
 
-// check if APP updates are available
-function apiCheckUpdates() {
 
-	appMsg.wait("Loading App ...", "rmMain.start();" );
-	appFW.requestAPI("GET", ["version",rm3version], "", apiCheckUpdates_msg, "wait" ); 	// doesn't work asynchronuous yet ... -> "wait" as param
-	}
+/* bundle and simplify all API calls incl. confirm, data preparation and reacting on server response */
+class RemoteApiControl extends RemoteDefaultClass {
+    constructor(name) {
+        super(name);
 
-function apiCheckUpdates_msg( data ) {
+        this.execute = this.execute.bind(this);
+        this.answer = this.answer.bind(this);
+        this.answer_api_request = this.answer_api_request.bind(this);
 
-	let msg = data["REQUEST"]["Return"];
-	msg = "<br/></b><i>"+msg+"</i>";
+        /*
+                        appFW.requestAPI("POST", ["chart-data", settings["date"]], settings, this.load);
 
-	appMsg.wait("Loading App ..."+msg, "rmMain.start();" );
+         */
 
-	if (data["REQUEST"]["ReturnCode"] !== "802") {
-		rm3update = true;
-		}
-	}
+        this.log_level_status = "warning";
+        this.temp_data = {};
+        this.temp_callback = undefined;
+        this.commands_unused = {
+            "ApiDeviceSettingsEdit":{ command: "device_api_settings", method: "POST", confirm: false, param: 3, prepare: true, answer: this.answer },
+            "ButtonAdd":            { command: "button", method: "PUT", confirm: false, param: 2, prepare: true, answer: this.answer },
+            "ButtonDelete":         { command: "button", method: "DELETE", confirm: true, message: "BUTTON_ASK_DELETE_NUMBER", param: 2, prepare: true, answer: this.answer },
+            "GroupSend":            { command: "macro", method: "GET", confirm: false, param: 3, prepare: true, answer: this.answer },
+            "TemplateAdd":          { command: "template", method: "PUT", confirm: true, message: "TEMPLATE_OVERWRITE", param: 2, prepare: true, answer: this.answer },
+        }
+        this.commands = {
+            "ApiDeviceAdd":         { command: "edit_api_device", method: "PUT", confirm: false, param: 1, param_info: "[api_name]", prepare: true, answer: this.answer },
+            "ApiDeviceDelete":      { command: "edit_api_device", method: "DELETE", confirm: true, param: 2, param_info: "[api_name, api_device]", message: "API_DEVICE_DELETE", prepare: true, answer: this.answer },
+            "ApiDeviceOnOff":       { command: "api_device", method: "PUT", confirm: false, param: 3, param_info: "[interface, api_device, value]" },
+            "ArchiveList":          { command: "archive", method: "GET", confirm: false, param: 1, param_info: "[rm_type]" },
+            "ChangeVisibility":     { command: "visibility", method: "PUT", confirm: false, param: 3, param_info: "[rm_type, rm_id, value_id]", prepare: true, answer: this.answer },
+            "CheckVersion":         { command: "version", method: "GET", confirm: false, param: 1, param_info: "[version]", prepare: false, wait: true },
+            "ChartData":            { command: "chart-data", method: "POST", param: 1, param_info: "[date]", data: true },
+            "CommandDelete":        { command: "command", method: "DELETE", confirm: true, message: "BUTTON_ASK_DELETE", param: 2, param_info: "[device_id, button_id]", prepare: true, answer: this.answer },
+            "CommandRecord":        { command: "command", method: "POST", confirm: true, message: "BUTTON_RECORD", param: 3, param_info: "[device_id, button_id, read_from_input]", prepare: true, answer: this.answer },
+            "CommandSend":          { command: "send", method: "GET", confirm: false, param: 3, param_info: "[cmdButton, sync, device]", prepare: true },
+            "CommandSendWait":      { command: "send", method: "GET", confirm: false, param: 3, param_info: "[cmdButton, sync, device]", prepare: true, wait: true },
+            "CommandSendCheck":     { command: "send_check", method: "GET", confirm: false, param: 3, param_info: "[cmdButton, sync, device]", prepare: true },
+            "CommandSendCheckWait": { command: "send_check", method: "GET", confirm: false, param:  3, param_info: "[cmdButton, sync, device]", prepare: true, wait: true },
+            "ConfigInterface":      { command: ["config", "interface"], method: "POST", confirm: false, param: 2, param_info: "[device, config]", prepare: true, answer: this.answer },
+            "ConfigInterfaceShow":  { command: ["config", "interface"], method: "GET", confirm: false, param: 0, prepare: true },
+            "ConfigDropDown":       { command: ["config", "device"], method: "GET", confirm: false, param: 1, param_info: "[device]", prepare: true },
+            "DeviceAdd":            { command: "device", method: "PUT", confirm: false, param: 2, param_info: "[data, onchange]", prepare: true, answer: this.answer },
+            "DeviceChangeConfigs":  { command: "device-api-settings", method: "POST", confirm: false, param: 1, param_info: "[remote_id]", prepare: true, answer: this.answer },
+            "DeviceDelete":         { command: "device", method: "DELETE", confirm: true, message: "DEVICE_ASK_DELETE", param: 1, param_info: "[device_id]", prepare: true, answer: this.answer },
+            "DeviceEdit":           { command: "device", method: "POST", confirm: false, param: 3, param_info: "[device_id, prefix, fields]", prepare: true, answer: this.answer },
+            "DeviceJsonEdit":       { command: "device", method: "POST", confirm: false, param: 4, param_info: "[device_id, json_buttons, json_display, display_size]", prepare: true, answer: this.answer },
+            "DiscoverDevices":      { command: "discovery", method: "POST", confirm: true, message: "API_DEVICE_DISCOVERY", param: 0, prepare: false, answer: this.answer },
+            "InterfaceOnOff":       { command: "interface", method: "PUT", confirm: false, param: 2, param_info: "[interface, value]", prepare: false },
+            "List":                 { command: "list", method: "GET", confirm: false, param: 0, prepare: false },
+            "LoggingLoad":          { command: "log_queue", method: "GET", confirm: false, param: 0, prepare: false },
+            "MacroChange":          { command: "macro", method: "PUT", confirm: false, param: 4, param_info: "['groups','macro','dev-on','dev-off']", prepare: true, answer: this.answer },
+            "MacroSend":            { command: "macro", method: "GET", confirm: false, param: 3, param_info: "[macro, device, content]", prepare: true, answer: this.answer },
+            "MainVolume":           { command: "set", method: "GET", param: 1, param_info: "[volume]", prepare: true, answer: this.answer },
+            "MoveToArchive":        { command: ["archiving", "move"], method: "PUT", confirm: true, message: "REMOTE_MOVE_TO_ARCHIVE", param: 2, param_info: "[remote_type, remote_id]", prepare: false, answer: this.answer },
+            "ReconnectInterface":   { command: "reconnect", method: "POST", confirm: true, message: "API_RECONNECT_ALL", param: 1, param_info: "[interface_id]", prepare: false, answer: this.answer },
+            "RecordingEdit":        { command: "edit-recording", method: "PUT", confirm: false, param: 0, data: true, prepare: false, answer: this.answer },
+            "RemoteMove":           { command: "move", method: "POST", confirm: false, param: 4, param_info: "[id, dnd_list, from, to]", prepare: true, answer: this.answer },
+            "Reset":                { command: "reset", method:"GET", confirm: true, message: "RESET_SWITCH_OFF", answer: this.answer },
+            "ResetAudio":           { command: "reset-audio", method:"GET", confirm: true, message: "RESET_VOLUME_TO_ZERO", answer: this.answer },
+            "RestoreFromArchive":   { command: ["archiving", "restore"], method: "PUT", confirm: true, message: "REMOTE_RESTORE_FROM_ARCHIVE", param: 2, param_info: "[remote_type, remote_id]", prepare: false, answer: this.answer },
+            "SceneAdd":             { command: "scene", method: "PUT", confirm: false, param: 3, param_info: "[add_scene_id,add_scene_label,add_scene_description]", prepare: true, answer: this.answer },
+            "SceneDelete":          { command: "scene", method: "DELETE", confirm: true, message: "SCENE_ASK_DELETE", param: 1, param_info: "[scene_id]", prepare: true, answer: this.answer },
+            "SceneEdit":            { command: "scene", method: "POST", confirm: false, param: 3, param_info: "[scene_id, prefix, fields]", prepare: true, answer: this.answer },
+            "SceneJsonEdit":        { command: "scene", method: "POST", confirm: false, param: 2, param_info: "[scene_id, field_names]", prepare: true, answer: this.answer },
+            "SendData":             { command: "send-data", method: "GET", confirm: false, param: 3, param_info: "[device, command, value]", prepare: false, answer: this.answer },
+            "SendToApi":            { command: "send-api-command", method: "POST", confirm: false, param: 1, param_info: "[api_command]", prepare: false, answer: this.answer_api_request },
+            "SendToDeviceApi":      { command: "send-api", method: "POST", confirm: false, param: 2, param_info: "[device, external_id]", prepare: true, answer: this.answer_api_request },
+            "SendToDeviceApi-ext":  { command: "send-api-external", method: "POST", confirm: false, param: 2, param_info: "[device, external_id]", prepare: true, answer: this.answer_api_request },
+            "SetMainAudio":         { command: "main-audio", method: "POST", confirm: false, param: 1, param_info: "[volume]", answer: this.answer },
+            "SetValue":             { command: "set", method: "GET", param: 3, param_info: "[filter, key, value]", prepare: false, answer: this.answer },
+            "ShutdownRestart":      { command: "shutdown", method: "GET", confirm: true, message: "RESTART", param: 0, prepare: false, answer: this.answer },
+            "TimerShow":            { command: "timer", method: "GET", confirm: false, param: 0, prepare: false },
+            "TimerDelete":          { command: "timer-edit", method: "DELETE", confirm: true, message: "TIMER_DELETE", param: 1, param_info: "[timer_id]", prepare: false, answer: this.answer },
+            "TimerEdit":            { command: "timer-edit", method: "PUT", confirm: false, prepare: true, param: 2, param_info: "[key, data_fields]", answer: this.answer },
+            "TimerTry":             { command: "timer-try", method: "PUT", confirm: true, message: "TIMER_TRY", param: 1, param_info: "[timer_id]", prepare: false, answer: this.answer },
+        }
 
+        this.logging.debug("available commands: " + JSON.stringify(Object.keys(this.commands)));
+        this.logging.debug("unused commands: " + JSON.stringify(Object.keys(this.commands_unused)));
+    }
 
-// show return message as alert
-function apiAlertReturn(data) {
+    /* coordinate api call */
+    call(cmd, param=[], data=undefined, callback=undefined) {
+        if (typeof param === "string") { param = [param]; }
+        this.status("call: " + cmd + " | " + JSON.stringify(param));
 
-    setTimeout(function() {
-        if (data["REQUEST"]["Command"] === "DeleteDevice") 	{ rmCookies.erase(); rmRemote.active_name = ""; }
-        if (data["REQUEST"]["Command"] === "DeleteScene") 	{ rmCookies.erase(); rmRemote.active_name = ""; }
-        rmMain.load_remote();
-        }, 1000);
+        if (!this.commands[cmd]) {
+            this.logging.error("call: "+cmd+" | command not defined: " + cmd);
+            return;
+        } else if (this.commands[cmd].param !== -1 && this.commands[cmd].param !== param.length) {
+            this.logging.error("call: "+cmd+" |  got other amount of parameters than required: " + this.commands[cmd].param + " param required, got " + param);
+            return;
+        } else if (this.commands[cmd].data === true && (data === undefined || data === "")) {
+            this.logging.error("call: "+cmd+" | 'data' are required but not delivered as parameter.");
+            return;
+        }
 
-    setTimeout(function() {
-        if (data["REQUEST"]["Command"] === "AddTemplate") { rmRemote.create( "device", data["REQUEST"]["Device"] ); }
-        else if (data["REQUEST"]["Command"] === "AddDevice") { rmRemote.create( "device", data["REQUEST"]["Device"] ); }
-        else if (data["REQUEST"]["Command"] === "EditDevice") { rmRemote.create( "device", data["REQUEST"]["Device"] ); }
-        else if (data["REQUEST"]["Command"] === "EditDeviceApiSettings") { rmRemote.create( "device", data["REQUEST"]["Device"] ); }
-        else if (data["REQUEST"]["Command"] === "AddScene") { rmRemote.create( "scene",  data["REQUEST"]["Scene"] ); }
-        else if (data["REQUEST"]["Command"] === "EditScene") { rmRemote.create( "scene",  data["REQUEST"]["Scene"] ); }
-        else if (data["REQUEST"]["Command"] === "ChangeVisibility" ) {
-            if (data["REQUEST"]["Device"] === "device") { rmRemote.create( "device", data["REQUEST"]["Device"] ); }
-            if (data["REQUEST"]["Device"] === "scene") { rmRemote.create( "scene", data["REQUEST"]["Device"] ); }
+        let command = this.commands[cmd];
+
+        if (data)                        { this.temp_data[cmd] = data; }
+        if (callback && callback !== "") { this.temp_callback = callback; } else { this.temp_callback = undefined; }
+
+        //console.warn("callback", this.temp_callback);
+        //console.warn("data", data);
+
+        if (command.prepare)        { this.prepare(cmd, param); }
+        else if (command.confirm)   { this.confirm(cmd, param); }
+        else                        { this.execute(cmd, param); }
+    }
+
+    /* prepare data before executing */
+    prepare(cmd, param=[]) {
+        this.status("prepare: " + cmd + " | " + JSON.stringify(param));
+
+        let command = this.commands[cmd];
+
+        if (cmd === "ApiDeviceAdd") {
+            this.temp_data[cmd] = {
+                "ip": getValueById("add_api_ip_"+param[0]),
+                "description": getValueById("add_api_description_"+param[0]),
+                "api": param[0]
+            };
+        }
+        else if (cmd === "ApiDeviceDelete") {
+            param = [param[0] + "_" + param[1]];
+        }
+        else if (cmd === "ButtonAdd") {
+            let i = 0;
+            let device, button;
+
+            if (document.getElementById(param[0])) {
+                device = document.getElementById(param[0]).value.toLowerCase();
+            } else {
+                device= param[0];
+                i++;
             }
-        else if (data["REQUEST"]["Command"] === "DeleteDevice") { rmMain.load_main(); }
-        else if (data["REQUEST"]["Command"] === "DeleteScene") { rmMain.load_main(); }
-        else {}
 
-        if (data["REQUEST"]["Return"].indexOf("ERROR") > -1 && data["REQUEST"]["Command"]) {
-            appMsg.alert("<b>" + data["REQUEST"]["Command"] + "</b>: " + data["REQUEST"]["Return"]);
-            }
-        else if (data["REQUEST"]["Return"].indexOf("ERROR") > -1 && data["REQUEST"]["Command"]) {
-            appMsg.alert(data["REQUEST"]["Return"]);
-            }
-        else if (data["REQUEST"]["Return"] && data["REQUEST"]["Command"] && data["REQUEST"]["Return"].indexOf("OK") > -1) {
-            appMsg.info("<b>" + data["REQUEST"]["Command"] + "</b>: " + data["REQUEST"]["Return"], "ok");
-            }
-        else if (data["REQUEST"]["Return"] && data["REQUEST"]["Command"]) {
-            appMsg.info("<b>" + data["REQUEST"]["Command"] + "</b>: " + data["REQUEST"]["Return"]);
-            }
-        else if (data["REQUEST"]["Return"]) {
-            appMsg.info(data["REQUEST"]["Return"]);
+            if (document.getElementById(param[1])) 	{
+                button = document.getElementById(param[1]).value;
+                if (button !== "LINE")	{ button = button.toLowerCase(); }
+                if (button === ".")		{ button = "DOT"; }
+            } else {
+                button = param[1]; i++;
             }
 
-        }, 5000);
-    }
+            cmd = "appFW.requestAPI('PUT',['button','"+device+"','"+button+"'], '', appMsg.alertReturn );";
 
+            if (device === "") { appMsg.alert(lang("DEVICE_SELECT")); return; }
+            if (button === "") { appMsg.alert(lang("BUTTON_INSERT_NAME")); return; }
+            if (i === 2)       { appMsg.confirm(lang("BUTTON_RECORD",[button,device]),cmd); return; }
 
-// set main audio device
-function setMainAudio(device) {
-    appFW.requestAPI( "POST", ["main-audio",device], "", apiAlertReturn );
-}
-
-
-// swt volume
-function setVolume(main_audio,volume) {
-    appFW.requestAPI( "GET",  ["set",main_audio,"send-vol",volume], "", rmMain.load_remote );
-}
-
-function apiSetVolume(volume) {
-    //appFW.requestAPI( "GET",  ["set",rm3slider.device,"send-vol",volume], "", rmMain.load_remote );
-    appFW.requestAPI( "GET",  ["set",rmStatusAudio.slider.device,"send-vol",volume], "", rmMain.load_remote );
-}
-
-
-// add template (load as JSON)
-function apiTemplateAdd_exe(device,template) {
-    appFW.requestAPI("PUT",["template",device,template], "", apiAlertReturn);
-}
-
-function apiTemplateAdd(device_id, template_id) {
-
-        device   = check_if_element_or_value(device_id,false);
-        template = check_if_element_or_value(template_id,false);
-        
-	if (!dataAll["CONFIG"]["devices"][device])  { appMsg.alert(lang("DEVICE_DONT_EXISTS"));     return; }
-	else if (device == "")                      { appMsg.alert(lang("DEVICE_INSERT_NAME"));     return; }
-	else if (template == "")                    { appMsg.alert(lang("DEVICE_SELECT_TEMPLATE")); return;	}
-
-	//appFW.requestAPI("PUT",["template",device,template], "", apiAlertReturn);
-	question = lang("TEMPLATE_OVERWRITE", [device, template]);
-	appMsg.confirm(question,"apiTemplateAdd_exe('" + device + "','" + template + "'); ");
-	}
-
-
-// create new device
-function apiSceneAdd(data) {
-
-	let send_data = {};
-	send_data["id"]             = getValueById(data[0]).replaceAll("_","-");
-	send_data["label"]          = getValueById(data[1]);
-	send_data["description"]    = getValueById(data[2]);
-	
-	console.debug("apiSceneAdd: " + JSON.stringify(send_data));
-
-    if (dataAll["CONFIG"]["scenes"][send_data["id"]])   { appMsg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
-    else if (send_data["id"] === "")                    { appMsg.alert(lang("SCENE_INSERT_ID")); return; }
-    else if (send_data["label"] === "")                 { appMsg.alert(lang("SCENE_INSERT_LABEL")); return; }
-
-	appFW.requestAPI("PUT",["scene",send_data["id"]], send_data, apiAlertReturn);
-	}
-
-function apiSceneAddCheckID(element) {
-    if (element.value && dataAll["CONFIG"]["scenes"][element.value]) {
-        element.style.color = "red";
+            param = [device, button];
         }
-    else {
-        element.style.color = "";
-        }
-    }
-
-
-// edit scene header data
-function apiSceneEdit(device,prefix,fields) {
-
-	var info        = {}
-	var field_list  = fields.split(",");
-
-	for (var i=0;i<field_list.length;i++) {
-		if (document.getElementById(prefix+"_"+field_list[i])) {
-			var value = document.getElementById(prefix+"_"+field_list[i]).value;
-			info[field_list[i]] = value;	
-			}
-		}
-
-	appFW.requestAPI("POST",["scene",device], info, apiAlertReturn);
-	}
-
-
-// edit button and display data using JSON
-function apiSceneJsonEdit(device,field_names) {
-
-    let fields = field_names.split(",");
-    let values = {};
-    let json   = {};
-
-    for (let i=0;i<fields.length;i++) {
-        let field = fields[i];
-        let key   = field.split("::")[1];
-        let lower_case = false;
-
-        if (field === "devices") { lower_case = true; }
-        values[key] = check_if_element_or_value(field, lower_case);
-
-        if (key !== "display-size") {
-            try         { json[key] = JSON.parse(values[key]); }
-            catch(e)    { appMsg.alert("<b>JSON " + field + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+        else if (cmd === "ButtonDelete") {
+            let device;
+            const device1 = document.getElementById(param[0]);
+            const button1 = document.getElementById(param[1]);
+            if (device1) {
+                if (device1.selectedIndex) { device = device1.options[device1.selectedIndex].value; }
+                else { device = device1.value; }
             }
-        else {
-            json[key] = values[key];
+            else {
+                device = param[0];
+            }
+
+            let button = button1.options[button1.selectedIndex].value;
+            if (device === "") { appMsg.alert(lang("DEVICE_SELECT")); return; }
+            if (button === "") { appMsg.alert(lang("BUTTON_SELECT")); return; }
+            param = [device, button];
+        }
+        else if (cmd === "ChangeVisibility") {
+            let device = check_if_element_or_value(param[1],true);
+            let value  = getValueById(param[2], "", true);
+            if (value === "yes") { setValueById(param[2], "no"); }
+            else                 { setValueById(param[2], "yes"); }
+            value                = getValueById(param[2], "", true);
+            param = [param[0], device, value];
+        }
+        else if (cmd === "CommandRecord") {
+            let device, button;
+            let [device_id, button_id, read_from_input] = param;
+
+            if (!this.status_ok("device", device_id, cmd, false, ["OFF"])) { return; }
+
+            if (document.getElementById(device_id) && read_from_input) {
+                device	= document.getElementById(device_id).value.toLowerCase();
+            } else {
+                device	= device_id;
+            }
+            if (document.getElementById(button_id) && read_from_input) {
+                button	= document.getElementById(button_id).value;
+                if (button !== "LINE")	{ button = button.toLowerCase(); }
+                if (button === ".")		{ button = "DOT"; }
+            } else {
+                button    = button_id;
+            }
+            if (device === "") { appMsg.alert(lang("DEVICE_SELECT")); return; }
+            if (button === "") { appMsg.alert(lang("BUTTON_INSERT_NAME")); return; }
+
+            param = [device, button];
+        }
+        else if (cmd === "CommandDelete") {
+            let device, button;
+            let device_id = param[0];
+            let button_id = param[1];
+
+            const device1 = document.getElementById(device_id);
+            const button1 = document.getElementById(button_id);
+
+            if (device1) {
+                if (device1.selectedIndex) { device = device1.options[device1.selectedIndex].value; }
+                else { device = device1.value; }
+            }
+            else { device = device_id; }
+            button = button1.options[button1.selectedIndex].value;
+
+            if (device === "") { appMsg.alert(lang("DEVICE_SELECT")); return; }
+            if (button === "") { appMsg.alert(lang("BUTTON_SELECT")); return; }
+
+            param = button.split("_");
+            param = param.push(device);
+        }
+        else if (cmd === "CommandSend" || cmd === "CommandSendWait" || cmd === "CommandSendCheck" || cmd === "CommandSendCheckWait") {
+
+            let [cmdButton, sync, device] = param;
+            let send_command = [];
+            let types = ["macro", "scene-on", "scene-off", "dev-on", "dev-off"];
+
+            // check if macro
+            for (let i=0;i<types.length;i++) {
+                if (cmdButton.startsWith(types[i]+"_")) { rmApi.call("MacroSend", [cmdButton, device,""]); return; }
+            }
+
+            // split into device and button
+            if (Array.isArray(cmdButton)) {
+                send_command = cmdButton;
+            }
+            else if (cmdButton.indexOf("group_") >= 0) {
+                send_command = cmdButton.split("_");
+                send_command = [send_command[0]+"_"+send_command[1], send_command[2]];
+            }
+            else {
+                send_command = cmdButton.split("_");
+            }
+
+            // check, if manual mode (with out checking the device status) or intelligent mode (with checking the device status)
+            if (!deactivateButton) { cmd = "CommandSendCheck"; }
+            if (sync === "sync")   { cmd += "Wait"; }
+            if (showButton)        { appMsg.info("<b>Request Button:</b> " + device + " / " + cmdButton); }
+
+            param = [send_command[0] , send_command[1]];
+        }
+        else if (cmd === "ConfigInterface") {
+            let config_data = {};
+            try         { config_data = JSON.parse(getValueById( param[1] )); }
+            catch(e)    { appMsg.alert("<b>JSON Config " + param[0] + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+
+            param = [param[0]];
+            this.temp_data[cmd] = config_data;
+        }
+        else if (cmd === "ConfigInterfaceShow") {
+            param = ["all"];
+        }
+        else if (cmd === "ConfigDropDown") {
+            param = [param[0]];
+        }
+        else if (cmd === "DeviceAdd") {
+            const data = param[0];
+            const onchange = param[1];
+
+            if (onchange && (getValueById(data[5]) === "" || getValueById(data[6]) === "")) { onchange(0); }
+
+            let send_data = {};
+            send_data["id"]            = getValueById(data[0]).replaceAll("_", "-");
+            send_data["description"]   = getValueById(data[1]);
+            send_data["label"]         = getValueById(data[2]);
+            send_data["api"]           = getValueById(data[3]);
+            send_data["device"]        = getValueById(data[4]);
+            send_data["config_device"] = getValueById(data[5]);
+            send_data["config_remote"] = getValueById(data[6]);
+            send_data["id_ext"]        = getValueById(data[7]);
+            send_data["image"]         = getValueById(data[8]);
+
+            this.logging.debug("DeviceAdd ...",send_data);
+
+            if (rmData.devices.exists(send_data["id"]))          { appMsg.alert(lang("DEVICE_EXISTS",[send_data["id"]])); return; }
+            else if (send_data["id"] === "")                     { appMsg.alert(lang("DEVICE_INSERT_ID")); return; }
+            else if (send_data["label"] === "")                  { appMsg.alert(lang("DEVICE_INSERT_LABEL")); return; }
+            else if (send_data["api"] === "")                    { appMsg.alert(lang("DEVICE_SELECT_API")); return; }
+            else if (send_data["device"] === "")                 { appMsg.alert(lang("DEVICE_INSERT_NAME")); return;	}
+
+            param = [send_data["id"]];
+            this.temp_data[cmd] = send_data;
+        }
+        else if (cmd === "DeviceDelete") {
+            let device = check_if_element_or_value(param[0], true);
+            if (device === "")  { appMsg.alert(lang("DEVICE_SELECT")); return; }
+            param = [device];
+        }
+        else if (cmd === "DeviceChangeConfigs") {
+            this.temp_data[cmd] = {
+                "api_file": document.getElementById("edit_dev_api").value,
+                "device_file": document.getElementById("edit_dev_config").value,
+                "remote_file": document.getElementById("edit_dev_rm").value,
             }
         }
-
-    /*
-    buttons      = check_if_element_or_value(json_buttons,false);
-    channel      = check_if_element_or_value(json_channel,false);
-    devices      = check_if_element_or_value(json_devices,true);
-    display      = check_if_element_or_value(json_display,false);
-    display_size = check_if_element_or_value(display_size,false);
-
-	try { json_buttons = JSON.parse(buttons); } catch(e) { appMsg.alert("<b>JSON Buttons - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
-	try { json_channel = JSON.parse(channel); } catch(e) { appMsg.alert("<b>JSON Channel - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
-	try { json_devices = JSON.parse(devices); } catch(e) { appMsg.alert("<b>JSON Devices - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
-	try { json_display = JSON.parse(display); } catch(e) { appMsg.alert("<b>JSON Display - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
-	
-	var info = {};
-	info["remote"]        = json_buttons;
-	info["macro-channel"] = json_channel;
-	info["devices"]       = json_devices;
-	info["display"]       = json_display;
-	info["display-size"]  = display_size;
-		
-	appFW.requestAPI("POST",["scene",device], info, apiAlertReturn);
-	*/
-
-	appFW.requestAPI("POST",["scene",device], json, apiAlertReturn);
-
-	}
-
-function apiRecordingEdit(config) {
-    appFW.requestAPI("PUT", ["edit-recording"], config, apiAlertReturn);
-}
-
-
-// delete scene
-function apiSceneDelete_exe(device) {
-    appFW.requestAPI("DELETE",["scene",device], "", apiAlertReturn);
-    rmRemote.active_name = "";
-    rmCookies.erase();
-    }
-
-function apiSceneDelete(scene_id) {
-
-	var scene = check_if_element_or_value(scene_id,true);
-	if (scene == "") { appMsg.alert(lang("SCENE_SELECT")); return; }
-
-	if (!dataAll["CONFIG"]["scenes"][scene_id]) {
-	    appMsg.alert("Scene '"+scene_id+"' doesn't exist.");
-	    }
-	else {
-        appMsg.confirm(lang("SCENE_ASK_DELETE",[scene]),"apiSceneDelete_exe('" + scene + "');", 140);
-        }
-	}
-
-
-// switch interfaces and API devices On or Off
-function apiInterfaceOnOff(interface, value) {
-
-    appFW.requestAPI("PUT",["interface", interface, value], "", "");
-    }
-
-function apiApiDeviceOnOff(interface, api_device, value) {
-
-    appFW.requestAPI("PUT",["api_device", interface, api_device, value], "", "");
-    }
-
-function apiApiDeviceOnOff_button(interface, api_device, button) {
-
-    var value  = button.innerHTML;
-    if (value == "ON") {
-        apiApiDeviceOnOff(interface, api_device, "False");
-        button.innerHTML = "OFF";
-        }
-    else if (value == "OFF") {
-        apiApiDeviceOnOff(interface, api_device, "True");
-        button.innerHTML = "ON";
-        }
-    else if (value == "ERROR") {
-        apiApiDeviceOnOff(interface, api_device, "False");
-        button.innerHTML = "OFF";
-        }
-    }
-
-
-// edit device data
-function apiDeviceEdit(device,prefix,fields) {
-
-	let info = {}
-	let field_list = fields.split(",");
-
-	for (let i=0;i<field_list.length;i++) {
-		if (document.getElementById(prefix+"_"+field_list[i])) {
-			let value = document.getElementById(prefix+"_"+field_list[i]).value;
-			info[field_list[i]] = value;	
-			}
-		}
-
-	appFW.requestAPI("POST",["device",device], info, apiAlertReturn);
-	}
-
-// edit device api settings data
-function apiDeviceApiSettingsEdit(device,prefix,fields) {
-
-	let info = {}
-	let field_list = fields.split(",");
-
-	for (let i=0;i<field_list.length;i++) {
-		if (document.getElementById(prefix+"_"+field_list[i])) {
-			let value = document.getElementById(prefix+"_"+field_list[i]).value;
-			info[field_list[i]] = value;
-			}
-		}
-
-	appFW.requestAPI("POST",["device_api_settings",device], info, apiAlertReturn);
-	}
-
-
-// edit button and display data using JSON
-function apiDeviceJsonEdit(device,json_buttons,json_display,display_size) {
-
-	buttons      = check_if_element_or_value(json_buttons,false);
-	display      = check_if_element_or_value(json_display,false);
-	display_size = check_if_element_or_value(display_size,false);
-
-	try { json_buttons = JSON.parse(buttons); } catch(e) { appMsg.alert("<b>JSON Buttons - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
-	try { json_display = JSON.parse(display); } catch(e) { appMsg.alert("<b>JSON Display - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
-	
-	var info = {};
-	info["remote"]  = json_buttons;
-	info["display"] = json_display;
-	info["display-size"] = display_size;
-		
-	appFW.requestAPI("POST",["device",device], info, apiAlertReturn);	
-	}
-
-
-// move position of device or scene in the menu
-function apiDeviceMovePosition_exe(type,device,direction) {
-    appFW.requestAPI( "POST", ["move",type,device,direction], "", apiDeviceMovePosition_get);
-}
-
-function apiDeviceMovePosition_get(data) {
-    if (data["REQUEST"]["Return"].indexOf("ERROR") > -1)   { appMsg.alert(data["REQUEST"]["Return"]); }
-    else if (data["REQUEST"]["Return"].indexOf("OK") > -1) { appMsg.info("<b>" + data["REQUEST"]["Command"] + "</b>: " + data["REQUEST"]["Return"], "ok"); }
-    setTimeout(function() { appFW.requestAPI("GET",["list"],"",apiDeviceMovePosition); }, 1000 );
-    }
-
-function apiDeviceMovePosition(data) {
-	rmSettings.data = data;
-	rmSettings.create();
-    rmMain.create_remote(data);
-	}
-
-function apiMovePosition(id, dnd_list, from, to) {
-    if (dnd_list.indexOf("scene") > -1 && id != "")         { apiDeviceMovePosition_exe("scene", id, (to - from)); }
-    else if (dnd_list.indexOf("device") > -1 && id != "")   { apiDeviceMovePosition_exe("device", id, (to - from)); }
-    else {
-        appMsg.info("MOVE "+from+" >> "+to +"<br/>not ready implemented yet", "error");
-        }
-    }
-
-
-// create new device
-function apiDeviceAdd(data,onchange) {
-
-    if (getValueById(data[5]) === "" || getValueById(data[6]) === "") { onchange(); }
-
-	let send_data = {};
-	send_data["id"]            = getValueById(data[0]).replaceAll("_", "-");
-	send_data["description"]   = getValueById(data[1]);
-	send_data["label"]         = getValueById(data[2]);
-	send_data["api"]           = getValueById(data[3]);
-	send_data["device"]        = getValueById(data[4]);
-	send_data["config_device"] = getValueById(data[5]);
-	send_data["config_remote"] = getValueById(data[6]);
-	send_data["id_ext"]        = getValueById(data[7]);
-	send_data["image"]         = getValueById(data[8]);
-
-	console.debug("apiDeviceAdd ...");
-	console.debug(send_data);
-
-	if (dataAll["CONFIG"]["devices"][send_data["id"]])  { appMsg.alert(lang("DEVICE_EXISTS",[send_data["id"]])); return; }
-	else if (send_data["id"] === "")                     { appMsg.alert(lang("DEVICE_INSERT_ID")); return; }
-	else if (send_data["label"] === "")                  { appMsg.alert(lang("DEVICE_INSERT_LABEL")); return; }
-	else if (send_data["api"] === "")                    { appMsg.alert(lang("DEVICE_SELECT_API")); return; }
-	else if (send_data["device"] === "")                 { appMsg.alert(lang("DEVICE_INSERT_NAME")); return;	}
-
-	appFW.requestAPI("PUT",["device",send_data["id"]], send_data, apiAlertReturn);
-	}
-
-function apiDeviceAddCheckID(element) {
-    if (element.value && dataAll["CONFIG"]["devices"][element.value]) {
-        element.style.color = "red";
-        }
-    else {
-        element.style.color = "";
-        }
-    }
-
-
-// change config files for a device remote control
-function apiDeviceChangeConfigs(remote_id) {
-    const send_command = ["device-api-settings", remote_id];
-    const send_data = {
-        "api_file": document.getElementById("edit_dev_api").value,
-        "device_file": document.getElementById("edit_dev_config").value,
-        "remote_file": document.getElementById("edit_dev_rm").value,
-    }
-
-    appFW.requestAPI("POST", send_command, send_data, apiAlertReturn);
-}
-
-
-// delete device
-function apiDeviceDelete_exe(device) {
-    appFW.requestAPI("DELETE",["device",device], "", apiAlertReturn);
-    rmRemote.active_name = "";
-    rmCookies.erase();
-    rmMain.start(); // check if required !!!!!!!!!!!!!!!
-    }
-
-function apiDeviceDelete(device_id) {
-
-	var device = check_if_element_or_value(device_id,true);
-	if (device == "")  { appMsg.alert(lang("DEVICE_SELECT")); return; }
-
-	appMsg.confirm(lang("DEVICE_ASK_DELETE",[device]),"apiDeviceDelete_exe('" + device + "');", 140);
-	}
-
-
-// REMOTES
-function apiRemoteChangeVisibility(type, device_id, value_id) {
-    device   = check_if_element_or_value(device_id,true);
-    value    = getValueById(value_id, "", true);
-
-    if (value == "yes") { setValueById(value_id, "no"); }
-    else                { setValueById(value_id, "yes"); }
-    value               = getValueById(value_id, "", true);
-
-	appFW.requestAPI("PUT",["visibility",type,device,value], "", apiAlertReturn);
-	}
-
-
-// send command
-function apiCommandSend(cmdButton, sync="", callback="", device="") {
-    let send_command = [];
-
-	// check if macro
-	let types = ["macro", "scene-on", "scene-off", "dev-on", "dev-off"];
-	for (let i=0;i<types.length;i++) {
-        if (cmdButton.startsWith(types[i]+"_")) { return apiMacroSend(cmdButton, device); }
-        }
-    console.debug("apiCommandSend: " + cmdButton);
-
-	// split into device and button
-	if (Array.isArray(cmdButton)) {
-        send_command = cmdButton;
-    }
-    else if (cmdButton.indexOf("group_") >= 0) {
-        send_command = cmdButton.split("_");
-        send_command = [send_command[0]+"_"+send_command[1], send_command[2]];
-    }
-	else {
-        send_command = cmdButton.split("_");
-    }
-
-	// check, if manual mode (with out checking the device status) or intelligent mode (with checking the device status)
-	if (deactivateButton)   { send_command = ["send" , send_command[0] , send_command[1]]; }
-    else                    { send_command = ["send_check" , send_command[0] , send_command[1]]; }
-
-    //if (callback == "")	{ callback = rmMain.load_remote; }
-
-	// send via app
-	if (sync === "sync") {
-  		console.warn("use of apiCommandSend with sync -> try to reduce or eliminate");
-  		
-		appFW.requestAPI("GET",send_command,"",callback,"wait");		// send command and reload data when done
-		if (showButton) {
-            appMsg.info("<b>Request Button:</b> " + device + " / " + cmdButton);
-		    }
-		}
-
-	else {
-		appFW.requestAPI("GET",send_command,"",callback);		// send command and reload data when done
-		if (showButton) {
-            appMsg.info("<b>Request Button:</b> " + device + " / " + cmdButton);
-		    }
-		}
-	}
-
-
-// delete commands
-function apiCommandDelete_exe(button) { let b = button.split("_"); appFW.requestAPI("DELETE",["command",b[0],b[1]], "", apiAlertReturn); }
-
-function apiCommandDelete(device_id, button_id) {
-
-	let device1 = document.getElementById(device_id);
-	if (device1) {
-		if (device1.selectedIndex) 	{ var device  = device1.options[device1.selectedIndex].value; }
-		else 				{ var device  = device1.value; }
-		}
-	else 					{ var device  = device_id; }
-
-	if (device == "") { appMsg.alert(lang("DEVICE_SELECT")); return; }
-
-	var button1 = document.getElementById(button_id);
-	var button  = button1.options[button1.selectedIndex].value;
-	if (button == "") { appMsg.alert(lang("BUTTON_SELECT")); return; }
-
-	button1  = button.split("_");
-	appMsg.confirm(lang("BUTTON_ASK_DELETE",[button1[1],device]),"apiCommandDelete_exe('" + button + "'); ");
-	}
-
-
-// record command for a button
-function apiCommandRecord(device_id, button_id, read_from_input=false) {
-
-	let device;
-    let button;
-
-    if (document.getElementById(device_id) && read_from_input) {
-        device	= document.getElementById(device_id).value.toLowerCase();
-    } else {
-        device	= device_id;
-    }
-	if (document.getElementById(button_id) && read_from_input) {
-        button	= document.getElementById(button_id).value;
-		if (button !== "LINE")	{ button = button.toLowerCase(); }
-		if (button === ".")		{ button = "DOT"; }
-    } else {
-        button    = button_id;
-    }
-	let cmd = "appFW.requestAPI('POST',['command','"+device+"','"+button+"'], '', apiAlertReturn );";
-
-	if (device === "") { appMsg.alert(lang("DEVICE_SELECT")); return; }
-	if (button === "") { appMsg.alert(lang("BUTTON_INSERT_NAME")); return; }
-	
-	appMsg.confirm(lang("BUTTON_RECORD",[button,device]),cmd);
-	}
-
-
-// add button to device
-function apiButtonAdd(device_id, button_id) {
-
-    var i=0;
-
-	if (document.getElementById(device_id)) {
-	    var device	= document.getElementById(device_id).value.toLowerCase();
-	    }
-	else {
-	    var device	= device_id; i++;
-	    }
-	if (document.getElementById(button_id)) 	{
-	    var button	= document.getElementById(button_id).value;
-		if (button != "LINE")	{ button = button.toLowerCase(); }
-		if (button == ".")		{ button = "DOT"; }
-		}
-	else {
-	    var button    = button_id; i++;
-	    }
-	
-    cmd = "appFW.requestAPI('PUT',['button','"+device+"','"+button+"'], '', appMsg.alertReturn );";
-
-	if (device == "") { appMsg.alert(lang("DEVICE_SELECT")); return; }
-	if (button == "") { appMsg.alert(lang("BUTTON_INSERT_NAME")); return; }
-	if (i == 2)       { appMsg.confirm(lang("BUTTON_RECORD",[button,device]),cmd); return; } 
-	
-	appFW.requestAPI("PUT",["button",device,button], "", apiAlertReturn);
-	}
-
-
-// delete buttons
-function apiButtonDelete_exe(device,button) { appFW.requestAPI("DELETE",["button",device,button], "", apiAlertReturn); }
-
-function apiButtonDelete(device_id, button_id) {
-
-	var device1 = document.getElementById(device_id);
-	if (device1) {
-		if (device1.selectedIndex) 	{ var device  = device1.options[device1.selectedIndex].value; }
-		else 				{ var device  = device1.value; }
-		}
-	else 					{ var device  = device_id; }
-
-	if (device == "") { appMsg.alert(lang("DEVICE_SELECT")); return; }
-
-	var button1 = document.getElementById(button_id);
-	var button  = button1.options[button1.selectedIndex].value;
-	if (button == "") { appMsg.alert(lang("BUTTON_SELECT")); return; }
-
-	appMsg.confirm(lang("BUTTON_ASK_DELETE_NUMBER",[button,device]),"apiButtonDelete_exe('"+device+"'," + button + "); ");
-	}
-
-
-// edit macros
-function apiMacroChange(data=[]) {
-
-	send_data = {};
-	for (var i=0;i<data.length;i++) {
-		var key     = data[i];
-        try         { send_data[key] = JSON.parse(getValueById(key)); }
-        catch(e)    { appMsg.alert("<b>JSON Macro " + key + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
-		}
-
-	appFW.requestAPI("PUT",["macro"], send_data, apiAlertReturn);
-	}
-
-
-// decompose macro data
-function apiMacroDecompose(macro) {
-    let full_decompose = [];
-    let macro_string = "";
-    let macro_wait = "";
-    let macro_wait_time = 0;
-
-    const types = ["macro", "dev-on", "dev-off"];
-    const translate = {
-        "macro": "global",
-        "dev-on": "device-on",
-        "dev-off": "device-off"
-    }
-
-    for (let a=0;a<types.length;a++) {
-        if (macro.startsWith(types[a]+"_")) {
-            let macro_cmd = macro.split("_");
-            let macro_translate = translate[types[a]];
-            let macro_data = rmRemote.data["CONFIG"]["macros"][macro_translate];
-
-            if (macro_data[macro_cmd[1]]) {
-                for (let i=0; i<macro_data[macro_cmd[1]].length; i++) {
-                    let command = macro_data[macro_cmd[1]][i];
-                    if (command.startsWith && (command.startsWith("WAIT") || command.startsWith("MSG"))) {
-                        let wait = command.split("-");
-                        macro_wait += Number(wait[1]);
-                        }
-                    else {
-                        macro_string += macro_data[macro_cmd[1]][i] + "::";
-                        full_decompose.push(macro_data[macro_cmd[1]][i]);
-                        }
-                    }
+        else if (cmd === "DeviceEdit" || cmd === "SceneEdit" || cmd === "ApiDeviceSettingsEdit") {
+            let info = {}
+            let field_list = param[2].split(",");
+
+            for (let i=0;i<field_list.length;i++) {
+                if (document.getElementById(param[1]+"_"+field_list[i])) {
+                    info[field_list[i]] = document.getElementById(param[1] + "_" + field_list[i]).value;
                 }
             }
+            param = [param[0]];
+            this.temp_data[cmd] = info;
         }
+        else if (cmd === "DeviceJsonEdit") {
 
-    if (macro_wait_time > 0) {
-        macro_wait = 'appMsg.wait_time("'+lang("MACRO_PLEASE_WAIT")+'", '+macro_wait_time+');';
-        full_decompose.push("wait=" + macro_wait_time + "s");
-    }
+            let info = {};
+            let buttons = check_if_element_or_value(param[1],false);
+            let display = check_if_element_or_value(param[2],false);
+            let display_size = check_if_element_or_value(param[3],false);
 
-    console.debug("apiMacroDecompose: " + macro + " -> " + macro_string + " | " + macro_wait);
-    if (showButton) {
-        appMsg.info("<b>Macro Decompose:</b> " + macro + " -> " + full_decompose.join(", "));
+            try { buttons = JSON.parse(buttons); } catch(e) { appMsg.alert("<b>JSON Buttons - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+            try { display = JSON.parse(display); } catch(e) { appMsg.alert("<b>JSON Display - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+
+            info["remote"]  = buttons;
+            info["display"] = display;
+            info["display-size"] = display_size;
+
+            param = [param[0]];
+            this.temp_data[cmd] = info;
         }
-    return [ macro_string, macro_wait ];
-    }
-
-
-// separate macro into single commands and send commands
-function apiMacroSend( macro, device="", content="" ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
-
-    console.debug("apiMacroSend: " + macro);
-    let macro_wait = "";
-    let macro_string = "";
-
-    if (macro === "") {
-        appMsg.info(lang("MACRO_EMPTY", [device]), "error");
-        return;
-    }
-    if (!macro.includes("::") && macro.indexOf("::") < 0) {
-        [macro_string, macro_wait] = apiMacroDecompose(macro);
-        macro = macro_string;
-        eval(macro_wait);
+        else if (cmd === "MacroChange") {
+            let send_data = {};
+            for (let i=0;i<param.length;i++) {
+                let key = param[i];
+                try         { send_data[key] = JSON.parse(getValueById(key)); }
+                catch(e)    { appMsg.alert("<b>JSON Macro " + key + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+            }
+            param = [];
+            this.temp_data[cmd] = send_data;
         }
-    else {
-        let commands = macro.split("::");
-        let commands_server = [];
-        for (let i=0; i<commands.length; i++) {
-            if (commands[i].indexOf("MSG") < 0 && commands[i].indexOf("WAIT") < 0) {
-                commands_server.push(commands[i]);
-            } else {
-                let macro_time = commands[i].split("-")[1];
-                macro_wait = 'appMsg.wait_time("'+lang("MACRO_PLEASE_WAIT")+'", '+macro_time+');';
+        else if (cmd === "MacroSend") {
+
+            let macro = param[0];
+            let macro_wait = "";
+            let macro_string = "";
+
+            if (macro === "") {
+                appMsg.info(lang("MACRO_EMPTY", [param[1]]), "error");
+                return;
+            }
+
+            if (!macro.includes("::") && macro.indexOf("::") < 0) {
+                [macro_string, macro_wait] = rmData.macros.decompose(macro);
+                macro = macro_string;
                 eval(macro_wait);
+            } else {
+                let commands = macro.split("::");
+                let commands_server = [];
+                for (let i=0; i<commands.length; i++) {
+                    if (commands[i].indexOf("MSG") < 0 && commands[i].indexOf("WAIT") < 0) {
+                        commands_server.push(commands[i]);
+                    } else {
+                        let macro_time = commands[i].split("-")[1];
+                        macro_wait = 'appMsg.wait_time("'+lang("MACRO_PLEASE_WAIT")+'", '+macro_time+');';
+                        eval(macro_wait);
+                    }
+                }
+                macro = commands_server.join("::");
             }
+            device_media_info[param[1]] = param[2];
+            if (showButton) { appMsg.info("<b>Request Macro:</b> " + macro); }
+            param = [param[0]];
         }
-        macro = commands_server.join("::");
-    }
-	let command = [ "macro", macro ];
-	appFW.requestAPI( "GET", command, "", apiMacroSend_return );
-	device_media_info[device] = content;
-
-	if (showButton) { appMsg.info("<b>Request Macro:</b> " + macro); }
-	}
-
-function apiMacroSend_return( data ) {
-	console.log("Send macro return :");
-	console.log(data);
-	if (data["REQUEST"]["macro_error"] && data["REQUEST"]["macro_error"] !== "") {
-	    appMsg.info("<b>Macro Error:</b> " + data["REQUEST"]["macro_error"], "error");
-	    }
-	if (showButton) {
-	    appMsg.info("<b>Macro Queue:</b> " + data["REQUEST"]["decoded_macro"]);
-	    }
-	}
-
-// separate macro into single commands and send commands
-function apiGroupSend( macro, device="", content="" ) {  // SEND -> FEHLER? obwohl keiner Änderung ...
-    console.debug("apiGroupSend: " + macro);
-	dc = [ "macro", macro ];
-	appFW.requestAPI( "GET", dc, "", apiGroupSend_return );
-	device_media_info[device] = content;
-
-	if (showButton) {
-	    appMsg.info("<b>Request Group:</b> " + dc);
-	    }
-	}
-
-function apiGroupSend_return( data ) {
-	console.log("Send group return :");
-	console.log(data);
-	if (data["REQUEST"]["macro_error"] && data["REQUEST"]["macro_error"] != "") {
-	    appMsg.info("<b>Macro Error:</b> " + data["REQUEST"]["macro_error"], "error");
-	    }
-	if (showButton) {
-	    appMsg.info("<b>Macro Queue:</b> " + data["REQUEST"]["decoded_macro"]);
-	    }
-	}
-
-
-// edit timer
-function apiTimerEdit(key, data_fields) {
-
-    send_data = {};
-    send_fields = data_fields.split(",");
-    for (var i=0;i<send_fields.length;i++) {
-        field_name = send_fields[i].split("_")[1];
-        if (getValueById(send_fields[i])) { send_data[field_name] = getValueById(send_fields[i]); }
-        else                              { send_data[field_name] = getTextById(send_fields[i]); }
+        else if (cmd === "MainVolume") {
+            if (!this.status_ok("device", rmStatusAudio.audio_device, cmd)) { return; }
+            param = [rmStatusAudio.audio_device,"send-vol",param[0]];
         }
+        else if (cmd === "GroupSend") {
+            device_media_info[param[1]] = param[2];
+            if (showButton) { appMsg.info("<b>Request Group:</b> marco:" + param[0]); }
+            param = [param[0]];
+        }
+        else if (cmd === "RemoteMove") {
+            let [id, dnd_list, from, to] = param;
+            if (dnd_list.indexOf("scene") > -1 && id !== "")         { param = ["scene", id, (to - from)]; }
+            else if (dnd_list.indexOf("device") > -1 && id !== "")   { param = ["device", id, (to - from)]; }
+            else { appMsg.info("MOVE "+from+" >> "+to +"<br/>not implemented", "error"); return; }
+        }
+        else if (cmd === "RemoteMoveUpdate") {}
+        else if (cmd === "SceneAdd") {
+            let send_data = {};
+            send_data["id"]             = getValueById(param[0]).replaceAll("_","-");
+            send_data["label"]          = getValueById(param[1]);
+            send_data["description"]    = getValueById(param[2]);
 
-    try { send_data["timer_regular"] = JSON.parse(send_data["regular"]); }  catch(e) { appMsg.alert("<b>Repeating timer - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
-    try { send_data["timer_once"]    = JSON.parse(send_data["once"]); }     catch(e) { appMsg.alert("<b>One-time timer - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
-    try { send_data["commands"]      = JSON.parse(send_data["commands"]); } catch(e) { appMsg.alert("<b>Commands - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+            if (rmData.scenes.exists(send_data["id"]))   { appMsg.alert(lang("SCENE_EXISTS",[send_data["id"]])); return; }
+            else if (send_data["id"] === "")             { appMsg.alert(lang("SCENE_INSERT_ID")); return; }
+            else if (send_data["label"] === "")          { appMsg.alert(lang("SCENE_INSERT_LABEL")); return; }
 
-    delete send_data["regular"];
-    delete send_data["once"];
+            this.temp_data[cmd] = send_data;
+            param = [send_data["id"]];
+        }
+        else if (cmd === "SceneDelete") {
+            const scene = check_if_element_or_value(param[0], true);
+            if (scene === "") { appMsg.alert(lang("SCENE_SELECT")); return; }
+            if (!rmData.scenes.exists(scene)) {
+                appMsg.alert("Scene '" + scene + "' doesn't exist.");
+                return;
+            }
+            param = [scene];
+        }
+        else if (cmd === "SceneJsonEdit") {
+            let fields = param[1].split(",");
+            let values = {};
+            let json   = {};
 
-    //console.error(data_fields);
-    //console.error(send_data);
-	appFW.requestAPI("PUT",["timer-edit", key], send_data, apiAlertReturn);
-    }
+            for (let i=0;i<fields.length;i++) {
+                let field = fields[i];
+                let key   = field.split("::")[1];
+                let lower_case = false;
 
-function apiTimerTry(key) {
+                if (field === "devices") { lower_case = true; }
+                values[key] = check_if_element_or_value(field, lower_case);
 
-	appFW.requestAPI("PUT",["timer-try", key], "", apiAlertReturn);
-    }
+                if (key !== "display-size") {
+                    try         { json[key] = JSON.parse(values[key]); }
+                    catch(e)    { appMsg.alert("<b>JSON " + field + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+                }
+                else {
+                    json[key] = values[key];
+                }
+            }
+            param = [param[0]];
+            this.temp_data[cmd] = json;
 
-function apiTimerAdd(data_fields) {}
+        }
+        else if (cmd === "SendToDeviceApi") {
+            if (param[1]) { cmd = "SendToDeviceApi-ext"; }
+            param = [param[0]];
+        }
+        else if (cmd === "TemplateAdd") {
+            let device   = check_if_element_or_value(param[0], false);
+            let template = check_if_element_or_value(param[1], false);
 
-function apiTimerDelete(key) {
-
-    appFW.requestAPI("DELETE",["timer-edit", key], "", apiAlertReturn);
-    }
-
-
-// send a command directly to an API of a device
-function apiSendToDeviceApi( device, api_command, external_id=false ) {
-    let send_cmd  = ["send-api", device];
-    let send_data = api_command;
-    if (external_id) { send_cmd[0] += "-external"; }
-	appFW.requestAPI( "POST", send_cmd, send_data, apiSendToDeviceApi_return );
-}
-
-function apiSendToApi( api_command ) {
-    let send_cmd  = ["send-api-command", api_command];
-	appFW.requestAPI( "POST", send_cmd, "", apiSendToDeviceApi_return );
-}
-
-function apiSendToDeviceApi_return( data ) {
-    console.debug("apiSendToDeviceApi_return:");
-    console.debug(data);
-
-    let formatted = "N/A";
-    const response = data["REQUEST"]["Return"];
-    const response_id = data["REQUEST"]["Return"]["request_id"];
-    const timecode = response["answer"]["last_action"]; // timestamp (seconds)
-    if (timecode > 0) {
-        const date = new Date(timecode * 1000); // convert to milliseconds
-        formatted =
-            String(date.getDate()).padStart(2, '0') + '.' +
-            String(date.getMonth() + 1).padStart(2, '0') + '.' +
-            String(date.getFullYear()).slice(-2) + ' ' +
-            String(date.getHours()).padStart(2, '0') + ':' +
-            String(date.getMinutes()).padStart(2, '0') + ':' +
-            String(date.getSeconds()).padStart(2, '0');
+            if (!dataAll["CONFIG"]["devices"][device])  { appMsg.alert(lang("DEVICE_DONT_EXISTS"));     return; }
+            else if (device === "")                     { appMsg.alert(lang("DEVICE_INSERT_NAME"));     return; }
+            else if (template === "")                   { appMsg.alert(lang("DEVICE_SELECT_TEMPLATE")); return; }
+            param = [device, template];
+        }
+        else if (cmd === "TimerEdit") {
+            let send_data = {};
+            let send_fields = param[1].split(",");
+            for (let i=0;i<send_fields.length;i++) {
+                let field_name = send_fields[i].split("_")[1];
+                if (getValueById(send_fields[i])) { send_data[field_name] = getValueById(send_fields[i]); }
+                else                              { send_data[field_name] = getTextById(send_fields[i]); }
             }
 
-    let answer = "";
-    answer += "<i>Request:</i> <b>" + response["command"] + "</b><br/>";
-    if (response["command"] === "api-discovery")    { answer += "<i>Interface:</i> " + response["device"].split("_")[0]; }
-    else if (response["answer"]["device_id"])       { answer += "<i>Interface &amp; device:</i> " + response["device"].replace("||", " / "); }
-    else                                            { answer += "<i>Interface &amp; device:</i> " + response["interface"] + " / " + response["device"] + " (" + response["status"] + ")"; }
-    answer += "<br/>-----<br/>";
-    answer += "<pre>" + syntaxHighlightJSON(response["answer"]["answer"]) + "</pre>";
-    answer += "<pre id='JSON_copy' style='display:none;'>" + JSON.stringify(response["answer"]["answer"], null, 2) + "</pre>";
-    answer += "<br/>&nbsp;<br/>-----<br/><i>";
-    answer += "total: " + (data["REQUEST"]["load-time-app"])/1000 + "s / srv: " + Math.round(data["REQUEST"]["load-time"]*10000)/10000 + "s / " +
-              "last: " + formatted;
+            try { send_data["timer_regular"] = JSON.parse(send_data["regular"]); }  catch(e) { appMsg.alert("<b>Repeating timer - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+            try { send_data["timer_once"]    = JSON.parse(send_data["once"]); }     catch(e) { appMsg.alert("<b>One-time timer - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
+            try { send_data["commands"]      = JSON.parse(send_data["commands"]); } catch(e) { appMsg.alert("<b>Commands - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
 
-    if (response_id !== "") {
-        setTextById('api_response_' + response_id, answer);
-    } else {
-        setTextById('api_response', answer);
+            delete send_data["regular"];
+            delete send_data["once"];
+
+            param = [param[0]];
+            this.temp_data[cmd] = send_data;
+        }
+        else {}
+
+        if (command.confirm)   { this.confirm(cmd, param); }
+        else                   { this.execute(cmd, param); }
+    }
+
+    /* display confirm message if command shall be executed */
+    confirm(cmd, param=[]) {
+        this.status("confirm: " + cmd + " | " + JSON.stringify(param));
+
+        let command = this.commands[cmd];
+        let parameters = JSON.stringify(param).replaceAll("\"", "#");
+
+        appMsg.confirm(lang(command.message, param), `${this.name}.execute(#${cmd}#, ${parameters});`, 150);
+    }
+
+    /* send api request */
+    execute(cmd, param=[]) {
+        this.status("execute: " + cmd + " | " + JSON.stringify(param));
+
+        let api_commands;
+        let wait = "";
+        let command = this.commands[cmd];
+
+        if (typeof command.command === "string") { api_commands = [command.command]; }
+        else { api_commands = command.command; }
+
+        api_commands = api_commands.concat(param);
+        if (command.wait) { wait = "wait"; }
+
+        let data = "";
+        if (this.temp_data[cmd]) { data = this.temp_data[cmd]; }
+
+        if (this.temp_callback) { appFW.requestAPI(command.method, api_commands, data, this.temp_callback, wait); }
+        if (command.answer)     { appFW.requestAPI(command.method, api_commands, data, command.answer, wait); }
+        else                    { appFW.requestAPI(command.method, api_commands, data, "", wait); }
+
+        delete this.temp_data[cmd];
+        this.temp_callback = undefined;
+    }
+
+    /* process answer, e.g., reload something and display return messages depending on status */
+    answer(data) {
+        if (!data["REQUEST"]) {
+            appMsg.alert("Request returned an invalid answer!");
+            this.logging.error("Request returned an invalid answer: " + JSON.stringify(data));
+            return;
+        }
+
+        let cmd = data["REQUEST"]["Command"];
+        let msg = data["REQUEST"]["Return"];
+
+        const erase_settings = ["SceneDelete", "DeviceDelete"];
+        const create_remote_device = ["DeviceAdd"];
+        const create_remote_scene = ["SceneAdd"];
+        const load_main_menu = ["SceneDelete", "DeviceDelete"];
+        const reload_drop_down = ["ChangeVisibility", "MainVolume", "RemoteMove"];
+        const reload_app = [
+            "ApiDeviceSettingsEdit",
+            "CommandRecord", "SetMainAudio",
+            "DeviceAdd", "DeviceEdit", "DeviceJsonEdit",
+            "SceneAdd", "SceneEdit", "SceneJsonEdit",
+            "TemplateAdd"
+        ];
+        const dont_show_info = ["Macro", "MacroSend", "CommandSend", "Set", "SceneAdd", "List", "RemoteSendText"];
+
+        this.status("answer: " + cmd + " | " + msg + " | " + JSON.stringify(data["REQUEST"]));
+
+        setTimeout(() => {
+            if (erase_settings.includes(cmd)) { rmRemote.active_name = ""; rmCookies.erase(); rmMain.set_main_var("edit_mode", "false"); }
+            if (create_remote_device.includes(cmd))   { rmCookies.set_remote( "device", data["REQUEST"]["Device"], "" ); rmSettings.active = false; }
+            if (create_remote_scene.includes(cmd))    { rmCookies.set_remote( "scene",  data["REQUEST"]["Scene"], "" ); rmSettings.active = false; }
+
+            // rmMain.load_remote();
+        }, 500);
+
+        setTimeout(() => {
+            if (cmd === "RestoreFromArchive" || cmd === "MoveToArchive") {
+                rmSettings.create("edit_"+data["REQUEST"]["Type"]+"s");
+            }
+            else if (cmd === "ApiDeviceAdd" || cmd === "ApiDeviceDelete") {
+                rmSettings.create("edit_interfaces");
+            }
+            else if (cmd === "SetMainAudio") {
+                // add a device remote reload
+            }
+            else if (cmd === "MacroSend") {
+                console.log("Send macro return :", data);
+                if (data["REQUEST"]["macro_error"] && data["REQUEST"]["macro_error"] !== "") {
+                    appMsg.info("<b>Macro Error:</b> " + data["REQUEST"]["macro_error"], "error");
+                }
+                if (showButton) {
+                    appMsg.info("<b>Macro Queue:</b> " + data["REQUEST"]["decoded_macro"]);
+                }
+            }
+            else if (cmd === "GroupSend") {
+                console.log("Send group return :", data);
+                if (data["REQUEST"]["macro_error"] && data["REQUEST"]["macro_error"] !== "") {
+                    appMsg.info("<b>Macro Error:</b> " + data["REQUEST"]["macro_error"], "error");
+                }
+                if (showButton) {
+                    appMsg.info("<b>Macro Queue:</b> " + data["REQUEST"]["decoded_macro"]);
+                }
+            }
+
+            if (load_main_menu.includes(cmd))         { rmMain.load_main(); }
+            if (reload_drop_down.includes(cmd))       { rmMain.load_remote(); }
+            if (reload_app.includes(cmd))             { rmMain.load_app(); }
+
+            if (cmd && msg.indexOf("ERROR") > -1) { appMsg.alert("<b>" + cmd + "</b>: " + msg); }
+            else if (msg.indexOf("ERROR") > -1) { appMsg.alert(msg); }
+            else if (msg && cmd && !dont_show_info.includes(cmd)) {
+                if (msg && cmd && msg.indexOf("OK") > -1) {
+                    appMsg.info("<b>" + cmd + "</b>: " + msg, "ok");
+                } else if (msg && cmd) {
+                    appMsg.info("<b>" + cmd + "</b>: " + msg);
+                } else if (msg) {
+                    appMsg.info(msg);
+                }
+            }
+        }, 4000);
+    }
+
+    /* answer for api requests - "SendToApi" and "SendToDeviceApi" */
+    answer_api_request( data ) {
+        let formatted = "N/A";
+        const response = data["REQUEST"]["Return"];
+        const response_id = data["REQUEST"]["Return"]["request_id"];
+        const timestamp = response["answer"]["last_action"]; // timestamp (seconds)
+
+        this.status("answer_api_request: " + response_id + " | " + timestamp + " | " + JSON.stringify(response));
+
+        if (timestamp > 0) {
+            const date = new Date(timestamp * 1000); // convert to milliseconds
+            formatted =
+                String(date.getDate()).padStart(2, '0') + '.' +
+                String(date.getMonth() + 1).padStart(2, '0') + '.' +
+                String(date.getFullYear()).slice(-2) + ' ' +
+                String(date.getHours()).padStart(2, '0') + ':' +
+                String(date.getMinutes()).padStart(2, '0') + ':' +
+                String(date.getSeconds()).padStart(2, '0');
+        }
+
+        let answer = "";
+        answer += "<i>Request:</i> <b>" + response["command"] + "</b><br/>";
+        if (response["command"] === "api-discovery")    { answer += "<i>Interface:</i> " + response["device"].split("_")[0]; }
+        else if (response["answer"]["device_id"])       { answer += "<i>Interface &amp; device:</i> " + response["device"].replace("||", " / "); }
+        else                                            { answer += "<i>Interface &amp; device:</i> " + response["interface"] + " / " + response["device"] + " (" + response["status"] + ")"; }
+        answer += "<br/>-----<br/>";
+        answer += "<pre>" + syntaxHighlightJSON(response["answer"]["answer"]) + "</pre>";
+        answer += "<pre id='JSON_copy' style='display:none;'>" + JSON.stringify(response["answer"]["answer"], null, 2) + "</pre>";
+        answer += "<br/>&nbsp;<br/>-----<br/><i>";
+        answer += "total: " + (data["REQUEST"]["load-time-app"])/1000 + "s / srv: " + Math.round(data["REQUEST"]["load-time"]*10000)/10000 + "s / " +
+            "last: " + formatted;
+
+        if (response_id !== "") {
+            setTextById('api_response_' + response_id, answer);
+        } else {
+            setTextById('api_response', answer);
+        }
+    }
+
+    /* check if status of required device is OK or return a message ... to be embedded for commands in the prepare section */
+    status_ok (rm_type, rm_id, source, on_error_show_message=true, additional_commands=[]) {
+        let rm_status_details, rm_status_message;
+        let ok_commands = ["ON", "OK"];
+        ok_commands = ok_commands.concat(additional_commands);
+
+        const rm_status = rmStatus.get_status(rm_type, rm_id, false);
+        const rm_status_return = (ok_commands.includes(rm_status));
+
+        if (!rm_status_return && on_error_show_message) {
+            rm_status_details = rmStatus.get_status(rm_type, rm_id, true);
+            rm_status_message = rm_status_details["message"];
+            appMsg.alert(lang("EXECUTION_ERROR", [rm_type, rm_id, source, rm_status_message]));
+        }
+
+
+        this.status(`status_ok: ${source} | ${rm_type}:${rm_id} | ${rm_status} (${rm_status_return}): ${rm_status_message}`);
+        return rm_status_return;
+    }
+
+    /* show status message with log level set in the constructor */
+    status(message) {
+        if (this.log_level_status === "warning") { this.logging.warn(message); }
+        else if (this.log_level_status === "info") { this.logging.info(message); }
+        else if (this.log_level_status === "error") { this.logging.error(message); }
+        else { this.logging.debug(message); }
     }
 }
 
-
-// get and edit specific configuration files
-function apiGetConfig_createDropDown( device, callback ) {
-    var send_cmd  = ["config", "device", device];
-	appFW.requestAPI( "GET", send_cmd, "", callback );
-}
-
-function apiGetConfig_showInterfaceData( callback ) {
-    let send_cmd = ["config", "interface", "all"];
-	appFW.requestAPI( "GET", send_cmd, "", callback );
-}
-
-function apiSetConfig_InterfaceData( device, config ) {
-    var config_data = {};
-    var send_cmd    = ["config", "interface", device];
-
-    try         { config_data = JSON.parse(getValueById( config )); }
-    catch(e)    { appMsg.alert("<b>JSON Config " + device + " - "+lang("FORMAT_INCORRECT")+":</b><br/> "+e); return; }
-
-	appFW.requestAPI( "POST", send_cmd, config_data, apiAlertReturn );
-}
-
-
-// reload API Device connections
-function apiReconnectInterface(interface_id) {
-    appMsg.confirm(lang("API_RECONNECT_ALL"), "apiReconnectInterface_exec('"+interface_id+"');", 140);
-}
-
-function apiReconnectInterface_exec(interface_id) {
-    let send_cmd    = ["reconnect", interface_id];
-	appFW.requestAPI( "POST", send_cmd, "", apiAlertReturn );
-}
-
-
-// reload API Device connections
-function apiDiscoverDevices() {
-    appMsg.confirm(lang("API_DEVICE_DISCOVERY"), "apiDiscoverDevices_exec();", 140);
-}
-
-function apiDiscoverDevices_exec() {
-    let send_cmd    = ["discovery"];
-	appFW.requestAPI( "POST", send_cmd, "", apiAlertReturn );
-}
-
-
-// move remote control to archive
-function apiMoveToArchive(remote_type, remote_id) {
-    appMsg.confirm(lang("REMOTE_MOVE_TO_ARCHIVE", [remote_id]), "apiMoveToArchive_exec('"+remote_type+"','"+remote_id+"');", 140);
-}
-
-function apiMoveToArchive_exec(remote_type, remote_id) {
-    let commands = ["archiving", "move", remote_type, remote_id];
-    appFW.requestAPI( "PUT", commands, "", apiAlertReturn );
-}
-
-
-// move remote control to archive
-function apiRestoreFromArchive(remote_type, remote_id) {
-    appMsg.confirm(lang("REMOTE_RESTORE_FROM_ARCHIVE", [remote_id]), "apiRestoreFromArchive_exec('"+remote_type+"','"+remote_id+"');", 140);
-}
-
-function apiRestoreFromArchive_exec(remote_type, remote_id) {
-    let commands = ["archiving", "restore", remote_type, remote_id];
-    appFW.requestAPI( "PUT", commands, "", apiAlertReturn );
-}
-
-
-// add API device
-function apiAddApiDevice(api_name) {
-    let command = ["edit_api_device", api_name];
-    let data = {
-        "ip": getValueById("add_api_ip_"+api_name),
-        "description": getValueById("add_api_description_"+api_name),
-        "api": api_name
-    };
-    appFW.requestAPI("PUT", command, data, apiAlertReturn);
-}
-
-function apiDeleteApiDevice(api_name, api_device) {
-    appMsg.confirm(lang("API_DEVICE_DELETE", [api_name, api_device]), "apiDeleteApiDevice_exec(#"+api_name+"#, #"+api_device+"#);", 140);
-}
-
-function apiDeleteApiDevice_exec(api_name, api_device) {
-    let command = ["edit_api_device", api_name + "_" + api_device];
-    appFW.requestAPI("DELETE", command, "", apiAlertReturn);
-}
-
-
-// load logging information from API
-function apiLoggingLoad() {
-    var send_cmd = ["log_queue"];
-	console.debug("apiLoggingLoad");
-	appFW.requestAPI( "GET", send_cmd, "", apiLoggingWrite );
-}
-
-function apiLoggingWrite(data) {
-    let log_data = data["DATA"];
-    if (!log_data) {
-        console.error("apiLoggingWrite: got no logging data!");
-        return;
-        }
-    let title = "<b>API Send</b><hr/>";
-    setTextById("logging_api_send",     title + log_data["log_api"]["send"].join("<br/>"));
-    title    = "<b>QUEUE Send</b><hr/>";
-    setTextById("logging_queue_send",   title + log_data["log_send"].join("<br/>"));
-
-    title    = "<b>API Query</b><hr/>";
-    setTextById("logging_api_query",     title + log_data["log_api"]["query"].join("<br/>"));
-    title    = "<b>QUEUE Query</b><hr/>";
-    setTextById("logging_queue_query",   title + log_data["log_query"].join("<br/>"));
-}
-
-
-// shutdown server
-function apiShutdownRestart() {
-    appMsg.confirm(lang("RESTART"), "appShutdownRestart_exec();");
-}
-
-function appShutdownRestart_exec() {
-    appFW.requestAPI( "GET", ["shutdown"], "", apiAlertReturn);
-
-}
 
 remote_scripts_loaded += 1;
