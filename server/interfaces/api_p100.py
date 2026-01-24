@@ -210,7 +210,7 @@ class APIaddOn(RemoteDefaultClass):
 
     def __init__(self, api, logger):
         self.api_description = "API-Addon for Tapo-Link P100"
-        RemoteDefaultClass.__init__(self, "api-P100*", self.api_description)
+        RemoteDefaultClass.__init__(self, "api-P100.jc", self.api_description)
 
         self.addon = "jc://addon/p100/"
         self.api = api
