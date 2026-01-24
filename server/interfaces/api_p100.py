@@ -302,7 +302,7 @@ class APIaddOn(RemoteDefaultClass):
                 self.logging.debug(f"{self.api_device} | {param}: {self.info_answer}")
             else:
                 self.info_answer = self.last_request_data.copy()
-                from_cache = true
+                from_cache = True
 
             if param == "power":
                 self.logging.debug(f"{self.info_answer}")
