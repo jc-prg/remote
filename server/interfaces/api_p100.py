@@ -1,3 +1,4 @@
+import sys
 import time
 import server.modules.rm3presets as rm3config
 import server.modules.rm3ping as rm3ping
@@ -265,10 +266,13 @@ class APIaddOn(RemoteDefaultClass):
                 self.power_status = "ON"
                 return {"result": "ON"}
             except Exception as e:
+                self.error_details(sys.exc_info())
+                self.logging.error(f".:|jc.turn_on()|:. ERROR {e}")
                 self.power_status = "ERROR"
                 return {"result": "error", "message": str(e)}
 
         else:
+            self.error_details(sys.exc_info())
             self.power_status = "NOT CONNECTED"
             return self.not_connected
 
@@ -282,6 +286,8 @@ class APIaddOn(RemoteDefaultClass):
                 self.api.turnOff()
                 return {"result": "OFF"}
             except Exception as e:
+                self.error_details(sys.exc_info())
+                self.logging.error(f".:|jc.turn_off()|:. ERROR {e}")
                 self.power_status = "ERROR"
                 return {"result": "error", "message": str(e)}
 
@@ -301,8 +307,10 @@ class APIaddOn(RemoteDefaultClass):
                 try:
                     self.info_answer = self.api.getDeviceInfo()
                 except Exception as e:
+                    self.error_details(sys.exc_info())
                     self.info_answer = {"error_code": 10, "error": "Exception during API request", "error_msg": str(e)}
-                #self.logging.info(".:|"+param+"|:."+str(self.info_answer))
+                    self.logging.error(f".:|{param}|:. ERROR {e} | {self.info_answer} ")
+
                 if "result" in self.info_answer:
                     self.last_request_data = self.info_answer.copy()
                     self.last_request_time = time.time()
