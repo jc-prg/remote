@@ -26,7 +26,7 @@ let language_app = {
         "MENU_SHOW_HIDDEN_ON"           : "Weitere zeigen",
         "MENU_SHOW_HIDDEN_OFF"          : "Weitere verbergen",
 
-        "STATUS_DEV_OK"                 : "Das Gerät <b>{0}</b> ist OK.",
+        "STATUS_DEV_OK"                 : "Das Gerät <b>{0}</b> ist bereit.",
         "STATUS_DEV_N/A"                : "Der Status vom Gerät <b>{0}</b> ist unbekannt, ausprobieren!",
         "STATUS_DEV_POWER_OFF"          : "Der Strom ist ausgeschaltet: <b>{0}</b>",
         "STATUS_DEV_ERROR"              : "Beim Gerät <b>{0}</b> ist ein Fehler aufgetreten. {1}",
@@ -36,7 +36,7 @@ let language_app = {
         "STATUS_DEV_OTHER_ERROR"        : "Es ist ein unbekannter Fehler beim Gerät <b>{0}</b> aufgetreten.",
         "STATUS_DEV_EMPTY"              : "Für dieses Gerät <b>{0}</b> wurde bislang noch keine Fernbedienung definiert.",
 
-        "STATUS_SCENE_OK"               : "Die Szene <b>{0}</b> ist OK.",
+        "STATUS_SCENE_OK"               : "Die Szene <b>{0}</b> ist bereit.",
         "STATUS_DEV_OFF"                : "Alle Geräte der Szene <b>{0}</b> sind ausgeschaltet.",
         "STATUS_SCENE_STARTING"         : "Mindestens eine für die Szene <b>{0}</b> nötige API startet gerade, bitte warten.",
         "STATUS_SCENE_POWER_OFF"        : "Der Strom über für Szene <b>{0}</b> ist ausgeschaltet. Nutze <b>{1}</b> zum einschalten.",
@@ -46,7 +46,17 @@ let language_app = {
         "STATUS_SCENE_EMPTY"            : "Für die Szene <b>{0}</b> wurde bislang noch keine Fernbedienung definiert.",
 
         "STATUS_SCENE_API_DISABLED"     : "Mindestens eine für die Szene <b>{0}</b> erforderliche API ist deaktiviert: <i>{1}</i>",
-        "STATUS_SCENE_NO_DEVICES"       : "Es sind keiner erforderlichen Geräte für die Szene <b>{0}</b> definiert.",
+        "STATUS_SCENE_NO_DEVICES"       : "Es sind keine erforderlichen Geräte für die Szene <b>{0}</b> definiert.",
+
+        "STATUS_GROUP_OK"                : "Die Gruppe <b>{0}</b> und die enthaltenen Geräte sind bereit.",
+        "STATUS_GROUP_N/A"               : "Der Power-Status der Gruppe <b>{0}</b> ist nicht verfügbar. Bitte, ausprobieren.",
+        "STATUS_GROUP_POWER_OFF"         : "Mindestens eines der in der Gruppe <b>{0}</b> enthaltenen Geräte ist ausgeschaltet: {1}.",
+        "STATUS_GROUP_ERROR"             : "Für mindestens eines der in der Gruppe <b>{0}</b> enthaltenen Geräte ist ein Fehler aufgetreten: {1}",
+        "STATUS_GROUP_API_DISABLED"      : "Die API <b>{0}</b> für <b>{1}</b> ist deaktiviert.",
+        "STATUS_GROUP_API_STARTING"      : "Mindestens eine relevante API für <b>{0}</b> startet gerade, bitte warten.",
+        "STATUS_GROUP_API_ERROR"         : "Für mindestens eine relevante API von <b>{1}</b> ist ein Fehler aufgetreten: <i>{2}</i>",
+        "STATUS_GROUP_OTHER_ERROR"       : "Unbekannter Fehler für die Gruppe <b>{0}</b> aufgetreten.",
+        "STATUS_GROUP_EMPTY"             : "Die Gruppe <b>{0}</b> enthält bislang keine Geräte.",
 
         "STATUS_NO_SERVER_CONNECT"      : "Aktuell besteht keine Verbindung zum Server.",
         },

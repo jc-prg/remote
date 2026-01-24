@@ -655,23 +655,19 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
         for (let api in this.config_apis) {
             let api_status = this.status_api(api, true);
             result += this.tab.line();
-            result += this.tab.row("<b>API:</b><br/>", false);
-            result += this.tab.row("-&nbsp;"+api, "<b>"+api_status["status"] + "</b> / " + api_status["message"]);
+            result += this.tab.row("<big><b>" + api + "</b> ("+api_status["status"]+")</big>", false);
 
             for (let api_device in this.config_apis_structure[api]) {
                 let api_device_status = this.status_api_device(api+"_"+api_device, true);
-                result += this.tab.row("&nbsp;<br/><b>API-Device:</b>", false);
-                result += this.tab.row("-&nbsp;"+api_device, "<b>"+api_device_status["status"] + "</b> / " + api_device_status["message"]);
+                let message = api_device_status["message"];
+                if (message.indexOf("DISABLED") > -1) { message = "DISABLED"; }
+                result += this.tab.row("&nbsp;<br/><b>"+api_device+"</b> (" + message + ")", false);
 
-                let count = 0;
                 for (let device in this.config_devices) {
                     let device_status = this.status_device(device, true);
+                    let status = `<b>${device_status["status_overall"]}</b> (${device_status["status"]}|${device_status["available"]})`;
                     if (device_status["api"] === api && device_status["api-device"] === api_device) {
-                        if (count === 0) {
-                            result += this.tab.row("&nbsp;<br/><b>Devices:</b>");
-                        }
-                        result += this.tab.row("-&nbsp;"+device, "<b>"+device_status["status"] + "</b> / " + device_status["message"]);
-                        count += 1;
+                        result += this.tab.row("-&nbsp;"+device, status + " <br/><i>" + device_status["message"] + "</i>");
                     }
 
                 }
@@ -679,17 +675,18 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
         }
 
         result += this.tab.line();
-        result += this.tab.row("<b>Scenes:</b>", false);
+        result += this.tab.row("<big><b>Scenes:</b></big>", false);
         for (let scene in this.config_scenes) {
             let scene_status = this.status_scene(scene, true);
-            result += this.tab.row("-&nbsp;"+scene, "<b>"+scene_status["status"] + "</b> / " + scene_status["message"]);
+            let status = `${scene_status["status"]}`;
+            result += this.tab.row("-&nbsp;"+scene, "<b>" + status + "</b> <br/><i>" + scene_status["message"] + "</i>");
         }
 
         result += this.tab.line();
-        result += this.tab.row("<b>Groups:</b>", false);
+        result += this.tab.row("<big><b>Groups:</b></big>", false);
         for (let group in this.config_groups) {
             let group_status = this.status_group(group, true);
-            result += this.tab.row("-&nbsp;"+group, "<b>"+group_status["status"] + "</b> / " + group_status["message"]);
+            result += this.tab.row("-&nbsp;"+group, "<b>"+group_status["status"] + "</b> <br/><i>" + group_status["message"] + "</i>");
         }
 
         result += this.tab.end();
