@@ -23,7 +23,8 @@ server_status = "Starting"
 server_health = {}
 
 rollout = server_port = client_port = data_dir = icons_dir = scene_img_dir = app_language = git_branch = None
-timezone_offset = local_network = config_dir = start_string = None
+local_network = config_dir = start_string = None
+timezone_offset = 0
 
 log_level = log_to_file = log_webserver = log_api_data = log_api_ext = log_set2level = None
 log_level_module = {"INFO": [], "DEBUG": [], "WARNING": [], "ERROR": []}
@@ -86,6 +87,14 @@ def time_since_start():
     return "  (" + str(time_info) + "s)"
 
 
+def logging_time_offset(seconds):
+    """
+    define logging time offset based on value from .env
+    """
+    global timezone_offset
+    return time.gmtime(seconds + timezone_offset * 3600)  # +1 hour
+
+
 def set_logging(set_name, set_log_level=None):
     """
     set logger and ensure it exists only once
@@ -123,6 +132,7 @@ def set_logging(set_name, set_log_level=None):
 
             log_format_string = '%(asctime)s | %(levelname)-8s ' + set_name.ljust(11) + ' | %(message)s'
             log_format = logging.Formatter(fmt=log_format_string, datefmt='%m/%d %H:%M:%S')
+            log_format.converter = logging_time_offset
             handler = RotatingFileHandler(filename=log_filename, mode='a',
                                           maxBytes=int(2.5 * 1024 * 1024),
                                           backupCount=2, encoding=None, delay=False)
