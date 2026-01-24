@@ -96,7 +96,7 @@ class ApiControl(RemoteApiClass):
             try:
                 command = "self.api." + command
                 result = eval(command)
-                self.logging.debug(str(result))
+                self.logging.debug(f"{self.api_config["Description"]} | {command} | {result}")
 
                 if "error" in result:
                     self.working = False
@@ -260,9 +260,13 @@ class APIaddOn(RemoteDefaultClass):
         turn on and set metadata
         """
         if self.status == "Connected":
-            self.power_status = "ON"
-            self.api.turnOn()
-            return {"result", "ON"}
+            try:
+                self.api.turnOn()
+                self.power_status = "ON"
+                return {"result": "ON"}
+            except Exception as e:
+                self.power_status = "ERROR"
+                return {"result": "error", "message": str(e)}
 
         else:
             self.power_status = "NOT CONNECTED"
@@ -273,9 +277,13 @@ class APIaddOn(RemoteDefaultClass):
         turn of and set metadata
         """
         if self.status == "Connected":
-            self.power_status = "OFF"
-            self.api.turnOff()
-            return {"result", "OFF"}
+            try:
+                self.power_status = "OFF"
+                self.api.turnOff()
+                return {"result": "OFF"}
+            except Exception as e:
+                self.power_status = "ERROR"
+                return {"result": "error", "message": str(e)}
 
         else:
             self.power_status = "NOT CONNECTED"
