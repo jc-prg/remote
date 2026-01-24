@@ -4,19 +4,61 @@
 
 ## KNOWN BUGS -------------------------------------------------------------------
 
-* server: weather API - change of date leads to an error (and no data available any more) - looks similar to loss of network
 * server: unsure if/why Tapo P100 are not accessible after a while (back again after restart)
+  * SERVER (running a while): API-Status = Connected, Power = OFF, Location (e.g.) = Error - Plug01 is ON / Plug02 is OFF
+    * test plug01: nothing happens but no error in logging?! Try reconnect API ... from messages OK, shows correct status afterward - and it works!
+    * test plug02: try ... nothing happens, but it shows Power is ON while is NOT
+  * LOCAL (fresh started): API-Status = Connect, Power = ON/OFF, Location = valid value - power correctly set 
+  * set to log level debug to observe - check value "error_code": 0 - maybe here? and than trigger reconnect?
+
+```
+{
+  'error_code': 0, 
+  'result': {
+    'device_id': '8022BDD3D20CD890F24D686164B378991F057A38', 
+    'fw_ver': '1.4.9 Build 20210621 Rel. 30941', 
+    'hw_ver': '1.20.0', 
+    'type': 'SMART.TAPOPLUG', 
+    'model': 'P100', 
+    'mac': 'B0-A7-B9-DD-8F-FC', 
+    'hw_id': '9994A0A7D5B29645B8150C392284029D', 
+    'fw_id': '1D18AD293A25ABDE41405B20C6F98816', 
+    'oem_id': 'D7C5ADFD37188938BA82FD0FE208D1E7', 
+    'specs': 'EU', 
+    'device_on': False, 
+    'on_time': 0, 
+    'overheated': False, 
+    'nickname': 'U21hcnRlIFN0ZWNrZG9zZSAwMQ==', 
+    'location': 'office', 
+    'avatar': 'plug', 
+    'longitude': -1879048193, 
+    'latitude': -1879048193, 
+    'has_set_location_info': False, 
+    'ip': '192.168.1.22', 
+    'ssid': 'SkMtd2lmaQ==', 
+    'signal_level': 2, 
+    'rssi': -54, 
+    'region': 'Europe/Berlin', 
+    'time_diff': 60, 
+    'lang': 'de_DE', 
+    'default_states': {'type': 'last_states', 'state': {}}
+  }
+}
+```
+
+* server: weather API - change of date leads to an error (and no data available any more) - looks similar to loss of network
 * server: error in device specific definition (devices/INTERFACE/*.json) -> is not shown in the attention section yet?!
 * server: reconnect of interfaces leads to error messages
 * server: queue bleibt hängen?! // tapo funktioniert nicht richtig?
+
 * server/app: zigbee geräte -> online, obwohl power definiert ist (rückgängig machen)
+  * OPEN: rm_status-devices.js > line 237 following (remove part -> availability -> power_status)
+  * OPEN: use for: DISPLAY, POWER_BUTTONS, ... ?!
+  * OK: add 'available' and 'status_overall' = "ONLINE" / "OFFLINE" / "N/A" -> rmStatus.status_device_overall(id)
 
 * edit mode
   * toggle & slider for groups doesn't work (but are in the drop-down menus) -> rm_remote-control.js:432
   * don't show groups in drop-down if no device is defined in it
-
-### Observe ...
-
 
 ### known but not that urgent
 
@@ -74,7 +116,8 @@
 
 ### NEW 01-2025
 
-* start discovery only if API is active
+* API / Status
+  * don't save the following in the status: api-discovery, device-configuration, device-features, device-info (reduce data) - may tunnel everything for _ACTIVE-DEVICES
 
 * set a time difference in .env -> config.local_time()
 
@@ -177,6 +220,7 @@
     
 # DONE --------------------------------------------------------------------------
 
+* OK: start discovery only if API is active
 * SOLVED: shutdown doesn't shutdown completely ... maybe weather?
 * SOLVED: app settings bugs
 * SOLVED: editing API device configuration via app doesn't work -> no "save" button
