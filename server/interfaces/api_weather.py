@@ -527,8 +527,12 @@ class ApiOpenMeteo(RemoteThreadingClass):
         self.weather_info["info_module_link_required"] = self.link_required
         self.weather_info["info_format"] = "metric"
         self.weather_info["info_status"] = status
-        self.weather_info["info_update"] = self.weather_update.strftime("%d.%m.%Y %H:%M:%S")
-        self.weather_info["info_update_stamp"] = self.weather_update.strftime("%H%M%S")
+        if self.weather_update != 0:
+            self.weather_info["info_update"] = self.weather_update.strftime("%d.%m.%Y %H:%M:%S")
+            self.weather_info["info_update_stamp"] = self.weather_update.strftime("%H%M%S")
+        else:
+            self.weather_info["info_update"] = "N/A"
+            self.weather_info["info_update_stamp"] = "N/A"
         self.weather_info["info_position"] = self.weather_location
         self.weather_info["info_rhythm"] = self.weather_update_rhythm
 
