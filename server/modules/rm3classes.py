@@ -51,7 +51,7 @@ class RemoteDefaultClass(object):
             ignore = []
 
         exc_type, exc_value, exc_tb = details
-        tb = traceback.format_tb(exc_tb)
+        tb = "".join(traceback.format_tb(exc_tb))
         message = f"{self.name} ({called_from}): {exc_type} | {exc_value}\n {tb}"
 
         for key in ignore:

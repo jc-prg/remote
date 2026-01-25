@@ -5,6 +5,7 @@ import socket
 import sys
 import re
 import requests
+import logging
 from xml.etree import ElementTree as ET
 
 import server.modules.rm3json as rm3json
@@ -18,6 +19,17 @@ from server.modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 
 shorten_info_to = rm3config.shorten_info_to
 rm3config.api_modules.append("DENON")
+telnet_logging = rm3config.set_logging("telnet", logging.INFO)
+
+
+async def run_telnet_commands(api):
+    await api.async_telnet_connect()
+
+    method = getattr(api, "async_send_telnet_commands")
+    result = await method(["TPAN?"])
+    telnet_logging.warning(f"TELNET: {result} !!!")
+
+    await api.async_telnet_disconnect()
 
 
 class ApiControl(RemoteApiClass):
@@ -310,6 +322,17 @@ class ApiControl(RemoteApiClass):
             self.error_details(sys.exc_info(), "ApiControl.query_update()")
             self.logging.error(f"Could not execute update: {e}")
 
+    async def query_async(self, command, args):
+        """
+        call something asynchronously
+        """
+        await self.api.async_telnet_connect()
+        method = getattr(self.api, command)
+        result = await method(args)
+        self.logging.warning(f"self.api.{command}({args}) !!!")
+        self.logging.warning(f"TELNET: {result} !!!")
+        await self.api.async_telnet_disconnect()
+
     def query(self, device, device_id, command):
         """
         Send command to API and wait for answer
@@ -327,6 +350,7 @@ class ApiControl(RemoteApiClass):
 
         if self.log_command:
             self.logging.info("__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
+        #self.logging.info("__QUERY " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
 
         if self.status == "Connected" or command == "api-discovery":
 
@@ -360,6 +384,18 @@ class ApiControl(RemoteApiClass):
                 self.working = False
                 return self.api_discovery
 
+            elif command.startswith("async_"):
+                if "(" not in command:
+                    command += "()"
+                try:
+                    result = asyncio.run(eval(f"self.api.{command}"))
+                except Exception as e:
+                    #self.error_details(sys.exc_info(),"ApiControl.query()", ["object has no attribute"])
+                    self.logging.error(f"async call failed ... {command}: {e}")
+                    self.working = False
+                    return "ERROR "+self.api_name+" - query (async): " + str(e)
+
+
             else:
                 try:
                     if time.time() - self.api_last_request > self.api_max_interval:
@@ -370,7 +406,7 @@ class ApiControl(RemoteApiClass):
                     self.logging.debug(f"__query {device}/{command[:shorten_info_to]}={result}")
 
                 except Exception as e:
-                    self.error_details(sys.exc_info(),"ApiControl.query()", ["object has no attribute"])
+                    #self.error_details(sys.exc_info(),"ApiControl.query()", ["object has no attribute"])
                     self.working = False
                     return "ERROR "+self.api_name+" - query: " + str(e)
 
@@ -416,32 +452,39 @@ class APIaddOn(RemoteDefaultClass):
         self.api = api
 
         self.available_vars = [
-            'album', 'artist',
+            # used commands
+            'async_back',
+            'async_cursor_down', 'async_cursor_enter', 'async_cursor_left', 'async_cursor_right', 'async_cursor_up',
+            'async_info', 'async_network_restart', 'async_next_track', 'async_power_on', 'async_previous_track',
+            'async_options', 'async_pause', 'async_play', 'async_power_off', 'async_setup',
+            'async_mute', 'async_volume_down', 'async_volume_up', 'async_set_volume',
+
+            # unused commands
             'async_audio_restorer', 'async_auto_lip_sync_off', 'async_auto_lip_sync_on', 'async_auto_lip_sync_toggle',
-            'async_auto_standby', 'async_back', 'async_bass_down', 'async_bass_up', 'async_bt_output_mode',
+            'async_auto_standby', 'async_bass_down', 'async_bass_up', 'async_bt_output_mode',
             'async_bt_output_mode_toggle', 'async_bt_transmitter_off', 'async_bt_transmitter_on',
-            'async_bt_transmitter_toggle', 'async_channel_level_adjust', 'async_cursor_down', 'async_cursor_enter',
-            'async_cursor_left', 'async_cursor_right', 'async_cursor_up', 'async_delay_down', 'async_delay_time',
+            'async_bt_transmitter_toggle', 'async_channel_level_adjust',  'async_delay_down', 'async_delay_time',
             'async_delay_time_down', 'async_delay_time_up', 'async_delay_up', 'async_dimmer', 'async_dimmer_toggle',
             'async_disable_tone_control', 'async_dynamic_eq_off', 'async_dynamic_eq_on', 'async_eco_mode',
             'async_enable_tone_control', 'async_get_command', 'async_graphic_eq_off', 'async_graphic_eq_on',
             'async_graphic_eq_toggle', 'async_hdmi_audio_decode', 'async_hdmi_cec_off', 'async_hdmi_cec_on',
             'async_hdmi_output', 'async_headphone_eq_off', 'async_headphone_eq_on', 'async_headphone_eq_toggle',
-            'async_illumination', 'async_info', 'async_mute', 'async_network_restart', 'async_next_track',
-            'async_options', 'async_panel_lock', 'async_panel_unlock', 'async_pause', 'async_play', 'async_power_off',
-            'async_power_on', 'async_previous_track', 'async_quick_select_memory', 'async_quick_select_mode',
+            'async_illumination',  'async_panel_lock', 'async_panel_unlock',
+             'async_quick_select_memory', 'async_quick_select_mode',
             'async_remote_control_lock', 'async_remote_control_unlock', 'async_room_size', 'async_send_telnet_commands',
             'async_set_bass', 'async_set_dynamicvol', 'async_set_input_func', 'async_set_multieq',
-            'async_set_reflevoffset', 'async_set_sound_mode', 'async_set_treble', 'async_set_volume',
-            'async_settings_menu', 'async_setup', 'async_sleep', 'async_speaker_preset', 'async_speaker_preset_toggle',
+            'async_set_reflevoffset', 'async_set_sound_mode', 'async_set_treble',
+            'async_settings_menu', 'async_sleep', 'async_speaker_preset', 'async_speaker_preset_toggle',
             'async_status', 'async_system_reset', 'async_tactile_transducer_level_down',
             'async_tactile_transducer_level_up', 'async_tactile_transducer_off', 'async_tactile_transducer_on',
             'async_tactile_transducer_toggle', 'async_telnet_connect', 'async_telnet_disconnect',
             'async_toggle_dynamic_eq', 'async_toggle_play_pause', 'async_transducer_lpf', 'async_treble_down',
             'async_treble_up', 'async_trigger_off', 'async_trigger_on', 'async_trigger_toggle', 'async_update',
             'async_update_attrs_appcommand', 'async_update_attrs_status_xml', 'async_update_audyssey',
-            'async_update_tonecontrol', 'async_video_processing_mode', 'async_volume_down', 'async_volume_up',
-            'audio_restorer', 'audyssey', 'auto_lip_sync', 'auto_standby', 'band', 'bass', 'bass_level',
+            'async_update_tonecontrol', 'async_video_processing_mode',
+
+            # parameters
+            'album', 'artist', 'audio_restorer', 'audyssey', 'auto_lip_sync', 'auto_standby', 'band', 'bass', 'bass_level',
             'bt_output_mode', 'bt_transmitter', 'create_appcommand_search_strings', 'create_zones', 'delay',
             'delay_time', 'dimmer', 'dirac', 'dynamic_eq', 'dynamic_volume', 'dynamic_volume_setting_list',
             'eco_mode', 'frequency', 'get_trigger', 'graphic_eq', 'hdmi_audio_decode', 'hdmi_output', 'headphone_eq',
@@ -454,8 +497,8 @@ class APIaddOn(RemoteDefaultClass):
             'state', 'station', 'support_sound_mode', 'support_tone_control', 'tactile_transducer',
             'tactile_transducer_level', 'tactile_transducer_lpf', 'telnet_available', 'telnet_connected',
             'telnet_healthy', 'title', 'tone_control_adjust', 'tone_control_status', 'tonecontrol', 'treble',
-            'treble_level', 'triggers', 'unregister_callback', 'video_processing_mode', 'vol', 'volume', 'zone',
-            'zones']
+            'treble_level', 'triggers', 'unregister_callback', 'video_processing_mode', 'vol', 'volume', 'zone', 'zones'
+        ]
         self.available_commands = {
             "jc.get_available_commands()": {
                 "info": "get a list of all available commands"
