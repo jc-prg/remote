@@ -1,7 +1,6 @@
 import time
 import denonavr
 import asyncio
-import asyncio
 import socket
 import sys
 import re
@@ -94,7 +93,7 @@ class ApiControl(RemoteApiClass):
             asyncio.run(self.initialize())
 
         except Exception as e:
-            self.error_details(sys.exc_info())
+            self.error_details(sys.exc_info(), "ApiControl.connect()", ["NetworkError: All connection attempts failed"])
             self.status = self.not_connected + " ... CONNECT " + str(e)
             return self.status
 
@@ -104,7 +103,7 @@ class ApiControl(RemoteApiClass):
             self.api_jc.not_connected = self.not_connected
 
         except Exception as e:
-            self.error_details(sys.exc_info())
+            self.error_details(sys.exc_info(), "ApiControl.connect()")
             self.status = self.not_connected + " ... CONNECT " + str(e)
             self.api_jc.status = self.status
             self.logging.warning(self.status)
@@ -243,7 +242,7 @@ class ApiControl(RemoteApiClass):
                 self.logging.debug(f"Send api command '{command}' (bound to a different event loop)")
                 return True
             else:
-                self.error_details(sys.exc_info())
+                self.error_details(sys.exc_info(), "ApiControl.send_command()")
                 self.logging.error(f"Could not send command '{command}': {e}")
                 return False
 
@@ -282,7 +281,7 @@ class ApiControl(RemoteApiClass):
                         return f"ERROR {self.api_name} - {result["error"]}"
 
                 except Exception as e:
-                    self.error_details(sys.exc_info())
+                    self.error_details(sys.exc_info(), "ApiControl.send()")
                     self.working = False
                     return "ERROR " + self.api_name + " - query: " + str(e)
 
@@ -291,7 +290,7 @@ class ApiControl(RemoteApiClass):
                     result = asyncio.run(self.send_command(command))
                     self.logging.debug(f"Send -> {result}")
                 except Exception as e:
-                    self.error_details(sys.exc_info())
+                    self.error_details(sys.exc_info(), "ApiControl.send()")
                     self.working = False
                     return f"ERROR {self.api_name} - send: {e}"
         else:
@@ -308,7 +307,7 @@ class ApiControl(RemoteApiClass):
         try:
             await self.api.async_update()
         except Exception as e:
-            self.error_details(sys.exc_info())
+            self.error_details(sys.exc_info(), "ApiControl.query_update()")
             self.logging.error(f"Could not execute update: {e}")
 
     def query(self, device, device_id, command):
@@ -344,14 +343,14 @@ class ApiControl(RemoteApiClass):
                     result = eval(command)
                     self.logging.debug(f"__query {device}/{command[:shorten_info_to]}={result}")
 
+                    self.working = False
                     if "error" in str(result):
-                        self.working = False
                         msg = f"ERROR {self.api_name} - {result["error"]}"
                         self.logging.debug(msg)
                         return msg
 
                 except Exception as e:
-                    self.error_details(sys.exc_info())
+                    self.error_details(sys.exc_info(), "ApiControl.query()")
                     self.working = False
                     msg = "ERROR " + self.api_name + " - query: " + str(e)
                     self.logging.debug(msg)
@@ -371,7 +370,7 @@ class ApiControl(RemoteApiClass):
                     self.logging.debug(f"__query {device}/{command[:shorten_info_to]}={result}")
 
                 except Exception as e:
-                    self.error_details(sys.exc_info())
+                    self.error_details(sys.exc_info(),"ApiControl.query()")
                     self.working = False
                     return "ERROR "+self.api_name+" - query: " + str(e)
 

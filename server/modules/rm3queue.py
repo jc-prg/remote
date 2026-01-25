@@ -125,7 +125,7 @@ class QueueApiCalls(RemoteThreadingClass):
                         self.logging.debug("queue_execute: load_after activated - " + device + "_" + button)
 
                 except Exception as e:
-                    self.error_details(sys.exc_info())
+                    self.error_details(sys.exc_info(),"QueueApiCalls.execute()")
                     result = "ERROR queue query_list (send," + interface + "," + device + "," + button + "=" + str(state) + "): " + str(e)
                     self.logging.error(result)
 
@@ -150,7 +150,7 @@ class QueueApiCalls(RemoteThreadingClass):
                         log_results.append(value + "=" + str(result))
 
                     except Exception as e:
-                        self.error_details(sys.exc_info())
+                        self.error_details(sys.exc_info(),"QueueApiCalls.execute()")
                         result = "ERROR queue query_list (query," + str(interface) + "," + str(device) + "," + str(value) + "): " + str(e)
                         self.logging.error(result)
 

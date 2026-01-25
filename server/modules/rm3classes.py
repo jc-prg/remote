@@ -43,18 +43,27 @@ class RemoteDefaultClass(object):
         if self.log_level_set != "":
             self.logging.info(f"Set log-level for {self.class_id} to {self.log_level_name}.")
 
-    def error_details(self, details):
+    def error_details(self, details, called_from="", ignore=None):
         """ 
-        print error details, call self.error_details(sys.exc_info())
+        print error details, call self.error_details(sys.exc_info(), "ClassName.def_name()")
         """
+        if ignore is None:
+            ignore = []
+
         exc_type, exc_value, exc_tb = details
         tb = traceback.format_tb(exc_tb)
-        message = f"{self.name}: {exc_type} | {exc_value} | {tb}"
-        self.logging.error(f"EXCEPTION in {message}")
+        message = f"{self.name} ({called_from}): {exc_type} | {exc_value} | {tb.join('')}"
 
+        for key in ignore:
+            if key in exc_value:
+                self.logging.debug(f"IGNORE EXCEPTION in {message}")
+                return
+
+        self.logging.error(f"EXCEPTION in {message}")
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        timestamp = ("-" * 50) + "\n" + timestamp + "  -> OTHER EXCEPTION:\n" + ("-" * 50)
         with open(rm3presets.log_filename_error, "a", encoding="utf-8") as f:
-            f.write(f"{timestamp} -> OTHER EXCEPTION:\n{message}\n")
+            f.write(f"{timestamp}\n{message}\n")
 
 
 class RemoteApiClass(RemoteDefaultClass):
