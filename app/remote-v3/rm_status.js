@@ -902,11 +902,21 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     visualize_element_disabled(div_id, active) {
         if (document.getElementById(div_id)) {
             let element = document.getElementById(div_id);
-            if (active) {
-                element.classList.remove("device_off");
+            let elements;
+
+            if (div_id.indexOf("+") < 0) {
+                elements = document.querySelectorAll("#" + div_id);
+            } else {
+                // this is just a workaround: should create correct div ids for buttons even if they consist of characters that are not allowed (such as "+")
+                elements = [element];
             }
-            else {
-                element.classList.add("device_off");
+
+            for (let i = 0; i < elements.length; i++) {
+                if (active) {
+                    elements[i].classList.remove("device_off");
+                } else {
+                    elements[i].classList.add("device_off");
+                }
             }
         } else {
             this.logging.debug("disable_element(): element '"+div_id+"' does not exist.");
