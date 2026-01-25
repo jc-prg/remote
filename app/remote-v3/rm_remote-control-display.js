@@ -252,6 +252,7 @@ class RemoteControlDisplay extends RemoteDefaultClass {
             "h3w2": "2x width / 3x height",
             "h4w2": "2x width / 4x height",
             "h2w3": "3x width / 2x height",
+            "h3w3": "3x width / 3x height",
             "h1w4": "4x width / 1x height",
             "h2w4": "4x width / 2x height",
             "h3w4": "4x width / 3x height",
