@@ -101,7 +101,7 @@ class ApiControl(RemoteApiClass):
         self.count_success = 0
 
         try:
-            self.api = denonavr.DenonAVR(self.api_config["IPAddress"])
+            self.api = denonavr.DenonAVR(self.api_config["IPAddress"], 8080)
             asyncio.run(self.initialize())
 
         except Exception as e:
@@ -393,7 +393,7 @@ class ApiControl(RemoteApiClass):
                     #self.error_details(sys.exc_info(),"ApiControl.query()", ["object has no attribute"])
                     #self.logging.error(f"async call failed ... {command}: {e}")
                     self.working = False
-                    return "ERROR "+self.api_name+" - query (async): " + str(e)
+                    return "ERROR "+self.api_name+" - query (async): " + str(e) + f" self.api.{command}"
 
 
             else:
@@ -451,6 +451,9 @@ class APIaddOn(RemoteDefaultClass):
         self.addon = "jc://addon/denon/"
         self.api = api
 
+
+        # try: playing_func_list, netaudio_func_list
+        # try: telnet_healthy, telnet_connected
         self.available_vars = [
             # used commands
             'async_back',

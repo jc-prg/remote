@@ -1,6 +1,10 @@
 {
     "data": {
         "buttons": {
+            "1": "async_quick_select_mode(1)",
+            "2": "async_quick_select_mode(2)",
+            "3": "async_quick_select_mode(3)",
+            "4": "async_quick_select_mode(4)",
             "HEOS": "async_set_input_func('HEOS Music')",
             "aux1": "async_set_input_func('PC')",
             "aux2": "async_set_input_func('AUX2')",
@@ -8,6 +12,8 @@
             "blu-ray": "async_set_input_func('Blu-ray')",
             "bluetooth": "async_set_input_func('Bluetooth')",
             "cbl-sat": "async_set_input_func('TV')",
+            "channel-up": "async_cursor_right",
+            "channel-down": "async_cursor_left",
             "cd": "async_set_input_func('CD')",
             "dimmer-toggle": "telnet:DIM SEL",
             "dimmer-toggle-1": "telnet_api.async_send_command(\"DIM SEL\")",
@@ -28,13 +34,17 @@
             "next": "async_next_track",
             "off": "async_power_off",
             "on": "async_power_on",
-            "option": "async_option",
+            "option": "async_options",
             "option-menu": "telnet:MNOPT",
             "pause": "async_pause",
             "phono": "async_set_input_func('Phono')",
             "play": "async_play",
             "previous": "async_previous_track",
             "right": "async_cursor_right",
+            "save-quick-1": "async_quick_select_memory(1)",
+            "save-quick-2": "async_quick_select_memory(2)",
+            "save-quick-3": "async_quick_select_memory(3)",
+            "save-quick-4": "async_quick_select_memory(4)",
             "setup": "async_setup_menu(True)",
             "setup-close": "async_setup_menu(False)",
             "sleep": "async_sleep",
@@ -48,8 +58,8 @@
             "tuner": "async_set_input_func('Tuner')",
             "tv-audio": "async_set_input_func('TV Audio')",
             "up": "async_cursor_up",
-            "vol+": "async_volume_up",
-            "vol-": "async_volume_down"
+            "volume-up": "async_volume_up",
+            "volume-down": "async_volume_down"
         },
         "commands": {
             "album": {
