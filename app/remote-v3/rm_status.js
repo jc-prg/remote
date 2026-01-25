@@ -214,12 +214,13 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
 
             let power_status  = rmStatus.status_device(key);
             let power_message = rmStatus.status_device(key, true)["message"];
+            let available     = rmStatus.status_device(key, true)["available"];
 
             this.visualize_power_button_device(key, power_status);
             this.visualize_buttons_device(key);
 
             if (!this.edit_mode) {
-                this.visualize_display_type_device(key, power_status, power_message);
+                this.visualize_display_type_device(key, power_status, available, power_message);
                 this.visualize_display_values_device(key);
 
                 this.visualize_toggle_device(key);
@@ -639,7 +640,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     }
 
     /* visualize status for devices by setting color of displays */
-    visualize_display_type_device (device_id, power_status, power_message) {
+    visualize_display_type_device (device_id, power_status, available, power_message) {
 
         if (!(rmRemote.active_type === "device" && rmRemote.active_name === device_id)) { return; }
         if (!rmData.devices.display_exists(device_id)) { return; }
@@ -649,10 +650,12 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             if (remoteHints) { setTextById("display_ERROR_info_"+device_id,""); }
             else { setTextById("display_ERROR_info_" + device_id, lang("STATUS_NO_SERVER_CONNECT")); }
         }
-        else if (rmRemote.edit_mode)                         { this.visualize_element_display(device_id, "EDIT_MODE", "device", "1"); }
-        else if (deactivateButton || power_status === "N/A") { this.visualize_element_display(device_id, "MANUAL", "device", "2"); }
-        else if (power_status === "ON")                      { this.visualize_element_display(device_id, "ON", "device", "3"); }
-        else if (power_status === "OFF")                     { this.visualize_element_display(device_id, "OFF", "device", "4"); }
+        else if (rmRemote.edit_mode)                                 { this.visualize_element_display(device_id, "EDIT_MODE", "device", "1"); }
+        else if (deactivateButton)                                   { this.visualize_element_display(device_id, "MANUAL", "device", "2"); }
+        else if (power_status === "ON")                              { this.visualize_element_display(device_id, "ON", "device", "3"); }
+        else if (power_status === "OFF")                             { this.visualize_element_display(device_id, "OFF", "device", "4"); }
+        else if (power_status === "N/A" && available === "ONLINE")   { this.visualize_element_display(device_id, "ON", "device", "4"); }
+        else if (power_status === "N/A" && available === "OFFLINE")  { this.visualize_element_display(device_id, "OFF", "device", "4"); }
         else if (power_status.indexOf("ERROR") >= 0) {
             this.visualize_element_display(device_id, "ERROR", "device", "5");
             if (remoteHints) { setTextById("display_ERROR_info_"+device_id,""); }
