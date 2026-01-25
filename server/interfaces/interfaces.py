@@ -326,32 +326,38 @@ class Connect(RemoteThreadingClass):
         arp = ARP(pdst=network)
         broadcast = Ether(dst="ff:ff:ff:ff:ff:ff")
         packet = broadcast / arp
+        error = False
 
-        answered = srp(packet, timeout=2, verbose=0)[0]
+        try:
+            answered = srp(packet, timeout=2, verbose=0)[0]
+        except Exception as e:
+            self.logging.error(f"Could not detect devices: {e}")
+            error = True
 
         devices = []
-        for sent, received in answered:
-            ip = received.psrc
-            mac = received.hwsrc
+        if not error:
+            for sent, received in answered:
+                ip = received.psrc
+                mac = received.hwsrc
 
-            # Try to resolve hostname via reverse DNS
-            try:
-                hostname = socket.gethostbyaddr(ip)[0]
-            except Exception:
-                hostname = None
+                # Try to resolve hostname via reverse DNS
+                try:
+                    hostname = socket.gethostbyaddr(ip)[0]
+                except Exception:
+                    hostname = None
 
-            identified = False
-            for key in self.api:
-                if self.api[key].api_config["IPAddress"] == ip:
-                    hostname = key
-                    identified = True
+                identified = False
+                for key in self.api:
+                    if self.api[key].api_config["IPAddress"] == ip:
+                        hostname = key
+                        identified = True
 
-            devices.append({
-                "ip": ip,
-                "mac": mac,
-                "hostname": hostname,
-                "identified": identified
-            })
+                devices.append({
+                    "ip": ip,
+                    "mac": mac,
+                    "hostname": hostname,
+                    "identified": identified
+                })
 
         self.logging.info(f"Detected {len(devices)} devices in the local network ({network})")
         for d in devices:
@@ -388,7 +394,12 @@ class Connect(RemoteThreadingClass):
                 continue
 
             start_time_api = time.time()
-            discover = self.api_check[api].discover()
+            try:
+                discover = self.api_check[api].discover()
+            except Exception as e:
+                self.error_details(sys.exc_info(), "ApiControl.check_discover_all()", ["Errno 101"])
+                self.logging.error(f"Could not discover devices for {api}: {e}")
+                continue
 
             for key in self.api:
                 if api in key:

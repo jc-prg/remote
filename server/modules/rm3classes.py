@@ -55,7 +55,7 @@ class RemoteDefaultClass(object):
         message = f"{self.name} ({called_from}): {exc_type} | {exc_value}\n {tb}"
 
         for key in ignore:
-            if key in exc_value:
+            if key in message:
                 self.logging.debug(f"IGNORE EXCEPTION in {message}")
                 return
 

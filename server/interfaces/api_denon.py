@@ -319,7 +319,7 @@ class ApiControl(RemoteApiClass):
         try:
             await self.api.async_update()
         except Exception as e:
-            self.error_details(sys.exc_info(), "ApiControl.query_update()")
+            self.error_details(sys.exc_info(), "ApiControl.query_update()", ["NetworkError: All connection attempts failed"])
             self.logging.error(f"Could not execute update: {e}")
 
     async def query_async(self, command, args):
@@ -391,7 +391,7 @@ class ApiControl(RemoteApiClass):
                     result = asyncio.run(eval(f"self.api.{command}"))
                 except Exception as e:
                     #self.error_details(sys.exc_info(),"ApiControl.query()", ["object has no attribute"])
-                    self.logging.error(f"async call failed ... {command}: {e}")
+                    #self.logging.error(f"async call failed ... {command}: {e}")
                     self.working = False
                     return "ERROR "+self.api_name+" - query (async): " + str(e)
 

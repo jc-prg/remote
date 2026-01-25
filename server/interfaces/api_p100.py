@@ -307,9 +307,9 @@ class APIaddOn(RemoteDefaultClass):
                 try:
                     self.info_answer = self.api.getDeviceInfo()
                 except Exception as e:
-                    self.error_details(sys.exc_info(),"APIaddOn.get_info()")
+                    self.error_details(sys.exc_info(),"APIaddOn.get_info()",["Errno 101"])
                     self.info_answer = {"error_code": 10, "error": "Exception during API request", "error_msg": str(e)}
-                    self.logging.error(f".:|{param}|:. ERROR {e} | {self.info_answer} ")
+                    self.logging.debug(f".:|{param}|:. ERROR {e} | {self.info_answer} ")
 
                 if "result" in self.info_answer:
                     self.last_request_data = self.info_answer.copy()
