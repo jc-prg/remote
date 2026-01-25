@@ -195,6 +195,8 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
                 else if (power && power_status && power_status.indexOf("OFF") > -1) { status = "POWER_OFF"; }
                 else if (power && power_status && power_status.indexOf("ERROR") > -1) { status = "POWER_ERROR"; }
                 else if (power && power_status && power_status !== "ON") { status = "POWER_ERROR"; }
+                else if (!this.status_api_devices_all[api]) { status = "ERROR"; }
+                else if (!this.status_api_devices_all[api]["api_devices"][api_device]) { status = "ERROR"; }
                 else if (this.status_api_devices_all[api]["api_devices"][api_device]["connect"] === "Connected") { status = "OK"; }
                 else if (this.status_api_devices_all[api]["api_devices"][api_device]["connect"].indexOf("ERROR") > -1) { status = "ERROR"; }
                 else if (this.status_api_devices_all[api]["api_devices"][api_device]["connect"].indexOf("Start") > -1) { status = "STARTING"; }
@@ -225,10 +227,13 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
             let api = this.config_devices[device]["interface"]["api_key"];
             let api_device = this.config_devices[device]["interface"]["api_device"];
             let api_key = api + "_" + api_device;
-        console.error(api,api_key);
-        console.error(this.status_data);
-            let api_status  = this.status_data["api"][api]["status"] || "N/A";
-            let api_device_status = this.status_data["api-device"][api_key]["status"] || "N/A";
+            let api_status = "ERROR";
+            let api_device_status = "ERROR";
+
+            if (this.status_data["api"][api]) {
+                api_status = this.status_data["api"][api]["status"];
+                api_device_status = this.status_data["api-device"][api_key]["status"];
+            }
             let active = (this.config_devices[device]["settings"]["visible"] === "yes");
 
             let status = "OK";
