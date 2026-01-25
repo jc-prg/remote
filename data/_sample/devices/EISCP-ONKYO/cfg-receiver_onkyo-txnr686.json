@@ -33,7 +33,9 @@
       "up": "setup=up",
       "usb": "input-selector=usb",
       "vol+": "master-volume=level-up",
-      "vol-": "master-volume=level-down"
+      "vol-": "master-volume=level-down",
+      "volume-up": "master-volume=level-up",
+      "volume-down": "master-volume=level-down"
     },
     "commands": {
       "a-v-sync": {

@@ -48,6 +48,8 @@
 		"videos": "GUI.ActivateWindow({'window':'videos'})",
 		"vol+": "jc.set_volume('up', 5)",
 		"vol-": "jc.set_volume('down', 5)",
+		"volume-up": "jc.set_volume('up', 5)",
+		"volume-down": "jc.set_volume('down', 5)",
 		"weather": "GUI.ActivateWindow({'window':'weather'})"
 	},
 	"commands": {
