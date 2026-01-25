@@ -567,6 +567,19 @@ class RemotePrepareDataDevices extends RemoteDefaultClass {
         }
     }
 
+    // check if no interactive elements in the remote
+    has_interactive_elements(device) {
+        const remote = this.remote(device);
+        const inactive = ["DISPLAY","CHART",".","LINE"];
+        let count = 0;
+
+        for (let i = 0; i < remote.length; i++) {
+            let button = remote[i].split("||")[0];
+            if (!inactive.includes(button)) { count++; }
+        }
+        return (count !== 0);
+    }
+
     // return label of a device
     image(device_id) {
         if (this.config_devices[device_id] && this.config_devices[device_id]["settings"]["image"]) {

@@ -1052,8 +1052,11 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     visualize_message_device(device_id) {
 
         if (rmRemote.active_type !== "device" && rmRemote.active_name !== device_id) { return; }
+        if (!document.getElementById("remote-power-information-"+device_id)) { return; }
 
         let status = rmStatus.status_device(device_id);
+        let interactive = rmData.devices.has_interactive_elements(device_id);
+
         let info_sign = "<div class='remote-power-information-image'  onclick='rmStatusShow.visualize_element_big_message(\"remote-power-information-" + device_id + "\");'></div>";
         let message = info_sign + rmStatus.status_device(device_id, true)["message"];
 
@@ -1061,6 +1064,9 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             status = "ERROR";
             message = info_sign + lang("STATUS_NO_SERVER_CONNECT");
         }
+
+        if (!interactive && status === "N/A") { status = "ON"; }
+
         if (status !== "ON" && status !== "OFF") {
             if (remoteHints || status && (status.indexOf("ERROR") >= 0 || status.indexOf("DISABLED") >= 0)) {
                 setTextById("remote-power-information-"+device_id, message);
