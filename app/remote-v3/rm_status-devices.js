@@ -225,8 +225,8 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
             let api = this.config_devices[device]["interface"]["api_key"];
             let api_device = this.config_devices[device]["interface"]["api_device"];
             let api_key = api + "_" + api_device;
-            let api_status  = this.status_data["api"][api]["status"];
-            let api_device_status = this.status_data["api-device"][api_key]["status"];
+            let api_status  = this.status_data["api"][api]["status"] || "N/A";
+            let api_device_status = this.status_data["api-device"][api_key]["status"] || "N/A";
             let active = (this.config_devices[device]["settings"]["visible"] === "yes");
 
             let status = "OK";
