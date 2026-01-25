@@ -242,7 +242,7 @@ class ApiControl(RemoteApiClass):
                 self.logging.debug(f"Send api command '{command}' (bound to a different event loop)")
                 return True
             else:
-                self.error_details(sys.exc_info(), "ApiControl.send_command()")
+                self.error_details(sys.exc_info(), "ApiControl.send_command()", ["object has no attribute"])
                 self.logging.error(f"Could not send command '{command}': {e}")
                 return False
 
@@ -281,7 +281,7 @@ class ApiControl(RemoteApiClass):
                         return f"ERROR {self.api_name} - {result["error"]}"
 
                 except Exception as e:
-                    self.error_details(sys.exc_info(), "ApiControl.send()")
+                    self.error_details(sys.exc_info(), "ApiControl.send()",["object has no attribute"])
                     self.working = False
                     return "ERROR " + self.api_name + " - query: " + str(e)
 
@@ -350,7 +350,7 @@ class ApiControl(RemoteApiClass):
                         return msg
 
                 except Exception as e:
-                    self.error_details(sys.exc_info(), "ApiControl.query()")
+                    self.error_details(sys.exc_info(), "ApiControl.query()", ["object has no attribute"])
                     self.working = False
                     msg = "ERROR " + self.api_name + " - query: " + str(e)
                     self.logging.debug(msg)
@@ -370,7 +370,7 @@ class ApiControl(RemoteApiClass):
                     self.logging.debug(f"__query {device}/{command[:shorten_info_to]}={result}")
 
                 except Exception as e:
-                    self.error_details(sys.exc_info(),"ApiControl.query()")
+                    self.error_details(sys.exc_info(),"ApiControl.query()", ["object has no attribute"])
                     self.working = False
                     return "ERROR "+self.api_name+" - query: " + str(e)
 

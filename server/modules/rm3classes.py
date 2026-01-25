@@ -52,7 +52,7 @@ class RemoteDefaultClass(object):
 
         exc_type, exc_value, exc_tb = details
         tb = traceback.format_tb(exc_tb)
-        message = f"{self.name} ({called_from}): {exc_type} | {exc_value}\n {tb.join('')}"
+        message = f"{self.name} ({called_from}): {exc_type} | {exc_value}\n {tb}"
 
         for key in ignore:
             if key in exc_value:
