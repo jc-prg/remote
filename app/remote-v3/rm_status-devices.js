@@ -284,8 +284,6 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
                 "label_pwr": label_power || power_device,
             });
 
-            // if disabled, status is still OK (but message shows details)
-            if (status !== "API_DISABLED" && !active && status !== "ON" && status !== "OFF") { status = "DISABLED"; }
 
             let status_overall = "ERROR";
             if (status === "ON" && available === "ONLINE")                  { status_overall = "ON"; }
@@ -295,6 +293,9 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
             else if (status === "N/A" && available === "OFFLINE")           { status_overall = "OFF"; }
             else if (status.indexOf("OFF") >= 0 && available === "N/A")     { status_overall = "OFF"; }
             else if (status.indexOf("OFF") >= 0 && available === "ONLINE")  { status_overall = "OFF"; }
+
+            // if disabled, status is still OK (but message shows details)
+            if (status !== "API_DISABLED" && !active && status_overall === "ERROR") { status = "DISABLED"; }
 
             this.status_data["device"][device] = {
                 "active": active,
