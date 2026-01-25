@@ -23,8 +23,7 @@ var appAutoLoad                 = false;
 //--------------------------------
 
 function app_menu_entries() {
-	let app_menu = [];
-	return app_menu;
+	return [];
 	}
 
 //--------------------------------
@@ -90,7 +89,7 @@ function app_connection_lost(error=false) {
     if (app_connection_error !== error) {
         if (error) {
             // code if lost connection
-            statusCheck_offline(dataAll);
+            statusCheck_offline();
         }
         else {
             // code if got back connection

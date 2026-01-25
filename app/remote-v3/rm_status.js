@@ -81,7 +81,7 @@ function statusCheck_measure(data, start) {
 
 
 // status messages in case the server is offline
-function statusCheck_offline(data) {
+function statusCheck_offline() {
     console.error("Lost connection to the server.");
     //statusCheck_deviceActive(data, true);
     rmStatus.set_connection_error(true);
@@ -132,7 +132,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     }
 
     /* update class data */
-    update(data, edit_mode, error_status) {
+    update(data, edit_mode) {
         this.data = data;
         this.edit_mode = edit_mode;
 
@@ -650,19 +650,19 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             if (remoteHints) { setTextById("display_ERROR_info_"+device_id,""); }
             else { setTextById("display_ERROR_info_" + device_id, lang("STATUS_NO_SERVER_CONNECT")); }
         }
-        else if (rmRemote.edit_mode)                                 { this.visualize_element_display(device_id, "EDIT_MODE", "device", "1"); }
-        else if (deactivateButton)                                   { this.visualize_element_display(device_id, "MANUAL", "device", "2"); }
-        else if (power_status === "ON")                              { this.visualize_element_display(device_id, "ON", "device", "3"); }
-        else if (power_status === "OFF")                             { this.visualize_element_display(device_id, "OFF", "device", "4"); }
-        else if (power_status === "N/A" && available === "ONLINE")   { this.visualize_element_display(device_id, "ON", "device", "4"); }
-        else if (power_status === "N/A" && available === "OFFLINE")  { this.visualize_element_display(device_id, "OFF", "device", "4"); }
+        else if (rmRemote.edit_mode)                                 { this.visualize_element_display(device_id, "EDIT_MODE", "device"); }
+        else if (deactivateButton)                                   { this.visualize_element_display(device_id, "MANUAL", "device"); }
+        else if (power_status === "ON")                              { this.visualize_element_display(device_id, "ON", "device"); }
+        else if (power_status === "OFF")                             { this.visualize_element_display(device_id, "OFF", "device"); }
+        else if (power_status === "N/A" && available === "ONLINE")   { this.visualize_element_display(device_id, "ON", "device"); }
+        else if (power_status === "N/A" && available === "OFFLINE")  { this.visualize_element_display(device_id, "OFF", "device"); }
         else if (power_status.indexOf("ERROR") >= 0) {
-            this.visualize_element_display(device_id, "ERROR", "device", "5");
+            this.visualize_element_display(device_id, "ERROR", "device");
             if (remoteHints) { setTextById("display_ERROR_info_"+device_id,""); }
             else { setTextById("display_ERROR_info_" + device_id, power_message); }
         }
         else if (power_status === "POWER_OFF") {
-            this.visualize_element_display(device_id, "POWER_OFF", "device", "6");
+            this.visualize_element_display(device_id, "POWER_OFF", "device");
             setTextById("display_POWER_OFF_info_"+device_id, "");
         }
     }
@@ -710,8 +710,6 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             return result;
         }
 
-        let key_status;
-
         // check if values of this device are relevant for a display
         if (!rmData.devices.exists(device_id) || device_id === "default") { return; }
         else if (rmRemote.active_type !== "device" && rmRemote.active_type !== "scene") { return; }
@@ -740,7 +738,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
                     if (value.toUpperCase().indexOf("ON") >= 0)        { value = use_color("<b>Power On<b/>","on"); }
                     else if (value.toUpperCase().indexOf("OFF") >= 0)  { value = use_color("<b>Power Off<b/>","hint"); }
                     else if (value.toUpperCase().indexOf("N/A") >= 0)  { value = use_color("<b>Power Status N/A<b/>","hint"); }
-                    else                                               { value = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error")+key_status; }
+                    else                                               { value = use_color("<b>"+lang("ERROR_UNKNOWN")+":</b> ","error"); }
                 }
                 if (key === "vol" || key === "volume" || (commands[key] && commands[key]["display"] && commands[key]["display"] === "bar")) {
                     value = this.visualize_as_bar(device_id, key, value);
@@ -804,11 +802,11 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
                     let macro = "";
                     if (key.indexOf("_") > -1) { macro = key.split("_")[1]; }
                     if (device === "scene-on" && (!scene_config["remote"]["macro-scene-on"] || scene_config["remote"]["macro-scene-on"].length === 0)) {
-                        error = `This scene ${source} uses the macro <u>${key}</u> but it's not defined yet`;
+                        error = `This scene ${source} uses the macro <u>${key}</u>, but it's not defined yet`;
                     } else if (device === "scene-off" && (!scene_config["remote"]["macro-scene-off"] || scene_config["remote"]["macro-scene-off"].length === 0)) {
-                        error = `This scene ${source} uses the macro <u>${key}</u> but it's not defined yet`;
+                        error = `This scene ${source} uses the macro <u>${key}</u>, but it's not defined yet`;
                     } else if (device === "scene" && macro !== "" && !scene_config["remote"]["macro-scene"][macro]) {
-                        error = `This scene ${source} uses the macro <u>${key}</u> but it's not defined yet`;
+                        error = `This scene ${source} uses the macro <u>${key}</u>, but it's not defined yet`;
                     }
                 } else if (device === "device-on" || device === "device-off" || device === "dev-on" || device === "dev-off") {
                     let macro = key.split("_")[1].split("||")[0];
@@ -916,7 +914,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     }
 
     /* visualize display depending on status */
-    visualize_element_display(id, view, remote_type="", xx="") {
+    visualize_element_display(id, view, remote_type="") {
         let keys = ["ON", "OFF", "ERROR", "MANUAL", "EDIT_MODE", "POWER_OFF"];
         view = view.toUpperCase();
 

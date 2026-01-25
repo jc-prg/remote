@@ -384,7 +384,7 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
         if (rmData.scenes.not_available()) { open_add_scene = true; }
 
         set_temp  = this.tab.start();
-        set_temp += this.tab.row( "ID:",            this.elements.input("add_scene_id", "", "rmStatusShow.visualize_id_exists('scene', this)") );
+        set_temp += this.tab.row( "ID:",            this.elements.input("add_scene_id", "", `rmStatusShow.visualize_id_exists('scene', this);`) );
         set_temp += this.tab.row( "Label:",         this.elements.input("add_scene_label") );
         set_temp += this.tab.row( "Description:",   this.elements.input("add_scene_descr") );
         set_temp += this.tab.row( "<span class='center'>" +
