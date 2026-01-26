@@ -506,6 +506,10 @@ class APIaddOn(RemoteDefaultClass):
             return { "ok": "jc.mute()" }
 
         except Exception as e:
+            self.error_details(sys.exc_info(), "APIaddOn._mute_toggle()", ["is bound to a different event loop"])
+            if "is bound to a different event loop" in str(e):
+                return {"ok": "jc.mute()"}
+
             self.logging.error(f"Could not send command 'jc.mute()': {e}")
             return { "error": f"jc.mute(): an error occurred - {e}" }
 
@@ -519,7 +523,8 @@ class APIaddOn(RemoteDefaultClass):
             return { "ok": "jc.set_volume()" }
 
         except Exception as e:
-            if "is bound to a different event loop" in e:
+            self.error_details(sys.exc_info(), "APIaddOn._set_volume()", ["is bound to a different event loop"])
+            if "is bound to a different event loop" in str(e):
                 return {"ok": "jc.set_volume()"}
 
             self.logging.error(f"Could not send command 'jc.set_volume()': {e}")

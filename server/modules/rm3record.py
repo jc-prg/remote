@@ -206,7 +206,7 @@ class RecordData(RemoteThreadingClass):
                         try:
                             status_value = float(status_value)
                         except Exception as e:
-                            self.logging.warning(f"Could not convert value to float: {device}:{value} -> {status_value} / {unit}")
+                            self.logging.debug(f"Could not convert value to float: {device}:{value} -> {status_value} / {unit}")
 
             record_item.append(status_value)
 
