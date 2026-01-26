@@ -107,38 +107,6 @@ class ApiControl(RemoteApiClass):
         self.logging.debug("            " + self.api_name + " - " + str(self.api_discovery))
         return api_config.copy()
 
-    def wait_if_working(self):
-        """Some devices run into problems, if send several requests at the same time"""
-        while self.working:
-            self.logging.debug(".")
-            time.sleep(0.2)
-        return
-
-    def send(self, device, device_id, command):
-        """Send command to API"""
-
-        self.wait_if_working()
-        self.working = True
-        self.last_action = time.time()
-        self.last_action_cmd = "SEND: " + device + "/" + command
-
-        if self.log_command:
-            self.logging.info("_SEND: " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
-
-        # ---- change for your api ----
-        #       if self.status == "Connected":
-        #         try:
-        #           result  = self.api.command(xxx)
-        #         except Exception as e:
-        #           self.working = False
-        #           return "ERROR "+self.api_name+" - send: " + str(e)
-        #       else:
-        #         self.working = False
-        #         return "ERROR "+self.api_name+": Not connected"
-
-        self.working = False
-        return "OK"
-
     def query(self, device, device_id, command):
         """Send command to API and wait for answer"""
 
@@ -209,51 +177,6 @@ class ApiControl(RemoteApiClass):
 
         self.working = False
         return result
-
-    def record(self, device, device_id, command):
-        """Record command, especially build for IR devices"""
-
-        self.wait_if_working()
-        self.working = True
-        self.last_action = time.time()
-        self.last_action_cmd = "RECORD: " + device + "/" + command
-
-        if self.log_command:
-            self.logging.info("__RECORD " + device + "/" + command[:shorten_info_to] + " ... (" + self.api_name + ")")
-
-        # ---- change for your api ----
-        #       if self.status == "Connected":
-        #         try:
-        #           result  = self.api.command(xxx)
-        #         except Exception as e:
-        #           self.working = False
-        #           return "ERROR "+self.api_name+" - record: " + str(e)
-        #       else:
-        #         self.working = False
-        #         return "ERROR "+self.api_name+": Not connected"
-
-        self.working = False
-        return "OK"
-
-    def test(self):
-        """Test device by sending a couple of commands"""
-
-        self.wait_if_working()
-        self.working = True
-
-        # ---- change for your api ----
-        #       if self.status == "Connected":
-        #         try:
-        #           result  = self.api.command(xxx)
-        #         except Exception as e:
-        #           self.working = False
-        #           return "ERROR "+self.api_name+" - test: " + str(e)
-        #       else:
-        #         self.working = False
-        #         return "ERROR "+self.api_name+": Not connected"
-
-        self.working = False
-        return "OK"
 
     def stop(self):
         """

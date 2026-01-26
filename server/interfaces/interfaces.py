@@ -106,7 +106,6 @@ class Connect(RemoteThreadingClass):
                 self.logging.info("Loading API connectors OK.")
 
         while self._running:
-            #self.logging.warn(f"LOOP 1")
             if time.time() - self.api_check_device_connection_last > self.api_check_device_connection_interval or self.api_check_device_connection_now:
                 if self.api_check_device_connection_now:
                     self.logging.info(f"Check connected devices (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
@@ -118,7 +117,6 @@ class Connect(RemoteThreadingClass):
                 self.api_check_device_connection_now = False
                 self.config.all_available_api_loaded = True
 
-            #self.logging.warn(f"LOOP 2")
             if self.discover_now:
                 self.logging.debug(f"Discover available devices (now={self.discover_now}) ...")
                 self.check_devices()
@@ -130,10 +128,9 @@ class Connect(RemoteThreadingClass):
                 self.discover_now = False
                 self.discover_now_message = False
 
-            #self.logging.warn(f"LOOP 3")
             self.thread_wait()
 
-            #self.logging.warn(f"LOOP 4")
+            self.api_request_reconnect_inside()
             if self.api_request_reconnect_data != {}:
                 for key in self.api_request_reconnect_data:
                     [reread_config, done_message] = self.api_request_reconnect_data[key]
@@ -141,7 +138,6 @@ class Connect(RemoteThreadingClass):
                 self.config.app_reload_indicator["api_reconnect"] = time.time()
                 self.api_request_reconnect_data = {}
 
-            #self.logging.warn(f"LOOP 5")
             if self.api_request_reconnect_all:
                 self.load_api_connectors()
                 self.api_request_reconnect_all = False
@@ -613,6 +609,15 @@ class Connect(RemoteThreadingClass):
         """
         self.api_request_reconnect_data[interface] = [reread_config, done_message]
         self.logging.info(f"api_request_reconnect('{interface}',{reread_config},{done_message})")
+
+    def api_request_reconnect_inside(self):
+        """
+        check if a reconnect trigger is set from inside the API modules
+        """
+        for key in self.api:
+            if self.api[key].api_trigger_reconnect:
+                self.api_request_reconnect(api)
+                self.api[key].trigger_reconnect(False)
 
     def api_request_discovery(self):
         """

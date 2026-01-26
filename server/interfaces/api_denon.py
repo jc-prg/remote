@@ -22,16 +22,6 @@ rm3config.api_modules.append("DENON")
 telnet_logging = rm3config.set_logging("telnet", logging.INFO)
 
 
-async def run_telnet_commands(api):
-    await api.async_telnet_connect()
-
-    method = getattr(api, "async_send_telnet_commands")
-    result = await method(["TPAN?"])
-    telnet_logging.warning(f"TELNET: {result} !!!")
-
-    await api.async_telnet_disconnect()
-
-
 class ApiControl(RemoteApiClass):
     """
     Integration of DENON API to be used by jc://remote/
@@ -416,26 +406,6 @@ class ApiControl(RemoteApiClass):
 
         self.working = False
         return result
-
-    def test(self):
-        """Test device by sending a couple of commands"""
-
-        self.wait_if_working()
-        self.working = True
-
-        # ---- change for your api ----
-        #       if self.status == "Connected":
-        #         try:
-        #           result  = self.api.command(xxx)
-        #         except Exception as e:
-        #           self.working = True
-        #           return "ERROR "+self.api_name+" - test: " + str(e)
-        #       else:
-        #         self.working = True
-        #         return "ERROR "+self.api_name+": Not connected"
-
-        self.working = False
-        return "OK"
 
 
 class APIaddOn(RemoteDefaultClass):

@@ -307,7 +307,7 @@ class APIaddOn(RemoteDefaultClass):
                 try:
                     self.info_answer = self.api.getDeviceInfo()
                 except Exception as e:
-                    self.error_details(sys.exc_info(),"APIaddOn.get_info()",["Errno 101"])
+                    self.error_details(sys.exc_info(),"APIaddOn.get_info()",["Errno 101","requests.exceptions.ConnectTimeout"])
                     self.info_answer = {"error_code": 10, "error": "Exception during API request", "error_msg": str(e)}
                     self.logging.debug(f".:|{param}|:. ERROR {e} | {self.info_answer} ")
 
