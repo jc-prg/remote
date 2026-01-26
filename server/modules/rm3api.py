@@ -120,6 +120,7 @@ class RemoteAPI(RemoteDefaultClass):
             "scenes":           self.data.scenes_status(),
             "system": {
                 "message":                  rm3presets.server_status,
+                "local_network":            self.apis.local_network_available,
                 "server_start":             rm3presets.start_time,
                 "server_start_duration":    rm3presets.start_duration,
                 "server_running":           time.time() - rm3presets.start_time,

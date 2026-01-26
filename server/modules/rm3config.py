@@ -96,7 +96,10 @@ class ConfigCache(RemoteThreadingClass):
         self.config_errors = {}
         self.config_messages = []
         self.record_devices = []
+
         self.all_available_api_loaded = False
+        self.local_network_available = True
+        self.local_network_empty_queue = False
 
     def run(self):
         """

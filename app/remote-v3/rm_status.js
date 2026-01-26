@@ -81,7 +81,6 @@ function statusCheck_measure(data, start) {
 // status messages in case the server is offline
 function statusCheck_offline() {
     console.error("Lost connection to the server.");
-    //statusCheck_deviceActive(data, true);
     rmStatus.set_connection_error(true);
     rmStatusShow.set_connection_error(true);
 }
@@ -125,6 +124,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         this.attention_config = false;
         this.attention_threads = false;
         this.attention_errors = {};
+        this.attention_local_network = false;
 
         this.edit_error_open = false;
     }
@@ -141,6 +141,8 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     set_connection_error(state) {
         this.app_connection_error = state;
         this.show_status(this.data, this.edit_mode, false);
+        console.error("-----> ",this.attention_config, this.attention_threads, this.attention_local_network, this.app_connection_error);
+        this.visualize_attentions();
     }
 
 
@@ -312,6 +314,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         let threads = [];
         this.attention_errors["thread"] = {};
         this.attention_threads = false;
+        this.attention_local_network = !this.data["STATUS"]["system"]["local_network"];
 
         for (const [key, value] of Object.entries(system_health)) {
 
@@ -395,20 +398,28 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             return [alert, count];
         }
 
-        let types = ["thread", "configuration"];
+
+        let types = ["thread", "configuration", "local network", "server connection"];
         let html = "";
         let alert = "";
-        if (this.attention_config || this.attention_threads) {
+        if (this.attention_config || this.attention_threads || this.attention_local_network || this.app_connection_error) {
             for (let i in types) {
                 let key = types[i];
                 let message, count;
 
-                if (this.attention_config && key === "configuration") { [message, count] = this.prepare_config_errors(); }
-                else if (this.attention_threads && key === "thread")  { [message, count] = this.prepare_thread_errors(); }
+                if (this.attention_config && key === "configuration")            { [message, count] = this.prepare_config_errors(); }
+                else if (this.attention_threads && key === "thread")             { [message, count] = this.prepare_thread_errors(); }
+                else if (this.attention_local_network && key === "local network")  { count = 1; message = lang("ERROR_LOST_LOCAL_NETWORK"); }
+                else if (this.app_connection_error && key === "server connection") { count = 1; message = lang("ERROR_LOST_SERVER_CONNECT"); }
+
+                console.error(this.attention_config, this.attention_threads, this.attention_local_network, this.app_connection_error, key, count);
                 if (count > 0) {
-                    alert += "<div style='color:var(--rm-color-font-warning);'><b>" + count + " " + key + " error(s):</b></div><div id='attention-alert' style='text-align:left;'>" + message + "</div>";
+                    console.error(this.attention_config, this.attention_threads, this.attention_local_network, this.app_connection_error);
+                    alert += "<div style='color:var(--rm-color-font-warning);'><b>" + count + " " + key + " error(s):</b></div>";
+                    alert += "<div id='attention-alert' style='text-align:left;'>" + message + "</div>";
                 }
             }
+
             alert = alert.replaceAll('"','');
             alert = alert.replaceAll('\'','');
             alert = "appMsg.confirm(\""+alert+"\", \"\", 300);";
@@ -418,7 +429,8 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             elementVisible("attention");
         }
         else {
-            setTextById("attention", "");
+            html = "<img src='icon/attention.png' style='display:none;' alt=''>";
+            setTextById("attention", html);
         }
     }
     

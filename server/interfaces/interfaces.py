@@ -80,6 +80,11 @@ class Connect(RemoteThreadingClass):
         self.discover_now = True
         self.discover_now_message = False
 
+        self.local_network_available = True
+        self.local_network_available_change_time = time.time()
+        self.local_network_available_delay = 30
+        self.local_network_reconnect = False
+
         if rm3presets.log_api_data == "NO":
             self.log_commands = False
         else:
@@ -106,42 +111,45 @@ class Connect(RemoteThreadingClass):
                 self.logging.info("Loading API connectors OK.")
 
         while self._running:
-            if time.time() - self.api_check_device_connection_last > self.api_check_device_connection_interval or self.api_check_device_connection_now:
-                if self.api_check_device_connection_now:
-                    self.logging.info(f"Check connected devices (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
-                else:
-                    self.logging.debug(f"Check connected devices (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
-                self.check_connection()
-                self.check_activity()
-                self.api_check_device_connection_last = time.time()
-                self.api_check_device_connection_now = False
-                self.config.all_available_api_loaded = True
 
-            if self.discover_now:
-                self.logging.debug(f"Discover available devices (now={self.discover_now}) ...")
-                self.check_devices()
-                self.check_discover_all()
+            if self.check_local_network():
 
-                if self.discover_now_message:
-                    self.config.config_messages_add("DISCOVERY_DONE")
-                self.discover_last = time.time()
-                self.discover_now = False
-                self.discover_now_message = False
+                if time.time() - self.api_check_device_connection_last > self.api_check_device_connection_interval or self.api_check_device_connection_now:
+                    if self.api_check_device_connection_now:
+                        self.logging.info(f"Check connected devices (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
+                    else:
+                        self.logging.debug(f"Check connected devices (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
+                    self.check_connection()
+                    self.check_activity()
+                    self.api_check_device_connection_last = time.time()
+                    self.api_check_device_connection_now = False
+                    self.config.all_available_api_loaded = True
+
+                if self.discover_now:
+                    self.logging.debug(f"Discover available devices (now={self.discover_now}) ...")
+                    self.check_devices()
+                    self.check_discover_all()
+
+                    if self.discover_now_message:
+                        self.config.config_messages_add("DISCOVERY_DONE")
+                    self.discover_last = time.time()
+                    self.discover_now = False
+                    self.discover_now_message = False
+
+                self.api_request_reconnect_inside()
+                if self.api_request_reconnect_data != {}:
+                    for key in self.api_request_reconnect_data:
+                        [reread_config, done_message] = self.api_request_reconnect_data[key]
+                        self.api_reconnect(key, reread_config, done_message)
+                    self.config.app_reload_indicator["api_reconnect"] = time.time()
+                    self.api_request_reconnect_data = {}
+
+                if self.api_request_reconnect_all:
+                    self.load_api_connectors()
+                    self.api_request_reconnect_all = False
+                    self.api_check_device_connection_now = True
 
             self.thread_wait()
-
-            self.api_request_reconnect_inside()
-            if self.api_request_reconnect_data != {}:
-                for key in self.api_request_reconnect_data:
-                    [reread_config, done_message] = self.api_request_reconnect_data[key]
-                    self.api_reconnect(key, reread_config, done_message)
-                self.config.app_reload_indicator["api_reconnect"] = time.time()
-                self.api_request_reconnect_data = {}
-
-            if self.api_request_reconnect_all:
-                self.load_api_connectors()
-                self.api_request_reconnect_all = False
-                self.api_check_device_connection_now = True
 
         self.logging.info("Stopped " + self.name)
 
@@ -157,6 +165,33 @@ class Connect(RemoteThreadingClass):
             if hasattr(self.api[key], "stop"):
                 self.api[key].stop()
         super().stop()
+
+    def check_local_network(self):
+        """
+        check if network connections exists, reconnect devices when connection was broken and returns after a while
+
+        Returns:
+            bool: True if local network is available
+        """
+        last = self.local_network_available
+        self.local_network_available = rm3ping.local_network_exists()
+        self.config.local_network_available = self.local_network_available
+
+        if self.local_network_reconnect and time.time() - self.local_network_available_change_time > self.local_network_available_delay:
+            self.logging.info("Request reconnect of all APIS after network is available again.")
+            self.config.local_network_empty_queue = True
+            self.api_reconnect("all")
+            self.local_network_reconnect = False
+
+        if last != self.local_network_available:
+            if last:
+                self.logging.error("Lost network connection! Will try to reconnect APIs when network is available again and stop all regular processes in the meanwhile.")
+            else:
+                self.logging.info(f"Local network is available again. Will trigger a reconnect in {self.local_network_available_delay}s.")
+                self.local_network_reconnect = True
+            self.local_network_available_change_time = time.time()
+
+        return self.local_network_available
 
     def check_connection(self):
         """

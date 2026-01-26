@@ -47,34 +47,42 @@ class QueueApiCalls(RemoteThreadingClass):
 
         while self._running:
 
-            if len(self.queue) == 0:
-                self.thread_wait(use_wait_time=0.04)
-                count += 1
-                if count > 10000:
-                    self.logging.info("Queue still running.")
-                    count = 0
-                continue
+            if self.config.local_network_available:
 
-            now = time.time()
-            if "," in str(self.queue[0]):
-                interface, device, button, state, request_time, execution_time = self.queue[0]
+                if self.config.local_network_empty_queue:
+                    self.queue = []
+                    time.sleep(1)
+                    self.config.local_network_empty_queue = False
+                    self.logging.info("Emptied queue after network reconnect.")
 
-                if now >= execution_time:
-                    self.logging.debug("Execute: - " + str(device) + " " + str(button) + " - " + time.strftime("%H:%M:%S", time.localtime(execution_time)))
-                    cmd = self.queue.pop(0)
-                    self.execute(cmd)
+                if len(self.queue) == 0:
+                    self.thread_wait(use_wait_time=0.04)
+                    count += 1
+                    if count > 10000:
+                        self.logging.info("Queue still running.")
+                        count = 0
+                    continue
+
+                now = time.time()
+                if "," in str(self.queue[0]):
+                    interface, device, button, state, request_time, execution_time = self.queue[0]
+
+                    if now >= execution_time:
+                        self.logging.debug("Execute: - " + str(device) + " " + str(button) + " - " + time.strftime("%H:%M:%S", time.localtime(execution_time)))
+                        cmd = self.queue.pop(0)
+                        self.execute(cmd)
+                    else:
+                        self.logging.debug("Wait to execute: " + str(device) + " " + str(button) + " - " + time.strftime("%H:%M:%S", time.localtime(execution_time)))
+                        cmd = self.queue.pop(0)
+                        self.queue.append(cmd)
+
+                elif type(self.queue[0]) is int or type(self.queue[0]) is float:
+                    command = self.queue.pop(0)
+
                 else:
-                    self.logging.debug("Wait to execute: " + str(device) + " " + str(button) + " - " + time.strftime("%H:%M:%S", time.localtime(execution_time)))
-                    cmd = self.queue.pop(0)
-                    self.queue.append(cmd)
-
-            elif type(self.queue[0]) is int or type(self.queue[0]) is float:
-                command = self.queue.pop(0)
-
-            else:
-                command = self.queue.pop(0)
-                self.logging.debug("Execute: " + str(command))
-                self.execute(command)
+                    command = self.queue.pop(0)
+                    self.logging.debug("Execute: " + str(command))
+                    self.execute(command)
 
             self.thread_wait(use_wait_time=0.01)
             count = 0

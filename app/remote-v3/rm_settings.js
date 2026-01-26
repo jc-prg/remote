@@ -822,7 +822,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
         text += "<br/>&nbsp;<br/>";
 
         this.button.width = "120px";
-        text += this.button.edit("apiReconnectInterface('all');", "Reconnect APIs", "", "api_reconnect_all") + "&nbsp;&nbsp;";
+        text += this.button.edit("rmApi.call('ReconnectInterface', ['all']);", "Reconnect APIs", "", "api_reconnect_all") + "&nbsp;&nbsp;";
         text += this.button.edit("rmApi.call('DiscoverDevices');", "Device discovery", "", "api_discover_all");
         return text;
     }

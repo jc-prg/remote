@@ -12,6 +12,8 @@ let language_app = {
         "CONNECTION_DISABLED"           : "API deaktiviert",
 
         "EXECUTION_ERROR"               : "Konnte das Kommando &quot;{2}&quot; für {0} <b>{1}</b> nicht ausführen: <i>{3}</i>",
+        "ERROR_LOST_LOCAL_NETWORK"      : "Aktuell besteht keine Verbindung vom Server ins lokale Netzwerk.",
+        "ERROR_LOST_SERVER_CONNECT"     : "Aktuell besteht keine Verbindung von der App zum Server.",
 
         "RESET_SWITCH_OFF"              : "Reset Devices ohne API-Anbindung:<br/>vorher alle Geräte ausschalten.",
         "RESET_VOLUME_TO_ZERO"          : "Reset Audio Settings für Devices ohne API-Anbindung:<br/>vorher alle Receiver mit Audio auf Mininum (0) einstellen.",
@@ -252,6 +254,8 @@ let language_app = {
         "EXECUTION_ERROR"        : "Could not execute command &quot;{2}&quot; for {0} <b>{1}</b>: <i>{3}</i>",
         "ERROR_UNKNOWN"          : "Unknown error",
         "ERROR_THREAD_TOO_LONG"  : "The thread <b>{0}</b> did not respond for <b>{1}s</b>.",
+        "ERROR_LOST_LOCAL_NETWORK": "Lost connection to local network, and by that to all connected devices.",
+        "ERROR_LOST_SERVER_CONNECT": "Lost connection to the server.",
 
         "FORMAT_INCORRECT"       : "format is not correct",
         "FAVICON_INFO"           : "Select a different favicon or apple-icon. <i>Note:</i> this selection at the moment is temporary only - " +
