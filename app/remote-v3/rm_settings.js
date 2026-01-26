@@ -912,7 +912,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
         this.update_data();
 
         let interfaces  = data["DATA"]["interfaces"];
-        let interfaces_available = dataAll["CONFIG"]["apis"]["list"];
+        let interfaces_available = rmData.apis.data("list");
         let sheet_boxes = {};
 
         this.button_add_device = function(api, api_device, external_id) {
@@ -1144,7 +1144,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
 
             let temp = "";
             let select = "";
-            let detect_devices = (api_name + "_" + device in dataAll["CONFIG"]["apis"]["list_detect"]);
+            let detect_devices = (api_name + "_" + device in rmData.apis.data("list_detect"));
             let activate_copy_button = "document.getElementById('copy_button_"+api_name+"_"+device+"').disabled=false;document.getElementById('copy_button_"+api_name+"_"+device+"').style.backgroundColor='';";
             let activate_create_button = "document.getElementById('create_button_"+api_name+"_"+device+"').disabled=false;document.getElementById('create_button_"+api_name+"_"+device+"').style.backgroundColor='';";
 
@@ -1237,7 +1237,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
 
         for (let i in interfaces_available) {
             let key = interfaces_available[i];
-            let api_device_config = (dataAll["CONFIG"]["apis"]["list_api_configs"]["list"][key] !== undefined);
+            let api_device_config = (rmData.apis.data("list_api_configs")["list"][key] !== undefined);
 
             let id = "interface_edit_"+key;
             let api_config = interfaces[key];

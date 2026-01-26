@@ -452,9 +452,9 @@ class RemoteApiControl extends RemoteDefaultClass {
             let device   = check_if_element_or_value(param[0], false);
             let template = check_if_element_or_value(param[1], false);
 
-            if (!dataAll["CONFIG"]["devices"][device])  { appMsg.alert(lang("DEVICE_DONT_EXISTS"));     return; }
-            else if (device === "")                     { appMsg.alert(lang("DEVICE_INSERT_NAME"));     return; }
-            else if (template === "")                   { appMsg.alert(lang("DEVICE_SELECT_TEMPLATE")); return; }
+            if (!rmData.devices.exists(device))  { appMsg.alert(lang("DEVICE_DONT_EXISTS"));     return; }
+            else if (device === "")              { appMsg.alert(lang("DEVICE_INSERT_NAME"));     return; }
+            else if (template === "")            { appMsg.alert(lang("DEVICE_SELECT_TEMPLATE")); return; }
             param = [device, template];
         }
         else if (cmd === "TimerEdit") {

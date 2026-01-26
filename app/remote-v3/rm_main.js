@@ -77,7 +77,6 @@ class RemoteMain extends RemoteDefaultClass {
 	/* init and reload data */
 	init(data) {
 		if (data["CONFIG"]) {
-			dataAll = data;
 			rmRemote.init( data );
 			rmSettings.init( data );
 			rmMenu.init( data );
@@ -127,7 +126,6 @@ class RemoteMain extends RemoteDefaultClass {
 	/* initially create app with start menu, remote control, setting, drop down menu */
 	create_app(data) {
 
-		dataAll = data;
 		this.create_remote(data);	// initial load of data incl. remotes, settings
 		this.create_start_menu(data);		// initial load start menu
 		this.create_drop_down(data);		// initial load drop down menu

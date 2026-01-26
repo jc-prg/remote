@@ -67,7 +67,7 @@ class RemoteVisualizeMainAudioStatus extends RemoteDefaultClass {
 
     // read properties from main audio device
     main_audio_settings(data=undefined) {
-        if (data !== undefined) { this.data = data || dataAll; }
+        if (data !== undefined) { this.data = data }
 
         this.audio_device = this.data["CONFIG"]["main-audio"];
         this.audio_active = (this.audio_device !== undefined);

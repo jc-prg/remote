@@ -25,8 +25,6 @@ function statusCheck(data={}) {
 	if (!data["CONFIG"] || !data["STATUS"]) {
 		console.error("statusCheck: no data or wrong data format loaded.", data);
 		return;
-    } else {
-        dataAll = data;
     }
 
     // first load: create classes for audio and device status
