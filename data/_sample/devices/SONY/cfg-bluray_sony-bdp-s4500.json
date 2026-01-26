@@ -30,7 +30,7 @@
             "green": "Green",
             "home": "Home",
             "karaoke": "Karaoke",
-            "last": "Prev",
+            "previous": "Prev",
             "left": "Left",
             "menu": "PopUpMenu",
             "mute": "?",
@@ -53,51 +53,96 @@
             "zoomin": "ZoomIn",
             "zoomout": "ZoomOut"
         },
-        "commands" : {
-            "power": {
-             	"get" : "power",
-             	"type" : "enum",
-             	"values" : ["ON", "OFF"]
-             	},
+        "commands": {
             "media-duration": {
-             	"get" : "SOAP=GetMediaInfo::MediaDuration"
-             	},
+                "cmd": [
+                    "get"
+                ],
+                "get": "SOAP=GetMediaInfo::MediaDuration"
+            },
             "media-medium": {
-             	"get" : "SOAP=GetMediaInfo::PlayMedium"
-             	},
+                "cmd": [
+                    "get"
+                ],
+                "get": "SOAP=GetMediaInfo::PlayMedium"
+            },
             "media-tracks": {
-             	"get" : "SOAP=GetMediaInfo::NrTracks"
-             	},
+                "cmd": [
+                    "get"
+                ],
+                "get": "SOAP=GetMediaInfo::NrTracks"
+            },
             "playing": {
-             	"get" : "playing"
-             	},
+                "cmd": [
+                    "get"
+                ],
+                "get": "playing"
+            },
             "playing-soap": {
-             	"get" : "SOAP=GetTransportInfo::CurrentTransportState"
-             	},
+                "cmd": [
+                    "get"
+                ],
+                "get": "SOAP=GetTransportInfo::CurrentTransportState"
+            },
             "position-abs-cnt": {
-             	"get" : "SOAP=GetPositionInfo::AbsCount"
-             	},
+                "cmd": [
+                    "get"
+                ],
+                "get": "SOAP=GetPositionInfo::AbsCount"
+            },
             "position-abs-time": {
-             	"get" : "SOAP=GetPositionInfo::AbsTime"
-             	},
+                "cmd": [
+                    "get"
+                ],
+                "get": "SOAP=GetPositionInfo::AbsTime"
+            },
             "position-duration": {
-             	"get" : "SOAP=GetPositionInfo::TrackDuration"
-             	},
+                "cmd": [
+                    "get"
+                ],
+                "get": "SOAP=GetPositionInfo::TrackDuration"
+            },
             "position-metadata": {
-             	"get" : "SOAP=GetPositionInfo::TrackMetaData"
-             	},
+                "cmd": [
+                    "get"
+                ],
+                "get": "SOAP=GetPositionInfo::TrackMetaData"
+            },
             "position-rel-cnt": {
-             	"get" : "SOAP=GetPositionInfo::RelCount"
-             	},
+                "cmd": [
+                    "get"
+                ],
+                "get": "SOAP=GetPositionInfo::RelCount"
+            },
             "position-rel-time": {
-             	"get" : "SOAP=GetPositionInfo::RelTime"
-             	},
+                "cmd": [
+                    "get"
+                ],
+                "get": "SOAP=GetPositionInfo::RelTime"
+            },
             "position-track": {
-             	"get" : "SOAP=GetPositionInfo::Track" 
-             	},
+                "cmd": [
+                    "get"
+                ],
+                "get": "SOAP=GetPositionInfo::Track"
+            },
+            "power": {
+                "cmd": [
+                    "get"
+                ],
+                "get": "power",
+                "type": "enum",
+                "values": [
+                    "ON",
+                    "OFF"
+                ]
+            },
             "test": {
-             	"get" : "CMD=test"
-             	}
+                "cmd": [
+                    "get"
+                ],
+                "get": "CMD=test"
+            }
         },
         "description": "SONY BDP-S4500"
     }
