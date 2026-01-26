@@ -266,13 +266,13 @@ class APIaddOn(RemoteDefaultClass):
                 self.power_status = "ON"
                 return {"result": "ON"}
             except Exception as e:
-                self.error_details(sys.exc_info(),"APIaddOn.turn_on()")
+                self.error_details(sys.exc_info(),f"APIaddOn.turn_on(), {self.api.api_config["IPAddress"]}")
                 self.logging.error(f".:|jc.turn_on()|:. ERROR {e}")
                 self.power_status = "ERROR"
                 return {"result": "error", "message": str(e)}
 
         else:
-            self.error_details(sys.exc_info(),"APIaddOn.turn_on()")
+            self.error_details(sys.exc_info(), f"APIaddOn.turn_on(), {self.api.api_config["IPAddress"]}")
             self.power_status = "NOT CONNECTED"
             return self.not_connected
 
@@ -286,7 +286,7 @@ class APIaddOn(RemoteDefaultClass):
                 self.api.turnOff()
                 return {"result": "OFF"}
             except Exception as e:
-                self.error_details(sys.exc_info(),"APIaddOn.turn_oof()")
+                self.error_details(sys.exc_info(),f"APIaddOn.turn_off(), {self.api.api_config["IPAddress"]}")
                 self.logging.error(f".:|jc.turn_off()|:. ERROR {e}")
                 self.power_status = "ERROR"
                 return {"result": "error", "message": str(e)}
@@ -307,7 +307,7 @@ class APIaddOn(RemoteDefaultClass):
                 try:
                     self.info_answer = self.api.getDeviceInfo()
                 except Exception as e:
-                    self.error_details(sys.exc_info(),"APIaddOn.get_info()",["Errno 101","requests.exceptions.ConnectTimeout"])
+                    self.error_details(sys.exc_info(),f"APIaddOn.get_info(), {self.api.api_config["IPAddress"]}",["Errno 101","requests.exceptions.ConnectTimeout"])
                     self.info_answer = {"error_code": 10, "error": "Exception during API request", "error_msg": str(e)}
                     self.logging.debug(f".:|{param}|:. ERROR {e} | {self.info_answer} ")
 
