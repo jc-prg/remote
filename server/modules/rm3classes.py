@@ -107,7 +107,7 @@ class RemoteApiClass(RemoteDefaultClass):
             "PowerDevice": "",
             "Timeout": 5
         }
-        self.api_trigger_reconnect = False
+        self.api_trigger_reconnect = 0
 
         self.method = method
         self.status = "Start"
@@ -249,7 +249,10 @@ class RemoteApiClass(RemoteDefaultClass):
         set cental var as signal for the main interfaces thread to trigger a reconnect,
         this can be used in case of a fatal error from inside the API module - should be used rarely
         """
-        self.api_trigger_reconnect = trigger
+        if trigger:
+            self.api_trigger_reconnect = time.time()
+        else:
+            self.api_trigger_reconnect = 0
 
     def test(self):
         if not "test" in self.devices_available_message:

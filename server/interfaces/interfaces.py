@@ -612,10 +612,11 @@ class Connect(RemoteThreadingClass):
 
     def api_request_reconnect_inside(self):
         """
-        check if a reconnect trigger is set from inside the API modules
+        check if a reconnect trigger is set from inside the API modules (after a defined delay of 30s)
         """
+        delay = 30
         for key in self.api:
-            if self.api[key].api_trigger_reconnect:
+            if self.api[key].api_trigger_reconnect > 0 and self.api[key].api_trigger_reconnect < time.time() - delay:
                 self.api_request_reconnect(api)
                 self.api[key].trigger_reconnect(False)
 
