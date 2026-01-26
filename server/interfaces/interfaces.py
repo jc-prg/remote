@@ -382,7 +382,7 @@ class Connect(RemoteThreadingClass):
         if wait > 0:
             time.sleep(wait)
 
-        self.logging.info(f"Discover all devices for up to {len(self.api_check)} APIs ...")
+        self.logging.info(f"Discover devices for up to {len(self.api_check)} APIs ...")
         discover_list = {}
         for api in self.api_check:
             if not config_api[api]["active"]:
