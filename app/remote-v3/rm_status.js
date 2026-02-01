@@ -414,7 +414,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
 
                 console.error(this.attention_config, this.attention_threads, this.attention_local_network, this.app_connection_error, key, count);
                 if (count > 0) {
-                    console.error(this.attention_config, this.attention_threads, this.attention_local_network, this.app_connection_error);
+                    console.debug(this.attention_config, this.attention_threads, this.attention_local_network, this.app_connection_error);
                     alert += "<div style='color:var(--rm-color-font-warning);'><b>" + count + " " + key + " error(s):</b></div>";
                     alert += "<div id='attention-alert' style='text-align:left;'>" + message + "</div>";
                 }
