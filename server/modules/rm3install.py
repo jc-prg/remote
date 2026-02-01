@@ -3,7 +3,6 @@ import shutil
 import json
 import codecs
 import server.modules.rm3presets as rm3presets
-import pathlib
 from pathlib import Path
 
 
@@ -80,6 +79,7 @@ class RemoteInstall:
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_apis), "action": "create", "source": self.init_config["APIS"]},
         ]
 
+    @staticmethod
     def check_configuration(self):
         """
         check all relevant directories and config files,
@@ -125,7 +125,8 @@ class RemoteInstall:
             print(f"ERROR: Couldn't solve {len(self.config_files)-count_solved} config file issues.")
             return False
 
-    def copy_directory(self, entry):
+    @staticmethod
+    def copy_directory(entry):
         """
         create and (if source) copy content of a directory
         """
@@ -148,7 +149,8 @@ class RemoteInstall:
 
         return True
 
-    def copy_file(self, entry):
+    @staticmethod
+    def copy_file(entry):
         """
         copy a file from source to target
         """
@@ -162,7 +164,8 @@ class RemoteInstall:
 
         return True
 
-    def create_log_file(self, entry):
+    @staticmethod
+    def create_log_file(entry):
         """
         create empty log files
         """
@@ -180,7 +183,8 @@ class RemoteInstall:
 
         return True
 
-    def create_json(self, entry):
+    @staticmethod
+    def create_json(entry):
         """
         create file from initial configuration
         """
