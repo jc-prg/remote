@@ -3,7 +3,7 @@
 //--------------------------------
 
 let rmStatus;
-let rmStatus_logging = true;
+let rmStatus_logging = false;
 
 
 // class that offers all types of status information for apis, api-devices, media devices, and scenes
