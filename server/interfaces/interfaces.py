@@ -33,18 +33,21 @@ class Connect(RemoteThreadingClass):
         self.api_first_load = True
         self.api_device_list = {}
         self.api_device_settings = {}
-        self.api_request_reconnect = {}
+        self.api_request_reconnect_data = {}
         self.api_request_reconnect_all = False
         self.api_request_reconnect_all_message = {}
+        self.api_reconnect_last = 0
+        self.api_reconnect_last_interface = "N/A"
         self.api_modules = {
             "BROADLINK": "api_broadlink",
-        #    "DENON": "api_denon",
+            "DENON": "api_denon",
             "EISCP-ONKYO": "api_eiscp",
             "KODI": "api_kodi",
             "MAGIC-HOME": "api_magichome",
             "SONY": "api_sony",
             "TAPO-P100": "api_p100",
             "TEST": "api_test",
+            "WEATHER": "api_weather",
             "ZIGBEE2MQTT": "api_zigbee"
         }
         self.api_configuration = {
@@ -64,15 +67,23 @@ class Connect(RemoteThreadingClass):
         self.available_discover = {}
         self.available_devices = {}
 
-        self.checking_interval = rm3presets.refresh_device_connection
-        self.checking_last = 0
+        self.api_check_device_connection_interval = rm3presets.refresh_device_connection
+        self.api_check_device_connection_now = False
+        self.api_check_device_connection_last = 0
+
         self.check_error = time.time()
         self.last_message = ""
         self.info_no_devices_found = {}
+        self.check_activity_info = {"count": 0, "active": [], "inactive": []}
 
-        self.discover_interval = rm3presets.discover_devices_interval
         self.discover_last = 0
-        self.discover_now = False
+        self.discover_now = True
+        self.discover_now_message = False
+
+        self.local_network_available = True
+        self.local_network_available_change_time = time.time()
+        self.local_network_available_delay = 30
+        self.local_network_reconnect = False
 
         if rm3presets.log_api_data == "NO":
             self.log_commands = False
@@ -100,40 +111,93 @@ class Connect(RemoteThreadingClass):
                 self.logging.info("Loading API connectors OK.")
 
         while self._running:
-            if time.time() - self.checking_last > self.checking_interval:
-                self.logging.debug(f"Check connected devices (interval={self.checking_interval}s) ...")
-                self.check_connection()
-                self.check_activity()
-                self.checking_last = time.time()
 
-            if time.time() - self.discover_last > self.discover_interval or self.discover_now:
-                self.logging.debug(f"Discover available devices (now={self.discover_now};interval={self.discover_interval}s) ...")
-                self.check_devices()
-                self.check_discover_all()
-                self.discover_last = time.time()
-                self.discover_now = False
+            if self.check_local_network():
+
+                if time.time() - self.api_check_device_connection_last > self.api_check_device_connection_interval or self.api_check_device_connection_now:
+                    if self.api_check_device_connection_now:
+                        self.logging.info(f"Check connected devices (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
+                    else:
+                        self.logging.debug(f"Check connected devices (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
+                    self.check_connection()
+                    self.check_activity()
+                    self.api_check_device_connection_last = time.time()
+                    self.api_check_device_connection_now = False
+                    self.config.all_available_api_loaded = True
+
+                if self.discover_now:
+                    self.logging.debug(f"Discover available devices (now={self.discover_now}) ...")
+                    self.check_devices()
+                    self.check_discover_all()
+
+                    if self.discover_now_message:
+                        self.config.config_messages_add("DISCOVERY_DONE")
+                    self.discover_last = time.time()
+                    self.discover_now = False
+                    self.discover_now_message = False
+
+                self.api_request_reconnect_inside()
+                if self.api_request_reconnect_data != {}:
+                    for key in self.api_request_reconnect_data:
+                        [reread_config, done_message] = self.api_request_reconnect_data[key]
+                        self.api_reconnect(key, reread_config, done_message)
+                    self.config.app_reload_indicator["api_reconnect"] = time.time()
+                    self.api_request_reconnect_data = {}
+
+                if self.api_request_reconnect_all:
+                    self.load_api_connectors()
+                    self.api_request_reconnect_all = False
+                    self.api_check_device_connection_now = True
 
             self.thread_wait()
 
-            if self.api_request_reconnect != {}:
-                start_time = time.time()
-                for key in self.api_request_reconnect:
-                    self.api_reconnect(key)
-                self.api_request_reconnect = {}
-
-            if self.api_request_reconnect_all:
-                start_time = time.time()
-                self.load_api_connectors()
-                self.api_request_reconnect_all = False
-
         self.logging.info("Stopped " + self.name)
+
+    def stop(self):
+        """
+        stop thread and check if threads in APIs have to be stopped
+        """
+        self.logging.info("Try to stop all APIs with threads ...")
+        for key in self.api_check:
+            if hasattr(self.api_check[key], "stop"):
+                self.api_check[key].stop()
+        for key in self.api:
+            if hasattr(self.api[key], "stop"):
+                self.api[key].stop()
+        super().stop()
+
+    def check_local_network(self):
+        """
+        check if network connections exists, reconnect devices when connection was broken and returns after a while
+
+        Returns:
+            bool: True if local network is available
+        """
+        last = self.local_network_available
+        self.local_network_available = rm3ping.local_network_exists()
+        self.config.local_network_available = self.local_network_available
+
+        if self.local_network_reconnect and time.time() - self.local_network_available_change_time > self.local_network_available_delay:
+            self.logging.info("Request reconnect of all APIS after network is available again.")
+            self.config.local_network_empty_queue = True
+            self.api_reconnect("all")
+            self.local_network_reconnect = False
+
+        if last != self.local_network_available:
+            if last:
+                self.logging.error("Lost network connection! Will try to reconnect APIs when network is available again and stop all regular processes in the meanwhile.")
+            else:
+                self.logging.info(f"Local network is available again. Will trigger a reconnect in {self.local_network_available_delay}s.")
+                self.local_network_reconnect = True
+            self.local_network_available_change_time = time.time()
+
+        return self.local_network_available
 
     def check_connection(self):
         """
         check IP connection and try to reconnect if IP connection exists and status is not "Connected"
         """
-        self.logging.debug(".................... CHECK CONNECTION (" + str(self.checking_interval) +
-                           "s) ....................")
+        self.logging.debug(".................... CHECK CONNECTION (" + str(self.api_check_device_connection_interval) + "s) ....................")
         self.logging.debug("Check Interface configuration: " + str(self.config.interface_configuration))
 
         connected = []
@@ -216,43 +280,45 @@ class Connect(RemoteThreadingClass):
                 else:
                     connected.append(key.replace("_default", ""))
 
-        self.logging.debug("Checked device connections (duration=" + str(round(time.time() - start_time, 1)) +
-                          "s / interval=" + str(self.checking_interval) + "s) ...")
-        if len(connected) > 0:
-            self.logging.debug("-> CONNECTION OK: " + ", ".join(connected))
-        if len(not_connected) > 0:
-            self.logging.debug("-> NO CONNECTION: " + ", ".join(not_connected))
+        self.logging.debug("Checked device connections (duration=" + str(round(time.time() - start_time, 1)) + "s / interval=" + str(self.api_check_device_connection_interval) + "s) ...")
+        if len(connected) > 0:     self.logging.debug("-> CONNECTION OK: " + ", ".join(connected))
+        if len(not_connected) > 0: self.logging.debug("-> NO CONNECTION: " + ", ".join(not_connected))
 
     def check_activity(self):
         """
         check when the last command was send and if an auto-off has to be reflected in the system status
         """
-        self.logging.debug(".................... CHECK ACTIVITY (" + str(self.checking_interval) +
-                           "s) ....................")
+        self.logging.debug(".................... CHECK ACTIVITY (" + str(self.api_check_device_connection_interval) + "s) ....................")
 
         active = []
         inactive = []
-        auto_off = []
+        change = False
+        check_activity = {"active":[], "inactive":[]}
 
         for key in self.api:
             if key not in self.api_device_list:
                 if key not in self.info_no_devices_found or not self.info_no_devices_found[key]:
                     if self.api[key].status == "Connected":
-                        self.logging.warning("Device Activity: Could not find list of devices for '" + key + "'; " +
-                                             "Assumption: API device enabled but no devices defined yet.")
+                        self.logging.warning("Device Activity: Could not find list of devices for '" + key + "'; " + "Assumption: API device enabled but no devices defined yet.")
                     self.info_no_devices_found[key] = True
                 continue
 
-            device_list = self.api_device_list[key]
+            device_list_complete = list(self.config.read(rm3presets.active_devices).keys())
+            device_list_temp = self.api_device_list[key]
+            device_list = []
+            for dev in device_list_temp:
+                if dev in device_list_complete:
+                    device_list.append(dev)
+
             self.logging.debug(" * " + key + " : " + str(device_list))
             if self.api[key].last_action > 0:
-                self.logging.debug("   -> " + str(round((time.time() - self.api[key].last_action)*10)/10) +
-                                   "s  (" + self.api[key].last_action_cmd + ")")
-                active.append(key.replace("_default", "") +
-                              " (" + str(round((time.time() - self.api[key].last_action)*10)/10) + "s)")
+                self.logging.debug("   -> " + str(round((time.time() - self.api[key].last_action)*10)/10) + "s  (" + self.api[key].last_action_cmd + ")")
+                active.append(key.replace("_default", "") + " (" + str(round((time.time() - self.api[key].last_action)*10)/10) + "s)")
+                check_activity["active"].append(key)
             else:
                 self.logging.debug("   -> INACTIVE since server start")
                 inactive.append(key.replace("_default", ""))
+                check_activity["active"].append(key)
 
             for device in device_list:
                 auto_power_off = self.device_auto_power_off(device)
@@ -261,18 +327,29 @@ class Connect(RemoteThreadingClass):
                     if auto_power_off["switch_off"]:
                         self.device_save_status(device, button="power", status="OFF")
 
-        self.logging.info("Checked device activity (interval=" + str(self.checking_interval) + "s) ...")
-        if len(active) > 0:
-            self.logging.info("-> ACTIVITY: " + ", ".join(active))
-        if len(inactive) > 0:
-            self.logging.info("-> INACTIVE: " + ", ".join(inactive))
+        if check_activity["active"] != self.check_activity_info["active"] or check_activity["inactive"] != self.check_activity_info["inactive"]:
+            change = True
+            self.check_activity_info["active"] = check_activity["active"]
+            self.check_activity_info["inactive"] = check_activity["inactive"]
+
+        if change or self.check_activity_info["count"] > 10 or self.api_check_device_connection_now:
+            if len(active) > 0:   self.logging.info("-> ACTIVITY: " + ", ".join(active))
+            if len(inactive) > 0: self.logging.info("-> INACTIVE: " + ", ".join(inactive))
+            self.logging.info(f"Checked device activity (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
+            self.check_activity_info["count"] = 0
+        else:
+            if len(active) > 0:   self.logging.debug("-> ACTIVITY: " + ", ".join(active))
+            if len(inactive) > 0: self.logging.debug("-> INACTIVE: " + ", ".join(inactive))
+            self.logging.debug(f"Checked device activity (interval={self.api_check_device_connection_interval}s, now={self.api_check_device_connection_now}) ...")
+
+        self.check_activity_info["count"] += 1
 
     def check_devices(self):
         """
         check devices available in the local network
         """
         start_time = time.time()
-        network = "192.168.2.0/24"
+        network = "192.168.1.0/24"
         if "." in rm3presets.local_network:
             network = rm3presets.local_network
 
@@ -280,32 +357,38 @@ class Connect(RemoteThreadingClass):
         arp = ARP(pdst=network)
         broadcast = Ether(dst="ff:ff:ff:ff:ff:ff")
         packet = broadcast / arp
+        error = False
 
-        answered = srp(packet, timeout=2, verbose=0)[0]
+        try:
+            answered = srp(packet, timeout=2, verbose=0)[0]
+        except Exception as e:
+            self.logging.error(f"Could not detect devices: {e}")
+            error = True
 
         devices = []
-        for sent, received in answered:
-            ip = received.psrc
-            mac = received.hwsrc
+        if not error:
+            for sent, received in answered:
+                ip = received.psrc
+                mac = received.hwsrc
 
-            # Try to resolve hostname via reverse DNS
-            try:
-                hostname = socket.gethostbyaddr(ip)[0]
-            except Exception:
-                hostname = None
+                # Try to resolve hostname via reverse DNS
+                try:
+                    hostname = socket.gethostbyaddr(ip)[0]
+                except Exception:
+                    hostname = None
 
-            identified = False
-            for key in self.api:
-                if self.api[key].api_config["IPAddress"] == ip:
-                    hostname = key
-                    identified = True
+                identified = False
+                for key in self.api:
+                    if self.api[key].api_config["IPAddress"] == ip:
+                        hostname = key
+                        identified = True
 
-            devices.append({
-                "ip": ip,
-                "mac": mac,
-                "hostname": hostname,
-                "identified": identified
-            })
+                devices.append({
+                    "ip": ip,
+                    "mac": mac,
+                    "hostname": hostname,
+                    "identified": identified
+                })
 
         self.logging.info(f"Detected {len(devices)} devices in the local network ({network})")
         for d in devices:
@@ -328,15 +411,26 @@ class Connect(RemoteThreadingClass):
         """
         discover all devices where available
         """
+        inactive_apis = []
+        config_api = self.config.read(rm3presets.active_apis)
         start_time = time.time()
         if wait > 0:
             time.sleep(wait)
 
-        self.logging.info(f"Discover all devices for all {len(self.api_check)} APIs ...")
+        self.logging.info(f"Discover devices for up to {len(self.api_check)} APIs ...")
         discover_list = {}
         for api in self.api_check:
+            if not config_api[api]["active"]:
+                inactive_apis.append(api)
+                continue
+
             start_time_api = time.time()
-            discover = self.api_check[api].discover()
+            try:
+                discover = self.api_check[api].discover()
+            except Exception as e:
+                self.error_details(sys.exc_info(), "ApiControl.check_discover_all()", ["Errno 101"])
+                self.logging.error(f"Could not discover devices for {api}: {e}")
+                continue
 
             for key in self.api:
                 if api in key:
@@ -363,9 +457,13 @@ class Connect(RemoteThreadingClass):
             if time.time() - start_time_api > 10:
                 self.logging.warning(f"check_discover_all():{api} took longer than expected: {round(time.time() - start_time_api, 1)}s")
 
+            self.thread_life_signal()
+
         self.available_discover = discover_list.copy()
         if time.time() - start_time > 25:
             self.logging.warning(f"check_discover_all() took longer than expected: {round(time.time() - start_time,1)}s")
+        if len(inactive_apis) > 0:
+            self.logging.info(f"Didn't check {len(inactive_apis)} inactive APIs: {inactive_apis}")
 
     def load_api_connectors(self):
         """
@@ -388,6 +486,9 @@ class Connect(RemoteThreadingClass):
         else:
             self.logging.info(".................... RECONNECT OF INTERFACES ....................")
 
+        self.api_reconnect_last = time.time()
+        self.api_reconnect_last_interface = "all"
+
         api_devices = []
         for device in config_dev:
             api = config_dev[device]["config"]["api_key"]
@@ -404,7 +505,7 @@ class Connect(RemoteThreadingClass):
         if config_api != {}:
             for api in config_api:
                 if api not in self.api_modules:
-                    self.logging.error("API Connector for '" + api + "' not available.")
+                    self.logging.error("API Connector (Python module) for '" + api + "' not available.")
                     continue
                 for api_device in config_api[api]["devices"]:
                     api_dev = api + "_" + api_device
@@ -430,6 +531,7 @@ class Connect(RemoteThreadingClass):
                     except AttributeError:
                         self.logging.error(f"Could not connect API (1): Class or function not found")
                     except Exception as e:
+                        self.error_details(sys.exc_info(),"Connect.load_api_connectors()")
                         self.logging.error("Could not connect API (2): " + str(e) + " (" + api_dev + ")")
                     except:
                         self.logging.error("Could not connect API (3): Unknown reason (" + api_dev + ")")
@@ -472,25 +574,30 @@ class Connect(RemoteThreadingClass):
                         self.logging.error("... if exist, check if all required modules are installed, " +
                                            "that are to be imported in this module.")
                     except Exception as e:
+                        self.error_details(sys.exc_info(),"Connect.load_api_connectors()")
                         self.logging.error("Could not connect API (5): " + str(e) + " (" + api_dev + ")")
                     except:
                         self.logging.error("Could not connect API (6): Unknown reason (" + api_dev + ")")
 
             return True
+
         else:
             return False
 
-    def api_reconnect(self, interface="", reread_config=False):
+    def api_reconnect(self, interface="", reread_config=False, done_message=False):
         """
         reconnect single device or all devices if status is not "Connected"
 
         Args:
             interface (str): interface id (<api>_<api_device>)
             reread_config (bool): reread configuration data
+            done_message (bool): send asynchronous message when reconnect is done
         """
         if interface != "all" and interface not in self.api:
             self.logging.warning(f"API Reconnect not possible, '{interface}' doesn't exist in self.api.")
             return
+        else:
+            self.logging.warning("RECONNECT " + interface)
 
         config = {}
         if interface in self.info_no_devices_found:
@@ -524,6 +631,38 @@ class Connect(RemoteThreadingClass):
         else:
             self.api[interface].connect()
 
+        self.api_reconnect_last = time.time()
+        self.api_reconnect_last_interface = interface
+        self.api_check_device_connection_now = True
+
+        if done_message:
+            self.config.config_messages_add(["RECONNECT_DONE", interface])
+
+    def api_request_reconnect(self, interface="", reread_config=False, done_message=False):
+        """
+        request a reconnect of a single or all API devices
+        """
+        self.api_request_reconnect_data[interface] = [reread_config, done_message]
+        self.logging.info(f"api_request_reconnect('{interface}',{reread_config},{done_message})")
+
+    def api_request_reconnect_inside(self):
+        """
+        check if a reconnect trigger is set from inside the API modules (after a defined delay of 30s)
+        """
+        delay = 30
+        for key in self.api:
+            if self.api[key].api_trigger_reconnect > 0 and self.api[key].api_trigger_reconnect < time.time() - delay:
+                self.api_request_reconnect(api)
+                self.api[key].trigger_reconnect(False)
+
+    def api_request_discovery(self):
+        """
+        trigger a discovery run
+        """
+        self.discover_now = True
+        self.discover_now_message = True
+        self.logging.info("api_request_discovery()")
+
     def api_test(self):
         """
         test all APIs
@@ -553,7 +692,7 @@ class Connect(RemoteThreadingClass):
 
     def api_get_status(self, interface="", device=""):
         """
-        return status of all devices or a selected device
+        return status of all devices or a selected device-
 
         Args:
             interface (str): interface id
@@ -574,7 +713,21 @@ class Connect(RemoteThreadingClass):
             status_all_interfaces[key] = self.api[key].status
 
         if interface == "":
-            interface_config = {"connect": status_all_interfaces, "active": {}}
+            discover_last = str(round(time.time() - self.discover_last))+"s"
+            reconnect_last = str(round(time.time() - self.api_reconnect_last))+"s"
+            if self.discover_last == 0:
+                discover_last = "N/A"
+            if self.api_reconnect_last == 0:
+                reconnect_last = "N/A"
+
+            interface_config = {
+                "connect": status_all_interfaces,
+                "active": {},
+                "status": {
+                    "last_reconnect": reconnect_last,
+                    "last_reconnect_device": self.api_reconnect_last_interface,
+                    "last_discovery": discover_last}
+            }
             for key in self.config.interface_configuration:
                 interface_config["active"][key] = self.config.interface_configuration[key]["active"]
             return interface_config
@@ -587,7 +740,6 @@ class Connect(RemoteThreadingClass):
         """
         check the amount of errors, if more than 80% errors and at least 5 requests try to reconnect
         """
-
         api_dev = self.device_api_string(device)
 
         if api_dev not in self.api:
@@ -600,8 +752,7 @@ class Connect(RemoteThreadingClass):
         else:
             error_rate = 0
 
-        self.logging.debug(
-            "ERROR RATE ... " + str(error_rate) + "/" + str(self.api[api_dev].count_error) + "/" + str(requests))
+        self.logging.debug(f"ERROR RATE ... {device}:{api_dev} - {error_rate}/{self.api[api_dev].count_error}/{requests}")
 
         if error_rate >= 0.8 and requests > 5:
             self.api[api_dev].status = self.api[api_dev].not_connected + " ... HIGH ERROR RATE"
@@ -625,7 +776,7 @@ class Connect(RemoteThreadingClass):
             self.api[api_dev].count_success += 1
 
         if self.api[api_dev].count_error > 0:
-            self.logging.debug("ERROR RATE ... error: " + str(is_error) +  " / " + str(self.api[api_dev].count_error))
+            self.logging.debug(f"ERROR RATE ... error - {device}:{api_dev} - {is_error}/{self.api[api_dev].count_error}")
 
     def api_send_directly(self, device, command, external=False):
         """
@@ -647,13 +798,19 @@ class Connect(RemoteThreadingClass):
                 "last_action_cmd": self.api[device].last_action_cmd
                 }
         else:
+            discovery = False
             if external:
                 dev_data = device.split("||")
                 api_dev = dev_data[0]
                 device_id = dev_data[1]
                 self.logging.info("__SEND DIRECTLY: " + api_dev + "/** | " + command)
 
-                if self.api[api_dev].status == "Connected":
+                if api_dev.endswith("_default") and command == "api-discovery":
+                    api = api_dev.split("_")[0]
+                    answer = self.api_check[api].query(device_id, device_id, command)
+                    power = "N/A"
+                    discovery = True
+                elif self.api[api_dev].status == "Connected":
                     answer = self.api[api_dev].query(device_id, device_id, command)
                     power = "N/A"
             else:
@@ -665,15 +822,26 @@ class Connect(RemoteThreadingClass):
                     answer = self.api[api_dev].query(device, device_id, command)
                     power = self.device_status(device)["status"]["power"]
 
-            return_msg = {
-                "connect": self.api[api_dev].status,
-                "command": command,
-                "power": power,
-                "answer": answer,
-                "device_id": external,
-                "last_action": self.api[api_dev].last_action,
-                "last_action_cmd": self.api[api_dev].last_action_cmd
-                }
+            if discovery:
+                return_msg = {
+                    "connect": "Connected",
+                    "command": command,
+                    "power": power,
+                    "answer": answer,
+                    "device_id": external,
+                    "last_action": "",
+                    "last_action_cmd": ""
+                    }
+            else:
+                return_msg = {
+                    "connect": self.api[api_dev].status,
+                    "command": command,
+                    "power": power,
+                    "answer": answer,
+                    "device_id": external,
+                    "last_action": self.api[api_dev].last_action,
+                    "last_action_cmd": self.api[api_dev].last_action_cmd
+                    }
 
         return return_msg
 
@@ -708,6 +876,7 @@ class Connect(RemoteThreadingClass):
                     try:
                         button_code = self.command_get(call_api, "send-data", device, button)
                     except Exception as e:
+                        self.error_details(sys.exc_info(),"Connect.api_send()")
                         button_code = "ERROR send: count not get_command."
                 else:
                     button_code = "ERROR send: wrong method (!query) or no data transmitted."
@@ -830,6 +999,7 @@ class Connect(RemoteThreadingClass):
             try:
                 button_code = self.command_get(call_api, "queries", device, button)
             except Exception as e:
+                self.error_details(sys.exc_info(),"Connect.api_query()")
                 self.logging.error(button_code)
                 button_code = "ERROR query, get_command: "+str(e)
 
@@ -1149,9 +1319,8 @@ class Connect(RemoteThreadingClass):
 
 
             else:
+                self.logging.error(f"Could not get command: Connect.get_command('{dev_api}','{button_query}','{device}','{button}')")
                 self.logging.error(str(buttons_default["data"]))
-                self.logging.error("---")
-                self.logging.error(str(buttons_default["data"][button_query]))
 
                 return f"ERROR get_command: button not defined ({dev_api},{button_query}: {device}_{button})"
 

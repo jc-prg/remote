@@ -25,7 +25,8 @@
             "TOGGLE||light_l2-power||Licht Couch||light_l2-on||light_l2-off",
             "TOGGLE||group_led_power||LED Lights||group_led_on||group_led_off"
         ],
-        "scene_power_status": "N/A"
+        "scene_power_status": "N/A",
+        "type" : "scene"
     },
     "info": "jc://remote/ - In this file the remote layout and channel macros for the scene are defined."
 }

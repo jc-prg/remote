@@ -7,28 +7,26 @@ let rmSheetBox_open = {};
 
 
 /* create elements for remote control editing */
-class RemoteElementsEdit {
+class RemoteElementsEdit extends RemoteDefaultClass {
     constructor(name) {
+        super(name);
 
-        this.app_name       = name;
         this.data           = {};
         this.edit_mode      = false;
         this.input_width    = "100px";
         this.container_open = {};
-
-        this.logging        = new jcLogging(this.app_name);
     }
 
     // create a basic container element that can be opened or closed dynamically
     container(id, title, text="", open=true) {
+
+        let onclick  = ' onclick="'+this.name+'.container_showHide(\''+id+'\')"; '
 
         if (this.container_open[id] !== undefined) {
             open = this.container_open[id];
         } else {
             this.container_open[id] = open;
         }
-
-        let onclick  = ' onclick="'+this.app_name+'.container_showHide(\''+id+'\')"; '
         let display  = "";
         let link     = "&minus;";
         let ct       = "";
@@ -61,13 +59,18 @@ class RemoteElementsEdit {
             document.getElementById(id+"_status").innerHTML   = "true";
             document.getElementById(id+"_link").innerHTML     = "&minus;";
             this.container_open[id] = true;
+
+            document
+                .getElementById(id + "_body")
+                .scrollIntoView({ behavior: "smooth", block: "nearest" });
         }
     }
 
     // create a simple input field
-    input(id, value="") {
+    input(id, value="", disabled="") {
 
-        return "<div style='width:" + this.input_width + ";margin:0;'><input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"'></div>";
+        //return "<div style='width:" + this.input_width + ";margin:0;'><input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"' "+disabled+"></div>";
+        return "<input id=\"" + id + "\" style='width:" + this.input_width + ";margin:1px;' value='"+value+"' "+disabled+">";
     }
 
     // create a select field with options from a dict
@@ -128,10 +131,41 @@ class RemoteElementsEdit {
 
 
 /* class to draw a table */
-class RemoteElementTable {
+class RemoteElementTable extends RemoteDefaultClass {
     constructor(name) {
+        super(name);
 
-        this.app_name       = name;
+        this.row_ratio = "auto";
+        this.vertical_align = "top";
+    }
+
+    /* add a table start */
+    start(width="100%", row_ratio="", vertical_align="top") {
+        this.row_ratio = row_ratio;
+        this.vertical_align = vertical_align;
+        return "<table style=\"border:0;width:"+width+"\">";
+    }
+
+    /* add a table row with up to two cells */
+    row(td1, td2=undefined) {
+
+        let row_ratio_left = "";
+        let row_ratio_right = "";
+
+        if (this.row_ratio.indexOf("px:*") > 0) {
+            row_ratio_left = "width:" + this.row_ratio.split(":")[0] + ";";
+            row_ratio_right = "width:auto;";
+        }
+        else if (this.row_ratio.indexOf(":") > 0) {
+            row_ratio_left = "width:" + this.row_ratio.split(":")[0] + "%;";
+            row_ratio_right = "width:" + this.row_ratio.split(":")[1] + "%;";
+        }
+
+        if (td2 === undefined)   { td2 = ""; }
+        if (td1 === "start")     { return "<table style=\"border:0;widt:"+td2+"\">"; }
+        else if (td1 === "end")  { return "</table>"; }
+        else if (td2 === false)  { return "<tr><td style=\"vertical-align:"+this.vertical_align+";\" colspan=\"2\">" + td1 + "</td></tr>"; }
+        else                     { return "<tr><td style=\"vertical-align:"+this.vertical_align+";"+row_ratio_left+"\">" + td1 + "</td><td style=\"vertical-align:top;"+row_ratio_right+"\">" + td2 + "</td></tr>"; }
     }
 
     /* add a table row with a line in it*/
@@ -140,41 +174,25 @@ class RemoteElementTable {
         return "<tr><td colspan='2'><hr style='border:1px solid white;'/></td></tr>";
     }
 
-    /* add a table row with up to two cells */
-    row(td1, td2=undefined) {
-        if (td2 === undefined)   { td2 = ""; }
-        if (td1 === "start")     { return "<table style=\"border:0;widt:"+td2+"\">"; }
-        else if (td1 === "end")  { return "</table>"; }
-        else if (td2 === false)  { return "<tr><td style=\"vertical-align:top\" colspan=\"2\">" + td1 + "</td></tr>"; }
-        else                     { return "<tr><td style=\"vertical-align:top\">" + td1 + "</td><td>" + td2 + "</td></tr>"; }
-    }
-
-    /* add a table start */
-    start(width="100%") {
-
-        return "<table style=\"border:0;width:"+width+"\">";
-    }
-
     /* add a table end */
     end() {
-
+        this.row_ratio = "auto";
         return "</table>";
     }
 
 }
 
 
-/*
-* class to create a box, where content can be added into several sheets and the sheets can be selected by tabs
-*/
-class RemoteElementSheetBox {
-
+/* class to create a box, where content can be added into several sheets and the sheets can be selected by tabs */
+class RemoteElementSheetBox extends RemoteDefaultClass {
     constructor(containerId, height = "300px", scroll_bar = false, scroll_view = false, keep_open = true) {
+        super("RemoteElementSheetBox");
+
         this.id = containerId;
         this.created = false;
         this.container = document.getElementById(containerId);
         if (!this.container) {
-            console.error("RemoteElementSheetBox: Could not create the sheet box, container '"+containerId+"' not found.");
+            this.logging.error("Could not create the sheet box, container '"+containerId+"' not found.");
         } else {
             this.created = true;
             this.container.innerHTML = "";
@@ -236,9 +254,11 @@ class RemoteElementSheetBox {
         }
     }
 
-    addSheet(title, content) {
-        if (!this.created) { console.error("RemoteElementSheetBox: Could not add sheet '"+title+"'."); return; }
+    /* add a new sheet as tab to the box */
+    addSheet(title, content, load_on_open = true, on_load_command=undefined) {
+        if (!this.created) { this.logging.error("addSheet(): Could not add sheet '"+title+"'."); return; }
         const index = this.sheets.length;
+        const lazy = load_on_open;
 
         // Tab erstellen
         const tab = document.createElement("div");
@@ -249,23 +269,33 @@ class RemoteElementSheetBox {
         // Sheet-Container erstellen
         const sheetDiv = document.createElement("div");
         sheetDiv.className = "sheet-panel";
-        sheetDiv.innerHTML = content;
         sheetDiv.style.display = "none"; // inaktiv = unsichtbar
         sheetDiv.style.position = "absolute";
         sheetDiv.style.top = "0";
         sheetDiv.style.left = "0";
         sheetDiv.style.right = "0";
         sheetDiv.style.bottom = "0";
+        sheetDiv.dataset.loaded = "false"; // noch nicht geladen
 
         // Scrollbar nur für das Sheet selbst
         if (this.scroll) {
             sheetDiv.style.overflowY = "auto";
-            }
+        }
+
+        if (index === 0 || !lazy) {
+            sheetDiv.innerHTML = content;
+            sheetDiv.dataset.loaded = "true";
+            sheetDiv.dataset.on_load = "false";
+        } else {
+            // Inhalte bleiben für später gespeichert
+            sheetDiv.dataset.content = content;
+            sheetDiv.dataset.on_load = "false";
+        }
 
         // Immer im DOM, auch inaktiv
         this.contentArea.appendChild(sheetDiv);
 
-        this.sheets.push({ title, tab, sheetDiv });
+        this.sheets.push({ title, tab, sheetDiv, on_load_command });
         this.tabBar.appendChild(tab);
 
         // Erstes Sheet aktivieren
@@ -273,36 +303,56 @@ class RemoteElementSheetBox {
         else if (index === 0)   { this.setActiveSheet(0); }
 
         this.updateArrowVisibility();
-        }
+    }
 
+    /* set a sheet active, e.g., when clicking on the tab */
     setActiveSheet(index) {
         this.updateArrowVisibility();
 
         this.sheets.forEach((sheet, i) => {
             const active = i === index;
             sheet.tab.classList.toggle("active", active);
-            sheet.sheetDiv.style.display = active ? "block" : "none"; // inaktiv = display:none
+            sheet.sheetDiv.style.display = active ? "block" : "none";
+
+            // Lazy-Loading: Inhalte beim ersten Aktivieren laden
+            if (active && sheet.sheetDiv.dataset.loaded === "false") {
+                sheet.sheetDiv.innerHTML = sheet.sheetDiv.dataset.content;
+                sheet.sheetDiv.dataset.loaded = "true";
+                delete sheet.sheetDiv.dataset.content;
+            }
+            if (active && sheet.on_load_command && sheet.sheetDiv.dataset.on_load === "false") {
+                setTimeout(()=>{
+                    eval(sheet.on_load_command);
+                    //try { eval(sheet.on_load_command); }
+                    //catch (e) { this.logging.error("addSheet(): Could not execute command '"+sheet.on_load_command+"' on load :" + e); }
+                },100);
+                sheet.sheetDiv.dataset.on_load ="true";
+            }
+
 
             if (this.keep_open && active) {
                 rmSheetBox_open[this.id] = index;
-                }
+            }
 
             if (active && this.scroll_into_view) {
                 sheet.tab.scrollIntoView({ behavior: "smooth", inline: "center" });
-                }
-            });
-        }
+            }
+        });
+    }
 
+    /* activate the last active sheet */
     activateLast() {
         if (this.keep_open && rmSheetBox_open[this.id]) { this.setActiveSheet(rmSheetBox_open[this.id]); }
         else                                            { this.setActiveSheet(0); }
         }
 
+    /* scroll the tabs if not all visible */
     scrollTabs(offset) {
         this.tabBar.scrollBy({ left: offset, behavior: "smooth" });
         setTimeout(() => this.updateArrowVisibility(), 200);
         }
 
+    /* show or hide the arrows to scroll the tabs */
     updateArrowVisibility() {
         function isVisible(el) {
           if (!el) return false;
@@ -331,6 +381,7 @@ class RemoteElementSheetBox {
             }
         }
 
+    /* get content from a specific tab */
     getSheetContent(index) {
         // Zugriff auf die Inhalte auch wenn sie gerade unsichtbar sind
         return this.sheets[index]?.sheetDiv || null;
@@ -338,12 +389,10 @@ class RemoteElementSheetBox {
     }
 
 
-/*
-* class to create a wide box for content, that can be scrolled left and right if it's wider than the box
-*/
-class RemoteElementScrollBox {
-
+/* class to create a wide box for content, that can be scrolled left and right if it's wider than the box */
+class RemoteElementScrollBox extends RemoteDefaultClass {
     constructor(container="scrollBox", html="") {
+        super("RemoteElementScrollBox");
 
         this.update = this.update.bind(this);
 
@@ -381,7 +430,7 @@ class RemoteElementScrollBox {
             this.update();
 	        }
 	    else {
-	        console.error("RemoteElementScrollBox: Container '" + container + "' not found.");
+	        this.logging.error("Container '" + container + "' not found.");
 	        }
         }
 
@@ -394,8 +443,10 @@ class RemoteElementScrollBox {
             this.rightArrow.style.display = scrollLeft < maxScroll - 1 ? 'block' : 'none';
             }
 	    else {
-	        console.error("RemoteElementScrollBox.update: Container '" + this.id_container + "' not found.");
+	        this.logging.error("update(): Container '" + this.id_container + "' not found.");
 	        }
         }
     }
 
+
+remote_scripts_loaded += 1;

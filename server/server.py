@@ -1,12 +1,14 @@
 #!/usr/bin/python3
-
-import time
-import sys
-import logging
-import traceback
 import connexion
+import logging
+import os
 import signal
+import sys
+import threading
+import time
+import traceback
 from flask_cors import CORS
+from datetime import datetime
 
 import server.modules.rm3config as rm3cache
 import server.modules.rm3data as rm3data
@@ -15,16 +17,39 @@ import server.modules.rm3presets as rm3presets
 import server.modules.rm3api as rm3api
 import server.modules.rm3timer as rm3timer
 import server.modules.rm3install as rm3install
+import server.modules.rm3record as rm3record
 import server.interfaces as interfaces
+
+
+def write_to_error_log(exc_type, message):
+    """
+    write exception message to log
+    """
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = ("-" * 50) + "\n" + timestamp + f"  -> {exc_type} EXCEPTION:\n" + ("-" * 50)
+
+    with open(rm3presets.log_filename_error, "a", encoding="utf-8") as f:
+        f.write(f"{timestamp}\n{message}\n")
 
 
 def on_exception(exc_type, value, trace_back):
     """
     grab all exceptions and write them to the logfile (if active)
     """
-    tb_str = ''.join(traceback.format_exception(exc_type, value, trace_back))
-    log.error("EXCEPTION:\n\n" + tb_str + "\n")
+    jsonAppDir = os.path.dirname(os.path.abspath(__file__))
 
+    tb_str = ''.join(traceback.format_exception(exc_type, value, trace_back))
+    log.error(f"EXCEPTION:\n\n{tb_str}\n")
+    write_to_error_log("MAIN", tb_str)
+
+def on_thread_exception(args):
+    """
+    send thread exceptions to logging
+    """
+    tb_str = ''.join(traceback.format_exception(args.exc_type,args.exc_value,args.exc_traceback))
+    log.error(f"EXCEPTION IN THREAD {args.thread.name}:\n\n{tb_str}\n")
+    write_to_error_log("THREAD", tb_str)
 
 def on_exit(signum, handler):
     """
@@ -67,6 +92,7 @@ def shutdown():
     eval("log_srv." + rm3presets.log_level.lower() + "('---------------------------------------------------------------')")
     configFiles.stop()
     configInterfaces.stop()
+    configRecord.stop()
     queueSend.stop()
     queueQuery.stop()
     deviceAPIs.stop()
@@ -79,12 +105,14 @@ def shutdown():
 
 
 log_srv = rm3presets.set_logging("server")
-log = logging.getLogger("werkzeug")
+log = rm3presets.set_logging("werkzeug")
+#log = logging.getLogger("werkzeug")
 
 # set system signal handler
 signal.signal(signal.SIGINT, on_exit)
 signal.signal(signal.SIGTERM, on_kill)
 sys.excepthook = on_exception
+threading.excepthook = on_thread_exception
 
 eval("log_srv."+rm3presets.log_level.lower()+"('---------------------------------------------------------------')")
 eval("log_srv."+rm3presets.log_level.lower()+"('" + rm3presets.start_string + "')")
@@ -112,16 +140,18 @@ if __name__ == "__main__":
         log_srv.error('Could not start jc://remote/ due to configuration error.')
         exit()
 
+    configRecord = rm3record.RecordData(configFiles)
     deviceAPIs = interfaces.Connect(configFiles)
     queueSend = rm3queue.QueueApiCalls("queueSend", "send", deviceAPIs, configFiles)
     queueQuery = rm3queue.QueueApiCalls("queueQuery", "query", deviceAPIs, configFiles)
     remotesData = rm3data.RemotesData(configFiles, configInterfaces, deviceAPIs, queueQuery)
     remotesEdit = rm3data.RemotesEdit(remotesData, configFiles, configInterfaces, deviceAPIs, queueQuery)
     remoteSchedule = rm3timer.ScheduleTimer(configFiles, deviceAPIs, remotesData, queueSend)
-    remoteAPI = rm3api.RemoteAPI(remotesData, remotesEdit, configFiles, deviceAPIs, queueQuery, queueSend, remoteSchedule)
+    remoteAPI = rm3api.RemoteAPI(remotesData, remotesEdit, configFiles, deviceAPIs, queueQuery, queueSend, remoteSchedule, configRecord)
 
     configFiles.start()
     configInterfaces.start()
+    configRecord.start()
     queueSend.start()
     queueQuery.start()
     deviceAPIs.start()

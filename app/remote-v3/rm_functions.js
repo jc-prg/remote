@@ -2,33 +2,12 @@
 // jc://remote/
 //--------------------------------
 
-function showRemoteInBackground(show=false) {
-    var body   = document.getElementById("app_background");
-    var width  = window.innerWidth;
-
-    if (show == 1 || show == true) {
-        body.style.backgroundImage      = "url("+rm3background+")";
-        body.style.backgroundRepeat     = "no-repeat";
-        body.style.backgroundPosition   = "bottom center";
-        body.style.backgroundAttachment = "fixed";
-        if (width < 350)	{ body.style.backgroundSize     = "100%"; }
-        else 			    { body.style.backgroundSize     = "350px"; }
-        }
-    else {
-        body.style.backgroundImage    = "";
-        }
-    }
-
-function setNavTitle (title) {
-
-        setTextById("navTitle", "<div onClick=\"javascript:remoteMainMenu();\" id='header_title'>"+title.replace(/#/g,"\"")+"</div>");
-        }
-
 function rm_image(file, big=false) {
-        if (big)    { var style = "max-height:54px;max-width:72px;"; }
-        else        { var style = "max-height:18px;max-width:24px;"; }
-        return "<img src='icon/"+file+"' style='" + style + "margin:auto;padding:0px;' alt='"+file+"' />";
-        }
+    let style;
+    if (big)    { style = "max-height:54px;max-width:72px;"; }
+    else        { style = "max-height:18px;max-width:24px;"; }
+    return "<img src='icon/"+file+"' style='" + style + "margin:auto;padding:0;' alt='"+file+"' />";
+}
 
 function writeKeyBoard () {
    var test = "<ul>";
@@ -44,12 +23,36 @@ function dictCopy(dict) {
     return JSON.parse(JSON.stringify(dict));
     }
 
-function use_color (value, color="VALUE") {
-
-    return "<font style='color:var(--rm-color-signal-value-"+color.toLowerCase()+");'>" + value + "</font>";
+function use_color (value, color="VALUE", light=false) {
+    let color_var;
+    if (light) {
+        color_var = "--rm-color-signal-value-light-" + color.toLowerCase();
+    } else {
+        color_var = "--rm-color-signal-value-" + color.toLowerCase();
     }
+    return "<span style='color:var("+color_var+");'>" + value + "</span>";
+}
 
 function scrollTop() {
   document.body.scrollTop = 0; // For Safari
   document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
 }
+
+
+//--------------------------------
+
+class RemoteLogging extends jcLogging {
+    constructor(name) {
+        super(name);
+    }
+}
+
+class RemoteDefaultClass {
+    constructor(name) {
+        this.name = name;
+        this.logging = new RemoteLogging(name);
+        this.logging.info("Initializing ...");
+    }
+}
+
+remote_scripts_loaded += 1;

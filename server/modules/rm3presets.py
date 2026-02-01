@@ -9,10 +9,10 @@ from logging.handlers import RotatingFileHandler
 # ---------------------------------
 
 API_name = "jc://remote/"
-API_version = "v3.0.2"
-APP_version = "v3.0.18"
+API_version = "v3.1.0"
+APP_version = "v3.1.ß"
 APP_support = [APP_version,
-               "v3.0.17"
+               "v3.0.30"
                ]  # other supported versions
 
 # ---------------------------
@@ -23,11 +23,13 @@ server_status = "Starting"
 server_health = {}
 
 rollout = server_port = client_port = data_dir = icons_dir = scene_img_dir = app_language = git_branch = None
-timezone_offset = local_network = config_dir = start_string = None
+local_network = config_dir = start_string = None
+timezone_offset = 0
 
 log_level = log_to_file = log_webserver = log_api_data = log_api_ext = log_set2level = None
 log_level_module = {"INFO": [], "DEBUG": [], "WARNING": [], "ERROR": []}
 log_filename = '/log/server.log'
+log_filename_error = '/log/server.error.log'
 log_loggers = {}
 log_logger_list = []
 
@@ -85,6 +87,14 @@ def time_since_start():
     return "  (" + str(time_info) + "s)"
 
 
+def logging_time_offset(seconds):
+    """
+    define logging time offset based on value from .env
+    """
+    global timezone_offset
+    return time.gmtime(seconds + timezone_offset * 3600)  # +1 hour
+
+
 def set_logging(set_name, set_log_level=None):
     """
     set logger and ensure it exists only once
@@ -111,13 +121,6 @@ def set_logging(set_name, set_log_level=None):
         if set_log_level is None:
             set_log_level = log_set2level
 
-        #if log_to_file:
-        #    logger = logging.getLogger(set_name + str(init_time))
-        #    logger.setLevel(set_log_level)
-        #else:
-        #    logger = logging.getLogger(set_name)
-        #    logger.setLevel(set_log_level)
-
         if log_to_file == "YES" and not os.access(log_filename, os.W_OK):
             print("Could not write to log file " + log_filename)
             log_to_file = "NO"
@@ -125,10 +128,11 @@ def set_logging(set_name, set_log_level=None):
         if log_to_file == "YES" and os.access(log_filename, os.W_OK):
             logger = logging.getLogger(set_name)
             logger.setLevel(set_log_level)
+            logger.propagate = False
 
-            log_format_string = '%(asctime)s | %(levelname)-8s ' + set_name.ljust(10) + ' | %(message)s'
-            log_format = logging.Formatter(fmt=log_format_string,
-                                           datefmt='%m/%d %H:%M:%S')
+            log_format_string = '%(asctime)s | %(levelname)-8s ' + set_name.ljust(11) + ' | %(message)s'
+            log_format = logging.Formatter(fmt=log_format_string, datefmt='%m/%d %H:%M:%S')
+            log_format.converter = logging_time_offset
             handler = RotatingFileHandler(filename=log_filename, mode='a',
                                           maxBytes=int(2.5 * 1024 * 1024),
                                           backupCount=2, encoding=None, delay=False)
@@ -138,11 +142,13 @@ def set_logging(set_name, set_log_level=None):
         else:
             logger = logging.getLogger(set_name + str(init_time))
             logger.setLevel(set_log_level)
+            logger.propagate = False
 
-            log_format_string = '%(asctime)s | %(levelname)-8s %(name)-10s | %(message)s'
-            logging.basicConfig(format=log_format_string,
-                                datefmt='%m/%d %H:%M:%S',
-                                level=log_level)
+            log_format_string = '%(asctime)s | %(levelname)-8s %(name)-11s | %(message)s'
+            log_format = logging.Formatter(fmt=log_format_string, datefmt='%m/%d %H:%M:%S')
+            handler = logging.StreamHandler(sys.stdout)
+            handler.setFormatter(log_format)
+            logger.addHandler(handler)
 
         logger.debug("Init logger '" + set_name + "', into_file=" + str(log_to_file))
 
@@ -267,7 +273,6 @@ refresh_config_sleep = 3 * 60
 refresh_config_cache = 60
 refresh_device_status = 10
 refresh_device_connection = 60
-discover_devices_interval = 10 * 60
 
 shorten_info_to = 50
 
@@ -283,6 +288,7 @@ remotes = "remotes/"  # remote layouts for devices
 scenes = "remotes/"  # remote layouts for scenes
 templates = "templates/"  # templates for remote layouts
 buttons = "buttons/"  # button configuration files
+record = "record/" # recording of values, e.g., from sensors
 active = "_active"  # overview file name
 
 active_devices = "_ACTIVE-DEVICES"
@@ -291,6 +297,9 @@ active_scenes = "_ACTIVE-SCENES"
 active_macros = "_ACTIVE-MACROS"
 active_apis = "_ACTIVE-APIS"
 active_timer = "_ACTIVE-TIMER"
+active_record = "_ACTIVE-RECORD"
+archive_devices = "_ARCHIVE-DEVICES"
+archive_scenes = "_ARCHIVE-SCENES"
 
 git_branch = get_git_branch_from_head()
 git_submodules_directory = os.path.join(os.path.dirname(__file__), "..", "..")
@@ -320,6 +329,8 @@ var git_branch      = '""" + str(git_branch) + """';
 LANG                = '""" + app_language + """';
 
 if (rollout === "test")	{ test = true; }
+
+remote_scripts_loaded += 1;
 """
 
 f = open(app_config_file, "w")

@@ -1,0 +1,86 @@
+:root {
+    --rm-color-chart-background: #2e423e;
+    --rm-color-chart-border: 0;
+    --rm-color-chart-title-background: #0E1413;
+    --rm-color-chart-title-border: 0.5px dashed #283a38;
+    --rm-color-chart-title-text: white;
+    --rm-color-chart-content-background: #1f2928;
+    --rm-color-chart-content-border: 0.5px dashed #213734;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --rm-color-chart-background: #283734;
+        --rm-color-chart-title-background: #182a28;
+        --rm-color-chart-title-text: white;
+        --rm-color-chart-content-background: #131918;
+    }
+}
+
+.rm-chart {
+    min-width       : 0;
+    min-height      : 0;
+    border-radius   : 6px;
+    border          : var(--rm-color-chart-border);
+    background-color: var(--rm-color-chart-background);
+    color           : white;
+    font-size       : var(--rm-size-remote-display-text);
+    overflow        : visible;
+    position        : relative;
+    display         : inline-block;
+    opacity         : var(--rm-opacity-display-var);
+    text-align      : center;
+    align-content   : center;
+    margin-bottom   : 6px;
+    margin-top      : 6px;
+}
+
+.rm-chart.default   { grid-column: span 4; grid-row: span 8; aspect-ratio: 8 / 5; }
+.rm-chart.legend    { grid-column: span 4; grid-row: span 1;  }
+.rm-chart-content.legend {
+    text-align: center;
+    align-content: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    height: calc(100% - 24px);
+    font-size: 13px;
+    color: #CCCCCC;
+}
+
+.rm-chart-nav {
+    cursor: pointer;
+}
+
+.rm-chart-reload {
+    height:16px;
+    width:16px;
+    cursor:pointer;
+    position:relative;
+    top:2px;
+    opacity:30%;
+}
+.rm-chart-reload:hover {
+    opacity:1;
+}
+
+.rm-chart-title {
+    font-weight      : bold;
+    background-color : var(--rm-color-chart-title-background);
+    border           : var(--rm-color-chart-title-border);
+    border-radius    : 5px;
+    padding          : 6px;
+    width            : calc(100% - 13px);
+    text-align       : center;
+}
+
+.rm-chart-content {
+    display          : block;
+    border           : var(--rm-color-chart-content-border);
+    border-radius    : 5px;
+    height           : calc(100% - 14px);
+    max-height       : calc(100% - 14px);
+    background-color : var(--rm-color-chart-content-background);
+    overflow         : hidden;
+    margin           : 6px;
+}
+

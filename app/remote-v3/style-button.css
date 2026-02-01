@@ -9,14 +9,12 @@ button {
    font-size       : 12px;
 
 }
-button.small {
-    /*
-    width : 50px;
-    height : 30px;
-     */
-}
 
 /* REDEFINE buttons for remote-control */
+
+.jc-tooltip-v2 {
+    padding-top: 15px;
+}
 
 .rm-info {
    font-size       : var(--rm-size-remote-info-text);
@@ -28,7 +26,7 @@ button.small {
     padding     : 10px;
     display     : grid;
     grid-template-columns: repeat(4, 1fr);
-    gap         : 10px;
+    gap         : 8px;
     box-sizing  : border-box;
 }
 
@@ -43,25 +41,33 @@ button.small {
 }
 
 .rm-button {
-    height          :  auto;
-    max-width       :  none;
+    appearance: none;
+    -webkit-appearance: none;
+
+    height          : unset;
+    width           : unset;
+    max-width       : none;
+    max-height      : none;
     min-width       : 0;
-    max-height      :  none;
+    min-height      : 0;
     aspect-ratio    : 4 / 2;
 
     align-items: center;   /* vertikal zentrieren */
     justify-content: center; /* horizontal zentrieren */
     display: flex;
 
+    padding: 4px;
+    line-height: 0;
+
     border-radius   : 6px;
     border          : solid 0.5px var(--rm-color-button-border);
     background-color: var(--rm-color-button);
     color           : var(--rm-color-button-text);
     font-size       : var(--rm-size-remote-button-text);
-    padding         : 2px;
     overflow        : visible;
     position        : relative;
 
+    touch-action: manipulation;
 }
 
 .rm-button-text {
@@ -166,8 +172,11 @@ button.rm-button.small {
 
 .rm-button svg {
     display: block;
-    max-width: 90%;
-    max-height: 90%;
+    min-width : 0;
+    min-height : 0;
+    max-width: 100%;
+    max-height: 100%;
+    margin: auto;
 }
 
 .rm-button.sample {
@@ -176,7 +185,6 @@ button.rm-button.small {
     grid-column: unset;
     grid-row: unset;
     width: 60px;
-    height: auto;
     margin: 4px;
     overflow: hidden;
     font-size: 14px;
@@ -321,6 +329,11 @@ button.rm-button.small {
     padding     : 10px;
     background  : var(--rm-color-button-setting);
     border      : solid 2px var(--rm-color-button-setting-border);
+    color       : white;
+}
+
+.rm-button_setting_index:hover {
+    border      : solid 2px var(--rm-color-button-setting-border-select);
 }
 
 .rm-button_setting_index_small {
@@ -330,7 +343,7 @@ button.rm-button.small {
     flex-shrink     : 0;
     transition      : background 0.3s;
 
-    width       : 11.2%;
+    width       : 9.9%;
     min-width   : 50px;
     margin      : 0.5%;
     height      : 40px;
@@ -341,6 +354,24 @@ button.rm-button.small {
 
 .rm-button_setting_index_small.selected {
     border      : solid 2px var(--rm-color-button-setting-border-select);
+}
+
+.rm-button_setting_index_small:hover {
+    border      : solid 2px var(--rm-color-button-setting-border-select);
+}
+
+
+.rm-button_setting_index.remote {
+    width       : calc(100% / 3 - 8px);
+    margin      : 4px;
+    height      : 80px;
+    border-radius : 4px;
+}
+.rm-button_setting_index.remote img {
+    max-height: 35px;
+    max-width: 55px;
+    margin: auto;
+    padding: 0;
 }
 
 canvas {
@@ -445,6 +476,8 @@ canvas {
 .header_image_text {
     width           : 100%;
     height          : 40px;
+    position        : absolute;
+    bottom          : 5%;
 }
 
 .header_image_text_info {

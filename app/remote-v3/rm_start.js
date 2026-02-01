@@ -4,22 +4,21 @@
 
 
 /* class to create the start menu */
-class RemoteStart {
+class RemoteStart extends RemoteDefaultClass {
 
     constructor(name) {
+        super(name);
+
         this.data         = {}
-        this.app_name     = name;
         this.edit_mode    = false;
         this.initial_load = true;
-        this.logging      = new jcLogging(this.app_name);
     }
 
     /* load configuration data */
     init(data) {
+        this.data = data;
 
-        if (data["CONFIG"])  { this.data = data; }
-        else                 { return; }
-
+        scrollTop();
         if (this.initial_load) {
             this.logging.default("Initialized new class 'RemoteStart'.");
             this.initial_load = false;
@@ -34,7 +33,7 @@ class RemoteStart {
 
             // set vars
             let menu = "";
-            rm3remotes.active_type = "start";
+            rmRemote.active_type = "start";
 
             // no edit mode in start menu
             elementHidden("frame1");
@@ -71,7 +70,7 @@ class RemoteStart {
 
             // set vars
             let menu = "";
-            rm3remotes.active_type = "start";
+            rmRemote.active_type = "start";
 
             // no edit mode in start menu
             elementHidden("frame1");
@@ -97,7 +96,7 @@ class RemoteStart {
             }
             else {
                 menu = "<div style='width:100%;text-align:center;padding:15px;'>" + lang("DEVICES_NOT_DEFINED_YET") +
-                    "<br/><div style='cursor:pointer;' onclick='rm3settings.create(\"index\");'><u>" + lang("DEVICES_ADD_SETTINGS") + "</u></div>" +
+                    "<br/><div style='cursor:pointer;' onclick='rmSettings.create(\"index\");'><u>" + lang("DEVICES_ADD_SETTINGS") + "</u></div>" +
                     "</div>";
             }
 
@@ -117,14 +116,14 @@ class RemoteStart {
         if (data[button[1]]["settings"]["label"]) { label2 = data[button[1]]["settings"]["label"]; }
 
         let d = this.button_image( label, style );
-        return this.button( id, d[0], style, 'rm3remotes.create("device","' + button[1] + '");setNavTitle("' + label2 + '");', "" );
+        return this.button( id, d[0], style, 'rmRemote.create("device","' + button[1] + '");rmMain.set_title("' + label2 + '");', "" );
     }
 
     /* create big button for scene */
     entry_scene(data, id, label, image, style) {
         let d = this.button_image( label, style );
         let i = id.split("_");
-        return this.button( id, d[0], style, 'rm3remotes.create("scene","' + i[1] + '");setNavTitle("' + label + '");', "", image );
+        return this.button( id, d[0], style, 'rmRemote.create("scene","' + i[1] + '");rmMain.set_title("' + label + '");', "", image );
     }
 
     /* switch from and to edit mode */
@@ -133,23 +132,23 @@ class RemoteStart {
                 elementVisible("frame3");
                 elementVisible("frame4");
             }
-            rm3settings.settings_ext_reset();
+            rmSettings.settings_ext_reset();
         }
 
     /* create standard button */
-    button(id, label, style, script_apiCommandSend, disabled, image="" ) {
+    button(id, label, style, script_CommandSend, disabled, image="" ) {
         let background_image = "";
         if (image !== "") {
-            let scene_images  = this.data["CONFIG"]["elements"]["scene_images"];
+            let scene_images  = rmData.elements.data("scene_images");
             if (scene_images[image]) {
                 image = scene_images[image][0];
             }
 
             background_image = "style='background-image:url("+rm3scene_dir+image+");'"
-            return "<button id='" + id + "' class='rm-button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + " " + background_image + "></button>";
+            return "<button id='" + id + "' class='rm-button " + style + "' onclick='" + script_CommandSend + "' " + disabled + " " + background_image + "></button>";
         }
         else {
-            return "<button id='" + id + "' class='rm-button " + style + "' onclick='javascript:" + script_apiCommandSend + "' " + disabled + " >" + label + "</button>";
+            return "<button id='" + id + "' class='rm-button " + style + "' onclick='" + script_CommandSend + "' " + disabled + " >" + label + "</button>";
         }
     }
 
@@ -163,8 +162,8 @@ class RemoteStart {
     button_image(label, style) {
 
         // set vars
-        let button_color = this.data["CONFIG"]["elements"]["button_colors"];  // definition of button color
-        let button_img2  = this.data["CONFIG"]["elements"]["button_images"];  // definition of images for buttons (without path and ".png")
+        let button_color = rmData.elements.data("button_colors");  // definition of button color
+        let button_img2  = rmData.elements.data("button_images");  // definition of images for buttons (without path and ".png")
         let button_img   = [];
         for (let key in button_img2) { button_img[key] = this.image(button_img2[key]); }
 
@@ -175,3 +174,5 @@ class RemoteStart {
     }
 }
 
+
+remote_scripts_loaded += 1;

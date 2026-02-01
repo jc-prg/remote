@@ -6,41 +6,45 @@
 /*
 * class to convert JSON data and edit it in <textarea> fields
 */
-class RemoteJsonHandling {
+class RemoteJsonHandling extends RemoteDefaultClass {
 
     constructor(name) {
-        this.app_name       = name;
-        this.data           = {};
-        this.logging        = new jcLogging(this.app_name);
-        this.json_highlight = new RemoteJsonEditing(this.app_name+".json_highlight");
+        super(name);
+
+        this.data = {};
     }
 
     /* get JSON value (and check if correct) */
     get_value(id, default_data="" ) {
+        let value = "";
 
-            if (typeof id === "object") {
-                let stack = new Error().stack;
-                let called_by = stack.split("\n")[2].replace("at ", "(call by: ") + ")";
-                this.logging.error(this.app_name + ".get_value: id is not type 'string' but '" + (typeof id) + "' (" + JSON.stringify(id) + "). " + called_by);
-                return;
-            }
-            else if (typeof id !== "string") {
-                let stack = new Error().stack;
-                let called_by = stack.split("\n")[2].replace("at ", "(call by: ") + ")";
-                this.logging.error(this.app_name+".get_value: id is not type 'string' but '"+(typeof id)+"'.");
-                return;
-            }
-
-            const element = document.getElementById(id);
-            this.logging.debug(this.app_name+".get_value: "+id);
-
-            if (!element)	{
-                this.logging.error(this.app_name+".get_value: element not found "+id);
-                return default_data;
-            }
-
-            return this.text2json( element.value, id );
+        if (id === undefined) {
+            value = default_data;
         }
+        else if (typeof id === "object") {
+            let stack = new Error().stack;
+            let called_by = stack.split("\n")[2].replace("at ", "(call by: ") + ")";
+            this.logging.error(this.name + ".get_value: id is not type 'string' but '" + (typeof id) + "' (" + JSON.stringify(id) + "). " + called_by);
+            return;
+        }
+        else if (typeof id !== "string") {
+            let stack = new Error().stack;
+            let called_by = stack.split("\n")[2].replace("at ", "(call by: ") + ")";
+            this.logging.error(this.name+".get_value: id is not type 'string' but '"+(typeof id)+"'.");
+            return;
+        }
+
+        const element = document.getElementById(id);
+        this.logging.debug(this.name+".get_value: "+id);
+
+        if (!element)	{
+            this.logging.error(this.name+".get_value: element not found "+id);
+            value = default_data;
+        } else {
+            value = this.text2json(element.value, id);
+        }
+        return value;
+    }
 
     /* convert text 2 json ... */
     text2json(json_text, id="" ) {
@@ -81,10 +85,10 @@ class RemoteJsonHandling {
     /* create textarea to edit JSON */
     textarea(id, json, format="" ) {
             let text = "";
-            text += "<center><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:95%;height:160px;\">";
+            text += "<span class='center'><textarea id=\""+id+"\" name=\""+id+"\" style=\"width:95%;height:160px;\">";
             text += this.json2text( id, json, format );
             text.replaceAll('"', '<b>"</b>');
-            text += "</textarea></center>";
+            text += "</textarea></span>";
             return text;
         }
 
@@ -139,14 +143,15 @@ class RemoteJsonHandling {
 /*
 * class to edit JSON texts in a pre-formated and color coded style
 */
-class RemoteJsonEditing {
+class RemoteJsonEditing extends RemoteDefaultClass {
 
-    constructor(name, format_style = "default", style = "width: 95%; height: 160px;") {
-        this.app_name = name;
+    constructor(name, format_style = "default", style = "width: 95%; height: 160px;", highlighting=undefined) {
+        super(name);
+
         this.default_size = style;
         this.format_style = format_style;   // other options: default, leafs, row4
-        this.main_instance = "rm3json_edit";
-        this.logging = new jcLogging(this.app_name);
+        this.main_instance = "rmJson";
+        this.highlighting = highlighting || jsonHighlighting;
 
         this.start = this.start.bind(this);
         this.create = this.create.bind(this);
@@ -158,7 +163,8 @@ class RemoteJsonEditing {
         if (document.getElementById(container_id)) {
             const container = document.getElementById(container_id);
             container.innerHTML = editor;
-            this.start(id);
+
+            if (this.highlighting) { this.start(id); }
         }
         else {
             this.logging.error("create: container for json editor '" + container_id + "' not found." );
@@ -174,9 +180,12 @@ class RemoteJsonEditing {
 
         if (style === "") { style = this.default_size; }
 
+        const highlightHTML = this.highlighting ? `<pre id="`+id_highlight+`">`+this.syntaxHighlight(jsonText)+`</pre>` : "";
+        const textareaClass = !this.highlighting ? "json-textarea-lazy" : "json-textarea-active";
+
         this.editor     = `<div id="`+id_container+`" class="json-editor-container" style="`+style+`">
-            <pre id="`+id_highlight+`">`+this.syntaxHighlight(jsonText)+`</pre>
-            <textarea id="`+id_textarea+`" spellcheck="false">`+jsonText+`</textarea>
+            ${highlightHTML}
+            <textarea id="`+id_textarea+`" class="`+textareaClass+`" spellcheck="false">`+jsonText+`</textarea>
             <div id="`+id_type+`">`+format_style+`</div>
             </div>`;
 
@@ -199,7 +208,7 @@ class RemoteJsonEditing {
         if (textarea) {
             // overlay highlighted text
             textarea.addEventListener("input", function () {
-                highlight.innerHTML = rm3json_edit.syntaxHighlight(textarea.value);
+                highlight.innerHTML = rmJson.syntaxHighlight(textarea.value);
             });
             textarea.dispatchEvent(new Event("input"));
 
@@ -217,7 +226,7 @@ class RemoteJsonEditing {
             resizeObserver.observe(textarea);
         }
         else {
-            console.error("RemoteJsonEditing.start: json editor '" + id + "' not found." );
+            this.logging.error("start(): json editor '" + id + "' not found." );
         }
     }
 
@@ -226,8 +235,11 @@ class RemoteJsonEditing {
         const textarea  = document.getElementById(id);
 
         textarea.disabled = disabled;
-        if (disabled)   { highlight.style.background = "var(--json-color-background-disabled)"; }
-        else            { highlight.style.background = "var(--json-color-background)"; }
+        if (disabled && highlight)   {
+            highlight.style.background = "var(--json-color-background-disabled)";
+        } else if (highlight) {
+            highlight.style.background = "var(--json-color-background)";
+        }
     }
 
     customJSONStringify(obj, indent = 2, format_style = "") {
@@ -338,22 +350,22 @@ class RemoteJsonEditing {
 /*
 * class to add elements to the JSON remote definition
 */
-class RemoteJsonElements {
+class RemoteJsonElements extends RemoteDefaultClass {
 
     constructor(name, remote_type, remote) {
+        super(name);
 
         this.data = {};
-        this.app_name = name;
         this.remote = remote;
         this.remote_type = remote_type;
 
         this.json = new RemoteJsonHandling(name + ".json");		// rm_remotes-elements.js
-        this.logging = new jcLogging(this.app_name);
         this.logging.debug("Create RemoteJsonElements (" + name + "/" + remote_type + "/" + this.json_field_id + ")");
 
         if (this.remote_type === "scene") {
             this.json_field_id = "json::remote";
             this.json_field_id_channel = "json::macro-channel";
+            this.json_field_id_chart = "json::chart";
             this.json_field_id_display = "json::display";
             this.json_field_id_display2 = "json::display-size";
         } else if (this.remote_type === "device") {
@@ -393,7 +405,12 @@ class RemoteJsonElements {
         let value = this.json.get_value(this.json_field_id);
         let value_new = [];
 
-        if (this.remote_type === "scene" && button.indexOf("_") < 0 && button.indexOf("LINE") < 0  && button.indexOf("HEADER-IMAGE") < 0) { button = scene + "_" + button; }
+        if (this.remote_type === "scene"
+            && button.indexOf("_") < 0
+            && button.indexOf("LINE") < 0
+            && button.indexOf("CHART") < 0
+            && button.indexOf("DISPLAY") < 0
+            && button.indexOf("HEADER-IMAGE") < 0) { button = scene + "_" + button; }
 
         if (position === "FIRST") {
             value_new.push(button);
@@ -486,6 +503,77 @@ class RemoteJsonElements {
             this.add_button(scene, button, position);
             this.preview(scene);
         }
+    }
+
+    /* add chart to JSON */
+    add_chart(scene, position = "") {
+
+        let value = this.json.get_value(this.json_field_id);
+
+        if (value.indexOf("CHART") < 0) {
+            this.add_button(scene, "CHART", position);
+            this.preview(scene);
+        } else {
+            appMsg.alert(lang("CHART_EXISTS"));
+        }
+    }
+
+    /* add chart value from JSON */
+    add_chart_value(scene, value) {
+
+        const input_field = document.getElementById(value);
+
+        if (!input_field) {
+            appMsg.alert("Error with input field.");
+            return;
+        }
+
+        let value_new = input_field.options[input_field.selectedIndex].text;
+
+        if (value_new === "" || value_new === undefined) {
+            appMsg.alert(lang("CHART_VALUE_SELECT"));
+            return;
+        }
+
+        let chart_new = JSON.parse(getValueById(this.json_field_id_chart));
+
+        if (chart_new.indexOf(value_new) > -1) {
+            appMsg.alert(lang("CHART_VALUE_EXISTS"));
+            return;
+        }
+        chart_new.push(value_new);
+
+        setValueById(this.json_field_id_chart, JSON.stringify(chart_new));
+        this.preview(scene);
+    }
+
+    /* add chart value from JSON */
+    delete_chart_value(scene, value) {
+
+        const input_field = document.getElementById(value);
+
+        if (!input_field) {
+            appMsg.alert("Error with input field.");
+            return;
+        }
+
+        let value_delete = input_field.options[input_field.selectedIndex].text;
+
+        if (value_delete === "" || value_delete === undefined) {
+            appMsg.alert(lang("CHART_VALUE_SELECT"));
+            return;
+        }
+
+        let chart_new = JSON.parse(getValueById(this.json_field_id_chart));
+
+        if (chart_new.indexOf(value_delete) < 0) {
+            appMsg.alert(lang("CHART_VALUE_DOESNT_EXISTS"));
+            return;
+        }
+        chart_new = chart_new.filter(item => item !== value_delete);
+
+        setValueById(this.json_field_id_chart, JSON.stringify(chart_new));
+        this.preview(scene);
     }
 
     /* add display to JSON */
@@ -731,7 +819,7 @@ class RemoteJsonElements {
             return;
         }
 
-        template = this.data["CONFIG"]["templates"]["definition"][value];
+        template = rmData.templates.data(value);
         let value_new = template["remote"];
         if (template["display"]) {
             let display_new = template["display"];
@@ -783,13 +871,12 @@ class RemoteJsonElements {
 
     /* get slider configuration */
     prepare_slider(device, slider_cmd, slider_param, slider_description, slider_minmax, position = "") {
-
         let s_param = getValueById(slider_param);
         let s_description = "description";
 
         if (device.startsWith("group_")) {
             let group = device.split("_")[1];
-            let group_devices = this.data["CONFIG"]["macros"]["groups"][group]["devices"];
+            let group_devices = rmData.device_groups.list_devices(group);
             if (group_devices.length > 0) {
                 device = group_devices[0];
             } else {
@@ -798,7 +885,7 @@ class RemoteJsonElements {
             }
         }
 
-        let s_device = this.data["CONFIG"]["devices"][device]["settings"]["label"];
+        let s_device = rmData.devices.label(device);
         if (s_param === "" || s_param === undefined) {
             appMsg.alert(lang("SLIDER_SELECT_PARAM"));
             return;
@@ -811,7 +898,7 @@ class RemoteJsonElements {
         }
         setValueById(slider_description, s_description);
 
-        let cmd_definition = this.data["CONFIG"]["devices"][device]["commands"]["definition"];
+        let cmd_definition = rmData.devices.list_commands(device, "definition");
 
         this.logging.info(JSON.stringify(cmd_definition[s_param]));
 
@@ -837,3 +924,5 @@ class RemoteJsonElements {
 
 }
 
+
+remote_scripts_loaded += 1;

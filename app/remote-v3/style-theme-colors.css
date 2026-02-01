@@ -3,10 +3,10 @@
     --rm-color-hr: #aaaaaa;
 
     --rm-color-font-default: black;
-    --rm-color-font-error: red;
-    --rm-color-font-ok: green;
-    --rm-color-font-data: cyan;
-    --rm-color-font-warning: yellow;
+    --rm-color-font-error: darkred;
+    --rm-color-font-ok: darkgreen;
+    --rm-color-font-data: darkcyan;
+    --rm-color-font-warning: darkorange;
 
     --rm-color-button-default: #000044;
     --rm-color-button-default-text: white;
@@ -92,14 +92,17 @@
     --rm-color-edit-cmd-text: #FFFF88;
     --rm-color-edit-cmd-border: #222222;
 
-    --rm-color-display-default: #000044;
+    --rm-color-display-default: #13134e;
     --rm-color-display-default-text: yellow;
-    --rm-color-display-default-border: white;
+    --rm-color-display-default-border: #3f3f67;
     --rm-color-display-error: #660000;
+    --rm-color-display-error-space: #520303;
     --rm-color-display-error-text: yellow;
     --rm-color-display-off: #000033;
+    --rm-color-display-off-space: #000033;
     --rm-color-display-off-text: yellow;
-    --rm-color-display-manual: #000044;
+    --rm-color-display-manual: #000033;
+    --rm-color-display-manual-space: #000055;
     --rm-color-display-manual-text: lightgray;
     --rm-color-display-element: white;
 
@@ -126,12 +129,27 @@
     --rm-color-signal-power-off: darkred;
     --rm-color-signal-power-other: #4690f1;
     --rm-color-signal-power-error: blueviolet;
+
     --rm-color-signal-value-on: #22BB22;
     --rm-color-signal-value-ok: #22BB22;
     --rm-color-signal-value-off: #FF3333;
     --rm-color-signal-value-error: #FF3333;
     --rm-color-signal-value-hint: gold;
     --rm-color-signal-value-value: #33AAAA;
+
+    --rm-color-signal-value-light-on: #22BB22;
+    --rm-color-signal-value-light-ok: #22BB22;
+    --rm-color-signal-value-light-off: #FF3333;
+    --rm-color-signal-value-light-error: #FF3333;
+    --rm-color-signal-value-light-hint: gold;
+    --rm-color-signal-value-light-value: #2166d1;
+    --rm-color-signal-value-dark-ok: lightgreen;
+    --rm-color-signal-value-dark-on: lightgreen;
+    --rm-color-signal-value-dark-off: #FF3333;
+    --rm-color-signal-value-dark-hint: gold;
+    --rm-color-signal-value-dark-error: #ee6666;
+    --rm-color-signal-value-dark-value: #66FFFF;
+
 
     --rm-color-slider: darkgray;
     --rm-color-slider-container: #DDDDEE;
@@ -186,6 +204,13 @@
         --jc-tooltip-button-background: #5555ff;
         --jc-tooltip-button-background-hover: #5555ee;
         --jc-tooltip-button-color: white;
+
+        --rm-color-display-default: #39397e;
+        --rm-color-display-error: #6b2626;
+        --rm-color-display-error-space: #5b0f0f;
+    }
+    .display-content {
+        background-color: #1d1d55   ;
     }
 }
 
@@ -193,6 +218,12 @@
     :root {
         --rm-color-body: #111111;
         --rm-color-hr: #444444;
+
+        --rm-color-font-default: black;
+        --rm-color-font-error: red;
+        --rm-color-font-ok: green;
+        --rm-color-font-data: cyan;
+        --rm-color-font-warning: yellow;
 
         --rm-color-button-default: #333333;
         --rm-color-button-default-text: #DDDDDD;
@@ -271,4 +302,8 @@
         --rm-opacity-frame-var: 0.8;
         --rm-opacity-display-var: 0.7;
         }
+
+    #menu-audio1 { opacity: 0.7 }
+    #menu-audio2 { opacity: 0.7 }
+    #menu-audio3 { opacity: 0.7 }
     }

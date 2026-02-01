@@ -10,7 +10,7 @@ class RemoteAPI(RemoteDefaultClass):
     Class with API commands
     """
 
-    def __init__(self, data, edit, config, apis, queue, queue_send, timer):
+    def __init__(self, data, edit, config, apis, queue, queue_send, timer, record):
         """
         Class constructor for Remote API
 
@@ -32,6 +32,7 @@ class RemoteAPI(RemoteDefaultClass):
         self.queue_send = queue_send
         self.edit = edit
         self.timer = timer
+        self.record = record
         self.errors = {}
 
     def _api_CONFIG(self):
@@ -49,7 +50,7 @@ class RemoteAPI(RemoteDefaultClass):
         apis_dev_configs = self.data.api_config_read()
         apis_detect = self.data.devices_read_api_new_devices()
         macros = self.data.macros_read()
-        device_types = self.config.read(rm3presets.data_dir + "/" + rm3presets.active_device_types)
+        device_types = self.config.read(rm3presets.data_dir + "/" + rm3presets.active_device_types, False, "rm3api._api_CONFIG()")
         if "data" in device_types:
             device_types = device_types["data"]
         else:
@@ -67,13 +68,18 @@ class RemoteAPI(RemoteDefaultClass):
                 "structure":            apis
                 },
             "devices":                  self.data.devices_read_config(),
-            "device_types":             device_types,
             "elements": {
-                "button_images":        self.config.read(rm3presets.icons_dir + "/index"),
-                "button_colors":        self.config.read(rm3presets.buttons + "button_colors"),
-                "scene_images":         self.config.read(rm3presets.scene_img_dir + "/index")
+                "button_images":        self.config.read(rm3presets.icons_dir + "/index", False, "rm3api._api_CONFIG()"),
+                "button_colors":        self.config.read(rm3presets.buttons + "button_colors", False, "rm3api._api_CONFIG()"),
+                "device_types":         device_types,
+                "icons":                rm3presets.icon_files,
+                "methods":              self.apis.methods,
+                "scene_images":         self.config.read(rm3presets.scene_img_dir + "/index", False, "rm3api._api_CONFIG()"),
+                "keys_archive": {
+                    "scenes":           self.data.archive_get_keys("scene"),
+                    "devices":          self.data.archive_get_keys("device")
+                }
                 },
-            "icons":                    rm3presets.icon_files,
             "macros": {
                 "device-on":            macros.get("dev-on", {}),
                 "device-off":           macros.get("dev-off", {}),
@@ -81,7 +87,10 @@ class RemoteAPI(RemoteDefaultClass):
                 "groups":               macros.get("groups", {})
             },
             "main-audio":               "NONE",
-            "methods":                  self.apis.methods,
+            "record": {
+                "config":               self.record.get_config(),
+                "available_dates":      self.record.get_available_dates()
+            },
             "remotes":                  remotes,
             "scenes":                   self.data.scenes_read(None, True),
             "templates": {
@@ -105,25 +114,40 @@ class RemoteAPI(RemoteDefaultClass):
         """
         status = {
             "config_errors":    self.data.errors,
-            "connections":      self.data.api_devices_connections(),
             "devices":          self.data.devices_status(),
-            "scenes":           self.data.scenes_status(),
             "interfaces":       self.apis.api_get_status(),
             "request_time":     self.queue_send.average_exec,
+            "scenes":           self.data.scenes_status(),
             "system": {
                 "message":                  rm3presets.server_status,
+                "local_network":            self.apis.local_network_available,
                 "server_start":             rm3presets.start_time,
                 "server_start_duration":    rm3presets.start_duration,
-                "server_running":           time.time() - rm3presets.start_time
-                },
-            "system_health": {}  # to be filled in self._end()
+                "server_running":           time.time() - rm3presets.start_time,
+                "health":                   {}  # to be filled in self._end()
+                }
             }
+        status["interfaces"]["structure"] = self.data.api_devices_connections()
+        status["interfaces"]["discovery"] = self.apis.discover_last > 0
 
         for key in rm3presets.server_health:
             if rm3presets.server_health[key] == "stopped" or rm3presets.server_health[key] == "registered":
-                status["system_health"][key] = rm3presets.server_health[key]
+                status["system"]["health"][key] = rm3presets.server_health[key]
             else:
-                status["system_health"][key] = round(time.time() - rm3presets.server_health[key], 2)
+                status["system"]["health"][key] = round(time.time() - rm3presets.server_health[key], 2)
+
+        # check reload status triggered via app
+        timeout = 120
+        reload_indicator = self.config.app_reload_indicator
+        if time.time() - reload_indicator["app_request"] < timeout:
+            reload_cache = time.time() - reload_indicator["cache_reload"]
+            reload_api = time.time() - reload_indicator["api_reconnect"]
+            reload_done = reload_cache < timeout and reload_api < timeout
+            status["reload"] = reload_done == False
+            if reload_done:
+                self.logging.debug("Reload done!")
+            else:
+                self.logging.debug(f"Waiting for reload (cache:{reload_cache}|api:{reload_api}...")
 
         return status
 
@@ -171,9 +195,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["load-time"] = (time.time() - data["REQUEST"]["start-time"])
         data["REQUEST"]["server-time"] = datetime.now().strftime("%Y-%m-%d | %H:%M | %A (%w)")
         data["REQUEST"]["server-time-local"] = self.config.local_time().strftime("%Y-%m-%d | %H:%M | %A (%w)")
-
-        if "CONFIG" in data:
-            data["CONFIG"]["reload_status"] = self.queue.reload
+        data["REQUEST"]["server-time-diff"] = rm3presets.timezone_offset
 
         if "no-data" in setting and "DATA" in data:
             del data["DATA"]
@@ -313,7 +335,7 @@ class RemoteAPI(RemoteDefaultClass):
 
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Button"] = button
-        data["REQUEST"]["Command"] = "RecordCommand"
+        data["REQUEST"]["Command"] = "CommandRecord"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -369,7 +391,7 @@ class RemoteAPI(RemoteDefaultClass):
             api, dev = interface.split("_")
             data["REQUEST"]["Return"] = "OK: saved interface configuration (" + interface + ")"
             data["DATA"]["interface"] = interface
-            config_org = self.config.read(rm3presets.commands + api + "/00_interface")
+            config_org = self.config.read(rm3presets.commands + api + "/00_interface", False, "rm3api.edit_config_interface()")
             config_org["API-Devices"][dev] = config
             try:
                 self.config.write(rm3presets.commands + api + "/00_interface", config_org)
@@ -409,7 +431,7 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start(["request-only"])
         data["REQUEST"]["Return"] = self.edit.device_edit(device, info)
         data["REQUEST"]["Device"] = device
-        data["REQUEST"]["Command"] = "EditDevice"
+        data["REQUEST"]["Command"] = "DeviceEdit"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -429,7 +451,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Return"] = self.edit.device_add(device, device_data)
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Parameter"] = device_data
-        data["REQUEST"]["Command"] = "AddDevice"
+        data["REQUEST"]["Command"] = "DeviceAdd"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -448,7 +470,7 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start(["request-only"])
         data["REQUEST"]["Return"] = self.edit.device_delete(device)
         data["REQUEST"]["Device"] = device
-        data["REQUEST"]["Command"] = "DeleteDevice"
+        data["REQUEST"]["Command"] = "DeviceDelete"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -469,7 +491,7 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start(["request-only"])
         data["REQUEST"]["Return"] = self.edit.device_edit_api_settings(device, info)
         data["REQUEST"]["Device"] = device
-        data["REQUEST"]["Command"] = "EditDeviceApiSettings"
+        data["REQUEST"]["Command"] = "ApiDeviceSettingsEdit"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -489,7 +511,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Return"] = self.edit.remote_add_template(device, template)
         data["REQUEST"]["Device"] = device
         data["REQUEST"]["Parameter"] = template
-        data["REQUEST"]["Command"] = "AddTemplate"
+        data["REQUEST"]["Command"] = "TemplateAdd"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -550,6 +572,31 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
 
+    def edit_remote_archive(self, direction, remote_type, remote_id):
+        """
+        move remote to archive or restore from archive
+        """
+        data = self._start(["request-only"])
+        data["REQUEST"]["Device"] = remote_id
+        data["REQUEST"]["Parameter"] = direction
+        data["REQUEST"]["Type"] = remote_type
+
+        if direction == "restore":
+            data["REQUEST"]["Command"] = "RestoreFromArchive"
+        elif direction == "move":
+            data["REQUEST"]["Command"] = "MoveToArchive"
+
+        if direction == "move":
+            data["REQUEST"]["Return"] = self.data.archive_move_to(remote_type, remote_id)
+        elif direction == "restore":
+            data["REQUEST"]["Return"] = self.data.archive_restore_from(remote_type, remote_id)
+        else:
+            data["REQUEST"]["Return"] = f"ERROR: command {direction} for {remote_type}:{remote_id} not supported"
+
+        self._refresh()
+        data = self._end(data, ["no-data", "no-config", "no-status"])
+        return data
+
     def edit_scene(self, scene, info):
         """
         Edit data of scene
@@ -565,7 +612,7 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start(["request-only"])
         data["REQUEST"]["Return"] = self.edit.scene_edit(scene, info)
         data["REQUEST"]["Scene"] = scene
-        data["REQUEST"]["Command"] = "EditScene"
+        data["REQUEST"]["Command"] = "SceneEdit"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -585,7 +632,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Return"] = self.edit.scene_add(scene, info)
         data["REQUEST"]["Scene"] = scene
         data["REQUEST"]["Parameter"] = info
-        data["REQUEST"]["Command"] = "AddScene"
+        data["REQUEST"]["Command"] = "SceneAdd"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -603,7 +650,7 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start(["request-only"])
         data["REQUEST"]["Return"] = self.edit.scene_delete(scene)
         data["REQUEST"]["Scene"] = scene
-        data["REQUEST"]["Command"] = "DeleteScene"
+        data["REQUEST"]["Command"] = "SceneDelete"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config"])
@@ -619,7 +666,7 @@ class RemoteAPI(RemoteDefaultClass):
         else:
             data["REQUEST"]["Return"] = f"ERROR: add API device ({api})"
 
-        data["REQUEST"]["Command"] = "edit_api_device/add"
+        data["REQUEST"]["Command"] = "ApiDeviceAdd"
         data = self._end(data)
         self.logging.info(f"Add API device for {api}: " + str(api_data))
         return data
@@ -635,9 +682,25 @@ class RemoteAPI(RemoteDefaultClass):
         else:
             data["REQUEST"]["Return"] = f"ERROR: delete API device ({api})"
 
-        data["REQUEST"]["Command"] = "edit_api_device/delete"
+        data["REQUEST"]["Command"] = "ApiDeviceDelete"
         data = self._end(data)
         self.logging.info(f"Delete API device {api}")
+        return data
+
+    def get_chart_data(self, chart_filter, chart_parameters):
+        """
+        get chart data
+        """
+        data = self._start()
+        data["REQUEST"]["Return"] = "OK: Returned chart data."
+        data["REQUEST"]["Command"] = "Get chart data"
+        data["REQUEST"]["ChartID"] = chart_parameters.get("chart-id", "")
+
+        filter_values = chart_parameters.get("filter-values", [])
+        data["DATA"] = self.record.get_chart_data(chart_filter, filter_values)
+        data["DATA"]["available"] = self.record.get_available_dates()
+
+        data = self._end(data, ["no-config", "no-status"])
         return data
 
     def get_config(self):
@@ -650,8 +713,28 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start()
         data["REQUEST"]["Return"] = "OK: Returned list and status data."
         data["REQUEST"]["Command"] = "List"
+        data["REQUEST"]["server-messages"] = self.config.config_messages_get()
         data = self._end(data)
         return data
+
+    def set_config_record(self, record_config):
+        """
+        save recording configuration
+        """
+        data = self._start()
+        data["REQUEST"]["Return"] = "OK."
+        data["REQUEST"]["Command"] = "ConfigRecord"
+        data["REQUEST"]["Success"] = self.record.edit_config(record_config)
+        data = self._end(data)
+        return data
+
+    def get_config_reload(self):
+        """
+        Load and list all data - after cleaning the cache
+        """
+        self.logging.info("! Triggered data reload by app ...")
+        self.config.cache_refill_from_files()
+        return self.get_config()
 
     def get_config_device(self, device):
         """
@@ -669,7 +752,7 @@ class RemoteAPI(RemoteDefaultClass):
 
         if device in device_config:
             api = device_config[device]["interface"]["api_key"]
-            api_config = self.config.read(rm3presets.commands + api + "/00_interface")
+            api_config = self.config.read(rm3presets.commands + api + "/00_interface", False, "rm3api.get_config_device()")
 
             data["REQUEST"]["Return"] = "OK"
             data["DATA"]["device"] = device
@@ -684,7 +767,7 @@ class RemoteAPI(RemoteDefaultClass):
             for key in device_config:
                 api = device_config[key]["interface"]["api_key"]
                 api_method = device_config[key]["interface"]["method"]
-                api_config = self.config.read(rm3presets.commands + api + "/00_interface")
+                api_config = self.config.read(rm3presets.commands + api + "/00_interface", False, "rm3api.get_config_device()")
 
                 if "ERROR" not in str(api_config):
                     data["DATA"]["devices"][key]["interface_details"] = str(api_config)
@@ -726,8 +809,8 @@ class RemoteAPI(RemoteDefaultClass):
             data["DATA"]["interface"] = "all"
             data["DATA"]["interfaces"] = {}
             for api in interfaces:
-                api_config = self.config.read(rm3presets.commands + api + "/00_interface")
-                api_device_config = self.config.read(rm3presets.commands + api + "/00_default")
+                api_config = self.config.read(rm3presets.commands + api + "/00_interface", False, "rm3api.get_config_device()")
+                api_device_config = self.config.read(rm3presets.commands + api + "/00_default", False, "rm3api.get_config_device()")
                 # data["DATA"]["interfaces"][api] = str(api_config)
                 if "API-Devices" in api_config:
                     for key1 in api_config["API-Devices"]:
@@ -746,8 +829,8 @@ class RemoteAPI(RemoteDefaultClass):
         elif interface in interfaces:
             data["REQUEST"]["Return"] = "OK"
             data["DATA"]["interface"] = interface
-            api_config = self.config.read(rm3presets.commands + interface + "/00_interface")
-            api_device_config = self.config.read(rm3presets.commands + api + "/00_default")
+            api_config = self.config.read(rm3presets.commands + interface + "/00_interface", False, "rm3api.get_config_device()")
+            api_device_config = self.config.read(rm3presets.commands + api + "/00_default", False, "rm3api.get_config_device()")
             for key1 in api_config["API-Devices"]:
                 for key2 in api_config["API-Devices"][key1]:
                     if key2 == "MACAddress":
@@ -790,6 +873,17 @@ class RemoteAPI(RemoteDefaultClass):
         data["DATA"]["log_query"] = self.queue.get_query_log()
         data["DATA"]["log_send"] = self.queue_send.get_query_log()
         data["DATA"]["log_api"] = self.apis.get_query_log()
+        data = self._end(data, ["no-config", "no-status"])
+        return data
+
+    def get_archived_data(self, remote_type):
+        """
+        return archived data for an API request
+        """
+        data = self._start(["request-only"])
+        data["REQUEST"]["Return"] = "OK: Returned data for " + remote_type
+        data["REQUEST"]["Command"] = "List"
+        data["DATA"] = self.data.archive_get_data(remote_type)
         data = self._end(data, ["no-config", "no-status"])
         return data
 
@@ -858,19 +952,19 @@ class RemoteAPI(RemoteDefaultClass):
         Return:
             dict: API response
         """
-        self.logging.warning("Request cache reload and device reconnect.")
-
-        self._refresh()
-        time.sleep(1)
+        self.logging.warning("Request cache reload and device reconnect ...")
 
         data = self._start()
         data["REQUEST"]["Return"] = "OK: Configuration reloaded"
         data["REQUEST"]["Command"] = "Reload"
+        data["STATUS"]["reload"] = True
 
-        self.apis.api_reconnect()
-        self.data.devices_get_status(data["STATUS"]["devices"], read_api=True)
+        self.config.cache_request_update()
+        self.apis.api_request_reconnect("all", True)
+        self.data.devices_get_status(read_api=True)
+        self.config.app_reload_indicator["app_request"] = time.time()
 
-        data = self._end(data, ["no-data"])
+        data = self._end(data, ["no-data","no-config"])
         return data
 
     def reconnect_api(self, interface):
@@ -878,10 +972,23 @@ class RemoteAPI(RemoteDefaultClass):
         trigger reconnect of APIs
         """
         data = self._start()
-        data["REQUEST"]["Return"] = "OK: Configuration reloaded"
-        data["REQUEST"]["Command"] = "Reload"
+        data["REQUEST"]["Return"] = "OK: Reconnect and configuration reload triggered"
+        data["REQUEST"]["Command"] = "ReconnectInterface"
 
-        self.apis.api_reconnect(interface, True)
+        self.apis.api_request_reconnect(interface, True, True)
+
+        data = self._end(data, ["no-data", "no-config", "no-status"])
+        return data
+
+    def discover_api(self):
+        """
+        trigger discover of API devices
+        """
+        data = self._start()
+        data["REQUEST"]["Return"] = "OK: Triggered API device discovery"
+        data["REQUEST"]["Command"] = "DiscoverDevices"
+
+        self.apis.api_request_discovery()
 
         data = self._end(data, ["no-data", "no-config", "no-status"])
         return data
@@ -995,11 +1102,11 @@ class RemoteAPI(RemoteDefaultClass):
         if method == "query":
             # data["REQUEST"]["Return"] = self.apis.send(interface,device,command,value)
             data["REQUEST"]["Return"] = self.queue_send.add2queue([[interface, device, command, value]])
-            self.data.devices_get_status(data, read_api=True)
+            self.data.devices_get_status(read_api=True)
 
         elif method == "record":
             data["REQUEST"]["Return"] = self.edit.device_status_set(device, command, value)
-            self.data.devices_get_status(data, read_api=True)
+            self.data.devices_get_status(read_api=True)
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config", "no-status"])
@@ -1063,7 +1170,7 @@ class RemoteAPI(RemoteDefaultClass):
         # decompose group
         if "group" in device:
             group_id = device.split("_")[1]
-            act_macros = self.config.read(rm3presets.active_macros)
+            act_macros = self.config.read(rm3presets.active_macros, False, "rm3api.send_button_on_off()")
             devices = act_macros["groups"][group_id].get("devices", [])
             self.logging.info("send_text: GROUP " + group_id + " (" + str(devices) + ")")
         else:
@@ -1072,127 +1179,130 @@ class RemoteAPI(RemoteDefaultClass):
         # prepare and send request
         for device in devices:
 
-            method = self.apis.api_method(device)
-            interface = data["CONFIG"]["devices"][device]["interface"]["api_key"]
-            api_dev = data["CONFIG"]["devices"][device]["interface"]["api"]
-            self.logging.info("__BUTTON: " + device + "/" + button + " (" + interface + "/" + method + ")")
+            if device in data["CONFIG"]["devices"]:
+                method = self.apis.api_method(device)
+                interface = data["CONFIG"]["devices"][device]["interface"]["api_key"]
+                api_dev = data["CONFIG"]["devices"][device]["interface"]["api"]
+                self.logging.info("__BUTTON: " + device + "/" + button + " (" + interface + "/" + method + ")")
 
-            # if recorded values, check against status quo
-            if method == "record":
+                # if recorded values, check against status quo
+                if method == "record":
 
-                # Get method and presets
-                definition = data["CONFIG"]["devices"][device]["commands"]["definition"]
+                    # Get method and presets
+                    definition = data["CONFIG"]["devices"][device]["commands"]["definition"]
 
-                # special with power buttons / and vol buttons
-                if button == "on-off" or button == "on" or button == "off":
-                    value = "power"
-                elif button[-1:] == "-" or button[-1:] == "+":
-                    value = button[:-1]
-                else:
-                    value = button
-
-                # get status
-                current_status = self.edit.device_status_get(device, value)
-                device_status = self.edit.device_status_get(device, "power")
-
-                data["REQUEST"]["status_device"] = device_status
-                data["REQUEST"]["status_value"] = current_status
-
-                # buttons power / ON / OFF
-                if value == "power":
-                    if button == "on":
-                        status = "ON"
-                    if button == "off":
-                        status = "OFF"
-                    if button == "on-off":
-                        status = self._button_toggle(current_status, ["ON", "OFF"])
-
-                # other buttons
-                elif value in definition and "type" in definition[value] \
-                        and ("values" in definition[value] or "param" in definition[value]):
-
-                    d_type = definition[value]["type"]
-                    if "param" in definition[value]:
-                        d_values = definition[value]["param"]
+                    # special with power buttons / and vol buttons
+                    if button == "on-off" or button == "on" or button == "off":
+                        value = "power"
+                    elif button[-1:] == "-" or button[-1:] == "+":
+                        value = button[:-1]
                     else:
-                        d_values = definition[value]["values"]
+                        value = button
 
-                    if device_status == "ON":
-                        if d_type == "enum":
-                            status = self._button_toggle(current_status, d_values)
+                    # get status
+                    current_status = self.edit.device_status_get(device, value)
+                    device_status = self.edit.device_status_get(device, "power")
 
-                        elif d_type == "integer" and "min" in d_values and "max" in d_values:
-                            minimum = int(d_values["min"])
-                            maximum = int(d_values["max"])
-                            direction = button[-1:]
-                            current_status = str(current_status).strip()
-                            if current_status:
-                                current_status = int(current_status)
+                    data["REQUEST"]["status_device"] = device_status
+                    data["REQUEST"]["status_value"] = current_status
+
+                    # buttons power / ON / OFF
+                    if value == "power":
+                        if button == "on":
+                            status = "ON"
+                        if button == "off":
+                            status = "OFF"
+                        if button == "on-off":
+                            status = self._button_toggle(current_status, ["ON", "OFF"])
+
+                    # other buttons
+                    elif value in definition and "type" in definition[value] \
+                            and ("values" in definition[value] or "param" in definition[value]):
+
+                        d_type = definition[value]["type"]
+                        if "param" in definition[value]:
+                            d_values = definition[value]["param"]
+                        else:
+                            d_values = definition[value]["values"]
+
+                        if device_status == "ON":
+                            if d_type == "enum":
+                                status = self._button_toggle(current_status, d_values)
+
+                            elif d_type == "integer" and "min" in d_values and "max" in d_values:
+                                minimum = int(d_values["min"])
+                                maximum = int(d_values["max"])
+                                direction = button[-1:]
+                                current_status = str(current_status).strip()
+                                if current_status:
+                                    current_status = int(current_status)
+                                else:
+                                    current_status = 0
+
+                                if direction == "+" and current_status < maximum:
+                                    status = current_status + 1
+                                elif direction == "+":
+                                    dont_send = True
+                                elif direction == "-" and current_status > minimum:
+                                    status = current_status - 1
+                                elif direction == "-":
+                                    dont_send = True
+
                             else:
-                                current_status = 0
-
-                            if direction == "+" and current_status < maximum:
-                                status = current_status + 1
-                            elif direction == "+":
-                                dont_send = True
-                            elif direction == "-" and current_status > minimum:
-                                status = current_status - 1
-                            elif direction == "-":
-                                dont_send = True
+                                self.logging.warning("RemoteOnOff - Unknown command definition: " +
+                                                     device + "_" + button + ":" + value +
+                                                     " (" + d_type + "/" + str(d_values) + ")")
 
                         else:
-                            self.logging.warning("RemoteOnOff - Unknown command definition: " +
-                                                 device + "_" + button + ":" + value +
-                                                 " (" + d_type + "/" + str(d_values) + ")")
+                            self.logging.debug("RemoteOnOff - Device is off: " + device)
+                            dont_send = True
+
+                    # ----------------------------- OLD
+                    # other buttons with defined values
+                    elif value in types and value in presets:
+
+                        if device_status == "ON":
+
+                            if types[value]["type"] == "enum":
+                                status = self._button_toggle(current_status, presets[value])
+
+                            if types[value]["type"] == "integer":
+                                minimum = int(presets[value]["min"])
+                                maximum = int(presets[value]["max"])
+                                direction = button[-1:]
+                                current_status = str(current_status).strip()
+                                if current_status:
+                                    current_status = int(current_status)
+                                else:
+                                    current_status = 0
+
+                                if direction == "+" and current_status < maximum:
+                                    status = current_status + 1
+                                elif direction == "+":
+                                    dont_send = True
+                                elif direction == "-" and current_status > minimum:
+                                    status = current_status - 1
+                                elif direction == "-":
+                                    dont_send = True
+
+                        else:
+                            self.logging.debug("RemoteOnOff - Device is off: " + device)
+                            dont_send = True
+                    # ----------------------------- OLD
 
                     else:
-                        self.logging.debug("RemoteOnOff - Device is off: " + device)
-                        dont_send = True
+                        self.logging.warning("RemoteOnOff - Command not defined: " + device + "_" + value)
+                        self.logging.debug("types = " + str(types) + " / presets = " + str(presets))
 
-                # ----------------------------- OLD
-                # other buttons with defined values
-                elif value in types and value in presets:
-
-                    if device_status == "ON":
-
-                        if types[value]["type"] == "enum":
-                            status = self._button_toggle(current_status, presets[value])
-
-                        if types[value]["type"] == "integer":
-                            minimum = int(presets[value]["min"])
-                            maximum = int(presets[value]["max"])
-                            direction = button[-1:]
-                            current_status = str(current_status).strip()
-                            if current_status:
-                                current_status = int(current_status)
-                            else:
-                                current_status = 0
-
-                            if direction == "+" and current_status < maximum:
-                                status = current_status + 1
-                            elif direction == "+":
-                                dont_send = True
-                            elif direction == "-" and current_status > minimum:
-                                status = current_status - 1
-                            elif direction == "-":
-                                dont_send = True
-
-                    else:
-                        self.logging.debug("RemoteOnOff - Device is off: " + device)
-                        dont_send = True
-                # ----------------------------- OLD
-
+                # send request if everything is OK
+                if dont_send:
+                    data["REQUEST"]["Return"] += ("Dont send " + device + "/" + button +
+                                                 " as values not valid (" + str(current_status) + ").")
                 else:
-                    self.logging.warning("RemoteOnOff - Command not defined: " + device + "_" + value)
-                    self.logging.debug("types = " + str(types) + " / presets = " + str(presets))
-
-            # send request if everything is OK
-            if dont_send:
-                data["REQUEST"]["Return"] += ("Dont send " + device + "/" + button +
-                                             " as values not valid (" + str(current_status) + ").")
+                    data["REQUEST"]["Return"] += self.queue_send.add2queue([[api_dev, device, button, status]])
+                    self.logging.debug("... add to queue [" + str(api_dev) + "," + str(device) + "," + str(button) + "," + str(status) + "]")
             else:
-                data["REQUEST"]["Return"] += self.queue_send.add2queue([[api_dev, device, button, status]])
-                self.logging.debug("... add to queue [" + str(api_dev) + "," + str(device) + "," + str(button) + "," + str(status) + "]")
+                data["REQUEST"]["Return"] += "Dont send " + device + "/" + button + " as device not defined (deleted or moved to archive)."
 
         self._refresh()
         data["DATA"] = {}
@@ -1245,7 +1355,9 @@ class RemoteAPI(RemoteDefaultClass):
                     commands_exist.append(command)
             elif not command_str.isnumeric() and "WAIT-" not in command_str:
                 commands_dont_exist.append(command)
-            elif "WAIT-" in command_str:
+            elif not command_str.isnumeric() and "MSG-" not in command_str:
+                commands_dont_exist.append(command)
+            elif "WAIT-" in command_str or "MSG-" in command_str:
                 pass
             else:
                 commands_exist.append(command)
@@ -1344,7 +1456,7 @@ class RemoteAPI(RemoteDefaultClass):
         self.logging.debug("send_text: " + button + " / " + device)
         if device.startswith("group"):
             group_id = device.replace("group_","")
-            act_macros = self.config.read(rm3presets.active_macros)
+            act_macros = self.config.read(rm3presets.active_macros, False, "rm3api.send_text()")
             devices = act_macros["groups"][group_id].get("devices", [])
             self.logging.info("send_text: " + button + " for GROUP " + group_id + " (" + str(devices) + ")")
         else:
@@ -1378,7 +1490,7 @@ class RemoteAPI(RemoteDefaultClass):
         """
         data = self._start(["request-only"])
         data["REQUEST"]["Return"] = self.edit.device_main_audio_set(device)
-        data["REQUEST"]["Command"] = "ChangeMainAudio"
+        data["REQUEST"]["Command"] = "SetMainAudio"
 
         self._refresh()
         data = self._end(data, ["no-data", "no-config", "no-status"])
@@ -1398,7 +1510,7 @@ class RemoteAPI(RemoteDefaultClass):
 
         data["REQUEST"]["Interface"] = interface
         data["REQUEST"]["Parameter"] = active
-        data["REQUEST"]["Command"] = "Change interface status"
+        data["REQUEST"]["Command"] = "InterfaceOnOff"
         data["REQUEST"]["Return"] = self.config.interface_active(interface, active)
 
         self.apis.check_directly = True
@@ -1425,7 +1537,7 @@ class RemoteAPI(RemoteDefaultClass):
         data["REQUEST"]["Command"] = "Change API device status"
         data["REQUEST"]["Return"] = self.config.interface_device_active(interface, api_device, active)
 
-        self.apis.check_directly = True
+        self.apis.api_check_device_connection_now = True
         self._refresh()
 
         data = self._end(data, ["no-data", "no-config", "no-status"])
@@ -1441,6 +1553,7 @@ class RemoteAPI(RemoteDefaultClass):
         data = self._start(["status-only"])
         data["REQUEST"]["Return"] = "OK: Returned status data."
         data["REQUEST"]["Command"] = "Status"
+
         data = self._end(data)
         return data
 

@@ -10,34 +10,55 @@ let language_app = {
     "DE" : {
         "CONNECTION_ERROR"              : "Verbindungsfehler",
         "CONNECTION_DISABLED"           : "API deaktiviert",
-        "RESET_SWITCH_OFF"              : "Reset Devices:<br/>vorher alle Geräte ausschalten.",
-        "RESET_VOLUME_TO_ZERO"          : "Reset Audio Settings:<br/>vorher alle Receiver mit Audio auf Mininum (0) einstellen.",
+
+        "EXECUTION_ERROR"               : "Konnte das Kommando &quot;{2}&quot; für {0} <b>{1}</b> nicht ausführen: <i>{3}</i>",
+        "ERROR_LOST_LOCAL_NETWORK"      : "Aktuell besteht keine Verbindung vom Server ins lokale Netzwerk.",
+        "ERROR_LOST_SERVER_CONNECT"     : "Aktuell besteht keine Verbindung von der App zum Server.",
+
+        "RESET_SWITCH_OFF"              : "Reset Devices ohne API-Anbindung:<br/>vorher alle Geräte ausschalten.",
+        "RESET_VOLUME_TO_ZERO"          : "Reset Audio Settings für Devices ohne API-Anbindung:<br/>vorher alle Receiver mit Audio auf Mininum (0) einstellen.",
 
         "POWER_DEVICE_OFF"              : "Schalte zuerst den Strom für das Gerät ein. {0}",
         "POWER_DEVICE_OFF_SCENE"        : "Schalte über den Toggle oben rechts den Strom für das Gerät ein. {0}",
         "POWER_DEVICE_OFF_SCENE_INFO"   : "<b>Strom ausgeschaltet:</b> Schalte den Strom für diese Szene über den Toggle oben rechts ein.",
 
         "PLEASE_WAIT"                   : "Bitte warten ... .",
-        "MACRO_PLEASE_WAIT"             : "Führe ein paar Kommandos aus, bitte warte ein paar Sekunden.",
+        "MACRO_PLEASE_WAIT"             : "Führe ein paar Kommandos aus, bitte kurz warten.",
 
-        "STATUS_DEV_OK"                 : "Das Gerät <b>{0}</b> ist OK.",
+        "MENU_SHOW_HIDDEN_ON"           : "Weitere zeigen",
+        "MENU_SHOW_HIDDEN_OFF"          : "Weitere verbergen",
+
+        "STATUS_DEV_OK"                 : "Das Gerät <b>{0}</b> ist bereit.",
         "STATUS_DEV_N/A"                : "Der Status vom Gerät <b>{0}</b> ist unbekannt, ausprobieren!",
         "STATUS_DEV_POWER_OFF"          : "Der Strom ist ausgeschaltet: <b>{0}</b>",
         "STATUS_DEV_ERROR"              : "Beim Gerät <b>{0}</b> ist ein Fehler aufgetreten. {1}",
-        "STATUS_DEV_API_DISABLED"       : "Die API <b>{0}</b> für das Gerät <b>{1}</b> wurde deaktiviert.",
+        "STATUS_DEV_API_DISABLED"       : "Die API <b>{0}</b> für das Gerät <b>{1}</b> ist deaktiviert.",
         "STATUS_DEV_API_STARTING"       : "Die API <b>{0}</b> für das Gerät <b>{1}</b> wird gerade gestartet, bitte warten.",
-        "STATUS_DEV_API_ERROR"          : "Bei der API <b>{0}</b> für das angeschlossene Gerät <b>{1}</b> ist ein Fehler aufgetreten. {2}",
+        "STATUS_DEV_API_ERROR"          : "Bei der API <b>{0}</b> für das angeschlossene Gerät <b>{1}</b> ist ein Fehler aufgetreten: <i>{2}</i>",
         "STATUS_DEV_OTHER_ERROR"        : "Es ist ein unbekannter Fehler beim Gerät <b>{0}</b> aufgetreten.",
         "STATUS_DEV_EMPTY"              : "Für dieses Gerät <b>{0}</b> wurde bislang noch keine Fernbedienung definiert.",
 
-        "STATUS_SCENE_OK"               : "Die Szene <b>{0}</b> ist OK.",
+        "STATUS_SCENE_OK"               : "Die Szene <b>{0}</b> ist bereit.",
         "STATUS_DEV_OFF"                : "Alle Geräte der Szene <b>{0}</b> sind ausgeschaltet.",
         "STATUS_SCENE_STARTING"         : "Mindestens eine für die Szene <b>{0}</b> nötige API startet gerade, bitte warten.",
         "STATUS_SCENE_POWER_OFF"        : "Der Strom über für Szene <b>{0}</b> ist ausgeschaltet. Nutze <b>{1}</b> zum einschalten.",
         "STATUS_SCENE_PARTLY"           : "Für die Szene <b>{0}</b> sind noch nicht alle nötigen Geräte eingeschaltet: <i>{1}</i>. &quot;ON&quot; dr&uuml;cken, um fehlende zu starten.",
-        "STATUS_SCENE_DISABLED"         : "Mindestens eine für die Szene <b>{0}</b> erforderliche API ist deaktiviert.",
+        "STATUS_SCENE_DISABLED"         : "Mindestens ein für die Szene <b>{0}</b> erforderliches Device ist deaktiviert: <i>{1}</i>",
         "STATUS_SCENE_ERROR"            : "Für mindestens eines der für die Szene <b>{0}</b> benötigten Geräte ist ein Fehler aufgetreten: <i>{1}</i>.",
         "STATUS_SCENE_EMPTY"            : "Für die Szene <b>{0}</b> wurde bislang noch keine Fernbedienung definiert.",
+
+        "STATUS_SCENE_API_DISABLED"     : "Mindestens eine für die Szene <b>{0}</b> erforderliche API ist deaktiviert: <i>{1}</i>",
+        "STATUS_SCENE_NO_DEVICES"       : "Es sind keine erforderlichen Geräte für die Szene <b>{0}</b> definiert.",
+
+        "STATUS_GROUP_OK"                : "Die Gruppe <b>{0}</b> und die enthaltenen Geräte sind bereit.",
+        "STATUS_GROUP_N/A"               : "Der Power-Status der Gruppe <b>{0}</b> ist nicht verfügbar. Bitte, ausprobieren.",
+        "STATUS_GROUP_POWER_OFF"         : "Mindestens eines der in der Gruppe <b>{0}</b> enthaltenen Geräte ist ausgeschaltet: {1}.",
+        "STATUS_GROUP_ERROR"             : "Für mindestens eines der in der Gruppe <b>{0}</b> enthaltenen Geräte ist ein Fehler aufgetreten: {1}",
+        "STATUS_GROUP_API_DISABLED"      : "Die API <b>{0}</b> für <b>{1}</b> ist deaktiviert.",
+        "STATUS_GROUP_API_STARTING"      : "Mindestens eine relevante API für <b>{0}</b> startet gerade, bitte warten.",
+        "STATUS_GROUP_API_ERROR"         : "Für mindestens eine relevante API von <b>{1}</b> ist ein Fehler aufgetreten: <i>{2}</i>",
+        "STATUS_GROUP_OTHER_ERROR"       : "Unbekannter Fehler für die Gruppe <b>{0}</b> aufgetreten.",
+        "STATUS_GROUP_EMPTY"             : "Die Gruppe <b>{0}</b> enthält bislang keine Geräte.",
 
         "STATUS_NO_SERVER_CONNECT"      : "Aktuell besteht keine Verbindung zum Server.",
         },
@@ -71,12 +92,16 @@ let language_app = {
         "API_COMMANDS"          : "API commands",
         "API_COMMANDS_TEST"     : "API commands - manual testing",
         "API_DEVICE_DELETE"     : "Do you really want to delete the device <b>{1}</b> from the <b>API {0}</b>?",
+        "API_DEVICE_DISCOVERY"  : "Do you want to start an API device discovery now? This will a few minutes and potentially slow down the server a bit.",
+        "API_DEVICE_CONFIG_NA"  : "<b>ERROR:</b> There is no API configuration available, or it's corrupt. Check the data files or use a copy from the sample data set (<u>data/_sample/devices/*/00_interface.json</u>).",
+        "API_RECONNECT_ALL"     : "Do you want to reconnect all devices now?",
         "API_INFORMATION"       : "API information",
         "API_SELECT_CMD"        : "API command or use your own ...",
         "API_INFO"              : "API info",
         "API_DEVICE_NOT_CONNECTED"   : "API device {0} not connected",
         "API_NOT_CONNECTED"          : "API {1} not connected",
         "API_SETTINGS"          : "API settings",
+        "API_SETTINGS_OVERVIEW" : "API overview",
         "API_TEST"              : "API test",
 
         "API_EDIT_REALLY_CHANGE": "Do you really want to <b>change the API settings</b> for this remote control?",
@@ -84,7 +109,7 @@ let language_app = {
         "API_EDIT_SELECT_API_DEVICE": "Please select a <b>device config</b> file",
         "API_EDIT_SELECT_REMOTE": "Please select a <b>remote control config</b> file",
 
-        "BUTTON_ASK_DELETE"     : "Do you really want to delete the button '{0}' from '{1}'?",
+        "BUTTON_ASK_DELETE"     : "Do you really want to delete the button '{0}_{1}' from '{2}'?",
         "BUTTON_ASK_DELETE_NUMBER" : "Do you really want to delete the button number [{0}] from '{1}'?",
         "BUTTON_INSERT_NAME"    : "Please insert name for button.",
         "BUTTON_RECORD"         : "Record button &quot;{0}&quot; for device &quot;{1}&quot;: click OK and then press the respective button on your remote control within the next 5 seconds.",
@@ -135,6 +160,15 @@ let language_app = {
         "CHANGE_MODES"          : "Change working modes",
         "CHANNEL"               : "channel",
 
+        "CHART"                 : "chart",
+        "CHART_EXISTS"          : "There is already a chart part of this remote control.",
+        "CHART_NO_ENTRIES"      : "No entries available.",
+        "CHART_ERROR_LOADING_CHART_JS": "Error: Could not load Chart.js.",
+        "CHART_LOADING"         : "Loading chart data ...",
+        "CHART_VALUE_EXISTS"    : "Value already exists.",
+        "CHART_VALUE_DOESNT_EXISTS" : "Value doesn't exists.",
+        "CHART_VALUE_SELECT"    : "Select chart value first.",
+
         "CONNECTION_ERROR"      : "Connection Error",
         "CONNECTION_POWER_OFF"  : "Power Off",
         "CONNECTION_DEVICE_OFF" : "Device Off",
@@ -184,8 +218,11 @@ let language_app = {
         "DEVICES_NOT_DEFINED_YET"   : "No devices defined yet.",
         "DEVICES_ADD_SETTINGS"      : "Use settings to create remote controls.",
 
+        "DISCOVERY_DONE"                : "OK: Discovery of API devices done.",
+        "DISCOVERY_FAILED"              : "ERROR: Discovery of API devices failed.",
+
         "DISPLAY"                       : "display",
-        "DISPLAY_EXISTS"                : "Display active for this remote.",
+        "DISPLAY_EXISTS"                : "There is already a display part of this remote control.",
         "DISPLAY_LABEL_SELECT"          : "Select label to be deleted in the display.",
         "DISPLAY_LABEL_DONT_EXIST"      : "Selected label doesn't exist in display definition.",
         "DISPLAY_VALUE_SELECT"          : "Select device and value to be added in the display.",
@@ -197,6 +234,7 @@ let language_app = {
         "EDIT_ADD_DISPLAY"       : "Add and edit display",
         "EDIT_DEVICE"            : "Edit device",
         "EDIT_DEVICES"           : "Edit devices",
+        "EDIT_ARCHIVED_DEVICES"  : "Manage archived devices",
         "EDIT_DISPLAY"           : "Edit display",
         "EDIT_ELEMENTS"          : "Edit elements",
         "EDIT_JSON"              : "Edit JSON",
@@ -207,9 +245,17 @@ let language_app = {
         "EDIT_REMOTES"           : "Edit remotes",
         "EDIT_SCENE"             : "Edit scene",
         "EDIT_SCENES"            : "Edit scenes",
+        "EDIT_ARCHIVED_SCENES"   : "Manage archived scenes",
+        "EDIT_RECORDINGS"        : "Edit recordings",
+        "EDIT_RECORDING_SETTINGS": "Edit general settings",
+        "EDIT_RECORDED_FIELDS"   : "Edit values to be recorded",
 
         "EXTERNAL_ID"            : "External ID",
+        "EXECUTION_ERROR"        : "Could not execute command &quot;{2}&quot; for {0} <b>{1}</b>: <i>{3}</i>",
         "ERROR_UNKNOWN"          : "Unknown error",
+        "ERROR_THREAD_TOO_LONG"  : "The thread <b>{0}</b> did not respond for <b>{1}s</b>.",
+        "ERROR_LOST_LOCAL_NETWORK": "Lost connection to local network, and by that to all connected devices.",
+        "ERROR_LOST_SERVER_CONNECT": "Lost connection to the server.",
 
         "FORMAT_INCORRECT"       : "format is not correct",
         "FAVICON_INFO"           : "Select a different favicon or apple-icon. <i>Note:</i> this selection at the moment is temporary only - " +
@@ -246,11 +292,16 @@ let language_app = {
         "LABEL"                 : "Label",
 
         "LOAD_TEMPLATE"         : "Load template",
+        "LOADING_APP"           : "Loading App ...",
 
         "MACRO"                 : "macro",
         "MACROS"                : "macros",
         "MACRO_PLEASE_WAIT"     : "Executing commands, please wait a few seconds!",
-        "MACRO_DEVICE_EDIT"     : "<p>Just for information; edit macros in the <u style='cursor:pointer;' onclick='rm3settings.create(\"edit_scenes\");'>scene settings</u> ...<br/></p>",
+        "MACRO_DEVICE_EDIT"     : "<p>Just for information; edit macros in the <u style='cursor:pointer;' onclick='rmSettings.create(\"edit_scenes\");'>scene settings</u> ...<br/></p>",
+        "MACRO_EMPTY"           : "ERROR: This button of the &quot;{0}&quot; contains an empty macro.",
+
+        "MACRO_EDIT_TIMING"     : "Wait [s]",
+        "MACRO_EDIT_WAITING"    : "Wait message [s]",
 
         "MAIN"                  : "main",
         "MAIN_SETTINGS"         : "Main settings",
@@ -307,7 +358,7 @@ let language_app = {
                                   "<br/><i>-&gt; Format:</i> \"&lt;macro&gt;\" : [\"&lt;device&gt;_&lt;button&gt;||&lt;value&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
 
                                   "<li>Macros can be used in all scenes (not in devices): 'macro_&lt;macro&gt;', 'dev-on_&lt;device&gt;', 'dev-off_&lt;device&gt;'. Note: if in the scene a macro with the same name is defined, the scene macro is used.</li>" +
-                                  "<li>Start with &quot;WAIT-xx&quot; in a macro to show a message that it's necessary to wait for xx seconds</li>" +
+                                  "<li>Start with &quot;MSG-xx&quot; in a macro to show a message that it's necessary to wait for xx seconds</li>" +
                                   "<li>For devices without API (method=record) use e.g. \"&lt;button&gt;||set-&lt;value&gt;\" to set a value without sending the command. This can be useful if you work with wifi controlled outlets and a device always start in mode \"ON\".</li>" +
                                   "</ul>",
         "MANUAL_MACROS_SCENE"   : "<i>Edit Macros for this scene:</i><br/><br/><ul class='help'>" +
@@ -318,12 +369,14 @@ let language_app = {
                                   "<br/><i>-&gt; Format:</i> [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"] </li>" +
                                   "<li><u>Other scene macros</u>: add here all buttons / commands to create another macro for this scene."+
                                   "<br/><i>-&gt; Format:</i> {\"&lt;macro_name&gt;\" : [\"&lt;device&gt;_&lt;button&gt;\", 2, \"dev-on_&lt;device&gt;\"]}</li>" +
-                                  "<li>Use the command &quot;WAIT-xx&quot; in a macro to show a message that it's necessary to wait for xx seconds</li>" +
+                                  "<li>Use the command &quot;MSG-xx&quot; in a macro to show a message that it's necessary to wait for xx seconds</li>" +
                                   "<li>For devices without API (method=record) use e.g. \"&lt;button&gt;||set-&lt;value&gt;\" to set a value without sending the command. This can be useful if you work with wifi controlled sockets and a device always start in mode \"ON\".</li>" +
                                   "</ul>",
 
         "METHOD"                : "Method",
-                          
+        "MENU_SHOW_HIDDEN_ON"   : "Show invisible",
+        "MENU_SHOW_HIDDEN_OFF"  : "Hide invisible",
+
         "MISSING_DATA"          : "Data are missing for '{0}'.<br/>Check files '{1}' and '{2}' in data directory.",
         "MISSING_DATA_SCENE"    : "Data are missing for '{0}'.<br/>Check file '{1}' in data directory.",
         
@@ -332,6 +385,7 @@ let language_app = {
         "MODE_INTELLIGENT"      : "Intelligent mode",
         "MODE_MANUAL"           : "Manual mode",
         "MODE_EASY_EDIT"        : "Easy edit",
+        "MODE_JSON_HIGHLIGHT"   : "JSON highlighting",
         "MODE_HINT"             : "Show hints for remote controls (not only errors)",
 
         "MSG_ONLY_ONE_COLOR_PICKER"    : "This color picker already exists in the remote control, only one is possible.",
@@ -352,23 +406,29 @@ let language_app = {
 
         "QUICK_ACCESS"                 : "Quick Access",
 
-        "RECONNECT"                    : "Reconnect",
-        "RECORD_COMMAND"               : "Record command",
-        "RECORD_DELETE_COMMANDS"       : "Record / delete commands",
+        "RECONNECT"                    : "reconnect",
+        "RECONNECT_DONE"               : "OK: Reconnect done ({0}).",
+        "RECONNECT_FAILED"             : "ERROR: Reconnect failed ({0}).",
+
+        "RECORD_COMMAND"               : "record command",
+        "RECORD_DELETE_COMMANDS"       : "Record or delete commands",
         "REMOTE"                       : "remote",
         "REMOTE_ADD"                   : "Add remote controls",
         "REMOTE_CONFIG_ERROR"          : "Error in remote config file(s) '{0}': ",
         "REMOTE_CONFIG_ERROR_UNKNOWN"  : "Unknown error in remote config file(s) '{0}'",
         "RELOAD_TAKES_LONGER"          : "Reload takes longer than expected ...",
         "RELOAD_TAKES_MUCH_LONGER"     : "Reload takes longer than much expected ...",
-        "RESET_SWITCH_OFF"             : "Reset devices:<br/>switch off all devices before.",
-        "RESET_VOLUME_TO_ZERO"         : "Reset audio settings:<br/>set the volume of all audio devices to mininum (0) before.",
+        "RESET_SWITCH_OFF"             : "Reset devices without API connect:<br/>switch off all devices before.",
+        "RESET_VOLUME_TO_ZERO"         : "Reset audio settings for devices without API connect:<br/>set the volume of all audio devices to mininum (0) before.",
         "RESTART"                      : "Are you sure you want to restart the server?",
         "RELOAD_ALL_SCRIPTS"           : "Reload all CSS and JavaScript files.",
+        "REMOTE_MOVE_TO_ARCHIVE"       : "Do you want to move the {0} remote control <b>{1}</b> to archive?",
+        "REMOTE_RESTORE_FROM_ARCHIVE"  : "Do you want to restore the {0} remote control <b>{1}</b> from archive?",
 
         "SAVE"                         : "Save",
 
         "SCENE"                        : "scene",
+        "SCENE_STATUS"                 : "Scene status",
         "SCENE_CONFIG_ERROR"           : "Error in scene config file(s) '{0}': ",
         "SCENE_CONFIG_ERROR_UNKNOWN"   : "Unknown error in scene config file(s) '{0}'",
 
@@ -395,6 +455,7 @@ let language_app = {
         "SETTINGS_MACROS"              : "Global Macros &amp; Groups",
         "SETTINGS_SCENES"              : "Scene Settings",
         "SETTINGS_TIMER"               : "Timer Settings",
+        "SETTINGS_RECORDINGS"          : "Recording Settings",
 
         "SLIDER"                       : "slider",
         "SLIDER_SELECT_CMD"            : "Select command, to insert slider.",
@@ -409,18 +470,31 @@ let language_app = {
         "STATUS_DEV_ERROR"             : "An error occurred for device <b>{0}</b>. {1}",
         "STATUS_DEV_API_DISABLED"      : "The API <b>{0}</b> for the device <b>{1}</b> has been disabled.",
         "STATUS_DEV_API_STARTING"      : "The API <b>{0}</b> for the device <b>{1}</b> is starting, please wait.",
-        "STATUS_DEV_API_ERROR"         : "An API error occurred for <b>{0}</b> and the connected device <b>{1}</b>. {2}",
+        "STATUS_DEV_API_ERROR"         : "An API error occurred for <b>{0}</b> and the connected device <b>{1}</b>: <i>{2}</i>",
         "STATUS_DEV_OTHER_ERROR"       : "Unknown error occurred for the device <b>{0}</b>.",
         "STATUS_DEV_EMPTY"             : "For this device <b>{0}</b> no remote control layout is defined yet.",
 
+        "STATUS_GROUP_OK"                : "Group <b>{0}</b> and its devices are OK.",
+        "STATUS_GROUP_N/A"               : "The power status of the group <b>{0}</b> is not available. Just try out.",
+        "STATUS_GROUP_POWER_OFF"         : "At least one for the group <b>{0}</b> relevant power device is switched off: {1}.",
+        "STATUS_GROUP_ERROR"             : "An error occurred for at least on device of the group <b>{0}</b>. {1}",
+        "STATUS_GROUP_API_DISABLED"      : "The API <b>{0}</b> for the device <b>{1}</b> has been disabled.",
+        "STATUS_GROUP_API_STARTING"      : "At least one API of the group <b>{0}</b> is starting, please wait.",
+        "STATUS_GROUP_API_ERROR"         : "At least for one API for the group <b>{1}</b> an error occurred: <i>{2}</i>",
+        "STATUS_GROUP_OTHER_ERROR"       : "Unknown error occurred for the group <b>{0}</b>.",
+        "STATUS_GROUP_EMPTY"             : "For the group <b>{0}</b> no devices are defined yet.",
+
         "STATUS_SCENE_OK"              : "Scene <b>{0}</b> is OK.",
-        "STATUS_DEV_OFF"               : "All devices of the scene <b>{0}</b> are switched off.",
+        "STATUS_SCENE_OFF"               : "All devices of the scene <b>{0}</b> are switched off.",
         "STATUS_SCENE_STARTING"        : "At least one required API the scene <b>{0}</b> is (re)starting, please wait.",
         "STATUS_SCENE_POWER_OFF"       : "Power device <b>{1}</b> for scene <b>{0}</b> is switched off.",
         "STATUS_SCENE_PARTLY"          : "For the scene <b>{0}</b> required devices are still switched off: <i>{1}</i>. Press 'ON' to switch on the missing devices.",
-        "STATUS_SCENE_DISABLED"        : "At least one for the scene <b>{0}</b> required API  is disabled.",
+        "STATUS_SCENE_DISABLED"        : "At least one for the scene <b>{0}</b> required API is disabled:  <i>{1}</i>",
         "STATUS_SCENE_ERROR"           : "For at least one of the required devices for the scene <b>{0}</b> an error occurred: <i>{1}</i>.",
         "STATUS_SCENE_EMPTY"           : "For this scene <b>{0}</b> no remote control layout is defined yet.",
+
+        "STATUS_SCENE_API_DISABLED"    : "At least one for the scene <b>{0}</b> required API  is disabled: <i>{1}</i>",
+        "STATUS_SCENE_NO_DEVICES"      : "There a no required devices defined for this scene <b>{0}</b>.",
 
         "STATUS_NO_SERVER_CONNECT"      : "At the moment there is no connection to the server.",
 
@@ -430,15 +504,21 @@ let language_app = {
         "TEST_DEVICE_COMMANDS"         : "Test here your commands for device {0}.",
         "TRY_OUT"                      : "try out",
 
+        "TIMER_TRY"                    : "Try out timer {0}?",
+        "TIMER_DELETE"                 : "Do you want to delete the timer {0}?",
+
         "TOGGLE"                       : "toggle",
         "TOGGLE_SELECT_DEVICE"         : "Select a toggle device.",
         "TOGGLE_SELECT_DESCR"          : "Define a description for the toggle.",
         "TOGGLE_SELECT_VALUE"          : "Select a value field for the toggle.",
         "TOGGLE_SELECT_ON"             : "Select a switch ON command for the toggle.",
         "TOGGLE_SELECT_OFF"            : "Select a switch OFF command for the toggle.",
+        "TOGGLE_DEVICE_DOESNT_EXIST"   : "ERROR: The power toggle in the header is defined for the device '{0}'. This device is not defined (anymore). Remove the toggle or change the power device for the toggle.",
 
         "VERSION_AND_STATUS"           : "Version and Status Information",
 
         "WORKING_MODES"                : "Working modes",
         }
     }
+
+remote_scripts_loaded += 1;

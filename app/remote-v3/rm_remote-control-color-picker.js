@@ -3,14 +3,12 @@
 //--------------------------------
 // uses parts from source: https://www.w3docs.com/tools/color-picker
 
+
 /* create a color-picker, to be embedded into a button -> RemoteControlAdvanced.colorPicker() */
-class RemoteElementColorPicker {
+class RemoteElementColorPicker extends RemoteDefaultClass {
     constructor(name) {
-
-        this.hh         = 0;
-        this.class_name = name;
-        this.logging    = new jcLogging(this.class_name);
-
+        super(name);
+        this.hh = 0;
     }
 
     set_device(name) {
@@ -86,15 +84,15 @@ class RemoteElementColorPicker {
                 const value = Math.round(x / canvas.width * 1000) / 10;
 
                 // Display RGB values
-                eval(this.class_name).logging.debug("PIXEL DATA: " + pixelData);
-                eval(this.class_name).logging.debug(`PIXEL DATA: X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue} | value: ${value}`);
+                this.logging.debug("PIXEL DATA: " + pixelData);
+                this.logging.debug(`PIXEL DATA: X: ${x}, Y: ${y} | R: ${red}, G: ${green}, B: ${blue} | value: ${value}`);
                 color_demo.style.backgroundColor = "rgb("+red+","+green+","+blue+")";
 
                 let input = `${red}:${green}:${blue}`;
-                if (color_model.indexOf("CIE_1931") > -1)          { eval(this.class_name).sendColorCode_CIE1931(color_send_command, input, device); }
-                else if (color_model.indexOf("temperature") > -1)  { eval(this.class_name).sendColorCode_temperature(color_send_command, value, device); }
-                else if (color_model.indexOf("Brightness") > -1)   { eval(this.class_name).sendColorCode_brightness(color_send_command, value, device); }
-                else                                                          { eval(this.class_name).sendColorCode(color_send_command, input, device); }
+                if (color_model.indexOf("CIE_1931") > -1)          { eval(this.name).sendColorCode_CIE1931(color_send_command, input, device); }
+                else if (color_model.indexOf("temperature") > -1)  { eval(this.name).sendColorCode_temperature(color_send_command, value, device); }
+                else if (color_model.indexOf("Brightness") > -1)   { eval(this.name).sendColorCode_brightness(color_send_command, value, device); }
+                else                                                          { eval(this.name).sendColorCode(color_send_command, input, device); }
             });
 
         }
@@ -106,8 +104,8 @@ class RemoteElementColorPicker {
             let xy_color  = this.RGB_to_XY(rgb_color);
             input     = xy_color[0] + ":" + xy_color[1];
 
-            this.logging.log("Send CIE 1931 XY color coordinates: " + input + " / " + this.class_name + " / " + device);
-            appFW.requestAPI('GET',[ 'send-data', device, send_command, '"'+input+'"' ], '','');
+            this.logging.log("Send CIE 1931 XY color coordinates: " + input + " / " + this.name + " / " + device);
+        rmApi.call("SendData", [device, send_command, '"'+input+'"' ]);
         }
 
     // send color code for brightness
@@ -117,15 +115,16 @@ class RemoteElementColorPicker {
 
         if (device.indexOf("group") >= 0) {
             let group_id = device.split("_")[1];
-            let devices = dataAll["CONFIG"]["macros"]["groups"][group_id]["devices"];
+            let devices = rmData.device_groups.list_devices(group_id);
             check_device = devices[0];
         }
 
-        let min_max  = dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]["values"];
-        let type     = dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]["type"];
+        let commands_def = rmData.devices.list_commands(check_device, "definition");
+        let min_max  = commands_def[pure_cmd]["values"];
+        let type     = commands_def[pure_cmd]["type"];
         if (min_max === undefined || min_max["min"] === undefined || min_max["max"] === undefined) {
             appMsg.info("Could not set brightness: no min-max values for " + check_device + " / " + pure_cmd + ".  Check remote configuration!","error");
-            this.logging.error(dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]);
+            this.logging.error(commands_def[pure_cmd]);
             this.logging.error(min_max["min"]);
         }
         else {
@@ -134,7 +133,8 @@ class RemoteElementColorPicker {
             if (type === "integer") { value = Math.round(value); }
             this.logging.log("BRIGHTNESS: " + send_command + " / " + input + " / min=" + min_max["min"] + "; max=" + min_max["max"] + " / " + value);
             this.logging.debug(min_max);
-            appFW.requestAPI('GET',[ 'send-data', device, send_command, value ], '','');
+            rmApi.call("SendData", [device, send_command, value ]);
+
         }
     }
 
@@ -145,15 +145,17 @@ class RemoteElementColorPicker {
 
             if (device.indexOf("group") >= 0) {
                 let group_id = device.split("_")[1];
-                let devices = dataAll["CONFIG"]["macros"]["groups"][group_id]["devices"];
+                let devices = rmData.device_groups.list_devices(group_id);
+
                 check_device = devices[0];
             }
 
-            let min_max  = dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]["values"];
-            let type     = dataAll["CONFIG"]["devices"][check_device]["commands"]["definition"][pure_cmd]["type"];
+            let commands_def = rmData.devices.list_commands(check_device, "definition");
+            let min_max  = commands_def[pure_cmd]["values"];
+            let type     = commands_def[pure_cmd]["type"];
             if (min_max === undefined || min_max["min"] === undefined || min_max["max"] === undefined) {
                 appMsg.info("Could not set color temperature: no min-max values for " + device + " / " + pure_cmd + ". Check remote configuration!","error");
-                this.logging.error(dataAll["CONFIG"]["devices"][device]["commands"]["definition"][pure_cmd]);
+                this.logging.error(commands_def[pure_cmd]);
                 }
             else {
                 let range = min_max["max"] - min_max["min"];
@@ -161,16 +163,17 @@ class RemoteElementColorPicker {
                 if (type === "integer") { value = Math.round(value); }
                 this.logging.log("TEMPERATURE: " + send_command + " / " + input + " / min=" + min_max["min"] + "; max=" + min_max["max"] + " / " + value);
                 this.logging.debug(min_max);
-                appFW.requestAPI('GET',[ 'send-data', device, send_command, value ], '','');
-                }
+                rmApi.call("SendData", [device, send_command, value ]);
+
+            }
             }
 
     // send commands depending on color model
     sendColorCode(send_command, input, device) {
 
-            this.logging.log("Send default color code: " + input + " / " + this.class_name + " / " + device);
-            appFW.requestAPI('GET',[ 'send-data', device, send_command, '"'+input+'"'	 ], '','');
-            }
+            this.logging.log("Send default color code: " + input + " / " + this.name + " / " + device);
+            rmApi.call("SendData", [device, send_command, '"'+input+'"' ]);
+    }
 
     // Function to convert RGB to XY
     RGB_to_XY(rgb) {
@@ -201,3 +204,5 @@ class RemoteElementColorPicker {
             }
 }
 
+
+remote_scripts_loaded += 1;

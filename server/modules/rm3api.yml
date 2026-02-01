@@ -58,6 +58,29 @@ paths:
               DATA:
                 $ref: "#/definitions/DATA"
 
+    post:
+      operationId: __main__.remoteAPI.get_config_reload
+      tags:
+        - list
+      summary: list status and remote definition data
+      description: list status and remote definition data
+      responses:
+        200:
+          description: Successfully status data
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              CONFIG:
+                $ref: "#/definitions/CONFIG"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+              DATA:
+                $ref: "#/definitions/DATA"
+
+
   /status/:
     get:
       operationId: __main__.remoteAPI.status
@@ -474,6 +497,121 @@ paths:
                 $ref: "#/definitions/REQUEST"
               DATA:
                 $ref: "#/definitions/DATA"
+
+  /chart-data/{chart_filter}/:
+    post:
+      operationId: __main__.remoteAPI.get_chart_data
+      tags:
+        - status
+      parameters:
+        - name: chart_filter
+          in: path
+          type: string
+          required: true
+        - name: chart_parameters
+          in: body
+          schema:
+            type:
+              object
+          required: true
+      summary: get recorded data for a chart
+      description: get recorded data for a chart
+      responses:
+        200:
+          description: Successfully status data
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              DATA:
+                $ref: "#/definitions/DATA"
+
+
+  /archive/{remote_type}/:
+    get:
+      operationId: __main__.remoteAPI.get_archived_data
+      tags:
+        - list
+      parameters:
+        - name: remote_type
+          in: path
+          type: string
+          required: true
+      summary: get data of archived remote controls
+      description: get data of archived remote controls
+      responses:
+        200:
+          description: Successfully status data
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              DATA:
+                $ref: "#/definitions/DATA"
+
+  /archiving/{direction}/{remote_type}/{remote_id}/:
+    put:
+      operationId: __main__.remoteAPI.edit_remote_archive
+      tags:
+        - edit
+      parameters:
+        - name: direction
+          in: path
+          type: string
+          required: true
+        - name: remote_type
+          in: path
+          type: string
+          required: true
+        - name: remote_id
+          in: path
+          type: string
+          required: true
+      summary: change recording configuration
+      description: change recording configuration
+      responses:
+        200:
+          description: Success
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              DATA:
+                $ref: "#/definitions/DATA"
+
+
+  /edit-recording/:
+    put:
+      operationId: __main__.remoteAPI.set_config_record
+      tags:
+        - edit
+      parameters:
+        - name: record_config
+          in: body
+          schema:
+            type:
+              object
+          required: true
+      summary: change recording configuration
+      description: change recording configuration
+      responses:
+        200:
+          description: Success
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              DATA:
+                $ref: "#/definitions/DATA"
+
 
   /timer-edit/{timer_id}/:
     put:
@@ -1096,6 +1234,25 @@ paths:
       responses:
         200:
           description: Successfully done reset
+          schema:
+            properties:
+              API:
+                $ref: "#/definitions/API"
+              REQUEST:
+                $ref: "#/definitions/REQUEST"
+              STATUS:
+                $ref: "#/definitions/STATUS"
+
+  /discovery/:
+    post:
+      operationId: __main__.remoteAPI.discover_api
+      tags:
+        - maintain
+      summary: discover api devices
+      description: discover api devices
+      responses:
+        200:
+          description: Successfully triggered discovery
           schema:
             properties:
               API:

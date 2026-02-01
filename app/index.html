@@ -4,23 +4,23 @@
 <head>
     <title id="title">jc://remote/</title>
 
-    <META charset="utf-8"></META>
-    <META http-equiv="content-type" content="text/html; charset=utf-8"></META>
-    <META http-equiv="cache-control" content="no-cache"></META>
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="content-type" content="no-cache">
 
-    <meta name="theme-color" content="#000000"></meta>
+    <meta name="theme-color" content="#000000">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes"></meta>
-    <meta name="apple-mobile-web-app-status-bar-style" content="black"></meta>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"></meta>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
 
     <link rel="icon" href="remote-v3/icon/favicon.png" sizes="any" type="image/svg+xml">
-    <LINK rel=apple-touch-icon href="remote-v3/icon/rmc1.jpg"></LINK>
-    <LINK rel=apple-touch-icon-precomposed href="remote-v3/icon/rmc1.jpg"></LINK>
+    <link rel=apple-touch-icon href="remote-v3/icon/rmc1.jpg">
+    <link rel=apple-touch-icon-precomposed href="remote-v3/icon/rmc1.jpg">
 
-    <!-- load main javascript files, dynamic load of additional files is managed at the end of this file -->
+    <!-- load main JavaScript files, dynamic load of additional files is managed at the end of this file -->
 
-    <script src="/modules/modules_1.2.4.js"></script>
+    <script src="/modules/modules_1.2.5.js"></script>
     <script src="/framework/app-fw.js"></script>
     <script src="/remote-v3/remote.js"></script>
     <style>
@@ -43,7 +43,12 @@
 </head>
 <body>
     <div id="loading_overlay" class="loading_overlay">
-        <img src="framework/img/loading3.gif" style='height:100px;width:100px' alt="loading" />
+        <div>
+            <img src="framework/img/loading3.gif" style='height:100px;width:100px' alt="loading" />
+            <br/>
+            <span id="loading_overlay_info" style='color:#FF0044;text-align:center;'></span>
+        </div>
+
     </div>
 
     <nav id="nav">
@@ -51,12 +56,13 @@
 
     <!-- APP specific header elements // START -->
 
-    <nav-info id="edit1"  onClick="" style="cursor:pointer;"></nav-info><!--icon-->
-    <nav-info id="audio">
-        <nav-info id="audio3" style="cursor:pointer;">IIIIIIIIIIIIIIIIIIII</nav-info>
-        <nav-info id="audio2" style="cursor:pointer;"></nav-info>
-        <nav-info id="audio1" style="cursor:pointer;"></nav-info>
-        <nav-info id="audio4"></nav-info><!--icon-->
+    <nav-info id="menu-audio">
+        <nav-info id="menu-audio3" style="cursor:pointer;">IIIIIIIIIIIIIIIIIIII</nav-info>
+        <nav-info id="menu-audio2" style="cursor:pointer;"></nav-info>
+        <nav-info id="menu-audio1" style="cursor:pointer;"></nav-info>
+        <nav-info id="edit1"  onClick=""></nav-info><!--icon-->
+        <nav-info id="attention"></nav-info>
+        <nav-info id="menu-audio4"></nav-info><!--icon-->
     </nav-info>
 
 
@@ -71,7 +77,7 @@
     </nav>
 
     <div id="statusLED"><div id="red"></div></div>
-    <div id="statusLEDload"><img src="framework/img/loading3.gif"></div>
+    <div id="statusLEDload"><img src="framework/img/loading3.gif" alt="Loading ..."></div>
     <div id="headerRight" class="headerRight"></div>
     <div id="app_background" class="app_background"></div>
     <div id="app_content" class="app_content">
@@ -101,7 +107,6 @@
     </div>
 
     <div id="appMsg"></div>
-    <div id="attention">test</div>
     <div id="ontop"        style="display:none"></div>
     <div id="theme_check"  style="display:none"></div>
 
@@ -111,7 +116,7 @@
 
     <!-- APP specific scripts and HTML elements // END -->
 
-    <!-- load additional css and javascript files in specific order // START -->
+    <!-- load additional CSS and JavaScript files in specific order // START -->
 
     <script>
 
@@ -124,15 +129,41 @@
         loadCss("/remote-v3/",     remote_css);
         loadScripts("/remote-v3/", remote_js);
 
+        let loaded_modules = {};
+        let loaded_ok = false;
+
         setTimeout( function() {
-            startApp();
-            startRemote();
-            elementHidden("loading_overlay");
-        }, 1000 );
+            loaded_modules = {
+                module: loadScriptsOk("/modules/", modules_js, module_scripts_loaded),
+                framework: loadScriptsOk("/framework/", app_js, app_framework_loaded),
+                remote: loadScriptsOk("/remote-v3/", remote_js, remote_scripts_loaded)
+            }
+            loaded_ok = (loaded_modules.module && loaded_modules.framework && loaded_modules.remote);
+            console.log(loaded_modules);
+            console.log(loaded_ok);
+
+            setTimeout( function() {
+                if (loaded_ok) {
+                    startApp();
+                    startRemote();
+                    elementHidden("loading_overlay");
+                } else {
+                    let message = "&nbsp;<br/>";
+                    for (let key in loaded_modules) {
+                        if (!loaded_modules[key]) {
+                            message += `Could not load all <u>${key}</u> scripts.<br/>`;
+                        }
+                    }
+                    message += "Check browser logging for details."
+                    document.getElementById("loading_overlay_info").innerHTML = message;
+                }
+            }, 500 );
+        }, 1500);
+
 
     </script>
 
-    <!-- load additional css and javascript files in specific order // END -->
+    <!-- load additional CSS and JavaScript files in specific order // END -->
 
     &nbsp;<br/>
     &nbsp;<br/>

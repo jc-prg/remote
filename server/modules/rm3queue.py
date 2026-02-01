@@ -1,3 +1,4 @@
+import sys
 import time
 import datetime
 from server.modules.rm3classes import RemoteThreadingClass
@@ -38,41 +39,50 @@ class QueueApiCalls(RemoteThreadingClass):
         """
         loop running in the background
         """
+        while not self.config.all_available_api_loaded:
+            time.sleep(1)
 
-        time.sleep(20)
         self.logging.info("Starting " + self.name)
         count = 0
 
         while self._running:
 
-            if len(self.queue) == 0:
-                self.thread_wait(use_wait_time=0.04)
-                count += 1
-                if count > 10000:
-                    self.logging.info("Queue still running.")
-                    count = 0
-                continue
+            if self.config.local_network_available:
 
-            now = time.time()
-            if "," in str(self.queue[0]):
-                interface, device, button, state, request_time, execution_time = self.queue[0]
+                if self.config.local_network_empty_queue:
+                    self.queue = []
+                    time.sleep(1)
+                    self.config.local_network_empty_queue = False
+                    self.logging.info("Emptied queue after network reconnect.")
 
-                if now >= execution_time:
-                    self.logging.debug("Execute: - " + str(device) + " " + str(button) + " - " + time.strftime("%H:%M:%S", time.localtime(execution_time)))
-                    cmd = self.queue.pop(0)
-                    self.execute(cmd)
+                if len(self.queue) == 0:
+                    self.thread_wait(use_wait_time=0.04)
+                    count += 1
+                    if count > 10000:
+                        self.logging.info("Queue still running.")
+                        count = 0
+                    continue
+
+                now = time.time()
+                if "," in str(self.queue[0]):
+                    interface, device, button, state, request_time, execution_time = self.queue[0]
+
+                    if now >= execution_time:
+                        self.logging.debug("Execute: - " + str(device) + " " + str(button) + " - " + time.strftime("%H:%M:%S", time.localtime(execution_time)))
+                        cmd = self.queue.pop(0)
+                        self.execute(cmd)
+                    else:
+                        self.logging.debug("Wait to execute: " + str(device) + " " + str(button) + " - " + time.strftime("%H:%M:%S", time.localtime(execution_time)))
+                        cmd = self.queue.pop(0)
+                        self.queue.append(cmd)
+
+                elif type(self.queue[0]) is int or type(self.queue[0]) is float:
+                    command = self.queue.pop(0)
+
                 else:
-                    self.logging.debug("Wait to execute: " + str(device) + " " + str(button) + " - " + time.strftime("%H:%M:%S", time.localtime(execution_time)))
-                    cmd = self.queue.pop(0)
-                    self.queue.append(cmd)
-
-            elif type(self.queue[0]) is int or type(self.queue[0]) is float:
-                command = self.queue.pop(0)
-
-            else:
-                command = self.queue.pop(0)
-                self.logging.debug("Execute: " + str(command))
-                self.execute(command)
+                    command = self.queue.pop(0)
+                    self.logging.debug("Execute: " + str(command))
+                    self.execute(command)
 
             self.thread_wait(use_wait_time=0.01)
             count = 0
@@ -123,8 +133,8 @@ class QueueApiCalls(RemoteThreadingClass):
                         self.logging.debug("queue_execute: load_after activated - " + device + "_" + button)
 
                 except Exception as e:
-                    result = "ERROR queue query_list (send," + interface + "," + device + "," +\
-                             button + "=" + str(state) + "): " + str(e)
+                    self.error_details(sys.exc_info(),"QueueApiCalls.execute()")
+                    result = "ERROR queue query_list (send," + interface + "," + device + "," + button + "=" + str(state) + "): " + str(e)
                     self.logging.error(result)
 
             elif self.query_send == "query":
@@ -148,6 +158,7 @@ class QueueApiCalls(RemoteThreadingClass):
                         log_results.append(value + "=" + str(result))
 
                     except Exception as e:
+                        self.error_details(sys.exc_info(),"QueueApiCalls.execute()")
                         result = "ERROR queue query_list (query," + str(interface) + "," + str(device) + "," + str(value) + "): " + str(e)
                         self.logging.error(result)
 

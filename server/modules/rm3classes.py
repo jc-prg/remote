@@ -1,8 +1,10 @@
 import logging
+import sys
 import time
 import threading
+import traceback
 import server.modules.rm3presets as rm3presets
-
+from datetime import datetime
 
 class RemoteDefaultClass(object):
     """
@@ -40,6 +42,28 @@ class RemoteDefaultClass(object):
 
         if self.log_level_set != "":
             self.logging.info(f"Set log-level for {self.class_id} to {self.log_level_name}.")
+
+    def error_details(self, details, called_from="", ignore=None):
+        """ 
+        print error details, call self.error_details(sys.exc_info(), "ClassName.def_name()")
+        """
+        if ignore is None:
+            ignore = []
+
+        exc_type, exc_value, exc_tb = details
+        tb = "".join(traceback.format_tb(exc_tb))
+        message = f"{self.name} ({called_from}): {exc_type} | {exc_value}\n {tb}"
+
+        for key in ignore:
+            if key in message:
+                self.logging.debug(f"IGNORE EXCEPTION in {message}")
+                return
+
+        self.logging.error(f"EXCEPTION in {message}")
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        timestamp = ("-" * 50) + "\n" + timestamp + "  -> OTHER EXCEPTION:\n" + ("-" * 50)
+        with open(rm3presets.log_filename_error, "a", encoding="utf-8") as f:
+            f.write(f"{timestamp}\n{message}\n")
 
 
 class RemoteApiClass(RemoteDefaultClass):
@@ -83,6 +107,7 @@ class RemoteApiClass(RemoteDefaultClass):
             "PowerDevice": "",
             "Timeout": 5
         }
+        self.api_trigger_reconnect = 0
 
         self.method = method
         self.status = "Start"
@@ -219,6 +244,16 @@ class RemoteApiClass(RemoteDefaultClass):
             time.sleep(0.2)
         return
 
+    def trigger_reconnect(self, trigger=True):
+        """
+        set cental var as signal for the main interfaces thread to trigger a reconnect,
+        this can be used in case of a fatal error from inside the API module - should be used rarely
+        """
+        if trigger:
+            self.api_trigger_reconnect = time.time()
+        else:
+            self.api_trigger_reconnect = 0
+
     def test(self):
         if not "test" in self.devices_available_message:
             self.devices_available_message["test"] = True
@@ -283,6 +318,12 @@ class RemoteThreadingClass(threading.Thread, RemoteDefaultClass):
 
         rm3presets.server_health[self.class_id] = time.time()
 
+    def thread_life_signal(self):
+        """
+        send a life signal from another source than the thread_wait() in a loop for longer lasting processes
+        """
+        rm3presets.server_health[self.class_id] = time.time()
+
     def thread_priority(self, priority):
         """
         set thread priority, influence on loop_wait
@@ -302,3 +343,9 @@ class RemoteThreadingClass(threading.Thread, RemoteDefaultClass):
         return current waiting time
         """
         return self._thread_waiting_times[self._thread_priority]
+
+    def thread_is_running(self):
+        """
+        return True if thread is running
+        """
+        return self._running

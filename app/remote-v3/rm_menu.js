@@ -4,26 +4,21 @@
 // class for drop down menu
 //--------------------------------
 
-let rmMenu_visibleWidth = 875;
 
-class rmMenu {
+class RemoteMenu extends RemoteDefaultClass {
     constructor(name, menu) {
+        super(name);
 
-        this.menuItems     = menu;
-        this.app_name      = name;
-        this.data          = {};
-        this.edit_mode     = false;
-        this.initial_load  = true;
-        this.logging       = new jcLogging(this.app_name);
-        this.hide_settings = "rm3settings.hide_settings();";
-
+        this.menuItems      = menu;
+        this.data           = {};
+        this.edit_mode      = false;
+        this.edit_mode_show = false;
+        this.initial_load   = true;
     }
 
     // load data with devices (deviceConfig["devices"])
     init(data) {
-
-        if (data["CONFIG"]) { this.data = data; }
-        else                { return; }
+        this.data = data
 
         if (this.initial_load) {
             this.logging.default("Initialized new class 'rmMenu'.");
@@ -41,7 +36,7 @@ class rmMenu {
             let width  = window.innerWidth;
             document.getElementById("menuItems").style.maxHeight  = height + "px";
             document.getElementById("menuItems2").style.maxHeight = height + "px";
-            rm3menu.menu_height();
+            rmMenu.menu_height();
 
             if (document.getElementById("remote_nav").style.display !== "block") {
                 document.getElementById("menuItems").style.visibility = "hidden";
@@ -62,10 +57,10 @@ class rmMenu {
     }
 
     // add links to scenes to drop down menu
-    add_script(script, label) {
+    add_script(script, label, click_menu) {
 
         let menu = this.readMenu();
-        menu += this.entry_script(script,label);
+        menu += this.entry_script(script,label,click_menu);
         this.writeMenu(menu);
     }
 
@@ -76,9 +71,7 @@ class rmMenu {
         if (data) {} else { return; }
 
         let menu = this.readMenu();
-        let error;
-        if (this.data["STATUS"])    { error = this.data["STATUS"]["config_errors"]["scenes"]; }
-        else                        { error = {}; }
+        let error = rmStatus.status_system("config_errors")["scenes"];
 
         for (let key in data) { data[key]["position"] = data[key]["settings"]["position"]; }
         let order  = sortDict(data,"position");
@@ -92,13 +85,13 @@ class rmMenu {
                             menu += this.entry_scene(scene, "<div class=#entry_error#>! " + data[scene]["settings"]["label"] + "</div>");
                             console.warn("addScenes: " + scene);
                             console.warn(error[scene]);
-                        } else if (this.edit_mode) {
+                        } else if (this.edit_mode_show) {
                             menu += this.entry_scene(scene, "<div class=#entry_error#>.(" + data[scene]["settings"]["label"] + ").</div>");
                         }
                     } else {
                         if (data[scene]["settings"]["visible"] !== "no") {
                             menu += this.entry_scene(scene, data[scene]["settings"]["label"]);
-                        } else if (this.edit_mode) {
+                        } else if (this.edit_mode_show) {
                             menu += this.entry_scene(scene, "<div class=#hidden_entry_edit#>.(" + data[scene]["settings"]["label"] + ").</div>");
                         }
                     }
@@ -106,7 +99,7 @@ class rmMenu {
             }
         }
         else {
-            menu += this.entry_script("rm3settings.create('edit_scenes');", lang("ADD_SCENE") + " ...")
+            menu += this.entry_script("rmSettings.create('edit_scenes');", lang("ADD_SCENE") + " ...")
         }
         this.writeMenu(menu + "<li><hr/></li>");
     }
@@ -118,11 +111,8 @@ class rmMenu {
         if (!data) { return; }
 
         // set vars
-        let error  = {};
-        let menu   = this.readMenu();
-        if (this.data["STATUS"] && this.data["STATUS"]["config_errors"] && this.data["STATUS"]["config_errors"]["devices"])   {
-            error  = this.data["STATUS"]["config_errors"]["devices"];
-        }
+        let error = rmStatus.status_system("config_errors")["devices"];
+        let menu = this.readMenu();
 
         for (let key in data) {
             if (data[key]["settings"]["position"]) {
@@ -140,13 +130,13 @@ class rmMenu {
                     if (device in error) {
                         if (data[device]["settings"]["visible"] !== "no") {
                             menu += this.entry_device(device, "<div class=#entry_error#>! " + data[device]["settings"]["label"] + "</div>");
-                        } else if (this.edit_mode) {
+                        } else if (this.edit_mode_show) {
                             menu += this.entry_device(device, "<div class=#entry_error#>.(" + data[device]["settings"]["label"] + ").</div>");
                         }
                     } else {
                         if (data[device]["settings"]["visible"] !== "no") {
                             menu += this.entry_device(device, data[device]["settings"]["label"]);
-                        } else if (this.edit_mode) {
+                        } else if (this.edit_mode_show) {
                             menu += this.entry_device(device, "<div class=#hidden_entry_edit#>.(" + data[device]["settings"]["label"] + ").</div>");
                         }
                     }
@@ -154,10 +144,20 @@ class rmMenu {
             }
         }
         else {
-            menu += this.entry_script("rm3settings.create('edit_devices');", lang("ADD_DEVICE") + " ...")
+            menu += this.entry_script("rmSettings.create('edit_devices');", lang("ADD_DEVICE") + " ...")
         }
 
         this.writeMenu(menu + "<li><hr/></li>");
+    }
+
+    // entry show / hide hidden remotes
+    add_show_hidden() {
+        //if (this.edit_mode) {
+            let message;
+            if (this.edit_mode_show) { message = lang("MENU_SHOW_HIDDEN_OFF"); }
+            else { message = lang("MENU_SHOW_HIDDEN_ON"); }
+            this.add_script(this.name+".toggle_invisible();", "<div class=\"hidden_entry_edit\">" + message + "</div>", false);
+        //}
     }
 
     // hide menu when clicked
@@ -170,19 +170,21 @@ class rmMenu {
     // create menu entry for a device
     entry_device(device, label) {
 
-            return "<li><a onclick=\"rm3remotes.create('device','" + device + "');rm3settings.hide();"+this.app_name+".click_menu();\" >" + label.replace(/#/g,"'") + "</a></li>";
+            return "<li><a onclick=\"rmRemote.create('device','" + device + "');rmSettings.hide();"+this.name+".click_menu();\" >" + label.replace(/#/g,"'") + "</a></li>";
             }
 
     // create menu entry for a scene
     entry_scene(scene, label) {
 
-        return "<li><a onclick=\"rm3remotes.create('scene','" + scene + "');rm3settings.hide();"+this.app_name+".click_menu();\" >" + label.replace(/#/g,"'") + "</a></li>";
+        return "<li><a onclick=\"rmRemote.create('scene','" + scene + "');rmSettings.hide();"+this.name+".click_menu();\" >" + label.replace(/#/g,"'") + "</a></li>";
     }
 
     // create menu entry with javascript
-    entry_script(script, label) {
+    entry_script(script, label, click_menu=true) {
 
-        return "<li><a onClick=\"" + script + ";"+this.app_name+".click_menu();\">"+label+"</a></li>";
+        let click = "";
+        if (click_menu === true) { click = this.name+".click_menu();"; }
+        return "<li><a onClick=\"" + script + ";"+click+"\">"+label+"</a></li>";
     }
 
     // create menu entry with link
@@ -215,11 +217,18 @@ class rmMenu {
             setTextById(this.menuItems,menu_text);
             }
         else if (typeof this.menuItems == "object") {
-            for (var i=0; i<this.menuItems.length; i++) {
+            for (let i=0; i<this.menuItems.length; i++) {
                 setTextById(this.menuItems[i],menu_text);
                 }
             }
     }
 
+    // show / hide hidden remotes as link
+    toggle_invisible() {
+        this.edit_mode_show = !this.edit_mode_show;
+        rmMain.load_drop_down();
+    }
+
 }
 
+remote_scripts_loaded += 1;

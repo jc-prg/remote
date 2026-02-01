@@ -68,9 +68,9 @@ This can be done using the API settings in the app. If you want to use an extern
 
 Currently, there is a default configuration [data/devices/ZIGBEE2MQTT/00_default.json](../../../data/_sample/devices/ZIGBEE2MQTT/00_default.json) and two device types are defined:
 
-* Plug:  [data/devices/ZIGBEE2MQTT/zigbee-plug.json](../../../data/_sample/devices/ZIGBEE2MQTT/zigbee-plug.json)
-* RGB+CCT Bulb:  [data/devices/ZIGBEE2MQTT/zigbee-bulb.json](../../../data/_sample/devices/ZIGBEE2MQTT/zigbee-bulb.json)
-* Switch / Socket:  [data/devices/ZIGBEE2MQTT/zigbee-switch.json](../../../data/_sample/devices/ZIGBEE2MQTT/zigbee-switch.json)
+* Plug:  [data/devices/ZIGBEE2MQTT/cfg-zigbee-socket.json](../../../data/_sample/devices/ZIGBEE2MQTT/cfg-zigbee-socket.json)
+* RGB+CCT Bulb:  [data/devices/ZIGBEE2MQTT/cfg-zigbee-bulb.json](../../../data/_sample/devices/ZIGBEE2MQTT/cfg-zigbee-bulb.json)
+* Switch / Socket:  [data/devices/ZIGBEE2MQTT/cfg-zigbee-switch.json](../../../data/_sample/devices/ZIGBEE2MQTT/cfg-zigbee-switch.json)
 
 Those definitions can be created automatically from the configuration that comes with the devices. Navigate in the app
 to "Settings > API Settings > API: ZIGBEE2MQTT", select the API-Device and jump to the sheet "create device config".

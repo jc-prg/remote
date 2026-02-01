@@ -1,3 +1,4 @@
+import sys
 import time
 import server.modules.rm3presets as rm3config
 import server.modules.rm3ping as rm3ping
@@ -57,6 +58,7 @@ class ApiControl(RemoteApiClass):
             self.api.jc = APIaddOn(self.api, self.logging)
             self.api.jc.status = self.status
             self.api.jc.not_connected = self.not_connected
+            self.api.jc.api_device = self.api_config["Description"]
 
         except Exception as e:
             self.status = self.not_connected + " ... CONNECT " + str(e)
@@ -95,7 +97,7 @@ class ApiControl(RemoteApiClass):
             try:
                 command = "self.api." + command
                 result = eval(command)
-                self.logging.debug(str(result))
+                self.logging.debug(f"{self.api_config["Description"]} | {command} | {result}")
 
                 if "error" in result:
                     self.working = False
@@ -137,12 +139,11 @@ class ApiControl(RemoteApiClass):
             try:
                 command = "self.api." + command_param[0]
                 result = eval(command)
-                self.logging.debug(str(result))
+                self.logging.debug(f"{self.api_config["Description"]} | {command} | {result}")
 
             except Exception as e:
                 self.working = False
-                return "ERROR " + self.api_name + " - query*: " + str(e) + " | " + command + " | " + \
-                       str(result) + " | " + str(self.api.jc.info_result)
+                return f"ERROR {self.api_name} - query*: {e} | {command} | {result} | {self.api.jc.info_result}"
 
             try:
                 if "error" in result:
@@ -210,7 +211,7 @@ class APIaddOn(RemoteDefaultClass):
 
     def __init__(self, api, logger):
         self.api_description = "API-Addon for Tapo-Link P100"
-        RemoteDefaultClass.__init__(self, "api-P100", self.api_description)
+        RemoteDefaultClass.__init__(self, "api-P100.jc", self.api_description)
 
         self.addon = "jc://addon/p100/"
         self.api = api
@@ -226,7 +227,8 @@ class APIaddOn(RemoteDefaultClass):
         self.info_result = {}
         self.last_request_time = time.time()
         self.last_request_data = {}
-        self.cache_wait = 1
+        self.cache_wait = 5
+        self.api_device = None
 
         self.available_commands = {
             "jc.get_available_commands()": {
@@ -259,11 +261,18 @@ class APIaddOn(RemoteDefaultClass):
         turn on and set metadata
         """
         if self.status == "Connected":
-            self.power_status = "ON"
-            self.api.turnOn()
-            return {"result", "ON"}
+            try:
+                self.api.turnOn()
+                self.power_status = "ON"
+                return {"result": "ON"}
+            except Exception as e:
+                self.error_details(sys.exc_info(),f"APIaddOn.turn_on(), {self.api.api_config["IPAddress"]}")
+                self.logging.error(f".:|jc.turn_on()|:. ERROR {e}")
+                self.power_status = "ERROR"
+                return {"result": "error", "message": str(e)}
 
         else:
+            self.error_details(sys.exc_info(), f"APIaddOn.turn_on(), {self.api.api_config["IPAddress"]}")
             self.power_status = "NOT CONNECTED"
             return self.not_connected
 
@@ -272,9 +281,15 @@ class APIaddOn(RemoteDefaultClass):
         turn of and set metadata
         """
         if self.status == "Connected":
-            self.power_status = "OFF"
-            self.api.turnOff()
-            return {"result", "OFF"}
+            try:
+                self.power_status = "OFF"
+                self.api.turnOff()
+                return {"result": "OFF"}
+            except Exception as e:
+                self.error_details(sys.exc_info(),f"APIaddOn.turn_off(), {self.api.api_config["IPAddress"]}")
+                self.logging.error(f".:|jc.turn_off()|:. ERROR {e}")
+                self.power_status = "ERROR"
+                return {"result": "error", "message": str(e)}
 
         else:
             self.power_status = "NOT CONNECTED"
@@ -287,22 +302,26 @@ class APIaddOn(RemoteDefaultClass):
         info_result = {}
         if self.status == "Connected":
 
-            self.logging.debug(str(self.last_request_time) + "__" + str(time.time()))
-
+            from_cache = False
             if self.last_request_time < time.time() - self.cache_wait:
                 try:
                     self.info_answer = self.api.getDeviceInfo()
                 except Exception as e:
+                    self.error_details(sys.exc_info(),f"APIaddOn.get_info(), {self.api.api_config["IPAddress"]}",["Errno 101","requests.exceptions.ConnectTimeout"])
                     self.info_answer = {"error_code": 10, "error": "Exception during API request", "error_msg": str(e)}
-                #self.logging.info(".:|"+param+"|:."+str(self.info_answer))
+                    self.logging.debug(f".:|{param}|:. ERROR {e} | {self.info_answer} ")
+
                 if "result" in self.info_answer:
                     self.last_request_data = self.info_answer.copy()
                     self.last_request_time = time.time()
-                self.logging.debug(str(self.info_answer))
+                self.logging.debug(f"{self.api_device} | {param}: {self.info_answer}")
             else:
                 self.info_answer = self.last_request_data.copy()
+                from_cache = True
 
-            self.logging.debug(str(self.info_answer))
+            if param == "power":
+                self.logging.debug(f"{self.api_device} | {self.info_answer}")
+                self.logging.debug(f"{self.api_device} | last request: {time.time() - self.last_request_time}s (cache-wait: {self.cache_wait}s | {from_cache})")
 
             if "error_code" in self.info_answer and self.info_answer["error_code"] != 0:
                 if "result" in self.info_answer:
@@ -324,7 +343,12 @@ class APIaddOn(RemoteDefaultClass):
             elif "device_on" in info_result:
                 self.power_status = "OFF"
 
-            if "error" not in info_result:
+            if param == "error_code" and "error_code" in self.info_answer:
+                info_result = {"result": self.info_answer["error_code"], "param": param}
+            elif param == "error_code":
+                info_result = {"result": -1, "param": param}
+
+            elif "error" not in info_result:
                 if param in info_result:
                     info_result = {"result": info_result[param], "param": param}
                 elif param == "status":

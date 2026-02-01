@@ -18,3 +18,5 @@ python-dotenv
 paho-mqtt==2.0.0
 broadlink==0.19.0
 scapy
+denonavr
+geopy

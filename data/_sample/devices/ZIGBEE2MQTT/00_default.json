@@ -16,6 +16,10 @@
                 "type": "enum",
                 "values": ["online", "offline"]
             },
+            "api-last-answer": {
+                "cmd": ["get"],
+                "get": "get=api-last-answer"
+            },
 			"link-quality": {
                 "cmd": [
                     "get"
@@ -35,18 +39,6 @@
                     "OFF"
                 ]
             },
-            "device-info": {
-                "cmd": ["get"],
-                "get": "get=device-info"
-            },
-            "device-features": {
-                "cmd": ["get"],
-                "get": "get=device-features"
-            },
-            "device-configuration": {
-                "cmd": ["get"],
-                "get": "get=device-configuration"
-            },
             "state": {
                 "cmd": [
                     "get",
@@ -59,16 +51,27 @@
                     "ON",
                     "OFF"
                 ]
+            },
+            "device-info": {
+                "cmd": ["get"],
+                "get": "get=device-info"
+            },
+            "device-configuration": {
+                "cmd": ["get"],
+                "get": "get=device-configuration"
+            },
+            "device-features": {
+                "cmd": ["get"],
+                "get": "get=device-features"
             }
 		},
         "query" : {
-          "load_default" : 30,
           "load_intervals" : {
-            "10": ["availability","power"]
+            "10": ["power"]
           },
+          "load_default" : 30,
           "load_after" : ["on", "off", "toggle"],
-          "load_after_values" : ["availability","power"],
-          "load_never": ["device-info","device-features"]
+          "load_never": ["device-info","device-features","device-configuration"]
           },
 		"description" : "API for ZigBee Devices",
 		"method" : "query"

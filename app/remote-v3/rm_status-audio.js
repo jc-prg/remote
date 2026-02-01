@@ -2,23 +2,25 @@
 // jc://remote/
 //--------------------------------
 
-let statusCheck_audio;
+let rmStatusAudio;
 
 
 // class for audio functionality (used in rm_status.js > statusCheck())
-class RemoteMainAudio {
-    constructor(name) {
-        this.app_name = name;
-        this.data = dataAll;
+class RemoteVisualizeMainAudioStatus extends RemoteDefaultClass {
+    constructor(name, status, data) {
+        super(name);
+
+        this.data = data;
+        this.status = status;
 
         this.audio_device = undefined;
         this.audio_device_label = "";
         this.audio_active = undefined;
         this.audio_status = "INIT";
         this.audio_info = {
-            "mute": "audio1",
-            "active": "audio2",
-            "volume": "audio3"
+            "mute": "menu-audio1",
+            "active": "menu-audio2",
+            "volume": "menu-audio3"
         }
         this.audio_level = {
             "min": 0,
@@ -34,7 +36,7 @@ class RemoteMainAudio {
         this.temp_audio_offset = 10;
 
         // bind volume slider
-        this.slider = new jcSlider(this.app_name+".slider", "audio_slider");
+        this.slider = new jcSlider(this.name+".slider", "audio_slider");
         this.slider.init(0, 100, "loading");
         this.slider.setPosition("45px",false,false,"10px");
         this.slider.setOnChange(this.change_volume);
@@ -52,9 +54,20 @@ class RemoteMainAudio {
         //this.change_volume = this.change_volume.bind(this);
     }
 
+    // read main audio device status
+    main_audio_status() {
+        if (this.audio_active) {
+
+            this.audio_status_details = this.status.status_device(this.audio_device, true);
+            this.audio_status = this.audio_status_details["status"];
+            if (this.audio_status.indexOf("ERROR") >= 0) { this.audio_status += " (" + this.audio_status_details["message"] + ")"; }
+        }
+        return this.audio_status;
+    }
+
     // read properties from main audio device
     main_audio_settings(data=undefined) {
-        if (data !== undefined) { this.data = data || dataAll; }
+        if (data !== undefined) { this.data = data }
 
         this.audio_device = this.data["CONFIG"]["main-audio"];
         this.audio_active = (this.audio_device !== undefined);
@@ -67,17 +80,21 @@ class RemoteMainAudio {
             this.audio_status = "ERROR: device not found ("+this.audio_device+")";
         }
 
-        let device_definition = devices_config[this.audio_device]["commands"]["definition"];
-        let device_api = this.data["STATUS"]["devices"][this.audio_device]["api"];
-        let device_api_status = this.data["STATUS"]["interfaces"]["connect"][device_api];
-        this.audio_device_label = devices_config[this.audio_device]["settings"]["label"];
+        let device_api_status, device_api, device_definition;
+
+        if (devices_config[this.audio_device] && devices_config[this.audio_device]["commands"]) {
+            device_definition = devices_config[this.audio_device]["commands"]["definition"];
+            device_api = this.data["STATUS"]["devices"][this.audio_device]["api"];
+            device_api_status = this.data["STATUS"]["interfaces"]["connect"][device_api];
+            this.audio_device_label = devices_config[this.audio_device]["settings"]["label"];
+        }
 
         if (device_api_status === undefined) {
             this.audio_active = false;
             this.audio_status = "ERROR: device_api not found ("+device_api+")";
         }
         
-        this.main_audio_status(this.data);
+        this.main_audio_status();
         if (this.audio_status.indexOf("ERROR") < 0) {
             if (device_definition && device_definition["vol"] && device_definition["vol"]["values"] && device_definition["vol"]["values"]["max"]) { this.audio_level["max"] = device_definition["vol"]["values"]["max"]; }
             if (device_definition && device_definition["vol"] && device_definition["vol"]["values"] && device_definition["vol"]["values"]["max"]) { this.audio_level["min"] = device_definition["vol"]["values"]["min"]; }
@@ -85,16 +102,6 @@ class RemoteMainAudio {
             this.slider.init(this.audio_level["min"],this.audio_level["max"],this.audio_device_label+" ("+this.audio_device+")");
             this.slider.device = this.audio_device;
         }
-    }
-
-    // read main audio device status
-    main_audio_status(data) {
-        if (this.audio_active) {
-            const [device_status, device_status_info] = statusCheck_devicePowerStatus(data);
-            this.audio_status = device_status[this.audio_device];
-            if (this.audio_status.indexOf("ERROR") >= 0) { this.audio_status += " (" + device_status_info[this.audio_device] + ")"; }
-        }
-        return this.audio_status;
     }
 
     // display mute/active icon
@@ -111,7 +118,7 @@ class RemoteMainAudio {
         }
     }
 
-    // check if temp volume level is relevant
+    // check if temp volume level is relevant (avoid a "jump back to old volume" while change_volume() is processed by the server)
     volume_temp(volume) {
         let current_time = Math.floor(Date.now() / 1000);
         if (this.temp_audio_time !== 0 && current_time - this.temp_audio_time <= this.temp_audio_offset) {
@@ -120,12 +127,12 @@ class RemoteMainAudio {
         return volume;
     }
 
-    // display volume level
-    volume(volume_level=undefined) {
+    // draw volume level
+    volume_draw(volume_level, volume_min, volume_max, bar_length) {
         let volume_bar = "";
-
         if (volume_level !== undefined) {
-            let volume = Math.round((volume_level - this.audio_level["min"]) * this.volume_bar_length / this.audio_level["max"]);
+
+            let volume = Math.round((volume_level - volume_min) * bar_length / volume_max);
             volume_bar = "<span style='color:" + this.color_volume + "'>";
             for (let i = 0; i < volume; i++) {
                 volume_bar += this.volume_bar_element;
@@ -133,11 +140,17 @@ class RemoteMainAudio {
             volume_bar += "</span>";
 
             volume_bar += "<span style='color:" + this.color_no_volume + "'>";
-            for (let i = 0; i < this.volume_bar_length - volume; i++) {
+            for (let i = 0; i < bar_length - volume; i++) {
                 volume_bar += this.volume_bar_element;
             }
             volume_bar += "</span>";
         }
+        return volume_bar;
+    }
+
+    // display volume level
+    volume(volume_level=undefined) {
+        let volume_bar = this.volume_draw(volume_level, this.audio_level["min"], this.audio_level["max"], this.volume_bar_length);
         setTextById(this.audio_info["volume"], volume_bar);
     }
 
@@ -146,12 +159,12 @@ class RemoteMainAudio {
         this.main_audio_settings(data);
 
         if (!this.audio_active || this.audio_status.indexOf("ERROR") >= 0) {
-            console.error("StatusCheckMainAudio.show(): device=" + this.audio_device + "; status=" + this.audio_status);
+            this.logging.info("show(): device=" + this.audio_device + "; status=" + this.audio_status);
             this.volume();
             this.mute();
         }
         else if (this.audio_status.indexOf("OFF") >= 0) {
-            console.debug("StatusCheckMainAudio.show(): device=" + this.audio_device + "; status=" + this.audio_status);
+            this.logging.debug("show(): device=" + this.audio_device + "; status=" + this.audio_status);
             this.volume(0);
             this.mute();
         }
@@ -164,21 +177,24 @@ class RemoteMainAudio {
             this.mute(status_mute);
             this.slider.set_value(status_volume);
 
-            console.debug("StatusCheckMainAudio.show(): device=" + this.audio_device + "; status=" + this.audio_status +"; volume=" + status_volume + "; mute=" + status_mute);
+            this.logging.debug("show(): device=" + this.audio_device + "; status=" + this.audio_status +"; volume=" + status_volume + "; mute=" + status_mute);
         }
 
     }
 
     // show audio status after slider change
     show_status_slider(data) {
-        statusCheck_audio.temp_audio_level = data;
-        statusCheck_audio.temp_audio_time = Math.floor(Date.now() / 1000);
-        statusCheck_audio.show_status();
+        rmStatusAudio.temp_audio_level = data;
+        rmStatusAudio.temp_audio_time = Math.floor(Date.now() / 1000);
+        rmStatusAudio.show_status();
     }
 
     // send API call to set volume
     change_volume(volume) {
-        console.debug("RemoteMainAudio.change_volume(): " + statusCheck_audio.audio_device+" -> "+volume);
-        appFW.requestAPI( "GET",  ["set",statusCheck_audio.audio_device,"send-vol",volume], "", remoteReload_load );
+        rmApi.call("MainVolume", volume);
     }
 }
+
+
+remote_scripts_loaded += 1;
+

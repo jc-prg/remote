@@ -1,4 +1,5 @@
 {
+  "apartment-sensor" : ["apartment-sensor.png","https://chatgpt.com/"],
   "cinema 01" : ["paolo-chiabrando-G16kFHYvCoQ-unsplash.jpg","https://unsplash.com/photos/G16kFHYvCoQ"],
   "cinema 02" : ["gr-stocks-q8P8YoR6erg-unsplash.jpg","https://unsplash.com/photos/q8P8YoR6erg"],
   "color" : ["gradienta-coj7UZ7iN60-unsplash.jpg","https://unsplash.com/photos/coj7UZ7iN60"],
@@ -28,5 +29,6 @@
   "power 02" : ["lucas-santos-i7jstxCmUqs-unsplash.jpg", "https://unsplash.com/photos/i7jstxCmUqs"],
   "tv 01" : ["zach-vessels-Y3k1gM8qpwg-unsplash.jpg","https://unsplash.com/photos/Y3k1gM8qpwg"],
   "tv 02" : ["thom-milkovic-uV1weWrJnRM-unsplash.jpg","https://unsplash.com/photos/uV1weWrJnRM"],
-  "tv 03" : ["tv.jpg","http://ai-playground/"]
+  "tv 03" : ["tv.jpg","http://ai-playground/"],
+  "weather 01": ["weather01.png", "https://chatgpt.com/"]
 }

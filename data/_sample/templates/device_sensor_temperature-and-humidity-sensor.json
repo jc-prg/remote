@@ -1,0 +1,17 @@
+{
+    "data": {
+        "description": "Temperatur und Luftfeuchtigkeit",
+        "display": {
+            "Batterie": "battery",
+            "Luftfeuchtigkeit": "humidity",
+            "Signal": "link-quality",
+            "Temperatur": "temperature"
+        },
+        "display-size": "big",
+        "remote": [
+            "DISPLAY"
+        ],
+        "type": "device"
+    },
+    "info": "jc://remote/ - In this file the remote layout and a display layout is defined."
+}

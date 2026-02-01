@@ -2,6 +2,8 @@
 // jc://remote/
 //--------------------------------
 
+var remote_scripts_loaded = 0;
+
 const remote_js = [
     "config_language.js",
     "config_main.js",
@@ -10,23 +12,28 @@ const remote_js = [
     "rm_functions-api.js",
     "rm_status.js",
     "rm_status-audio.js",
+    "rm_status-devices.js",
     "rm_settings.js",
     "rm_menu.js",
     "rm_start.js",
+    "rm_cookies.js",
     "rm_sort-list.js",
+    "rm_charts.js",
     "rm_remote-control.js",
     "rm_remote-control-color-picker.js",
     "rm_remote-control-display.js",
     "rm_remote-control-keyboard.js",
+    "rm_remote-data.js",
     "rm_remote-element.js",
     "rm_remote-element-slider.js",
     "rm_remote-json.js",
+    "rm_remote-macros.js",
     "rm_remotes.js",
     "rm_main.js",
     ];
 
 const remote_css = [
-    "style-theme-colors.css",
+    "style-chart.css",
     "style-menu.css",
     "style-json.css",
     "style-json-edit.css",
@@ -36,7 +43,9 @@ const remote_css = [
     "style-settings.css",
     "style-display.css",
     "style-color-picker.css",
+    "style-macros.css",
     "style-sort-list.css",
     "style-sheet-box.css",
+    "style-theme-colors.css",
     "style-size.css",
     ];
