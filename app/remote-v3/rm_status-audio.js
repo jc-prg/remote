@@ -80,10 +80,14 @@ class RemoteVisualizeMainAudioStatus extends RemoteDefaultClass {
             this.audio_status = "ERROR: device not found ("+this.audio_device+")";
         }
 
-        let device_definition = devices_config[this.audio_device]["commands"]["definition"];
-        let device_api = this.data["STATUS"]["devices"][this.audio_device]["api"];
-        let device_api_status = this.data["STATUS"]["interfaces"]["connect"][device_api];
-        this.audio_device_label = devices_config[this.audio_device]["settings"]["label"];
+        let device_api_status, device_api, device_definition;
+
+        if (devices_config[this.audio_device] && devices_config[this.audio_device]["commands"]) {
+            device_definition = devices_config[this.audio_device]["commands"]["definition"];
+            device_api = this.data["STATUS"]["devices"][this.audio_device]["api"];
+            device_api_status = this.data["STATUS"]["interfaces"]["connect"][device_api];
+            this.audio_device_label = devices_config[this.audio_device]["settings"]["label"];
+        }
 
         if (device_api_status === undefined) {
             this.audio_active = false;
