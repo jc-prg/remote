@@ -191,6 +191,34 @@
         },
         "devices_count": 1
     },
+    "WEATHER": {
+        "active": true,
+        "config_file": "devices/WEATHER/00_interface.json",
+        "config_info": "Don't edit config here, this is just temporary!",
+        "description": "Open Meteo Weather interfaces",
+        "devices": {
+            "default": {
+                "Description": "Open Meteo Weather (incl. GeoPy)",
+                "IPAddress": "127.0.0.1",
+                "Interval": 600,
+                "Location": null,
+                "LocationGPS": [
+                    48.128,
+                    11.646,
+                    "Munich"
+                ],
+                "Methods": [
+                    "query"
+                ],
+                "MultiDevice": false,
+                "Timeout": 5
+            }
+        },
+        "devices_active": {
+            "default": true
+        },
+        "devices_count": 1
+    },
     "ZIGBEE2MQTT": {
         "active": true,
         "config_file": "devices/ZIGBEE2MQTT/00_interface.json",
