@@ -192,7 +192,7 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
                 let power_device = "";
                 let power_status = "";
                 let power = (this.status_api_devices_all[api]["api_devices"][api_device]["power_device"] && this.status_api_devices_all[api]["api_devices"][api_device]["power_device"] !== "");
-                if (power) {
+                if (power && this.status_devices[power_device] && this.status_devices[power_device]["power"]) {
                     power_device = this.power_devices[this.status_api_devices_all[api]["api_devices"][api_device]["power_device"]];
                     power_status = this.status_devices[power_device]["power"];
                 }
