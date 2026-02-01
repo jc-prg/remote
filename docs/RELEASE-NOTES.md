@@ -1,13 +1,17 @@
-# jc://remote/ - srRelease Notes
+# jc://remote/ - Release Notes
 
-## v3.1 (in progress)
+## v3.1
 
 * move remote controls to archive, check scene definition for errors
 * recording of device and weather data and visualization via Chart.js
 * integration of Open Meteo Weather (incl. GeoPy)
 * integration of Denon API incl. discovery
 * macro editing via app (instead of JSON editing)
+* device discovery for several APIs
 * improved and cleaned up app code, several bugfixes
+
+**Note:** The data structure changed: recreate configuration files by coping them from the
+folder [_sample/devices](data/_sample/devices) to the productive folders and adjusting them to your needs.
 
 ## v3.0
 

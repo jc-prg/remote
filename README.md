@@ -6,9 +6,9 @@ You can define remote controls for devices and create scenes that use those comm
 those devices or macros to combine several commands on a single button. 
 There are a few templates available to be used and modified.
 
-## Table of Content
+## Table of Contents
 
-- [Currently Supported Hardware](#supported-hardware)
+- [Supported Devices and Interfaces](#supported-devices-and-interfaces)
 - [Screenshots](#screenshots)
 - [Data structure](#data-structure)
 - [Release notes](docs/RELEASE-NOTES.md)
@@ -18,7 +18,7 @@ There are a few templates available to be used and modified.
 - [Disclaimer](#disclaimer)
 
 
-## Currently Supported Devices and Interfaces
+## Supported Devices and Interfaces
 
 1. Broadlink Remote Controls  ... [API Info](./server/interfaces/broadlink/README.md)
 2. DENON devices with API ... [API Info](./server/interfaces/denon/README.md)
@@ -91,48 +91,27 @@ In order to use jc://remote/ as it is, the following software must be installed:
     $ cd remote
     ```
 
-2. Create configuration: [sample.env](./sample.env)
+2. Use the start script to create configuration [.env](./sample.env) and build the required docker container.
+   ```bash
+    $ sudo ./start
 
-    ```bash
-    $ cp sample.env .env
-    $ nano .env              # modify configuration for your needs
-    ```
+   # use the following to manually build the container, requires an .env-file
+   # $ docker-compose build
+   ```
 
-3. _Optional:_ Install sample remote controls. Alternatively jump to point (4) to create a fresh configuration and use the app settings to create your own remote controls.
-
-    ```bash
-    $ cd data/_sample
-    $ ./install-config
-    $ cd ../..
-    ```
-
-4. Build and start via docker-compose.
-
-    ```bash
-    $ docker-compose build
-    $ sudo ./start start
-    ```
-
-5. Open in browser depending on your settings, e.g., http://localhost:81/
-
-6. To start automatically add the following line to your /etc/rc.local
+3. Open in browser depending on your settings, e.g., http://localhost:81/
+4. Activate the required APIs and create your first device remote control in the settings
+5. To start the server on start-up add the following line to your /etc/rc.local
 
     ```bash
     /<your_path_to_remote>/start start
     ```
 
-7. Update from Github (works, if configuration file has not changed)
+6. Update from Github (works, if configuration file has not changed)
 
     ```bash
     $ sudo ./start update
     ```
-
-8. Additional options, such as live watching the logging, are available in the start script:
-
-    ```bash
-    $ sudo ./start
-    ```
-
 
 ## Integration of additional APIs and devices
 

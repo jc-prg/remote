@@ -29,6 +29,7 @@ Find here an overview of the folder and file structure:
   ./_ACTIVE-APIS.json                    -> Overview API, configuration which APIs and API devices are active
   ./_ACTIVE-DEVICES.json                 -> defines devices and connect API, API device and remote control
   ./_ACTIVE-MACROS.json                  -> defines global macros and device on/off macros
+  ./_ACTIVE-RECORD.json                  -> defines the values to be recorded
   ./_ACTIVE-SCENES.json                  -> defines scenes and connect remote control
   ./_ACTIVE-TIMER.json                   -> defines timer events
   ./_ACTIVE-TYPEs.json                   -> defines available device types
@@ -38,6 +39,10 @@ Find here an overview of the folder and file structure:
   ./devices/<API>/00_interface.json     -> configures API and API device(s)
   ./devices/<API>/00_default.json       -> configures default commands that are applicable for all devices
   ./devices/<API>/cfg-<device>.json     -> configures device specific commands
+
+* RECORDINGS
+
+  ./record/*
 
 * ACTIVE REMOTE CONTROL CONFIGURATION
 
@@ -171,8 +176,8 @@ Remote controls for scenes can be added, changed and deleted via edit mode in th
 * use "LINE" to draw a line and start in a new row
 * use "macro_*" to use a macro
 * use "device_button" to use a button from a specific device
-* use "Remote" : [] to define remote control ("<device>_<button>")
-* use "Channel" : {} to define channel list ("<channel_name>" : ["<device_button","<device_button"])
+* use "Remote" : [] to define remote control ("&lt;device&gt;_&lt;button&gt;")
+* use "Channel" : {} to define channel list ("&lt;channel_name&gt;" : ["&lt;device_button&gt;","&lt;device_button&gt;"])
 
 ### MACROS
 
@@ -180,8 +185,8 @@ Macros have to defined in the file \_ACTIVE-MACROS.json:
 
 * define global macros (sets of multiple buttons)
 * use macros "dev-on" and "dev-off" to switch on / off devices
-* use "<device>_<button>" to use a button from a specific device
-* use "<device>_<button>||<value>" to send command only if value is different (value has to be tracked)
+* use "&lt;device&gt;_&lt;button&gt;" to use a button from a specific device
+* use "&lt;device&gt;_&lt;button&gt;||&lt;value&gt;" to send command only if value is different (value has to be tracked)
 * use just a number (integer) to wait some seconds
 
 
