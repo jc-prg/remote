@@ -157,7 +157,7 @@ class RemoteControlDisplay extends RemoteDefaultClass {
             let input_id;
             html += this.tab.start("100%", "", "center");
 
-            if (display_data["ICON"].indexOf("_") >= 0) { input_id = 'display_' + display_data["ICON"]; }
+            if (display_data["ICON"] && display_data["ICON"].indexOf("_") >= 0) { input_id = 'display_' + display_data["ICON"]; }
             else { input_id = 'display_' + device + '_' + display_data["ICON"]; }
             html_col1 += "<span id='edit_"+input_id+"'>ICON<br/>{"+display_data["ICON"]+"}</span>";
 
