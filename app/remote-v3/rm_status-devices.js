@@ -139,7 +139,7 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
         for (let device in this.power_devices) {
             if (!device) { continue; }
             let [api, api_device] = device.split("_");
-            if (this.config_apis_structure[api][api_device].length > 0) {
+            if (this.config_apis_structure[api] && this.config_apis_structure[api][api_device] && this.config_apis_structure[api][api_device].length > 0) {
                 this.power_devices[device] = this.config_apis_structure[api][api_device][0];
                 this.power_devices_status[device] = this.status_devices[this.power_devices[device]]["power"].toUpperCase();
                 if (this.config_apis_structure[api][api_device].length > 1) {
