@@ -139,13 +139,20 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
         for (let device in this.power_devices) {
             if (!device) { continue; }
             let [api, api_device] = device.split("_");
-            this.power_devices[device] = this.config_apis_structure[api][api_device][0];
-            this.power_devices_status[device] = this.status_devices[this.power_devices[device]]["power"].toUpperCase();
-            if (this.config_apis_structure[api][api_device].length > 1) {
-                let message = "There are several devices defined as power device. A power device usually consists of an API device with just one connected device!" +
-                    "(" + device + ": " + this.config_apis_structure[api][api_device] + ")";
-                if (!this.warning[message]) { this.logging.warn(message); }
-                this.warning[message] = true;
+            if (this.config_apis_structure[api][api_device].length > 0) {
+                this.power_devices[device] = this.config_apis_structure[api][api_device][0];
+                this.power_devices_status[device] = this.status_devices[this.power_devices[device]]["power"].toUpperCase();
+                if (this.config_apis_structure[api][api_device].length > 1) {
+                    let message = "There are several devices defined as power device. A power device usually consists of an API device with just one connected device!" +
+                        "(" + device + ": " + this.config_apis_structure[api][api_device] + ")";
+                    if (!this.warning[message]) {
+                        this.logging.warn(message);
+                    }
+                    this.warning[message] = true;
+                }
+                else {
+                    this.logging.warn("Nothing defined yet for " + api + "_" + api_device);
+                }
             }
         }
     }
