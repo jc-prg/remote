@@ -412,9 +412,8 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
                 else if (this.attention_local_network && key === "local network")  { count = 1; message = lang("ERROR_LOST_LOCAL_NETWORK"); }
                 else if (this.app_connection_error && key === "server connection") { count = 1; message = lang("ERROR_LOST_SERVER_CONNECT"); }
 
-                console.error(this.attention_config, this.attention_threads, this.attention_local_network, this.app_connection_error, key, count);
+                console.debug(this.attention_config, this.attention_threads, this.attention_local_network, this.app_connection_error, key, count);
                 if (count > 0) {
-                    console.debug(this.attention_config, this.attention_threads, this.attention_local_network, this.app_connection_error);
                     alert += "<div style='color:var(--rm-color-font-warning);'><b>" + count + " " + key + " error(s):</b></div>";
                     alert += "<div id='attention-alert' style='text-align:left;'>" + message + "</div>";
                 }
