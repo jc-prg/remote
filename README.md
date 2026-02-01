@@ -32,16 +32,16 @@ There are a few templates available to be used and modified.
 
 ## Screenshots
 
-<img src="./docs/app_light/remotes_04.PNG" width="19%"> <img 
-src="./docs/app_light/remotes_01.PNG" width="19%"> <img 
-src="./docs/app_dark/remotes_01.PNG" width="19%"> <img 
-src="./docs/app_dark/remotes_05.PNG" width="19%"> <img 
-src="./docs/app_dark/remotes_06.PNG" width="19%"> <img 
-src="./docs/app_dark/remotes_04.PNG" width="19%"> <img 
-src="./docs/app_dark/remotes_07.PNG" width="19%"> <img 
-src="./docs/app_dark/remotes_10.PNG" width="19%"> <img 
-src="./docs/app_dark/settings_01.PNG" width="19%"> <img 
-src="./docs/app_dark/settings_02.PNG" width="19%">
+<img src="./docs/app/light-theme-01.jpg" width="19%"> <img 
+src="./docs/app/light-theme-09.jpg" width="19%"> <img 
+src="./docs/app/light-theme-06.jpg" width="19%"> <img 
+src="./docs/app/light-theme-02.jpg" width="19%"> <img 
+src="./docs/app/light-theme-04.jpg" width="19%"> <img 
+src="./docs/app/dark-theme-14.jpg" width="19%"> <img 
+src="./docs/app/dark-theme-16.jpg" width="19%"> <img 
+src="./docs/app/dark-theme-15.jpg" width="19%"> <img 
+src="./docs/app/dark-theme-20.jpg" width="19%"> <img 
+src="./docs/app/dark-theme-04.jpg" width="19%">
 
 Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 

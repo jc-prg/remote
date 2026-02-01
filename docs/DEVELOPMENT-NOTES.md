@@ -4,6 +4,58 @@
 
 ## KNOWN BUGS -------------------------------------------------------------------
 
+* weather ... if timeout, signal and don't deliver data ... until control next reconnect / data collection (just return an error)
+* confirm message reconnect single devices -> asks for "all devices"
+* error ... vermutlich "Strom Medientechnik"?! Nach reconnect zunächst wieder OK
+
+      01/26 22:52:07 | ERROR    api-P100    | EXCEPTION in API-Addon for Tapo-Link P100 (APIaddOn.get_info()): <class 'KeyError'> | 'result'
+      File "/usr/src/app/server/interfaces/api_p100.py", line 308, in get_info
+      self.info_answer = self.api.getDeviceInfo()
+      ~~~~~~~~~~~~~~~~~~~~~~^^
+      File "/usr/src/app/server/interfaces/p100/PyP100.py", line 284, in getDeviceInfo
+      decryptedResponse = self.tpLinkCipher.decrypt(r.json()["result"]["response"])
+
+* error ...
+
+      01/26 18:02:49 | ERROR    api         | Could not get command: Connect.get_command('ZIGBEE2MQTT','queries','sensor4','power')
+      01/26 18:02:49 | ERROR    api         | {'api_commands': {'permit-join': "request/permit_join={'value': true, 'time': 120}", 'restart-api': 'request/restart='}, 'buttons': {'off': "set={'state': 'OFF'}", 'on': "set={'state': 'ON'}", 'toggle': "set={'state': 'TOGGLE'}", 'l1-off': "set={'state_l1': 'OFF'}", 'l1-on': "set={'state_l1': 'ON'}", 'l1-toggle': "set={'state_l1': 'TOGGLE'}", 'l2-off': "set={'state_l2': 'OFF'}", 'l2-on': "set={'state_l2': 'ON'}", 'l2-toggle': "set={'state_l2': 'TOGGLE'}"}, 'commands': {'availability': {'cmd': ['get'], 'get': 'get=availability', 'type': 'enum', 'values': ['online', 'offline']}, 'api-last-answer': {'cmd': ['get'], 'get': 'get=api-last-answer'}, 'link-quality': {'cmd': ['get'], 'get': 'get=linkquality'}, 'power': {'cmd': []}, 'state': {'cmd': ['get', 'set'], 'get': 'get=state', 'set': "get={'state': '{DATA}'}", 'type': 'enum', 'values': ['ON', 'OFF']}, 'device-info': {'cmd': ['get'], 'get': 'get=device-info'}, 'device-configuration': {'cmd': ['get'], 'get': 'get=device-configuration'}, 'device-features': {'cmd': ['get'], 'get': 'get=device-features'}, 'l1-power': {'cmd': ['get', 'set'], 'get': 'get=state_l1', 'set': "get={'state_l1': '{DATA}'}", 'type': 'enum', 'values': ['ON', 'OFF']}, 'l2-power': {'cmd': ['get', 'set'], 'get': 'get=state_l2', 'set': "get={'state_l2': '{DATA}'}", 'type': 'enum', 'values': ['ON', 'OFF']}}, 'query': {'load_intervals': {'10': ['l1-power', 'l2-power']}, 'load_default': 30, 'load_after': ['on', 'off', 'toggle'], 'load_never': ['device-info', 'device-features', 'device-configuration']}, 'description': 'API for ZigBee Devices', 'method': 'query'}
+
+* observation: if remote is disabled due to power_off and then enabled -> power buttons are still displayed like disabled (but are still usable)
+* add reconnect trigger for some cases ... maybe add a delay time of e.g. 30s?!
+* Error TAPO P100 - no bad consequences?!
+
+      01/26 05:17:46 | ERROR    api-P100    | EXCEPTION in API-Addon for Tapo-Link P100 (APIaddOn.get_info()): <class 'requests.exceptions.ConnectTimeout'> | HTTPConnectionPool(host='192.168.1.22', port=80): Max retries exceeded with url: /app?token=33C996C0CB501154BF1452168D367B37 (Caused by ConnectTimeoutError(<HTTPConnection(host='192.168.1.22', port=80) at 0x7f8467bce0>, 'Connection to 192.168.1.22 timed out. (connect timeout=None)'))
+         File "/usr/src/app/server/interfaces/api_p100.py", line 308, in get_info
+          self.info_answer = self.api.getDeviceInfo()
+                             ~~~~~~~~~~~~~~~~~~~~~~^^
+        File "/usr/src/app/server/interfaces/p100/PyP100.py", line 283, in getDeviceInfo
+          r = requests.post(URL, json=SecurePassthroughPayload, headers=headers)
+        File "/usr/local/lib/python3.14/site-packages/requests/api.py", line 115, in post
+          return request("post", url, data=data, json=json, **kwargs)
+        File "/usr/local/lib/python3.14/site-packages/requests/api.py", line 59, in request
+          return session.request(method=method, url=url, **kwargs)
+                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "/usr/local/lib/python3.14/site-packages/requests/sessions.py", line 589, in request
+          resp = self.send(prep, **send_kwargs)
+        File "/usr/local/lib/python3.14/site-packages/requests/sessions.py", line 703, in send
+          r = adapter.send(request, **kwargs)
+        File "/usr/local/lib/python3.14/site-packages/requests/adapters.py", line 665, in send
+          raise ConnectTimeout(e, request=request)
+
+
+      01/26 08:59:43 | ERROR    Q-query     | ERROR queue query_list (query,TAPO-P100,plug02,signal): 'P100' object has no attribute 'jc'
+      01/26 08:59:43 | ERROR    Q-query     | EXCEPTION in queueQuery (QueueApiCalls.execute()): <class 'AttributeError'> | 'P100' object has no attribute 'jc'
+         File "/usr/src/app/server/modules/rm3queue.py", line 141, in execute
+          result = self.device_apis.api_query(interface, device, value)
+        File "/usr/src/app/server/interfaces/interfaces.py", line 973, in api_query
+          return_msg = self.api[api_dev].query(device, device_id, button_code)
+        File "/usr/src/app/server/interfaces/api_p100.py", line 146, in query
+          return f"ERROR {self.api_name} - query*: {e} | {command} | {result} | {self.api.jc.info_result}"
+                                                                                 ^^^^^^^^^^^
+
+
+* if "_ACTIVE-APIS.json" refers to API device, that is not available in 00_interface.json -> a fatal error occurs (rm_status-device.js line 229)
+* reconnecting weather (after a network error) doesn't work 
 * edit mode
   * toggle & slider for groups doesn't work (but are in the drop-down menus) -> rm_remote-control.js:432
   * don't show groups in drop-down if no device is defined in it
@@ -28,7 +80,6 @@
 
 ## UNDER DEVELOPMENT -------------------------------------------------------------
 
- 
 * macro editing in the app
   * OPEN: sort in some order (alphabetically or in the order of the menu)
   * OPEN: edit groups with the same option (different data structure)
@@ -57,7 +108,12 @@
 
 ### NEW 01-2025
 
-* set a time difference in .env -> config.local_time()
+
+* API refactoring
+  * from:   command = "self.api." + command_param[0]
+            result = eval(command)
+  * to:     method = getattr(self.api, command)
+            result = await method(args)
 
 * QUESTION: is there a need for a device or is it possible to get data if API-Device is defined
   * idea: whenever MultiDevice = False and same set of commands (defined in 00_default.json) is enough,
@@ -81,8 +137,7 @@
 
 * Implementing DENON API
   * OPEN: Data definition
-    * prg+ / prg- ?? ffw / fbw ??
-    * internet-radio / usb / eco / hdmi-output / 1..4 / ffw / fbw (next / previous)
+    * internet-radio / usb
 
 * Improve API Device settings
   * add possibility to select PowerDevice from a menu
@@ -93,22 +148,16 @@
 
 * working with templates
   * set buttons to "!template_" (instead of device)
-    * remove if used for devices
+    * show buttons in a specific color to mark them as not defined yet (for scenes), remove "!template_" for devices
     * offer option to replace with device or macro for scenes (editing in preview instead of adding something before or after)
   * save default icon in device templates
   * save default header image in scene templates
-
-* installation after initial load
-  * server side - copy / create initial config files (all APIs are off, no API devices configured)
-  * app side - add API devices (use discovery if available or default config from API)
-  * app side - remove API device
-  * app side - hint / help if not remote is defined yet
+  * save/export remote as template
 
 ### NEW 11-2025
 
 * SERVER
   * INTERFACES / API
-    * ensure, reload / reconnect reloads 00_interfaces.js, 00_default.json + all <device>.json
     * if device defines commands with "get" and query is not defined, query all (at least in a wider rhythm)
     * integrate from "query": "load_only", "load_never"
 
@@ -139,19 +188,16 @@
 
 ### OLDER (to be checked if still relevant)
 
-* CACHING
-  * General idea:
-    * method to request all data at once (are in QUEUE all at once already)
-  * Improve KODI:   ~1s - cache not only for request of complete data but also of single values
-  
 * Further ZigBee Integration
   * Check ZigBee with Password
-  
-* "not used in this remote control" -> nicht vom API device sondern nur vom device nutzen (wird serverseitig gemergt)
-  
+   
     
 # DONE --------------------------------------------------------------------------
 
+* monitor if network connection gets lost, if so keep an eye on it ...
+  ... show in "attention"; force reconnect of all APIs if got connections back / stop API and Queue processes if no connection to local network
+* replace global dataAll where ever used 
+* SOLVED: ?! further errors (4x) - EXCEPTION in Denon AV-Receiver API (ApiControl.send()): <class 'TypeError'> | argument of type 'RuntimeError' is not a container or iterable
 * bugfix visualize group status (toggle and power button)
 * integrating weather API
   * OPEN: create default configuration with sample data (quasi as device discovery)
@@ -272,6 +318,7 @@
   * OK: rearrange api device settings -> splitted info/reconnect and edit config
   * OK: rearrange api settings -> logging, device api speed, ...
 * Implementing DENON API
+  * OK: Data definition: prg+ / prg- / 1..4 / ffw / fbw (next / previous)
   * OK: Update relevant macros for own installation
   * OK: Documentation (main README.md)
   * NOT POSSIBLE @ THE MOMENT: specific commands - current-playing (DAB)
