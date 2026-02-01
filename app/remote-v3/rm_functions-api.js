@@ -12,12 +12,7 @@ class RemoteApiControl extends RemoteDefaultClass {
         this.answer = this.answer.bind(this);
         this.answer_api_request = this.answer_api_request.bind(this);
 
-        /*
-                        appFW.requestAPI("POST", ["chart-data", settings["date"]], settings, this.load);
-
-         */
-
-        this.log_level_status = "warning";
+        this.log_level_status = "info";
         this.temp_data = {};
         this.temp_callback = undefined;
         this.commands_unused = {
