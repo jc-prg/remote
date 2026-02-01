@@ -79,7 +79,6 @@ class RemoteInstall:
             {"type": "json", "path": os.path.join(self.directory_data, rm3presets.active_apis), "action": "create", "source": self.init_config["APIS"]},
         ]
 
-    @staticmethod
     def check_configuration(self):
         """
         check all relevant directories and config files,
