@@ -6,7 +6,7 @@
             "IPAddress": "127.0.0.1",
             "Methods": ["query"],
             "MultiDevice": false,
-            "Location": "Munich",
+            "Location": "",
             "LocationGPS": [48.14, 11.58, "Munich"],
             "Interval": 600,
             "Timeout": 5
