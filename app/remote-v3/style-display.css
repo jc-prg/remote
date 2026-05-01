@@ -110,8 +110,8 @@
 .display-table td {
     vertical-align: middle;  /* vertical */
     align-items: center;     /* vertical */
-    padding-top: 4px;
-    padding-bottom: 4px;
+    //padding-top: 4px;
+    //padding-bottom: 4px;
 }
 
 .display-table::-webkit-scrollbar {
