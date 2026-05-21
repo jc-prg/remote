@@ -257,6 +257,7 @@ def write_config_information():
 
 # ---------------------------------
 
+log_set2level = logging.INFO    # default; overridden by read_from_env() from REMOTE_LOG_LEVEL
 read_from_env()
 write_config_information()
 
@@ -337,7 +338,6 @@ f = open(app_config_file, "w")
 f.write(app_configuration)
 f.close()
 
-log_set2level = logging.INFO
 log_threads = {
     "DEBUG": [],
     "INFO": [],

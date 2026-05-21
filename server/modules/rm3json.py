@@ -7,7 +7,7 @@ import traceback
 import os
 import server.modules.rm3presets as rm3presets
 
-jsonPath = rm3presets.data_dir + "/"
+jsonPath = (rm3presets.data_dir + "/") if rm3presets.data_dir is not None else ""
 jsonAppDir = os.path.dirname(os.path.abspath(__file__))
 jsonSettingsPath = ""
 json_logging = rm3presets.set_logging("json", logging.INFO)
@@ -15,10 +15,11 @@ json_logging = rm3presets.set_logging("json", logging.INFO)
 
 def init():
     """
-    global settings
+    global settings — call after rm3presets.data_dir is populated
     """
 
     global jsonPath, jsonAppDir, jsonSettings, jsonSettingsFile
+    jsonPath = rm3presets.data_dir + "/"
     jsonSettingsPath = os.path.join(jsonAppDir, jsonPath)
 
 
@@ -60,13 +61,7 @@ def delete(file):
 
 def if_exist(file):
     filename = os.path.join(jsonAppDir, jsonPath, file + ".json")
-
-    try:
-        f = open(filename)
-    except IOError:
-        return False
-
-    return True
+    return os.path.exists(filename)
 
 
 def write(file, data, call_from=""):
@@ -84,11 +79,7 @@ def write(file, data, call_from=""):
 
     with open(file3, 'wb') as outfile:
         json.dump(data, codecs.getwriter('utf-8')(outfile), ensure_ascii=False, sort_keys=True, indent=4)
-    with open(file2, 'wb') as outfile:
-        json.dump(data, codecs.getwriter('utf-8')(outfile), ensure_ascii=False, sort_keys=True, indent=4)
-
-    if os.path.isfile(file3):
-        os.remove(file3)
+    os.replace(file3, file2)
 
     json_logging.debug("write ... " + file + " ... from:" + call_from)
 

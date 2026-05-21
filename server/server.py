@@ -26,7 +26,6 @@ def write_to_error_log(exc_type, message):
     write exception message to log
     """
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     timestamp = ("-" * 50) + "\n" + timestamp + f"  -> {exc_type} EXCEPTION:\n" + ("-" * 50)
 
     with open(rm3presets.log_filename_error, "a", encoding="utf-8") as f:

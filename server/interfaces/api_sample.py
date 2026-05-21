@@ -1,11 +1,11 @@
 import time
 import server.modules.rm3json as rm3json
-import server.modules.rm3presets as rm3config
+import server.modules.rm3presets as rm3presets
 from server.modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 
 # How to start an integration:
 # - create a copy of this file to api_<your-api-key>.py
-# - change the line rm3config.api_modules.append("SAMPLE") to rm3config.api_modules.append("<YOUR-API-KEY>")
+# - change the line rm3presets.api_modules.append("SAMPLE") to rm3presets.api_modules.append("<YOUR-API-KEY>")
 # - create a subdirectory <your-api-key> and a README.md in that directory
 # - create a directory data/devices/<YOUR-API-KEY>/ incl. 00_default.json and 00_interface.json
 # - in interface.py add "<YOUR-API-KEY>": "api_<your-api-key>" to self.api_modules = {}
@@ -15,8 +15,8 @@ from server.modules.rm3classes import RemoteDefaultClass, RemoteApiClass
 # API-class
 # -------------------------------------------------
 
-shorten_info_to = rm3config.shorten_info_to
-rm3config.api_modules.append("SAMPLE")
+shorten_info_to = rm3presets.shorten_info_to
+rm3presets.api_modules.append("SAMPLE")
 
 
 class ApiControl(RemoteApiClass):

@@ -319,7 +319,7 @@ class ConfigCache(RemoteThreadingClass):
                 del self.cache[config_key]
             return "OK: Config file '" + config_file + "' deleted."
         else:
-            return "ERROR: Could not delete '" + config_file + "' deleted."
+            return "ERROR: Could not delete config file '" + config_file + "'."
 
     def device_set_values(self, device_id, category, values):
         """
@@ -440,7 +440,7 @@ class ConfigCache(RemoteThreadingClass):
 
     def scene_add(self, scene_id, configuration):
         """
-        add a complete new device to devices config
+        add a complete new scene to scenes config
 
         Args:
             scene_id (str): scene id

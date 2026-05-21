@@ -76,8 +76,9 @@ def local_network_exists(host=None, port=80, timeout=3):
             return False
 
         # Try to connect to the host (gateway) within the local network
-        socket.setdefaulttimeout(timeout)
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(timeout)
+            s.connect((host, port))
         return True
     except OSError:
         return False
