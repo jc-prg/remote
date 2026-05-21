@@ -1,4 +1,3 @@
-<?xml version=„1.0“ encoding=„utf-8“?>
 <!doctype html>
 <html lang="EN"><!-- manifest="cache.manifest"> -->
 <head>
@@ -6,7 +5,7 @@
 
     <meta charset="utf-8">
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <meta http-equiv="content-type" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
 
     <meta name="theme-color" content="#000000">
     <meta name="mobile-web-app-capable" content="yes">
@@ -60,7 +59,7 @@
         <nav-info id="menu-audio3" style="cursor:pointer;">IIIIIIIIIIIIIIIIIIII</nav-info>
         <nav-info id="menu-audio2" style="cursor:pointer;"></nav-info>
         <nav-info id="menu-audio1" style="cursor:pointer;"></nav-info>
-        <nav-info id="edit1"  onClick=""></nav-info><!--icon-->
+        <nav-info id="edit1"  onclick=""></nav-info><!--icon-->
         <nav-info id="attention"></nav-info>
         <nav-info id="menu-audio4"></nav-info><!--icon-->
     </nav-info>
@@ -70,7 +69,7 @@
 
     <nav-title id="navTitle">Loading ...</nav-title>
     <ul>
-      <li id="navi"><div onClick="appClickMenu();"  id="navi-click"><img src="img/button.png" alt="menu"/></div>
+      <li id="navi"><div onclick="appClickMenu();"  id="navi-click"><img src="img/button.png" alt="menu"/></div>
         <ul id='menuItems' style="visibility:hidden;"><!-- drop down menu - filled by script --></ul>
       </li>
     </ul>
@@ -129,47 +128,46 @@
         loadCss("/remote-v3/",     remote_css);
         loadScripts("/remote-v3/", remote_js);
 
-        let loaded_modules = {};
-        let loaded_ok = false;
+        const LOAD_TIMEOUT_MS = 8000;
+        const LOAD_POLL_MS = 50;
+        let elapsed = 0;
 
-        setTimeout( function() {
-            loaded_modules = {
-                module: loadScriptsOk("/modules/", modules_js, module_scripts_loaded),
-                framework: loadScriptsOk("/framework/", app_js, app_framework_loaded),
-                remote: loadScriptsOk("/remote-v3/", remote_js, remote_scripts_loaded)
-            }
-            loaded_ok = (loaded_modules.module && loaded_modules.framework && loaded_modules.remote);
-            console.log(loaded_modules);
-            console.log(loaded_ok);
+        const checkInterval = setInterval(function() {
+            const allLoaded =
+                module_scripts_loaded === modules_js.length &&
+                app_framework_loaded  === app_js.length &&
+                remote_scripts_loaded === remote_js.length;
 
-            setTimeout( function() {
-                if (loaded_ok) {
-                    startApp();
-                    startRemote();
-                    elementHidden("loading_overlay");
-                } else {
-                    let message = "&nbsp;<br/>";
-                    for (let key in loaded_modules) {
-                        if (!loaded_modules[key]) {
-                            message += `Could not load all <u>${key}</u> scripts.<br/>`;
-                        }
+            if (allLoaded) {
+                clearInterval(checkInterval);
+                startApp();
+                startRemote();
+                elementHidden("loading_overlay");
+            } else if (elapsed >= LOAD_TIMEOUT_MS) {
+                clearInterval(checkInterval);
+                const loaded_modules = {
+                    module:    loadScriptsOk("/modules/",   modules_js, module_scripts_loaded),
+                    framework: loadScriptsOk("/framework/", app_js,     app_framework_loaded),
+                    remote:    loadScriptsOk("/remote-v3/", remote_js,  remote_scripts_loaded),
+                };
+                let message = "&nbsp;<br/>";
+                for (const key of Object.keys(loaded_modules)) {
+                    if (!loaded_modules[key]) {
+                        message += `Could not load all <u>${key}</u> scripts.<br/>`;
                     }
-                    message += "Check browser logging for details."
-                    document.getElementById("loading_overlay_info").innerHTML = message;
                 }
-            }, 500 );
-        }, 1500);
+                message += "Check browser logging for details.";
+                document.getElementById("loading_overlay_info").innerHTML = message;
+            }
+
+            elapsed += LOAD_POLL_MS;
+        }, LOAD_POLL_MS);
 
 
     </script>
 
     <!-- load additional CSS and JavaScript files in specific order // END -->
 
-    &nbsp;<br/>
-    &nbsp;<br/>
-    &nbsp;<br/>
-    &nbsp;<br/>
-    &nbsp;<br/>
     </div>
 </body>
 </html>

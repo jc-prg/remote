@@ -132,7 +132,7 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
         let list_power_devices = this.data["CONFIG"]["apis"]["list_api_power_device"];
         let power_devices = [];
         for (let device in list_power_devices) {
-            let power_device = list_power_devices[device]
+            let power_device = list_power_devices[device];
             this.power_devices[power_device] = "";
             this.power_devices_status[power_device] = "N/A";
         }
@@ -354,9 +354,8 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
 
             // collect status for required devices
             if (dev_required_length > 0) {
-                for (let device_id in dev_required) {
+                for (const device of dev_required) {
                     // collect status infos for each required device
-                    let device = dev_required[device_id];
 
                     if (!this.status_data["device"][device]) {
                         console.debug("create_data_scenes(): Status for '" + device + "' not found - part of scene '" + scene + "'");
@@ -445,9 +444,8 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
             let devices_disabled = [];
             let devices_error = [];
 
-            for (let i in group["devices"]) {
+            for (const device_id of group["devices"]) {
                 let device_status;
-                let device_id = group["devices"][i];
 
                 if (!this.config_devices[device_id]) {
                     device_status = {"status": "ERROR"};

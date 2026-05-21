@@ -519,12 +519,12 @@ class RemoteSettingsRemotes extends RemoteDefaultClass {
 
     // load archived devices
     load_archived_devices() {
-        rmApi.call("ArchiveList", ["device"], "", eval(this.name+".list_devices"));
+        rmApi.call("ArchiveList", ["device"], "", this.list_devices.bind(this));
     }
 
     // load archived devices
     load_archived_scenes() {
-        rmApi.call("ArchiveList", ["scene"], "", eval(this.name+".list_scenes"));
+        rmApi.call("ArchiveList", ["scene"], "", this.list_scenes.bind(this));
     }
 
     // create links for drag & drop items to edit the remotes (for scenes and devices)
@@ -796,7 +796,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
         setting  += set_temp;
         setting  += "</div>";
 
-        rmApi.call("LoggingLoad", [], undefined, eval(this.name+".show_logs_write"));
+        rmApi.call("LoggingLoad", [], undefined, this.show_logs_write.bind(this));
         return setting;
     }
 
@@ -1235,8 +1235,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
 
         this.button.width = "72px";
 
-        for (let i in interfaces_available) {
-            let key = interfaces_available[i];
+        for (const key of interfaces_available) {
             let api_device_config = (rmData.apis.data("list_api_configs")["list"][key] !== undefined);
 
             let id = "interface_edit_"+key;
@@ -1467,8 +1466,8 @@ class RemoteSettingsGeneral extends RemoteDefaultClass {
         appleTouchIcon  = "";
         favicon         = "";
 
-        for (let icon in rmData.elements.data("icons")) {
-            let currentUrl = "remote-v3/icon/" + rmData.elements.data("icons")[icon];
+        for (const iconFile of rmData.elements.data("icons")) {
+            let currentUrl = "remote-v3/icon/" + iconFile;
             if (appleTouchIconUrl.indexOf(currentUrl) >= 0) { appleTouchIcon += this.icon_img(currentUrl, false, false, true, "appleicon"); }
             else                                            { appleTouchIcon += this.icon_img(currentUrl, false, true, false, "appleicon"); }
             if (faviconUrl.indexOf(currentUrl) >= 0)        { favicon += this.icon_img(currentUrl, false, false, true, "favicon"); }

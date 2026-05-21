@@ -1423,8 +1423,7 @@ class RemoteControlEditDialogs extends RemoteDefaultClass{
                 if (rmData.devices.has_colors(key)) { devices_color_picker[key] = "Device: " + label; }
             }
 
-            for (let i in rmData.device_groups.list_all()) {
-                let key = rmData.device_groups.list_all()[i];
+            for (const key of rmData.device_groups.list_all()) {
                 let label_long = "Group: " + rmData.device_groups.description(key) + " (" + key + ")"
                 let label_short = "Group: " + key;
                 if (rmData.device_groups.description(key)) {
@@ -1441,7 +1440,7 @@ class RemoteControlEditDialogs extends RemoteDefaultClass{
                     devices_color_picker["group_"+key] = label_long;
                 }
             }
-            for (let key in rmData.macros.list_all()) {
+            for (const key of rmData.macros.list_all()) {
                 if (key !== "scene-on" && key !== "scene-off") {
                     device_macro["macro_" + key] = "Macro: " + key;
                 }

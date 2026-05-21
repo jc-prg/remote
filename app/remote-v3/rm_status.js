@@ -141,7 +141,6 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     set_connection_error(state) {
         this.app_connection_error = state;
         this.show_status(this.data, this.edit_mode, false);
-        console.error("-----> ",this.attention_config, this.attention_threads, this.attention_local_network, this.app_connection_error);
         this.visualize_attentions();
     }
 
@@ -176,8 +175,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     /* visualize status for APIs: active -> toggles */
     show_status_apis () {
         let all_keys = this.status.get_keys("api");
-        for (let i in all_keys) {
-            let key = all_keys[i];
+        for (const key of all_keys) {
             let status = this.status.status_api(key, true);
 
             this.visualize_api_slider(`toggle__${key}_input`, status["active"]);
@@ -191,8 +189,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     /* visualize status for APIs: active -> toggles */
     show_status_api_devices () {
         let all_keys = this.status.get_keys("api-device");
-        for (let i in all_keys) {
-            let key = all_keys[i];
+        for (const key of all_keys) {
             let [api, api_device] = key.split("_");
             let status = this.status.status_api_device(key, true);
 
@@ -208,8 +205,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     /* visualizes status for devices */
     show_status_devices () {
         let all_keys = this.status.get_keys("device");
-        for (let i in all_keys) {
-            let key = all_keys[i];
+        for (const key of all_keys) {
             if (key === "default")        { continue; }
 
             let power_status  = rmStatus.status_device(key);
@@ -236,8 +232,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     /* visualizes status for scenes */
     show_status_scenes () {
         let all_keys = this.status.get_keys("scene");
-        for (let i in all_keys) {
-            let key = all_keys[i];
+        for (const key of all_keys) {
             if (key === "default") { continue; }
 
             let power_status  = rmStatus.status_scene(key);
@@ -258,8 +253,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     /* visualizes status for groups */
     show_status_groups() {
         let all_keys = this.status.get_keys("group");
-        for (let i in all_keys) {
-            let key = all_keys[i];
+        for (const key of all_keys) {
             if (key === "default") { continue; }
 
             if (!this.edit_mode) {
@@ -351,11 +345,11 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         const status_sliders = ["toggle__edit_input", "toggle__intelligent_input", "toggle__button_input", "toggle__hint_input", "toggle__easy_input", "toggle__json_input"];
         const status_values = [rmRemote.edit_mode, !deactivateButton, showButton, remoteHints, easyEdit, jsonHighlighting];
 
-        for (let key in status_sliders) {
-            if (document.getElementById(status_sliders[key])) {
-                let slider = document.getElementById(status_sliders[key]);
-                if (status_values[key])   { slider.value = 1; slider.className = "rm-slider device_active"; }
-                else                      { slider.value = 0; slider.className = "rm-slider device_disabled"; }
+        for (let i = 0; i < status_sliders.length; i++) {
+            if (document.getElementById(status_sliders[i])) {
+                let slider = document.getElementById(status_sliders[i]);
+                if (status_values[i])   { slider.value = 1; slider.className = "rm-slider device_active"; }
+                else                    { slider.value = 0; slider.className = "rm-slider device_disabled"; }
             }
         }
     }
@@ -403,8 +397,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         let html = "";
         let alert = "";
         if (this.attention_config || this.attention_threads || this.attention_local_network || this.app_connection_error) {
-            for (let i in types) {
-                let key = types[i];
+            for (const key of types) {
                 let message, count;
 
                 if (this.attention_config && key === "configuration")            { [message, count] = this.prepare_config_errors(); }
@@ -412,7 +405,6 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
                 else if (this.attention_local_network && key === "local network")  { count = 1; message = lang("ERROR_LOST_LOCAL_NETWORK"); }
                 else if (this.app_connection_error && key === "server connection") { count = 1; message = lang("ERROR_LOST_SERVER_CONNECT"); }
 
-                console.debug(this.attention_config, this.attention_threads, this.attention_local_network, this.app_connection_error, key, count);
                 if (count > 0) {
                     alert += "<div style='color:var(--rm-color-font-warning);'><b>" + count + " " + key + " error(s):</b></div>";
                     alert += "<div id='attention-alert' style='text-align:left;'>" + message + "</div>";
@@ -596,7 +588,6 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         }
 
         if (document.getElementById("color-picker_"+device_id)) {
-            console.error(device_id, device_status, device_commands);
 
 
             let color_picker = document.getElementById("color-picker_"+device_id);
@@ -736,8 +727,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         // set values if device is active or scene is active (which can contain several devices)
         if (status === "ON" || status === "OFF" || status === "POWER_OFF" || status === "OK" || status === "N/A") {
 
-            for (let i in display_keys) {
-                let key = display_keys[i];
+            for (const key of display_keys) {
 
                 const element_norm = document.getElementById("display_" + device_id + "_" + key);
                 const element_full = document.getElementById("display_full_" + device_id + "_" + key);
@@ -852,8 +842,8 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         let scene_display = rmData.scenes.display(scene_id);
 
 
-        for (let i in scene_devices) {
-            if (!rmData.devices.exists(scene_devices[i])) { error.push(`Device <u>${scene_devices[i]}</u> is used in scene <u>${scene_id}</u> but no configuration exists`); }
+        for (const device of scene_devices) {
+            if (!rmData.devices.exists(device)) { error.push(`Device <u>${device}</u> is used in scene <u>${scene_id}</u> but no configuration exists`); }
         }
         for (let key in scene_display) {
             let device = scene_display[key].split("_")[0];
@@ -869,8 +859,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             if (error_msg !== "") { error.push(error_msg); }
         }
         for (let key in scene_channels) {
-            for (let i in scene_channels[key]) {
-                let command = scene_channels[key][i];
+            for (const command of scene_channels[key]) {
                 let error_msg = this.check_errors(command, "channel-macro");
                 if (error_msg !== "") { error.push(error_msg); }
             }
@@ -988,7 +977,6 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
 
         if (status.toUpperCase() === "FALSE")            { status = "0"; }
         else if (status.toUpperCase().includes("OFF"))   { status = "0"; }
-        else if (status.toUpperCase() === "OFF")         { status = "0"; }
         else if (status.toUpperCase() === "TRUE")        { status = "1"; }
         else if (status.toUpperCase() === "ON")          { status = "1"; }
         else if (status.toUpperCase() === "PARTLY")      { status = "0.5"; }
@@ -1068,7 +1056,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
     /* visualizes device status via message on top of the remote control */
     visualize_message_device(device_id) {
 
-        if (rmRemote.active_type !== "device" && rmRemote.active_name !== device_id) { return; }
+        if (rmRemote.active_type !== "device" || rmRemote.active_name !== device_id) { return; }
         if (!document.getElementById("remote-power-information-"+device_id)) { return; }
 
         let status = rmStatus.status_device(device_id);
@@ -1208,7 +1196,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         let group_status = rmStatus.status_group(group_id);
         let options = ["on", "off", "on-off", "ON", "OFF", "ON-OFF"];
 
-        for (let key in options) { if (document.getElementById("group_" + group_id + "_" + options[key])) { exists = true; } }
+        for (const opt of options) { if (document.getElementById("group_" + group_id + "_" + opt)) { exists = true; } }
         if (document.getElementById("toggle_group_" + group_id + "_input")) { exists = true; }
         if (!exists) { return; }
 
@@ -1246,7 +1234,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         let group_status = rmStatus.status_group(group_id);
         let options = ["on", "off", "on-off", "ON", "OFF", "ON-OFF"];
 
-        for (let key in options) {  if (document.getElementById("group_" + group_id + "_" + options[key])) { exists = true; } }
+        for (const opt of options) {  if (document.getElementById("group_" + group_id + "_" + opt)) { exists = true; } }
         if (document.getElementById("toggle_group_" + group_id + "_input")) { exists = true; }
         if (!exists) { return; }
 

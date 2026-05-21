@@ -218,7 +218,7 @@ class RemoteApiControl extends RemoteDefaultClass {
             if (button === "") { appMsg.alert(lang("BUTTON_SELECT")); return; }
 
             param = button.split("_");
-            param = param.push(device);
+            param.push(device);
         }
         else if (cmd === "CommandSend" || cmd === "CommandSendWait" || cmd === "CommandSendCheck" || cmd === "CommandSendCheckWait") {
 
@@ -504,9 +504,8 @@ class RemoteApiControl extends RemoteDefaultClass {
         let data = "";
         if (this.temp_data[cmd]) { data = this.temp_data[cmd]; }
 
-        if (this.temp_callback) { appFW.requestAPI(command.method, api_commands, data, this.temp_callback, wait); }
-        if (command.answer)     { appFW.requestAPI(command.method, api_commands, data, command.answer, wait); }
-        else                    { appFW.requestAPI(command.method, api_commands, data, "", wait); }
+        const callback = this.temp_callback || command.answer || "";
+        appFW.requestAPI(command.method, api_commands, data, callback, wait);
 
         delete this.temp_data[cmd];
         this.temp_callback = undefined;

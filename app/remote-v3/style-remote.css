@@ -138,6 +138,7 @@ ul.help ul li {
    top              : 0;
    z-index          : 1;
    padding          : 8px;
+   padding-bottom   : 100px;
    margin           : 0;
 }
 

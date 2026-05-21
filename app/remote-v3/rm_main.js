@@ -12,7 +12,7 @@ reload_times = {
 	TIMEOUT: 60
 }
 reload_active = false;
-rm3update = false;
+let rm3update = false;
 
 let showImg = true;
 let startActive = true;
@@ -41,7 +41,7 @@ function startRemote() {
     rmRemote    = new RemoteControl( "rmRemote");
     rmSettings  = new RemoteSettings( "rmSettings");
     rmJson      = new RemoteJsonEditing( "rmJson");
-	rmCookies   = new RemoteCookies("rmCookies");
+    rmCookies   = new RemoteCookies("rmCookies");
 
     rmMain.start(true);
     }
@@ -222,7 +222,7 @@ class RemoteMain extends RemoteDefaultClass {
 
 	/* set a main variable - toggles in the settings */
 	set_main_var(main_var, settings="") {
-		this.logging.info("set_main_vair('"+main_var+"','"+settings+"');");
+		this.logging.info("set_main_var('"+main_var+"','"+settings+"');");
 
 		if (main_var === "edit_mode") {
 

@@ -98,7 +98,7 @@ class RemotePrepareDataMacros extends RemoteDefaultClass {
 
         let result = expected_type;
         if (category === "") {
-            for (let c in this.categories_global) { this.list_all(c); }
+            for (const c of this.categories_global) { this.list_all(c); }
         }
         else if (this.categories_global.includes(category) && macro_id === "") {
             result = this.config_macros[category];
@@ -181,8 +181,8 @@ class RemotePrepareDataMacros extends RemoteDefaultClass {
 
         if (category === "") {
             let result = {};
-            for (let c in this.categories_global) {
-                result[this.categories_global[c]] = this.list_all(this.categories_global[c]);
+            for (const c of this.categories_global) {
+                result[c] = this.list_all(c);
             }
             return result;
         }
@@ -210,8 +210,7 @@ class RemotePrepareDataMacros extends RemoteDefaultClass {
         // add device buttons as source
         if (show_devices) {
             let devices = this.devices.list_all(devices_include_invisible);
-            for (let i in devices) {
-                let device_id = devices[i];
+            for (const device_id of devices) {
                 result[device_id] = {
                     color: "devices",
                     commands: this.devices.list_buttons(device_id),
@@ -248,8 +247,7 @@ class RemotePrepareDataMacros extends RemoteDefaultClass {
         // add group buttons as source
         if (show_groups) {
             let groups = this.device_groups.list_all();
-            for (let i in groups) {
-                let group_id = groups[i];
+            for (const group_id of groups) {
                 result["group_" + group_id] = {
                     color: "groups",
                     commands: this.device_groups.list_buttons(group_id),
@@ -358,8 +356,7 @@ class RemotePrepareDataGroups extends RemoteDefaultClass {
         let result = [];
         let buttons = {};
         if (this.config_groups[group_id]["devices"].length > 0) {
-            for (let i in this.config_groups[group_id]["devices"]) {
-                let device_id = this.config_groups[group_id]["devices"][i];
+            for (const device_id of this.config_groups[group_id]["devices"]) {
                 buttons[device_id] = this.devices.list_buttons(device_id);
             }
             let result_temp = Object.values(buttons);
@@ -408,9 +405,9 @@ class RemotePrepareDataGroups extends RemoteDefaultClass {
             return false;
         }
         let devices = this.list_devices(group_id);
-        for (let key in devices) {
-            if (!commands && this.devices.has_ranges(devices[key])) { has_ranges_count += 1; }
-            else { has_ranges_cmd.push(this.devices.has_ranges(devices[key], true)); }
+        for (const device_id of devices) {
+            if (!commands && this.devices.has_ranges(device_id)) { has_ranges_count += 1; }
+            else { has_ranges_cmd.push(this.devices.has_ranges(device_id, true)); }
         }
         if (!commands) {
             return (devices.length === has_ranges_count);
@@ -428,9 +425,9 @@ class RemotePrepareDataGroups extends RemoteDefaultClass {
             return false;
         }
         let devices = this.list_devices(group_id);
-        for (let key in devices) {
-            if (!commands && this.devices.has_colors(devices[key])) { has_colors_count += 1; }
-            else { has_colors_cmd.push(this.devices.has_colors(devices[key], true)); }
+        for (const device_id of devices) {
+            if (!commands && this.devices.has_colors(device_id)) { has_colors_count += 1; }
+            else { has_colors_cmd.push(this.devices.has_colors(device_id, true)); }
         }
         if (!commands) {
             return (devices.length === has_colors_count);

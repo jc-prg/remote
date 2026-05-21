@@ -70,7 +70,7 @@ class RemoteCookies extends RemoteDefaultClass {
 
     /* set cookie data */
     set(values, source="") {
-        if (values && values !== []) {
+        if (Array.isArray(values) && values.length > 0) {
             values = values.join("::");
         }
         this.logging.info("set(): " + values, source);
