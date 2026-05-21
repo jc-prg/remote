@@ -21,8 +21,8 @@ paths:
       operationId: __main__.remoteAPI.test
       tags:
         - maintain
-      summary: test api functionality
-      description: test api functionality
+      summary: test API connectivity
+      description: ping the API to verify it is running and reachable
       responses:
         200:
           description: Successfully status data
@@ -62,8 +62,8 @@ paths:
       operationId: __main__.remoteAPI.get_config_reload
       tags:
         - list
-      summary: list status and remote definition data
-      description: list status and remote definition data
+      summary: force reload config and return status and remote definition data
+      description: forces a full reload of all config files from disk before returning the data
       responses:
         200:
           description: Successfully status data
@@ -86,8 +86,8 @@ paths:
       operationId: __main__.remoteAPI.status
       tags:
         - status
-      summary: list status data
-      description: list status data
+      summary: return current system status
+      description: return current status of all devices, connections, interfaces and scenes
       responses:
         200:
           description: Successfully status data
@@ -106,7 +106,7 @@ paths:
       tags:
         - queue log
       summary: returns a logging of api requests
-      description: returns a logging of api requests handled using the que
+      description: returns the recent command queue log (Q-send and Q-query entries)
       responses:
         200:
           description: Successfully status data
@@ -171,8 +171,8 @@ paths:
       operationId: __main__.remoteAPI.edit_api_delete
       tags:
         - edit
-      summary: add api device
-      description: add api device
+      summary: delete api device
+      description: remove an api device and its configuration
       parameters:
         - name: api
           in: path
@@ -270,8 +270,8 @@ paths:
       operationId: __main__.remoteAPI.send_button_on_off
       tags:
         - send
-      summary: send IR command including a check, if device is on
-      description: if device is off, no IR command is send except on-off
+      summary: send command only if device is on
+      description: send command to device only if it is powered on; power toggle commands (on-off) are always sent regardless
       parameters:
         - name: device
           in: path
@@ -296,8 +296,8 @@ paths:
       operationId: __main__.remoteAPI.send_button
       tags:
         - send
-      summary: send command and execute via queue
-      description: the command is send never the less the device is on or off
+      summary: send command unconditionally via queue
+      description: send command via Q-send queue regardless of device power state
       parameters:
         - name: device
           in: path
@@ -322,8 +322,8 @@ paths:
       operationId: __main__.remoteAPI.send_text
       tags:
         - send
-      summary: send text and execute via queue
-      description: the command is send never the less the device is on or off
+      summary: send text payload to device via queue
+      description: send a text value to the specified device command via Q-send queue, regardless of device power state
       parameters:
         - name: device
           in: path
@@ -462,8 +462,8 @@ paths:
       operationId: __main__.remoteAPI.send_macro_buttons
       tags:
         - send
-      summary: send marco
-      description: the macro commands are send
+      summary: execute macro
+      description: execute all commands defined in the named macro via the queue
       parameters:
         - name: macro
           in: path
@@ -571,8 +571,8 @@ paths:
           in: path
           type: string
           required: true
-      summary: change recording configuration
-      description: change recording configuration
+      summary: archive or restore a remote control
+      description: move a device or scene remote to/from the archive based on the direction parameter
       responses:
         200:
           description: Success
@@ -617,7 +617,7 @@ paths:
     put:
       operationId: __main__.remoteAPI.edit_timer
       tags:
-        - send
+        - edit
       summary: edit timer event
       description: edit timer event
       parameters:
@@ -643,7 +643,7 @@ paths:
     delete:
       operationId: __main__.remoteAPI.edit_timer_delete
       tags:
-        - send
+        - edit
       summary: delete timer event
       description: delete timer event
       parameters:
@@ -665,9 +665,9 @@ paths:
     put:
       operationId: __main__.remoteAPI.edit_timer_try
       tags:
-        - send
-      summary: try timer event
-      description: try timer event (send to queue directly)
+        - edit
+      summary: test-fire a timer event
+      description: immediately execute a timer event by sending its commands directly to the queue, without waiting for the scheduled time
       parameters:
         - name: timer_id
           in: path
@@ -691,8 +691,8 @@ paths:
       operationId: __main__.remoteAPI.edit_remote_macros
       tags:
         - edit
-      summary: edit marko
-      description: change marcos
+      summary: edit macro definition
+      description: update macro, device on/off, and scene on/off button sequences
       parameters:
         - name: macros
           in: body
@@ -1127,8 +1127,8 @@ paths:
       operationId: __main__.remoteAPI.edit_remote_visibility
       tags:
         - edit
-      summary: add template to device
-      description: add template to device
+      summary: set visibility of a device or scene
+      description: show or hide a device or scene remote in the menu
       parameters:
         - name: remote_type
           in: path
@@ -1224,8 +1224,8 @@ paths:
       operationId: __main__.remoteAPI.reconnect_api
       tags:
         - maintain
-      summary: reload data from config files
-      description: reload data from config files
+      summary: reconnect a device interface
+      description: trigger a reconnect attempt for the specified interface (e.g. after a connection loss)
       parameters:
         - name: interface
           in: path
@@ -1268,10 +1268,10 @@ paths:
       tags:
         - maintain
       summary: reset all configuration status values
-      description: set all volumes to zero and turn off all devices before using this command
+      description: reset all cached device status values; set all volumes to zero and turn off all devices before using this command
       responses:
         200:
-          description: Successfully read check APP version vs. API version
+          description: Successfully reset all configuration status values
           schema:
             properties:
               API:
@@ -1287,10 +1287,10 @@ paths:
       tags:
         - maintain
       summary: reset all volume values
-      description: set all volumes to zero before using this command
+      description: reset all cached volume values to zero; set all volumes to zero on the devices before using this command
       responses:
         200:
-          description: Successfully read check APP version vs. API version
+          description: Successfully reset all volume values
           schema:
             properties:
               API:
