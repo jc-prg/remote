@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Backend:** Python 3, Flask + Connexion (OpenAPI/Swagger), REST API defined in `server/modules/rm3api.yml`
 - **Frontend:** Vanilla JS (ES6+), no build step, served by Apache via PHP Docker image
 - **Infrastructure:** Docker Compose; two containers (server + client)
-- **Current version:** v3.1.0
+- **Current version:** v3.2.0
 
 ## Running the Project
 
