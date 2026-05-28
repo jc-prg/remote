@@ -88,7 +88,8 @@ class QueueApiCalls(RemoteThreadingClass):
                 self.thread_wait(use_wait_time=0.01)
                 count = 0
 
-            except Exception:
+            except Exception as e:
+                self.logging.error(f"Exception: {e}")
                 self.error_details(sys.exc_info(), "QueueApiCalls.run()")
                 self.thread_wait(use_wait_time=0.1)
 

@@ -122,6 +122,29 @@ eval("log_srv."+rm3presets.log_level.lower()+"(' * SwaggerUI: http://<url>:"+str
 eval("log_srv."+rm3presets.log_level.lower()+"('---------------------------------------------------------------')")
 
 
+def create_app(remotesData, remotesEdit, configFiles, deviceAPIs,
+               queueQuery, queueSend, remoteSchedule, configRecord, testing=False):
+    """
+    Create and configure the Connexion/Flask application.
+
+    Accepts all service objects as parameters so the app can be created with
+    real or mock dependencies. Pass testing=True to enable Flask's test mode
+    and skip log-level changes on the werkzeug logger.
+
+    Returns the configured Connexion app (not yet running).
+    """
+    rm3api.RemoteAPI(remotesData, remotesEdit, configFiles,
+                     deviceAPIs, queueQuery, queueSend, remoteSchedule, configRecord)
+
+    app = connexion.App(__name__, specification_dir=rm3presets.rest_api_dir)
+    CORS(app.app)
+    app.add_api(rm3presets.rest_api)
+
+    if testing:
+        app.app.config["TESTING"] = True
+    return app
+
+
 if __name__ == "__main__":
 
     # Create threads and other classes
@@ -146,7 +169,6 @@ if __name__ == "__main__":
     remotesData = rm3data.RemotesData(configFiles, configInterfaces, deviceAPIs, queueQuery)
     remotesEdit = rm3data.RemotesEdit(remotesData, configFiles, configInterfaces, deviceAPIs, queueQuery)
     remoteSchedule = rm3timer.ScheduleTimer(configFiles, deviceAPIs, remotesData, queueSend)
-    remoteAPI = rm3api.RemoteAPI(remotesData, remotesEdit, configFiles, deviceAPIs, queueQuery, queueSend, remoteSchedule, configRecord)
 
     configFiles.start()
     configInterfaces.start()
@@ -162,12 +184,10 @@ if __name__ == "__main__":
 
     log_srv.info("Initializing REST API ..." + rm3presets.time_since_start())
     log_srv.info("... specification directory is " + rm3presets.rest_api_dir + " ...")
-    app = connexion.App(__name__, specification_dir=rm3presets.rest_api_dir)
-    CORS(app.app)
-
-    # Cead the swagger.yml file to configure the endpoints
     log_srv.info("... loading API specification from '" + rm3presets.rest_api + "' ..." + rm3presets.time_since_start())
-    app.add_api(rm3presets.rest_api)
+
+    app = create_app(remotesData, remotesEdit, configFiles, deviceAPIs,
+                     queueQuery, queueSend, remoteSchedule, configRecord)
 
     log_srv.info("... starting web-server on port " + str(rm3presets.server_port) + " ..." + rm3presets.time_since_start())
     rm3presets.start_duration = time.time() - rm3presets.start_time
