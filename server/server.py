@@ -122,6 +122,14 @@ eval("log_srv."+rm3presets.log_level.lower()+"(' * SwaggerUI: http://<url>:"+str
 eval("log_srv."+rm3presets.log_level.lower()+"('---------------------------------------------------------------')")
 
 
+# Populated by create_app(). Connexion resolves operationIds of the form
+# "__main__.remoteAPI.*" by looking up `remoteAPI` in sys.modules['__main__'].
+# In production (__name__ == "__main__"), that is this module. In tests,
+# the conftest injects this value into sys.modules['__main__'] after calling
+# create_app() so the resolver can find it.
+remoteAPI = None
+
+
 def create_app(remotesData, remotesEdit, configFiles, deviceAPIs,
                queueQuery, queueSend, remoteSchedule, configRecord, testing=False):
     """
@@ -133,8 +141,16 @@ def create_app(remotesData, remotesEdit, configFiles, deviceAPIs,
 
     Returns the configured Connexion app (not yet running).
     """
-    rm3api.RemoteAPI(remotesData, remotesEdit, configFiles,
-                     deviceAPIs, queueQuery, queueSend, remoteSchedule, configRecord)
+    global remoteAPI
+    remoteAPI = rm3api.RemoteAPI(remotesData, remotesEdit, configFiles,
+                                  deviceAPIs, queueQuery, queueSend, remoteSchedule, configRecord)
+
+    # Connexion resolves operationIds like "__main__.remoteAPI.test" by
+    # importing __main__ then doing deep_getattr("remoteAPI.test"). Inject
+    # before add_api() so the resolver can find it regardless of how the
+    # server is launched (directly or imported for tests).
+    import sys as _sys
+    _sys.modules["__main__"].remoteAPI = remoteAPI
 
     app = connexion.App(__name__, specification_dir=rm3presets.rest_api_dir)
     CORS(app.app)
