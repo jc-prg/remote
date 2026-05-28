@@ -54,6 +54,9 @@ function app_check_status(data) {
 //--------------------------------
 
 function app_click_menu() {
+	const visible = document.getElementById("menuItems").style.visibility !== "hidden";
+	if (visible) { rmSwipe.hide(); }
+	else if (rmRemote.active_name !== "") { rmSwipe.update_dots(); rmSwipe.show(); }
 	}
 	
 //--------------------------------

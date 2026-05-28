@@ -29,6 +29,7 @@ const remote_js = [
     "rm_remote-json.js",
     "rm_remote-macros.js",
     "rm_remotes.js",
+    "rm_swipe.js",
     "rm_main.js",
     ];
 
@@ -48,4 +49,5 @@ const remote_css = [
     "style-sheet-box.css",
     "style-theme-colors.css",
     "style-size.css",
+    "style-swipe.css",
     ];

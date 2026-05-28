@@ -1,0 +1,64 @@
+/* Swipe dot-indicator bar — fixed at the bottom of the viewport */
+
+#swipe-dots {
+    position        : fixed;
+    bottom          : 32px;
+    left            : 0;
+    width           : 100%;
+    text-align      : center;
+    z-index         : 150;
+    display         : none;    /* shown/hidden by rmSwipe.show() / .hide() */
+    white-space     : nowrap;
+    padding         : 0;
+    pointer-events  : none;    /* pass through to content below; dots opt back in */
+}
+
+/* rounded pill background — wraps only the visible dots */
+.swipe-dot-bg {
+    display         : inline-block;
+    background      : rgba(128, 128, 128, 0.15);
+    border-radius   : 12px;
+    border          : 0.5px solid rgba(128, 128, 128, 0.40);
+    padding         : 5px 9px;
+    pointer-events  : none;
+}
+
+.swipe-dot {
+    display         : inline-block;
+    width           : 7px;
+    height          : 7px;
+    margin          : 0 4px;
+    border-radius   : 50%;
+    background      : var(--rm-color-hr);
+    opacity         : 0.55;
+    cursor          : pointer;
+    transition      : width 0.15s, height 0.15s, opacity 0.15s, background 0.15s;
+    pointer-events  : auto;
+    vertical-align  : middle;
+}
+
+.swipe-dot.active {
+    width           : 10px;
+    height          : 10px;
+    margin          : 0 3px;
+    background      : var(--rm-color-font-default);
+    opacity         : 1;
+}
+
+
+@media (prefers-color-scheme: dark) {
+    .swipe-dot-bg {
+        background  : rgba(255, 255, 255, 0.15);
+    }
+}
+
+@media (min-width: 705px) {
+    #swipe-dots { display: none !important; }
+}
+
+/* edge dots indicate hidden remotes beyond the visible window */
+.swipe-dot.edge {
+    width           : 5px;
+    height          : 5px;
+    opacity         : 0.30;
+}

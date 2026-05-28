@@ -272,6 +272,9 @@ class RemoteControl extends RemoteDefaultClass {
         statusCheck_load();			// ... check if part of class ...
         rmMain.set_background(0);			// ... check if part of this class ...
         rmSettings.hide();				// ... check if part of another class ...
+
+        rmSwipe.update_dots();
+        rmSwipe.show();
     }
 
     // DEVICE REMOTES - - - - - - - - - - - - - - - - - - - - - - - - - - - -

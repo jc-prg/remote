@@ -27,6 +27,7 @@ let rmStart = undefined;
 let rmRemote = undefined;
 let rmSettings = undefined;
 let rmJson = undefined;
+let rmSwipe = undefined;
 
 
 /* start remote control app when all modules are loaded - used once at the end of index.html */
@@ -42,6 +43,7 @@ function startRemote() {
     rmSettings  = new RemoteSettings( "rmSettings");
     rmJson      = new RemoteJsonEditing( "rmJson");
     rmCookies   = new RemoteCookies("rmCookies");
+    rmSwipe     = new RemoteSwipe("rmSwipe");
 
     rmMain.start(true);
     }
@@ -101,6 +103,7 @@ class RemoteMain extends RemoteDefaultClass {
 		setTextById("frame3","");
 		setTextById("frame4","");
 		setTextById("frame5","");
+		rmSwipe.hide();
 
 		if (load_remote) {
 			this.load_app();
@@ -148,6 +151,8 @@ class RemoteMain extends RemoteDefaultClass {
 		rmMenu.add_show_hidden();
 		rmMenu.add_script( "rmSettings.create('index');", lang("SETTINGS"));
 
+		rmSwipe.init(data);		// rebuild ordered remote list for swipe navigation
+
 	}
 
 	/* create remote creation, trigger status check */
@@ -189,6 +194,7 @@ class RemoteMain extends RemoteDefaultClass {
 
 		// check status and change button color
 		statusCheck( data );
+		rmSwipe.hide();
 	}
 
 	/* show or hide background image for the start screen */
