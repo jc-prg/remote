@@ -1,0 +1,20 @@
+{
+  "name": "remote-frontend-tests",
+  "version": "1.0.0",
+  "description": "Frontend test suite for jc://remote/",
+  "private": true,
+  "scripts": {
+    "lint": "eslint app/remote-v3/ --config tests/lint/.eslintrc.js",
+    "test:unit": "jest tests/unit/ --testEnvironment node",
+    "test:integration": "jest tests/integration/ --testEnvironment jsdom",
+    "test:e2e": "playwright test",
+    "test": "npm run lint && jest tests/unit/ tests/integration/"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "eslint": "^8.57.0",
+    "express": "^4.19.2",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  }
+}
