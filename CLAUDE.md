@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Tool Usage Rules
+
+- Never use `sed` via the Bash tool to read files. Always use the Read tool instead.
+
 ## Project Overview
 
 **jc://remote/** is a home media device control system. It runs a Python/Flask REST API server and a vanilla JS web client, both containerized via Docker. Designed to run on a Raspberry Pi or similar small server on the local network.

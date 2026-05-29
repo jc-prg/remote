@@ -36,7 +36,34 @@ app.get("/api/list/", (_req, res) => {
                 list_api_configs:    { list: {} },
                 structure:           {},
             },
-            devices:      {},
+            // Minimal device "tv" with a single "power" button.
+            // Shape required by rm_remote-data.js (exists/label/remote/list_buttons accessors).
+            devices: {
+                tv: {
+                    remote: {
+                        remote:        ["power"],
+                        "display":     {},
+                        "display-size": "middle",
+                    },
+                    buttons:  ["power"],
+                    settings: {
+                        label:       "TV",
+                        description: "Test TV",
+                        position:    1,
+                        visible:     true,
+                        image:       "",
+                    },
+                    commands: { definition: {}, set: [], get: [] },
+                    interface: {
+                        api_key:    "test",
+                        api_device: "test_tv",
+                        api:        "test_test_tv",
+                        remote:     "rmc_tv",
+                        method:     "send",
+                    },
+                    config: { device: "test-tv", api_key: "test" },
+                },
+            },
             elements: {
                 button_images: {},
                 button_colors: {},
@@ -88,8 +115,18 @@ app.get("/api/list/", (_req, res) => {
                 health:                {},
             },
         },
-        DATA:   {},
+        REQUEST: {},
+        DATA:    {},
     });
+});
+
+// /api/send_check/ and /api/send/ — button click endpoints.
+// Default config uses send_check (deactivateButton=false); manual mode uses send.
+app.get("/api/send_check/:device/:button/", (_req, res) => {
+    res.json({ STATUS: { api: "CONNECT" }, DATA: {}, CONFIG: {}, REQUEST: { ReturnCode: "ok", Return: "" } });
+});
+app.get("/api/send/:device/:button/", (_req, res) => {
+    res.json({ STATUS: { api: "CONNECT" }, DATA: {}, CONFIG: {}, REQUEST: { ReturnCode: "ok", Return: "" } });
 });
 
 // /api/version/ — called by appCheckUpdates on load; match current app version
