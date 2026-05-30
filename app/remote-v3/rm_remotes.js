@@ -1443,7 +1443,7 @@ class RemoteControlEditDialogs extends RemoteDefaultClass{
                     devices_color_picker["group_"+key] = label_long;
                 }
             }
-            for (const key of rmData.macros.list_all()) {
+            for (const key of Object.keys(rmData.macros.list_all())) {
                 if (key !== "scene-on" && key !== "scene-off") {
                     device_macro["macro_" + key] = "Macro: " + key;
                 }

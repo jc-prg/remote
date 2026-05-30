@@ -2,7 +2,30 @@
 
 * .... release v3.0.x
 
-## KNOWN BUGS -------------------------------------------------------------------
+## BUGS -------------------------------------------------------------------
+
+* occurred once:
+
+      05/30 10:59:56 | ERROR    api-DENON   | Could not execute update: <asyncio.locks.Lock object at 0x7f537ae4c0 [unlocked, waiters:1]> is bound to a different event loop
+      05/30 11:00:06 | ERROR    api-DENON   | EXCEPTION in Denon AV-Receiver API (ApiControl.query_update()): <class 'RuntimeError'> | <asyncio.locks.Lock object at 0x7f537ae4c0 [unlocked, waiters:1]> is bound to a different event loop
+         File "/usr/src/app/server/interfaces/api_denon.py", line 310, in query_update
+          await self.api.async_update()
+        File "/usr/local/lib/python3.14/site-packages/denonavr/denonavr.py", line 208, in async_update
+          await self.input.async_update(global_update=True, cache_id=cache_id)
+        File "/usr/local/lib/python3.14/site-packages/denonavr/input.py", line 452, in async_update
+          await self.async_update_inputfuncs(
+              global_update=global_update, cache_id=cache_id
+          )
+        File "/usr/local/lib/python3.14/site-packages/denonavr/input.py", line 652, in async_update_inputfuncs
+          async with self._input_func_update_lock:
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "/usr/local/lib/python3.14/asyncio/locks.py", line 14, in __aenter__
+          await self.acquire()
+        File "/usr/local/lib/python3.14/asyncio/locks.py", line 105, in acquire
+          fut = self._get_loop().create_future()
+                ~~~~~~~~~~~~~~^^
+        File "/usr/local/lib/python3.14/asyncio/mixins.py", line 20, in _get_loop
+          raise RuntimeError(f'{self!r} is bound to a different event loop')
 
 * weather ... if timeout, signal and don't deliver data ... until control next reconnect / data collection (just return an error)
 * confirm message reconnect single devices -> asks for "all devices"
