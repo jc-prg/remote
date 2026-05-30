@@ -1,9 +1,9 @@
 # jc://remote/
 
-With this software you can control several **home media devices** via Infrared and API with a web-app, e.g., on your smartphone.
-It requires a small server such as a Raspberry Pi and can control the hardware listed below. 
-You can define remote controls for devices and create scenes that use those commands from 
-those devices or macros to combine several commands on a single button. 
+With this software you can control several **media and home devices** via Infrared and API with 
+a web-app, e.g., on your smartphone. It requires a small server such as a Raspberry Pi and can 
+control the hardware listed below. You can define remote controls for devices and create scenes 
+that use those commands from those devices or macros to combine several commands on a single button. 
 There are a few templates available to be used and modified.
 
 ## Table of Contents
@@ -45,8 +45,9 @@ src="./docs/app/dark-theme-04.jpg" width="19%">
 
 Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 
-## Data structure
+## Architecture and data structure
 
+* [Architecture overview](docs/concepts/architecture.html)
 * [Description of data and configuration files](data/README.md)
 
 ## Used sources
@@ -70,6 +71,7 @@ Own included modules:
 * [jc://modules/](https://github.com/jc-prg/modules)
 * [jc://app-framework/](https://github.com/jc-prg/app-framework)
 
+Since v3.1 this app is crafted in co-creation with [Claude Code](https://claude.ai).
 
 ## How to setup the software
 
@@ -120,5 +122,5 @@ Find here additional information [how to integrate APIs](./docs/INTERFACES.md).
 
 ## Disclaimer
 
-This is a private crafting project. Feel free to try out and improve ... and stay tuned. I'm also open for your contributions.
-
+This is a private crafting project. 
+Feel free to try out and use as is or improve. Contributions are welcome.
