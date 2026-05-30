@@ -25,8 +25,8 @@ let language_app = {
         "PLEASE_WAIT"                   : "Bitte warten ... .",
         "MACRO_PLEASE_WAIT"             : "Führe ein paar Kommandos aus, bitte kurz warten.",
 
-        "MENU_SHOW_HIDDEN_ON"           : "Weitere zeigen",
-        "MENU_SHOW_HIDDEN_OFF"          : "Weitere verbergen",
+        "MENU_SHOW_HIDDEN_ON"           : "Mehr zeigen",
+        "MENU_SHOW_HIDDEN_OFF"          : "Weniger zeigen",
 
         "STATUS_DEV_OK"                 : "Das Gerät <b>{0}</b> ist bereit.",
         "STATUS_DEV_N/A"                : "Der Status vom Gerät <b>{0}</b> ist unbekannt, ausprobieren!",
@@ -61,6 +61,410 @@ let language_app = {
         "STATUS_GROUP_EMPTY"             : "Die Gruppe <b>{0}</b> enthält bislang keine Geräte.",
 
         "STATUS_NO_SERVER_CONNECT"      : "Aktuell besteht keine Verbindung zum Server.",
+        "STATUS_SCENE_OFF"              : "Alle Geräte der Szene <b>{0}</b> sind ausgeschaltet.",
+
+        "ADD_ELEMENTS"          : "Elemente hinzufügen",
+        "ADD_DISPLAY"           : "Display hinzufügen",
+        "ADD_SCENE"             : "Szene hinzufügen",
+        "ADD_REMOTE"            : "Fernbedienung hinzufügen",
+        "ADD_DEVICE"            : "Gerät hinzufügen",
+        "ADD_LINE"              : "Einfache Linie hinzufügen",
+        "ADD_EMPTY"             : "Leeres Feld hinzufügen",
+
+        "AUDIO_IS_MAIN"         : "Dieses Gerät ist als AUDIO-Hauptgerät definiert.",
+        "AUDIO_SET_AS_MAIN"     : "Als AUDIO-Hauptgerät festlegen (wechseln von &quot;{0}&quot;).",
+        "AUDIO_N/A_AS_MAIN"     : "Dieses Gerät kann nicht als AUDIO-Hauptgerät genutzt werden, keine Lautstärkeregelung verfügbar. (Es ist kein Schlüssel 'vol' oder 'volume' in den Gerätebefehlen definiert.)",
+
+        "API"                   : "API",
+        "API_ADMIN"             : "API-Verwaltung",
+        "API_CREATE_CONFIG"     : "API-Konfiguration erstellen",
+        "API_CREATE_DEV_CONFIG" : "Gerätekonfiguration erstellen",
+        "API_CREATE_CONFIG_INFO" : "Erstelle eine vollständige <b>API-Konfiguration</b> für alle erkannten API-Geräte, die als ./data/devices/{0}/00_interface.json gespeichert wird. " +
+                                   "Die 'API-Geräte' werden auf Basis der Standard-API-Definitionen erstellt. Passe Werte wie 'PowerDevice' an deine Bedürfnisse an. " +
+                                   "Wird ein neues Gerät nicht erkannt, trenne die API-Verbindung, warte einige Minuten und versuche es erneut.",
+        "API_CREATE_DEV_CONFIG_INFO" : "Erstelle eine <b>Gerätekonfigurationsdatei</b> für ein Gerät aus seiner Konfiguration und speichere diese im Ordner ./data/devices/{0}/&lt;device_name&gt;.json. " +
+                                   "Du kannst Schlüsselnamen für Tasten und Befehle sowie den Abfragebereich anpassen. " +
+                                   "Wähle diese Datei als Gerätekonfiguration beim Erstellen einer neuen Fernbedienung für ein Gerät aus.",
+        "API_DEVICE"            : "API-Device",
+        "API_DEFINITION"        : "API-Definition",
+        "API_INTERFACE"         : "API / API-Device",
+        "API_CONNECTION"        : "API-Verbindung",
+        "API_COMMANDS"          : "API-Befehle",
+        "API_COMMANDS_TEST"     : "API-Befehle - manueller Test",
+        "API_DEVICE_DELETE"     : "Möchtest du das Gerät <b>{1}</b> wirklich aus der <b>API {0}</b> löschen?",
+        "API_DEVICE_DISCOVERY"  : "Soll jetzt eine API-Geräteerkennung gestartet werden? Dies dauert einige Minuten und kann den Server vorübergehend verlangsamen.",
+        "API_DEVICE_CONFIG_NA"  : "<b>FEHLER:</b> Es ist keine API-Konfiguration verfügbar oder sie ist beschädigt. Überprüfe die Datendateien oder verwende eine Kopie aus den Beispieldaten (<u>data/_sample/devices/*/00_interface.json</u>).",
+        "API_RECONNECT_ALL"     : "Sollen jetzt alle Geräte neu verbunden werden?",
+        "API_INFORMATION"       : "API-Informationen",
+        "API_SELECT_CMD"        : "API-Befehl oder eigenen eingeben ...",
+        "API_INFO"              : "API-Info",
+        "API_DEVICE_NOT_CONNECTED"   : "API-Gerät {0} nicht verbunden",
+        "API_NOT_CONNECTED"          : "API {1} nicht verbunden",
+        "API_SETTINGS"          : "API-Einstellungen",
+        "API_SETTINGS_OVERVIEW" : "API-Übersicht",
+        "API_TEST"              : "API-Test",
+
+        "API_EDIT_REALLY_CHANGE": "Möchtest du die <b>API-Einstellungen</b> für diese Fernbedienung wirklich ändern?",
+        "API_EDIT_SELECT_API_CONFIG": "Bitte wähle eine <b>API-Konfigurationsdatei</b> aus",
+        "API_EDIT_SELECT_API_DEVICE": "Bitte wähle eine <b>Gerätekonfigurationsdatei</b> aus",
+        "API_EDIT_SELECT_REMOTE": "Bitte wähle eine <b>Fernbedienungskonfigurationsdatei</b> aus",
+
+        "BUTTON_ASK_DELETE"     : "Möchtest du die Taste '{0}_{1}' aus '{2}' wirklich löschen?",
+        "BUTTON_ASK_DELETE_NUMBER" : "Möchtest du die Taste Nummer [{0}] aus '{1}' wirklich löschen?",
+        "BUTTON_INSERT_NAME"    : "Bitte gib einen Namen für die Taste ein.",
+        "BUTTON_RECORD"         : "Taste &quot;{0}&quot; für Gerät &quot;{1}&quot; aufnehmen: Klicke auf OK und drücke dann innerhalb der nächsten 5 Sekunden die entsprechende Taste auf deiner Fernbedienung.",
+        "BUTTON_SELECT"         : "Bitte wähle eine Taste aus.",
+        "BUTTON_INFOS"          : "Tasteninformationen",
+        "BUTTON_IMAGE_DEFAULT"  : "Standard-Tastenbild",
+
+        "BUTTON_T"              : "BUtton",
+        "BUTTON_T_ADD"          : "hinzufügen",
+        "BUTTON_T_CLONE"        : "klonen",
+        "BUTTON_T_COLOR_PICKER" : "Farbauswahl",
+        "BUTTON_T_COLOR"        : "Farbmodell",
+        "BUTTON_T_CREATE"       : "erstellen",
+        "BUTTON_T_DEL"          : "Button löschen",
+        "BUTTON_T_DELETE"       : "löschen",
+        "BUTTON_T_DEL_VALUE"    : "Wert löschen",
+        "BUTTON_T_DESCRIPTION"  : "Beschreibung",
+        "BUTTON_T_DEVICE"       : "Device",
+        "BUTTON_T_DISPLAY"      : "Display hinzufügen",
+        "BUTTON_T_DISPLAY_VALUE": "Anzeigewert",
+        "BUTTON_T_EMPTY"        : "leeres Feld",
+        "BUTTON_T_HEADER"       : "Kopfzeilenbild",
+        "BUTTON_T_KEYBOARD"     : "Tastatur",
+        "BUTTON_T_LINE"         : "Linie",
+        "BUTTON_T_LINE_TEXT"    : "Linie mit Text",
+        "BUTTON_T_MINMAX"       : "Min-Max",
+        "BUTTON_T_MOVE2REMOTE"  : "zur Fernbedienung verschieben",
+        "BUTTON_T_PREVEW"       : "Vorschau",
+        "BUTTON_T_RESET"        : "zurücksetzen",
+        "BUTTON_T_SAVE"         : "speichern",
+        "BUTTON_T_STOP_EDIT"    : "Bearbeitung beenden",
+        "BUTTON_T_SEND"         : "Befehl senden",
+        "BUTTON_T_SHOW_HIDE"    : "ein-/ausblenden",
+        "BUTTON_T_SLIDER"       : "Schieberegler",
+        "BUTTON_T_TEMPLATE"     : "Vorlage",
+        "BUTTON_T_OTHER"        : "andere Taste",
+        "BUTTON_T_PARAMETER"    : "Parameter",
+        "BUTTON_T_PREVIEW"      : "Vorschau",
+        "BUTTON_T_VALUE"        : "Wert hinzufügen",
+        "BUTTON_T_TRY"          : "ausprobieren",
+        "BUTTON"                : "Button",
+        "BUTTONS"               : "Buttons",
+
+        "CHANNEL_USE_JSON"      : "Bitte verwende JSON zum Bearbeiten der Kanalliste.",
+        "CHANGE_ORDER"          : "Reihenfolge der Fernbedienungen ändern",
+        "CHANGE_ORDER_SCENES"   : "Reihenfolge der Szenen ändern",
+        "CHANGE_ORDER_DEVICES"  : "Reihenfolge der Geräte ändern",
+        "CHANGE_MODES"          : "Arbeitsmodi ändern",
+        "CHANNEL"               : "Kanal",
+
+        "CHART"                 : "Diagramm",
+        "CHART_EXISTS"          : "Es gibt bereits einen Diagrammbereich in dieser Fernbedienung.",
+        "CHART_NO_ENTRIES"      : "Keine Einträge vorhanden.",
+        "CHART_ERROR_LOADING_CHART_JS": "Fehler: Chart.js konnte nicht geladen werden.",
+        "CHART_LOADING"         : "Diagrammdaten werden geladen ...",
+        "CHART_VALUE_EXISTS"    : "Wert existiert bereits.",
+        "CHART_VALUE_DOESNT_EXISTS" : "Wert existiert nicht.",
+        "CHART_VALUE_SELECT"    : "Zuerst einen Diagrammwert auswählen.",
+
+        "CONNECTION_POWER_OFF"  : "Strom aus",
+        "CONNECTION_DEVICE_OFF" : "Gerät aus",
+        "CONNECTION_MANUAL"     : "Manueller Modus",
+        "CONNECTED"             : "verbunden",
+        "CONNECTED_DEVICES"     : "verbundene Geräte",
+        "CONNECTED_RMC"         : "verbundene Fernbedienungen",
+        "DETECTED_DEVICES"      : "erkannte Geräte",
+
+        "COLOR_PICKER_SELECT_CMD": "Befehl auswählen, um Farbauswahl einzufügen.",
+        "COLOR_PICKER_SELECT_MODEL": "Farbmodell auswählen, um Farbauswahl einzufügen.",
+        "COLOR_PICKER_N/A"      : "Farbauswahl nicht unterstützt",
+        "COLOR_PICKER"          : "Farbauswahl",
+
+        "CONFIG_INTERFACE"      : "Schnittstellen-Konfiguration",
+        "CONFIG_API"            : "Konfigurationsdatei <u>API</u>",
+        "CONFIG_REMOTE"         : "Konfigurationsdatei <u>Fernbedienung</u>",
+        "CONFIG_DEVICE"         : "Konfigurationsdatei <u>Gerät</u>",
+        "COMMANDS"              : "Befehle",
+
+        "COMMAND_DELETE_INFO"   : "Nach dem Löschen kann ein Befehl für eine Taste erneut aufgenommen werden.",
+        "COMMAND_RECORD_INFO"   : "Nicht definierte Tasten sind blau markiert. Klicken zum Aufnehmen eines IR-Befehls für diese Tasten.",
+        "COPY"                  : "kopieren",
+        "COPIED_TO_CLIPBOARD"   : "Inhalt in die Zwischenablage kopiert.",
+        "CREATE"                : "erstellen",
+
+        "DESCRIPTION"           : "Beschreibung",
+
+        "DELETE"                : "löschen",
+        "DELETE_ELEMENTS"       : "Elemente löschen",
+        "DELETE_COMMAND"        : "Befehl löschen",
+
+        "DEVICE"                    : "Gerät",
+        "DEVICE_ASK_DELETE"         : "Möchtest du das Gerät '{0}' wirklich löschen?",
+        "DEVICE_DONT_EXISTS"        : "Gerät '{0}' existiert nicht!",
+        "DEVICE_EXISTS"             : "Gerät '{0}' existiert bereits!",
+        "DEVICE_INSERT_ID"          : "Bitte gib eine ID für das Gerät ein (keine Sonderzeichen).",
+        "DEVICE_INSERT_LABEL"       : "Bitte gib eine Bezeichnung für das Gerät ein.",
+        "DEVICE_INSERT_NAME"        : "Bitte gib den Namen des Geräts ein.",
+        "DEVICE_SELECT"             : "Bitte wähle ein Gerät aus.",
+        "DEVICE_SELECT_API"         : "Bitte wähle eine API für das Device aus.",
+        "DEVICE_SELECT_TEMPLATE"    : "Bitte wähle eine Vorlage für die Fernbedienung aus.",
+        "DEVICE_SELECT_VISIBILITY"  : "Bitte wähle aus, ob das Device sichtbar oder ausgeblendet sein soll.",
+        "DEVICES"                   : "Devices",
+        "DEVICES_NOT_CONNECTED"     : "Devices nicht verbunden",
+        "DEVICES_NOT_DEFINED_YET"   : "Noch keine Devices definiert.",
+        "DEVICES_ADD_SETTINGS"      : "Verwende die Einstellungen, um Fernbedienungen zu erstellen.",
+
+        "DISCOVERY_DONE"                : "OK: Erkennung von API-Devices abgeschlossen.",
+        "DISCOVERY_FAILED"              : "FEHLER: Erkennung von API-Devices fehlgeschlagen.",
+
+        "DISPLAY"                       : "Display",
+        "DISPLAY_EXISTS"                : "Es gibt bereits ein Display in dieser Fernbedienung.",
+        "DISPLAY_LABEL_SELECT"          : "Zu löschendes Label im Display auswählen.",
+        "DISPLAY_LABEL_DONT_EXIST"      : "Das ausgewählte Label existiert nicht in der Display-Definition.",
+        "DISPLAY_VALUE_SELECT"          : "Gerät und Wert auswählen, der im Display angezeigt werden soll.",
+        "DISPLAY_LABEL_ADD"             : "Label für den zusätzlichen Wert im Display eingeben.",
+        "DISPLAY_LABEL_EXISTS_ALREADY"  : "Label existiert bereits im Display.",
+        "DISPLAY_NOT_ADDED"             : "Noch kein Display hinzugefügt. Änderungen unten haben keine Auswirkung.",
+
+        "EDIT"                   : "bearbeiten",
+        "EDIT_ADD_DISPLAY"       : "Display hinzufügen und bearbeiten",
+        "EDIT_DEVICE"            : "Device bearbeiten",
+        "EDIT_DEVICES"           : "Devices bearbeiten",
+        "EDIT_ARCHIVED_DEVICES"  : "Archivierte Devices verwalten",
+        "EDIT_DISPLAY"           : "Display bearbeiten",
+        "EDIT_ELEMENTS"          : "Elemente bearbeiten",
+        "EDIT_JSON"              : "JSON bearbeiten",
+        "EDIT_INTERFACES"        : "Schnittstellen bearbeiten",
+        "EDIT_INTERFACE"         : "Schnittstellenkonfiguration bearbeiten für {0}",
+        "EDIT_MACROS"            : "Makros bearbeiten",
+        "EDIT_REMOTE"            : "Fernbedienung bearbeiten",
+        "EDIT_REMOTES"           : "Fernbedienungen bearbeiten",
+        "EDIT_SCENE"             : "Szene bearbeiten",
+        "EDIT_SCENES"            : "Szenen bearbeiten",
+        "EDIT_ARCHIVED_SCENES"   : "Archivierte Szenen verwalten",
+        "EDIT_RECORDINGS"        : "Aufnahmen bearbeiten",
+        "EDIT_RECORDING_SETTINGS": "Allgemeine Einstellungen bearbeiten",
+        "EDIT_RECORDED_FIELDS"   : "Aufzuzeichnende Werte bearbeiten",
+
+        "EXTERNAL_ID"            : "Externe ID",
+        "ERROR_UNKNOWN"          : "Unbekannter Fehler",
+        "ERROR_THREAD_TOO_LONG"  : "Der Thread <b>{0}</b> hat für <b>{1}s</b> nicht geantwortet.",
+        "FORMAT_INCORRECT"       : "Format ist nicht korrekt",
+        "FAVICON_INFO"           : "Wähle ein anderes Favicon oder Apple-Icon. <i>Hinweis:</i> Diese Auswahl ist momentan nur temporär – wähle die WebApp und speichere sie auf dem Home-Screen, um ein bestimmtes Apple-Icon zu verwenden.",
+
+        "GET_DATA"               : "Daten abrufen",
+        "GET_AVAILABLE_COMMANDS" : "Befehle auflisten",
+
+        "HEADER"                : "Kopfzeile",
+        "HEADER_IMAGE_EXISTS"   : "Es gibt bereits ein KOPFZEILEN-BILD in dieser Fernbedienung.",
+
+        "ID"                    : "ID",
+        "IMAGE"                 : "Bild",
+        "INFO"                  : "Info",
+        "INTERFACES"            : "Schnittstellen",
+        "INTERFACE_STATUS"      : "Schnittstellenstatus",
+
+        "JSON_EDIT"             : "JSON-Daten bearbeiten",
+        "JSON_CHANNEL"          : "JSON-Kanal-Makros",
+        "JSON_DISPLAY"          : "JSON-Display-Informationen",
+        "JSON_DEVICE"           : "JSON erforderliche Devices",
+        "JSON_REMOTE"           : "JSON Fernbedienung",
+        "JSON_SCENE_MACROS"     : "JSON Szenen-Makros",
+        "JSON_DEVICE_MACROS"    : "JSON Device-Makros",
+        "JSON_REMOTE_MACROS"    : "JSON Makros (EIN|AUS)",
+
+        "JSON_REQUIRED_DEVICES"        : "Erforderliche Devices",
+        "JSON_EDIT_RMC_DEFINITION"     : "Fernbedienung bearbeiten",
+        "JSON_EDIT_DISPLAY_DEFINITION" : "Display-Definition bearbeiten",
+        "JSON_EDIT_CHANNEL_MACROS"     : "Kanal-Makros bearbeiten",
+        "JSON_EDIT_MACRO_SCENE"        : "Makros SZENE bearbeiten",
+        "JSON_EDIT_MACRO_SCENE_OTHER"  : "Szenen-Makros bearbeiten",
+
+        "LABEL"                 : "Label",
+
+        "LOAD_TEMPLATE"         : "Vorlage laden",
+        "LOADING_APP"           : "App wird geladen ...",
+
+        "MACRO"                 : "Makro",
+        "MACROS"                : "Makros",
+        "MACRO_DEVICE_EDIT"     : "<p>Nur zur Information; Makros in den <u style='cursor:pointer;' onclick='rmSettings.create(\\\"edit_scenes\\\");'>Szeneneinstellungen</u> bearbeiten ...<br/></p>",
+        "MACRO_EMPTY"           : "FEHLER: Dieser Button von &quot;{0}&quot; enthält ein leeres Makro.",
+
+        "MACRO_EDIT_TIMING"     : "Warten [s]",
+        "MACRO_EDIT_WAITING"    : "Wartemeldung [s]",
+
+        "MAIN"                  : "Haupt",
+        "MAIN_SETTINGS"         : "Haupteinstellungen",
+        "MANUAL"                : "manuell",
+
+        "MANUAL_ADD_ELEMENTS"   : "<h4>Elemente hinzufügen</h4><p>Hier können verschiedene neue Elemente zur Fernbedienung hinzugefügt werden. Alle neuen Elemente werden am Ende der Fernbedienung eingefügt und können mit dem Tooltip nach oben verschoben werden.</p>",
+        "MANUAL_ADD_TEMPLATE"   : "<h4>Vorlage laden</h4><p>Durch das Laden einer Vorlage wird die vorhandene Fernbedienungsdefinition überschrieben.</p>",
+        "MANUAL_ADD_API-DEVICE" : "Wähle ein erkanntes <b>API-Gerät</b> aus der Liste oder wähle &quot;ANDERE&quot;, um eine IPv4-Adresse manuell einzugeben. " +
+                                  "Falls das erwartete Gerät nicht in der Liste ist, stelle sicher, dass das API-Gerät eingeschaltet ist, und versuche es in einigen Minuten erneut.",
+
+        "MANUAL_CHANNEL"        : "<i>Kanäle bearbeiten:</i><br/><br/><ul class='help'>" +
+                                  "<li>Dict für die Kanaldefinition im JSON-Format befüllen: " +
+                                  "<i>&quot;Kanalname&quot; : [ &quot;Taste&quot;, &quot;Taste&quot;, &quot;Makro&quot;]</i></li>" +
+                                  "<li>Verwende &quot;&lt;device_id&gt;_&lt;button&gt;&quot; oder &quot;&lt;macro_type&gt;_&lt;button&gt;&quot; zur Definition von Tasten im Kanal-Makro; Makrotypen: macro, scene-on, scene-off, dev-on, dev-off</li>" +
+                                  "</ul>",
+        "MANUAL_DEVICES"        : "<i>Devices für Szene bearbeiten</i><br/><br/><ul class='help'>" +
+                                  "<li>Array der enthaltenen Devices im JSON-Format befüllen: [&quot;device_id&quot;,&quot;device_id&quot;]</i>.</li>" +
+                                  "</ul>",
+        "MANUAL_DISPLAY"        : "<i>Display-Definition bearbeiten</i><br/><br/><ul class='help'>" +
+                                  "<li>Dict für die Display-Definition im JSON-Format befüllen: <i>&quot;Label&quot; : &quot;feld_vom_gerät&quot;</i>.</li>" +
+                                  "<li>Falls &quot;auto_off&quot; für das Gerät definiert ist (JSON-Datei prüfen), verwende &quot;auto-power-off&quot; als Feld, um die verbleibende Zeit bis zum automatischen Ausschalten anzuzeigen.</li>" +
+                                  "</ul>",
+        "MANUAL_REMOTE"         : "<i>Device-Fernbedienung bearbeiten:</i><br/><br/><ul class='help'>" +
+                                  "<li>Array von Tastennamen im JSON-Format befüllen, vier Tasten pro Zeile.</li>" +
+                                  "<li>&quot;LINE&quot; hinzufügen für eine horizontale Linie und &quot;LINE||Beschreibung&quot; für eine Linie mit Text.</li>" +
+                                  "<li>&quot;DISPLAY&quot; hinzufügen, um ein Display mit Statusinformationen einzufügen (Details unten definiert).</li>" +
+                                  "<li>&quot;SLIDER||send-&lt;command&gt;||&lt;Beschreibung&gt;||&lt;min&gt;-&lt;max&gt;||&lt;parameter&gt;&quot; hinzufügen, um einen Schieberegler einzufügen.</li>" +
+                                  "<li>&quot;COLOR-PICKER||send-&lt;command&gt;&quot; hinzufügen, um ein Farbauswahl-Element einzufügen.</li>" +
+                                  "<li>&quot;.&quot; hinzufügen, um ein leeres Feld einzufügen.</li>" +
+                                  "</ul>",
+        "MANUAL_SCENE"          : "<i>Szenen-Fernbedienung bearbeiten:</i><br/><br/><ul class='help'>" +
+                                  "<li>Array von Tastennamen im JSON-Format befüllen, vier Tasten pro Zeile.</li>" +
+                                  "<li>Verwende &quot;&lt;device_id&gt;_&lt;button&gt;&quot; oder &quot;&lt;macro_type&gt;_&lt;button&gt;&quot; zur Definition von Tasten; Makrotypen: macro, scene-on, scene-off, dev-on, dev-off</li>" +
+                                  "<li>&quot;.&quot; hinzufügen, um ein leeres Feld einzufügen.</li>" +
+                                  "<li>&quot;LINE&quot; hinzufügen für eine horizontale Linie und &quot;LINE||Beschreibung&quot; für eine Linie mit Text.</li>" +
+                                  "<li>&quot;HEADER-IMAGE&quot; hinzufügen, um ein Bild einzufügen. Das Bild kann in den Szeneneinstellungen ausgewählt werden.</li>" +
+                                  "<li>&quot;TOGGLE||&lt;gerät&gt;_&lt;wert&gt;||&lt;Beschreibung&gt;||&lt;befehl_ein&gt;||&lt;befehl_aus&gt;&quot; hinzufügen, um einen Schalter einzufügen." +
+                                  " Unterstützt nur Werte mit EIN|AUS oder WAHR|FALSCH." +
+                                  " Soll der Schalter in das Kopfzeilenbild integriert werden, direkt unterhalb von &quot;HEADER-IMAGE&quot; platzieren und &quot;HEADER-IMAGE||toggle&quot; verwenden.</li>" +
+                                  "<li>&quot;SLIDER||send-&lt;wert&gt;||&lt;Beschreibung&gt;||&lt;von&gt;-&lt;bis&gt;||&lt;wert&gt;&quot; hinzufügen, um einen Schieberegler einzufügen." +
+                                  " Unterstützt Geräte mit Abfragemodus, bei denen eine Zahl per API gesendet werden kann." +
+                                  "</ul>",
+        "MANUAL_MACROS"            : "<h4>Makros bearbeiten:</h4><ul class='help'>" +
+                                  "<li>Hier können Makros im JSON-Format definiert werden. Makros können aus Tasten beliebiger definierter Fernbedienungen und ganzen Zahlen für Wartezeiten in Sekunden bestehen.</li>" +
+                                  "<li><i>Wichtig:</i> Beim Speichern erfolgt eine generische Prüfung des JSON-Formats. Bitte sicherstellen, dass die erforderliche Datenstruktur wie unten beschrieben verwendet wird.</li>" +
+                                  "<li><u>Gruppen (Implementierung in Bearbeitung)</u>: fasst mehrere ähnliche Geräte zu einer Gruppe zusammen, um die gleichen Tasten oder Befehle für alle Geräte gleichzeitig zu verwenden." +
+                                  "<br/><i>-&gt; Format:</i> \\\"&lt;gruppe_id&gt;\\\" : {\\\"description\\\": \\\"&lt;Beschreibung&gt;\\\", \\\"devices\\\": [\\\"&lt;gerät_01&gt;\\\",\\\"&lt;gerät_02&gt;\\\"]} </li>" +
+                                  "<li>Gruppen können in allen Szenen (nicht in Geräten) verwendet werden: 'group_&lt;button&gt;'.</li>" +
+                                  "<li><u>Makrotyp DEV-ON</u>: Makros zum Ein-/Ausschalten eines Geräts, z.B. einschalten und Lautstärke setzen (auch in den jeweiligen Geräteeinstellungen bearbeitbar)." +
+                                  "<br/><i>-&gt; Format:</i>  \\\"&lt;gerät&gt;\\\" : [\\\"&lt;gerät&gt;_&lt;taste&gt;\\\", 2, \\\"&lt;gerät&gt;_&lt;taste&gt;||&lt;wert&gt;\\\",] </li>" +
+                                  "<li><u>Makrotyp DEV-OFF</u>: Makros zum Ausschalten eines Geräts (auch in den jeweiligen Geräteeinstellungen bearbeitbar)." +
+                                  "<br/><i>-&gt; Format:</i>  \\\"&lt;gerät&gt;\\\" : [\\\"&lt;gerät&gt;_&lt;taste&gt;\\\", 2, \\\"&lt;gerät&gt;_&lt;taste&gt;||&lt;wert&gt;\\\",] </li>" +
+                                  "<li><u>Globale Makros</u>: alle anderen Makros." +
+                                  "<br/><i>-&gt; Format:</i> \\\"&lt;makro&gt;\\\" : [\\\"&lt;gerät&gt;_&lt;taste&gt;||&lt;wert&gt;\\\", 2, \\\"dev-on_&lt;gerät&gt;\\\"] </li>" +
+                                  "<li>Makros können in allen Szenen (nicht in Geräten) verwendet werden: 'macro_&lt;makro&gt;', 'dev-on_&lt;gerät&gt;', 'dev-off_&lt;gerät&gt;'. Hinweis: Ist in der Szene ein Makro mit gleichem Namen definiert, wird das Szenen-Makro verwendet.</li>" +
+                                  "<li>Mit &quot;MSG-xx&quot; am Anfang eines Makros wird eine Meldung angezeigt, dass xx Sekunden gewartet werden muss.</li>" +
+                                  "<li>Für Geräte ohne API (method=record) z.B. \\\"&lt;taste&gt;||set-&lt;wert&gt;\\\" verwenden, um einen Wert zu setzen ohne den Befehl zu senden. Nützlich bei WLAN-Steckdosen, wenn ein Gerät immer im Modus \\\"EIN\\\" startet.</li>" +
+                                  "</ul>",
+        "MANUAL_MACROS_SCENE"   : "<i>Makros für diese Szene bearbeiten:</i><br/><br/><ul class='help'>" +
+                                  "<li>Makros im JSON-Format definieren. Tasten beliebiger Geräte, globale Makros und Wartezeiten in Sekunden kombinieren.</li>" +
+                                  "<li><u>Makrotyp SZENE EIN</u>: Hier alle Tasten/Befehle eintragen, um alle Geräte dieser Szene einzuschalten, Eingangskanäle zu setzen usw. Als \\\"scene-on\\\" in der Fernbedienungsdefinition verwenden." +
+                                  "<br/><i>-&gt; Format:</i> [\\\"&lt;gerät&gt;_&lt;taste&gt;\\\", 2, \\\"dev-on_&lt;gerät&gt;\\\"] </li>" +
+                                  "<li><u>Makrotyp SZENE AUS</u>: Hier alle Tasten/Befehle eintragen, um alle Geräte dieser Szene auszuschalten. Als \\\"scene-off\\\" in der Fernbedienungsdefinition verwenden." +
+                                  "<br/><i>-&gt; Format:</i> [\\\"&lt;gerät&gt;_&lt;taste&gt;\\\", 2, \\\"dev-on_&lt;gerät&gt;\\\"] </li>" +
+                                  "<li><u>Andere Szenen-Makros</u>: Hier weitere Tasten/Befehle für ein weiteres Makro dieser Szene eintragen." +
+                                  "<br/><i>-&gt; Format:</i> {\\\"&lt;makro_name&gt;\\\" : [\\\"&lt;gerät&gt;_&lt;taste&gt;\\\", 2, \\\"dev-on_&lt;gerät&gt;\\\"]}</li>" +
+                                  "<li>Den Befehl &quot;MSG-xx&quot; in einem Makro verwenden, um eine Meldung anzuzeigen, dass xx Sekunden gewartet werden muss.</li>" +
+                                  "<li>Für Geräte ohne API (method=record) z.B. \\\"&lt;taste&gt;||set-&lt;wert&gt;\\\" verwenden, um einen Wert zu setzen ohne den Befehl zu senden. Nützlich bei WLAN-Steckdosen, wenn ein Gerät immer im Modus \\\"EIN\\\" startet.</li>" +
+                                  "</ul>",
+
+        "METHOD"                : "Methode",
+        "MISSING_DATA"          : "Daten fehlen für '{0}'.<br/>Überprüfe die Dateien '{1}' und '{2}' im Datenverzeichnis.",
+        "MISSING_DATA_SCENE"    : "Daten fehlen für '{0}'.<br/>Überprüfe die Datei '{1}' im Datenverzeichnis.",
+
+        "MODE_SHOW_BUTTON"      : "Button-Code anzeigen",
+        "MODE_EDIT"             : "Bearbeitungsmodus",
+        "MODE_INTELLIGENT"      : "Intelligenter Modus",
+        "MODE_MANUAL"           : "Manueller Modus",
+        "MODE_EASY_EDIT"        : "Einfache Bearbeitung",
+        "MODE_JSON_HIGHLIGHT"   : "JSON-Hervorhebung",
+        "MODE_HINT"             : "Hinweise für Fernbedienungen anzeigen (nicht nur Fehler)",
+
+        "MSG_ONLY_ONE_COLOR_PICKER"    : "Diese Farbauswahl existiert bereits in der Fernbedienung, nur eine ist möglich.",
+
+        "NOT_USED"                     : "nicht in Fernbedienung verwendet",
+        "NO_DEVICE_CONNECTED"          : "kein Gerät verbunden",
+        "NO_REMOTE_CONNECTED"          : "keine Fernbedienung verbunden",
+        "NO_HEADER_DEFINED"            : "Noch kein Kopfzeilenbild ausgewählt, in den Szeneneinstellungen bearbeiten.",
+
+        "OFFLINE"                      : "Offline",
+
+        "PREVIEW"                      : "Vorschau",
+
+        "QUICK_ACCESS"                 : "Schnellzugriff",
+
+        "RECONNECT"                    : "neu verbinden",
+        "RECONNECT_DONE"               : "OK: Neuverbindung abgeschlossen ({0}).",
+        "RECONNECT_FAILED"             : "FEHLER: Neuverbindung fehlgeschlagen ({0}).",
+
+        "RECORD_COMMAND"               : "Befehl aufnehmen",
+        "RECORD_DELETE_COMMANDS"       : "Befehle aufnehmen oder löschen",
+        "REMOTE"                       : "Fernbedienung",
+        "REMOTE_ADD"                   : "Fernbedienungen hinzufügen",
+        "REMOTE_CONFIG_ERROR"          : "Fehler in der Fernbedienungskonfigurationsdatei(en) '{0}': ",
+        "REMOTE_CONFIG_ERROR_UNKNOWN"  : "Unbekannter Fehler in der Fernbedienungskonfigurationsdatei(en) '{0}'",
+        "RELOAD_TAKES_LONGER"          : "Das Laden dauert länger als erwartet ...",
+        "RELOAD_TAKES_MUCH_LONGER"     : "Das Laden dauert viel länger als erwartet ...",
+        "RESTART"                      : "Bist du sicher, dass du den Server neu starten möchtest?",
+        "RELOAD_ALL_SCRIPTS"           : "Alle CSS- und JavaScript-Dateien neu laden.",
+        "REMOTE_MOVE_TO_ARCHIVE"       : "Möchtest du die {0} Fernbedienung <b>{1}</b> ins Archiv verschieben?",
+        "REMOTE_RESTORE_FROM_ARCHIVE"  : "Möchtest du die {0} Fernbedienung <b>{1}</b> aus dem Archiv wiederherstellen?",
+
+        "SAVE"                         : "Speichern",
+
+        "SCENE"                        : "Szene",
+        "SCENE_STATUS"                 : "Szenenstatus",
+        "SCENE_CONFIG_ERROR"           : "Fehler in der Szenenkonfigurationsdatei(en) '{0}': ",
+        "SCENE_CONFIG_ERROR_UNKNOWN"   : "Unbekannter Fehler in der Szenenkonfigurationsdatei(en) '{0}'",
+
+        "SCENE_ASK_DELETE"             : "Möchtest du die Szene '{0}' wirklich löschen?",
+        "SCENE_EXISTS"                 : "Szene '{0}' existiert bereits!",
+        "SCENE_IMAGE"                  : "Szenenbild",
+        "SCENE_INSERT_ID"              : "Bitte gib eine ID für die Szene ein (keine Sonderzeichen).",
+        "SCENE_INSERT_LABEL"           : "Bitte gib eine Bezeichnung für die Szene ein.",
+        "SCENE_SELECT"                 : "Bitte wähle eine Szene aus.",
+        "SCENES_NOT_DEFINED_YET"       : "Noch keine Szenen definiert.",
+
+        "SEND_DATA"                    : "Daten senden",
+        "SELECT"                       : "Auswählen",
+        "SELECT_DEV_MACRO"             : "Device oder Makro auswählen",
+        "SELECT_DEV_FIRST"             : "zuerst Device auswählen",
+        "SELECT_DEV_TYPE_FIRST"        : "zuerst Device-Typ auswählen",
+        "SELECT_API_FIRST"             : "zuerst Schnittstelle auswählen",
+        "SERVER_SETTINGS"              : "Server- &amp; Client-Einstellungen",
+        "SETTINGS"                     : "Einstellungen",
+        "SETTINGS_GENERAL"             : "Allgemeine Einstellungen",
+        "SETTINGS_REMOTE"              : "Fernbedienungseinstellungen",
+        "SETTINGS_DEVICES"             : "Device-Einstellungen",
+        "SETTINGS_API"                 : "API-Einstellungen",
+        "SETTINGS_MACROS"              : "Globale Makros &amp; Gruppen",
+        "SETTINGS_SCENES"              : "Szeneneinstellungen",
+        "SETTINGS_TIMER"               : "Timer-Einstellungen",
+        "SETTINGS_RECORDINGS"          : "Aufnahmeeinstellungen",
+
+        "SLIDER"                       : "Schieberegler",
+        "SLIDER_SELECT_CMD"            : "Befehl auswählen, um Schieberegler einzufügen.",
+        "SLIDER_SELECT_PARAM"          : "Parameter auswählen, um Schieberegler einzufügen.",
+        "SLIDER_INSERT_DESCR"          : "Beschreibung eingeben, um Schieberegler einzufügen.",
+        "SLIDER_INSERT_MINMAX"         : "Mindest- und Höchstwert eingeben (min-max), um Schieberegler einzufügen.",
+        "SLIDER_N/A"                   : "Schieberegler nicht unterstützt",
+
+        "TEXT_INPUT"                   : "Texteingabe",
+        "TEMPLATE"                     : "Vorlage",
+        "TEMPLATE_OVERWRITE"           : "Möchtest du die Tasten von '{0}' wirklich mit der Vorlage '{1}' überschreiben?",
+        "TEST_DEVICE_COMMANDS"         : "Hier deine Befehle für Gerät {0} testen.",
+        "TRY_OUT"                      : "ausprobieren",
+
+        "TIMER_TRY"                    : "Timer {0} ausprobieren?",
+        "TIMER_DELETE"                 : "Möchtest du den Timer {0} löschen?",
+
+        "TOGGLE"                       : "Schalter",
+        "TOGGLE_SELECT_DEVICE"         : "Schaltergerät auswählen.",
+        "TOGGLE_SELECT_DESCR"          : "Beschreibung für den Schalter definieren.",
+        "TOGGLE_SELECT_VALUE"          : "Wertfeld für den Schalter auswählen.",
+        "TOGGLE_SELECT_ON"             : "EIN-Befehl für den Schalter auswählen.",
+        "TOGGLE_SELECT_OFF"            : "AUS-Befehl für den Schalter auswählen.",
+        "TOGGLE_DEVICE_DOESNT_EXIST"   : "FEHLER: Der Schalter in der Kopfzeile ist für das Device '{0}' definiert. Dieses Gerät ist nicht (mehr) vorhanden. Entferne den Schalter oder ändere das Schalter-Device.",
+
+        "VERSION_AND_STATUS"           : "Versions- und Statusinformationen",
+
+        "WORKING_MODES"                : "Arbeitsmodi",
         },
     "EN" : {
         "ADD_ELEMENTS"          : "Add elements",
