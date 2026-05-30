@@ -1,5 +1,15 @@
 # jc://remote/ - Release Notes
 
+## v3.2
+
+* swipe navigation between remote controls on mobile (left/right)
+* swipe dot indicator bar with per-remote colors and edge indicators
+* swipe disabled while settings panel is open
+* E2E Playwright tests and JS test infrastructure
+* fix macros list_all() iteration
+* fix queue thread stability on blocking API calls or unhandled exceptions
+* various bugfixes and code refactoring
+
 ## v3.1
 
 * move remote controls to archive, check scene definition for errors
