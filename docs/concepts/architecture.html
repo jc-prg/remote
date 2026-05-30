@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>jc://remote/ — System Architecture</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0c0e12; color: #e2e8f0; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; padding: 24px 20px; }
+    h1 { color: #f1f5f9; font-size: 1.35rem; margin-bottom: 4px; letter-spacing: -0.01em; }
+    .meta { color: #475569; font-size: 0.8rem; margin-bottom: 18px; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 10px 18px;
+      margin-bottom: 20px; padding: 12px 16px;
+      background: #12161f; border: 1px solid #1e293b; border-radius: 8px;
+    }
+    .li { display: flex; align-items: center; gap: 6px; font-size: 0.73rem; color: #94a3b8; white-space: nowrap; }
+    .ld { width: 11px; height: 11px; border-radius: 2px; flex-shrink: 0; }
+    .wrap { overflow-x: auto; }
+  </style>
+</head>
+<body>
+<h1>jc://remote/ — System Architecture</h1>
+<p class="meta">Version v3.1.0 &nbsp;·&nbsp; branch: dev &nbsp;·&nbsp; 2026-05-21</p>
+
+<div class="legend">
+  <span class="li"><span class="ld" style="background:#3b82f6"></span>Browser / HTTP</span>
+  <span class="li"><span class="ld" style="background:#0ea5e9"></span>Client container (Apache)</span>
+  <span class="li"><span class="ld" style="background:#1d6fa8"></span>Frontend JS classes</span>
+  <span class="li"><span class="ld" style="background:#6366f1"></span>Server container (Python)</span>
+  <span class="li"><span class="ld" style="background:#8b5cf6"></span>REST API layer (Connexion/Flask)</span>
+  <span class="li"><span class="ld" style="background:#10b981"></span>Core module — background thread ⚙</span>
+  <span class="li"><span class="ld" style="background:#6ee7b7"></span>Core module — no thread</span>
+  <span class="li"><span class="ld" style="background:#f59e0b"></span>Command queues</span>
+  <span class="li"><span class="ld" style="background:#f97316"></span>Device interface adapters</span>
+  <span class="li"><span class="ld" style="background:#14b8a6"></span>Config &amp; cache</span>
+  <span class="li"><span class="ld" style="background:#475569"></span>JSON data layer (host filesystem)</span>
+  <span class="li"><span class="ld" style="background:#ef4444"></span>Physical devices (LAN)</span>
+  <span class="li"><span class="ld" style="background:#4ade80"></span>Support / utility modules</span>
+</div>
+
+<div class="wrap">
+<svg viewBox="0 0 1720 1270" xmlns="http://www.w3.org/2000/svg" style="min-width:1400px; width:100%; display:block;">
+<defs>
+  <marker id="arr"        markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#475569"/></marker>
+  <marker id="arr-blue"   markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#3b82f6"/></marker>
+  <marker id="arr-violet" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#8b5cf6"/></marker>
+  <marker id="arr-green"  markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#10b981"/></marker>
+  <marker id="arr-amber"  markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#f59e0b"/></marker>
+  <marker id="arr-orange" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#f97316"/></marker>
+  <marker id="arr-red"    markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#ef4444"/></marker>
+  <marker id="arr-slate"  markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#64748b"/></marker>
+  <marker id="arr-teal"   markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#14b8a6"/></marker>
+</defs>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- BACKGROUND                                              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<rect width="1720" height="1270" fill="#0c0e12"/>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- DOCKER COMPOSE WRAPPER                                  -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<rect x="28" y="26" width="1662" height="916" rx="12" fill="none" stroke="#1e293b" stroke-width="1.5" stroke-dasharray="10,5"/>
+<rect x="28" y="16" width="156" height="18" rx="3" fill="#0c0e12"/>
+<text x="110" y="28" text-anchor="middle" fill="#334155" font-size="9.5" font-weight="600" letter-spacing="1">DOCKER COMPOSE</text>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- BROWSER                                                 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<rect x="40" y="38" width="286" height="88" rx="8" fill="#0d1e3a" stroke="#3b82f6" stroke-width="1.5"/>
+<rect x="40" y="38" width="286" height="26" rx="8" fill="#173260"/>
+<rect x="40" y="56" width="286" height="8" fill="#173260"/>
+<text x="183" y="55" text-anchor="middle" fill="#93c5fd" font-size="11" font-weight="700" letter-spacing="0.5">WEB BROWSER</text>
+<text x="183" y="75" text-anchor="middle" fill="#60a5fa" font-size="10">HTTP GET · POST · PUT · DELETE</text>
+<text x="183" y="91" text-anchor="middle" fill="#60a5fa" font-size="9.5">port 81 (client UI)  ·  port 5001 (REST API, CORS)</text>
+<text x="183" y="107" text-anchor="middle" fill="#1d4ed8" font-size="9" font-style="italic">status polling every 15 s  ·  edit via REST</text>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- CLIENT CONTAINER                                        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<rect x="40" y="158" width="300" height="646" rx="10" fill="#060e1a" stroke="#0ea5e9" stroke-width="1.5"/>
+<rect x="40" y="158" width="300" height="28" rx="10" fill="#0a2440"/>
+<rect x="40" y="178" width="300" height="8" fill="#0a2440"/>
+<text x="190" y="177" text-anchor="middle" fill="#38bdf8" font-size="10.5" font-weight="700">CLIENT CONTAINER</text>
+
+<!-- Apache -->
+<rect x="55" y="196" width="270" height="36" rx="5" fill="#071828" stroke="#0284c7" stroke-width="1"/>
+<text x="190" y="211" text-anchor="middle" fill="#7dd3fc" font-size="10" font-weight="600">Apache HTTP Server  (PHP image)</text>
+<text x="190" y="225" text-anchor="middle" fill="#0369a1" font-size="8.5">serves app/ · port 81→5000 · mounts icon/ and scenes/</text>
+
+<!-- JS section label -->
+<text x="57" y="251" fill="#475569" font-size="8.5" font-weight="700" letter-spacing="1">FRONTEND JS — Vanilla ES6+  (no build step)</text>
+
+<!-- JS class boxes — 2 columns -->
+<rect x="55" y="257" width="126" height="28" rx="4" fill="#071424" stroke="#1d6fa8" stroke-width="1"/>
+<text x="118" y="275" text-anchor="middle" fill="#7dd3fc" font-size="9">RemoteMain</text>
+
+<rect x="189" y="257" width="126" height="28" rx="4" fill="#071424" stroke="#1d6fa8" stroke-width="1"/>
+<text x="252" y="275" text-anchor="middle" fill="#7dd3fc" font-size="9">RemoteApiControl</text>
+
+<rect x="55" y="291" width="126" height="28" rx="4" fill="#071424" stroke="#1d6fa8" stroke-width="1"/>
+<text x="118" y="309" text-anchor="middle" fill="#7dd3fc" font-size="9">RemoteMenu</text>
+
+<rect x="189" y="291" width="126" height="28" rx="4" fill="#071424" stroke="#1d6fa8" stroke-width="1"/>
+<text x="252" y="309" text-anchor="middle" fill="#7dd3fc" font-size="9">RemoteStart</text>
+
+<rect x="55" y="325" width="126" height="28" rx="4" fill="#071424" stroke="#1d6fa8" stroke-width="1"/>
+<text x="118" y="343" text-anchor="middle" fill="#7dd3fc" font-size="9">RemoteControl</text>
+
+<rect x="189" y="325" width="126" height="28" rx="4" fill="#071424" stroke="#1d6fa8" stroke-width="1"/>
+<text x="252" y="343" text-anchor="middle" fill="#7dd3fc" font-size="9">RemoteSettings</text>
+
+<rect x="55" y="359" width="126" height="28" rx="4" fill="#071424" stroke="#1d6fa8" stroke-width="1"/>
+<text x="118" y="377" text-anchor="middle" fill="#7dd3fc" font-size="9">RemoteJsonEditing</text>
+
+<rect x="189" y="359" width="126" height="28" rx="4" fill="#071424" stroke="#1d6fa8" stroke-width="1"/>
+<text x="252" y="377" text-anchor="middle" fill="#7dd3fc" font-size="9">rm_charts.js</text>
+
+<rect x="55" y="393" width="126" height="28" rx="4" fill="#071424" stroke="#1d6fa8" stroke-width="1"/>
+<text x="118" y="411" text-anchor="middle" fill="#7dd3fc" font-size="9">rm_cookies.js</text>
+
+<rect x="189" y="393" width="126" height="28" rx="4" fill="#071424" stroke="#1d6fa8" stroke-width="1"/>
+<text x="252" y="411" text-anchor="middle" fill="#7dd3fc" font-size="9">rm_remotes.js</text>
+
+<rect x="55" y="427" width="126" height="28" rx="4" fill="#071424" stroke="#1d6fa8" stroke-width="1"/>
+<text x="118" y="445" text-anchor="middle" fill="#7dd3fc" font-size="9">rm_status.js</text>
+
+<rect x="189" y="427" width="126" height="28" rx="4" fill="#071424" stroke="#1d6fa8" stroke-width="1"/>
+<text x="252" y="445" text-anchor="middle" fill="#7dd3fc" font-size="9">rm_status-audio.js</text>
+
+<rect x="55" y="461" width="126" height="28" rx="4" fill="#071424" stroke="#1d6fa8" stroke-width="1"/>
+<text x="118" y="479" text-anchor="middle" fill="#7dd3fc" font-size="9">rm_sort-list.js</text>
+
+<rect x="189" y="461" width="126" height="28" rx="4" fill="#071424" stroke="#1d6fa8" stroke-width="1"/>
+<text x="252" y="479" text-anchor="middle" fill="#7dd3fc" font-size="9">rm_functions.js</text>
+
+<!-- Submodules divider -->
+<line x1="55" y1="500" x2="325" y2="500" stroke="#1e293b" stroke-width="1"/>
+<text x="190" y="514" text-anchor="middle" fill="#334155" font-size="8.5" letter-spacing="0.5">GIT SUBMODULES</text>
+
+<rect x="55" y="520" width="260" height="32" rx="4" fill="#04080e" stroke="#1d4ed8" stroke-width="1" stroke-dasharray="4,2"/>
+<text x="185" y="534" text-anchor="middle" fill="#93c5fd" font-size="9">app/modules/  →  jc-prg/modules</text>
+<text x="185" y="546" text-anchor="middle" fill="#334155" font-size="8">shared JS utilities</text>
+
+<rect x="55" y="558" width="260" height="32" rx="4" fill="#04080e" stroke="#1d4ed8" stroke-width="1" stroke-dasharray="4,2"/>
+<text x="185" y="572" text-anchor="middle" fill="#93c5fd" font-size="9">app/framework/  →  jc-prg/app-framework</text>
+<text x="185" y="584" text-anchor="middle" fill="#334155" font-size="8">web app framework base classes</text>
+
+<!-- config_stage.js generated -->
+<line x1="55" y1="601" x2="325" y2="601" stroke="#1e293b" stroke-width="1"/>
+<rect x="55" y="607" width="260" height="32" rx="4" fill="#040e06" stroke="#16a34a" stroke-width="1" stroke-dasharray="3,2"/>
+<text x="185" y="621" text-anchor="middle" fill="#4ade80" font-size="9">app/remote-v3/config_stage.js</text>
+<text x="185" y="633" text-anchor="middle" fill="#166534" font-size="8">written by server on startup (rm3presets.py)</text>
+
+<!-- Client volume note -->
+<line x1="55" y1="650" x2="325" y2="650" stroke="#1e293b" stroke-width="1"/>
+<text x="185" y="665" text-anchor="middle" fill="#334155" font-size="8.5" font-style="italic">Volume mounts: icon/  ·  scenes/  ·  app/</text>
+<text x="185" y="679" text-anchor="middle" fill="#334155" font-size="8">Apache conf: config/apache2/www-rm3.conf</text>
+<text x="185" y="693" text-anchor="middle" fill="#334155" font-size="8">Port mapping: REMOTE_CLIENT_PORT → 5000</text>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SERVER CONTAINER                                        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<rect x="368" y="38" width="1310" height="900" rx="10" fill="#07080c" stroke="#6366f1" stroke-width="1.5"/>
+<rect x="368" y="38" width="1310" height="28" rx="10" fill="#16144a"/>
+<rect x="368" y="58" width="1310" height="8" fill="#16144a"/>
+<text x="1023" y="56" text-anchor="middle" fill="#a5b4fc" font-size="10.5" font-weight="700">SERVER CONTAINER — Python 3  ·  network_mode: host  ·  privileged: true</text>
+
+<!-- ─── Connexion / Flask bar ─── -->
+<rect x="384" y="70" width="1278" height="42" rx="5" fill="#100e3a" stroke="#6366f1" stroke-width="1.2"/>
+<text x="1023" y="87" text-anchor="middle" fill="#c4b5fd" font-size="10.5" font-weight="600">Connexion / Flask (Werkzeug) + Flask-CORS</text>
+<text x="1023" y="103" text-anchor="middle" fill="#4f46e5" font-size="9">routes defined in rm3api.yml (Swagger / OpenAPI 2.0) · port 5001 · all responses include: { API, REQUEST, STATUS/CONFIG/DATA }</text>
+
+<!-- ─── RemoteAPI ─── -->
+<rect x="384" y="124" width="400" height="80" rx="5" fill="#100c38" stroke="#8b5cf6" stroke-width="1.2"/>
+<text x="584" y="142" text-anchor="middle" fill="#c4b5fd" font-size="10" font-weight="600">RemoteAPI  —  rm3api.py</text>
+<text x="584" y="158" text-anchor="middle" fill="#a78bfa" font-size="8.5">REST endpoint handlers (~30 routes)</text>
+<text x="584" y="171" text-anchor="middle" fill="#6d28d9" font-size="8">tags: list · send · edit · maintain · status</text>
+<text x="584" y="184" text-anchor="middle" fill="#6d28d9" font-size="8">delegates to: RemotesData · RemotesEdit · QueueApiCalls · ScheduleTimer · RecordData</text>
+
+<!-- ─── Right utility column ─── -->
+
+<!-- rm3presets -->
+<rect x="1296" y="124" width="182" height="74" rx="5" fill="#071206" stroke="#4ade80" stroke-width="1"/>
+<text x="1387" y="141" text-anchor="middle" fill="#4ade80" font-size="9.5" font-weight="600">rm3presets.py</text>
+<text x="1387" y="155" text-anchor="middle" fill="#86efac" font-size="8">global config · .env vars · logging</text>
+<text x="1387" y="167" text-anchor="middle" fill="#86efac" font-size="8">path constants · version strings</text>
+<text x="1387" y="179" text-anchor="middle" fill="#86efac" font-size="8">writes config_stage.js on import</text>
+<text x="1387" y="191" text-anchor="middle" fill="#14532d" font-size="7.5">runs side-effects on import</text>
+
+<!-- rm3json -->
+<rect x="1296" y="208" width="182" height="74" rx="5" fill="#071206" stroke="#4ade80" stroke-width="1"/>
+<text x="1387" y="225" text-anchor="middle" fill="#4ade80" font-size="9.5" font-weight="600">rm3json.py</text>
+<text x="1387" y="239" text-anchor="middle" fill="#86efac" font-size="8">JSON file I/O abstraction</text>
+<text x="1387" y="251" text-anchor="middle" fill="#86efac" font-size="8">read · write · if_exist · delete</text>
+<text x="1387" y="263" text-anchor="middle" fill="#86efac" font-size="8">path prefix: rm3presets.data_dir</text>
+<text x="1387" y="275" text-anchor="middle" fill="#14532d" font-size="7.5">used by ConfigCache</text>
+
+<!-- rm3ping -->
+<rect x="1296" y="292" width="182" height="74" rx="5" fill="#071206" stroke="#4ade80" stroke-width="1"/>
+<text x="1387" y="309" text-anchor="middle" fill="#4ade80" font-size="9.5" font-weight="600">rm3ping.py</text>
+<text x="1387" y="323" text-anchor="middle" fill="#86efac" font-size="8">network reachability checks</text>
+<text x="1387" y="335" text-anchor="middle" fill="#86efac" font-size="8">ICMP ping (pythonping)</text>
+<text x="1387" y="347" text-anchor="middle" fill="#86efac" font-size="8">TCP socket probe</text>
+<text x="1387" y="359" text-anchor="middle" fill="#14532d" font-size="7.5">used by interfaces.Connect</text>
+
+<!-- rm3classes -->
+<rect x="1296" y="376" width="182" height="74" rx="5" fill="#071206" stroke="#4ade80" stroke-width="1"/>
+<text x="1387" y="393" text-anchor="middle" fill="#4ade80" font-size="9.5" font-weight="600">rm3classes.py</text>
+<text x="1387" y="407" text-anchor="middle" fill="#86efac" font-size="8">RemoteDefaultClass</text>
+<text x="1387" y="419" text-anchor="middle" fill="#86efac" font-size="8">RemoteThreadingClass</text>
+<text x="1387" y="431" text-anchor="middle" fill="#86efac" font-size="8">RemoteApiClass</text>
+<text x="1387" y="443" text-anchor="middle" fill="#14532d" font-size="7.5">base for all major classes</text>
+
+<!-- rm3install -->
+<rect x="1296" y="460" width="182" height="56" rx="5" fill="#071206" stroke="#22c55e" stroke-width="1" stroke-dasharray="4,2"/>
+<text x="1387" y="477" text-anchor="middle" fill="#22c55e" font-size="9.5" font-weight="600">rm3install.py</text>
+<text x="1387" y="491" text-anchor="middle" fill="#86efac" font-size="8">startup config validation</text>
+<text x="1387" y="505" text-anchor="middle" fill="#14532d" font-size="7.5">runs once · not a thread</text>
+
+<!-- ─── Core data row ─── -->
+
+<!-- RemotesData -->
+<rect x="384" y="218" width="220" height="80" rx="5" fill="#04120c" stroke="#10b981" stroke-width="1.2"/>
+<text x="494" y="236" text-anchor="middle" fill="#6ee7b7" font-size="9.5" font-weight="600">RemotesData  ⚙</text>
+<text x="494" y="250" text-anchor="middle" fill="#34d399" font-size="8">rm3data.py · background thread</text>
+<text x="494" y="263" text-anchor="middle" fill="#34d399" font-size="8">builds CONFIG / STATUS / DATA</text>
+<text x="494" y="276" text-anchor="middle" fill="#34d399" font-size="8">polls device status via Q-query</text>
+<text x="494" y="289" text-anchor="middle" fill="#065f46" font-size="7.5">5-min cache · 15 s poll interval</text>
+
+<!-- RemotesEdit -->
+<rect x="614" y="218" width="210" height="80" rx="5" fill="#04120c" stroke="#6ee7b7" stroke-width="1"/>
+<text x="719" y="236" text-anchor="middle" fill="#6ee7b7" font-size="9.5" font-weight="600">RemotesEdit</text>
+<text x="719" y="250" text-anchor="middle" fill="#34d399" font-size="8">rm3data.py · no thread</text>
+<text x="719" y="263" text-anchor="middle" fill="#34d399" font-size="8">device / scene / button CRUD</text>
+<text x="719" y="276" text-anchor="middle" fill="#34d399" font-size="8">template · macro · visibility</text>
+<text x="719" y="289" text-anchor="middle" fill="#065f46" font-size="7.5">writes through ConfigCache</text>
+
+<!-- RecordData -->
+<rect x="834" y="218" width="200" height="80" rx="5" fill="#04120c" stroke="#10b981" stroke-width="1.2"/>
+<text x="934" y="236" text-anchor="middle" fill="#6ee7b7" font-size="9.5" font-weight="600">RecordData  ⚙</text>
+<text x="934" y="250" text-anchor="middle" fill="#34d399" font-size="8">rm3record.py · background thread</text>
+<text x="934" y="263" text-anchor="middle" fill="#34d399" font-size="8">time-series data recording</text>
+<text x="934" y="276" text-anchor="middle" fill="#34d399" font-size="8">feeds Chart.js graphs</text>
+<text x="934" y="289" text-anchor="middle" fill="#065f46" font-size="7.5">writes to data/record/</text>
+
+<!-- ─── Schedule / config row ─── -->
+
+<!-- ScheduleTimer -->
+<rect x="384" y="314" width="210" height="76" rx="5" fill="#04120c" stroke="#10b981" stroke-width="1.2"/>
+<text x="489" y="331" text-anchor="middle" fill="#6ee7b7" font-size="9.5" font-weight="600">ScheduleTimer  ⚙</text>
+<text x="489" y="345" text-anchor="middle" fill="#34d399" font-size="8">rm3timer.py · background thread</text>
+<text x="489" y="358" text-anchor="middle" fill="#34d399" font-size="8">cron-like event scheduling</text>
+<text x="489" y="371" text-anchor="middle" fill="#34d399" font-size="8">dispatches to Q-send on time</text>
+<text x="489" y="382" text-anchor="middle" fill="#065f46" font-size="7.5">config: _ACTIVE-TIMER.json</text>
+
+<!-- ConfigInterfaces -->
+<rect x="604" y="314" width="210" height="76" rx="5" fill="#031414" stroke="#14b8a6" stroke-width="1"/>
+<text x="709" y="331" text-anchor="middle" fill="#5eead4" font-size="9.5" font-weight="600">ConfigInterfaces  ⚙</text>
+<text x="709" y="345" text-anchor="middle" fill="#2dd4bf" font-size="8">rm3config.py · background thread</text>
+<text x="709" y="358" text-anchor="middle" fill="#2dd4bf" font-size="8">triggers interface cache reload</text>
+<text x="709" y="371" text-anchor="middle" fill="#2dd4bf" font-size="8">sets cache_update_api = True</text>
+<text x="709" y="382" text-anchor="middle" fill="#0f766e" font-size="7.5">reload interval: 10 s</text>
+
+<!-- ─── Cache / queue row ─── -->
+
+<!-- ConfigCache -->
+<rect x="384" y="406" width="210" height="76" rx="5" fill="#031414" stroke="#14b8a6" stroke-width="1.2"/>
+<text x="489" y="423" text-anchor="middle" fill="#5eead4" font-size="9.5" font-weight="600">ConfigCache  ⚙</text>
+<text x="489" y="437" text-anchor="middle" fill="#2dd4bf" font-size="8">rm3config.py · background thread</text>
+<text x="489" y="450" text-anchor="middle" fill="#2dd4bf" font-size="8">in-memory JSON file cache</text>
+<text x="489" y="463" text-anchor="middle" fill="#2dd4bf" font-size="8">cache invalidation · read / write</text>
+<text x="489" y="474" text-anchor="middle" fill="#0f766e" font-size="7.5">cache TTL 60 s · sleep 180 s</text>
+
+<!-- Q-send -->
+<rect x="604" y="406" width="215" height="76" rx="5" fill="#130e00" stroke="#f59e0b" stroke-width="1.2"/>
+<text x="711" y="423" text-anchor="middle" fill="#fde68a" font-size="9.5" font-weight="600">QueueApiCalls (Q-send)  ⚙</text>
+<text x="711" y="437" text-anchor="middle" fill="#fbbf24" font-size="8">rm3queue.py · background thread</text>
+<text x="711" y="450" text-anchor="middle" fill="#fbbf24" font-size="8">fire-and-forget commands</text>
+<text x="711" y="463" text-anchor="middle" fill="#fbbf24" font-size="8">delayed / timed execution</text>
+<text x="711" y="474" text-anchor="middle" fill="#92400e" font-size="7.5">macros · timer triggers · user cmds</text>
+
+<!-- Q-query -->
+<rect x="829" y="406" width="215" height="76" rx="5" fill="#130e00" stroke="#f59e0b" stroke-width="1.2"/>
+<text x="936" y="423" text-anchor="middle" fill="#fde68a" font-size="9.5" font-weight="600">QueueApiCalls (Q-query)  ⚙</text>
+<text x="936" y="437" text-anchor="middle" fill="#fbbf24" font-size="8">rm3queue.py · background thread</text>
+<text x="936" y="450" text-anchor="middle" fill="#fbbf24" font-size="8">device status polling queries</text>
+<text x="936" y="463" text-anchor="middle" fill="#fbbf24" font-size="8">separate from Q-send thread</text>
+<text x="936" y="474" text-anchor="middle" fill="#92400e" font-size="7.5">used by RemotesData thread</text>
+
+<!-- ─── Interfaces layer ─── -->
+<rect x="384" y="498" width="896" height="210" rx="7" fill="#0c0600" stroke="#f97316" stroke-width="1.5"/>
+<text x="832" y="518" text-anchor="middle" fill="#fb923c" font-size="10" font-weight="700">interfaces.Connect  ⚙  —  interfaces.py</text>
+<text x="832" y="532" text-anchor="middle" fill="#7c2d12" font-size="8.5">manages all device API adapters · ARP + ICMP health checks · dynamic module loading (importlib) · reconnect logic</text>
+
+<!-- Interface adapter boxes: row 1 y=544, row 2 y=612 -->
+<!-- 5 boxes per row, inner width=896-30=866, box_w=158, gap=10 -->
+<!-- x: 397, 567, 737, 907, 1077 (width 158, gap 12) -->
+
+<rect x="397" y="544" width="158" height="54" rx="4" fill="#170800" stroke="#f97316" stroke-width="1"/>
+<text x="476" y="561" text-anchor="middle" fill="#fed7aa" font-size="9" font-weight="600">BROADLINK</text>
+<text x="476" y="574" text-anchor="middle" fill="#f97316" font-size="8">api_broadlink.py</text>
+<text x="476" y="587" text-anchor="middle" fill="#7c2d12" font-size="7.5">IR blaster · send · record</text>
+
+<rect x="567" y="544" width="158" height="54" rx="4" fill="#170800" stroke="#f97316" stroke-width="1"/>
+<text x="646" y="561" text-anchor="middle" fill="#fed7aa" font-size="9" font-weight="600">DENON</text>
+<text x="646" y="574" text-anchor="middle" fill="#f97316" font-size="8">api_denon.py</text>
+<text x="646" y="587" text-anchor="middle" fill="#7c2d12" font-size="7.5">HTTP REST · send · query</text>
+
+<rect x="737" y="544" width="158" height="54" rx="4" fill="#170800" stroke="#f97316" stroke-width="1"/>
+<text x="816" y="561" text-anchor="middle" fill="#fed7aa" font-size="9" font-weight="600">EISCP-ONKYO</text>
+<text x="816" y="574" text-anchor="middle" fill="#f97316" font-size="8">api_eiscp.py</text>
+<text x="816" y="587" text-anchor="middle" fill="#7c2d12" font-size="7.5">eISCP protocol · send · query</text>
+
+<rect x="907" y="544" width="158" height="54" rx="4" fill="#170800" stroke="#f97316" stroke-width="1"/>
+<text x="986" y="561" text-anchor="middle" fill="#fed7aa" font-size="9" font-weight="600">KODI</text>
+<text x="986" y="574" text-anchor="middle" fill="#f97316" font-size="8">api_kodi.py</text>
+<text x="986" y="587" text-anchor="middle" fill="#7c2d12" font-size="7.5">JSON-RPC · send · query</text>
+
+<rect x="1077" y="544" width="158" height="54" rx="4" fill="#170800" stroke="#f97316" stroke-width="1"/>
+<text x="1156" y="561" text-anchor="middle" fill="#fed7aa" font-size="9" font-weight="600">SONY</text>
+<text x="1156" y="574" text-anchor="middle" fill="#f97316" font-size="8">api_sony.py</text>
+<text x="1156" y="587" text-anchor="middle" fill="#7c2d12" font-size="7.5">IRCC / REST · send · query</text>
+
+<rect x="397" y="612" width="158" height="54" rx="4" fill="#170800" stroke="#f97316" stroke-width="1"/>
+<text x="476" y="629" text-anchor="middle" fill="#fed7aa" font-size="9" font-weight="600">TAPO-P100</text>
+<text x="476" y="642" text-anchor="middle" fill="#f97316" font-size="8">api_p100.py</text>
+<text x="476" y="655" text-anchor="middle" fill="#7c2d12" font-size="7.5">PyP100 · smart plug · send · query</text>
+
+<rect x="567" y="612" width="158" height="54" rx="4" fill="#170800" stroke="#f97316" stroke-width="1"/>
+<text x="646" y="629" text-anchor="middle" fill="#fed7aa" font-size="9" font-weight="600">MAGIC-HOME</text>
+<text x="646" y="642" text-anchor="middle" fill="#f97316" font-size="8">api_magichome.py</text>
+<text x="646" y="655" text-anchor="middle" fill="#7c2d12" font-size="7.5">TCP socket · LED · send · query</text>
+
+<rect x="737" y="612" width="158" height="54" rx="4" fill="#170800" stroke="#f97316" stroke-width="1"/>
+<text x="816" y="629" text-anchor="middle" fill="#fed7aa" font-size="9" font-weight="600">ZIGBEE2MQTT</text>
+<text x="816" y="642" text-anchor="middle" fill="#f97316" font-size="8">api_zigbee.py</text>
+<text x="816" y="655" text-anchor="middle" fill="#7c2d12" font-size="7.5">MQTT broker · send · query</text>
+
+<rect x="907" y="612" width="158" height="54" rx="4" fill="#170800" stroke="#f97316" stroke-width="1"/>
+<text x="986" y="629" text-anchor="middle" fill="#fed7aa" font-size="9" font-weight="600">WEATHER</text>
+<text x="986" y="642" text-anchor="middle" fill="#f97316" font-size="8">api_weather.py</text>
+<text x="986" y="655" text-anchor="middle" fill="#7c2d12" font-size="7.5">Open Meteo API · query only</text>
+
+<rect x="1077" y="612" width="158" height="54" rx="4" fill="#170800" stroke="#ea580c" stroke-width="1" stroke-dasharray="4,2"/>
+<text x="1156" y="629" text-anchor="middle" fill="#fed7aa" font-size="9" font-weight="600">TEST</text>
+<text x="1156" y="642" text-anchor="middle" fill="#f97316" font-size="8">api_test.py</text>
+<text x="1156" y="655" text-anchor="middle" fill="#7c2d12" font-size="7.5">no-op stub · automated tests</text>
+
+<!-- Startup sequence note -->
+<text x="386" y="744" fill="#1e293b" font-size="8.5" font-style="italic">
+  Startup: rm3install → ConfigCache → ConfigInterfaces → RecordData → interfaces.Connect → Q-send → Q-query → RemotesData → ScheduleTimer → Connexion/Flask (port 5001)
+</text>
+
+<!-- Server volume note -->
+<text x="386" y="762" fill="#1e293b" font-size="8.5" font-style="italic">Volume mounts: REMOTE_DIR (repo root) · REMOTE_DIR_DATA · REMOTE_DIR_ICONS · log/  ·  Swagger spec: server/modules/rm3api.yml</text>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- DATA LAYER                                              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<rect x="40" y="962" width="1650" height="102" rx="8" fill="#0a0c10" stroke="#334155" stroke-width="1.5"/>
+<rect x="40" y="962" width="1650" height="26" rx="8" fill="#141b26"/>
+<rect x="40" y="980" width="1650" height="8" fill="#141b26"/>
+<text x="865" y="979" text-anchor="middle" fill="#64748b" font-size="10.5" font-weight="700">DATA LAYER — data/  (bind-mounted host filesystem · read/written via ConfigCache → rm3json)</text>
+
+<!-- Data section boxes — 7 segments -->
+<rect x="52"   y="996" width="248" height="58" rx="4" fill="#0c101a" stroke="#293548" stroke-width="1"/>
+<text x="176"  y="1012" text-anchor="middle" fill="#64748b" font-size="9" font-weight="600">_ACTIVE-*.json</text>
+<text x="176"  y="1025" text-anchor="middle" fill="#334155" font-size="7.5">_ACTIVE-DEVICES · _ACTIVE-SCENES</text>
+<text x="176"  y="1037" text-anchor="middle" fill="#334155" font-size="7.5">_ACTIVE-APIS · _ACTIVE-MACROS</text>
+<text x="176"  y="1048" text-anchor="middle" fill="#334155" font-size="7.5">_ACTIVE-TIMER · _ACTIVE-RECORD</text>
+
+<rect x="308"  y="996" width="230" height="58" rx="4" fill="#0c101a" stroke="#293548" stroke-width="1"/>
+<text x="423"  y="1012" text-anchor="middle" fill="#64748b" font-size="9" font-weight="600">devices/&lt;API&gt;/</text>
+<text x="423"  y="1025" text-anchor="middle" fill="#334155" font-size="7.5">00_interface.json · 00_default.json</text>
+<text x="423"  y="1037" text-anchor="middle" fill="#334155" font-size="7.5">cfg-&lt;device&gt;.json</text>
+<text x="423"  y="1048" text-anchor="middle" fill="#334155" font-size="7.5">per-interface device configs</text>
+
+<rect x="546"  y="996" width="210" height="58" rx="4" fill="#0c101a" stroke="#293548" stroke-width="1"/>
+<text x="651"  y="1012" text-anchor="middle" fill="#64748b" font-size="9" font-weight="600">remotes/</text>
+<text x="651"  y="1025" text-anchor="middle" fill="#334155" font-size="7.5">rmc_&lt;device&gt;.json</text>
+<text x="651"  y="1037" text-anchor="middle" fill="#334155" font-size="7.5">scene_&lt;name&gt;.json</text>
+<text x="651"  y="1048" text-anchor="middle" fill="#334155" font-size="7.5">remote button layouts</text>
+
+<rect x="764"  y="996" width="196" height="58" rx="4" fill="#0c101a" stroke="#293548" stroke-width="1"/>
+<text x="862"  y="1012" text-anchor="middle" fill="#64748b" font-size="9" font-weight="600">templates/</text>
+<text x="862"  y="1025" text-anchor="middle" fill="#334155" font-size="7.5">default button layout templates</text>
+<text x="862"  y="1037" text-anchor="middle" fill="#334155" font-size="7.5">applied when adding new devices</text>
+
+<rect x="968"  y="996" width="196" height="58" rx="4" fill="#0c101a" stroke="#293548" stroke-width="1"/>
+<text x="1066" y="1012" text-anchor="middle" fill="#64748b" font-size="9" font-weight="600">buttons/</text>
+<text x="1066" y="1025" text-anchor="middle" fill="#334155" font-size="7.5">button icon index (JSON)</text>
+<text x="1066" y="1037" text-anchor="middle" fill="#334155" font-size="7.5">PNG images · color definitions</text>
+
+<rect x="1172" y="996" width="196" height="58" rx="4" fill="#0c101a" stroke="#293548" stroke-width="1"/>
+<text x="1270" y="1012" text-anchor="middle" fill="#64748b" font-size="9" font-weight="600">record/</text>
+<text x="1270" y="1025" text-anchor="middle" fill="#334155" font-size="7.5">time-series sensor data</text>
+<text x="1270" y="1037" text-anchor="middle" fill="#334155" font-size="7.5">JSON · used by Chart.js</text>
+
+<rect x="1376" y="996" width="302" height="58" rx="4" fill="#0c101a" stroke="#293548" stroke-width="1"/>
+<text x="1527" y="1012" text-anchor="middle" fill="#64748b" font-size="9" font-weight="600">log/</text>
+<text x="1527" y="1025" text-anchor="middle" fill="#334155" font-size="7.5">server.log  (RotatingFileHandler)</text>
+<text x="1527" y="1037" text-anchor="middle" fill="#334155" font-size="7.5">server.error.log  (exceptions)</text>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PHYSICAL DEVICES                                        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<rect x="40" y="1084" width="1650" height="104" rx="8" fill="#0d0606" stroke="#ef4444" stroke-width="1.5"/>
+<rect x="40" y="1084" width="1650" height="26" rx="8" fill="#2a0c0c"/>
+<rect x="40" y="1102" width="1650" height="8" fill="#2a0c0c"/>
+<text x="865" y="1101" text-anchor="middle" fill="#f87171" font-size="10.5" font-weight="700">PHYSICAL DEVICES — Local Network (LAN)  192.168.1.x  ·  TCP / UDP / HTTP / MQTT / eISCP / ICMP</text>
+
+<!-- Device boxes: 10 boxes, x spacing -->
+<!-- total available: 1640, 10 boxes, let w=151, gap=11 → 10*151+9*11=1609. Start x=52 -->
+
+<rect x="52"   y="1108" width="151" height="68" rx="4" fill="#160404" stroke="#dc2626" stroke-width="1"/>
+<text x="127"  y="1124" text-anchor="middle" fill="#fca5a5" font-size="8.5" font-weight="600">Broadlink RM</text>
+<text x="127"  y="1137" text-anchor="middle" fill="#f87171" font-size="7.5">IR blaster (RM3mini / RM4)</text>
+<text x="127"  y="1149" text-anchor="middle" fill="#7f1d1d" font-size="7.5">TCP  192.168.1.24 / .85</text>
+<text x="127"  y="1161" text-anchor="middle" fill="#7f1d1d" font-size="7">send · record IR codes</text>
+
+<rect x="214"  y="1108" width="151" height="68" rx="4" fill="#160404" stroke="#dc2626" stroke-width="1"/>
+<text x="289"  y="1124" text-anchor="middle" fill="#fca5a5" font-size="8.5" font-weight="600">Denon AVR-X2800H</text>
+<text x="289"  y="1137" text-anchor="middle" fill="#f87171" font-size="7.5">AV receiver</text>
+<text x="289"  y="1149" text-anchor="middle" fill="#7f1d1d" font-size="7.5">HTTP REST  192.168.1.97</text>
+<text x="289"  y="1161" text-anchor="middle" fill="#7f1d1d" font-size="7">send · query</text>
+
+<rect x="376"  y="1108" width="151" height="68" rx="4" fill="#160404" stroke="#dc2626" stroke-width="1"/>
+<text x="451"  y="1124" text-anchor="middle" fill="#fca5a5" font-size="8.5" font-weight="600">ONKYO TX-NR686</text>
+<text x="451"  y="1137" text-anchor="middle" fill="#f87171" font-size="7.5">AV receiver</text>
+<text x="451"  y="1149" text-anchor="middle" fill="#7f1d1d" font-size="7.5">eISCP  192.168.1.80</text>
+<text x="451"  y="1161" text-anchor="middle" fill="#7f1d1d" font-size="7">send · query</text>
+
+<rect x="538"  y="1108" width="151" height="68" rx="4" fill="#160404" stroke="#dc2626" stroke-width="1"/>
+<text x="613"  y="1124" text-anchor="middle" fill="#fca5a5" font-size="8.5" font-weight="600">Kodi</text>
+<text x="613"  y="1137" text-anchor="middle" fill="#f87171" font-size="7.5">media center</text>
+<text x="613"  y="1149" text-anchor="middle" fill="#7f1d1d" font-size="7.5">JSON-RPC  192.168.1.35:8080</text>
+<text x="613"  y="1161" text-anchor="middle" fill="#7f1d1d" font-size="7">send · query</text>
+
+<rect x="700"  y="1108" width="151" height="68" rx="4" fill="#160404" stroke="#dc2626" stroke-width="1"/>
+<text x="775"  y="1124" text-anchor="middle" fill="#fca5a5" font-size="8.5" font-weight="600">Sony BDP-S4500</text>
+<text x="775"  y="1137" text-anchor="middle" fill="#f87171" font-size="7.5">Blu-ray player</text>
+<text x="775"  y="1149" text-anchor="middle" fill="#7f1d1d" font-size="7.5">IRCC / REST  192.168.1.12</text>
+<text x="775"  y="1161" text-anchor="middle" fill="#7f1d1d" font-size="7">send · query</text>
+
+<rect x="862"  y="1108" width="151" height="68" rx="4" fill="#160404" stroke="#dc2626" stroke-width="1"/>
+<text x="937"  y="1124" text-anchor="middle" fill="#fca5a5" font-size="8.5" font-weight="600">Tapo P100 ×3</text>
+<text x="937"  y="1137" text-anchor="middle" fill="#f87171" font-size="7.5">smart plug</text>
+<text x="937"  y="1149" text-anchor="middle" fill="#7f1d1d" font-size="7.5">PyP100  .22 / .23 / .42</text>
+<text x="937"  y="1161" text-anchor="middle" fill="#7f1d1d" font-size="7">power on/off · query</text>
+
+<rect x="1024" y="1108" width="151" height="68" rx="4" fill="#160404" stroke="#dc2626" stroke-width="1"/>
+<text x="1099" y="1124" text-anchor="middle" fill="#fca5a5" font-size="8.5" font-weight="600">Magic Home LED</text>
+<text x="1099" y="1137" text-anchor="middle" fill="#f87171" font-size="7.5">RGB LED strip</text>
+<text x="1099" y="1149" text-anchor="middle" fill="#7f1d1d" font-size="7.5">TCP socket  192.168.1.49</text>
+<text x="1099" y="1161" text-anchor="middle" fill="#7f1d1d" font-size="7">color · brightness · query</text>
+
+<rect x="1186" y="1108" width="151" height="68" rx="4" fill="#160404" stroke="#dc2626" stroke-width="1"/>
+<text x="1261" y="1124" text-anchor="middle" fill="#fca5a5" font-size="8.5" font-weight="600">ZigBee2MQTT</text>
+<text x="1261" y="1137" text-anchor="middle" fill="#f87171" font-size="7.5">ZigBee gateway</text>
+<text x="1261" y="1149" text-anchor="middle" fill="#7f1d1d" font-size="7.5">MQTT  192.168.1.41:1883</text>
+<text x="1261" y="1161" text-anchor="middle" fill="#7f1d1d" font-size="7">send · query ZigBee devices</text>
+
+<rect x="1348" y="1108" width="151" height="68" rx="4" fill="#0c0c18" stroke="#6366f1" stroke-width="1" stroke-dasharray="4,2"/>
+<text x="1423" y="1124" text-anchor="middle" fill="#c4b5fd" font-size="8.5" font-weight="600">Open Meteo API</text>
+<text x="1423" y="1137" text-anchor="middle" fill="#a78bfa" font-size="7.5">weather data (external)</text>
+<text x="1423" y="1149" text-anchor="middle" fill="#4c1d95" font-size="7.5">HTTPS  api.open-meteo.com</text>
+<text x="1423" y="1161" text-anchor="middle" fill="#4c1d95" font-size="7">query only · no LAN</text>
+
+<rect x="1510" y="1108" width="168" height="68" rx="4" fill="#160404" stroke="#f87171" stroke-width="1" stroke-dasharray="4,2"/>
+<text x="1594" y="1124" text-anchor="middle" fill="#fca5a5" font-size="8.5" font-weight="600">IR-controlled devices</text>
+<text x="1594" y="1137" text-anchor="middle" fill="#f87171" font-size="7.5">TV · Amplifier · Set-top box</text>
+<text x="1594" y="1149" text-anchor="middle" fill="#7f1d1d" font-size="7.5">no direct IP</text>
+<text x="1594" y="1161" text-anchor="middle" fill="#7f1d1d" font-size="7">controlled via Broadlink IR</text>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- ARROWS / CONNECTIONS                                    -->
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<!-- 1. Browser → Client container (vertical, port 81) -->
+<line x1="182" y1="126" x2="182" y2="158" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+<rect x="114" y="134" width="136" height="14" rx="2" fill="#0c0e12"/>
+<text x="182" y="145" text-anchor="middle" fill="#3b82f6" font-size="8.5" font-weight="600">HTTP  port 81</text>
+
+<!-- 2. Browser → Server (right side, then into Flask bar) -->
+<path d="M 326 82 L 384 82" stroke="#8b5cf6" stroke-width="1.5" fill="none" marker-end="url(#arr-violet)"/>
+<rect x="326" y="71" width="170" height="14" rx="2" fill="#0c0e12"/>
+<text x="411" y="81" text-anchor="middle" fill="#8b5cf6" font-size="8.5" font-weight="600">HTTP REST  port 5001 · CORS</text>
+
+<!-- 3. RemoteApiControl → RemoteAPI (from client right edge, routes right, enters server) -->
+<path d="M 340 271 L 356 271 L 356 164 L 384 164" stroke="#0ea5e9" stroke-width="1" fill="none" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+<rect x="330" y="186" width="36" height="60" rx="2" fill="#0c0e12"/>
+<text x="348" y="226" text-anchor="middle" fill="#0ea5e9" font-size="7.5" transform="rotate(-90,348,216)">CORS REST API calls</text>
+
+<!-- 4. RemoteAPI → RemotesData -->
+<line x1="494" y1="204" x2="494" y2="218" stroke="#10b981" stroke-width="1.2" marker-end="url(#arr-green)"/>
+
+<!-- 5. RemoteAPI → RemotesEdit -->
+<path d="M 630 204 L 630 218 L 650 218" stroke="#6ee7b7" stroke-width="1" fill="none" marker-end="url(#arr-green)"/>
+
+<!-- 6. RemoteAPI → Q-send (dashed: write path for send_button) -->
+<path d="M 711 204 L 711 260 L 711 406" stroke="#f59e0b" stroke-width="1" fill="none" stroke-dasharray="4,3" marker-end="url(#arr-amber)"/>
+<rect x="663" y="284" width="96" height="13" rx="2" fill="#0c0e12"/>
+<text x="711" y="294" text-anchor="middle" fill="#f59e0b" font-size="7.5">send commands</text>
+
+<!-- 7. RemoteAPI → Q-query (dashed) -->
+<path d="M 780 192 C 940 192 936 360 936 406" stroke="#f59e0b" stroke-width="1" fill="none" stroke-dasharray="4,3" marker-end="url(#arr-amber)"/>
+<rect x="880" y="284" width="92" height="13" rx="2" fill="#0c0e12"/>
+<text x="926" y="294" text-anchor="middle" fill="#f59e0b" font-size="7.5">status queries</text>
+
+<!-- 8. ScheduleTimer → Q-send -->
+<path d="M 594 444 L 604 444" stroke="#f59e0b" stroke-width="1" fill="none" stroke-dasharray="3,2" marker-end="url(#arr-amber)"/>
+<rect x="590" y="432" width="58" height="13" rx="2" fill="#0c0e12"/>
+<text x="619" y="441" text-anchor="middle" fill="#f59e0b" font-size="7">timed events</text>
+
+<!-- 9. Q-send → interfaces.Connect -->
+<line x1="711" y1="482" x2="711" y2="498" stroke="#f97316" stroke-width="1.5" marker-end="url(#arr-orange)"/>
+
+<!-- 10. Q-query → interfaces.Connect -->
+<line x1="936" y1="482" x2="936" y2="498" stroke="#f97316" stroke-width="1.5" marker-end="url(#arr-orange)"/>
+
+<!-- 11. interfaces.Connect → Physical devices (vertical down through data layer) -->
+<line x1="832" y1="708" x2="832" y2="962" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="7,3" marker-end="url(#arr-red)"/>
+<rect x="740" y="820" width="184" height="14" rx="2" fill="#0d0606"/>
+<text x="832" y="831" text-anchor="middle" fill="#ef4444" font-size="8.5" font-weight="600">LAN: TCP/HTTP/MQTT/eISCP</text>
+<!-- continue below data layer -->
+<line x1="832" y1="1064" x2="832" y2="1084" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="7,3" marker-end="url(#arr-red)"/>
+
+<!-- 12. ConfigCache ↔ data/ (bidirectional) -->
+<line x1="489" y1="482" x2="489" y2="962" stroke="#14b8a6" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arr-teal)"/>
+<rect x="398" y="724" width="184" height="14" rx="2" fill="#0c0e12"/>
+<text x="490" y="735" text-anchor="middle" fill="#14b8a6" font-size="8">JSON read / write</text>
+
+<!-- 13. RecordData → data/record/ -->
+<path d="M 1034 298 L 1200 298 L 1270 962" stroke="#475569" stroke-width="1" fill="none" stroke-dasharray="4,3" marker-end="url(#arr-slate)"/>
+
+<!-- 14. rm3presets writes config_stage.js → client (above client container) -->
+<path d="M 1296 162 C 1260 80 700 80 340 631" stroke="#4ade80" stroke-width="0.8" fill="none" stroke-dasharray="5,4" marker-end="url(#arr)"/>
+<rect x="750" y="62" width="170" height="13" rx="2" fill="#0c0e12"/>
+<text x="835" y="72" text-anchor="middle" fill="#4ade80" font-size="7.5">writes config_stage.js on startup</text>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- HOST LABEL                                              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<text x="860" y="1218" text-anchor="middle" fill="#1e293b" font-size="9.5">
+  Raspberry Pi (Linux ARM) or any Linux host  ·  Docker Compose v3  ·  server: network_mode=host, privileged=true  ·  client: port-mapped
+</text>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- FLOW LEGEND (bottom-right corner)                       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<rect x="1490" y="780" width="218" height="148" rx="6" fill="#0c0e12" stroke="#1e293b" stroke-width="1"/>
+<text x="1599" y="799" text-anchor="middle" fill="#475569" font-size="8.5" font-weight="700">KEY DATA FLOWS</text>
+
+<line x1="1504" y1="815" x2="1540" y2="815" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+<text x="1548" y="819" fill="#64748b" font-size="8">Browser loads UI / calls API</text>
+
+<line x1="1504" y1="833" x2="1540" y2="833" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arr-violet)"/>
+<text x="1548" y="837" fill="#64748b" font-size="8">REST request (CORS)</text>
+
+<line x1="1504" y1="851" x2="1540" y2="851" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr-amber)"/>
+<text x="1548" y="855" fill="#64748b" font-size="8">Command enqueued</text>
+
+<line x1="1504" y1="869" x2="1540" y2="869" stroke="#f97316" stroke-width="1.5" marker-end="url(#arr-orange)"/>
+<text x="1548" y="873" fill="#64748b" font-size="8">Queue → interface adapter</text>
+
+<line x1="1504" y1="887" x2="1540" y2="887" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arr-red)"/>
+<text x="1548" y="891" fill="#64748b" font-size="8">Adapter → physical device</text>
+
+<line x1="1504" y1="905" x2="1540" y2="905" stroke="#14b8a6" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arr-teal)"/>
+<text x="1548" y="909" fill="#64748b" font-size="8">Config cache read/write</text>
+
+<line x1="1504" y1="921" x2="1540" y2="921" stroke="#4ade80" stroke-width="0.8" stroke-dasharray="5,4" marker-end="url(#arr)"/>
+<text x="1548" y="925" fill="#64748b" font-size="8">Server → client file write</text>
+
+</svg>
+</div>
+</body>
+</html>

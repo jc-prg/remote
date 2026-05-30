@@ -17,13 +17,6 @@ echo $LINE
 echo " Start jc://remote/$REMOTE_CURRENT_STAGE/"
 echo $LINE
 
-if [ $user != "root" ]; then
-  echo
-  echo "Please run as root!"
-  echo
-  exit 0
-fi
-
 # CHECK IF .env FILE EXIST OR CREATE ONE
 
 if [ -e ".env" ]; then
@@ -101,7 +94,7 @@ else
   while : ; do
     read -n 1 k <& 1
     if [[ $k = y ]] ; then
-      sudo git submodule update --init --recursive
+      git submodule update --init --recursive
       break
     elif [[ $k = n ]] ; then
       echo

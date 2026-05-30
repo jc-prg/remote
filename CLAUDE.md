@@ -23,12 +23,12 @@ cp sample.env .env          # then edit .env to set REMOTE_DIR and ports
 git submodule update --init --recursive   # required for app/modules/ and app/framework/
 ```
 
-### Start / Stop / Restart (requires root)
+### Start / Stop / Restart
 ```bash
-sudo ./start                # interactive menu: s=start, r=restart, x=stop, i=start visible, l=log
-sudo ./start start          # non-interactive
-sudo ./start stop
-sudo ./start restart
+./start                # interactive menu: s=start, r=restart, x=stop, i=start visible, l=log
+./start start          # non-interactive
+./start stop
+./start restart
 ```
 
 ### Start server directly (outside Docker, for development)
@@ -39,7 +39,7 @@ python3 -m server.server    # runs on port 5001 by default (set in .env)
 
 ### Watch logs
 ```bash
-sudo ./start watchlog       # tails the log file
+./start watchlog       # tails the log file
 tail -f log/server.log
 ```
 
