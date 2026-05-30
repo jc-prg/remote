@@ -192,6 +192,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         for (const key of all_keys) {
             let [api, api_device] = key.split("_");
             let status = this.status.status_api_device(key, true);
+            if (!status) { continue; }
 
             this.visualize_api_slider(`toggle__${api}-${api_device}_input`, status["active"]);
             this.visualize_status_text("power_status_"+key, "&nbsp;(" + status["power-status"] + ")", (status["power"] !== ""));

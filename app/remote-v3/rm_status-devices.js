@@ -150,8 +150,8 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
                     }
                     this.warning[message] = true;
                 }
-                else {
-                    this.logging.warn("Nothing defined yet for " + api + "_" + api_device);
+                else if (this.config_apis_structure[api][api_device].length === 0) {
+                    this.logging.warn("Nothing defined yet for " + api + "_" + api_device + ".");
                 }
             }
         }
@@ -230,6 +230,7 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
     create_data_devices() {
         for (let device in this.status_devices) {
             if (device === "default") { continue; }
+            if (!this.config_devices[device] || !this.config_devices[device]["interface"]) { continue; }
 
             let api = this.config_devices[device]["interface"]["api_key"];
             let api_device = this.config_devices[device]["interface"]["api_device"];
@@ -237,10 +238,11 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
             let api_status = "ERROR";
             let api_device_status = "ERROR";
 
-            if (this.status_data["api"][api]) {
+            if (this.status_data["api"][api] && this.status_data["api-device"][api_key]) {
                 api_status = this.status_data["api"][api]["status"];
                 api_device_status = this.status_data["api-device"][api_key]["status"];
             }
+            if (!this.status_data["api-device"][api_key]) { continue; }
             let active = (this.config_devices[device]["settings"]["visible"] === "yes");
 
             let status = "OK";
@@ -576,6 +578,9 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
 
     /* get status for all device types, includes checks if available*/
     get_status (device_type, device_id, details=false) {
+        const error_status_empty  = { active : false, api : device_type, id : device_id, message : "No status available", power : "", "power-status" : "", status : "ERROR" }
+        const error_status  = "ERROR";
+
         if (this.status_data[device_type]) {
             if (this.status_data[device_type][device_id]) {
                 if (details) {
@@ -585,7 +590,9 @@ class RemoteDevicesStatus extends RemoteDefaultClass {
                 }
             }
             else {
-                this.logging.error("get_status(): no status information for '" + device_type + "/" + device_id + "' available.")
+                this.logging.error("get_status(): no status information for '" + device_type + "/" + device_id + "' available (device not defined).")
+                if (details) { return error_status_empty; }
+                else         { return error_status; }
             }
         }
         else {

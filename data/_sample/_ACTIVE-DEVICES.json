@@ -77,7 +77,7 @@
     },
     "bd-api": {
         "config": {
-            "api_device": "SONY-BDP-S4500",
+            "api_device": "sample-api-device",
             "api_key": "SONY",
             "device": "cfg-bluray_sony-bdp-s4500",
             "remote": "rmc-bluray_sony-bdp-s4500_api"
