@@ -21,7 +21,7 @@
 </head>
 <body>
 <h1>jc://remote/ — System Architecture</h1>
-<p class="meta">Version v3.1.0 &nbsp;·&nbsp; branch: dev &nbsp;·&nbsp; 2026-05-21</p>
+<p class="meta">Version v3.2.4 &nbsp;·&nbsp; branch: dev &nbsp;·&nbsp; 2026-05-30</p>
 
 <div class="legend">
   <span class="li"><span class="ld" style="background:#3b82f6"></span>Browser / HTTP</span>
@@ -79,7 +79,7 @@
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- CLIENT CONTAINER                                        -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<rect x="40" y="158" width="300" height="646" rx="10" fill="#060e1a" stroke="#0ea5e9" stroke-width="1.5"/>
+<rect x="40" y="158" width="300" height="680" rx="10" fill="#060e1a" stroke="#0ea5e9" stroke-width="1.5"/>
 <rect x="40" y="158" width="300" height="28" rx="10" fill="#0a2440"/>
 <rect x="40" y="178" width="300" height="8" fill="#0a2440"/>
 <text x="190" y="177" text-anchor="middle" fill="#38bdf8" font-size="10.5" font-weight="700">CLIENT CONTAINER</text>
@@ -135,29 +135,32 @@
 <rect x="189" y="461" width="126" height="28" rx="4" fill="#071424" stroke="#1d6fa8" stroke-width="1"/>
 <text x="252" y="479" text-anchor="middle" fill="#7dd3fc" font-size="9">rm_functions.js</text>
 
+<rect x="55" y="495" width="126" height="28" rx="4" fill="#071424" stroke="#1d6fa8" stroke-width="1"/>
+<text x="118" y="513" text-anchor="middle" fill="#7dd3fc" font-size="9">RemoteSwipe</text>
+
 <!-- Submodules divider -->
-<line x1="55" y1="500" x2="325" y2="500" stroke="#1e293b" stroke-width="1"/>
-<text x="190" y="514" text-anchor="middle" fill="#334155" font-size="8.5" letter-spacing="0.5">GIT SUBMODULES</text>
+<line x1="55" y1="534" x2="325" y2="534" stroke="#1e293b" stroke-width="1"/>
+<text x="190" y="548" text-anchor="middle" fill="#334155" font-size="8.5" letter-spacing="0.5">GIT SUBMODULES</text>
 
-<rect x="55" y="520" width="260" height="32" rx="4" fill="#04080e" stroke="#1d4ed8" stroke-width="1" stroke-dasharray="4,2"/>
-<text x="185" y="534" text-anchor="middle" fill="#93c5fd" font-size="9">app/modules/  →  jc-prg/modules</text>
-<text x="185" y="546" text-anchor="middle" fill="#334155" font-size="8">shared JS utilities</text>
+<rect x="55" y="554" width="260" height="32" rx="4" fill="#04080e" stroke="#1d4ed8" stroke-width="1" stroke-dasharray="4,2"/>
+<text x="185" y="568" text-anchor="middle" fill="#93c5fd" font-size="9">app/modules/  →  jc-prg/modules</text>
+<text x="185" y="580" text-anchor="middle" fill="#334155" font-size="8">shared JS utilities</text>
 
-<rect x="55" y="558" width="260" height="32" rx="4" fill="#04080e" stroke="#1d4ed8" stroke-width="1" stroke-dasharray="4,2"/>
-<text x="185" y="572" text-anchor="middle" fill="#93c5fd" font-size="9">app/framework/  →  jc-prg/app-framework</text>
-<text x="185" y="584" text-anchor="middle" fill="#334155" font-size="8">web app framework base classes</text>
+<rect x="55" y="592" width="260" height="32" rx="4" fill="#04080e" stroke="#1d4ed8" stroke-width="1" stroke-dasharray="4,2"/>
+<text x="185" y="606" text-anchor="middle" fill="#93c5fd" font-size="9">app/framework/  →  jc-prg/app-framework</text>
+<text x="185" y="618" text-anchor="middle" fill="#334155" font-size="8">web app framework base classes</text>
 
 <!-- config_stage.js generated -->
-<line x1="55" y1="601" x2="325" y2="601" stroke="#1e293b" stroke-width="1"/>
-<rect x="55" y="607" width="260" height="32" rx="4" fill="#040e06" stroke="#16a34a" stroke-width="1" stroke-dasharray="3,2"/>
-<text x="185" y="621" text-anchor="middle" fill="#4ade80" font-size="9">app/remote-v3/config_stage.js</text>
-<text x="185" y="633" text-anchor="middle" fill="#166534" font-size="8">written by server on startup (rm3presets.py)</text>
+<line x1="55" y1="635" x2="325" y2="635" stroke="#1e293b" stroke-width="1"/>
+<rect x="55" y="641" width="260" height="32" rx="4" fill="#040e06" stroke="#16a34a" stroke-width="1" stroke-dasharray="3,2"/>
+<text x="185" y="655" text-anchor="middle" fill="#4ade80" font-size="9">app/remote-v3/config_stage.js</text>
+<text x="185" y="667" text-anchor="middle" fill="#166534" font-size="8">written by server on startup (rm3presets.py)</text>
 
 <!-- Client volume note -->
-<line x1="55" y1="650" x2="325" y2="650" stroke="#1e293b" stroke-width="1"/>
-<text x="185" y="665" text-anchor="middle" fill="#334155" font-size="8.5" font-style="italic">Volume mounts: icon/  ·  scenes/  ·  app/</text>
-<text x="185" y="679" text-anchor="middle" fill="#334155" font-size="8">Apache conf: config/apache2/www-rm3.conf</text>
-<text x="185" y="693" text-anchor="middle" fill="#334155" font-size="8">Port mapping: REMOTE_CLIENT_PORT → 5000</text>
+<line x1="55" y1="684" x2="325" y2="684" stroke="#1e293b" stroke-width="1"/>
+<text x="185" y="699" text-anchor="middle" fill="#334155" font-size="8.5" font-style="italic">Volume mounts: icon/  ·  scenes/  ·  app/</text>
+<text x="185" y="713" text-anchor="middle" fill="#334155" font-size="8">Apache conf: config/apache2/www-rm3.conf</text>
+<text x="185" y="727" text-anchor="middle" fill="#334155" font-size="8">Port mapping: REMOTE_CLIENT_PORT → 5000</text>
 
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- SERVER CONTAINER                                        -->
