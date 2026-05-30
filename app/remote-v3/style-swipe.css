@@ -2,7 +2,8 @@
 
 #swipe-dots {
     position        : fixed;
-    bottom          : 32px;
+    bottom          : 30px;
+    transform       : translateY(50%);
     left            : 0;
     width           : 100%;
     text-align      : center;
@@ -30,6 +31,7 @@
     margin          : 0 4px;
     border-radius   : 50%;
     background      : var(--rm-color-hr);
+    border          : 0.5px solid rgba(0, 0, 0, 0.25);
     opacity         : 0.55;
     cursor          : pointer;
     transition      : width 0.15s, height 0.15s, opacity 0.15s, background 0.15s;
@@ -48,12 +50,31 @@
 
 @media (prefers-color-scheme: dark) {
     .swipe-dot-bg {
-        background  : rgba(255, 255, 255, 0.15);
+        background  : rgba(255, 255, 255, 0.08);
+    }
+    .swipe-dot {
+        border      : none;
     }
 }
 
+/* bottom fade bar — covers the very bottom of the viewport when swipe is active */
+#swipe-bottom-bar {
+    position        : fixed;
+    bottom          : 0;
+    left            : 0;
+    width           : 100%;
+    height          : 60px;
+    background      : var(--rm-color-body);
+    border-top      : 1px solid var(--rm-color-hr);
+    border-radius   : 16px 16px 0 0;
+    z-index         : 140;
+    display         : none;
+    pointer-events  : none;
+}
+
 @media (min-width: 705px) {
-    #swipe-dots { display: none !important; }
+    #swipe-dots      { display: none !important; }
+    #swipe-bottom-bar { display: none !important; }
 }
 
 /* edge dots indicate hidden remotes beyond the visible window */

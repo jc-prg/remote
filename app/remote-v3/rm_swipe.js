@@ -166,12 +166,16 @@ class RemoteSwipe extends RemoteDefaultClass {
     show() {
         const el = document.getElementById("swipe-dots");
         if (el) el.style.display = "block";
+        const bar = document.getElementById("swipe-bottom-bar");
+        if (bar) bar.style.display = "block";
     }
 
     /* hide the dot bar */
     hide() {
         const el = document.getElementById("swipe-dots");
         if (el) el.style.display = "none";
+        const bar = document.getElementById("swipe-bottom-bar");
+        if (bar) bar.style.display = "none";
     }
 }
 
