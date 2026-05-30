@@ -66,6 +66,7 @@ class RemoteSwipe extends RemoteDefaultClass {
             this.touch_start_y = e.touches[0].clientY;
         };
         const on_end = (e) => {
+            if (typeof rmSettings !== "undefined" && rmSettings.active) return;
             const dx = e.changedTouches[0].clientX - this.touch_start_x;
             const dy = e.changedTouches[0].clientY - this.touch_start_y;
             // only act when horizontal movement dominates and exceeds threshold
@@ -74,16 +75,11 @@ class RemoteSwipe extends RemoteDefaultClass {
             }
         };
 
-        for (const id of ["frame_block_content", "app_background"]) {
-            const el = document.getElementById(id);
-            if (el) {
-                el.addEventListener("touchstart", on_start, { passive: true });
-                el.addEventListener("touchend",   on_end,   { passive: true });
-            }
-        }
+        document.addEventListener("touchstart", on_start, { passive: true });
+        document.addEventListener("touchend",   on_end,   { passive: true });
 
         this.swipe_bound = true;
-        this.logging.default("Swipe gestures bound to #frame_block_content and #app_background.");
+        this.logging.default("Swipe gestures bound to document.");
     }
 
     /* navigate +1 (next / swipe-left) or -1 (prev / swipe-right) */
