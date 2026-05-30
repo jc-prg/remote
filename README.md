@@ -47,7 +47,7 @@ Find here [further screenshots](./docs/IMPRESSIONS.md) ...
 
 ## Architecture and data structure
 
-* [Architecture overview](docs/concepts/architecture.html)
+* [Architecture overview (HTML Download)](https://github.com/jc-prg/remote/blob/dev/docs/concepts/architecture.html)
 * [Description of data and configuration files](data/README.md)
 
 ## Used sources
