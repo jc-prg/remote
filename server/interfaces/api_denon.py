@@ -91,8 +91,10 @@ class ApiControl(RemoteApiClass):
         self.count_success = 0
 
         try:
+            self._loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(self._loop)
             self.api = denonavr.DenonAVR(self.api_config["IPAddress"], 8080)
-            asyncio.run(self.initialize())
+            self._loop.run_until_complete(self.initialize())
 
         except Exception as e:
             self.error_details(sys.exc_info(), "ApiControl.connect()", ["NetworkError: All connection attempts failed"])
@@ -100,7 +102,7 @@ class ApiControl(RemoteApiClass):
             return self.status
 
         try:
-            self.api_jc = APIaddOn(self.api)
+            self.api_jc = APIaddOn(self.api, self._loop)
             self.api_jc.status = self.status
             self.api_jc.not_connected = self.not_connected
 
@@ -240,13 +242,9 @@ class ApiControl(RemoteApiClass):
                 self.logging.debug(f"Send api command '{command}'")
             return True
         except Exception as e:
-            if "is bound to a different event loop" in str(e):
-                self.logging.debug(f"Send api command '{command}' (bound to a different event loop)")
-                return True
-            else:
-                self.error_details(sys.exc_info(), "ApiControl.send_command()", ["object has no attribute"])
-                self.logging.error(f"Could not send command '{command}': {e}")
-                return False
+            self.error_details(sys.exc_info(), "ApiControl.send_command()", ["object has no attribute"])
+            self.logging.error(f"Could not send command '{command}': {e}")
+            return False
 
     def send(self, device, device_id, command):
         """
@@ -289,7 +287,7 @@ class ApiControl(RemoteApiClass):
 
             else:
                 try:
-                    result = asyncio.run(self.send_command(command))
+                    result = self._loop.run_until_complete(self.send_command(command))
                     self.logging.debug(f"Send -> {result}")
                 except Exception as e:
                     self.error_details(sys.exc_info(), "ApiControl.send()")
@@ -309,6 +307,7 @@ class ApiControl(RemoteApiClass):
         try:
             await self.api.async_update()
         except Exception as e:
+            #self.error_details(sys.exc_info(), "ApiControl.query_update()", ["NetworkError: All connection attempts failed","is bound to a different event loop"])
             self.error_details(sys.exc_info(), "ApiControl.query_update()", ["NetworkError: All connection attempts failed"])
             self.logging.error(f"Could not execute update: {e}")
 
@@ -351,7 +350,7 @@ class ApiControl(RemoteApiClass):
                         command += "()"
 
                     if time.time() - self.api_last_request > self.api_max_interval:
-                        asyncio.run(self.query_update())
+                        self._loop.run_until_complete(self.query_update())
                         self.api_last_request = time.time()
 
                     result = eval(command)
@@ -378,7 +377,7 @@ class ApiControl(RemoteApiClass):
                 if "(" not in command:
                     command += "()"
                 try:
-                    result = asyncio.run(eval(f"self.api.{command}"))
+                    result = self._loop.run_until_complete(eval(f"self.api.{command}"))
                 except Exception as e:
                     #self.error_details(sys.exc_info(),"ApiControl.query()", ["object has no attribute"])
                     #self.logging.error(f"async call failed ... {command}: {e}")
@@ -389,7 +388,7 @@ class ApiControl(RemoteApiClass):
             else:
                 try:
                     if time.time() - self.api_last_request > self.api_max_interval:
-                        asyncio.run(self.query_update())
+                        self._loop.run_until_complete(self.query_update())
                         self.api_last_request = time.time()
 
                     result = eval(f"self.api.{command}")
@@ -412,7 +411,7 @@ class APIaddOn(RemoteDefaultClass):
     """
     additional functions that combine values
     """
-    def __init__(self, api):
+    def __init__(self, api, loop):
         self.api_description = "API-Addon for DENON Devices"
         RemoteDefaultClass.__init__(self, "api-DENON", self.api_description)
 
@@ -420,6 +419,7 @@ class APIaddOn(RemoteDefaultClass):
         self.not_connected = None
         self.addon = "jc://addon/denon/"
         self.api = api
+        self._loop = loop
 
 
         # try: playing_func_list, netaudio_func_list
@@ -506,10 +506,7 @@ class APIaddOn(RemoteDefaultClass):
             return { "ok": "jc.mute()" }
 
         except Exception as e:
-            self.error_details(sys.exc_info(), "APIaddOn._mute_toggle()", ["is bound to a different event loop"])
-            if "is bound to a different event loop" in str(e):
-                return {"ok": "jc.mute()"}
-
+            self.error_details(sys.exc_info(), "APIaddOn._mute_toggle()")
             self.logging.error(f"Could not send command 'jc.mute()': {e}")
             return { "error": f"jc.mute(): an error occurred - {e}" }
 
@@ -523,10 +520,7 @@ class APIaddOn(RemoteDefaultClass):
             return { "ok": "jc.set_volume()" }
 
         except Exception as e:
-            self.error_details(sys.exc_info(), "APIaddOn._set_volume()", ["is bound to a different event loop"])
-            if "is bound to a different event loop" in str(e):
-                return {"ok": "jc.set_volume()"}
-
+            self.error_details(sys.exc_info(), "APIaddOn._set_volume()")
             self.logging.error(f"Could not send command 'jc.set_volume()': {e}")
             return { "error": f"jc.set_volume(): an error occurred - {e}" }
 
@@ -534,7 +528,7 @@ class APIaddOn(RemoteDefaultClass):
         """
         switch mute on or off depending on current status
         """
-        result = asyncio.run(self._mute_toggle())
+        result = self._loop.run_until_complete(self._mute_toggle())
         return result
 
     def volume(self):
@@ -549,5 +543,5 @@ class APIaddOn(RemoteDefaultClass):
         set volume including calculating dB value
         """
         value = float(volume) - float(80)
-        result = asyncio.run(self._set_volume(value))
+        result = self._loop.run_until_complete(self._set_volume(value))
         return result
