@@ -250,7 +250,7 @@ let language_app = {
 
         "EXTERNAL_ID"            : "Externe ID",
         "ERROR_UNKNOWN"          : "Unbekannter Fehler",
-        "ERROR_THREAD_TOO_LONG"  : "Der Thread <b>{0}</b> hat für <b>{1}s</b> nicht geantwortet.",
+        "ERROR_THREAD_TOO_LONG"  : "Der Thread <b>{0}</b> hat für <b>{1}</b> nicht geantwortet (seit {2}).",
         "FORMAT_INCORRECT"       : "Format ist nicht korrekt",
         "FAVICON_INFO"           : "Wähle ein anderes Favicon oder Apple-Icon. <i>Hinweis:</i> Diese Auswahl ist momentan nur temporär – wähle die WebApp und speichere sie auf dem Home-Screen, um ein bestimmtes Apple-Icon zu verwenden.",
 
@@ -657,7 +657,7 @@ let language_app = {
         "EXTERNAL_ID"            : "External ID",
         "EXECUTION_ERROR"        : "Could not execute command &quot;{2}&quot; for {0} <b>{1}</b>: <i>{3}</i>",
         "ERROR_UNKNOWN"          : "Unknown error",
-        "ERROR_THREAD_TOO_LONG"  : "The thread <b>{0}</b> did not respond for <b>{1}s</b>.",
+        "ERROR_THREAD_TOO_LONG"  : "The thread <b>{0}</b> did not respond for <b>{1}</b> (since {2}).",
         "ERROR_LOST_LOCAL_NETWORK": "Lost connection to local network, and by that to all connected devices.",
         "ERROR_LOST_SERVER_CONNECT": "Lost connection to the server.",
 

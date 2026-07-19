@@ -387,7 +387,15 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
             let count = 0;
             let alert = "";
             for (let key in this.attention_errors["thread"]) {
-                alert += `${lang("ERROR_THREAD_TOO_LONG", [key, this.attention_errors["thread"][key]])}<br/>`;
+                let secs = this.attention_errors["thread"][key];
+                let h = Math.floor(secs / 3600);
+                let m = Math.floor((secs % 3600) / 60);
+                let s = secs % 60;
+                let timeStr = (h > 0 ? `${h}:` : "") + String(m).padStart(h > 0 ? 2 : 1, "0") + ":" + String(s).padStart(2, "0");
+                let since = new Date(Date.now() - secs * 1000);
+                let sh = since.getHours(), sm = since.getMinutes(), ss = since.getSeconds();
+                let timeSince = (sh > 0 ? `${sh}:` : "") + String(sm).padStart(sh > 0 ? 2 : 1, "0") + ":" + String(ss).padStart(2, "0");
+                alert += `${lang("ERROR_THREAD_TOO_LONG", [key, timeStr, timeSince])}<br/>`;
                 count += 1;
             }
             return [alert, count];
