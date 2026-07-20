@@ -371,8 +371,11 @@ class ApiOpenMeteo(RemoteThreadingClass):
                 if self.update_settings:
                     self._create_url()
                     self.update_settings = False
-                self._request_data()
-                self._convert_data()
+                try:
+                    self._request_data()
+                    self._convert_data()
+                except Exception as e:
+                    self.logging.error(f"Error processing weather data: {e}")
 
             self.update_wait = (last_update + self.update_interval) - time.time()
             self.logging.debug("Wait to read weather data (" + str(round(self.update_interval, 1)) + ":" +
