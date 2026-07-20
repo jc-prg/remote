@@ -390,7 +390,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
                 let secs = this.attention_errors["thread"][key];
                 let h = Math.floor(secs / 3600);
                 let m = Math.floor((secs % 3600) / 60);
-                let s = secs % 60;
+                let s = Math.floor(secs % 60);
                 let timeStr = (h > 0 ? `${h}:` : "") + String(m).padStart(h > 0 ? 2 : 1, "0") + ":" + String(s).padStart(2, "0");
                 let since = new Date(Date.now() - secs * 1000);
                 let sh = since.getHours(), sm = since.getMinutes(), ss = since.getSeconds();
