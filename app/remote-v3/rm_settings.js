@@ -1501,9 +1501,25 @@ class RemoteSettingsGeneral extends RemoteDefaultClass {
         }
         setTimeout(() => { rmStatusShow.show_status_system_health(); }, 500 );
 
+        const system_info = rmStatus.status_system("system");
+        const server_start   = system_info["server_start"];
+        const server_running = system_info["server_running"];
+        let start_str  = "N/A";
+        let uptime_str = "N/A";
+        if (server_start && server_running != null) {
+            start_str = new Date(server_start * 1000).toLocaleString();
+            const h = Math.floor(server_running / 3600);
+            const m = Math.floor((server_running % 3600) / 60);
+            const s = Math.floor(server_running % 60);
+            uptime_str = String(h).padStart(2,"0") + ":" + String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+        }
+
         set_temp  = this.tab.start();
         set_temp += this.tab.row( 	"Threads:&nbsp;", "<div id='system_health'></div>" );
         set_temp += this.tab.row( 	"APIs:&nbsp;", modules.join(", ") );
+        set_temp += this.tab.row( 	"&nbsp;");
+        set_temp += this.tab.row( 	"Running since:&nbsp;", start_str );
+        set_temp += this.tab.row( 	"Uptime:&nbsp;", uptime_str );
         set_temp += this.tab.row( 	"&nbsp;");
         set_temp += this.tab.row( 	"StatusCheck&nbsp(Load):&nbsp;",  "<div id='average_status_duration_load'>"+lang("PLEASE_WAIT")+"</div>");
         set_temp += this.tab.row( 	"StatusCheck&nbsp(Write):&nbsp;",  "<div id='average_status_duration'>"+lang("PLEASE_WAIT")+"</div>");
