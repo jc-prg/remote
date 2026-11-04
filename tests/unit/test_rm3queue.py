@@ -165,3 +165,26 @@ def test_future_execution_time():
     execution_time = queue.queue[0][5]   # index 5 = execution_time
     assert execution_time >= before + 5
     apis.api_send.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# Query: values mapped via "values-remote"
+# ---------------------------------------------------------------------------
+
+@pytest.mark.unit
+def test_query_stores_mapped_and_original_value():
+    """Mapped value goes to status[key], the original device value to status['api-values-original'][key]."""
+    cfg = _make_config({"trv": {"status": {}}})
+    apis = MagicMock()
+    apis.api_query.side_effect = lambda i, d, key, map_values=True: {"child-lock": "LOCK", "system-mode": "heat"}[key]
+    apis.command_values_remote_map.side_effect = lambda i, d, key, value: {"LOCK": "ON"}.get(value, value)
+    queue = QueueApiCalls("test-queue", "query", apis, cfg)
+    now = _now()
+
+    queue.execute(["ZIGBEE2MQTT_test", "trv", ["child-lock", "system-mode"], "", now, now])
+
+    status = cfg.device_set_values.call_args[0][2]
+    assert status["child-lock"] == "ON"
+    assert status["system-mode"] == "heat"
+    assert status["api-values-original"] == {"child-lock": "LOCK"}
+    apis.api_query.assert_any_call("ZIGBEE2MQTT_test", "trv", "child-lock", map_values=False)

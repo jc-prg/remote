@@ -978,9 +978,12 @@ class Connect(RemoteThreadingClass):
 
         return return_msg
 
-    def api_query(self, call_api, device, button):
+    def api_query(self, call_api, device, button, map_values=True):
         """
         Query an information from device via API.
+
+        If map_values is True, the result is translated using "values-remote" of the command definition
+        (see command_values_remote_map()); set to False to get the original device value.
 
         Values are store in self.config.cache[active_devices_key][device_id][category][key] and written to the main
         config file _ACTIVE-DEVICES.json via self.config.device_set_values(self, device_id, category, values).
@@ -1007,7 +1010,8 @@ class Connect(RemoteThreadingClass):
                 return_msg = f"ERROR: could not read/create command from button code (query/{device}/{button}); " + button_code
             elif api_dev in self.api:
                 return_msg = self.api[api_dev].query(device, device_id, button_code)
-                return_msg = self.command_values_remote_map(call_api, device, button, return_msg)
+                if map_values:
+                    return_msg = self.command_values_remote_map(call_api, device, button, return_msg)
             else:
                 return_msg = "ERROR: API not available (" + str(api_dev) + ")"
 

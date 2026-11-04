@@ -1324,7 +1324,7 @@ class RemoteSettingsApi extends RemoteDefaultClass {
         let filter = filter_list.options[filter_list.selectedIndex].value;
         let device_status = rmStatus.status_device_raw(filter);
         let device_values = rmData.devices.list_commands(filter, "get");
-        let dont_use = ["api", "api-last-query", "api-last-query-tc", "api-last-send", "api-last-send-tc", "api-status","presets"];
+        let dont_use = ["api", "api-last-query", "api-last-query-tc", "api-last-send", "api-last-send-tc", "api-status", "api-values-original", "presets"];
         let color = "VALUE";
         if (device_status["api-status"].indexOf("ERROR") > -1)          { color = "ERROR"; }
         else if (device_status["api-status"].indexOf("Connected") > -1) { color = "ON"; }

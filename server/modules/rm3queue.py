@@ -154,7 +154,17 @@ class QueueApiCalls(RemoteThreadingClass):
                         continue
                     try:
                         self.thread_life_signal()
-                        result = self.device_apis.api_query(interface, device, value)
+                        result_original = self.device_apis.api_query(interface, device, value, map_values=False)
+                        result = self.device_apis.command_values_remote_map(interface, device, value, result_original)
+
+                        # keep original device value, if mapped via "values-remote" (displayed in the app)
+                        values_original = devices[device]["status"].get("api-values-original", {})
+                        if result != result_original:
+                            values_original[value] = str(result_original)
+                        else:
+                            values_original.pop(value, None)
+                        devices[device]["status"]["api-values-original"] = values_original
+
                         if "ERROR" in str(result):
                             log_error += 1
 

@@ -732,6 +732,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
         let commands = rmData.devices.list_commands(device_id, "definition");
         let additional_keys = ["api","api-status","api-last-query","api-last-record","api-last-send","api-last-answer","api-auto-off"];
         display_keys = display_keys.concat(additional_keys);
+        const values_original = dev_status["api-values-original"] || {};
 
         // set values if device is active or scene is active (which can contain several devices)
         if (status === "ON" || status === "OFF" || status === "POWER_OFF" || status === "OK" || status === "N/A") {
@@ -742,6 +743,14 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
                 const element_full = document.getElementById("display_full_" + device_id + "_" + key);
 
                 let value = dev_status[key];
+
+                // values mapped via "values-remote": displays show the original value, details show "original (mapped)"
+                let value_mapped = "";
+                if (key in values_original) {
+                    value_mapped = " (" + value + ")";
+                    value = values_original[key];
+                }
+
                 if (value && (key === "power" || key === "state")) {
                     if (value.toUpperCase().indexOf("ON") >= 0)        { value = use_color("<b>Power On<b/>","on"); }
                     else if (value.toUpperCase().indexOf("OFF") >= 0)  { value = use_color("<b>Power Off<b/>","hint"); }
@@ -767,7 +776,7 @@ class RemoteVisualizeStatus extends RemoteDefaultClass {
                 }
 
                 if (element_norm) { element_norm.innerHTML = value; }
-                if (element_full) { element_full.innerHTML = String(value).replace(/,/g,"; "); }
+                if (element_full) { element_full.innerHTML = String(value).replace(/,/g,"; ") + value_mapped; }
             }
 
         }
