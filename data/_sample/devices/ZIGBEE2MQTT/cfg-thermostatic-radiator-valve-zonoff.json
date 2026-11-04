@@ -1,0 +1,322 @@
+{
+  "data": {
+    "buttons": {
+      "child-lock-lock": "set={'child_lock': 'LOCK'}",
+      "child-lock-unlock": "set={'child_lock': 'UNLOCK'}",
+      "open-window-off": "set={'open_window': 'OFF'}",
+      "open-window-on": "set={'open_window': 'ON'}",
+      "system-mode-auto": "set={'system_mode': 'auto'}",
+      "system-mode-heat": "set={'system_mode': 'heat'}",
+      "system-mode-off": "set={'system_mode': 'off'}",
+      "temperature-sensor-select-external": "set={'temperature_sensor_select': 'external'}",
+      "temperature-sensor-select-external-2": "set={'temperature_sensor_select': 'external_2'}",
+      "temperature-sensor-select-external-3": "set={'temperature_sensor_select': 'external_3'}",
+      "temperature-sensor-select-internal": "set={'temperature_sensor_select': 'internal'}"
+    },
+    "commands": {
+      "battery": {
+        "cmd": [
+          "get"
+        ],
+        "description": "Remaining battery in %, can take up to 24 hours before reported",
+        "get": "get=battery",
+        "type": "numeric",
+        "unit": "%",
+        "values": {
+          "max": 100,
+          "min": 0
+        }
+      },
+      "child-lock": {
+        "cmd": [
+          "get",
+          "set",
+          "notify"
+        ],
+        "description": "Enables/disables physical input on the device",
+        "get": "get=child_lock",
+        "set": "set={'child_lock': '{DATA}'}",
+        "type": "binary",
+        "values": [
+          "LOCK",
+          "UNLOCK"
+        ]
+      },
+      "closing-steps": {
+        "cmd": [
+          "get",
+          "notify"
+        ],
+        "description": "Number of steps it takes to close the valve",
+        "get": "get=closing_steps",
+        "type": "numeric"
+      },
+      "external-temperature-input": {
+        "cmd": [
+          "get",
+          "set",
+          "notify"
+        ],
+        "description": "The value of an external temperature sensor. Note: synchronisation of this value with the external temperature sensor needs to happen outside of Zigbee2MQTT.",
+        "get": "get=external_temperature_input",
+        "set": "set={'external_temperature_input': '{DATA}'}",
+        "type": "numeric",
+        "unit": "°C",
+        "values": {
+          "max": 99.9,
+          "min": 0
+        }
+      },
+      "frost-protection-temperature": {
+        "cmd": [
+          "get",
+          "set",
+          "notify"
+        ],
+        "description": "Minimum temperature at which to automatically turn on the radiator, if system mode is off, to prevent pipes freezing.",
+        "get": "get=frost_protection_temperature",
+        "set": "set={'frost_protection_temperature': '{DATA}'}",
+        "type": "numeric",
+        "unit": "°C",
+        "values": {
+          "max": 35,
+          "min": 4
+        }
+      },
+      "idle-steps": {
+        "cmd": [
+          "get",
+          "notify"
+        ],
+        "description": "Number of steps used for calibration (no-load steps)",
+        "get": "get=idle_steps",
+        "type": "numeric"
+      },
+      "linkquality": {
+        "cmd": [
+          "get"
+        ],
+        "description": "Link quality (signal strength)",
+        "get": "get=linkquality",
+        "type": "numeric",
+        "unit": "lqi",
+        "values": {
+          "max": 255,
+          "min": 0
+        }
+      },
+      "local-temperature": {
+        "cmd": [
+          "get",
+          "notify"
+        ],
+        "description": "Current temperature measured on the device",
+        "get": "get=local_temperature",
+        "type": "numeric",
+        "unit": "°C"
+      },
+      "local-temperature-calibration": {
+        "cmd": [
+          "get",
+          "set",
+          "notify"
+        ],
+        "description": "Offset to add/subtract to the local temperature",
+        "get": "get=local_temperature_calibration",
+        "set": "set={'local_temperature_calibration': '{DATA}'}",
+        "type": "numeric",
+        "unit": "°C",
+        "values": {
+          "max": 12.7,
+          "min": -12.8
+        }
+      },
+      "occupied-heating-setpoint": {
+        "cmd": [
+          "get",
+          "set",
+          "notify"
+        ],
+        "description": "Temperature setpoint",
+        "get": "get=occupied_heating_setpoint",
+        "set": "set={'occupied_heating_setpoint': '{DATA}'}",
+        "type": "numeric",
+        "unit": "°C",
+        "values": {
+          "max": 35,
+          "min": 4
+        }
+      },
+      "open-window": {
+        "cmd": [
+          "get",
+          "set",
+          "notify"
+        ],
+        "description": "Automatically turns off the radiator when local temperature drops by more than 1.5°C in 4.5 minutes.",
+        "get": "get=open_window",
+        "set": "set={'open_window': '{DATA}'}",
+        "type": "binary",
+        "values": [
+          "ON",
+          "OFF"
+        ]
+      },
+      "running-state": {
+        "cmd": [
+          "get",
+          "notify"
+        ],
+        "description": "The current running state",
+        "get": "get=running_state",
+        "type": "enum",
+        "values": [
+          "idle",
+          "heat"
+        ]
+      },
+      "system-mode": {
+        "cmd": [
+          "get",
+          "set",
+          "notify"
+        ],
+        "description": "Mode of the thermostat",
+        "get": "get=system_mode",
+        "set": "set={'system_mode': '{DATA}'}",
+        "type": "enum",
+        "values": [
+          "off",
+          "auto",
+          "heat"
+        ]
+      },
+      "temperature-accuracy": {
+        "cmd": [
+          "get",
+          "set",
+          "notify"
+        ],
+        "description": "Temperature control accuracy. The range is -0.2 ~ -1°C, with an interval of 0.2, and the default is -1. If the temperature control accuracy is selected as -1°C (default value) and the target temperature is 26 degrees, then TRVZB will close the valve when the room temperature reaches 26 degrees and open the valve at 25 degrees. If -0.4°C is chosen as the temperature control accuracy, then the valve will close when the room temperature reaches 26 degrees and open at 25.6 degrees.Note: Only version v1.3.0 or higher is supported.",
+        "get": "get=temperature_accuracy",
+        "set": "set={'temperature_accuracy': '{DATA}'}",
+        "type": "numeric",
+        "unit": "°C",
+        "values": {
+          "max": -0.2,
+          "min": -1
+        }
+      },
+      "temperature-sensor-select": {
+        "cmd": [
+          "get",
+          "set",
+          "notify"
+        ],
+        "description": "Whether to use the value of the internal temperature sensor or an external temperature sensor for the perceived local temperature. Using an external sensor does not require local temperature calibration.",
+        "get": "get=temperature_sensor_select",
+        "set": "set={'temperature_sensor_select': '{DATA}'}",
+        "type": "enum",
+        "values": [
+          "internal",
+          "external",
+          "external_2",
+          "external_3"
+        ]
+      },
+      "valve-closing-degree": {
+        "cmd": [
+          "get",
+          "set",
+          "notify"
+        ],
+        "description": "Valve closed position (percentage) control. If the closing degree is set to 100%, the valve is fully closed when it is closed. If the closing degree is set to 0%, the valve is fully opened when it is closed, and the default value is 100%. Note: Only version v1.1.4 or higher is supported.",
+        "get": "get=valve_closing_degree",
+        "set": "set={'valve_closing_degree': '{DATA}'}",
+        "type": "numeric",
+        "unit": "%",
+        "values": {
+          "max": 100,
+          "min": 0
+        }
+      },
+      "valve-closing-limit-voltage": {
+        "cmd": [
+          "get",
+          "notify"
+        ],
+        "description": "Valve closing limit voltage",
+        "get": "get=valve_closing_limit_voltage",
+        "type": "numeric",
+        "unit": "mV"
+      },
+      "valve-motor-running-voltage": {
+        "cmd": [
+          "get",
+          "notify"
+        ],
+        "description": "Valve motor running voltage",
+        "get": "get=valve_motor_running_voltage",
+        "type": "numeric",
+        "unit": "mV"
+      },
+      "valve-opening-degree": {
+        "cmd": [
+          "get",
+          "set",
+          "notify"
+        ],
+        "description": "Valve open position (percentage) control. If the opening degree is set to 100%, the valve is fully open when it is opened. If the opening degree is set to 0%, the valve is fully closed when it is opened, and the default value is 100%. Note: only version v1.1.4 or higher is supported.",
+        "get": "get=valve_opening_degree",
+        "set": "set={'valve_opening_degree': '{DATA}'}",
+        "type": "numeric",
+        "unit": "%",
+        "values": {
+          "max": 100,
+          "min": 0
+        }
+      },
+      "valve-opening-limit-voltage": {
+        "cmd": [
+          "get",
+          "notify"
+        ],
+        "description": "Valve opening limit voltage",
+        "get": "get=valve_opening_limit_voltage",
+        "type": "numeric",
+        "unit": "mV"
+      },
+      "weekly-schedule": {
+        "cmd": [
+          "get",
+          "set"
+        ],
+        "description": "The preset heating schedule to use when the system mode is set to \"auto\" (indicated with ⏲ on the TRV). Up to 6 transitions can be defined per day, where a transition is expressed in the format 'HH:mm/temperature', each separated by a space. The first transition for each day must start at 00:00 and the valid temperature range is 4-35°C (in 0.5°C steps). The temperature will be set at the time of the first transition until the time of the next transition, e.g. '04:00/20 10:00/25' will result in the temperature being set to 20°C at 04:00 until 10:00, when it will change to 25°C.",
+        "get": "get=weekly_schedule",
+        "set": "set={'weekly_schedule': '{DATA}'}",
+        "type": "composite"
+      }
+    },
+    "details": {
+      "description": "Zigbee thermostatic radiator valve",
+      "friendly_name": "Heizung1",
+      "ieee_address": "0xcc36bbfffedeb240",
+      "manufacturer": "SONOFF",
+      "model_id": "TRVZB",
+      "type": "EndDevice"
+    },
+    "query": {
+      "load_after": [],
+      "load_after_values": [],
+      "load_default": 60,
+      "load_intervals": {
+        "10": [
+          "linkquality"
+        ]
+      },
+      "load_never": [],
+      "load_only": []
+    }
+  },
+  "info": "jc://remote/ device configuration for 'Zigbee thermostatic radiator valve' (SONOFF / TRVZB)"
+}
