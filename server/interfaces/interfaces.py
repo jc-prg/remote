@@ -1007,6 +1007,7 @@ class Connect(RemoteThreadingClass):
                 return_msg = f"ERROR: could not read/create command from button code (query/{device}/{button}); " + button_code
             elif api_dev in self.api:
                 return_msg = self.api[api_dev].query(device, device_id, button_code)
+                return_msg = self.command_values_remote_map(call_api, device, button, return_msg)
             else:
                 return_msg = "ERROR: API not available (" + str(api_dev) + ")"
 
@@ -1326,6 +1327,40 @@ class Connect(RemoteThreadingClass):
 
         else:
             return "ERROR get_command: device not found (" + dev_api + ": " + device + ")"
+
+    def command_values_remote(self, dev_api, device, button):
+        """
+        get mapping of device values to remote values ("values-remote") for a command,
+        defined in the device configuration or in the 00_default configuration of the API
+
+        Returns:
+            dict: mapping, e.g. {"LOCK": "ON", "UNLOCK": "OFF"}; empty if not defined
+        """
+        api = dev_api.split("_")[0]
+        configs = [self.device_configuration(device)]
+        device_default = rm3presets.commands + api + "/00_default"
+        if rm3json.if_exist(device_default):
+            configs.append(self.config.read(device_default))
+
+        for config in configs:
+            commands = config.get("data", {}).get("commands", {}) if isinstance(config, dict) else {}
+            if button in commands:
+                values_remote = commands[button].get("values-remote", {})
+                return values_remote if isinstance(values_remote, dict) else {}
+        return {}
+
+    def command_values_remote_map(self, dev_api, device, button, value):
+        """
+        translate a queried device value into the remote value, if "values-remote" is defined
+        """
+        if isinstance(value, (dict, list)) or "ERROR" in str(value) or "error" in str(value):
+            return value
+
+        values_remote = self.command_values_remote(dev_api, device, button)
+        if str(value) in values_remote:
+            self.logging.debug(f"__QUERY {device}_{button}: map '{value}' -> '{values_remote[str(value)]}'")
+            return values_remote[str(value)]
+        return value
 
     def command_api_get(self, api_dev, command):
         """

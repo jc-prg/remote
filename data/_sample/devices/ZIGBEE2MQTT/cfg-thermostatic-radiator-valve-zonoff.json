@@ -40,7 +40,11 @@
         "values": [
           "LOCK",
           "UNLOCK"
-        ]
+        ],
+        "values-remote": {
+          "LOCK": "ON",
+          "UNLOCK": "OFF"
+        }
       },
       "closing-steps": {
         "cmd": [
