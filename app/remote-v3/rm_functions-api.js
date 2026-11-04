@@ -440,7 +440,12 @@ class RemoteApiControl extends RemoteDefaultClass {
 
         }
         else if (cmd === "SendToDeviceApi") {
-            if (param[1]) { cmd = "SendToDeviceApi-ext"; }
+            if (param[1]) {
+                // move request data to the renamed command, otherwise execute() sends an empty body
+                this.temp_data["SendToDeviceApi-ext"] = this.temp_data[cmd];
+                delete this.temp_data[cmd];
+                cmd = "SendToDeviceApi-ext";
+            }
             param = [param[0]];
         }
         else if (cmd === "TemplateAdd") {
@@ -596,6 +601,10 @@ class RemoteApiControl extends RemoteDefaultClass {
     /* answer for api requests - "SendToApi" and "SendToDeviceApi" */
     answer_api_request( data ) {
         let formatted = "N/A";
+        if (!data || !data["REQUEST"] || !data["REQUEST"]["Return"]) {
+            this.logging.error("answer_api_request: invalid answer: " + JSON.stringify(data));
+            return;
+        }
         const response = data["REQUEST"]["Return"];
         const response_id = data["REQUEST"]["Return"]["request_id"];
         const timestamp = response["answer"]["last_action"]; // timestamp (seconds)
