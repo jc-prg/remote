@@ -179,6 +179,23 @@
           "heat"
         ]
       },
+      "power": {
+        "cmd": [
+          "get",
+          "set",
+          "notify"
+        ],
+        "description": "Mode of the thermostat",
+        "get": "get=system_mode",
+        "set": "set={'system_mode': '{DATA}'}",
+        "type": "enum",
+        "values": [
+          "off",
+          "auto",
+          "heat"
+        ],
+        "values-remote": {"off":"OFF","auto":"ON","heat":"ON"}
+      },
       "system-mode": {
         "cmd": [
           "get",
