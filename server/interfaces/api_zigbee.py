@@ -228,7 +228,7 @@ class ApiControl(RemoteApiClass):
 
         self.logging.debug(f"Force update for all {len(self.mqtt_devices)} registered devices")
         for device in self.mqtt_devices:
-            self.request_execute(self.mqtt_msg_start + device)
+            self.request_execute(device + "/get")
 
         self.mqtt_force_update_last = time.time()
 
@@ -243,13 +243,16 @@ class ApiControl(RemoteApiClass):
             if friendly_name not in self.mqtt_device_availability_subscribed:
                 self.logging.debug("Subscribed '/availability' for device " + friendly_name + "/" + device_id)
                 self.request_subscribe(self.mqtt_msg_start + friendly_name + "/availability")
-                self.request_execute(self.mqtt_msg_start + friendly_name + "/availability/get")
+                self.request_execute(friendly_name + "/availability/get")
                 self.mqtt_device_availability_subscribed.append(friendly_name)
 
             if topic == self.mqtt_msg_start + device_id:
                 self.mqtt_devices_status[device_id] = data
                 self.mqtt_devices_status[device_id]["api-last-answer"] = self.config.local_time().strftime("%H:%M:%S (%d.%m.%Y)")
                 self.logging.debug("-> " + device_id + " : " + str(data))
+
+                # trigger an immediate status reload for this device (friendly name or IEEE address as device ID)
+                self.config.push_update_set(self.api_name, [device_id, self.mqtt_device_id.get(device_id, device_id)])
 
         if "bridge/info" in topic and data != {} and data is not None:
             self.mqtt_bridge = data
@@ -264,7 +267,7 @@ class ApiControl(RemoteApiClass):
                 self.mqtt_friendly_name[device["ieee_address"]] = device_id
 
                 self.request_subscribe(self.mqtt_msg_start + device_id)
-                self.request_execute(self.mqtt_msg_start + device_id + "/get")
+                self.request_execute(device_id + "/get")
 
             self.config.write(rm3config.commands + self.api_name + "/10_devices", self.mqtt_devices)
 

@@ -93,6 +93,7 @@ class ConfigCache(RemoteThreadingClass):
         self.shutdown_request = False
         self.load_after_update = {}
         self.load_after = {}
+        self.push_update = set()
         self.config_errors = {}
         self.config_messages = []
         self.record_devices = []
@@ -142,6 +143,33 @@ class ConfigCache(RemoteThreadingClass):
         document a user activity, e.g. API request from client
         """
         self.cache_last_action = time.time()
+
+    def push_update_set(self, api_key, device_ids):
+        """
+        mark devices as updated by a pushed message from an API (e.g. MQTT), to be reloaded with next status request
+
+        Args:
+            api_key (str): API key, e.g. ZIGBEE2MQTT
+            device_ids (list): external device IDs
+        """
+        for device_id in device_ids:
+            self.push_update.add(api_key + ":" + str(device_id))
+
+    def push_update_check(self, api_key, device_id):
+        """
+        check if a device was updated by a pushed message and reset the indicator
+
+        Args:
+            api_key (str): API key, e.g. ZIGBEE2MQTT
+            device_id (str): external device ID
+        Returns:
+            bool: True if pushed update is pending
+        """
+        key = api_key + ":" + str(device_id)
+        if key in self.push_update:
+            self.push_update.discard(key)
+            return True
+        return False
 
     def user_inactive(self):
         """

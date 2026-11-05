@@ -702,6 +702,13 @@ class RemotesData(RemoteThreadingClass):
                             #self.queue.add2queue([1])
                             cmds_now = config[device]["commands"]["query"].get("load_after_values", cmds_all)
 
+                        # load all data if the API pushed new data for this device (e.g. MQTT message)
+                        elif self.config.push_update_check(interface, devices[device]["config"].get("device_id", "")):
+                            self.logging.debug(f"devices_get_status: pushed update -> reload all values of {device}")
+                            cmds_now = list(cmds_all)
+                            for cmd in cmds_now:
+                                self.get_status_last_run[(device, cmd)] = now
+
                         # else load selected data based on defined intervals
                         else:
                             cmd_intervals = {cmd: interval_default for cmd in cmds_all}
