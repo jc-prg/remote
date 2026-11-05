@@ -13,6 +13,7 @@ class RemoteSwipe extends RemoteDefaultClass {
         this.swipe_bound   = false;
         this.touch_start_x = 0;
         this.touch_start_y = 0;
+        this.touch_ignore  = false;   // true when the touch started on a slider or color picker
     }
 
     /* build ordered list of visible remotes — same order as drop-down menu */
@@ -61,11 +62,16 @@ class RemoteSwipe extends RemoteDefaultClass {
     bind_swipe() {
         if (this.swipe_bound) return;
 
+        // elements where horizontal dragging is part of the interaction (sliders, color pickers)
+        const no_swipe_selector = "input[type=range], .rm-slide-container, .audio_slider, .color-picker, canvas";
+
         const on_start = (e) => {
             this.touch_start_x = e.touches[0].clientX;
             this.touch_start_y = e.touches[0].clientY;
+            this.touch_ignore  = !!(e.target.closest && e.target.closest(no_swipe_selector));
         };
         const on_end = (e) => {
+            if (this.touch_ignore) return;
             if (typeof rmSettings !== "undefined" && rmSettings.active) return;
             const dx = e.changedTouches[0].clientX - this.touch_start_x;
             const dy = e.changedTouches[0].clientY - this.touch_start_y;
